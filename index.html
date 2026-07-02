@@ -27,7 +27,7 @@
     background:#fff;border-bottom:1px solid var(--line);padding:11px 20px;
     box-shadow:var(--shadow);position:sticky;top:0;z-index:40}
   .logo{font-weight:700;color:var(--navy);font-size:20px;display:flex;align-items:center;gap:9px;flex:0 0 auto}
-  .logo .mark{background:var(--navy);color:#fff;border-radius:8px;padding:3px 9px;font-size:16px}
+  .logo img{display:block;height:30px;width:auto}
 
   /* client switcher — the anchor of the whole screen */
   .switcher-wrap{position:relative;flex:1;max-width:360px}
@@ -111,11 +111,23 @@
   .client-head .st::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
   .sub-line{font-size:12.5px;color:var(--muted);margin-bottom:16px}
   .db-actions{margin-inline-start:auto;display:flex;gap:8px}
+  .rep{position:relative}
+  .rep .chip-btn .repchev{transition:.2s}
+  .rep.open .chip-btn .repchev{transform:rotate(180deg)}
+  .rep-menu{position:absolute;top:calc(100% + 6px);inset-inline-end:0;background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;min-width:210px;z-index:35;display:none}
+  .rep.open .rep-menu{display:block}
+  .rep-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;font-size:13.5px;
+    color:var(--navy);cursor:pointer;white-space:nowrap}
+  .rep-item:hover{background:var(--blue-bg)}
+  .rep-item svg{opacity:.55;flex:0 0 auto}
   .chip-btn{font-size:12.5px;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:10px;
     padding:8px 13px;cursor:pointer;display:flex;align-items:center;gap:7px}
   .chip-btn:hover{border-color:var(--blue)}
   .chip-btn.primary{background:var(--coral);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(228,131,117,.3)}
   .chip-btn.primary:hover{background:var(--coral-deep)}
+  #btnOps.done{background:var(--green);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(22,163,74,.28)}
+  #btnOps.done:hover{background:#12833d}
 
   /* ===== section tabs ===== */
   .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
@@ -249,6 +261,147 @@
   .placeholder svg{opacity:.4}
   .placeholder .pt{font-size:15px;color:var(--navy);font-weight:600}
 
+  /* ===== AI chat view ===== */
+  .chat{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;height:calc(100vh - 215px);min-height:460px;overflow:hidden}
+  .chat-body{flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:22px}
+  .cmsg{max-width:82%}
+  .cmsg.bot{align-self:flex-start}
+  .cmsg.user{align-self:flex-end}
+  .think{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);
+    cursor:pointer;user-select:none;padding:2px 0}
+  .think svg{opacity:.55}
+  .think .chev{transition:.2s}
+  .think.open .chev{transform:rotate(180deg)}
+  .think-content{font-size:12.5px;color:var(--muted);background:var(--bg);border:1px solid var(--line);
+    border-radius:10px;padding:11px 13px;margin:6px 0 10px;line-height:1.65;max-width:520px;display:none}
+  .think.open + .think-content{display:block}
+  .bot-text{font-size:14.5px;color:var(--navy);line-height:1.75}
+  .bot-text .greet{color:var(--blue);font-weight:500}
+  .bot-text b{color:var(--navy);font-weight:600}
+  .user-bubble{background:var(--blue-bg);color:var(--navy);border:1px solid #d4ecfb;
+    border-radius:16px;padding:12px 18px;font-size:14.5px;line-height:1.6}
+  .cmsg-time{font-size:11px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:6px}
+  .cmsg.user .cmsg-time{justify-content:flex-end}
+  .cmsg-time svg{opacity:.5}
+  .chat-input{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--line);background:#fbfdff}
+  .chat-input input{flex:1;border:1px solid var(--line);border-radius:24px;padding:12px 18px;
+    font-family:inherit;font-size:14px;outline:none;background:#fff}
+  .chat-input input:focus{border-color:var(--blue)}
+  .chat-send{width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;border:none;
+    cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .chat-send:hover{background:#2f9ad0}
+
+  /* ===== operations mode ===== */
+  .demo-role{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);cursor:pointer;
+    background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;user-select:none}
+  .demo-role input{accent-color:var(--coral)}
+  .ops-banner{display:flex;align-items:center;gap:13px;background:linear-gradient(95deg,#E48375,#d96a5a);
+    border:none;border-radius:14px;padding:15px 20px;margin-bottom:18px;color:#fff;
+    box-shadow:0 10px 26px rgba(217,106,90,.32)}
+  .ops-title{font-size:17px;font-weight:600;color:#fff;display:flex;align-items:center;gap:9px}
+  .ops-title .sub{font-size:12.5px;font-weight:400;color:rgba(255,255,255,.85)}
+  .ops-live{width:11px;height:11px;border-radius:50%;background:#fff;position:relative;flex:0 0 auto}
+  .ops-live::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,255,255,.7);
+    animation:opspulse 1.5s ease-out infinite}
+  @keyframes opspulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+  .ops-clock{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);
+    color:#fff;font-size:13px;font-weight:600;padding:6px 13px;border-radius:999px;font-variant-numeric:tabular-nums}
+  .ops-actions{display:flex;gap:10px}
+  .ops-close{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:10px;
+    padding:10px 15px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .ops-close:hover{background:rgba(255,255,255,.28)}
+  .ops-done{background:#fff;color:var(--coral-deep);border:none;border-radius:10px;
+    padding:10px 17px;font-family:inherit;font-weight:600;font-size:13.5px;cursor:pointer;
+    display:flex;align-items:center;gap:7px;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+  .ops-done:hover{background:#fff5f2}
+  body.ops-on .main{background:linear-gradient(180deg,#fff4f1,transparent 220px)}
+  body.ops-on::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;
+    box-shadow:inset 0 0 80px rgba(228,131,117,.16)}
+  body.ops-on::before{content:"";position:fixed;top:0;left:0;right:0;height:4px;pointer-events:none;z-index:61;
+    background:linear-gradient(90deg,#E48375,#f2ab9f,#d96a5a,#E48375);background-size:200% 100%;
+    animation:opsribbon 2.6s linear infinite}
+  @keyframes opsribbon{to{background-position:-200% 0}}
+
+  /* finish-operations modal */
+  .fin-ov{position:fixed;inset:0;background:rgba(12,64,104,.5);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;z-index:95}
+  .fin-ov.show{display:flex}
+  .fin{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);width:440px;max-width:92vw;padding:26px}
+  .fin-head{text-align:center;margin-bottom:18px}
+  .fin-ico{width:56px;height:56px;border-radius:50%;background:var(--blue-bg);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .fin-ico.ok{background:var(--green-bg);color:var(--green)}
+  .fin-ico .spin{width:26px;height:26px;border:3px solid #cfe6f8;border-top-color:var(--blue);
+    border-radius:50%;animation:finspin .8s linear infinite}
+  @keyframes finspin{to{transform:rotate(360deg)}}
+  .fin-title{font-size:18px;font-weight:600;color:var(--navy)}
+  .fin-sub{font-size:13px;color:var(--muted);margin-top:5px}
+  .fin-steps{display:flex;flex-direction:column;gap:4px}
+  .fin-step{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;font-size:13.5px;color:var(--muted)}
+  .fin-step.run{background:var(--blue-bg);color:var(--navy)}
+  .fin-step.done{color:var(--navy)}
+  .fin-step .fs-ico{width:22px;height:22px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;
+    justify-content:center;border:2px solid var(--line);color:#fff}
+  .fin-step.run .fs-ico{border-color:var(--blue)}
+  .fin-step.done .fs-ico{background:var(--green);border-color:var(--green)}
+  .fin-step .mini-spin{width:12px;height:12px;border:2px solid #cfe6f8;border-top-color:var(--blue);
+    border-radius:50%;animation:finspin .8s linear infinite}
+  .fin-foot{margin-top:18px;text-align:center;display:none}
+  .fin-foot.show{display:block}
+  .fin-badge{display:inline-flex;align-items:center;gap:7px;background:var(--green-bg);color:var(--green);
+    font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;margin-bottom:16px}
+
+  /* ops KPI strip */
+  .ops-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:1050px){.ops-kpis{grid-template-columns:repeat(2,1fr)}}
+  .okpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;
+    display:flex;align-items:center;gap:13px;transition:.15s;box-shadow:var(--shadow)}
+  .okpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .okpi.active{border-color:var(--navy);box-shadow:0 0 0 2px rgba(12,64,104,.1)}
+  .ochip{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .ochip.doc{background:var(--blue-bg);color:var(--blue)}
+  .ochip.ai{background:#efedfb;color:#6b5fd0}
+  .ochip.action{background:var(--amber-bg);color:#c98a1e}
+  .ochip.msg{background:var(--green-bg);color:var(--green)}
+  .okpi .ok-n{font-size:22px;font-weight:700;color:var(--navy);line-height:1}
+  .okpi .ok-l{font-size:12px;color:var(--muted);margin-top:4px}
+
+  /* ops grid */
+  .ops-grid{display:grid;grid-template-columns:1.7fr 1fr;gap:16px;align-items:start}
+  @media(max-width:1050px){.ops-grid{grid-template-columns:1fr}}
+  .ops-list-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .ops-list-head{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;
+    border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px}
+  .olh-title{font-size:16px;font-weight:600;color:var(--navy)}
+  .ops-filters{display:flex;gap:3px;background:var(--bg);border-radius:10px;padding:3px}
+  .ofilter{font-size:12px;color:var(--muted);padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .ofilter.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .ops-list{display:flex;flex-direction:column}
+  .orow{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid #f0f4f8;transition:.12s}
+  .orow:last-child{border-bottom:none}
+  .orow:hover{background:#fafcff}
+  .orow .obody{flex:1;min-width:0}
+  .orow .ot{font-size:14px;color:var(--navy);font-weight:500;line-height:1.4}
+  .orow .os{font-size:12px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .orow .os .dot{width:3px;height:3px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+  .oact{border:1px solid var(--blue);background:#fff;color:var(--blue);font-family:inherit;font-weight:600;
+    font-size:12.5px;border-radius:9px;padding:8px 15px;cursor:pointer;flex:0 0 auto;transition:.12s}
+  .oact:hover{background:var(--blue);color:#fff}
+  .ops-empty{padding:54px 20px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:12px}
+  .ops-empty svg{color:var(--green);opacity:.75}
+
+  /* ops side */
+  .ops-side{display:flex;flex-direction:column;gap:16px}
+  .ops-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px}
+  .osc-title{font-size:14.5px;font-weight:600;color:var(--navy);margin-bottom:12px}
+  .osc-prog{height:12px;border-radius:20px;background:#deeef8;overflow:hidden;direction:ltr;margin:8px 0 14px}
+  .osc-prog .fill{height:100%;background:var(--blue);border-radius:20px}
+  .osc-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #f0f4f8}
+  .osc-row:last-child{border-bottom:none}
+  .osc-row .l{color:var(--muted)}
+  .osc-row .v{font-weight:600;color:var(--navy)}
+
   /* KPI hero row */
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
   @media(max-width:1050px){.kpis{grid-template-columns:repeat(2,1fr)}}
@@ -371,7 +524,7 @@
 
 <!-- ===== top bar ===== -->
 <div class="topbar">
-  <div class="logo"><span class="mark">HK</span> חזות קריספין</div>
+  <div class="logo"><img src="logo.b96db34a449db8db7eaea328a06ad8e2.svg" alt="HK חזות קריספין" height="30"></div>
 
   <div class="switcher-wrap">
     <div class="switcher" onclick="toggleSwitcher(event)" title="החלפת לקוח">
@@ -389,6 +542,7 @@
   </div>
 
   <div class="top-right">
+    <label class="demo-role" title="הדגמה — מדמה התחברות כמתפעל"><input type="checkbox" id="opRole" checked onchange="setOperator(this.checked)"> מחובר כמתפעל</label>
     <div class="who">ערב טוב, אייל חזות<br><b>לאיזור האישי</b></div>
     <div class="avatar">אח</div>
   </div>
@@ -428,8 +582,16 @@
       <span class="hp2" id="headHp">511327876</span>
       <span class="st active">פעיל</span>
       <div class="db-actions">
+        <div class="rep" id="repDd">
+          <button class="chip-btn" onclick="toggleRep(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg> דוחות <svg class="repchev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="rep-menu" id="repMenu">
+            <div class="rep-item" onclick="openReport('דו&quot;ח תקציבי')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg> דו"ח תקציבי</div>
+            <div class="rep-item" onclick="openReport('דו&quot;ח תזרים חודשי')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg> דו"ח תזרים חודשי</div>
+            <div class="rep-item" onclick="openReport('דוח תזרים עתידי')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2M21 12a9 9 0 1 1-9-9"/><path d="M17 3v4h4"/></svg> דוח תזרים עתידי</div>
+          </div>
+        </div>
         <div class="chip-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/></svg> רענון</div>
-        <div class="chip-btn primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> התפעול הסתיים</div>
+        <button class="chip-btn primary" id="btnOps" onclick="enterOps()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg> תפעל</button>
       </div>
     </div>
     <div class="sub-line">חברת ייעוץ · לירון בן כליפא · סונכרן אוטומטית 1.7.2026 10:54</div>
@@ -437,6 +599,7 @@
     <!-- section tabs -->
     <div class="tabs">
       <div class="tab on" onclick="switchTab(this,'dash')">דשבורד</div>
+      <div class="tab" onclick="switchTab(this,'chat')">צ'אט</div>
       <div class="tab" onclick="switchTab(this,'metrics')">מדדים</div>
       <div class="tab" onclick="switchTab(this,'meetings')">פגישות</div>
       <div class="tab" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
@@ -466,12 +629,65 @@
       <div class="mcards" id="mcards"></div>
     </div>
 
+    <!-- ===== AI chat view ===== -->
+    <div id="viewChat" style="display:none">
+      <div class="chat">
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-input">
+          <input id="chatInput" placeholder="כתיבת הודעה — שאלו את העוזר על נתוני הלקוח" onkeydown="if(event.key==='Enter')chatSend()">
+          <button class="chat-send" onclick="chatSend()" aria-label="שליחה"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== placeholder views ===== -->
     <div id="viewOther" style="display:none">
       <div class="placeholder">
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
         <div class="pt">המסך "<span id="otherName"></span>"</div>
         <div>נבנה באותה שפת עיצוב — נמשיך לכאן כשנגיע אליו</div>
+      </div>
+    </div>
+
+    <!-- ===== OPERATIONS mode ===== -->
+    <div id="opsView" style="display:none">
+      <div class="ops-banner">
+        <span class="ops-live"></span>
+        <div class="ops-title">מצב תפעול — <span id="opsScope">אנרגי אינטרנשיונל</span> <span class="sub" id="opsCount"></span></div>
+        <span class="ops-clock" id="opsClock">0:00</span>
+        <div class="ops-actions">
+          <button class="ops-close" onclick="exitOps()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> סגירת מצב תפעול</button>
+          <button class="ops-done" onclick="finishOps()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול</button>
+        </div>
+      </div>
+
+      <div class="ops-kpis" id="opsKpis"></div>
+
+      <div class="ops-grid">
+        <div class="ops-list-card">
+          <div class="ops-list-head">
+            <span class="olh-title">תור התפעול</span>
+            <div class="ops-filters" id="opsFilters"></div>
+          </div>
+          <div class="ops-list" id="opsList"></div>
+        </div>
+
+        <div class="ops-side">
+          <div class="ops-card">
+            <div class="osc-title">סגירת חודש — יוני 2026</div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">התקדמות</span><span style="font-weight:600;color:var(--navy)">72%</span></div>
+            <div class="osc-prog"><div class="fill" style="width:72%"></div></div>
+            <div class="osc-row"><span class="l">חשבונות סונכרנו</span><span class="v">9 / 12</span></div>
+            <div class="osc-row"><span class="l">התאמות פתוחות</span><span class="v">3</span></div>
+            <div class="osc-row"><span class="l">ממתין לאישור לקוח</span><span class="v">1</span></div>
+          </div>
+          <div class="ops-card">
+            <div class="osc-title">היום</div>
+            <div class="osc-row"><span class="l">טופלו משימות</span><span class="v" id="opsDone">14</span></div>
+            <div class="osc-row"><span class="l">קיטלוגי AI שאושרו</span><span class="v">23</span></div>
+            <div class="osc-row"><span class="l">חברות שנסגרו</span><span class="v">4</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -518,6 +734,22 @@
     <button class="send" onclick="drawerSend()">➤</button>
   </div>
 </aside>
+
+<!-- ===== finish-operations modal ===== -->
+<div class="fin-ov" id="finOv">
+  <div class="fin">
+    <div class="fin-head">
+      <div class="fin-ico" id="finIco"><div class="spin"></div></div>
+      <div class="fin-title" id="finTitle">מסיים תפעול…</div>
+      <div class="fin-sub" id="finSub">מרענן נתונים מ-Bizibox ומאמת שהכול תקין</div>
+    </div>
+    <div class="fin-steps" id="finSteps"></div>
+    <div class="fin-foot" id="finFoot">
+      <div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> 0 חריגות נמצאו</div>
+      <button class="chip-btn primary" style="width:100%;justify-content:center" onclick="finishDone()">חזרה לדשבורד</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -608,15 +840,19 @@
   };
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};
   const rowSpan=h=>Math.max(6,Math.ceil((h+18)/8));
+  const SIZE={};  // per-widget width override chosen in edit mode: 'sm' | 'lg'
+  const sizeOf=f=>SIZE[f]||(wmeta(f).s==='sm'?'sm':'lg');
+  function toggleSize(f){SIZE[f]=sizeOf(f)==='sm'?'lg':'sm';renderBoard();}
 
   function renderBoard(){
     const active=BOARDS[SCOPE];
     const b=document.getElementById('wboard');
     if(!active.length){b.innerHTML='<div class="wb-empty">אין ווידג\'טים בלוח — לחצו "הוספת ווידג\'ט"</div>';return;}
-    b.innerHTML=active.map((f,i)=>{const w=wmeta(f);const sm=w.s==='sm';
+    b.innerHTML=active.map((f,i)=>{const w=wmeta(f);const sm=sizeOf(f)==='sm';
       return `<div class="wframe loading ${sm?'sm':''}" data-idx="${i}" draggable="false" style="grid-row-end:span ${rowSpan(w.h)}">
         <div class="wf-tools">
           <button class="wf-btn wf-grip" title="גרירה לסידור" aria-label="גרירה"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg></button>
+          <button class="wf-btn wf-size" title="${sm?'הרחבה לרוחב מלא':'צמצום לחצי רוחב'}" aria-label="רוחב" onclick="toggleSize('${f}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7 4 12l4 5M16 7l4 5-4 5M4 12h16"/></svg></button>
           <button class="wf-btn wf-x" title="הסרה מהלוח" onclick="removeWidget('${f}')">✕</button>
         </div>
         <iframe loading="lazy" scrolling="no" data-file="${f}" src="widgets/${encodeURI(f)}#embed" style="height:${w.h}px" onload="this.parentElement.classList.remove('loading')"></iframe>
@@ -742,9 +978,13 @@
     // force dashboard tab
     const tabs=document.querySelectorAll('.tab');
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
-    ['viewDash','viewMetrics','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    OPSMODE=false; document.body.classList.remove('ops-on');
+    document.getElementById('opsView').style.display='none';
+    ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
+    document.querySelector('.tabs').style.display = (s==='portfolio') ? 'none' : '';
     document.getElementById('wbActions').style.display='flex';
+    updateOpsBtn();
     renderBoard();
   }
   function selectPortfolio(){setScope('portfolio');}
@@ -794,9 +1034,10 @@
   function switchTab(el,t){
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     el.classList.add('on');
-    ['viewDash','viewMetrics','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
+    else if(t==='chat'){document.getElementById('viewChat').style.display='';renderChat();}
     else{document.getElementById('viewOther').style.display='';document.getElementById('otherName').textContent=el.textContent;}
     document.querySelector('.db-actions').style.visibility = t==='dash' ? 'visible' : 'hidden';
     document.getElementById('wbActions').style.display = t==='dash' ? 'flex' : 'none';
@@ -845,7 +1086,160 @@
   function delMetric(i){METRICS.splice(i,1);renderMetrics();toast('המדד נמחק');}
   function addMetric(){METRICS.push({name:'מדד חדש',current:0,target:0,type:'עצמאי'});renderMetrics();toast('נוסף מדד חדש');}
 
-  renderRail(); renderBoard();
+  /* ---- AI chat (assistant) ---- */
+  const CHAT=[
+    {role:'user', t:'כמה שילמתי על שכר דירה ברבעון האחרון?', time:'31/03/2026 15:33'},
+    {role:'bot', think:'שלפתי את תנועות סעיף "שכר דירה" מ-1.1.2026 עד 31.3.2026 ממערכת הנהלת החשבונות, סיננתי לפי הספק וחיברתי את הסכומים.',
+      t:'<span class="greet">עומרי,</span><br>לגבי חזות קריספין, בבדיקה שערכנו במערכות, לא נמצאו תשלומים שבוצעו אליה.<br>באשר לתשלומי השכירות בין יולי לאוקטובר 2025, הסכום הכולל ששולם בתקופה זו עומד על <b>46 ₪</b>.',
+      time:'15:34 31/03/2026'},
+    {role:'user', t:'כמה שילמתי על ביטוחים חודש שעבר?', time:'19/04/2026 13:33'},
+    {role:'bot', think:'חיפשתי תנועות בסעיף "ביטוחים" לחודש מרץ 2026 בטווח 1.3–31.3 — לא נמצאו רשומות תואמות במקור הנתונים הזמין.',
+      t:'<span class="greet">אייל,</span><br>לגבי שאלתך כמה שילמת על ביטוחים בחודש שעבר (מרץ 2026) – המידע הספציפי הזה אינו זמין כרגע במערכת.<br>אם תרצה, אוכל לבדוק זאת שוב בדרך אחרת.',
+      time:'13:33 19/04/2026'},
+  ];
+  function renderChat(){
+    const b=document.getElementById('chatBody');
+    b.innerHTML=CHAT.map(m=>{
+      const time=`<div class="cmsg-time"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${m.time}</div>`;
+      if(m.role==='user') return `<div class="cmsg user"><div class="user-bubble">${m.t}</div>${time}</div>`;
+      const think=m.think
+        ? `<div class="think" onclick="this.classList.toggle('open')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 10h8M8 14h5M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12z"/></svg> חלון חשיבה <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><div class="think-content">${m.think}</div>`
+        : '';
+      return `<div class="cmsg bot">${think}<div class="bot-text">${m.t}</div>${time}</div>`;
+    }).join('');
+    b.scrollTop=b.scrollHeight;
+  }
+  function chatSend(){
+    const inp=document.getElementById('chatInput'); const v=inp.value.trim(); if(!v) return;
+    CHAT.push({role:'user', t:v, time:'עכשיו'});
+    CHAT.push({role:'bot', think:'מנתח את השאלה, שולף את הנתונים הרלוונטיים של הלקוח מהמערכות ומחשב את התשובה.',
+      t:'<span class="greet">אייל,</span><br>קיבלתי את השאלה — אני בודק את נתוני הלקוח ואחזור עם תשובה מפורטת.', time:'עכשיו'});
+    inp.value=''; renderChat();
+  }
+
+  /* ---- reports dropdown ---- */
+  function toggleRep(e){e.stopPropagation();document.getElementById('repDd').classList.toggle('open');}
+  function openReport(name){document.getElementById('repDd').classList.remove('open');toast('נפתח '+name);}
+  document.addEventListener('click',function(){const r=document.getElementById('repDd');if(r)r.classList.remove('open');});
+
+  /* ---- operations mode (מתפעל בלבד) ---- */
+  let isOperator=true, OPSMODE=false;
+  const opsDoneSet=new Set(), opsDur={};
+  let opsStart=0, opsTimer=null, opsElapsed=0;
+  const opsKey=()=>SCOPE==='portfolio'?'portfolio':'c'+CUR;
+  const OPS_ICO_GEAR='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>';
+  const OPS_ICO_CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
+  const OPS_ICO_CLOCK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  const fmtDur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  function startOpsTimer(){opsStart=Date.now();const el=document.getElementById('opsClock');
+    const tick=()=>{el.innerHTML=OPS_ICO_CLOCK+' '+fmtDur(Math.floor((Date.now()-opsStart)/1000));};
+    tick();clearInterval(opsTimer);opsTimer=setInterval(tick,1000);}
+  function stopOpsTimer(){clearInterval(opsTimer);opsTimer=null;}
+  function updateOpsBtn(){
+    const btn=document.getElementById('btnOps');
+    btn.style.display=(isOperator&&!OPSMODE)?'flex':'none';
+    const done=opsDoneSet.has(opsKey()), dur=opsDur[opsKey()];
+    btn.classList.toggle('done',done);
+    btn.innerHTML = done ? OPS_ICO_CHECK+' התפעול הושלם'+(dur!=null?' · '+fmtDur(dur):'') : OPS_ICO_GEAR+' תפעל';
+  }
+  function setOperator(v){isOperator=v; if(!v&&OPSMODE){exitOps();} else {updateOpsBtn();}}
+  function enterOps(){
+    OPSMODE=true; document.body.classList.add('ops-on');
+    document.querySelector('.tabs').style.display='none';
+    ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    document.getElementById('opsScope').textContent = SCOPE==='portfolio' ? 'כל החברות' : document.getElementById('headName').textContent;
+    document.getElementById('opsView').style.display='';
+    renderOps();
+    startOpsTimer();
+    updateOpsBtn();
+  }
+  function exitOps(){
+    stopOpsTimer();
+    OPSMODE=false; document.body.classList.remove('ops-on');
+    document.getElementById('opsView').style.display='none';
+    if(SCOPE!=='portfolio') document.querySelector('.tabs').style.display='';
+    const t=document.querySelectorAll('.tab'); t.forEach(x=>x.classList.remove('on')); t[0].classList.add('on');
+    document.getElementById('viewDash').style.display='';
+    updateOpsBtn(); toast('מצב תפעול נסגר');
+  }
+
+  /* סיום תפעול — רענון מ-Bizibox + בדיקת חריגות */
+  const FIN_STEPS=['רענון נתונים מ-Bizibox','סנכרון תנועות בנק אחרונות','אימות התאמות פתוחות','בדיקת חריגות תזרים ועו״ש'];
+  let finTimers=[];
+  function finishOps(){
+    opsElapsed=Math.floor((Date.now()-opsStart)/1000); stopOpsTimer();
+    const ov=document.getElementById('finOv'); ov.classList.add('show');
+    document.getElementById('finFoot').classList.remove('show');
+    document.getElementById('finTitle').textContent='מסיים תפעול…';
+    document.getElementById('finSub').textContent='מרענן נתונים מ-Bizibox ומאמת שהכול תקין';
+    const ico=document.getElementById('finIco'); ico.className='fin-ico'; ico.innerHTML='<div class="spin"></div>';
+    document.getElementById('finSteps').innerHTML=FIN_STEPS.map((s,i)=>
+      `<div class="fin-step" id="fstep${i}"><span class="fs-ico"></span><span>${s}</span></div>`).join('');
+    finTimers.forEach(clearTimeout); finTimers=[];
+    let d=400;
+    FIN_STEPS.forEach((s,i)=>{
+      finTimers.push(setTimeout(()=>{const el=document.getElementById('fstep'+i);
+        if(el){el.className='fin-step run';el.querySelector('.fs-ico').innerHTML='<span class="mini-spin"></span>';}},d));
+      d+=750;
+      finTimers.push(setTimeout(()=>{const el=document.getElementById('fstep'+i);
+        if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
+        if(i===FIN_STEPS.length-1) finSuccess();},d));
+      d+=250;
+    });
+  }
+  function finSuccess(){
+    const ico=document.getElementById('finIco'); ico.className='fin-ico ok';
+    ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
+    document.getElementById('finTitle').textContent='התפעול הושלם בהצלחה';
+    document.getElementById('finSub').textContent='הנתונים עודכנו מ-Bizibox · הושלם ב-'+fmtDur(opsElapsed)+' · לא נמצאו חריגות';
+    document.getElementById('finFoot').classList.add('show');
+  }
+  function finishDone(){opsDur[opsKey()]=opsElapsed;opsDoneSet.add(opsKey());document.getElementById('finOv').classList.remove('show');exitOps();toast('התפעול הושלם בהצלחה ✓');}
+
+  /* ops console data + render */
+  const OPS_TYPES={
+    doc:   {label:'מסמכים שהתקבלו', act:'קטלוג', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'},
+    ai:    {label:'קיטלוג AI לאישור', act:'אישור', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>'},
+    action:{label:'פעולות לטיפול', act:'טיפול', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'},
+    msg:   {label:'הודעות מלקוחות', act:'מענה', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>'},
+  };
+  let OPS_TASKS=[], OPS_FILTER='all', OPS_DONE=14;
+  function seedOps(){OPS_TASKS=[
+    {type:'doc',    t:'חשבונית ספק — סונול · 4,820 ₪',                         client:'אנרגי אינטרנשיונל', time:'לפני 12 דק׳'},
+    {type:'ai',     t:'קיטלוג אוטומטי: 5,550 ₪- ← "אלבר צי רכב" (רכב / ליסינג)', client:'אנרגי אינטרנשיונל', time:'לפני 40 דק׳'},
+    {type:'ai',     t:'קיטלוג אוטומטי: 6,773 ₪+ ← "קיר זי בע״מ" (הלוואות)',       client:'מטעי גבעון',        time:'לפני 55 דק׳'},
+    {type:'action', t:'חשבון בנק לא מעודכן — נדרש חיבור מחדש ל-Bizibox',         client:'אקוסרוויס בע״מ',    time:'לפני שעה'},
+    {type:'doc',    t:'דף חשבון — בנק לאומי · יוני 2026',                       client:'רימון יצחק',        time:'לפני שעה'},
+    {type:'msg',    t:'שאלה מלקוח: מתי נסגר החודש?',                             client:'טיב השוק קמעונאות', time:'לפני שעתיים'},
+    {type:'action', t:'סגירת חודש יוני — 2 התאמות פתוחות',                       client:'מטעי גבעון',        time:'היום 09:14'},
+  ];}
+  const opsCount=t=>OPS_TASKS.filter(x=>x.type===t).length;
+  function renderOps(){
+    document.getElementById('opsCount').textContent = OPS_TASKS.length ? '· '+OPS_TASKS.length+' משימות ממתינות' : '· הכל טופל';
+    document.getElementById('opsKpis').innerHTML=Object.keys(OPS_TYPES).map(k=>{const on=OPS_FILTER===k;
+      return `<div class="okpi ${on?'active':''}" onclick="opsFilter('${on?'all':k}')">
+        <div class="ochip ${k}">${OPS_TYPES[k].icon}</div>
+        <div><div class="ok-n">${opsCount(k)}</div><div class="ok-l">${OPS_TYPES[k].label}</div></div></div>`;}).join('');
+    document.getElementById('opsFilters').innerHTML=
+      `<div class="ofilter ${OPS_FILTER==='all'?'on':''}" onclick="opsFilter('all')">הכל</div>`+
+      Object.keys(OPS_TYPES).map(k=>`<div class="ofilter ${OPS_FILTER===k?'on':''}" onclick="opsFilter('${k}')">${OPS_TYPES[k].label}</div>`).join('');
+    const list=OPS_FILTER==='all'?OPS_TASKS:OPS_TASKS.filter(x=>x.type===OPS_FILTER);
+    const el=document.getElementById('opsList');
+    if(!list.length){el.innerHTML='<div class="ops-empty"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.2 2.2 4.8-4.8"/></svg>אין משימות תפעול פתוחות — כל הכבוד</div>';return;}
+    el.innerHTML=list.map(task=>{const gi=OPS_TASKS.indexOf(task);
+      return `<div class="orow">
+        <div class="ochip ${task.type}">${OPS_TYPES[task.type].icon}</div>
+        <div class="obody"><div class="ot">${task.t}</div>
+          <div class="os">${task.client}<span class="dot"></span>${task.time}</div></div>
+        <button class="oact" onclick="opsDo(${gi})">${OPS_TYPES[task.type].act}</button></div>`;}).join('');
+  }
+  function opsFilter(k){OPS_FILTER=k;renderOps();}
+  function opsDo(i){const task=OPS_TASKS[i];if(!task)return;OPS_TASKS.splice(i,1);OPS_DONE++;
+    const dn=document.getElementById('opsDone');if(dn)dn.textContent=OPS_DONE;
+    renderOps();toast('בוצע: '+OPS_TYPES[task.type].act);}
+  seedOps();
+
+  renderRail(); renderBoard(); updateOpsBtn();
 </script>
 </body>
 </html>
