@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ימי עבודה שנותרו — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08); --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:48px; padding:48px 32px;
+    }
+    .section-label{ font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; text-transform:uppercase; text-align:center; }
+    .section-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white); border:1.5px solid #e6ecf2; border-radius:12px;
+      width:200px; display:flex; flex-direction:column; overflow:hidden;
+      transition:box-shadow .18s,transform .18s,border-color .18s; cursor:pointer;
+    }
+    .wcard:hover{ box-shadow:0 6px 20px rgba(12,64,104,.12); border-color:var(--cyan); transform:translateY(-2px); }
+    .wcard.added{ border-color:var(--cyan); }
+    .wcard-text{ padding:12px 12px 6px; }
+    .wcard-title{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+    .wcard-desc{ font-size:10px; color:var(--gray); line-height:1.4; }
+    .wcard-preview{
+      height:100px; padding:8px 10px; background:#f7fafd;
+      display:flex; flex-direction:column; justify-content:space-between;
+      overflow:hidden;
+    }
+    .wcard-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 10px 9px; border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{ font-size:10px; color:var(--gray2); }
+    .wcard-btn{
+      border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500;
+      padding:4px 12px; border-radius:20px; cursor:pointer; transition:all .15s;
+    }
+    .wcard-btn:hover{ background:rgba(12,64,104,.06); }
+    .wcard-counter{ display:none; align-items:center; background:var(--cyan); border-radius:20px; overflow:hidden; }
+    .wcard-counter button{ background:transparent; border:none; color:#fff; font-size:15px; font-weight:600; padding:3px 9px; cursor:pointer; font-family:'Rubik',sans-serif; }
+    .cnt-num{ color:#fff; font-size:12px; font-weight:600; min-width:20px; text-align:center; }
+    .wcard.added .wcard-btn{ display:none; }
+    .wcard.added .wcard-counter{ display:flex; }
+
+    /* Picker preview */
+    .pv-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+    .pv-days-num{ font-size:28px; font-weight:600; color:var(--cyan); line-height:1; }
+    .pv-days-label{ font-size:8px; color:var(--gray2); margin-top:2px; }
+    .pv-status{ font-size:8px; font-weight:500; padding:2px 6px; border-radius:4px; }
+    .pv-status.green{ color:var(--green); background:rgba(30,138,76,.1); }
+    .pv-status.red  { color:var(--red);   background:rgba(217,48,37,.1); }
+    .pv-split{
+      display:flex; align-items:center;
+      background:#eef4fa; border-radius:8px; padding:5px 6px;
+    }
+    .pv-split-side{ flex:1; text-align:center; }
+    .pv-split-num{ font-size:15px; font-weight:600; line-height:1; }
+    .pv-split-side.past .pv-split-num{ color:var(--navy); opacity:.5; }
+    .pv-split-side.future .pv-split-num{ color:var(--cyan); }
+    .pv-split-lbl{ font-size:7.5px; color:var(--gray2); margin-top:1px; }
+    .pv-split-div{ width:1px; height:24px; background:#d0dcea; margin:0 4px; }
+    .pv-split-today{ background:var(--navy); color:#fff; font-size:7px; font-weight:500; padding:2px 6px; border-radius:10px; white-space:nowrap; }
+    .pv-req{ font-size:9px; font-weight:500; color:var(--navy); }
+    .pv-req small{ font-weight:400; color:var(--gray2); }
+
+    /* ══ FULL WIDGET ══ */
+    .widget{
+      background:var(--white); border-radius:var(--r);
+      box-shadow:var(--shadow); width:640px; overflow:hidden;
+    }
+
+    /* ── Header ── */
+    .w-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px 10px;
+    }
+    .w-head-right{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .w-icon{ width:32px; height:32px; border-radius:8px; background:#f0f8fd; display:flex; align-items:center; justify-content:center; }
+    .w-title{ font-size:14px; font-weight:500; color:var(--dark); }
+    .w-head-left{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .w-month{
+      display:flex; align-items:center; gap:5px;
+      font-size:12px; font-weight:500; color:var(--navy);
+      background:#f0f4f8; border-radius:8px;
+      padding:5px 10px; cursor:pointer; border:1px solid #e2eaf2;
+    }
+    .w-month select{
+      appearance:none; -webkit-appearance:none;
+      background:transparent; border:none;
+      font-family:'Rubik',sans-serif; font-size:12px; font-weight:500;
+      color:var(--navy); cursor:pointer; outline:none;
+      padding:0; margin:0;
+    }
+    .w-settings-btn{
+      width:32px; height:32px; border-radius:8px; border:1px solid #e2eaf2;
+      background:#f0f4f8; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:background .15s;
+    }
+    .w-settings-btn:hover{ background:#e2eaf2; }
+
+    /* ── Main stat ── */
+    .w-stat-row{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 18px 0;
+    }
+    .w-stat-left{ display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
+    .w-days-line{ display:flex; align-items:baseline; gap:8px; }
+    .w-days-big{ font-size:60px; font-weight:600; color:var(--cyan); line-height:1; direction:ltr; }
+    .w-days-unit{ font-size:16px; font-weight:400; color:var(--gray2); }
+    .w-stat-right{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; padding-bottom:4px; }
+    .w-ctx-line{ font-size:12px; color:var(--gray2); }
+    .w-ctx-line strong{ color:var(--navy); font-weight:500; }
+
+    /* Status badge */
+    .status-badge{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:12px; font-weight:500; padding:5px 14px; border-radius:20px;
+    }
+    .status-badge.green{ color:var(--green); background:rgba(30,138,76,.09); }
+    .status-badge.red  { color:var(--red);   background:rgba(217,48,37,.09); }
+    .status-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .status-badge.green .status-dot{ background:var(--green); }
+    .status-badge.red   .status-dot{ background:var(--red); }
+
+    /* Chips */
+    .w-chips-row{
+      display:flex; align-items:center; justify-content:flex-end;
+      gap:8px; padding:8px 18px 0; flex-wrap:wrap;
+    }
+    .chip{ display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:500; padding:4px 10px; border-radius:20px; }
+    .chip.tgt{ color:var(--gray2); background:#f0f4f8; font-weight:400; }
+    .chip.up { color:var(--green); background:rgba(30,138,76,.08); }
+    .chip.dn { color:var(--red);   background:rgba(217,48,37,.08); }
+
+    /* ── Split ── */
+    .w-split{
+      display:flex; align-items:stretch;
+      margin:16px 18px 0; background:#f7fafd; border-radius:12px; overflow:hidden;
+    }
+    .w-split-side{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px 10px; gap:4px; }
+    .w-split-side.past{ opacity:.5; }
+    .w-split-num{ font-size:36px; font-weight:600; line-height:1; }
+    .w-split-side.past .w-split-num{ color:var(--navy); }
+    .w-split-side.future .w-split-num{ color:var(--cyan); }
+    .w-split-label{ font-size:11px; color:var(--gray2); font-weight:400; }
+    .w-split-sub{ font-size:10px; color:var(--gray2); }
+    .w-split-center{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 18px; gap:6px; }
+    .w-split-divider{ width:1px; flex:1; max-height:32px; background:#e2eaf2; }
+    .w-split-today{ background:var(--navy); color:#fff; font-size:11px; font-weight:500; padding:4px 12px; border-radius:20px; white-space:nowrap; }
+
+    /* ── Daily rate ── */
+    .w-rate-section{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 18px; border-top:1px solid #f0f4f8; margin-top:16px;
+    }
+    .w-rate-label{ font-size:11px; color:var(--gray2); margin-bottom:3px; }
+    .w-rate-amount{ font-size:32px; font-weight:600; line-height:1; direction:ltr; display:inline-block; }
+    .w-rate-amount.green{ color:var(--green); }
+    .w-rate-amount.red  { color:var(--red); }
+    .w-rate-sub{ font-size:11px; color:var(--gray2); margin-top:4px; }
+
+    /* ── Daily rate (in stat-right) ── */
+    .w-rate-right{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; padding-bottom:6px; }
+    .w-rate-right-label{ font-size:11px; color:var(--gray2); }
+    .w-rate-right-amount{ font-size:26px; font-weight:600; line-height:1; direction:ltr; }
+    .w-rate-right-amount.green{ color:var(--green); }
+    .w-rate-right-amount.red  { color:var(--red); }
+    .w-rate-right-unit{ font-size:12px; font-weight:400; color:var(--gray2); }
+    .w-rate-right-sub{ font-size:10px; color:var(--gray2); }
+
+    /* ── Workday toggles ── */
+    .w-workdays-row{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 18px 14px; border-top:1px solid #f0f4f7;
+    }
+    .w-workdays-label{ font-size:12px; color:var(--gray2); }
+    .day-toggles{ display:flex; gap:5px; direction:ltr; }
+    .day-toggle{
+      width:28px; height:28px; border-radius:6px; font-size:10px; font-weight:500;
+      border:1.5px solid #e2eaf2; background:transparent; color:var(--gray2);
+      cursor:pointer; font-family:'Rubik',sans-serif;
+      display:flex; align-items:center; justify-content:center; transition:all .15s;
+    }
+    .day-toggle.active{ background:var(--cyan); border-color:var(--cyan); color:#fff; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ PICKER CARD ══ -->
+  <div class="section-group">
+    <div class="section-label">כרטיסיית גלריה</div>
+    <div class="wcard" id="wc">
+      <div class="wcard-text">
+        <div class="wcard-title">ימי עבודה שנותרו</div>
+        <div class="wcard-desc">קצב יומי נדרש וציר זמן לסוף החודש</div>
+      </div>
+      <div class="wcard-preview">
+        <div class="pv-top">
+          <div>
+            <div class="pv-days-num">10</div>
+            <div class="pv-days-label">ימים שנותרו</div>
+          </div>
+          <div class="pv-status green">● בקצב</div>
+        </div>
+        <div class="pv-split">
+          <div class="pv-split-side past">
+            <div class="pv-split-num">11</div>
+            <div class="pv-split-lbl">עברו</div>
+          </div>
+          <div class="pv-split-div"></div>
+          <div class="pv-split-today">היום</div>
+          <div class="pv-split-div"></div>
+          <div class="pv-split-side future">
+            <div class="pv-split-num">10</div>
+            <div class="pv-split-lbl">נותרו</div>
+          </div>
+        </div>
+        <div class="pv-req">נדרש: <strong style="color:var(--green)">₪8,500</strong> <small>ליום</small></div>
+      </div>
+      <div class="wcard-foot">
+        <span class="wcard-cat">זמן ויעדים</span>
+        <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+        <div class="wcard-counter">
+          <button onclick="change(-1)">−</button>
+          <div class="cnt-num" id="cnt">1</div>
+          <button onclick="change(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FULL WIDGET — מצב ירוק ══ -->
+  <div class="section-group">
+    <div class="section-label">מצב א׳ — בקצב</div>
+    <div class="widget">
+      <div class="w-head">
+        <div class="w-head-right">
+          <div class="w-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="5" width="14" height="11" rx="2" stroke="#39ABE2" stroke-width="1.4"/>
+              <path d="M6 5V3.5C6 2.67 6.67 2 7.5 2h3C11.33 2 12 2.67 12 3.5V5" stroke="#39ABE2" stroke-width="1.4"/>
+              <path d="M2 9h14" stroke="#39ABE2" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="w-title">ימי עבודה שנותרו</div>
+        </div>
+        <div class="w-head-left">
+        </div>
+      </div>
+
+      <div class="w-stat-row">
+        <div class="w-stat-left">
+          <div class="w-days-line">
+            <div class="w-days-big">10</div>
+            <div class="w-days-unit">ימים שנותרו</div>
+          </div>
+          <div class="status-badge green">
+            <div class="status-dot"></div>
+            <span>בקצב — ניתן לעמוד ביעד</span>
+          </div>
+        </div>
+        <div class="w-rate-right">
+          <div class="w-rate-right-label">נדרש ליום</div>
+          <div style="display:flex;align-items:baseline;gap:4px;direction:ltr">
+            <div class="w-rate-right-amount green">₪7,700</div>
+          </div>
+          <div class="w-rate-right-sub">נותר ₪77,000 · יעד ₪187,000</div>
+        </div>
+      </div>
+
+      <div class="w-chips-row">
+        <div class="chip tgt">יעד חודשי: ₪187,000</div>
+        <div class="chip up">↑ הושג: ₪110,000 · 59%</div>
+      </div>
+
+      <div class="w-split">
+        <div class="w-split-side past">
+          <div class="w-split-num">11</div>
+          <div class="w-split-label">ימי עבודה עברו</div>
+          <div class="w-split-sub">1–16 באפריל</div>
+        </div>
+        <div class="w-split-center">
+          <div class="w-split-divider"></div>
+          <div class="w-split-today">היום</div>
+          <div class="w-split-divider"></div>
+        </div>
+        <div class="w-split-side future">
+          <div class="w-split-num">10</div>
+          <div class="w-split-label">ימי עבודה נותרו</div>
+          <div class="w-split-sub">17–30 באפריל</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ FULL WIDGET — מצב אדום ══ -->
+  <div class="section-group">
+    <div class="section-label">מצב ב׳ — לא בקצב</div>
+    <div class="widget">
+      <div class="w-head">
+        <div class="w-head-right">
+          <div class="w-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="2" y="5" width="14" height="11" rx="2" stroke="#39ABE2" stroke-width="1.4"/>
+              <path d="M6 5V3.5C6 2.67 6.67 2 7.5 2h3C11.33 2 12 2.67 12 3.5V5" stroke="#39ABE2" stroke-width="1.4"/>
+              <path d="M2 9h14" stroke="#39ABE2" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="w-title">ימי עבודה שנותרו</div>
+        </div>
+        <div class="w-head-left">
+        </div>
+      </div>
+
+      <div class="w-stat-row">
+        <div class="w-stat-left">
+          <div class="w-days-line">
+            <div class="w-days-big">10</div>
+            <div class="w-days-unit">ימים שנותרו</div>
+          </div>
+          <div class="status-badge red">
+            <div class="status-dot"></div>
+            <span>לא בקצב — נדרש מאמץ רב</span>
+          </div>
+        </div>
+        <div class="w-rate-right">
+          <div class="w-rate-right-label">נדרש ליום</div>
+          <div style="display:flex;align-items:baseline;gap:4px;direction:ltr">
+            <div class="w-rate-right-amount red">₪12,700</div>
+          </div>
+          <div class="w-rate-right-sub">נותר ₪127,000 · יעד ₪187,000</div>
+        </div>
+      </div>
+
+      <div class="w-chips-row">
+        <div class="chip tgt">יעד חודשי: ₪187,000</div>
+        <div class="chip dn">↓ הושג: ₪60,000 · 32%</div>
+      </div>
+
+      <div class="w-split">
+        <div class="w-split-side past">
+          <div class="w-split-num">11</div>
+          <div class="w-split-label">ימי עבודה עברו</div>
+          <div class="w-split-sub">1–16 באפריל</div>
+        </div>
+        <div class="w-split-center">
+          <div class="w-split-divider"></div>
+          <div class="w-split-today">היום</div>
+          <div class="w-split-divider"></div>
+        </div>
+        <div class="w-split-side future">
+          <div class="w-split-num">10</div>
+          <div class="w-split-label">ימי עבודה נותרו</div>
+          <div class="w-split-sub">17–30 באפריל</div>
+        </div>
+      </div>
+      <div style="height:18px"></div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.day-toggle').forEach(b =>
+      b.addEventListener('click', () => b.classList.toggle('active')));
+    let cnt=1;
+    function change(d){ cnt=Math.max(1,cnt+d); document.getElementById('cnt').textContent=cnt; }
+  </script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

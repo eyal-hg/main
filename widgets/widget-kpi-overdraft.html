@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0C4068;--cyan:#39ABE2;--warm:#E48375;--green:#1e8a4c;--red:#d93025;--gray:#818181;--line:#e6ecf2;--shadow:0px 1px 50px rgba(0,0,0,0.08);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Rubik',sans-serif;background:transparent}
+  .kpiw{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+    padding:18px 20px;min-height:132px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+  .kpiw .l{font-size:13px;color:var(--gray);display:flex;align-items:center;gap:7px;line-height:1.3}
+  .kpiw .l svg{flex:0 0 auto}
+  .kpiw .n{font-size:30px;font-weight:700;color:var(--navy);line-height:1;direction:ltr;text-align:right}
+  .kpiw .n .c{font-size:16px;font-weight:500;color:var(--gray)}
+  .kpiw .foot{font-size:11.5px;color:var(--gray)}
+  .kpiw.danger{background:#fff7f5;border-color:#f6d9d2}
+  .kpiw.danger .n,.kpiw.danger .l{color:#c0392b}
+  .kpiw.pos .n{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="kpiw danger">
+  <div class="l"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg> חריגה צפויה ב-13.7.2026</div>
+  <div class="n">-289,161 <span class="c">₪</span></div>
+  <div class="foot">בעוד 12 ימים · עו"ש מאוחד</div>
+</div>
+<script>
+(function(){
+  if(self===top && location.hash!=='#embed') return;
+  function report(){var el=document.querySelector('.kpiw')||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+2;
+    parent.postMessage({hkEmbed:1,src:(location.pathname.split('/').pop()||''),h:h},'*');}
+  addEventListener('load',function(){report();[100,400].forEach(function(t){setTimeout(report,t);});});
+  addEventListener('resize',report);
+})();
+</script>
+</body>
+</html>

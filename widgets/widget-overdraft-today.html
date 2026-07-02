@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>לקוחות בחריגה היום | HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4; direction:rtl; color:var(--dark);
+      min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:18px; padding:32px 24px;
+    }
+    .screen-head{ width:100%; max-width:560px; display:flex; align-items:center; justify-content:space-between; padding:0 4px; }
+    .screen-head-right{ display:flex; align-items:center; gap:12px; }
+    .screen-logo{ height:24px; }
+    .screen-title{ font-size:18px; font-weight:600; color:var(--navy); }
+    .screen-update{ font-size:11px; color:var(--gray2); }
+
+    .widget{ background:var(--white); border-radius:12px; box-shadow:var(--shadow); width:560px; max-width:100%; overflow:hidden; }
+
+    /* head */
+    .w-head{ display:flex; align-items:center; justify-content:space-between; padding:15px 18px 13px; gap:10px; }
+    .w-head-left{ display:flex; align-items:center; gap:10px; }
+    .w-icon{ width:34px; height:34px; border-radius:9px; background:rgba(217,48,37,.1); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .w-titles .w-title{ font-size:15px; font-weight:600; color:var(--navy); }
+    .w-titles .w-sub{ font-size:11px; color:var(--gray2); }
+    .w-count{ font-size:13px; font-weight:600; color:var(--red); background:rgba(217,48,37,.1); border-radius:20px; padding:5px 13px; white-space:nowrap; }
+
+    /* summary strip */
+    .w-strip{ display:flex; margin:0 18px 4px; background:#fff5f5; border:1px solid #f6d6d3; border-radius:10px; overflow:hidden; }
+    .strip-item{ flex:1; padding:9px 14px; }
+    .strip-item + .strip-item{ border-right:1px solid #f6d6d3; }
+    .strip-label{ font-size:11px; color:var(--gray2); }
+    .strip-val{ font-size:18px; font-weight:600; color:var(--red); direction:ltr; margin-top:1px; }
+    .strip-val.muted{ color:var(--navy); }
+
+    /* list */
+    .w-list{ padding:8px 0 4px; max-height:520px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#d0e8f5 transparent; }
+    .w-list::-webkit-scrollbar{ width:4px; } .w-list::-webkit-scrollbar-thumb{ background:#d0e8f5; border-radius:4px; }
+
+    .od-row{ display:flex; align-items:center; gap:12px; padding:13px 18px; border-top:1px solid #f3f5f8; }
+    .od-row:first-child{ border-top:none; }
+    .od-sev{ width:4px; align-self:stretch; border-radius:3px; flex-shrink:0; }
+    .od-sev.high{ background:var(--red); } .od-sev.mid{ background:#e8743a; } .od-sev.low{ background:var(--yellow); }
+    .od-main{ flex:1; min-width:0; }
+    .od-name{ font-size:14px; font-weight:600; color:var(--navy); }
+    .od-meta{ font-size:11px; color:var(--gray2); margin-top:2px; }
+    .od-bal{ text-align:left; flex-shrink:0; }
+    .od-bal-val{ font-size:15px; font-weight:600; color:var(--red); direction:ltr; }
+    .od-frame{ font-size:10px; color:var(--gray2); direction:ltr; margin-top:1px; }
+    .od-over{ text-align:left; flex-shrink:0; min-width:118px; }
+    .od-over-badge{ display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:var(--red); background:rgba(217,48,37,.1); border-radius:8px; padding:5px 10px; direction:ltr; }
+    .od-days{ font-size:10px; color:var(--gray2); margin-top:3px; }
+
+    .w-foot{ display:flex; align-items:center; justify-content:space-between; padding:11px 18px 13px; border-top:1px solid #f0f4f7; }
+    .w-update{ font-size:10px; color:var(--gray2); }
+    .w-foot-link{ font-size:11px; font-weight:500; color:var(--cyan); cursor:pointer; }
+
+    /* empty state */
+    .empty{ text-align:center; padding:34px 18px; }
+    .empty-emoji{ font-size:30px; }
+    .empty-title{ font-size:14px; font-weight:600; color:var(--green); margin-top:8px; }
+    .empty-sub{ font-size:12px; color:var(--gray2); margin-top:3px; }
+  </style>
+</head>
+<body>
+
+  <div class="screen-head">
+    <div class="screen-head-right">
+      <svg class="screen-logo" width="40" height="24" viewBox="0 0 40 34" fill="none">
+        <path d="M3 2 L3 32" stroke="#39ABE2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M14 2 L14 32" stroke="#39ABE2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M3 17 L14 17" stroke="#39ABE2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M25 2 L25 32" stroke="#0C4068" stroke-width="4" stroke-linecap="round"/>
+        <path d="M25 17 L37 3" stroke="#0C4068" stroke-width="4" stroke-linecap="round"/>
+        <path d="M28 14 L37 32" stroke="#0C4068" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <div class="screen-title">ווידגטים</div>
+    </div>
+    <div class="screen-update">נכון להיום · 18.06.2026</div>
+  </div>
+
+  <div class="widget">
+    <div class="w-head">
+      <div class="w-head-left">
+        <div class="w-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3l9 16H3l9-16z" stroke="#d93025" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M12 10v4M12 17h.01" stroke="#d93025" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="w-titles">
+          <div class="w-title">לקוחות בחריגה היום</div>
+          <div class="w-sub">חריגה ממסגרת האשראי נכון לעכשיו</div>
+        </div>
+      </div>
+      <div class="w-count" id="count">—</div>
+    </div>
+
+    <div class="w-strip" id="strip">
+      <div class="strip-item"><div class="strip-label">סך החריגה</div><div class="strip-val" id="sum-over">—</div></div>
+      <div class="strip-item"><div class="strip-label">לקוחות בחריגה</div><div class="strip-val muted" id="sum-count">—</div></div>
+      <div class="strip-item"><div class="strip-label">החריגה הגדולה</div><div class="strip-val" id="sum-max">—</div></div>
+    </div>
+
+    <div class="w-list" id="list"></div>
+
+    <div class="w-foot">
+      <div class="w-update">מתעדכן אוטומטית מנתוני הבנק</div>
+      <div class="w-foot-link">צפייה בכל הלקוחות ←</div>
+    </div>
+  </div>
+
+<script>
+// balance = יתרה בפועל היום ; frame = מסגרת אשראי (שלילי) ; sinceDays = כמה ימים בחריגה
+// "בחריגה" = balance < frame (היתרה נמוכה מהמסגרת המותרת)
+const CLIENTS = [
+  { name:'גבדור בע״מ',     acct:'עו״ש ראשי · 1234', balance:-62400, frame:-50000, sinceDays:3 },
+  { name:'קפוארה',         acct:'עו״ש · 8842',      balance:142000, frame:-50000, sinceDays:0 },
+  { name:'כאמלה הסעדה',     acct:'עו״ש · 7700',      balance:-28900, frame:-20000, sinceDays:5 },
+  { name:'טל-אור שיווק',    acct:'עו״ש · 3391',      balance: 12000, frame:-30000, sinceDays:0 },
+  { name:'מאפיית בן-דוד',   acct:'עו״ש · 5512',      balance:-19200, frame:-15000, sinceDays:1 },
+  { name:'סטודיו NOVA',     acct:'עו״ש · 6620',      balance:-41000, frame:-40000, sinceDays:1 },
+];
+
+function fmtBal(v){ return (v<0?'-':'')+Math.abs(v).toLocaleString('he-IL')+' ₪'; }
+function fmtOver(v){ return Math.abs(v).toLocaleString('he-IL')+' ₪'; }
+function sevOf(over, frame){
+  const pct = over / Math.abs(frame || 1);
+  if(pct >= 0.2) return 'high';
+  if(pct >= 0.05) return 'mid';
+  return 'low';
+}
+
+function render(){
+  const breached = CLIENTS
+    .map(c => ({...c, over: c.frame - c.balance}))   // over>0 means below the allowed frame
+    .filter(c => c.over > 0)
+    .sort((a,b) => b.over - a.over);
+
+  document.getElementById('count').textContent = breached.length + ' לקוחות';
+
+  const list = document.getElementById('list');
+
+  if(breached.length === 0){
+    document.getElementById('strip').style.display = 'none';
+    list.innerHTML = '<div class="empty"><div class="empty-emoji">✅</div>'+
+      '<div class="empty-title">אין לקוחות בחריגה היום</div>'+
+      '<div class="empty-sub">כל הלקוחות בתוך מסגרת האשראי</div></div>';
+    return;
+  }
+
+  const totalOver = breached.reduce((s,c)=>s+c.over,0);
+  const maxOver = breached[0].over;
+  document.getElementById('sum-over').textContent = fmtOver(totalOver);
+  document.getElementById('sum-count').textContent = breached.length + ' מתוך ' + CLIENTS.length;
+  document.getElementById('sum-max').textContent = fmtOver(maxOver);
+
+  list.innerHTML = breached.map(c => {
+    const sev = sevOf(c.over, c.frame);
+    const days = c.sinceDays <= 0 ? 'נכנס לחריגה היום'
+               : c.sinceDays === 1 ? 'בחריגה כבר יום' : 'בחריגה כבר '+c.sinceDays+' ימים';
+    return '<div class="od-row">'+
+      '<span class="od-sev '+sev+'"></span>'+
+      '<div class="od-main"><div class="od-name">'+c.name+'</div><div class="od-meta">'+c.acct+'</div></div>'+
+      '<div class="od-bal"><div class="od-bal-val">'+fmtBal(c.balance)+'</div><div class="od-frame">מסגרת: '+fmtBal(c.frame)+'</div></div>'+
+      '<div class="od-over"><span class="od-over-badge">'+
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5l-6 6M12 5l6 6" stroke="#d93025" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+        'חריגה '+fmtOver(c.over)+'</span><div class="od-days">'+days+'</div></div>'+
+      '</div>';
+  }).join('');
+}
+
+render();
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>ווידגט תזרים — תיק לקוחות | HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh; color:var(--dark);
+      display:flex; flex-direction:column; align-items:center; gap:18px; padding:32px 24px;
+    }
+    .screen-head{ width:100%; max-width:720px; display:flex; align-items:center; justify-content:space-between; padding:0 4px; }
+    .screen-head-right{ display:flex; align-items:center; gap:12px; }
+    .screen-logo{ height:24px; }
+    .screen-title{ font-size:18px; font-weight:600; color:var(--navy); }
+    .screen-update{ font-size:11px; color:var(--gray2); }
+
+    .widget{ background:var(--white); border-radius:12px; box-shadow:var(--shadow); width:720px; max-width:100%; overflow:hidden; }
+
+    /* head */
+    .w-head{ display:flex; align-items:flex-start; justify-content:space-between; padding:14px 18px 12px; gap:12px; flex-wrap:wrap; }
+    .w-head-right{ display:flex; flex-direction:column; gap:2px; }
+    .w-title{ font-size:15px; font-weight:600; color:var(--navy); }
+    .w-subtitle{ font-size:11px; color:var(--gray2); }
+    .w-range{ display:flex; background:#f0f4f8; border-radius:8px; padding:2px; gap:2px; border:1px solid #e2eaf2; }
+    .range-tab{ font-family:'Rubik',sans-serif; font-size:11px; font-weight:500; color:var(--gray2); background:transparent; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .range-tab.active{ background:var(--white); color:var(--navy); box-shadow:0 1px 4px rgba(12,64,104,.1); }
+    .range-tab:hover:not(.active){ color:var(--navy); }
+
+    /* portfolio summary strip */
+    .pf-summary{ display:flex; margin:0 18px; background:#f0f8fd; border:1px solid #cfe8f5; border-radius:10px; overflow:hidden; }
+    .pf-sum-item{ flex:1; padding:10px 16px; }
+    .pf-sum-item + .pf-sum-item{ border-right:1px solid #d8ebf6; }
+    .pf-sum-label{ font-size:11px; color:var(--gray2); }
+    .pf-sum-val{ font-size:20px; font-weight:600; color:var(--cyan); direction:ltr; margin-top:1px; }
+    .pf-sum-val.small{ font-size:15px; color:var(--navy); }
+    .pf-sum-risk{ display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:600; margin-top:3px; }
+    .pf-sum-risk .rdot{ width:8px; height:8px; border-radius:50%; }
+    .pf-sum-risk.bad{ color:var(--red); } .pf-sum-risk.bad .rdot{ background:var(--red); }
+    .pf-sum-risk.warn{ color:#9a6e00; } .pf-sum-risk.warn .rdot{ background:var(--yellow); }
+    .pf-sum-risk.ok{ color:var(--green); } .pf-sum-risk.ok .rdot{ background:var(--green); }
+
+    /* table header */
+    .pf-thead{ display:grid; grid-template-columns:1fr 120px 130px 150px 24px; gap:8px; padding:10px 18px 6px; font-size:10px; color:var(--gray2); letter-spacing:.3px; }
+    .pf-thead .num{ text-align:left; }
+
+    /* company rows */
+    .pf-list{ max-height:560px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#d0e8f5 transparent; }
+    .pf-list::-webkit-scrollbar{ width:4px; } .pf-list::-webkit-scrollbar-thumb{ background:#d0e8f5; border-radius:4px; }
+
+    .pf-row{
+      display:grid; grid-template-columns:1fr 120px 130px 150px 24px; gap:8px; align-items:center;
+      padding:13px 18px; border:0; border-top:1px solid #eef3f8; cursor:pointer; transition:background .15s;
+      background:var(--white); width:100%; font-family:'Rubik',sans-serif; text-align:right;
+    }
+    .pf-row:hover{ background:#f7fbfe; }
+    .pf-co{ display:flex; align-items:center; gap:9px; min-width:0; }
+    .pf-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .pf-dot.ok{ background:var(--cyan); } .pf-dot.warn{ background:var(--yellow); } .pf-dot.bad{ background:var(--red); }
+    .pf-co-name{ font-size:14px; font-weight:600; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pf-co-acct{ font-size:10px; color:var(--gray2); }
+    .pf-num{ text-align:left; font-size:14px; font-weight:600; direction:ltr; }
+    .pf-num.cur{ color:var(--navy); }
+    .pf-proj{ text-align:left; direction:ltr; }
+    .pf-proj-val{ font-size:14px; font-weight:600; }
+    .pf-proj-val.ok{ color:var(--cyan); } .pf-proj-val.warn{ color:#9a6e00; } .pf-proj-val.bad{ color:var(--red); }
+    .pf-proj-delta{ font-size:10px; }
+    .pf-proj-delta.pos{ color:var(--green); } .pf-proj-delta.neg{ color:var(--red); }
+    .pf-status{ text-align:left; }
+    .pf-chip{ display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:500; }
+    .pf-chip .cdot{ width:6px; height:6px; border-radius:50%; }
+    .pf-chip.ok{ color:var(--green); background:rgba(30,138,76,.1); } .pf-chip.ok .cdot{ background:var(--green); }
+    .pf-chip.warn{ color:#9a6e00; background:rgba(240,180,41,.14); } .pf-chip.warn .cdot{ background:var(--yellow); }
+    .pf-chip.bad{ color:var(--red); background:rgba(217,48,37,.1); } .pf-chip.bad .cdot{ background:var(--red); }
+    .pf-chev{ display:flex; justify-content:center; color:var(--gray2); transition:transform .2s; }
+    .pf-row.open .pf-chev{ transform:rotate(180deg); }
+
+    /* expanded detail (same look as the cashflow widget) */
+    .pf-detail{ display:none; background:#fbfdff; border-top:1px solid #eef3f8; }
+    .pf-row.open + .pf-detail{ display:block; }
+
+    .day-hdr{ display:flex; align-items:center; justify-content:space-between; padding:7px 18px; background:#f4f8fc; border-top:1px solid #edf2f7; border-bottom:1px solid #edf2f7; }
+    .day-hdr-name{ font-size:12px; font-weight:600; color:var(--navy); }
+    .day-hdr-date{ font-size:11px; color:var(--gray2); margin-right:8px; }
+    .day-hdr-bal-pill{ display:flex; align-items:center; gap:6px; padding:4px 10px 4px 12px; border-radius:20px; border:1.5px solid; }
+    .day-hdr-bal-pill.ok{ border-color:rgba(57,171,226,.35); background:rgba(57,171,226,.08); }
+    .day-hdr-bal-pill.warn{ border-color:rgba(240,180,41,.4); background:rgba(240,180,41,.1); }
+    .day-hdr-bal-pill.bad{ border-color:rgba(217,48,37,.35); background:rgba(217,48,37,.08); }
+    .day-hdr-bal-pill::before{ content:''; width:6px; height:6px; border-radius:50%; }
+    .day-hdr-bal-pill.ok::before{ background:var(--cyan); } .day-hdr-bal-pill.warn::before{ background:var(--yellow); } .day-hdr-bal-pill.bad::before{ background:var(--red); }
+    .day-hdr-bal-val{ font-size:14px; font-weight:600; direction:ltr; line-height:1; }
+    .day-hdr-bal-val.ok{ color:var(--cyan); } .day-hdr-bal-val.warn{ color:#9a6e00; } .day-hdr-bal-val.bad{ color:var(--red); }
+
+    .tx-row{ display:flex; align-items:center; padding:7px 18px; gap:10px; border-bottom:1px solid #f5f7fa; }
+    .tx-bullet{ width:6px; height:6px; border-radius:50%; } .tx-bullet.in{ background:var(--green); } .tx-bullet.out{ background:var(--red); }
+    .tx-body{ flex:1; min-width:0; }
+    .tx-desc{ font-size:12px; color:var(--dark); } .tx-cat{ font-size:10px; color:var(--gray2); }
+    .tx-amt{ font-size:13px; font-weight:600; direction:ltr; white-space:nowrap; } .tx-amt.in{ color:var(--green); } .tx-amt.out{ color:var(--red); }
+
+    .eod-row{ display:flex; align-items:center; justify-content:space-between; padding:8px 18px 10px; border-bottom:2px solid #e0eaf4; }
+    .eod-row.ok{ background:#f0f9ff; } .eod-row.warn{ background:#fffbf0; } .eod-row.bad{ background:#fff5f5; }
+    .eod-label{ font-size:10px; font-weight:500; color:var(--gray2); text-transform:uppercase; letter-spacing:.4px; }
+    .day-tag{ font-size:10px; font-weight:500; padding:2px 9px; border-radius:10px; } .day-tag.bad{ color:var(--red); background:rgba(217,48,37,.12); }
+
+    .carry-section{ border-bottom:2px solid #e8eef5; background:#fffdf5; }
+    .carry-hdr{ display:flex; align-items:center; justify-content:space-between; padding:7px 18px 6px; background:#fdf6e3; border-bottom:1px solid #f5e8c0; }
+    .carry-hdr-title{ font-size:12px; font-weight:600; color:#7a5a00; }
+    .carry-hdr-sub{ font-size:10px; color:#a07820; margin-right:7px; }
+    .carry-hdr-count{ font-size:10px; font-weight:600; color:#7a5a00; background:rgba(240,180,41,.25); padding:2px 7px; border-radius:10px; }
+    .carry-tx-row{ display:flex; align-items:center; padding:6px 18px; gap:10px; border-bottom:1px solid #f5f0e0; }
+    .carry-bullet{ width:6px; height:6px; border-radius:50%; } .carry-bullet.in{ background:var(--green); } .carry-bullet.out{ background:var(--red); }
+    .carry-body{ flex:1; min-width:0; } .carry-desc{ font-size:12px; color:var(--dark); } .carry-meta{ font-size:10px; color:#b09040; }
+    .carry-amt{ font-size:13px; font-weight:600; direction:ltr; } .carry-amt.in{ color:var(--green); } .carry-amt.out{ color:var(--red); }
+    .carry-summary{ display:flex; padding:7px 18px; border-top:1px solid #f5e8c0; background:#fdf6e3; }
+    .carry-sum-item{ flex:1; } .carry-sum-item + .carry-sum-item{ border-right:1px solid #ede0b0; padding-right:14px; }
+    .carry-sum-label{ font-size:10px; color:#a07820; } .carry-sum-val{ font-size:13px; font-weight:600; direction:ltr; }
+    .carry-sum-val.pos{ color:var(--green); } .carry-sum-val.neg{ color:var(--red); } .carry-sum-val.net{ color:var(--navy); }
+    .carry-balance-row{ display:flex; align-items:center; justify-content:space-between; padding:8px 18px 10px; background:#fdf6e3; border-top:1px solid #f0e0a0; }
+    .carry-bal-label{ font-size:11px; font-weight:600; color:#7a5a00; }
+
+    .w-foot{ display:flex; align-items:center; justify-content:space-between; padding:12px 18px 14px; border-top:1px solid #f0f4f7; }
+    .w-update{ font-size:10px; color:var(--gray2); }
+  </style>
+</head>
+<body>
+
+  <div class="screen-head">
+    <div class="screen-head-right">
+      <svg class="screen-logo" width="40" height="24" viewBox="0 0 40 34" fill="none">
+        <path d="M3 2 L3 32" stroke="#39ABE2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M14 2 L14 32" stroke="#39ABE2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M3 17 L14 17" stroke="#39ABE2" stroke-width="4" stroke-linecap="round"/>
+        <path d="M25 2 L25 32" stroke="#0C4068" stroke-width="4" stroke-linecap="round"/>
+        <path d="M25 17 L37 3" stroke="#0C4068" stroke-width="4" stroke-linecap="round"/>
+        <path d="M28 14 L37 32" stroke="#0C4068" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+      <div class="screen-title">ווידגטים</div>
+    </div>
+    <div class="screen-update">עדכון אחרון: 18.06.2026</div>
+  </div>
+
+  <div class="widget">
+    <div class="w-head">
+      <div class="w-head-right">
+        <div class="w-title">תחזית תזרים — כל החברות</div>
+        <div class="w-subtitle">מבט-על על תזרים כל הלקוחות במקום אחד</div>
+      </div>
+      <div class="w-range">
+        <button class="range-tab" onclick="setRange(7,this)">שבוע</button>
+        <button class="range-tab active" onclick="setRange(14,this)">14 י׳</button>
+        <button class="range-tab" onclick="setRange(30,this)">30 י׳</button>
+      </div>
+    </div>
+
+    <div class="pf-summary">
+      <div class="pf-sum-item"><div class="pf-sum-label">סך יתרות נוכחיות</div><div class="pf-sum-val" id="sum-bal">—</div></div>
+      <div class="pf-sum-item"><div class="pf-sum-label">צפי מאוחד לסוף התקופה</div><div class="pf-sum-val small" id="sum-proj">—</div></div>
+      <div class="pf-sum-item"><div class="pf-sum-label">חברות בסיכון</div><div class="pf-sum-risk bad" id="sum-risk"><span class="rdot"></span><span id="sum-risk-txt">—</span></div></div>
+    </div>
+
+    <div class="pf-thead">
+      <span>חברה</span>
+      <span class="num">יתרה נוכחית</span>
+      <span class="num">צפי לסוף התקופה</span>
+      <span class="num">מצב תזרים</span>
+      <span></span>
+    </div>
+
+    <div class="pf-list" id="pf-list"></div>
+
+    <div class="w-foot"><div class="w-update">לחיצה על חברה פותחת את פירוט התזרים היומי שלה</div></div>
+  </div>
+
+<script>
+const DAY_NAMES = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+function rng(seed){ let s=(seed>>>0)||1; return ()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; }; }
+const ri = (r,min,max)=> Math.round(min + r()*(max-min));
+function genPlan(p){
+  const r = rng(p.seed); const plan = [];
+  for(let i=0;i<30;i++){
+    const txs = [];
+    txs.push({d:'הכנסות מסליקה', c:'הכנסות', a: ri(r, p.income*0.5, p.income*1.4)});
+    if(r()<0.35) txs.push({d:'הכנסות אונליין', c:'הכנסות', a: ri(r, p.income*0.3, p.income*0.8)});
+    if(r()<0.12) txs.push({d:'הכנסה — פרויקט', c:'הכנסות', a: ri(r, p.income*3, p.income*6)});
+    if(r()<0.5)  txs.push({d:'תשלום ספק', c:'ספקים', a: -ri(r, p.supplier*0.5, p.supplier*1.6)});
+    if(i%15===1) txs.push({d:'משכורות עובדים', c:'שכר', a: -p.payroll});
+    if(i===8)    txs.push({d:'שכירות', c:'קבועות', a: -p.rent});
+    if(r()<0.22) txs.push({d:'הוצאות קבועות', c:'קבועות', a: -ri(r, p.fixed*0.5, p.fixed*1.2)});
+    plan.push({txs});
+  }
+  return plan;
+}
+
+// גבדור & קפוארה = real clients; others sample
+const COMPANIES = [
+  { id:'gabdor',  name:'גבדור בע״מ',   acct:'עו״ש ראשי · 1234', opening:75187,  credit:10000, seed:101,
+    profile:{income:9000, supplier:18000, payroll:65000, rent:22000, fixed:3000},
+    carry:[ {d:'חשבונית פתוחה — לקוח ABC',c:'גבייה',a:+18500,due:'15.06.2026'},{d:'שיק מלקוח — טרם נפרע',c:'גבייה',a:+7200,due:'16.06.2026'},{d:'החזר מע״מ — ממתין',c:'מס הכנסה',a:+4900,due:'14.06.2026'},{d:'חשבונית ספק X — עצורה',c:'ספקים',a:-12000,due:'16.06.2026'},{d:'שכר דירה — התעכב',c:'קבועות',a:-4500,due:'14.06.2026'} ]},
+  { id:'kapoeira',name:'קפוארה',       acct:'עו״ש · 8842', opening:142000, credit:50000, seed:202,
+    profile:{income:11000, supplier:9000, payroll:48000, rent:14000, fixed:2200},
+    carry:[ {d:'מנויים חודשיים — גבייה',c:'גבייה',a:+22000,due:'17.06.2026'},{d:'ספק ציוד — תשלום',c:'ספקים',a:-8000,due:'16.06.2026'} ]},
+  { id:'kamla',   name:'כאמלה הסעדה',   acct:'עו״ש · 7700', opening:38000, credit:20000, seed:303,
+    profile:{income:7000, supplier:14000, payroll:42000, rent:9000, fixed:1800},
+    carry:[ {d:'אירוע — תשלום לקוח',c:'גבייה',a:+16000,due:'17.06.2026'},{d:'ספק מזון מרכזי',c:'ספקים',a:-19000,due:'15.06.2026'},{d:'שכר דירה — מטבח',c:'קבועות',a:-4200,due:'14.06.2026'} ]},
+  { id:'talor',   name:'טל-אור שיווק',  acct:'עו״ש · 3391', opening:96000, credit:30000, seed:404,
+    profile:{income:8500, supplier:6000, payroll:38000, rent:11000, fixed:2000},
+    carry:[ {d:'ריטיינר חודשי — לקוח',c:'גבייה',a:+28000,due:'18.06.2026'},{d:'מדיה ממומנת — ספק',c:'ספקים',a:-9500,due:'16.06.2026'} ]},
+  { id:'bendavid',name:'מאפיית בן-דוד', acct:'עו״ש · 5512', opening:22000, credit:15000, seed:505,
+    profile:{income:6000, supplier:11000, payroll:34000, rent:8500, fixed:1600},
+    carry:[ {d:'הזמנת רשת — גבייה',c:'גבייה',a:+12000,due:'17.06.2026'},{d:'ספק קמח וחומרי גלם',c:'ספקים',a:-7800,due:'15.06.2026'},{d:'תיקון תנור — שירות',c:'תפעול',a:-3200,due:'16.06.2026'} ]},
+];
+COMPANIES.forEach(c => c.plan = genPlan({seed:c.seed, ...c.profile}));
+
+let currentRange = 14;
+const openSet = new Set();
+
+function dayDate(i){ const d = new Date(2026,5,18); d.setDate(d.getDate()+i); return d; }
+function fmtDate(d){ return d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear(); }
+function fmtAmt(a){ return (a>=0?'+':'-')+Math.abs(a).toLocaleString('he-IL')+' ₪'; }
+function fmtBal(v){ return (v<0?'-':'')+Math.abs(v).toLocaleString('he-IL')+' ₪'; }
+function riskOf(v, credit){ if(v<credit) return 'bad'; if(v<credit*2.5) return 'warn'; return 'ok'; }
+
+function forecast(c, range){
+  let bal=c.opening, minBal=c.opening, firstBad=-1;
+  c.plan.slice(0,range).forEach((day,i)=>{
+    day.txs.forEach(t=> bal+=t.a);
+    if(bal<minBal) minBal=bal;
+    if(firstBad===-1 && bal<c.credit) firstBad=i;
+  });
+  return {end:bal, minBal, firstBad, rc:riskOf(minBal,c.credit)};
+}
+function chipText(rc, firstBad){
+  if(rc==='bad')  return 'חריגה · '+fmtDate(dayDate(firstBad));
+  if(rc==='warn') return 'סיכון בינוני';
+  return 'תקין';
+}
+
+function setRange(n, btn){
+  currentRange = n;
+  document.querySelectorAll('.range-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// full per-company breakdown (carry + daily) — shown inline when a row is expanded
+function detailHTML(c){
+  const credit = c.credit;
+  const cin = c.carry.filter(t=>t.a>0), cout = c.carry.filter(t=>t.a<0);
+  const sumIn = cin.reduce((s,t)=>s+t.a,0), sumOut = cout.reduce((s,t)=>s+t.a,0), netCarry = sumIn+sumOut;
+
+  let h = '<div class="carry-section"><div class="carry-hdr"><div><span class="carry-hdr-title">נגררות מימים קודמים</span>'+
+          '<span class="carry-hdr-sub">פריטים שטרם סולקו</span></div><span class="carry-hdr-count">'+c.carry.length+' פריטים</span></div>';
+  cin.forEach(t=> h+='<div class="carry-tx-row"><span class="carry-bullet in"></span><div class="carry-body"><div class="carry-desc">'+t.d+'</div><div class="carry-meta">תאריך מקורי: '+t.due+'</div></div><div class="carry-amt in">'+fmtAmt(t.a)+'</div></div>');
+  cout.forEach(t=> h+='<div class="carry-tx-row"><span class="carry-bullet out"></span><div class="carry-body"><div class="carry-desc">'+t.d+'</div><div class="carry-meta">תאריך מקורי: '+t.due+'</div></div><div class="carry-amt out">'+fmtAmt(t.a)+'</div></div>');
+  // carry summary row (סה״כ נגררות) removed per request
+  const bac = riskOf(c.opening+netCarry, credit);
+  h += '<div class="carry-balance-row"><span class="carry-bal-label">יתרה אחרי נגררות</span><div class="day-hdr-bal-pill '+bac+'"><span class="day-hdr-bal-val '+bac+'">'+fmtBal(c.opening+netCarry)+'</span></div></div></div>';
+
+  let bal = c.opening;
+  c.plan.slice(0,currentRange).forEach((day,i)=>{
+    const d = dayDate(i);
+    const eod = bal + day.txs.reduce((s,t)=>s+t.a,0);
+    const er = riskOf(eod,credit);
+    const tag = er==='bad' ? '<span class="day-tag bad">⚠ חריגה ממסגרת</span>' : '';
+    h += '<div class="day-hdr"><div><span class="day-hdr-name">יום '+DAY_NAMES[d.getDay()]+'</span><span class="day-hdr-date">'+fmtDate(d)+'</span></div></div>';
+    day.txs.filter(t=>t.a>0).forEach(t=> h+='<div class="tx-row"><span class="tx-bullet in"></span><div class="tx-body"><div class="tx-desc">'+t.d+'</div><div class="tx-cat">'+t.c+'</div></div><div class="tx-amt in">'+fmtAmt(t.a)+'</div></div>');
+    day.txs.filter(t=>t.a<0).forEach(t=> h+='<div class="tx-row"><span class="tx-bullet out"></span><div class="tx-body"><div class="tx-desc">'+t.d+'</div><div class="tx-cat">'+t.c+'</div></div><div class="tx-amt out">'+fmtAmt(t.a)+'</div></div>');
+    h += '<div class="eod-row '+er+'"><span class="eod-label">יתרה עתידית</span><div style="display:flex;align-items:center;gap:8px">'+tag+'<div class="day-hdr-bal-pill '+er+'"><span class="day-hdr-bal-val '+er+'">'+fmtBal(eod)+'</span></div></div></div>';
+    bal = eod;
+  });
+  return h;
+}
+
+function render(){
+  let totalCur = 0, totalProj = 0, atRisk = 0;
+  let html = '';
+
+  COMPANIES.forEach(c=>{
+    const f = forecast(c, currentRange);
+    totalCur += c.opening; totalProj += f.end;
+    if(f.rc !== 'ok') atRisk++;
+    const delta = f.end - c.opening;
+    const open = openSet.has(c.id);
+
+    html += '<button class="pf-row'+(open?' open':'')+'" onclick="toggle(\''+c.id+'\')">'+
+      '<div class="pf-co"><span class="pf-dot '+f.rc+'"></span><div style="min-width:0"><div class="pf-co-name">'+c.name+'</div><div class="pf-co-acct">'+c.acct+'</div></div></div>'+
+      '<div class="pf-num cur">'+fmtBal(c.opening)+'</div>'+
+      '<div class="pf-proj"><div class="pf-proj-val '+f.rc+'">'+fmtBal(f.end)+'</div><div class="pf-proj-delta '+(delta>=0?'pos':'neg')+'">'+fmtAmt(delta)+'</div></div>'+
+      '<div class="pf-status"><span class="pf-chip '+f.rc+'"><span class="cdot"></span>'+chipText(f.rc,f.firstBad)+'</span></div>'+
+      '<span class="pf-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+      '</button>'+
+      '<div class="pf-detail">'+(open?detailHTML(c):'')+'</div>';
+  });
+
+  document.getElementById('pf-list').innerHTML = html;
+  document.getElementById('sum-bal').textContent = fmtBal(totalCur);
+  document.getElementById('sum-proj').textContent = fmtBal(totalProj);
+  const sr = document.getElementById('sum-risk');
+  sr.className = 'pf-sum-risk ' + (atRisk===0?'ok':(atRisk>=3?'bad':'warn'));
+  document.getElementById('sum-risk-txt').textContent = atRisk===0 ? 'כל החברות תקינות' : atRisk+' מתוך '+COMPANIES.length;
+}
+
+function toggle(id){
+  if(openSet.has(id)) openSet.delete(id); else openSet.add(id);
+  render();
+}
+
+render();
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

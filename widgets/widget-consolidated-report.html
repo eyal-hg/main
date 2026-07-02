@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>דוח מאוחד | HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+    }
+    body{
+      font-family:'Rubik',sans-serif;background:#e8eef4;
+      direction:rtl;min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      gap:24px;padding:48px 32px;
+    }
+    .section-label{font-size:11px;font-weight:500;color:var(--gray2);letter-spacing:.5px;text-align:center}
+
+    /* ── Widget shell ── */
+    .widget{
+      background:var(--white);border-radius:12px;
+      box-shadow:var(--shadow);width:640px;overflow:hidden;
+    }
+
+    /* ── Header ── */
+    .w-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px 14px;border-bottom:1px solid #f2f4f7;
+    }
+    .w-title{font-size:15px;font-weight:600;color:var(--navy)}
+    .month-range{display:flex;align-items:center;gap:6px}
+    .month-range-label{font-size:11px;color:var(--gray2)}
+    .month-select{
+      display:flex;align-items:center;gap:4px;
+      background:#f0f4f8;border:1px solid #e2eaf2;border-radius:8px;
+      padding:4px 8px;font-size:12px;font-weight:500;color:var(--navy);cursor:pointer;
+    }
+    .month-select select{
+      appearance:none;-webkit-appearance:none;background:transparent;border:none;
+      font-family:'Rubik',sans-serif;font-size:12px;font-weight:500;
+      color:var(--navy);cursor:pointer;outline:none;padding:0;
+    }
+    .month-range-sep{font-size:11px;color:var(--gray2);padding:0 2px}
+
+    /* ── Company filter bar ── */
+    .w-filter{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      padding:10px 20px;border-bottom:1px solid #f2f4f7;
+      background:#fafcfe;
+    }
+    .filter-label{font-size:11px;color:var(--gray2);flex-shrink:0}
+    .comp-chip{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:5px 12px;border-radius:20px;cursor:pointer;
+      font-size:12px;font-weight:500;border:1.5px solid transparent;
+      transition:all .15s;user-select:none;
+    }
+    .comp-chip .dot{
+      width:8px;height:8px;border-radius:50%;flex-shrink:0;
+    }
+    .comp-chip.active{color:var(--navy);background:#eef5fb;border-color:#c8dff0}
+    .comp-chip.inactive{color:var(--gray2);background:#f5f7fa;border-color:#e8eef5;opacity:.55}
+    .comp-chip:hover{opacity:1;border-color:var(--cyan)}
+
+    /* ── KPI summary row ── */
+    .kpi-row{
+      display:flex;gap:0;border-bottom:1px solid #f2f4f7;
+    }
+    .kpi-box{
+      flex:1;padding:14px 20px;text-align:center;
+      border-left:1px solid #f2f4f7;
+    }
+    .kpi-box:last-child{border-left:none}
+    .kpi-label{font-size:10px;color:var(--gray2);margin-bottom:5px}
+    .kpi-val{font-size:22px;font-weight:600;color:var(--navy);direction:ltr;display:inline-block;line-height:1.1}
+    .kpi-val.pos{color:var(--green)}
+    .kpi-val.neg{color:var(--red)}
+    .kpi-sub{font-size:10px;color:var(--gray2);margin-top:3px}
+
+    /* ── Company rows table ── */
+    .comp-table{padding:0 0 4px}
+    .comp-row{
+      display:flex;align-items:center;gap:0;
+      padding:14px 20px;border-bottom:1px solid #f8fafc;
+      transition:background .12s;
+    }
+    .comp-row:last-child{border-bottom:none}
+    .comp-row:hover{background:#fafcfe}
+
+    /* Color stripe (right side in RTL = first child) */
+    .comp-stripe{
+      width:3px;height:36px;border-radius:3px;
+      flex-shrink:0;margin-left:12px;
+    }
+
+    /* Company name */
+    .comp-name-wrap{flex:0 0 190px}
+    .comp-name{font-size:13px;font-weight:600;color:var(--dark);margin-bottom:2px}
+    .comp-months{font-size:10px;color:var(--gray2)}
+
+    /* Revenue & expenses */
+    .comp-nums{display:flex;gap:0;flex:1}
+    .comp-num-item{flex:1;text-align:center}
+    .comp-num-label{font-size:9px;color:var(--gray2);margin-bottom:2px}
+    .comp-num-val{font-size:12px;font-weight:500;color:var(--navy);direction:ltr;display:inline-block}
+
+    /* Diff column */
+    .comp-diff{flex:0 0 100px;text-align:center}
+    .comp-diff-val{font-size:18px;font-weight:600;direction:ltr;display:inline-block;line-height:1}
+    .comp-diff-val.pos{color:var(--green)}
+    .comp-diff-val.neg{color:var(--red)}
+    .comp-diff-chip{
+      display:inline-flex;align-items:center;
+      font-size:9px;font-weight:500;padding:1px 6px;border-radius:8px;margin-top:3px;
+    }
+    .comp-diff-chip.pos{color:var(--green);background:rgba(30,138,76,.08)}
+    .comp-diff-chip.neg{color:var(--red);background:rgba(217,48,37,.08)}
+
+    /* Sparkline column */
+    .comp-spark{flex:0 0 90px;display:flex;justify-content:center;align-items:center}
+
+    /* No data state */
+    .comp-row.no-data{opacity:.35;pointer-events:none}
+    .empty-state{
+      padding:28px 20px;text-align:center;
+      font-size:12px;color:var(--gray2);
+    }
+
+    /* ── Footer ── */
+    .w-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 20px 13px;border-top:1px solid #f2f4f7;background:#fafcfe;
+    }
+    .w-update{font-size:10px;color:var(--gray2)}
+    .w-note{font-size:10px;color:var(--gray2);font-style:italic}
+
+    /* ══ CASHFLOW WIDGET ══ */
+    .cf-widget{background:var(--white);border-radius:12px;box-shadow:var(--shadow);width:640px;overflow:hidden}
+
+    /* Company summary cards */
+    .cf-cards{display:flex;gap:0;border-bottom:1px solid #f2f4f7}
+    .cf-card{
+      flex:1;padding:14px 18px;position:relative;
+      border-left:1px solid #f2f4f7;
+    }
+    .cf-card:last-child{border-left:none}
+    .cf-card::after{
+      content:'';position:absolute;top:0;right:0;width:3px;height:100%;
+      background:var(--cf-color,var(--cyan));border-radius:0 12px 12px 0;
+    }
+    .cf-card-label{font-size:10px;color:var(--gray2);margin-bottom:3px}
+    .cf-card-name{font-size:12px;font-weight:600;color:var(--dark);margin-bottom:6px}
+    .cf-card-diff{font-size:22px;font-weight:600;direction:ltr;display:inline-block;line-height:1}
+    .cf-card-diff.pos{color:var(--green)}
+    .cf-card-diff.neg{color:var(--red)}
+    .cf-card-sub{font-size:10px;color:var(--gray2);margin-top:3px}
+    .cf-spark-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    .cf-chip{font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px}
+    .cf-chip.pos{color:var(--green);background:rgba(30,138,76,.08)}
+    .cf-chip.neg{color:var(--red);background:rgba(217,48,37,.08)}
+
+    /* Monthly table */
+    .cf-table{border-collapse:collapse;width:100%}
+    .cf-table th{
+      font-size:10px;font-weight:500;color:var(--gray2);
+      padding:8px 14px;text-align:center;border-bottom:1px solid #f0f4f7;
+      background:#fafcfe;
+    }
+    .cf-table th:first-child{text-align:right}
+    .cf-table td{
+      font-size:12px;padding:10px 14px;
+      text-align:center;border-bottom:1px solid #f8fafc;
+      vertical-align:middle;
+    }
+    .cf-table td:first-child{text-align:right;font-weight:500;color:var(--dark);font-size:11px}
+    .cf-table tr:last-child td{border-bottom:none}
+    .cf-table tr:hover td{background:#fafcfe}
+    .cf-cell-main{font-size:13px;font-weight:600;direction:ltr;display:inline-block}
+    .cf-cell-main.pos{color:var(--green)}
+    .cf-cell-main.neg{color:var(--red)}
+    .cf-cell-main.na{color:var(--gray2);font-weight:400;font-size:11px}
+    .cf-cell-sub{font-size:9px;color:var(--gray2);margin-top:1px}
+    .cf-total-row td{
+      background:#f7fafd;font-weight:600;
+      border-top:2px solid #e8eef5;border-bottom:none;
+    }
+    .cf-total-row td:first-child{color:var(--navy)}
+    .cf-month-dot{
+      display:inline-block;width:6px;height:6px;border-radius:50%;
+      vertical-align:middle;margin-left:5px;
+    }
+
+    /* ══ TASKS WIDGET ══ */
+    .tasks-widget{
+      background:var(--white);border-radius:12px;
+      box-shadow:var(--shadow);width:640px;overflow:hidden;
+    }
+
+    /* Tasks header */
+    .tw-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px 14px;border-bottom:1px solid #f2f4f7;
+    }
+    .tw-title-wrap{display:flex;align-items:center;gap:10px}
+    .tw-title{font-size:15px;font-weight:600;color:var(--navy)}
+    .tw-count{
+      font-size:11px;font-weight:500;color:var(--white);
+      background:var(--cyan);border-radius:20px;padding:1px 8px;
+    }
+    .tw-status-tabs{display:flex;gap:4px}
+    .tw-tab{
+      font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;
+      cursor:pointer;border:1px solid #e2eaf2;color:var(--gray2);
+      background:#f7fafd;transition:all .15s;
+    }
+    .tw-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .tw-tab:hover:not(.active){background:#eef5fb;color:var(--navy)}
+
+    /* Tasks filter bar */
+    .tw-filter{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      padding:10px 20px;border-bottom:1px solid #f2f4f7;background:#fafcfe;
+    }
+
+    /* Task rows */
+    .tw-list{padding:4px 0}
+    .task-row{
+      display:flex;align-items:center;gap:12px;
+      padding:12px 20px;border-bottom:1px solid #f8fafc;
+      transition:background .12s;cursor:default;
+    }
+    .task-row:last-child{border-bottom:none}
+    .task-row:hover{background:#fafcfe}
+    .task-row.done{opacity:.5}
+
+    /* Status toggle button */
+    .task-toggle{
+      width:20px;height:20px;border-radius:50%;border:2px solid #c8d4e0;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;flex-shrink:0;transition:all .15s;background:transparent;
+    }
+    .task-toggle:hover{border-color:var(--cyan)}
+    .task-toggle.done-btn{background:var(--green);border-color:var(--green)}
+    .task-toggle.active-btn{background:var(--cyan);border-color:var(--cyan)}
+    .task-toggle svg{width:10px;height:10px;display:none}
+    .task-toggle.done-btn svg,.task-toggle.active-btn svg{display:block}
+
+    /* Task content */
+    .task-content{flex:1;min-width:0}
+    .task-title{font-size:13px;font-weight:500;color:var(--dark);line-height:1.3}
+    .task-row.done .task-title{text-decoration:line-through;color:var(--gray2)}
+    .task-meta{display:flex;align-items:center;gap:6px;margin-top:3px}
+
+    /* Company badge */
+    .task-company{
+      display:inline-flex;align-items:center;gap:4px;
+      font-size:10px;color:var(--gray2);
+    }
+    .task-company-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+    /* Priority */
+    .task-priority{
+      font-size:9px;font-weight:500;padding:1px 6px;border-radius:8px;
+    }
+    .task-priority.high{color:var(--red);background:rgba(217,48,37,.08)}
+    .task-priority.mid{color:var(--yellow);background:rgba(240,180,41,.08)}
+    .task-priority.low{color:var(--gray2);background:#f0f4f8}
+
+    /* Due date */
+    .task-due{font-size:10px;color:var(--gray2);flex-shrink:0;margin-right:auto}
+    .task-due.overdue{color:var(--red);font-weight:500}
+
+    /* Status chip */
+    .task-status{
+      font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;
+      flex-shrink:0;white-space:nowrap;
+    }
+    .task-status.done{color:var(--green);background:rgba(30,138,76,.08)}
+    .task-status.active{color:var(--cyan);background:rgba(57,171,226,.1)}
+    .task-status.pending{color:var(--gray2);background:#f0f4f8}
+
+    /* Empty state */
+    .tw-empty{padding:28px 20px;text-align:center;font-size:12px;color:var(--gray2)}
+
+    /* Footer */
+    .tw-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 20px 13px;border-top:1px solid #f2f4f7;background:#fafcfe;
+    }
+    .tw-progress-wrap{display:flex;align-items:center;gap:8px}
+    .tw-progress-bar{width:120px;height:6px;background:#deeef8;border-radius:20px;overflow:hidden;direction:ltr}
+    .tw-progress-fill{height:100%;background:var(--green);border-radius:20px;transition:width .4s}
+    .tw-progress-label{font-size:10px;color:var(--gray2)}
+    .tw-add-btn{
+      font-size:11px;font-weight:500;color:var(--navy);
+      background:transparent;border:1.5px solid #c8d4e0;
+      border-radius:20px;padding:4px 12px;cursor:pointer;
+      font-family:'Rubik',sans-serif;transition:all .15s;
+    }
+    .tw-add-btn:hover{background:rgba(12,64,104,.05);border-color:var(--navy)}
+
+    /* ── Months no-data note ── */
+    .month-note{
+      font-size:10px;color:var(--gray2);
+      padding:6px 20px;border-bottom:1px solid #f2f4f7;
+      background:#fffbf0;display:none;
+    }
+    .month-note.visible{display:block}
+  </style>
+</head>
+<body>
+
+<div class="section-label">ווידגט מלא</div>
+<div class="widget" id="widget">
+
+  <!-- ── Header ── -->
+  <div class="w-head">
+    <div class="w-title">דוח מאוחד — רווחיות תזרימית</div>
+    <div class="month-range">
+      <div class="month-select">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style="opacity:.5">
+          <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+          <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+        </svg>
+        <select id="fromMonth" onchange="render()">
+          <option value="0">ינואר 2026</option>
+          <option value="1">פברואר 2026</option>
+          <option value="2">מרץ 2026</option>
+          <option value="3">אפריל 2026</option>
+        </select>
+      </div>
+      <div class="month-range-sep">—</div>
+      <div class="month-select">
+        <select id="toMonth" onchange="render()">
+          <option value="0">ינואר 2026</option>
+          <option value="1">פברואר 2026</option>
+          <option value="2">מרץ 2026</option>
+          <option value="3" selected>אפריל 2026</option>
+        </select>
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+          <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Company filter ── -->
+  <div class="w-filter">
+    <span class="filter-label">חברות:</span>
+    <div id="compChips"></div>
+  </div>
+
+  <!-- ── Note ── -->
+  <div class="month-note" id="monthNote">
+    ⚠ לגבדור בע"מ אין נתונים לינואר 2026 — החודש הוחרג מחישוב חברה זו
+  </div>
+
+  <!-- ── KPI Summary ── -->
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <div class="kpi-label">סה"כ הכנסות</div>
+      <div class="kpi-val" id="sumRev">—</div>
+      <div class="kpi-sub" id="sumRevSub"></div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">סה"כ הוצאות</div>
+      <div class="kpi-val" id="sumExp">—</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">הפרש מצטבר</div>
+      <div class="kpi-val" id="sumDiff">—</div>
+      <div class="kpi-sub" id="sumDiffSub"></div>
+    </div>
+  </div>
+
+  <!-- ── Company rows ── -->
+  <div class="comp-table" id="compTable"></div>
+
+  <!-- ── Footer ── -->
+  <div class="w-foot">
+    <div class="w-update">עדכון אחרון: 04.05.2026</div>
+    <div class="w-note">מקור: דוחות תזרים חודשיים | HK חזות קריספין</div>
+  </div>
+
+</div><!-- /profitability widget -->
+
+<!-- ══════════════════════════════════════
+     CASHFLOW WIDGET
+════════════════════════════════════════ -->
+<div class="section-label">תזרים מאוחד</div>
+<div class="cf-widget">
+
+  <!-- Header -->
+  <div class="w-head">
+    <div class="w-title">תזרים מאוחד</div>
+    <div class="month-range">
+      <div class="month-select">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style="opacity:.5">
+          <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+          <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+        </svg>
+        <select id="cfFrom" onchange="renderCF()">
+          <option value="0">ינואר 2026</option>
+          <option value="1">פברואר 2026</option>
+          <option value="2">מרץ 2026</option>
+          <option value="3">אפריל 2026</option>
+        </select>
+      </div>
+      <div class="month-range-sep">—</div>
+      <div class="month-select">
+        <select id="cfTo" onchange="renderCF()">
+          <option value="0">ינואר 2026</option>
+          <option value="1">פברואר 2026</option>
+          <option value="2">מרץ 2026</option>
+          <option value="3" selected>אפריל 2026</option>
+        </select>
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+          <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company summary cards -->
+  <div class="cf-cards" id="cfCards"></div>
+
+  <!-- Monthly table -->
+  <div style="overflow-x:auto">
+    <table class="cf-table" id="cfTable"></table>
+  </div>
+
+  <!-- Footer -->
+  <div class="w-foot">
+    <div class="w-update" id="cfFooterNote"></div>
+    <div class="w-note">הפרש = הכנסות − הוצאות (תפעולי)</div>
+  </div>
+
+</div><!-- /cashflow widget -->
+
+<!-- ══════════════════════════════════════
+     TASKS WIDGET
+════════════════════════════════════════ -->
+<div class="section-label">משימות לקוחות</div>
+<div class="tasks-widget">
+
+  <!-- Header -->
+  <div class="tw-head">
+    <div class="tw-title-wrap">
+      <div class="tw-title">משימות לקוחות</div>
+      <div class="tw-count" id="taskCount">0</div>
+    </div>
+    <div class="tw-status-tabs">
+      <div class="tw-tab active" data-filter="all"   onclick="setFilter('all',this)">הכל</div>
+      <div class="tw-tab"        data-filter="active" onclick="setFilter('active',this)">פעיל</div>
+      <div class="tw-tab"        data-filter="pending"onclick="setFilter('pending',this)">ממתין</div>
+      <div class="tw-tab"        data-filter="done"   onclick="setFilter('done',this)">הושלם</div>
+    </div>
+  </div>
+
+  <!-- Company filter -->
+  <div class="tw-filter">
+    <span class="filter-label">לקוח:</span>
+    <div id="taskCompChips"></div>
+  </div>
+
+  <!-- Task list -->
+  <div class="tw-list" id="taskList"></div>
+
+  <!-- Footer -->
+  <div class="tw-foot">
+    <div class="tw-progress-wrap">
+      <div class="tw-progress-bar">
+        <div class="tw-progress-fill" id="taskProgressFill" style="width:0%"></div>
+      </div>
+      <div class="tw-progress-label" id="taskProgressLabel">0/0 הושלמו</div>
+    </div>
+    <button class="tw-add-btn" onclick="addTask()">+ משימה חדשה</button>
+  </div>
+
+</div><!-- /tasks widget -->
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+   rev = הכנסות, exp = הוצאות (כולל עלות מכר)
+   diff = הפרש תזרימי תפעולי
+══════════════════════════════════════ */
+const MONTHS = [
+  { key:'jan26', label:'ינואר',  short:'ינו׳' },
+  { key:'feb26', label:'פברואר', short:'פבר׳' },
+  { key:'mar26', label:'מרץ',    short:'מרץ'  },
+  { key:'apr26', label:'אפריל',  short:'אפר׳' },
+];
+
+const COMPANIES = [
+  {
+    id: 'gabdor',
+    name: 'גבדור בע"מ',
+    color: '#39ABE2',
+    note: '* מרץ: הכנסות אורגניות בלבד (ללא הלוואה ₪400K)',
+    months: {
+      jan26: null,
+      feb26: { rev:171333,  exp:380952  },
+      mar26: { rev:508135,  exp:466363  },   // organic
+      apr26: { rev:574250,  exp:776285  },
+    }
+  },
+  {
+    id: 'kapoeira',
+    name: 'המרכז הישראלי לקפוארה',
+    color: '#0C4068',
+    note: null,
+    months: {
+      jan26: { rev:108229, exp:87991  },
+      feb26: { rev:111405, exp:79197  },
+      mar26: { rev:117433, exp:123640 },
+      apr26: { rev:79858,  exp:73771  },
+    }
+  },
+];
+
+/* Active state */
+const active = { gabdor:true, kapoeira:true };
+
+/* ── Helpers ── */
+function fmt(n, showSign=false) {
+  const sign = showSign && n > 0 ? '+' : (n < 0 ? '−' : '');
+  return sign + '₪' + Math.abs(Math.round(n)).toLocaleString('he-IL');
+}
+function fmtK(n, showSign=false) {
+  const sign = showSign && n > 0 ? '+' : (n < 0 ? '−' : '');
+  return sign + '₪' + Math.abs(Math.round(n/1000)) + 'K';
+}
+
+/* ── Build company chips ── */
+function buildChips() {
+  const wrap = document.getElementById('compChips');
+  wrap.innerHTML = '';
+  COMPANIES.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'comp-chip ' + (active[c.id] ? 'active' : 'inactive');
+    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.name}`;
+    chip.onclick = () => { active[c.id] = !active[c.id]; render(); };
+    wrap.appendChild(chip);
+  });
+}
+
+/* ── Build sparkline SVG ── */
+function sparkline(diffs, color) {
+  if (diffs.length < 2) return '';
+  const W=88, H=34, mid=H/2;
+  const maxAbs = Math.max(...diffs.map(Math.abs), 1);
+  const scale = (H/2 - 5) / maxAbs;
+  const pts = diffs.map((d,i) => {
+    const x = (i/(diffs.length-1)) * W;
+    const y = mid - d * scale;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const dots = diffs.map((d,i) => {
+    const x = (i/(diffs.length-1)) * W;
+    const y = mid - d * scale;
+    const col = d >= 0 ? '#1e8a4c' : '#d93025';
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${col}" stroke="white" stroke-width="1.2"/>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block">
+    <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="#e8eef5" stroke-width="1"/>
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8"
+      stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+    ${dots}
+  </svg>`;
+}
+
+/* ── Main render ── */
+function render() {
+  const from = parseInt(document.getElementById('fromMonth').value);
+  let   to   = parseInt(document.getElementById('toMonth').value);
+  if (to < from) { to = from; document.getElementById('toMonth').value = from; }
+
+  const selectedMonths = MONTHS.slice(from, to+1);
+  const selectedKeys   = selectedMonths.map(m => m.key);
+
+  /* Note: gabdor has no jan data */
+  const showNote = active.gabdor && selectedKeys.includes('jan26');
+  document.getElementById('monthNote').className = 'month-note' + (showNote ? ' visible' : '');
+
+  /* Active companies */
+  const activeComps = COMPANIES.filter(c => active[c.id]);
+
+  /* Totals */
+  let totalRev=0, totalExp=0;
+  activeComps.forEach(c => {
+    selectedKeys.forEach(mk => {
+      const m = c.months[mk];
+      if (m) { totalRev += m.rev; totalExp += m.exp; }
+    });
+  });
+  const totalDiff = totalRev - totalExp;
+
+  /* KPI boxes */
+  const revEl  = document.getElementById('sumRev');
+  const expEl  = document.getElementById('sumExp');
+  const diffEl = document.getElementById('sumDiff');
+  const diffSub = document.getElementById('sumDiffSub');
+  const revSub  = document.getElementById('sumRevSub');
+
+  if (activeComps.length === 0) {
+    revEl.textContent = '—'; expEl.textContent = '—'; diffEl.textContent = '—';
+    revEl.className = 'kpi-val'; diffEl.className = 'kpi-val';
+    revSub.textContent = ''; diffSub.textContent = '';
+  } else {
+    revEl.textContent  = fmt(totalRev);
+    expEl.textContent  = fmt(totalExp);
+    diffEl.textContent = fmt(totalDiff, true);
+    diffEl.className   = 'kpi-val ' + (totalDiff >= 0 ? 'pos' : 'neg');
+    revSub.textContent = activeComps.length + ' חברות · ' + selectedMonths.length + ' חודשים';
+    const avgDiff = totalDiff / (activeComps.length * selectedMonths.length);
+    diffSub.textContent = 'ממוצע חודשי: ' + fmtK(avgDiff, true);
+  }
+
+  /* Company table */
+  const table = document.getElementById('compTable');
+  if (activeComps.length === 0) {
+    table.innerHTML = '<div class="empty-state">לא נבחרה אף חברה</div>';
+    buildChips(); return;
+  }
+
+  table.innerHTML = '';
+
+  /* Column header */
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'display:flex;align-items:center;gap:0;padding:6px 20px 4px;border-bottom:1px solid #f0f4f7';
+  hdr.innerHTML = `
+    <div style="width:3px;margin-left:12px"></div>
+    <div style="flex:0 0 190px;font-size:10px;color:var(--gray2)">חברה</div>
+    <div style="flex:1;display:flex">
+      <div style="flex:1;text-align:center;font-size:10px;color:var(--gray2)">הכנסות</div>
+      <div style="flex:1;text-align:center;font-size:10px;color:var(--gray2)">הוצאות</div>
+    </div>
+    <div style="flex:0 0 100px;text-align:center;font-size:10px;color:var(--gray2)">הפרש תפעולי</div>
+    <div style="flex:0 0 90px;text-align:center;font-size:10px;color:var(--gray2)">מגמה</div>
+  `;
+  table.appendChild(hdr);
+
+  COMPANIES.forEach(c => {
+    if (!active[c.id]) return;
+
+    /* Calculate this company's totals */
+    let cRev=0, cExp=0;
+    const diffs = [];
+    const validMonths = [];
+    selectedKeys.forEach(mk => {
+      const m = c.months[mk];
+      if (m) {
+        cRev += m.rev; cExp += m.exp;
+        diffs.push(m.rev - m.exp);
+        validMonths.push(mk);
+      }
+    });
+    const cDiff = cRev - cExp;
+    const hasData = validMonths.length > 0;
+    const monthsLabel = validMonths.map(k => MONTHS.find(m=>m.key===k)?.short).join('–');
+
+    const row = document.createElement('div');
+    row.className = 'comp-row' + (hasData ? '' : ' no-data');
+    row.innerHTML = `
+      <div class="comp-stripe" style="background:${c.color}"></div>
+      <div class="comp-name-wrap">
+        <div class="comp-name">${c.name}</div>
+        <div class="comp-months">${hasData ? monthsLabel : 'אין נתונים לתקופה זו'}</div>
+      </div>
+      <div class="comp-nums">
+        <div class="comp-num-item">
+          <div class="comp-num-label">הכנסות</div>
+          <div class="comp-num-val">${hasData ? fmtK(cRev) : '—'}</div>
+        </div>
+        <div class="comp-num-item">
+          <div class="comp-num-label">הוצאות</div>
+          <div class="comp-num-val">${hasData ? fmtK(cExp) : '—'}</div>
+        </div>
+      </div>
+      <div class="comp-diff">
+        <div class="comp-diff-val ${cDiff>=0?'pos':'neg'}">${hasData ? fmtK(cDiff,true) : '—'}</div>
+        ${hasData ? `<div><div class="comp-diff-chip ${cDiff>=0?'pos':'neg'}">${cDiff>=0?'עודף':'גרעון'}</div></div>` : ''}
+      </div>
+      <div class="comp-spark">
+        ${hasData && diffs.length >= 1 ? sparkline(diffs, c.color) : ''}
+      </div>
+    `;
+    table.appendChild(row);
+  });
+
+  buildChips();
+}
+
+/* Init */
+buildChips();
+render();
+setTimeout(renderCF, 0);
+
+/* ══════════════════════════════════════
+   TASKS LOGIC
+══════════════════════════════════════ */
+let taskFilter = 'all';
+const taskCompActive = { gabdor:true, kapoeira:true };
+
+const TASKS = [
+  /* גבדור */
+  { id:1, company:'gabdor', title:'ניתוח עלות מלאי — אפריל 2026', status:'done',    priority:'high', due:'30.04.2026' },
+  { id:2, company:'gabdor', title:'תכנון תזרים חודש מאי',          status:'active',  priority:'high', due:'15.05.2026' },
+  { id:3, company:'gabdor', title:'פגישת סיכום רבעוני Q1',         status:'active',  priority:'mid',  due:'20.05.2026' },
+  { id:4, company:'gabdor', title:'המלצות לצמצום הוצאות תפעול',    status:'pending', priority:'mid',  due:'31.05.2026' },
+  /* קפוארה */
+  { id:5, company:'kapoeira', title:'הכנת דוח מס מרץ',                  status:'done',    priority:'high', due:'30.04.2026' },
+  { id:6, company:'kapoeira', title:'בדיקת ירידת הכנסות אפריל',          status:'active',  priority:'high', due:'12.05.2026' },
+  { id:7, company:'kapoeira', title:'ניתוח רווחיות לפי סניף',            status:'pending', priority:'mid',  due:'25.05.2026' },
+  { id:8, company:'kapoeira', title:'תכנון קמפיין גיוס תלמידים — קיץ',  status:'pending', priority:'low',  due:'01.06.2026' },
+];
+
+function setFilter(f, el) {
+  taskFilter = f;
+  document.querySelectorAll('.tw-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const t = TASKS.find(t => t.id === id);
+  if (!t) return;
+  t.status = t.status === 'done' ? 'pending' : 'done';
+  renderTasks();
+}
+
+function addTask() {
+  const title = prompt('שם המשימה:');
+  if (!title) return;
+  const compId = Object.keys(taskCompActive).find(k => taskCompActive[k]) || 'gabdor';
+  TASKS.push({
+    id: Date.now(), company: compId,
+    title, status:'pending', priority:'mid', due:'—'
+  });
+  renderTasks();
+}
+
+function buildTaskCompChips() {
+  const wrap = document.getElementById('taskCompChips');
+  wrap.innerHTML = '';
+  COMPANIES.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'comp-chip ' + (taskCompActive[c.id] ? 'active' : 'inactive');
+    chip.innerHTML = `<span class="dot" style="background:${c.color}"></span>${c.name}`;
+    chip.onclick = () => { taskCompActive[c.id] = !taskCompActive[c.id]; renderTasks(); };
+    wrap.appendChild(chip);
+  });
+}
+
+const PRIORITY_LABELS = { high:'דחוף', mid:'רגיל', low:'נמוך' };
+const STATUS_LABELS    = { done:'הושלם', active:'בעבודה', pending:'ממתין' };
+
+function isOverdue(due) {
+  if (!due || due === '—') return false;
+  const [d,m,y] = due.split('.');
+  return new Date(`${y}-${m}-${d}`) < new Date('2026-05-25');
+}
+
+function renderTasks() {
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+
+  const visible = TASKS.filter(t => {
+    if (!taskCompActive[t.company]) return false;
+    if (taskFilter !== 'all' && t.status !== taskFilter) return false;
+    return true;
+  });
+
+  /* Count & progress */
+  const allVisible = TASKS.filter(t => taskCompActive[t.company]);
+  const doneCount  = allVisible.filter(t => t.status === 'done').length;
+  const pct        = allVisible.length ? Math.round(doneCount/allVisible.length*100) : 0;
+  document.getElementById('taskCount').textContent = visible.length;
+  document.getElementById('taskProgressFill').style.width = pct + '%';
+  document.getElementById('taskProgressLabel').textContent = `${doneCount}/${allVisible.length} הושלמו`;
+
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="tw-empty">אין משימות להצגה</div>';
+    buildTaskCompChips(); return;
+  }
+
+  /* Sort: active → pending → done */
+  const order = { active:0, pending:1, done:2 };
+  visible.sort((a,b) => order[a.status] - order[b.status]);
+
+  visible.forEach(t => {
+    const comp = COMPANIES.find(c => c.id === t.company);
+    const overdue = isOverdue(t.due) && t.status !== 'done';
+
+    const iconSVG = `<svg viewBox="0 0 10 10" fill="none">
+      <path d="M2 5.5l2.5 2L8 3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+
+    const row = document.createElement('div');
+    row.className = 'task-row' + (t.status === 'done' ? ' done' : '');
+    row.innerHTML = `
+      <button class="task-toggle ${t.status === 'done' ? 'done-btn' : t.status === 'active' ? 'active-btn' : ''}"
+              onclick="toggleTask(${t.id})" title="שנה סטטוס">
+        ${t.status !== 'pending' ? iconSVG : ''}
+      </button>
+      <div class="task-content">
+        <div class="task-title">${t.title}</div>
+        <div class="task-meta">
+          <div class="task-company">
+            <span class="task-company-dot" style="background:${comp.color}"></span>
+            ${comp.name}
+          </div>
+          <div class="task-priority ${t.priority}">${PRIORITY_LABELS[t.priority]}</div>
+        </div>
+      </div>
+      <div class="task-due ${overdue ? 'overdue' : ''}">${overdue ? '⚠ ' : ''}${t.due}</div>
+      <div class="task-status ${t.status}">${STATUS_LABELS[t.status]}</div>
+    `;
+    list.appendChild(row);
+  });
+
+  buildTaskCompChips();
+}
+
+/* Init tasks */
+buildTaskCompChips();
+renderTasks();
+
+/* ══════════════════════════════════════
+   CASHFLOW LOGIC
+   rev = הכנסות, exp = הוצאות (כולל עלות מכר)
+   diff = rev − exp (הפרש תפעולי)
+   מרץ גבדור = אורגני בלבד (ללא הלוואה 400K)
+══════════════════════════════════════ */
+const CF = {
+  gabdor: {
+    jan26: null,
+    feb26: { rev:171333,  exp:380952  },
+    mar26: { rev:508135,  exp:466363  },
+    apr26: { rev:574250,  exp:776285  },
+  },
+  kapoeira: {
+    jan26: { rev:108229, exp:87991  },
+    feb26: { rev:111405, exp:79197  },
+    mar26: { rev:117433, exp:123640 },
+    apr26: { rev:79858,  exp:73771  },
+  }
+};
+
+function cfSparkline(diffs, color) {
+  if (!diffs.length) return '';
+  const W=72, H=28, mid=H/2;
+  const maxAbs = Math.max(...diffs.map(Math.abs), 1);
+  const sc = (H/2-4)/maxAbs;
+  const pts = diffs.map((d,i)=>{
+    const x=(i/(Math.max(diffs.length-1,1)))*W;
+    const y=mid-d*sc;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const dots = diffs.map((d,i)=>{
+    const x=(i/(Math.max(diffs.length-1,1)))*W;
+    const y=mid-d*sc;
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="${d>=0?'#1e8a4c':'#d93025'}" stroke="white" stroke-width="1"/>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+    <line x1="0" y1="${mid}" x2="${W}" y2="${mid}" stroke="#e8eef5" stroke-width="1"/>
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/>
+    ${dots}
+  </svg>`;
+}
+
+function renderCF() {
+  const from = parseInt(document.getElementById('cfFrom').value);
+  let   to   = parseInt(document.getElementById('cfTo').value);
+  if (to < from) { to = from; document.getElementById('cfTo').value = from; }
+
+  const selMonths = MONTHS.slice(from, to+1);
+  const selKeys   = selMonths.map(m=>m.key);
+
+  /* ── Company summary cards ── */
+  const cards = document.getElementById('cfCards');
+  cards.innerHTML = '';
+  COMPANIES.forEach(c => {
+    let totalRev=0, totalExp=0;
+    const diffs=[];
+    selKeys.forEach(mk=>{
+      const m = CF[c.id][mk];
+      if(m){ totalRev+=m.rev; totalExp+=m.exp; diffs.push(m.rev-m.exp); }
+    });
+    const diff = totalRev - totalExp;
+    const hasDat = diffs.length > 0;
+
+    const card = document.createElement('div');
+    card.className = 'cf-card';
+    card.style.setProperty('--cf-color', c.color);
+    card.innerHTML = `
+      <div class="cf-card-label">הפרש תפעולי מצטבר</div>
+      <div class="cf-card-name">${c.name}</div>
+      <div class="cf-card-diff ${diff>=0?'pos':'neg'}">${hasDat?fmt(diff,true):'אין נתונים'}</div>
+      <div class="cf-card-sub">${hasDat?`הכנסות ${fmtK(totalRev)} · הוצאות ${fmtK(totalExp)}`:''}</div>
+      <div class="cf-spark-row">
+        <div class="cf-chip ${diff>=0?'pos':'neg'}">${hasDat?(diff>=0?'עודף':'גרעון'):''}</div>
+        ${hasDat ? cfSparkline(diffs, c.color) : ''}
+      </div>
+    `;
+    cards.appendChild(card);
+  });
+
+  /* ── Monthly table ── */
+  const tbl = document.getElementById('cfTable');
+
+  /* Header */
+  let html = `<thead><tr>
+    <th>חודש</th>`;
+  COMPANIES.forEach(c=>{
+    html += `<th><span class="cf-month-dot" style="background:${c.color}"></span>${c.name.split('—')[0].trim()}</th>`;
+  });
+  html += `<th>סה"כ</th></tr></thead><tbody>`;
+
+  /* Monthly rows */
+  let grandRev=0, grandExp=0;
+  selKeys.forEach(mk=>{
+    const mo = MONTHS.find(m=>m.key===mk);
+    let rowTotal=0, rowHasAny=false;
+    let row = `<tr><td>${mo.label} 2026</td>`;
+
+    COMPANIES.forEach(c=>{
+      const m = CF[c.id][mk];
+      if(m){
+        const diff = m.rev - m.exp;
+        rowTotal += diff; rowHasAny=true;
+        grandRev += m.rev; grandExp += m.exp;
+        const isMar = mk==='mar26' && c.id==='gabdor';
+        row += `<td>
+          <div class="cf-cell-main ${diff>=0?'pos':'neg'}">${fmtK(diff,true)}</div>
+          <div class="cf-cell-sub">${fmtK(m.rev)} / ${fmtK(m.exp)}${isMar?' *':''}</div>
+        </td>`;
+      } else {
+        row += `<td><div class="cf-cell-main na">—</div></td>`;
+      }
+    });
+
+    const totalCls = rowTotal>=0?'pos':'neg';
+    row += `<td>
+      ${rowHasAny ? `<div class="cf-cell-main ${totalCls}">${fmtK(rowTotal,true)}</div>` : '<div class="cf-cell-main na">—</div>'}
+    </td></tr>`;
+    html += row;
+  });
+
+  /* Totals row */
+  const grandDiff = grandRev - grandExp;
+  html += `<tr class="cf-total-row">
+    <td>סה"כ</td>`;
+  COMPANIES.forEach(c=>{
+    let cRev=0,cExp=0;
+    selKeys.forEach(mk=>{ const m=CF[c.id][mk]; if(m){cRev+=m.rev;cExp+=m.exp;} });
+    const cd=cRev-cExp;
+    html+=`<td><div class="cf-cell-main ${cd>=0?'pos':'neg'}" style="font-size:14px">${fmtK(cd,true)}</div></td>`;
+  });
+  html+=`<td><div class="cf-cell-main ${grandDiff>=0?'pos':'neg'}" style="font-size:14px">${fmtK(grandDiff,true)}</div></td>`;
+  html += `</tr></tbody>`;
+  tbl.innerHTML = html;
+
+  /* Footer note */
+  document.getElementById('cfFooterNote').textContent =
+    `* מרץ גבדור: הכנסות אורגניות בלבד — ללא הלוואה ₪400K`;
+}
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>רווחיות תזרימית — גבדור בע"מ | HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2; --warm:#E48375;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif;background:#e8eef4;
+      direction:rtl;min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      gap:48px;padding:48px 32px;
+    }
+    .section-label{font-size:11px;font-weight:500;color:var(--gray2);letter-spacing:.5px;text-align:center}
+    .section-group{display:flex;flex-direction:column;align-items:center;gap:10px}
+
+    /* ── Picker Card ── */
+    .wcard{
+      background:var(--white);border:1.5px solid #e6ecf2;border-radius:12px;
+      width:200px;display:flex;flex-direction:column;overflow:hidden;
+      transition:box-shadow .18s,transform .18s,border-color .18s;cursor:pointer;
+    }
+    .wcard:hover{box-shadow:0 6px 20px rgba(12,64,104,.12);border-color:var(--cyan);transform:translateY(-2px)}
+    .wcard.added{border-color:var(--cyan)}
+    .wcard-text{padding:12px 12px 6px}
+    .wcard-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px}
+    .wcard-desc{font-size:10px;color:var(--gray);line-height:1.4}
+    .wcard-preview{
+      height:100px;padding:8px 10px 6px;background:#f7fafd;
+      display:flex;flex-direction:column;justify-content:space-between;
+      position:relative;overflow:hidden;
+    }
+    .wcard-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:7px 10px 9px;border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{font-size:10px;color:var(--gray2)}
+    .wcard-btn{
+      border:1.5px solid var(--navy);background:transparent;color:var(--navy);
+      font-family:'Rubik',sans-serif;font-size:11px;font-weight:500;
+      padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s;
+    }
+    .wcard-btn:hover{background:rgba(12,64,104,.06)}
+    .wcard-counter{display:none;align-items:center;background:var(--cyan);border-radius:20px;overflow:hidden}
+    .wcard-counter button{background:transparent;border:none;color:#fff;font-size:15px;font-weight:600;padding:3px 9px;cursor:pointer;font-family:'Rubik',sans-serif}
+    .cnt-num{color:#fff;font-size:12px;font-weight:600;min-width:20px;text-align:center}
+    .wcard.added .wcard-btn{display:none}
+    .wcard.added .wcard-counter{display:flex}
+
+    /* ── Full Widget ── */
+    .widget{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);width:640px;overflow:hidden}
+
+    /* Header */
+    .w-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 20px 14px;border-bottom:1px solid #f2f4f7;
+    }
+    .w-head-right{display:flex;align-items:baseline;gap:10px}
+    .w-title{font-size:15px;font-weight:600;color:var(--navy)}
+    .w-company{font-size:11px;color:var(--gray2)}
+    .w-month{
+      display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--navy);
+      background:#f0f4f8;border-radius:8px;padding:5px 10px;border:1px solid #e2eaf2;cursor:pointer;
+    }
+    .w-month select{
+      appearance:none;-webkit-appearance:none;background:transparent;border:none;
+      font-family:'Rubik',sans-serif;font-size:12px;font-weight:500;
+      color:var(--navy);cursor:pointer;outline:none;padding:0;
+    }
+
+    /* Hero metric */
+    .hero{padding:20px 20px 16px;border-bottom:1px solid #f2f4f7}
+    .hero-label{font-size:11px;color:var(--gray2);margin-bottom:6px}
+    .hero-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+    .hero-val{font-size:42px;font-weight:600;color:var(--red);direction:ltr;display:inline-block;line-height:1}
+    .hero-chip{
+      font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;
+      color:var(--red);background:rgba(217,48,37,.08);display:inline-flex;align-items:center;gap:4px;
+    }
+    .hero-note{font-size:10px;color:var(--gray2);margin-top:6px}
+
+    /* Cascade strip */
+    .cascade{
+      display:flex;align-items:center;gap:0;
+      padding:14px 20px;border-bottom:1px solid #f2f4f7;
+      background:#fafcfe;
+    }
+    .casc-item{flex:1;text-align:center}
+    .casc-label{font-size:10px;color:var(--gray2);margin-bottom:3px}
+    .casc-val{font-size:14px;font-weight:600;color:var(--navy);direction:ltr;display:inline-block}
+    .casc-val.neg{color:var(--red)}
+    .casc-val.pos{color:var(--green)}
+    .casc-val.warn{color:var(--yellow)}
+    .casc-sub{font-size:9px;color:var(--gray2);margin-top:2px}
+    .casc-arrow{
+      flex-shrink:0;font-size:16px;color:#c8d4e0;
+      padding:0 2px;align-self:center;line-height:1;
+    }
+
+    /* Chart + stat row */
+    .body-row{display:flex;gap:0;align-items:stretch}
+
+    /* Chart */
+    .chart-wrap{flex:0 0 400px;padding:16px 20px 12px;border-left:1px solid #f2f4f7}
+    .chart-title{font-size:12px;font-weight:500;color:var(--dark);margin-bottom:2px}
+    .chart-sub{font-size:10px;color:var(--gray2);margin-bottom:10px}
+    .chart-note{font-size:9px;color:var(--gray2);margin-top:6px;direction:ltr;text-align:left;line-height:1.5}
+
+    /* Stat column */
+    .stat-col{flex:1;padding:16px 16px 12px;display:flex;flex-direction:column;gap:0}
+    .stat-title{font-size:12px;font-weight:500;color:var(--dark);margin-bottom:14px}
+    .stat-item{padding:12px 0;border-bottom:1px solid #f2f4f7}
+    .stat-item:last-child{border-bottom:none}
+    .stat-label{font-size:10px;color:var(--gray2);margin-bottom:4px}
+    .stat-val{font-size:20px;font-weight:600;direction:ltr;display:inline-block;line-height:1.1;color:var(--navy)}
+    .stat-val.neg{color:var(--red)}
+    .stat-val.warn{color:var(--yellow)}
+    .stat-context{font-size:10px;color:var(--gray2);margin-top:3px}
+    .stat-badge{
+      display:inline-flex;align-items:center;font-size:10px;font-weight:500;
+      padding:2px 8px;border-radius:10px;margin-top:5px;
+    }
+    .stat-badge.dn{color:var(--red);background:rgba(217,48,37,.08)}
+    .stat-badge.up{color:var(--green);background:rgba(30,138,76,.08)}
+    .stat-badge.st{color:var(--yellow);background:rgba(240,180,41,.08)}
+
+    /* Footer */
+    .w-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 20px 13px;border-top:1px solid #f2f4f7;background:#fafcfe;
+    }
+    .w-update{font-size:10px;color:var(--gray2)}
+    .w-source{font-size:10px;color:var(--gray2);font-style:italic}
+  </style>
+</head>
+<body>
+
+<!-- PICKER -->
+<div class="section-group">
+  <div class="section-label">כרטיסיית גלריה</div>
+  <div class="wcard" id="wc">
+    <div class="wcard-text">
+      <div class="wcard-title">רווחיות תזרימית</div>
+      <div class="wcard-desc">גולמי, תפעולי ומגמת 3 חודשים</div>
+    </div>
+    <div class="wcard-preview">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:8px;color:#a0a8b8;margin-bottom:2px">הפרש תפעולי אפר׳</div>
+          <div style="font-size:20px;font-weight:600;color:#d93025;direction:ltr">−₪202K</div>
+        </div>
+        <div style="font-size:8px;font-weight:500;color:#d93025;background:rgba(217,48,37,.08);padding:2px 6px;border-radius:4px;margin-top:2px">מלאי 94%</div>
+      </div>
+      <svg viewBox="0 0 176 42" width="100%" style="display:block">
+        <line x1="0" y1="26" x2="176" y2="26" stroke="#e2eaf2" stroke-width="1"/>
+        <rect x="12" y="26" width="38" height="12" rx="2" fill="rgba(217,48,37,.7)"/>
+        <rect x="69" y="4"  width="38" height="22" rx="2" fill="rgba(30,138,76,.75)"/>
+        <rect x="126" y="26" width="38" height="11" rx="2" fill="rgba(217,48,37,.7)"/>
+        <text x="31"  y="40" text-anchor="middle" font-family="Rubik" font-size="7" fill="#a0a8b8">פבר׳</text>
+        <text x="88"  y="40" text-anchor="middle" font-family="Rubik" font-size="7" fill="#a0a8b8">מרץ*</text>
+        <text x="145" y="40" text-anchor="middle" font-family="Rubik" font-size="7" fill="#a0a8b8">אפר׳</text>
+      </svg>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">רווחיות</span>
+      <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added');document.getElementById('n').textContent=1">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="ch(-1)">−</button>
+        <div class="cnt-num" id="n">1</div>
+        <button onclick="ch(1)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- FULL WIDGET -->
+<div class="section-group">
+  <div class="section-label">ווידגט מלא</div>
+  <div class="widget">
+
+    <!-- Header -->
+    <div class="w-head">
+      <div class="w-head-right">
+        <div class="w-title">רווחיות תזרימית</div>
+        <div class="w-company">גבדור בע"מ</div>
+      </div>
+      <div class="w-month">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+          <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+        </svg>
+        <select>
+          <option>אפריל 2026</option>
+          <option>מרץ 2026</option>
+          <option>פברואר 2026</option>
+        </select>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+          <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-label">הפרש תפעולי — אפריל 2026</div>
+      <div class="hero-row">
+        <div class="hero-val">−₪202,035</div>
+        <div class="hero-chip">↓ הפסד תפעולי</div>
+      </div>
+      <div class="hero-note">* נתונים חלקיים — 17 ימים מתוך 30</div>
+    </div>
+
+    <!-- Cascade strip -->
+    <!--
+      הכנסות 574,250
+      − עלות מלאי 541,902 (94.4%)
+      = רווח גולמי 32,348 (5.6%)
+      − הוצאות תפעוליות 234,382
+      = הפרש תפעולי −202,035
+    -->
+    <div class="cascade">
+      <div class="casc-item">
+        <div class="casc-label">הכנסות</div>
+        <div class="casc-val">₪574,250</div>
+      </div>
+      <div class="casc-arrow">−</div>
+      <div class="casc-item">
+        <div class="casc-label">עלות מלאי</div>
+        <div class="casc-val warn">₪541,902</div>
+        <div class="casc-sub">94.4% מהכנסות</div>
+      </div>
+      <div class="casc-arrow">=</div>
+      <div class="casc-item">
+        <div class="casc-label">רווח גולמי</div>
+        <div class="casc-val pos">₪32,348</div>
+        <div class="casc-sub">5.6%</div>
+      </div>
+      <div class="casc-arrow">−</div>
+      <div class="casc-item">
+        <div class="casc-label">הוצאות תפעול</div>
+        <div class="casc-val">₪234,382</div>
+      </div>
+      <div class="casc-arrow">=</div>
+      <div class="casc-item">
+        <div class="casc-label">הפרש תפעולי</div>
+        <div class="casc-val neg">−₪202,035</div>
+      </div>
+    </div>
+
+    <!-- Body: Chart + Stats -->
+    <div class="body-row">
+
+      <!-- Line Chart: הכנסות vs הוצאות -->
+      <div class="chart-wrap">
+        <div class="chart-title">הכנסות מול הוצאות — פבר׳–אפר׳ 2026</div>
+        <div class="chart-sub">הפרש תפעולי = המרחק בין הקווים</div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:16px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray2)">
+            <div style="width:18px;height:3px;background:#39ABE2;border-radius:2px"></div>הכנסות
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray2)">
+            <div style="width:18px;height:3px;background:#0C4068;border-radius:2px"></div>הוצאות
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray2)">
+            <div style="width:10px;height:10px;background:rgba(217,48,37,.12);border-radius:2px"></div>גרעון
+          </div>
+        </div>
+
+        <!--
+          viewBox 0 0 380 150
+          x: Feb=65, Mar=190, Apr=315
+          y range: 100K–950K → height 110px (y 20→130)
+          scale = 110 / 850000
+
+          Revenue: Feb=171K→121, Mar=908K→26, Apr=574K→69
+          Expenses: Feb=381K→94, Mar=466K→83, Apr=776K→43
+
+          Grid at 200K→117, 400K→91, 600K→65, 800K→39
+        -->
+        <svg viewBox="0 0 380 150" width="100%" style="display:block" aria-hidden="true">
+          <defs>
+            <!-- Red fill for deficit zones -->
+            <linearGradient id="defFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#d93025" stop-opacity="0.10"/>
+              <stop offset="100%" stop-color="#d93025" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Y-axis labels -->
+          <text x="374" y="120" text-anchor="end" font-family="Rubik" font-size="9" fill="#c8d4e0">200K</text>
+          <text x="374" y="94"  text-anchor="end" font-family="Rubik" font-size="9" fill="#c8d4e0">400K</text>
+          <text x="374" y="68"  text-anchor="end" font-family="Rubik" font-size="9" fill="#c8d4e0">600K</text>
+          <text x="374" y="42"  text-anchor="end" font-family="Rubik" font-size="9" fill="#c8d4e0">800K</text>
+
+          <!-- Gridlines -->
+          <line x1="14" y1="117" x2="348" y2="117" stroke="#f0f4f8" stroke-width="1"/>
+          <line x1="14" y1="91"  x2="348" y2="91"  stroke="#f0f4f8" stroke-width="1"/>
+          <line x1="14" y1="65"  x2="348" y2="65"  stroke="#f0f4f8" stroke-width="1"/>
+          <line x1="14" y1="39"  x2="348" y2="39"  stroke="#f0f4f8" stroke-width="1"/>
+
+          <!--
+            Deficit fill: Feb zone (65,94→121) and Apr zone (315,43→69)
+            Both zones: expenses above revenue (expenses line lower y value)
+            Feb deficit polygon: (65,121) (65,94) = expenses above revenue
+            Apr deficit polygon: (315,69) (315,43)
+            Full polygons connecting both lines:
+          -->
+          <!-- Feb deficit fill: revenue(65,121)→expenses(65,94) to midpoint -->
+          <!-- Using clip-path approach: fill between expense and revenue lines where expenses > revenue -->
+          <!-- Feb: x=65 → midpoint with Mar at approx where lines cross -->
+          <!-- Lines cross between Feb and Mar:
+               Revenue: from (65,121) to (190,26), slope = (26-121)/(190-65) = -95/125 = -0.76
+               Expenses: from (65,94) to (190,83), slope = (83-94)/125 = -11/125 = -0.088
+               At x: 121 - 0.76*(x-65) = 94 - 0.088*(x-65)
+               27 = 0.672*(x-65) → x-65 = 40.2 → x = 105.2, y = 121-0.76*40.2 = 90.4
+          -->
+          <!-- Apr deficit fill: lines cross between Mar and Apr:
+               Revenue: (190,26)→(315,69), slope = 43/125 = 0.344
+               Expenses: (190,83)→(315,43), slope = -40/125 = -0.32
+               At x: 26 + 0.344*(x-190) = 83 - 0.32*(x-190)
+               -57 = -0.664*(x-190) → x-190 = 85.8 → x = 275.8 ≈ 276, y = 26+0.344*85.8 = 55.5
+          -->
+          <polygon
+            points="65,121 105,90 65,94"
+            fill="url(#defFill)"/>
+          <polygon
+            points="276,56 315,69 315,43"
+            fill="url(#defFill)"/>
+
+          <!-- Revenue line (cyan) -->
+          <polyline
+            points="65,121 190,26 315,69"
+            fill="none" stroke="#39ABE2" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Revenue dots -->
+          <circle cx="65"  cy="121" r="4" fill="#39ABE2" stroke="white" stroke-width="1.5"/>
+          <circle cx="190" cy="26"  r="4" fill="#39ABE2" stroke="white" stroke-width="1.5"/>
+          <circle cx="315" cy="69"  r="4" fill="#39ABE2" stroke="white" stroke-width="1.5"/>
+
+          <!-- Expenses line (navy) -->
+          <polyline
+            points="65,94 190,83 315,43"
+            fill="none" stroke="#0C4068" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Expenses dots -->
+          <circle cx="65"  cy="94" r="4" fill="#0C4068" stroke="white" stroke-width="1.5"/>
+          <circle cx="190" cy="83" r="4" fill="#0C4068" stroke="white" stroke-width="1.5"/>
+          <circle cx="315" cy="43" r="4" fill="#0C4068" stroke="white" stroke-width="1.5"/>
+
+          <!-- Revenue value labels -->
+          <text x="65"  y="135" text-anchor="middle" font-family="Rubik" font-size="9" font-weight="500" fill="#39ABE2">₪171K</text>
+          <text x="190" y="20"  text-anchor="middle" font-family="Rubik" font-size="9" font-weight="500" fill="#39ABE2">₪908K*</text>
+          <text x="315" y="84"  text-anchor="middle" font-family="Rubik" font-size="9" font-weight="500" fill="#39ABE2">₪574K</text>
+
+          <!-- Expenses value labels -->
+          <text x="50"  y="90"  text-anchor="middle" font-family="Rubik" font-size="9" font-weight="500" fill="#0C4068">₪381K</text>
+          <text x="207" y="79"  text-anchor="start"  font-family="Rubik" font-size="9" font-weight="500" fill="#0C4068">₪466K</text>
+          <text x="315" y="38"  text-anchor="middle" font-family="Rubik" font-size="9" font-weight="500" fill="#0C4068">₪776K</text>
+
+          <!-- X labels -->
+          <text x="65"  y="148" text-anchor="middle" font-family="Rubik" font-size="10" fill="#b0bac8">פברואר</text>
+          <text x="190" y="148" text-anchor="middle" font-family="Rubik" font-size="10" fill="#b0bac8">מרץ</text>
+          <text x="315" y="148" text-anchor="middle" font-family="Rubik" font-size="10" fill="#b0bac8">אפריל</text>
+        </svg>
+
+        <div class="chart-note">
+          * מרץ: כולל הלוואה ₪400K — הכנסות אורגניות בלבד ₪508K · אפריל: 17 ימים מתוך 30
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-col">
+        <div class="stat-title">נקודות מפתח</div>
+
+        <div class="stat-item">
+          <div class="stat-label">יחס מלאי להכנסות</div>
+          <div class="stat-val warn">94.4%</div>
+          <div class="stat-context">vs מרץ: 52.6%</div>
+          <div class="stat-badge dn">↑ 41 נק׳</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">רווח גולמי</div>
+          <div class="stat-val neg">5.6%</div>
+          <div class="stat-context">vs מרץ: 47.4%</div>
+          <div class="stat-badge dn">↓ 87%</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">ממוצע הפרש — פבר׳–אפר׳</div>
+          <div class="stat-val neg">−₪123K</div>
+          <div class="stat-context">ללא הלוואת מרץ</div>
+        </div>
+      </div>
+
+    </div><!-- /body-row -->
+
+    <!-- Footer -->
+    <div class="w-foot">
+      <div class="w-update">עדכון אחרון: 17.04.2026</div>
+      <div class="w-source">מקור: דוח תזרים חודשי | HK חזות קריספין</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let cnt = 0;
+  function ch(d) {
+    cnt = Math.max(0, cnt + d);
+    document.getElementById('n').textContent = cnt;
+    if (cnt === 0) document.getElementById('wc').classList.remove('added');
+  }
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

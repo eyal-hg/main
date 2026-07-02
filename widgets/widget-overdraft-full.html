@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>חריגה צפויה — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068;--cyan:#39ABE2;--warm:#E48375;
+      --white:#FFFFFF;--dark:#273736;
+      --gray:#818181;--gray2:#a0a8b8;
+      --green:#1e8a4c;--red:#d93025;--yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif;background:#e8eef4;
+      direction:rtl;min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      gap:48px;padding:48px 32px;
+    }
+    .section-label{font-size:11px;font-weight:500;color:var(--gray2);letter-spacing:.5px;text-transform:uppercase;text-align:center;}
+    .section-group{display:flex;flex-direction:column;align-items:center;gap:10px;}
+
+    /* ── Demo toggles ── */
+    .demo-bar{
+      display:flex;gap:8px;align-items:center;
+      background:var(--white);padding:8px 16px;border-radius:24px;
+      box-shadow:0 2px 10px rgba(0,0,0,.07);
+    }
+    .demo-lbl{font-size:11px;color:var(--gray2);}
+    .demo-btn{
+      font-family:'Rubik',sans-serif;font-size:11px;font-weight:500;
+      padding:5px 14px;border-radius:16px;border:2px solid transparent;
+      cursor:pointer;transition:all .18s;
+    }
+    .demo-btn.d-green{background:rgba(30,138,76,.1);color:var(--green);}
+    .demo-btn.d-red{background:rgba(217,48,37,.1);color:var(--red);}
+    .demo-btn.active.d-green{border-color:var(--green);}
+    .demo-btn.active.d-red{border-color:var(--red);}
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white);border:1.5px solid #e6ecf2;border-radius:12px;
+      width:200px;display:flex;flex-direction:column;overflow:hidden;
+      transition:box-shadow .18s,transform .18s,border-color .18s;cursor:pointer;
+    }
+    .wcard:hover{box-shadow:0 6px 20px rgba(12,64,104,.12);border-color:var(--cyan);transform:translateY(-2px);}
+    .wcard.added{border-color:var(--cyan);}
+    .wcard-text{padding:12px 12px 6px;}
+    .wcard-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;}
+    .wcard-desc{font-size:10px;color:var(--gray);line-height:1.4;}
+    .wcard-preview{
+      height:100px;padding:8px 10px 6px;background:#f7fafd;
+      display:flex;flex-direction:column;gap:3px;
+      position:relative;overflow:hidden;
+    }
+    .wcard-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:7px 10px 9px;border-top:1px solid #f0f4f7;
+    }
+    /* ⚡ AUTO badge — key differentiator from manual widgets */
+    .wcard-auto{
+      display:flex;align-items:center;gap:3px;
+      font-size:9px;font-weight:600;color:var(--cyan);
+      background:rgba(57,171,226,.1);padding:2px 7px;border-radius:10px;
+    }
+    .wcard-btn{
+      border:1.5px solid var(--navy);background:transparent;color:var(--navy);
+      font-family:'Rubik',sans-serif;font-size:11px;font-weight:500;
+      padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s;
+    }
+    .wcard-btn:hover{background:rgba(12,64,104,.06);}
+    .wcard-counter{display:none;align-items:center;background:var(--cyan);border-radius:20px;overflow:hidden;}
+    .wcard-counter button{background:transparent;border:none;color:#fff;font-size:15px;font-weight:600;padding:3px 9px;cursor:pointer;font-family:'Rubik',sans-serif;}
+    .cnt-num{color:#fff;font-size:12px;font-weight:600;min-width:20px;text-align:center;}
+    .wcard.added .wcard-btn{display:none;}
+    .wcard.added .wcard-counter{display:flex;}
+
+    /* ══ FULL WIDGET ══ */
+    .widget{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);width:640px;overflow:hidden;}
+
+    /* ── Header ── */
+    .w-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;}
+    .w-head-r{display:flex;align-items:center;gap:8px;}
+    .w-icon{width:32px;height:32px;border-radius:8px;background:#f0f8fd;display:flex;align-items:center;justify-content:center;font-size:16px;}
+    .w-title{font-size:14px;font-weight:500;color:var(--dark);}
+    /* ⚡ AUTO badge in full widget header */
+    .w-auto{
+      display:flex;align-items:center;gap:5px;
+      font-size:10px;font-weight:600;color:var(--cyan);
+      background:rgba(57,171,226,.1);padding:4px 11px;border-radius:12px;
+    }
+
+    /* ── Status banner ── */
+    .w-banner{
+      margin:0 18px 14px;border-radius:10px;padding:12px 14px;
+      display:flex;align-items:center;gap:12px;
+      transition:background .3s,border .3s;
+    }
+    .wb-icon{font-size:20px;flex-shrink:0;line-height:1;}
+    .wb-body{flex:1;}
+    .wb-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+    .wb-sub{font-size:11px;opacity:.8;}
+    .wb-days{text-align:center;flex-shrink:0;min-width:52px;}
+    .wb-days-num{font-size:26px;font-weight:600;line-height:1;}
+    .wb-days-lbl{font-size:9px;font-weight:400;opacity:.7;margin-top:2px;}
+
+    /* ── Numbers row ── */
+    .w-nums{display:flex;gap:8px;padding:0 18px 14px;}
+    .w-num{flex:1;background:#f7fafd;border-radius:8px;padding:10px 12px;}
+    .w-num-lbl{font-size:10px;color:var(--gray2);margin-bottom:5px;}
+    .w-num-val{font-size:17px;font-weight:600;direction:ltr;display:inline-block;line-height:1;}
+
+    /* ── Forecast chart ── */
+    .w-chart{padding:0 18px;}
+    .w-chart svg{width:100%;display:block;overflow:visible;}
+    .w-chart-lbls{
+      display:flex;justify-content:space-between;align-items:flex-start;
+      padding:4px 0 12px;font-size:10px;color:var(--gray2);line-height:1.4;
+    }
+    .w-chart-lbls .lbl-r{text-align:right;}
+    .w-chart-lbls .lbl-m{text-align:center;}
+    .w-chart-lbls .lbl-l{text-align:left;}
+
+    /* ── Footer — sync indicator (key differentiator) ── */
+    .w-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:9px 18px 12px;border-top:1px solid #f2f4f7;
+    }
+    .w-sync{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray2);}
+    .w-acts{display:flex;gap:14px;}
+    .w-act{font-size:11px;font-weight:500;color:var(--cyan);cursor:pointer;display:flex;align-items:center;gap:4px;}
+    .w-act:hover{text-decoration:underline;}
+    .w-act.navy{color:var(--navy);}
+  </style>
+</head>
+<body>
+
+<!-- ══ PICKER CARD ══ -->
+<div class="section-group">
+  <div class="section-label">כרטיסיית גלריה</div>
+  <div class="wcard" id="wc">
+    <div class="wcard-text">
+      <div class="wcard-title">חריגה צפויה</div>
+      <div class="wcard-desc">תחזית עו"ש מאוחד — חריגה בטווח 30 ימים</div>
+    </div>
+
+    <div class="wcard-preview">
+      <!-- Status row -->
+      <div style="display:flex;align-items:center;gap:5px;">
+        <div id="pv-dot" style="width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;"></div>
+        <span id="pv-txt" style="font-size:9px;font-weight:500;color:var(--red);">חריגה בטווח 30 ימים</span>
+      </div>
+      <!-- Balance -->
+      <div id="pv-bal" style="font-size:19px;font-weight:600;color:var(--red);direction:ltr;line-height:1;">₪-3,200</div>
+      <div style="font-size:8px;color:var(--gray2);">יתרה עו"ש נוכחית</div>
+    </div>
+
+    <div class="wcard-foot">
+      <!-- AUTO badge replaces category label for financial widgets -->
+      <div class="wcard-auto">
+        <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
+          <path d="M6 1C3.24 1 1 3.24 1 6s2.24 5 5 5 5-2.24 5-5" stroke="#39ABE2" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M11 1l-3 3M11 1H8M11 1v3" stroke="#39ABE2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        אוטומטי
+      </div>
+      <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="cc(-1)">−</button>
+        <div class="cnt-num" id="cn">1</div>
+        <button onclick="cc(1)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FULL WIDGET ══ -->
+<div class="section-group">
+  <div class="section-label">ווידגט מלא</div>
+  <div class="widget">
+
+    <!-- Header: no month selector — always 30 days forward -->
+    <div class="w-head">
+      <div class="w-head-r">
+        <div class="w-icon">🏦</div>
+        <div class="w-title">חריגה צפויה — עו"ש מאוחד</div>
+      </div>
+      <!-- AUTO badge in header: key visual difference from manual widgets -->
+      <div class="w-auto">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+          <path d="M6 1C3.24 1 1 3.24 1 6s2.24 5 5 5 5-2.24 5-5" stroke="#39ABE2" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M11 1l-3 3M11 1H8M11 1v3" stroke="#39ABE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        מסונכרן אוטומטית
+      </div>
+    </div>
+
+    <!-- Status banner -->
+    <div class="w-banner" id="wb" style="background:rgba(217,48,37,.08);border:1px solid rgba(217,48,37,.2);">
+      <div class="wb-icon" id="wb-icon">🔴</div>
+      <div class="wb-body">
+        <div class="wb-title" id="wb-title" style="color:var(--red);">חריגה צפויה ב-28.04.2026</div>
+      </div>
+      <div class="wb-days" id="wb-days-wrap">
+        <div class="wb-days-num" id="wb-days" style="color:var(--red);">12</div>
+        <div class="wb-days-lbl" id="wb-days-lbl" style="color:var(--red);">ימים</div>
+      </div>
+    </div>
+
+    <!-- Numbers row -->
+    <div class="w-nums">
+      <div class="w-num">
+        <div class="w-num-lbl">יתרה נוכחית עו"ש</div>
+        <div class="w-num-val" id="n1" style="color:var(--dark);">₪18,400</div>
+      </div>
+      <div class="w-num">
+        <div class="w-num-lbl">מסגרת עו"ש</div>
+        <div class="w-num-val" style="color:var(--navy);">₪50,000</div>
+      </div>
+      <div class="w-num">
+        <div class="w-num-lbl" id="n3lbl">חריגה צפויה</div>
+        <div class="w-num-val" id="n3" style="color:var(--red);">₪-8,200</div>
+      </div>
+    </div>
+
+    <!-- Footer: sync indicator (replaces "עדכון אחרון" from manual widgets) -->
+    <div class="w-foot">
+      <div class="w-sync">
+        <!-- Sync icon -->
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M1.5 6C1.5 3.51 3.51 1.5 6 1.5c1.46 0 2.76.68 3.62 1.74" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M10.5 6c0 2.49-2.01 4.5-4.5 4.5-1.46 0-2.76-.68-3.62-1.74" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M9.62 1.74l1.88-.24v1.5" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.38 10.26l-1.88.24V9" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        מסונכרן אוטומטית · 16.04.2026
+      </div>
+      <div class="w-acts">
+        <div class="w-act">
+          <!-- External link icon -->
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M5.5 2H2a1 1 0 00-1 1v6a1 1 0 001 1h7a1 1 0 001-1V6" stroke="#39ABE2" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M7.5 1H10v2.5M10 1L6.5 4.5" stroke="#39ABE2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          מעבר לתזרים Bizibox
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .widget -->
+</div><!-- .section-group -->
+
+<!-- ══ FULL WIDGET — GREEN STATE (static) ══ -->
+<div class="section-group">
+  <div class="section-label">ווידגט מלא — אין חריגה</div>
+  <div class="widget">
+
+    <div class="w-head">
+      <div class="w-head-r">
+        <div class="w-icon">🏦</div>
+        <div class="w-title">חריגה צפויה — עו"ש מאוחד</div>
+      </div>
+      <div class="w-auto">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+          <path d="M6 1C3.24 1 1 3.24 1 6s2.24 5 5 5 5-2.24 5-5" stroke="#39ABE2" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M11 1l-3 3M11 1H8M11 1v3" stroke="#39ABE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        מסונכרן אוטומטית
+      </div>
+    </div>
+
+    <!-- Green banner -->
+    <div class="w-banner" style="background:rgba(30,138,76,.08);border:1px solid rgba(30,138,76,.2);">
+      <div class="wb-icon">✅</div>
+      <div class="wb-body">
+        <div class="wb-title" style="color:#1e8a4c;">אין חריגה בטווח 30 הימים הקרובים</div>
+      </div>
+      <div class="wb-days">
+        <div class="wb-days-num" style="color:#1e8a4c;">✓</div>
+        <div class="wb-days-lbl" style="color:#1e8a4c;">מוגן</div>
+      </div>
+    </div>
+
+    <!-- Numbers -->
+    <div class="w-nums">
+      <div class="w-num">
+        <div class="w-num-lbl">יתרה נוכחית עו"ש</div>
+        <div class="w-num-val" style="color:var(--green);">₪42,600</div>
+      </div>
+      <div class="w-num">
+        <div class="w-num-lbl">מסגרת עו"ש</div>
+        <div class="w-num-val" style="color:var(--navy);">₪50,000</div>
+      </div>
+      <div class="w-num">
+        <div class="w-num-lbl">יתרה מינימלית צפויה</div>
+        <div class="w-num-val" style="color:var(--green);">₪28,300</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="w-foot">
+      <div class="w-sync">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M1.5 6C1.5 3.51 3.51 1.5 6 1.5c1.46 0 2.76.68 3.62 1.74" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M10.5 6c0 2.49-2.01 4.5-4.5 4.5-1.46 0-2.76-.68-3.62-1.74" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M9.62 1.74l1.88-.24v1.5" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.38 10.26l-1.88.24V9" stroke="#a0a8b8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        מסונכרן אוטומטית · 16.04.2026
+      </div>
+      <div class="w-acts">
+        <div class="w-act">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M5.5 2H2a1 1 0 00-1 1v6a1 1 0 001 1h7a1 1 0 001-1V6" stroke="#39ABE2" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M7.5 1H10v2.5M10 1L6.5 4.5" stroke="#39ABE2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          מעבר לתזרים Bizibox
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .widget green -->
+</div><!-- .section-group -->
+
+<script>
+/* ── Picker counter ── */
+let cntV = 1;
+function cc(d) {
+  cntV = Math.max(1, cntV + d);
+  document.getElementById('cn').textContent = cntV;
+}
+
+/* ── State definitions ── */
+const S = {
+  green: {
+    wbBg:'rgba(30,138,76,.08)', wbBdr:'rgba(30,138,76,.2)',
+    icon:'✅', title:'אין חריגה בטווח 30 הימים הקרובים', titleC:'#1e8a4c',
+    days:'✓', daysLbl:'מוגן', daysC:'#1e8a4c',
+    n1:'₪42,600', n1C:'var(--green)',
+    n3lbl:'יתרה מינימלית צפויה', n3:'₪28,300', n3C:'var(--green)',
+    fl:'M604,14 C500,17 370,21 200,23 C100,24 50,24 0,25',
+    flC:'#1e8a4c',
+    fp:'M604,14 C500,17 370,21 200,23 C100,24 50,24 0,25 L0,47 L604,47 Z',
+    fpFill:'url(#g-green)', fn:'', zY:47,
+    vl:false, td:{cx:604,cy:14}, cd:null, midLbl:null,
+    tvVal:'₪42,600', tvY:11, tvFill:'#1e8a4c',
+    evVal:'₪28,300', evY:22, evFill:'#1e8a4c',
+    chartRight:'✓ יתרה חיובית לאורך כל התקופה', chartRightC:'var(--green)',
+    pvDot:'var(--green)', pvTxt:'אין חריגה · 30+ ימים', pvTxtC:'var(--green)',
+    pvBal:'₪42,600', pvBalC:'var(--green)',
+    pvBar:'100%', pvBarC:'var(--green)', pvMidLbl:''
+  },
+  red: {
+    wbBg:'rgba(217,48,37,.08)', wbBdr:'rgba(217,48,37,.2)',
+    icon:'🔴', title:'חריגה צפויה ב-28.04.2026', titleC:'var(--red)',
+    days:'12', daysLbl:'ימים', daysC:'var(--red)',
+    n1:'₪18,400', n1C:'var(--dark)',
+    n3lbl:'חריגה צפויה', n3:'₪-8,200', n3C:'var(--red)',
+    fl:'M604,33 C540,38 490,43 362,47 C295,50 190,52 0,53',
+    flC:'#d93025',
+    fp:'M604,33 C540,38 490,43 362,47 L604,47 Z',
+    fpFill:'url(#g-pos)',
+    fn:'M362,47 C295,50 190,52 0,53 L0,47 Z', zY:47,
+    vl:true, vlX:362, vlC:'#d93025',
+    td:{cx:604,cy:33}, cd:{cx:362,cy:47},
+    midLbl:{txt:'⚠ חריגה', sub:'28.04', color:'var(--red)'},
+    tvVal:'₪18,400', tvY:30, tvFill:'#273736',
+    evVal:'₪-8,200', evY:50, evFill:'#d93025',
+    chartRight:'⚠ חריגה ב-28.04', chartRightC:'var(--red)',
+    pvDot:'var(--red)', pvTxt:'חריגה בטווח 30 ימים', pvTxtC:'var(--red)',
+    pvBal:'₪18,400', pvBalC:'var(--dark)',
+    pvBar:'40%', pvBarC:'var(--red)', pvMidLbl:'חריגה'
+  }
+};
+
+function setState(s, btn) {
+  document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const st = S[s];
+
+  /* Banner */
+  const wb = document.getElementById('wb');
+  wb.style.background = st.wbBg;
+  wb.style.border = `1px solid ${st.wbBdr}`;
+  document.getElementById('wb-icon').textContent = st.icon;
+  const wbt = document.getElementById('wb-title');
+  wbt.textContent = st.title; wbt.style.color = st.titleC;
+  const wbd = document.getElementById('wb-days');
+  wbd.textContent = st.days; wbd.style.color = st.daysC;
+  const wbdl = document.getElementById('wb-days-lbl');
+  wbdl.textContent = st.daysLbl; wbdl.style.color = st.daysC;
+
+  /* Numbers */
+  const n1 = document.getElementById('n1');
+  n1.textContent = st.n1; n1.style.color = st.n1C;
+  document.getElementById('n3lbl').textContent = st.n3lbl;
+  const n3 = document.getElementById('n3');
+  n3.textContent = st.n3; n3.style.color = st.n3C;
+
+  /* Picker preview */
+  document.getElementById('pv-dot').style.background = st.pvDot;
+  const pvt = document.getElementById('pv-txt');
+  pvt.textContent = st.pvTxt; pvt.style.color = st.pvTxtC;
+  const pvb = document.getElementById('pv-bal');
+  pvb.textContent = st.pvBal; pvb.style.color = st.pvBalC;
+}
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

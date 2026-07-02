@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>דשבורד תזרים — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan:   #39ABE2;
+      --navy:   #0C4068;
+      --dark:   #273736;
+      --gray:   #818181;
+      --gray2:  #a0a8b8;
+      --bg:     #d4dde8;
+      --white:  #ffffff;
+      --green:  #1e8a4c;
+      --red:    #d93025;
+      --orange: #f0832a;
+      --shadow: 0px 1px 50px 0px rgba(0,0,0,0.08);
+      --r:      8px;
+    }
+
+    body { font-family:'Rubik',sans-serif; background:var(--bg); direction:rtl; min-height:100vh; }
+
+    /* ── Nav (same as dashboard.html) ─────────── */
+    .topnav { background:var(--navy); height:54px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:10; }
+    .tn-logo { color:#fff; font-size:18px; font-weight:600; }
+    .tn-logo em { color:var(--cyan); font-style:normal; }
+    .tn-links { display:flex; gap:2px; }
+    .tn-links a { color:rgba(255,255,255,.6); font-size:13px; text-decoration:none; padding:5px 12px; border-radius:6px; }
+    .tn-links a.on, .tn-links a:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .tn-user { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.75); font-size:13px; }
+    .av { width:28px; height:28px; border-radius:50%; background:var(--cyan); color:#fff; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+
+    /* ── Page (same as dashboard.html) ────────── */
+    .page { padding:18px 24px 36px; max-width:1300px; margin:0 auto; }
+    .pg-title { font-size:14px; font-weight:500; color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .sec { font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; margin:16px 0 8px; }
+
+    /* ── Grids ─────────────────────────────────── */
+    .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .g21 { display:grid; grid-template-columns:2fr 1fr; gap:12px; }
+    .span2 { grid-column: span 2; }
+
+    /* ── Base card ─────────────────────────────── */
+    .card { background:var(--white); border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:box-shadow .18s; }
+    .card:hover { box-shadow:0 4px 24px rgba(0,0,0,0.13); }
+
+    /* ══════════════════════════════════════════════
+       WIDGET INTERNALS — rectangular style
+       Same pattern as the app screenshot
+    ══════════════════════════════════════════════ */
+
+    /* Row 1: title + target/badge */
+    .w-head { display:flex; align-items:flex-start; justify-content:space-between; padding:14px 16px 0; }
+    .w-title { font-size:14px; font-weight:500; color:var(--dark); line-height:20px; text-align:right; }
+    .w-badge {
+      font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px;
+      white-space:nowrap; flex-shrink:0; margin-top:2px;
+    }
+    .w-badge.red    { background:#fde8e8; color:var(--red); }
+    .w-badge.orange { background:#fff3e8; color:var(--orange); }
+    .w-badge.green  { background:#e8f6ee; color:var(--green); }
+    .w-badge.blue   { background:#e8f4fb; color:var(--cyan); }
+    .w-badge.gray   { background:#edf0f5; color:var(--gray2); }
+
+    /* Row 2: main value */
+    .w-val { font-size:28px; font-weight:400; line-height:1.2; direction:ltr; text-align:right; padding:6px 16px 0; }
+    .w-val.cyan   { color:var(--cyan); }
+    .w-val.red    { color:var(--red); }
+    .w-val.green  { color:var(--green); }
+    .w-val.orange { color:var(--orange); }
+
+    .w-lbl { font-size:11px; text-align:right; padding:1px 16px 0; line-height:14px; }
+    .w-lbl.cyan   { color:var(--cyan); }
+    .w-lbl.red    { color:var(--red); }
+    .w-lbl.green  { color:var(--green); }
+    .w-lbl.orange { color:var(--orange); }
+
+    /* Progress bar */
+    .w-bar-wrap { padding:8px 16px 0; }
+    .w-bar { height:5px; background:#edf0f5; border-radius:3px; overflow:hidden; }
+    .w-fill { height:100%; border-radius:3px; background:var(--cyan); }
+    .w-fill.red    { background:var(--red); }
+    .w-fill.green  { background:var(--green); }
+    .w-fill.orange { background:var(--orange); }
+    .w-scale { display:flex; justify-content:space-between; padding:3px 16px 0; font-size:10px; color:var(--gray2); direction:ltr; }
+
+    /* Trend / footer */
+    .w-foot { display:flex; align-items:center; gap:5px; padding:7px 16px 12px; border-top:1px solid #f2f4f7; margin-top:7px; font-size:11px; color:var(--gray); flex-wrap:wrap; }
+    .chip { display:inline-flex; align-items:center; gap:2px; font-size:10px; font-weight:500; padding:1px 6px; border-radius:10px; }
+    .chip.up  { background:#e8f6ee; color:var(--green); }
+    .chip.dn  { background:#fde8e8; color:var(--red); }
+    .chip.or  { background:#fff3e8; color:var(--orange); }
+    .chip.neu { background:#edf0f5; color:var(--gray2); }
+
+    /* Sparkline */
+    .w-spark { padding:8px 0 0; }
+    svg.sp { width:100%; height:64px; display:block; }
+
+    /* ── Two-column data rows ─────────────────── */
+    .w-rows { padding:8px 16px 0; display:flex; flex-direction:column; gap:0; }
+    .w-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 0; border-bottom:1px solid #f5f6f8; font-size:12px;
+    }
+    .w-row:last-child { border-bottom:none; }
+    .w-row-label { color:var(--gray); }
+    .w-row-val { font-weight:500; color:var(--dark); direction:ltr; }
+    .w-row-val.red   { color:var(--red); }
+    .w-row-val.green { color:var(--green); }
+    .w-row-val.cyan  { color:var(--cyan); }
+
+    /* ── Comparison (2 big numbers side by side) ─ */
+    .w-compare { display:grid; grid-template-columns:1fr 1fr; gap:0; padding:8px 0 0; }
+    .w-cmp-item { padding:4px 16px; text-align:right; }
+    .w-cmp-item + .w-cmp-item { border-right:1px solid #f2f4f7; }
+    .w-cmp-label { font-size:10px; color:var(--gray2); margin-bottom:2px; }
+    .w-cmp-val { font-size:20px; font-weight:400; color:var(--cyan); direction:ltr; line-height:1.2; }
+    .w-cmp-val.red  { color:var(--red); }
+    .w-cmp-gap { padding:4px 16px 0; display:flex; align-items:center; justify-content:flex-end; gap:6px; font-size:11px; color:var(--gray); }
+
+    /* ── Pace widget (10) ─────────────────────── */
+    .w-pace { padding:8px 16px 0; }
+    .pace-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f5f6f8; }
+    .pace-row:last-child { border-bottom:none; }
+    .pace-label { font-size:11px; color:var(--gray); }
+    .pace-right { display:flex; align-items:center; gap:8px; }
+    .pace-val { font-size:13px; font-weight:500; color:var(--dark); direction:ltr; }
+    .pace-pct { font-size:11px; font-weight:500; }
+    .pace-pct.up { color:var(--green); }
+    .pace-pct.dn { color:var(--red); }
+    .pace-pct.or { color:var(--orange); }
+
+    /* Progress for pace bar */
+    .pace-bar-wrap { padding:10px 16px 0; }
+    .pace-bar-label { display:flex; justify-content:space-between; font-size:10px; color:var(--gray2); margin-bottom:3px; }
+    .pace-track { height:6px; background:#edf0f5; border-radius:3px; position:relative; overflow:visible; }
+    .pace-fill { height:100%; border-radius:3px; background:var(--cyan); }
+    .pace-marker {
+      position:absolute; top:-3px; width:2px; height:12px; background:var(--orange);
+      border-radius:1px;
+    }
+    .pace-marker::after { content:attr(data-label); position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--orange); white-space:nowrap; font-family:'Rubik',sans-serif; }
+
+    /* Alert row for widget 1 */
+    .w-alert { display:flex; align-items:flex-start; gap:8px; padding:10px 16px; border-radius:0; margin:8px 0 0; }
+    .w-alert.red    { background:#fff5f5; border-right:3px solid var(--red); }
+    .w-alert.orange { background:#fffbf5; border-right:3px solid var(--orange); }
+    .w-alert.green  { background:#f5fbf8; border-right:3px solid var(--green); }
+    .w-alert-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+    .w-alert-text { font-size:12px; line-height:18px; }
+    .w-alert-text strong { display:block; font-size:13px; color:var(--dark); margin-bottom:2px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ─────────────────────────────────── -->
+<nav class="topnav">
+  <div class="tn-logo"><em>HK</em> חזות קריספין</div>
+  <div class="tn-links">
+    <a href="#">לקוחות</a>
+    <a href="#">דשבורד</a>
+    <a href="#" class="on">תזרים</a>
+    <a href="#">מסמכים</a>
+    <a href="#">דוחות</a>
+  </div>
+  <div class="tn-user"><span>שלום, איציק</span><div class="av">ע</div></div>
+</nav>
+
+<div class="page">
+
+  <div class="pg-title">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x=".5" y=".5" width="5.5" height="5.5" rx="1.2" fill="var(--navy)"/>
+      <rect x="8"  y=".5" width="5.5" height="5.5" rx="1.2" fill="var(--cyan)"/>
+      <rect x=".5" y="8"  width="5.5" height="5.5" rx="1.2" fill="var(--cyan)"/>
+      <rect x="8"  y="8"  width="5.5" height="5.5" rx="1.2" fill="var(--navy)"/>
+    </svg>
+    דוח בקרה תזרימי — מאי 2026
+  </div>
+
+  <!-- ═══ ROW 1: התראות ותזרים ═══ -->
+  <div class="sec">התראות ותחזית</div>
+  <div class="g4">
+
+    <!-- 1. חריגה צפויה (spans 2) -->
+    <div class="card span2">
+      <div class="w-head">
+        <span class="w-title">חריגה צפויה — 30 ימים קדימה</span>
+        <span class="w-badge orange">⚠ חריגה עם פתרון</span>
+      </div>
+      <div class="w-alert orange">
+        <div class="w-alert-icon">🔶</div>
+        <div class="w-alert-text">
+          <strong>חריגה צפויה ב-15.05.2026</strong>
+          יתרה מאוחדת צפויה: <span style="color:var(--red);font-weight:500">−₪12,400</span> | מסגרת: ₪50,000<br>
+          פתרון מוצע: העברה מחשבון 123456 — <span style="color:var(--green);font-weight:500">₪15,000</span>
+        </div>
+      </div>
+      <div class="w-rows" style="padding-top:4px">
+        <div class="w-row"><span class="w-row-label">יתרה עו״ש מאוחדת כיום</span><span class="w-row-val cyan">₪38,600</span></div>
+        <div class="w-row"><span class="w-row-label">תאריך חריגה קרובה</span><span class="w-row-val red">15.05.2026</span></div>
+        <div class="w-row"><span class="w-row-label">יתרה צפויה בתאריך החריגה</span><span class="w-row-val red">−₪12,400</span></div>
+        <div class="w-row"><span class="w-row-label">סך מסגרת אשראי מאוחדת</span><span class="w-row-val">₪50,000</span></div>
+      </div>
+      <div class="w-foot">
+        <span class="chip or">⚠ חריגה מיידית</span>
+        ניתן לפתור בהעברה פנימית
+        <span style="margin-right:auto;color:var(--cyan);font-size:11px;cursor:pointer">← מעבר לתזרים</span>
+      </div>
+    </div>
+
+    <!-- 4. תזרים 30–60 ימים -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">תזרים 30–60 ימים קדימה</span>
+        <span class="w-badge orange">⚠ קרוב למסגרת</span>
+      </div>
+      <div class="w-val orange">₪62,800</div>
+      <div class="w-lbl orange">יתרה צפויה בסוף התקופה</div>
+      <div class="w-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray2);margin-bottom:2px;">
+          <span>מסגרת ₪50K</span><span>יתרה סוף תקופה</span>
+        </div>
+        <div class="w-bar"><div class="w-fill orange" style="width:68%"></div></div>
+      </div>
+      <div class="w-rows" style="padding-top:4px">
+        <div class="w-row"><span class="w-row-label">יום יתרה מינימלית</span><span class="w-row-val red">15.05 | −₪12,400</span></div>
+        <div class="w-row"><span class="w-row-label">ימי בדיקה</span><span class="w-row-val">30 ימים</span></div>
+      </div>
+      <div class="w-foot">
+        <span class="chip or">⚠ קרוב למסגרת</span>
+        <span style="margin-right:auto;color:var(--cyan);font-size:11px;cursor:pointer">← פירוט יומי</span>
+      </div>
+    </div>
+
+    <!-- 3. מגמות הכנסות -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">מגמות — מחזור הכנסות</span>
+        <span class="w-badge green">↑ עלייה</span>
+      </div>
+      <div class="w-val cyan">₪276,400</div>
+      <div class="w-lbl cyan">מחזור חודש נוכחי</div>
+      <div class="w-spark"><svg class="sp" id="sp-rev" viewBox="0 0 260 60" preserveAspectRatio="none"></svg></div>
+      <div class="w-foot">
+        <span class="chip up">↑ +18%</span> מחודש קודם
+        <span class="chip up" style="margin-right:4px">↑ +24%</span> מאשתקד
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ ROW 2: מצב פיננסי ═══ -->
+  <div class="sec">מצב פיננסי</div>
+  <div class="g3">
+
+    <!-- 2. רווח חשבונאי vs בנק -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">רווח חשבונאי vs בנק</span>
+        <span class="w-badge orange">פער בינוני</span>
+      </div>
+      <div class="w-compare">
+        <div class="w-cmp-item">
+          <div class="w-cmp-label">רווח תפעולי (בנק)</div>
+          <div class="w-cmp-val">₪45,200</div>
+        </div>
+        <div class="w-cmp-item">
+          <div class="w-cmp-label">רווח חשבונאי (רו״ח)</div>
+          <div class="w-cmp-val" style="color:var(--dark)">₪38,600</div>
+        </div>
+      </div>
+      <div class="w-cmp-gap">
+        <span>פער:</span>
+        <span class="chip or">₪6,600 | 14.6%</span>
+      </div>
+      <div class="w-bar-wrap" style="margin-top:8px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray2);margin-bottom:2px;">
+          <span>חשבונאי ₪38.6K</span><span>בנק ₪45.2K</span>
+        </div>
+        <div class="w-bar">
+          <div class="w-fill orange" style="width:85%"></div>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip or">פער 14.6%</span>
+        לבדוק החרגות ומשיכות בעלים
+      </div>
+    </div>
+
+    <!-- 5. נגררות -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">נגררות</span>
+        <span class="w-badge orange">⚠ כמות נמוכה</span>
+      </div>
+      <div class="w-val orange">8</div>
+      <div class="w-lbl orange">פעולות שלא בוצעו</div>
+      <div class="w-rows" style="padding-top:6px">
+        <div class="w-row">
+          <span class="w-row-label">סך הכנסות ממתינות</span>
+          <span class="w-row-val green">+₪32,000</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">סך הוצאות ממתינות</span>
+          <span class="w-row-val red">−₪18,500</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">פעולה ישנה ביותר</span>
+          <span class="w-row-val orange">23.04.2026</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">נטו ממתין</span>
+          <span class="w-row-val cyan">+₪13,500</span>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip or">8 פעולות פתוחות</span>
+        <span style="margin-right:auto;color:var(--cyan);font-size:11px;cursor:pointer">← מסך נגררות</span>
+      </div>
+    </div>
+
+    <!-- 6. הלוואות ואשראי -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">הלוואות ואשראי</span>
+        <span class="w-badge orange">ניצול בינוני</span>
+      </div>
+      <div class="w-val orange">68%</div>
+      <div class="w-lbl orange">ניצול מסגרות אשראי</div>
+      <div class="w-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray2);margin-bottom:2px;">
+          <span style="color:var(--orange)">68%</span><span>סך מסגרת ₪150K</span>
+        </div>
+        <div class="w-bar"><div class="w-fill orange" style="width:68%"></div></div>
+      </div>
+      <div class="w-rows" style="padding-top:4px">
+        <div class="w-row">
+          <span class="w-row-label">יתרת הלוואות כוללת</span>
+          <span class="w-row-val red">₪280,000</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">סך מסגרות אשראי</span>
+          <span class="w-row-val">₪150,000</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">אשראי מנוצל</span>
+          <span class="w-row-val orange">₪102,000</span>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip or">68% ניצול</span>
+        עומס החזר חודשי: ₪12,400
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ROW 3: רווח תזרימי ═══ -->
+  <div class="sec">רווח תזרימי</div>
+  <div class="g3">
+
+    <!-- 7. רווח תזרימי נקי -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">רווח תזרימי — נקי</span>
+        <span class="w-badge green">↑ מעל תקציב</span>
+      </div>
+      <div class="w-val green">₪45,200</div>
+      <div class="w-lbl green">רווח נקי חודש נוכחי</div>
+      <div class="w-spark"><svg class="sp" id="sp-net" viewBox="0 0 260 60" preserveAspectRatio="none"></svg></div>
+      <div class="w-rows" style="padding-top:2px">
+        <div class="w-row">
+          <span class="w-row-label">שינוי מחודש קודם</span>
+          <span class="w-row-val green">↑ +12%</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">שינוי מממוצע 3 חודשים</span>
+          <span class="w-row-val green">↑ +8%</span>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip up">↑ +12%</span> מחודש קודם
+        <span style="margin-right:auto;color:var(--cyan);font-size:11px;cursor:pointer">← דוח קטגוריות</span>
+      </div>
+    </div>
+
+    <!-- 8. רווח תזרימי תפעולי -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">רווח תזרימי — תפעולי</span>
+        <span class="w-badge green">↑ שיפור</span>
+      </div>
+      <div class="w-val green">₪38,600</div>
+      <div class="w-lbl green">רווח תפעולי חודש נוכחי</div>
+      <div class="w-spark"><svg class="sp" id="sp-op" viewBox="0 0 260 60" preserveAspectRatio="none"></svg></div>
+      <div class="w-rows" style="padding-top:2px">
+        <div class="w-row">
+          <span class="w-row-label">שינוי מחודש קודם</span>
+          <span class="w-row-val green">↑ +9%</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">שינוי מממוצע 3 חודשים</span>
+          <span class="w-row-val green">↑ +5%</span>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip up">↑ +9%</span> מחודש קודם
+        <span style="margin-right:auto;color:var(--cyan);font-size:11px;cursor:pointer">← דוח קטגוריות</span>
+      </div>
+    </div>
+
+    <!-- 9. רווח תזרימי גולמי -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">רווח תזרימי — גולמי</span>
+        <span class="w-badge green">↑ שיפור</span>
+      </div>
+      <div class="w-val green">₪98,400</div>
+      <div class="w-lbl green">רווח גולמי חודש נוכחי</div>
+      <div class="w-spark"><svg class="sp" id="sp-gross" viewBox="0 0 260 60" preserveAspectRatio="none"></svg></div>
+      <div class="w-rows" style="padding-top:2px">
+        <div class="w-row">
+          <span class="w-row-label">שינוי מחודש קודם</span>
+          <span class="w-row-val green">↑ +15%</span>
+        </div>
+        <div class="w-row">
+          <span class="w-row-label">שינוי מממוצע 3 חודשים</span>
+          <span class="w-row-val green">↑ +11%</span>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip up">↑ +15%</span> מחודש קודם
+        <span style="margin-right:auto;color:var(--cyan);font-size:11px;cursor:pointer">← דוח קטגוריות</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ROW 4: קצב לפי תאריך ═══ -->
+  <div class="sec">קצב ביצוע</div>
+  <div class="g2">
+
+    <!-- 10. קצב לפי תאריך -->
+    <div class="card">
+      <div class="w-head">
+        <span class="w-title">קצב לפי תאריך — הכנסות</span>
+        <span class="w-badge green">↑ מעל קצב</span>
+      </div>
+      <div class="w-val cyan">₪182,400</div>
+      <div class="w-lbl cyan">הכנסות מצטברות עד היום (יום 14)</div>
+
+      <!-- Pace bar: actual vs expected -->
+      <div class="pace-bar-wrap">
+        <div class="pace-bar-label">
+          <span>ביצוע בפועל</span>
+          <span>₪0</span>
+          <span>₪276,400 יעד</span>
+        </div>
+        <div class="pace-track">
+          <!-- Expected pace marker (day 14/22 = 63.6%) -->
+          <div class="pace-fill" style="width:66%"></div>
+          <div class="pace-marker" style="right:36.4%" data-label="קצב צפוי 63.6%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray2);margin-top:3px;">
+          <span style="color:var(--orange)">▲ קצב צפוי: ₪175,800 (63.6%)</span>
+          <span style="color:var(--green)">ביצוע: ₪182,400 (66%)</span>
+        </div>
+      </div>
+
+      <div class="w-pace" style="margin-top:4px">
+        <div class="pace-row">
+          <span class="pace-label">הכנסות עד אותו תאריך — חודש קודם</span>
+          <div class="pace-right">
+            <span class="pace-val">₪118,400</span>
+            <span class="pace-pct up">↑ +54%</span>
+          </div>
+        </div>
+        <div class="pace-row">
+          <span class="pace-label">הכנסות עד אותו תאריך — חודשיים קודם</span>
+          <div class="pace-right">
+            <span class="pace-val">₪105,600</span>
+            <span class="pace-pct up">↑ +72.7%</span>
+          </div>
+        </div>
+        <div class="pace-row">
+          <span class="pace-label">אחוז ביצוע מול קצב זמן</span>
+          <div class="pace-right">
+            <span class="pace-val">63.6% → 66%</span>
+            <span class="pace-pct up">↑ מעל קצב</span>
+          </div>
+        </div>
+      </div>
+      <div class="w-foot">
+        <span class="chip up">↑ מעל קצב</span>
+        יום 14 מתוך 22 — ביצוע 66% מהחודש
+      </div>
+    </div>
+
+    <!-- Summary / quick stats -->
+    <div class="card">
+      <div class="w-head" style="padding-bottom:8px">
+        <span class="w-title">סיכום מהיר — מאי 2026</span>
+        <span class="w-badge blue">יום 14</span>
+      </div>
+      <div class="w-rows">
+        <div class="w-row"><span class="w-row-label">יתרה עו״ש מאוחדת</span><span class="w-row-val cyan">₪38,600</span></div>
+        <div class="w-row"><span class="w-row-label">תזרים חודש נוכחי (נטו)</span><span class="w-row-val green">+₪26,700</span></div>
+        <div class="w-row"><span class="w-row-label">חריגה קרובה</span><span class="w-row-val orange">15.05 | −₪12,400</span></div>
+        <div class="w-row"><span class="w-row-label">ניצול אשראי</span><span class="w-row-val orange">68% מ-₪150K</span></div>
+        <div class="w-row"><span class="w-row-label">נגררות פתוחות</span><span class="w-row-val orange">8 פעולות | נטו +₪13,500</span></div>
+        <div class="w-row"><span class="w-row-label">רווח גולמי חודשי</span><span class="w-row-val green">₪98,400 ↑ +15%</span></div>
+        <div class="w-row"><span class="w-row-label">פער חשבונאי vs בנק</span><span class="w-row-val orange">₪6,600 (14.6%)</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MONTHS = ['נוב','דצמ','ינו','פבר','מרץ','אפר','מאי'];
+
+function spark(id, pts, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const W=260, CH=46, LH=14, PX=10, PY=4;
+  const c = color || '#39ABE2';
+  const mn=Math.min(...pts), mx=Math.max(...pts), rng=mx-mn||1;
+  const step=(W-PX*2)/(pts.length-1);
+  const coords = pts.map((v,i)=>({
+    x: PX + i*step,
+    y: PY + (1-(v-mn)/rng)*(CH-PY-6)
+  }));
+  const line = coords.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+  const area = line+` L${coords.at(-1).x},${CH} L${coords[0].x},${CH} Z`;
+
+  el.innerHTML = `
+    <defs>
+      <linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${c}" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="${c}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <line x1="${PX}" y1="${CH}" x2="${W-PX}" y2="${CH}" stroke="#f0f2f5" stroke-width="1"/>
+    <path d="${area}" fill="url(#g${id})"/>
+    <path d="${line}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+    ${coords.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.8" fill="#fff" stroke="${c}" stroke-width="1.5"/>`).join('')}
+    ${coords.map((p,i)=>`<text x="${p.x.toFixed(1)}" y="${CH+LH-1}" text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#b0b8c8">${MONTHS[i]}</text>`).join('')}
+  `;
+}
+
+// מחזור הכנסות
+spark('sp-rev', [198000,215000,208000,230000,245000,254000,276400]);
+// רווח נקי
+spark('sp-net', [30200,33400,31800,36200,39800,42100,45200], '#1e8a4c');
+// רווח תפעולי
+spark('sp-op',  [26000,28800,27200,30400,33600,36200,38600], '#1e8a4c');
+// רווח גולמי
+spark('sp-gross',[68000,74200,71800,80400,86200,91400,98400], '#1e8a4c');
+</script>
+</body>
+</html>

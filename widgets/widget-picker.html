@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>הוספת ווידגט — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      /* HK Money Design Skill — exact tokens */
+      --navy:   #0C4068;   /* Primary Dark */
+      --cyan:   #39ABE2;   /* Accent Blue */
+      --warm:   #E48375;   /* Accent Warm — CTA */
+      --bg:     #FFFEFE;   /* Background Light */
+      --white:  #FFFFFF;
+
+      /* Supporting */
+      --dark:   #0C4068;
+      --gray:   #7a8898;
+      --gray2:  #b0bcc8;
+      --gray-bg: #f2f5f8;
+      --green:  #1e8a4c;
+      --red:    #d93025;
+      --orange: #f0832a;
+
+      /* HK Money shadow standard */
+      --shadow-card: -74px 56px 57.8px 0px rgba(12,64,104,0.16);
+      --shadow-soft: 0px 4px 24px rgba(12,64,104,0.10);
+      --r: 12px;
+    }
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #e8eef4;
+      direction: rtl;
+      min-height: 100vh;
+    }
+
+    /* ── Top Nav ── */
+    .topnav {
+      background: var(--navy);
+      height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .tn-logo { color:#fff; font-size:18px; font-weight:600; }
+    .tn-logo em { color:var(--cyan); font-style:normal; }
+    .tn-links { display:flex; gap:2px; }
+    .tn-links a { color:rgba(255,255,255,.6); font-size:13px; text-decoration:none; padding:5px 12px; border-radius:6px; }
+    .tn-links a.on, .tn-links a:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .tn-user { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.75); font-size:13px; }
+    .av { width:28px; height:28px; border-radius:50%; background:var(--cyan); color:#fff; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+
+    /* ── Dashboard background (blurred) ── */
+    .page { padding:18px 24px 36px; max-width:1300px; margin:0 auto; filter: blur(1px); pointer-events:none; user-select:none; }
+    .sec { font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; margin:16px 0 8px; }
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .card { background:var(--bg); border-radius:var(--r); box-shadow:var(--shadow-soft); padding:16px; min-height:90px; }
+    .pg-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .pg-title { font-size:14px; font-weight:500; color:var(--navy); display:flex; align-items:center; gap:6px; }
+    .pg-actions { display:flex; gap:8px; }
+    .btn { display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:20px; font-family:'Rubik',sans-serif; font-size:13px; font-weight:500; cursor:pointer; border:1.5px solid rgba(12,64,104,0.2); background:var(--bg); color:var(--navy); }
+    .btn-primary { background:var(--warm); color:#fff; border-color:var(--warm); }
+
+    /* ── OVERLAY BACKDROP ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(12, 64, 104, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn .18s ease;
+    }
+    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+
+    /* ── PICKER PANEL ── */
+    .picker {
+      width: 880px;
+      max-width: 96vw;
+      max-height: 88vh;
+      background: var(--bg);
+      border-radius: 20px;
+      /* HK Money shadow standard */
+      box-shadow: 0 32px 80px rgba(12,64,104,0.28), -74px 56px 57.8px 0px rgba(12,64,104,0.10);
+      display: flex;
+      flex-direction: column;
+      animation: slideUp .24s cubic-bezier(.34,1.2,.64,1);
+      overflow: hidden;
+    }
+    @keyframes slideUp { from { transform:translateY(32px); opacity:0 } to { transform:none; opacity:1 } }
+
+    /* ── Header (navy background like HK sections) ── */
+    .pk-header {
+      padding: 22px 26px 0;
+      background: var(--navy);
+      flex-shrink: 0;
+    }
+    .pk-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .pk-title {
+      font-size: 20px; font-weight: 600; color: var(--white);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .pk-title-accent { color: var(--cyan); }
+    .pk-close {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      border: none; cursor: pointer; display:flex; align-items:center; justify-content:center;
+      color: rgba(255,255,255,.7); font-size: 17px; line-height:1;
+      transition: background .15s, color .15s;
+    }
+    .pk-close:hover { background: rgba(255,255,255,.22); color: #fff; }
+
+    /* ── Search ── */
+    .pk-search {
+      position: relative; margin-bottom: 18px;
+    }
+    .pk-search input {
+      width: 100%; padding: 10px 42px 10px 16px;
+      border: 1.5px solid rgba(255,255,255,.2); border-radius: 10px;
+      font-family: 'Rubik', sans-serif; font-size: 14px; color: var(--white);
+      background: rgba(255,255,255,.1); outline: none;
+      transition: border-color .15s, background .15s;
+      direction: rtl;
+    }
+    .pk-search input:focus { border-color: var(--cyan); background: rgba(255,255,255,.15); }
+    .pk-search input::placeholder { color: rgba(255,255,255,.45); }
+    .pk-search-icon {
+      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+      color: rgba(255,255,255,.45); pointer-events:none;
+    }
+
+    /* ── Category tabs ── */
+    .pk-tabs {
+      display: flex; gap: 2px; padding-bottom: 0;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .pk-tabs::-webkit-scrollbar { display:none; }
+    .pk-tab {
+      padding: 8px 16px; border-radius: 8px 8px 0 0;
+      font-size: 13px; font-weight: 500; color: rgba(255,255,255,.55);
+      cursor: pointer; white-space: nowrap;
+      border: 1.5px solid transparent; border-bottom: none;
+      background: transparent; transition: all .15s;
+      position: relative; bottom: -1px;
+    }
+    .pk-tab:hover { color: rgba(255,255,255,.85); background: rgba(255,255,255,.08); }
+    .pk-tab.active {
+      color: var(--navy); background: var(--bg);
+      border-color: rgba(57,171,226,.3);
+      font-weight: 600;
+    }
+
+    /* ── Body ── */
+    .pk-body {
+      display: flex; flex: 1; min-height: 0;
+      border-top: none;
+    }
+
+    /* ── Sidebar ── */
+    .pk-sidebar {
+      width: 172px; flex-shrink: 0;
+      border-left: 1px solid rgba(12,64,104,.1);
+      padding: 14px 0;
+      overflow-y: auto;
+      background: #f5f8fa;
+    }
+    .pk-cat {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 16px; cursor: pointer;
+      font-size: 13px; color: var(--gray);
+      border-right: 3px solid transparent;
+      transition: all .13s;
+    }
+    .pk-cat:hover { background: rgba(57,171,226,.07); color: var(--navy); }
+    .pk-cat.active {
+      background: rgba(57,171,226,.12); color: var(--navy);
+      border-right-color: var(--cyan); font-weight: 600;
+    }
+    .pk-cat-icon { font-size: 15px; width: 20px; text-align: center; }
+    .pk-cat-count {
+      margin-right: auto;
+      background: rgba(12,64,104,.1); color: var(--gray);
+      font-size: 10px; font-weight: 600;
+      padding: 1px 6px; border-radius: 10px;
+      min-width: 20px; text-align: center;
+    }
+    .pk-cat.active .pk-cat-count { background: rgba(57,171,226,.2); color: var(--navy); }
+
+    /* ── Grid ── */
+    .pk-grid-wrap {
+      flex: 1; overflow-y: auto; padding: 20px 18px;
+      background: var(--bg);
+    }
+    .pk-cat-heading {
+      font-size: 11px; font-weight: 600; color: var(--gray2);
+      letter-spacing: .8px; text-transform: uppercase;
+      margin-bottom: 12px; margin-top: 4px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(12,64,104,.08);
+    }
+    .pk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Widget Card ── */
+    .wc {
+      border: 1.5px solid rgba(12,64,104,.1);
+      border-radius: var(--r);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .2s cubic-bezier(.34,1.1,.64,1);
+      background: var(--white);
+      position: relative;
+      box-shadow: 0 2px 8px rgba(12,64,104,.06);
+    }
+    .wc:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 8px 28px rgba(57,171,226,.2);
+      transform: translateY(-3px);
+    }
+    .wc.added { border-color: var(--cyan); background: #f8fdff; }
+
+    /* Preview area */
+    .wc-preview {
+      height: 88px;
+      padding: 10px 12px 8px;
+      background: linear-gradient(140deg, rgba(57,171,226,.06) 0%, rgba(12,64,104,.04) 100%);
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .wc-preview.green { background: linear-gradient(140deg, rgba(30,138,76,.06) 0%, rgba(30,138,76,.02) 100%); }
+    .wc-preview.orange { background: linear-gradient(140deg, rgba(228,131,117,.08) 0%, rgba(228,131,117,.02) 100%); }
+    .wc-preview.navy  { background: linear-gradient(140deg, rgba(12,64,104,.07) 0%, rgba(12,64,104,.02) 100%); }
+
+    /* mini chart in preview */
+    .mini-bar { display:flex; align-items:flex-end; gap:3px; height:32px; }
+    .mb { border-radius: 3px 3px 0 0; min-width: 8px; flex:1; background: var(--cyan); opacity:.6; }
+    .mb.hi { opacity:1; }
+    .mb.g { background: var(--green); }
+    .mb.w { background: var(--warm); } /* warm accent */
+
+    .mini-num {
+      font-size: 20px; font-weight: 600; color: var(--navy); line-height:1;
+    }
+    .mini-num.cyan { color: var(--cyan); }
+    .mini-num.green { color: var(--green); }
+    .mini-num.red { color: var(--red); }
+
+    .mini-tag {
+      font-size: 9px; font-weight: 500; color: var(--cyan);
+      background: rgba(57,171,226,.12); padding: 2px 6px; border-radius: 4px;
+      display: inline-block;
+    }
+    .mini-tag.green { color:var(--green); background:rgba(30,138,76,.1); }
+    .mini-tag.warm  { color:var(--warm);  background:rgba(228,131,117,.12); } /* Accent Warm */
+    .mini-tag.red   { color:var(--red);   background:rgba(217,48,37,.1); }
+
+    .mini-progress { height:5px; border-radius:3px; background:rgba(12,64,104,.1); overflow:hidden; }
+    .mini-progress-fill { height:100%; border-radius:3px; background:var(--cyan); }
+
+    .mini-sparkline { width:100%; }
+
+    /* bottom info */
+    .wc-info { padding: 10px 12px 6px; }
+    .wc-name { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
+    .wc-desc { font-size: 11px; color: var(--gray); line-height: 1.45; }
+
+    /* Add button row */
+    .wc-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      border-top: 1px solid rgba(12,64,104,.06);
+    }
+    .wc-add {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 14px; border-radius: 20px;
+      font-family: 'Rubik', sans-serif; font-size: 12px; font-weight: 500;
+      /* Warm CTA — per HK Money design skill */
+      background: var(--warm); color: #fff; border: none; cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .wc-add:hover { background: #d4725f; transform: scale(1.02); }
+    .wc-add.added-btn {
+      background: rgba(57,171,226,.12); color: var(--cyan);
+      pointer-events: none; border: 1px solid rgba(57,171,226,.3);
+    }
+    .wc-badge {
+      font-size: 10px; font-weight: 500; color: var(--gray2);
+      background: rgba(12,64,104,.06); padding: 2px 7px; border-radius: 10px;
+    }
+
+    /* ── Footer ── */
+    .pk-footer {
+      padding: 14px 24px;
+      border-top: 1px solid rgba(12,64,104,.1);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+      background: #f5f8fa;
+    }
+    .pk-footer-note { font-size: 12px; color: var(--gray2); }
+    .pk-footer-note strong { color: var(--navy); }
+    .pk-footer-actions { display: flex; gap: 8px; }
+    .pk-done {
+      padding: 10px 26px; border-radius: 20px;
+      /* Primary CTA = Warm per HK Money skill */
+      background: var(--warm); color: #fff;
+      font-family: 'Rubik', sans-serif; font-size: 14px; font-weight: 500;
+      border: none; cursor: pointer; transition: background .15s;
+      box-shadow: 0 4px 16px rgba(228,131,117,.35);
+    }
+    .pk-done:hover { background: #d4725f; }
+    .pk-cancel {
+      padding: 10px 18px; border-radius: 20px;
+      background: transparent; color: var(--gray);
+      font-family: 'Rubik', sans-serif; font-size: 14px;
+      border: 1.5px solid rgba(12,64,104,.15); cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .pk-cancel:hover { border-color: var(--navy); color: var(--navy); }
+
+    /* ── Selected check badge ── */
+    .wc-check {
+      position: absolute; top: 8px; left: 8px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--cyan); color: #fff;
+      font-size: 12px; display: none; align-items:center; justify-content:center;
+      font-weight: 700; box-shadow: 0 2px 8px rgba(57,171,226,.4);
+    }
+    .wc.added .wc-check { display: flex; }
+
+    /* Scrollbar */
+    .pk-grid-wrap::-webkit-scrollbar { width: 4px; }
+    .pk-grid-wrap::-webkit-scrollbar-thumb { background: #d0dae6; border-radius: 4px; }
+    .pk-sidebar::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="topnav">
+  <div class="tn-logo">HK <em>חזות קריספין</em></div>
+  <div class="tn-links">
+    <a href="#">לקוחות</a>
+    <a href="#" class="on">דשבורד</a>
+    <a href="#">משימות</a>
+    <a href="#">הגדרות</a>
+  </div>
+  <div class="tn-user">
+    <div class="av">יא</div>
+    <span>יצחק עוז</span>
+  </div>
+</nav>
+
+<!-- Dashboard (blurred background) -->
+<div class="page">
+  <div class="pg-header">
+    <div class="pg-title">
+      <span>לוח עבודה</span>
+      <span style="font-size:11px;background:#e8f4fc;color:var(--cyan);padding:2px 8px;border-radius:10px;font-weight:500;">דשבורד</span>
+    </div>
+    <div class="pg-actions">
+      <button class="btn btn-primary">+ הוספת ווידגט</button>
+      <button class="btn">✏️ סידור ועריכה</button>
+      <button class="btn">↺ רענון</button>
+    </div>
+  </div>
+  <div class="g4">
+    <div class="card"></div><div class="card"></div>
+    <div class="card" style="grid-row:span 2;min-height:180px;"></div>
+    <div class="card"></div><div class="card"></div><div class="card"></div>
+  </div>
+  <div class="sec">מסמכים</div>
+  <div class="g2"><div class="card" style="min-height:120px;"></div><div class="card" style="min-height:120px;"></div></div>
+</div>
+
+<!-- WIDGET PICKER OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="picker">
+
+    <!-- Header -->
+    <div class="pk-header">
+      <div class="pk-top">
+        <div class="pk-title">הוספת <span class="pk-title-accent">ווידגט</span></div>
+        <button class="pk-close" onclick="closePicker()">✕</button>
+      </div>
+      <div class="pk-search">
+        <svg class="pk-search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="חיפוש ווידגט..." oninput="filterWidgets(this.value)" />
+      </div>
+      <div class="pk-tabs">
+        <div class="pk-tab active" onclick="filterCat('all',this)">הכל</div>
+        <div class="pk-tab" onclick="filterCat('finance',this)">פיננסי</div>
+        <div class="pk-tab" onclick="filterCat('sales',this)">מכירות</div>
+        <div class="pk-tab" onclick="filterCat('ops',this)">תפעול</div>
+        <div class="pk-tab" onclick="filterCat('alerts',this)">התראות</div>
+        <div class="pk-tab" onclick="filterCat('docs',this)">מסמכים</div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="pk-body">
+
+      <!-- Sidebar categories -->
+      <div class="pk-sidebar">
+        <div class="pk-cat active" onclick="sidebarCat('all',this)">
+          <span class="pk-cat-icon">◻</span>
+          <span>הכל</span>
+          <span class="pk-cat-count">16</span>
+        </div>
+        <div class="pk-cat" onclick="sidebarCat('finance',this)">
+          <span class="pk-cat-icon">💰</span>
+          <span>פיננסי</span>
+          <span class="pk-cat-count">6</span>
+        </div>
+        <div class="pk-cat" onclick="sidebarCat('sales',this)">
+          <span class="pk-cat-icon">📈</span>
+          <span>מכירות</span>
+          <span class="pk-cat-count">4</span>
+        </div>
+        <div class="pk-cat" onclick="sidebarCat('ops',this)">
+          <span class="pk-cat-icon">⚙️</span>
+          <span>תפעול</span>
+          <span class="pk-cat-count">3</span>
+        </div>
+        <div class="pk-cat" onclick="sidebarCat('alerts',this)">
+          <span class="pk-cat-icon">🔔</span>
+          <span>התראות</span>
+          <span class="pk-cat-count">2</span>
+        </div>
+        <div class="pk-cat" onclick="sidebarCat('docs',this)">
+          <span class="pk-cat-icon">📄</span>
+          <span>מסמכים</span>
+          <span class="pk-cat-count">1</span>
+        </div>
+      </div>
+
+      <!-- Widgets Grid -->
+      <div class="pk-grid-wrap" id="gridWrap">
+
+        <!-- Section: פיננסי -->
+        <div class="pk-cat-heading" data-cat="finance">💰 פיננסי</div>
+        <div class="pk-grid" data-cat="finance">
+
+          <div class="wc" data-cat="finance" data-name="תזרים 7 ימים">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num cyan">₪14,200</div>
+                <div class="mini-tag green">▲ 8%</div>
+              </div>
+              <svg class="mini-sparkline" height="30" viewBox="0 0 180 30">
+                <defs><linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#39ABE2" stop-opacity=".3"/><stop offset="100%" stop-color="#39ABE2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0,22 C20,20 40,25 60,18 C80,11 100,14 120,8 C140,3 160,6 180,2 L180,30 L0,30Z" fill="url(#sg1)"/>
+                <path d="M0,22 C20,20 40,25 60,18 C80,11 100,14 120,8 C140,3 160,6 180,2" fill="none" stroke="#39ABE2" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">תזרים 7 ימים קדימה</div>
+              <div class="wc-desc">יתרה, הכנסות/הוצאות צפויות ומסגרת אשראי</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">פיננסי</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="finance" data-name="רווח חשבונאי">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num green">₪8,500</div>
+                <div class="mini-tag green">▲ 12%</div>
+              </div>
+              <div class="mini-bar" style="margin-top:6px;">
+                <div class="mb g" style="height:45%;"></div>
+                <div class="mb g" style="height:55%;"></div>
+                <div class="mb g" style="height:40%;"></div>
+                <div class="mb g hi" style="height:70%;"></div>
+                <div class="mb g" style="height:60%;"></div>
+                <div class="mb g hi" style="height:85%;"></div>
+                <div class="mb g" style="height:75%;"></div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">רווח חשבונאי vs בנק</div>
+              <div class="wc-desc">השוואת רווח בפנקסים לעומת יתרה בנקאית</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">פיננסי</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="finance" data-name="חריגה צפויה">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview orange">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num red">₪−3,200</div>
+                <div class="mini-tag red">⚠ חריגה</div>
+              </div>
+              <div style="margin-top:8px;">
+                <div style="font-size:10px;color:#f0832a;font-weight:500;">30 ימים הבאים</div>
+                <div class="mini-progress" style="margin-top:4px;"><div class="mini-progress-fill" style="width:85%;background:#f0832a;"></div></div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">חריגה צפויה</div>
+              <div class="wc-desc">התראה על חריגה ממסגרת אשראי בתוך 30 ימים</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">פיננסי</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="finance" data-name="הלוואות ואשראי">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview navy">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num" style="color:var(--navy)">₪120K</div>
+                <div class="mini-tag">3 הלוואות</div>
+              </div>
+              <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div class="mini-progress" style="flex:1;"><div class="mini-progress-fill" style="width:60%;"></div></div>
+                  <span style="font-size:9px;color:var(--gray);">60%</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div class="mini-progress" style="flex:1;"><div class="mini-progress-fill" style="width:35%;background:var(--green);"></div></div>
+                  <span style="font-size:9px;color:var(--gray);">35%</span>
+                </div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">הלוואות ואשראי</div>
+              <div class="wc-desc">יתרת הלוואות, אשראי מנוצל ומסגרות פתוחות</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">פיננסי</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="finance" data-name="רווח תזרימי נקי">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview green">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num green">₪6,840</div>
+                <div class="mini-tag green">▲ 5.2%</div>
+              </div>
+              <svg class="mini-sparkline" height="30" viewBox="0 0 180 30">
+                <defs><linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e8a4c" stop-opacity=".3"/><stop offset="100%" stop-color="#1e8a4c" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0,25 C30,22 60,18 90,14 C120,10 150,7 180,4 L180,30 L0,30Z" fill="url(#sg2)"/>
+                <path d="M0,25 C30,22 60,18 90,14 C120,10 150,7 180,4" fill="none" stroke="#1e8a4c" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">רווח תזרימי נקי</div>
+              <div class="wc-desc">הכנסות פחות הוצאות תזרימיות לתקופה</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">פיננסי</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="finance" data-name="קצב לפי תאריך">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div style="font-size:11px;font-weight:600;color:var(--navy);">קצב ביצוע</div>
+                <div class="mini-tag">72% מהיעד</div>
+              </div>
+              <div style="margin-top:10px; position:relative;">
+                <div class="mini-progress" style="height:8px;border-radius:4px;">
+                  <div class="mini-progress-fill" style="width:72%;border-radius:4px;"></div>
+                </div>
+                <div style="position:absolute;top:-2px;right:58%;width:3px;height:12px;background:var(--navy);border-radius:2px;"></div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">קצב לפי תאריך</div>
+              <div class="wc-desc">קצב ביצוע בפועל מול קצב צפוי לפי תאריך</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">פיננסי</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section: מכירות -->
+        <div class="pk-cat-heading" data-cat="sales">📈 מכירות</div>
+        <div class="pk-grid" data-cat="sales">
+
+          <div class="wc" data-cat="sales" data-name="מחזור הכנסות">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num cyan">₪16,000</div>
+                <div class="mini-tag">יעד: 20K</div>
+              </div>
+              <div style="margin-top:8px;">
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:80%;"></div></div>
+                <div style="font-size:9px;color:var(--gray);margin-top:3px;">80% מהיעד</div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">מחזור הכנסות</div>
+              <div class="wc-desc">הכנסות בפועל לעומת יעד חודשי עם גרף מגמה</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add added-btn">✓ נוסף</button>
+              <span class="wc-badge">מכירות</span>
+            </div>
+          </div>
+
+          <div class="wc added" data-cat="sales" data-name="יעד לידים">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num cyan">123</div>
+                <div class="mini-tag">יעד: 250</div>
+              </div>
+              <div style="margin-top:8px;">
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:49%;"></div></div>
+                <div style="font-size:9px;color:var(--gray);margin-top:3px;">49% מהיעד</div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">יעד לידים</div>
+              <div class="wc-desc">לידים שנאספו לעומת יעד חודשי</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add added-btn">✓ נוסף</button>
+              <span class="wc-badge">מכירות</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="sales" data-name="יעד מכירות">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num cyan">₪20,000</div>
+                <div class="mini-tag green">▲ 15%</div>
+              </div>
+              <div style="margin-top:8px;">
+                <div style="font-size:10px;color:var(--gray);margin-bottom:3px;">יעד יומי: ₪3,500</div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:100%;"></div></div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">יעד מכירות</div>
+              <div class="wc-desc">מכירות חודשיות עם יעד יומי ושבועי</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">מכירות</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="sales" data-name="מגמת הכנסות">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div style="font-size:11px;font-weight:600;color:var(--navy);">6 חודשים אחורה</div>
+                <div class="mini-tag green">▲ מגמה חיובית</div>
+              </div>
+              <div class="mini-bar" style="margin-top:6px;">
+                <div class="mb" style="height:40%;"></div>
+                <div class="mb" style="height:50%;"></div>
+                <div class="mb" style="height:55%;"></div>
+                <div class="mb hi" style="height:65%;"></div>
+                <div class="mb" style="height:72%;"></div>
+                <div class="mb hi" style="height:85%;"></div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">מגמת הכנסות</div>
+              <div class="wc-desc">גרף חודשי של הכנסות — 6 חודשים אחורה</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">מכירות</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section: תפעול -->
+        <div class="pk-cat-heading" data-cat="ops">⚙️ תפעול</div>
+        <div class="pk-grid" data-cat="ops">
+
+          <div class="wc" data-cat="ops" data-name="תהליך ליווי">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview navy">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div style="font-size:11px;font-weight:600;color:var(--navy);">שלב 1 מתוך 16</div>
+                <div class="mini-tag">6%</div>
+              </div>
+              <div style="margin-top:8px;">
+                <div class="mini-progress" style="height:6px;border-radius:3px;">
+                  <div class="mini-progress-fill" style="width:6%;border-radius:3px;background:var(--navy);"></div>
+                </div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">תהליך ליווי עסקי</div>
+              <div class="wc-desc">התקדמות בתהליך הליווי — שלב נוכחי ואחוז השלמה</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add added-btn">✓ נוסף</button>
+              <span class="wc-badge">תפעול</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="ops" data-name="פוקוסים">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview navy">
+              <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;"></div>
+                  <span style="font-size:10px;color:var(--dark);font-weight:500;">לסיים את האתר</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;"></div>
+                  <span style="font-size:10px;color:var(--dark);font-weight:500;">לגייס איש מכירות</span>
+                </div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">פוקוסים</div>
+              <div class="wc-desc">מטרות עיקריות להתמקד בהן עכשיו</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add added-btn">✓ נוסף</button>
+              <span class="wc-badge">תפעול</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="ops" data-name="פגישה הבאה">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview navy">
+              <div style="font-size:11px;font-weight:600;color:var(--navy);">הפגישה הבאה</div>
+              <div style="margin-top:8px;">
+                <div style="font-size:18px;font-weight:600;color:var(--cyan);">20.01</div>
+                <div style="font-size:10px;color:var(--gray);">13:30 | ייעוץ שנתי</div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">פגישה הבאה</div>
+              <div class="wc-desc">תאריך ונושא הפגישה הקרובה עם הלקוח</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">תפעול</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section: התראות -->
+        <div class="pk-cat-heading" data-cat="alerts">🔔 התראות</div>
+        <div class="pk-grid" data-cat="alerts">
+
+          <div class="wc" data-cat="alerts" data-name="נגררות">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview orange">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num red">3</div>
+                <div class="mini-tag orange">⚠ פתוחות</div>
+              </div>
+              <div style="margin-top:6px;font-size:10px;color:var(--orange);font-weight:500;">חשבוניות שלא שולמו · 45+ ימים</div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">נגררות</div>
+              <div class="wc-desc">חשבוניות פתוחות ותשלומים שלא התקבלו</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">התראות</span>
+            </div>
+          </div>
+
+          <div class="wc" data-cat="alerts" data-name="התראות מיוחדות">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview orange">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="mini-num red">2</div>
+                <div class="mini-tag red">! דחוף</div>
+              </div>
+              <div style="margin-top:6px;font-size:10px;color:var(--red);font-weight:500;">דו"ח מס עד 31.01 · תשלום VAT</div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">התראות ומועדים</div>
+              <div class="wc-desc">התראות חשובות: מועדי הגשה, דוחות ותשלומים</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add" onclick="toggleWidget(this)">+ הוסף</button>
+              <span class="wc-badge">התראות</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section: מסמכים -->
+        <div class="pk-cat-heading" data-cat="docs">📄 מסמכים</div>
+        <div class="pk-grid" data-cat="docs">
+
+          <div class="wc" data-cat="docs" data-name="מסמכים אחרונים">
+            <div class="wc-check">✓</div>
+            <div class="wc-preview navy">
+              <div style="display:flex;flex-direction:column;gap:5px;margin-top:2px;">
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.6);border-radius:4px;padding:3px 6px;">
+                  <span style="font-size:14px;">📋</span>
+                  <span style="font-size:10px;color:var(--dark);font-weight:500;">תוכנית עבודה שנתית</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.6);border-radius:4px;padding:3px 6px;">
+                  <span style="font-size:14px;">📊</span>
+                  <span style="font-size:10px;color:var(--dark);font-weight:500;">דו"ח תזרים חודשי</span>
+                </div>
+              </div>
+            </div>
+            <div class="wc-info">
+              <div class="wc-name">מסמכים אחרונים</div>
+              <div class="wc-desc">גישה מהירה למסמכים ודוחות אחרונים</div>
+            </div>
+            <div class="wc-btn">
+              <button class="wc-add added-btn">✓ נוסף</button>
+              <span class="wc-badge">מסמכים</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- /pk-grid-wrap -->
+    </div><!-- /pk-body -->
+
+    <!-- Footer -->
+    <div class="pk-footer">
+      <div class="pk-footer-note">
+        <span id="addedCount">2 ווידגטים נוספו</span> · ניתן לסדר את סדר הווידגטים לאחר ההוספה
+      </div>
+      <div class="pk-footer-actions">
+        <button class="pk-cancel" onclick="closePicker()">ביטול</button>
+        <button class="pk-done" onclick="closePicker()">✓ שמור ועדכן דשבורד</button>
+      </div>
+    </div>
+
+  </div><!-- /picker -->
+</div><!-- /overlay -->
+
+<script>
+  let addedCount = 2; // pre-added
+
+  function closePicker() {
+    document.getElementById('overlay').style.opacity = '0';
+    document.getElementById('overlay').style.transition = 'opacity .18s';
+    setTimeout(() => document.getElementById('overlay').remove(), 200);
+  }
+
+  function toggleWidget(btn) {
+    const card = btn.closest('.wc');
+    const isAdded = card.classList.contains('added');
+    if (!isAdded) {
+      card.classList.add('added');
+      btn.classList.add('added-btn');
+      btn.textContent = '✓ נוסף';
+      addedCount++;
+    } else {
+      card.classList.remove('added');
+      btn.classList.remove('added-btn');
+      btn.textContent = '+ הוסף';
+      btn.onclick = function(){ toggleWidget(this); };
+      addedCount = Math.max(0, addedCount - 1);
+    }
+    updateCount();
+  }
+
+  function updateCount() {
+    document.getElementById('addedCount').textContent =
+      addedCount === 0 ? 'לא נוספו ווידגטים' :
+      addedCount === 1 ? 'ווידגט 1 נוסף' :
+      `${addedCount} ווידגטים נוספו`;
+  }
+
+  function filterWidgets(q) {
+    const term = q.trim().toLowerCase();
+    document.querySelectorAll('.wc').forEach(card => {
+      const name = card.dataset.name.toLowerCase();
+      card.style.display = (!term || name.includes(term)) ? '' : 'none';
+    });
+    // Show/hide section headings
+    document.querySelectorAll('.pk-cat-heading').forEach(h => {
+      const cat = h.dataset.cat;
+      const grid = document.querySelector(`.pk-grid[data-cat="${cat}"]`);
+      const visible = [...grid.querySelectorAll('.wc')].some(c => c.style.display !== 'none');
+      h.style.display = visible ? '' : 'none';
+      grid.style.display = visible ? '' : 'none';
+    });
+  }
+
+  let currentCat = 'all';
+
+  function filterCat(cat, tab) {
+    currentCat = cat;
+    // Update tabs
+    document.querySelectorAll('.pk-tab').forEach(t => t.classList.remove('active'));
+    if (tab) tab.classList.add('active');
+    applyCatFilter(cat);
+  }
+
+  function sidebarCat(cat, item) {
+    currentCat = cat;
+    document.querySelectorAll('.pk-cat').forEach(c => c.classList.remove('active'));
+    item.classList.add('active');
+    // sync tabs
+    document.querySelectorAll('.pk-tab').forEach(t => {
+      t.classList.toggle('active', t.textContent.trim() === (cat === 'all' ? 'הכל' :
+        cat === 'finance' ? 'פיננסי' : cat === 'sales' ? 'מכירות' :
+        cat === 'ops' ? 'תפעול' : cat === 'alerts' ? 'התראות' : 'מסמכים'));
+    });
+    applyCatFilter(cat);
+  }
+
+  function applyCatFilter(cat) {
+    document.querySelectorAll('.pk-cat-heading, .pk-grid').forEach(el => {
+      el.style.display = (cat === 'all' || el.dataset.cat === cat) ? '' : 'none';
+    });
+    // Scroll to top
+    document.getElementById('gridWrap').scrollTop = 0;
+  }
+
+  // keyboard
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePicker(); });
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>מדד חודשי — Picker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2; --warm:#E48375;
+      --white:#FFFFFF; --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --bg:#e8eef4;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:var(--bg);
+      direction:rtl; min-height:100vh;
+      display:flex; align-items:center; justify-content:center; gap:48px;
+      padding:48px 32px; flex-wrap:wrap;
+    }
+    .col{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .lbl{ font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; text-transform:uppercase; }
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white);
+      border:1.5px solid #e6ecf2;
+      border-radius:12px;
+      width:200px;
+      display:flex; flex-direction:column;
+      overflow:hidden;
+      transition:box-shadow .18s, transform .18s, border-color .18s;
+      cursor:pointer;
+    }
+    .wcard:hover{
+      box-shadow:0 6px 20px rgba(12,64,104,.12);
+      border-color:var(--cyan);
+      transform:translateY(-2px);
+    }
+    .wcard.added{ border-color:var(--cyan); }
+
+    /* text */
+    .wcard-text{ padding:12px 12px 6px; }
+    .wcard-title{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+    .wcard-desc{ font-size:10px; color:var(--gray); line-height:1.4; }
+
+    /* preview */
+    .wcard-preview{
+      height:100px; padding:8px 10px 6px;
+      background:#f7fafd;
+      display:flex; flex-direction:column; justify-content:space-between;
+      position:relative; overflow:hidden;
+    }
+
+    /* preview — top row */
+    .pv-top{
+      display:flex; justify-content:space-between; align-items:flex-start;
+    }
+    .pv-num{
+      font-size:18px; font-weight:600; color:var(--cyan); line-height:1;
+    }
+    .pv-chips{ display:flex; flex-direction:column; gap:3px; align-items:flex-end; }
+    .pv-chip{
+      font-size:8px; font-weight:500; color:var(--green);
+      background:rgba(30,138,76,.1); padding:2px 5px; border-radius:4px;
+      white-space:nowrap;
+    }
+
+    /* preview — mini progress bar */
+    .pv-bar-wrap{ position:relative; margin:4px 0 2px; }
+    .pv-bar{
+      height:7px; background:#deeef8; border-radius:20px; overflow:hidden; direction:ltr;
+    }
+    .pv-fill{
+      height:100%; width:80%; border-radius:20px; background:var(--cyan);
+    }
+    .pv-bubble{
+      position:absolute; top:-16px; left:80%;
+      transform:translateX(-50%);
+      background:var(--white); border:1px solid #e2eaf2;
+      border-radius:10px; padding:1px 5px;
+      font-size:8px; font-weight:500; color:var(--navy);
+      white-space:nowrap;
+      box-shadow:0 1px 4px rgba(12,64,104,.08);
+    }
+
+    /* preview — mini sparkline */
+    .pv-spark{ width:100%; }
+
+    /* footer */
+    .wcard-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 10px 9px;
+      border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{ font-size:10px; color:var(--gray2); }
+    .wcard-btn{
+      border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500;
+      padding:4px 12px; border-radius:20px; cursor:pointer; transition:all .15s;
+    }
+    .wcard-btn:hover{ background:rgba(12,64,104,.06); }
+    .wcard-counter{
+      display:none; align-items:center;
+      background:var(--cyan); border-radius:20px; overflow:hidden;
+    }
+    .wcard-counter button{
+      background:transparent; border:none; color:#fff;
+      font-size:15px; font-weight:600; padding:3px 9px;
+      cursor:pointer; font-family:'Rubik',sans-serif;
+    }
+    .cnt-num{
+      color:#fff; font-size:12px; font-weight:600;
+      min-width:20px; text-align:center;
+    }
+    .wcard.added .wcard-btn    { display:none; }
+    .wcard.added .wcard-counter{ display:flex; }
+  </style>
+</head>
+<body>
+
+  <div class="col">
+    <div class="lbl">כרטיסיית גלריה</div>
+
+    <div class="wcard" id="wc">
+      <div class="wcard-text">
+        <div class="wcard-title">מדד מגמות</div>
+        <div class="wcard-desc">מדד לבחירה עם השוואה לחודשים קודמים ומגמה</div>
+      </div>
+
+      <div class="wcard-preview">
+        <!-- number + chips -->
+        <div class="pv-top">
+          <div class="pv-num">₪48,200</div>
+          <div class="pv-chips">
+            <div class="pv-chip">↑ 12% חודש קודם</div>
+            <div class="pv-chip">↑ 8% שנה קודמת</div>
+          </div>
+        </div>
+
+        <!-- progress bar -->
+        <div class="pv-bar-wrap">
+          <div class="pv-bubble">₪48,200</div>
+          <div class="pv-bar"><div class="pv-fill"></div></div>
+        </div>
+
+        <!-- sparkline -->
+        <svg class="pv-spark" height="26" viewBox="0 0 180 26" fill="none">
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#39ABE2" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#39ABE2" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,22 C30,20 60,18 90,14 C120,10 150,6 180,2 L180,26 L0,26Z" fill="url(#sg)"/>
+          <path d="M0,22 C30,20 60,18 90,14 C120,10 150,6 180,2" stroke="#39ABE2" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <circle cx="180" cy="2" r="2.5" fill="#39ABE2"/>
+        </svg>
+      </div>
+
+      <div class="wcard-foot">
+        <span class="wcard-cat">מדדים</span>
+        <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+        <div class="wcard-counter">
+          <button onclick="change(-1)">−</button>
+          <div class="cnt-num" id="n">1</div>
+          <button onclick="change(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function change(d){
+      const el=document.getElementById('n');
+      let n=parseInt(el.textContent)+d;
+      if(n<=0){document.getElementById('wc').classList.remove('added');el.textContent='1';}
+      else el.textContent=n;
+    }
+  </script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

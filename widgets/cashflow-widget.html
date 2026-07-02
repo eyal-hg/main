@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>תזרים 7 ימים</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #d8e2eb;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 20px;
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* ── Card ─────────────────────────────────── */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 1px 50px 0px rgba(0,0,0,0.08);
+      width: 340px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Top section ──────────────────────────── */
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 18px 18px 0;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .title-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: #273736;
+      line-height: 22px;
+    }
+
+    .title-icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.55;
+      flex-shrink: 0;
+    }
+
+    .secondary-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .secondary-text {
+      font-size: 16px;
+      font-weight: 400;
+      color: #273736;
+      line-height: 22px;
+      white-space: nowrap;
+    }
+
+    /* ── Main metric ──────────────────────────── */
+    .metric-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 0;
+      padding: 6px 18px 0;
+      position: relative;
+    }
+
+    .metric-value {
+      font-size: 30px;
+      font-weight: 400;
+      color: #39ABE2;
+      line-height: 39px;
+      direction: ltr;
+    }
+
+    .metric-unit {
+      font-size: 12px;
+      font-weight: 400;
+      color: #39ABE2;
+      line-height: 16px;
+      position: absolute;
+      left: 18px;
+      bottom: 12px;
+    }
+
+    /* ── Sub-metrics row ──────────────────────── */
+    .sub-metrics {
+      display: flex;
+      justify-content: flex-end;
+      gap: 14px;
+      padding: 4px 18px 0;
+    }
+
+    .sub-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .sub-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sub-label {
+      font-size: 11px;
+      font-weight: 400;
+      color: #818181;
+      line-height: 16px;
+    }
+
+    /* ── Date / alert ─────────────────────────── */
+    .date-line {
+      font-size: 12px;
+      font-weight: 400;
+      color: #818181;
+      text-align: right;
+      padding: 4px 18px 0;
+      line-height: 16px;
+    }
+
+    .alert-line {
+      font-size: 11px;
+      font-weight: 500;
+      text-align: right;
+      padding: 3px 18px 0;
+      line-height: 16px;
+    }
+
+    .alert-line.warn { color: #e07020; }
+    .alert-line.ok   { color: #1a8a4a; }
+
+    /* ── Sparkline ────────────────────────────── */
+    .spark-wrap {
+      padding: 10px 0 0;
+    }
+
+    svg.spark {
+      width: 100%;
+      height: 80px;
+      display: block;
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Top -->
+  <div class="card-top">
+    <div class="title-row">
+      <span class="title-text">תזרים 7 ימים קדימה</span>
+      <!-- trend icon -->
+      <svg class="title-icon" viewBox="0 0 16 16" fill="none">
+        <path d="M2 11 L5.5 7 L8.5 9.5 L13 4" stroke="#273736" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="10.5,4 13,4 13,6.5" stroke="#273736" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="secondary-row">
+      <!-- credit icon -->
+      <svg class="title-icon" viewBox="0 0 16 16" fill="none">
+        <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="#555" stroke-width="1.2"/>
+        <line x1="1.5" y1="6.5" x2="14.5" y2="6.5" stroke="#555" stroke-width="1.2"/>
+        <rect x="3.5" y="8.5" width="4" height="1.5" rx="0.5" fill="#555"/>
+      </svg>
+      <span class="secondary-text" id="s-credit">מסגרת: ₪50,000</span>
+    </div>
+  </div>
+
+  <!-- Main metric -->
+  <div class="metric-wrap">
+    <span class="metric-value" id="m-end">₪105,400</span>
+    <span class="metric-unit">יתרה בעוד 7 ימים</span>
+  </div>
+
+  <!-- Sub metrics -->
+  <div class="sub-metrics">
+    <div class="sub-item">
+      <div class="sub-dot" style="background:#39ABE2"></div>
+      <span class="sub-label" id="s-income">הכנסות: +₪62,500</span>
+    </div>
+    <div class="sub-item">
+      <div class="sub-dot" style="background:#f0832a"></div>
+      <span class="sub-label" id="s-expense">הוצאות: −₪41,300</span>
+    </div>
+  </div>
+
+  <!-- Date -->
+  <p class="date-line" id="s-date">יתרה נוכחית: ₪84,200 | עודכן היום</p>
+
+  <!-- Alert -->
+  <p class="alert-line" id="s-alert"></p>
+
+  <!-- Sparkline -->
+  <div class="spark-wrap">
+    <svg class="spark" id="spark" viewBox="0 0 340 80" preserveAspectRatio="none"></svg>
+  </div>
+
+</div>
+
+<script>
+  const START  = 84200;
+  const CREDIT = 50000;
+
+  const daily = [
+    { income: 18000, expense: 7200  },
+    { income:  4500, expense: 12400 },
+    { income: 22000, expense:  3800 },
+    { income:     0, expense:  8100 },
+    { income: 11000, expense:  5500 },
+    { income:  5000, expense:  3200 },
+    { income:  2000, expense:  1100 },
+  ];
+
+  // Running balances (day 0 = today)
+  const balances = [START];
+  daily.forEach(d => balances.push(balances.at(-1) + d.income - d.expense));
+
+  const totalIncome  = daily.reduce((s,d) => s + d.income,  0);
+  const totalExpense = daily.reduce((s,d) => s + d.expense, 0);
+  const endBalance   = balances.at(-1);
+  const minBalance   = Math.min(...balances);
+
+  const fmt = n => '₪' + Math.abs(Math.round(n)).toLocaleString('he-IL');
+
+  // Fill values
+  document.getElementById('m-end').textContent     = fmt(endBalance);
+  document.getElementById('s-credit').textContent  = 'מסגרת: ' + fmt(CREDIT);
+  document.getElementById('s-income').textContent  = 'הכנסות: +' + fmt(totalIncome);
+  document.getElementById('s-expense').textContent = 'הוצאות: −' + fmt(totalExpense);
+  document.getElementById('s-date').textContent    = 'יתרה נוכחית: ' + fmt(START) + ' | עודכן היום';
+
+  // Alert
+  const alertEl = document.getElementById('s-alert');
+  if (minBalance < 0) {
+    alertEl.className = 'alert-line warn';
+    alertEl.textContent = '⚠ חריגה ממסגרת — יתרה מינימלית: ' + fmt(minBalance);
+  } else if (minBalance < CREDIT * 0.15) {
+    alertEl.className = 'alert-line warn';
+    alertEl.textContent = '⚠ יתרה נמוכה — מינימום צפוי: ' + fmt(minBalance);
+  } else {
+    alertEl.className = 'alert-line ok';
+    alertEl.textContent = '✓ אין חריגה צפויה';
+  }
+
+  // ── Sparkline ──────────────────────────────────
+  const W = 340, H = 80, PX = 12, PY = 10;
+  const minB  = Math.min(...balances);
+  const maxB  = Math.max(...balances);
+  const range = maxB - minB || 1;
+  const xStep = (W - PX * 2) / (balances.length - 1);
+
+  const pts = balances.map((b, i) => ({
+    x: PX + i * xStep,
+    y: PY + (1 - (b - minB) / range) * (H - PY - 18),
+  }));
+
+  const linePath = pts.map((p,i) => (i===0?'M':'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+  const areaPath = linePath + ` L${pts.at(-1).x.toFixed(1)},${H} L${pts[0].x.toFixed(1)},${H} Z`;
+
+  const svg = document.getElementById('spark');
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#39ABE2" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#39ABE2" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#g)"/>
+    <path d="${linePath}" fill="none" stroke="#39ABE2" stroke-width="1.8"
+          stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map(p =>
+      `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5"
+               fill="#fff" stroke="#39ABE2" stroke-width="1.8"/>`
+    ).join('')}
+  `;
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>דשבורד יועצים — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan:   #39ABE2;
+      --navy:   #0C4068;
+      --dark:   #273736;
+      --gray:   #818181;
+      --gray2:  #a0a8b8;
+      --bg:     #d4dde8;
+      --white:  #ffffff;
+      --green:  #1e8a4c;
+      --red:    #d93025;
+      --orange: #f0832a;
+      --shadow: 0px 1px 50px 0px rgba(0,0,0,0.08);
+      --r:      8px;
+    }
+
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: var(--bg);
+      direction: rtl;
+      min-height: 100vh;
+    }
+
+    /* ── Top Nav ───────────────────────────────── */
+    .topnav {
+      background: var(--navy);
+      height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .tn-logo { color:#fff; font-size:18px; font-weight:600; }
+    .tn-logo em { color:var(--cyan); font-style:normal; }
+    .tn-links { display:flex; gap:2px; }
+    .tn-links a {
+      color:rgba(255,255,255,.6); font-size:13px; text-decoration:none;
+      padding:5px 12px; border-radius:6px;
+    }
+    .tn-links a.on, .tn-links a:hover { background:rgba(255,255,255,.12); color:#fff; }
+    .tn-user { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.75); font-size:13px; }
+    .av { width:28px; height:28px; border-radius:50%; background:var(--cyan); color:#fff; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+
+    /* ── Page ──────────────────────────────────── */
+    .page { padding:18px 24px 36px; max-width:1300px; margin:0 auto; }
+
+    .pg-title {
+      font-size:14px; font-weight:500; color:var(--navy);
+      margin-bottom:14px; display:flex; align-items:center; gap:6px;
+    }
+
+    .sec { font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; margin:16px 0 8px; }
+
+    /* ── Grids ──────────────────────────────────── */
+    .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .g5 { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+    /* ── Base card ─────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow .18s;
+    }
+    .card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.13); }
+
+    /* ── Card header (title + sub) ─────────────── */
+    .ch {
+      display:flex; flex-direction:column; align-items:flex-end;
+      gap:2px; padding:14px 16px 0;
+    }
+    .ch-title {
+      display:flex; align-items:center; gap:4px;
+      font-size:14px; font-weight:500; color:var(--dark); line-height:20px;
+    }
+    .ch-sub {
+      display:flex; align-items:center; gap:4px;
+      font-size:13px; font-weight:400; color:var(--dark); line-height:19px;
+    }
+    .ic { width:14px; height:14px; opacity:.45; flex-shrink:0; }
+
+    /* ── Main metric ───────────────────────────── */
+    .cm { padding:6px 16px 0; text-align:right; }
+    .cm-val {
+      font-size:30px; font-weight:400; color:var(--cyan);
+      line-height:1.25; direction:ltr; display:inline-block;
+    }
+    .cm-lbl { font-size:11px; color:var(--cyan); text-align:right; line-height:14px; margin-top:1px; }
+    .cm-val.red   { color:var(--red); }
+    .cm-val.green { color:var(--green); }
+    .cm-lbl.red   { color:var(--red); }
+    .cm-lbl.green { color:var(--green); }
+
+    /* ── Trend row ─────────────────────────────── */
+    .ct {
+      display:flex; align-items:center; justify-content:flex-end;
+      gap:6px; padding:4px 16px 0;
+    }
+    .chip { font-size:11px; font-weight:400; display:flex; align-items:center; gap:2px; }
+    .chip.up  { color:var(--green); }
+    .chip.dn  { color:var(--red); }
+    .chip.st  { color:var(--orange); }
+    .sep { color:#ddd; font-size:10px; }
+    .tgt { font-size:11px; color:var(--gray2); }
+
+    /* ── Progress bar ──────────────────────────── */
+    .cpb { padding:6px 16px 0; }
+    .pbt { height:5px; background:#edf0f5; border-radius:3px; overflow:hidden; }
+    .pbf { height:100%; border-radius:3px; background:var(--cyan); }
+    .pbf.rd { background:var(--red); }
+    .pbf.or { background:var(--orange); }
+    .pbf.gr { background:var(--green); }
+    .pbl { display:flex; justify-content:space-between; font-size:10px; color:var(--gray2); margin-bottom:2px; }
+
+    /* ── Sparkline ─────────────────────────────── */
+    .csp { padding:8px 0 0; }
+    svg.sp { width:100%; height:72px; display:block; }
+
+    /* ── Date footer ───────────────────────────── */
+    .cd { font-size:11px; color:var(--gray); text-align:right; padding:3px 16px 12px; line-height:15px; }
+
+    /* ── Donut ─────────────────────────────────── */
+    .donut-body { display:flex; align-items:center; justify-content:space-between; padding:10px 16px 0; gap:8px; }
+    .dc-list { display:flex; flex-direction:column; gap:8px; }
+    .dc-row { display:flex; align-items:center; gap:5px; }
+    .dc-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* ── Timeline ──────────────────────────────── */
+    .tl { padding:10px 16px 0; }
+    .tl-nums { display:flex; align-items:flex-end; gap:18px; justify-content:flex-end; margin-bottom:8px; }
+    .tl-num { text-align:right; }
+    .tl-n { font-size:24px; font-weight:400; color:var(--cyan); line-height:1.2; }
+    .tl-l { font-size:10px; color:var(--gray2); }
+    .tl-bar { height:5px; background:#edf0f5; border-radius:3px; overflow:hidden; }
+    .tl-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--cyan),#6fcef5); }
+    .tl-ends { display:flex; justify-content:space-between; font-size:10px; color:var(--gray2); margin-top:3px; }
+
+    /* ── Focus ─────────────────────────────────── */
+    .fc { padding:10px 16px 12px; }
+    .fi {
+      display:flex; align-items:flex-start; gap:8px;
+      padding:7px 0; border-bottom:1px solid #f2f4f7;
+      font-size:12px; color:var(--dark); text-align:right;
+    }
+    .fi:last-child { border-bottom:none; padding-bottom:0; }
+    .fn {
+      width:18px; height:18px; border-radius:50%;
+      background:var(--cyan); color:#fff; font-size:9px; font-weight:600;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
+    }
+
+    /* ── Meeting ───────────────────────────────── */
+    .mc-body { padding:10px 16px 14px; }
+    .mc-d  { font-size:22px; font-weight:400; color:var(--cyan); margin-bottom:2px; }
+    .mc-nm { font-size:12px; color:var(--dark); margin-bottom:5px; }
+    .mc-t  { font-size:11px; color:var(--gray); margin-bottom:8px; }
+    .mc-ag { display:flex; flex-direction:column; gap:4px; }
+    .mc-ai { font-size:11px; color:var(--gray); border-right:2px solid var(--cyan); padding-right:6px; line-height:15px; }
+    .mc-ai.dim { border-right-color:#e0e0e0; }
+
+    /* ── List ──────────────────────────────────── */
+    .list-hd { padding:12px 16px 8px; border-bottom:1px solid #f2f4f7; }
+    .li { display:flex; align-items:center; justify-content:space-between; padding:8px 16px; border-bottom:1px solid #f5f6f8; }
+    .li:last-child { border-bottom:none; }
+    .li-r { display:flex; align-items:center; gap:8px; }
+    .li-ico { width:26px; height:26px; border-radius:5px; background:#e8f4fb; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .li-ico.gr { background:#e8f8ef; }
+    .li-nm  { font-size:12px; color:var(--dark); }
+    .li-sub { font-size:10px; color:var(--gray2); }
+    .li-dt  { font-size:10px; color:var(--gray2); white-space:nowrap; }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="tn-logo"><em>HK</em> חזות קריספין</div>
+  <div class="tn-links">
+    <a href="#">לקוחות</a>
+    <a href="#" class="on">דשבורד</a>
+    <a href="#">פגישות</a>
+    <a href="#">מסמכים</a>
+    <a href="#">דוחות</a>
+  </div>
+  <div class="tn-user"><span>שלום, איציק</span><div class="av">ע</div></div>
+</nav>
+
+<div class="page">
+
+  <div class="pg-title">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x=".5" y=".5" width="5.5" height="5.5" rx="1.2" fill="var(--navy)"/>
+      <rect x="8"  y=".5" width="5.5" height="5.5" rx="1.2" fill="var(--cyan)"/>
+      <rect x=".5" y="8"  width="5.5" height="5.5" rx="1.2" fill="var(--cyan)"/>
+      <rect x="8"  y="8"  width="5.5" height="5.5" rx="1.2" fill="var(--navy)"/>
+    </svg>
+    סקירת ביצועים חודשית — מאי 2026
+  </div>
+
+  <!-- ═══ ROW 1 ═══ -->
+  <div class="sec">הכנסות ומכירות</div>
+  <div class="g4">
+
+    <!-- 1. הכנסות -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">סה״כ הכנסות החודש
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/><path d="M7 4.5v5M4.5 7h5" stroke="#273736" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          יעד: ₪300,000
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val">₪276,400</div><div class="cm-lbl">ביצוע בפועל</div></div>
+      <div class="cpb">
+        <div class="pbl"><span style="color:var(--cyan)">92%</span><span>יעד ₪300K</span></div>
+        <div class="pbt"><div class="pbf" style="width:92%"></div></div>
+      </div>
+      <div class="ct"><span class="chip up">↑ +18%</span><span class="sep">|</span><span class="tgt">לעומת חודש קודם</span></div>
+      <div class="csp"><svg class="sp" id="sp1" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">01.05.2026 | עודכן היום</div>
+    </div>
+
+    <!-- 2. עסקאות -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">כמות עסקאות
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><rect x="2" y="4.5" width="10" height="8" rx="1.3" stroke="#273736" stroke-width="1.2"/><path d="M4.5 4.5V3.5a2.5 2.5 0 015 0v1" stroke="#273736" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          יעד: 120 עסקאות
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val">114</div><div class="cm-lbl">עסקאות</div></div>
+      <div class="cpb">
+        <div class="pbl"><span style="color:var(--cyan)">95%</span><span>יעד 120</span></div>
+        <div class="pbt"><div class="pbf" style="width:95%"></div></div>
+      </div>
+      <div class="ct"><span class="chip up">↑ +12%</span><span class="sep">|</span><span class="tgt">לעומת חודש קודם</span></div>
+      <div class="csp"><svg class="sp" id="sp2" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">01.05.2026 | עודכן היום</div>
+    </div>
+
+    <!-- 3. APPM -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">ממוצע עסקה (APPM)
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3.5 2.5 2 4.5-5.5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/></svg>
+          יעד: ₪1,800
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val green">₪2,425</div><div class="cm-lbl green">לעסקה — מעל יעד ✓</div></div>
+      <div class="cpb">
+        <div class="pbl"><span style="color:var(--green)">135%</span><span>יעד ₪1,800</span></div>
+        <div class="pbt"><div class="pbf gr" style="width:100%"></div></div>
+      </div>
+      <div class="ct"><span class="chip up">↑ +8%</span><span class="sep">|</span><span class="tgt">לעומת חודש קודם</span></div>
+      <div class="csp"><svg class="sp" id="sp3" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">01.05.2026 | עודכן היום</div>
+    </div>
+
+    <!-- 4. ימי עבודה -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">ימי עבודה שנותרו
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="#273736" stroke-width="1.2"/><path d="M1.5 5.5h11M4.5 1.5v2M9.5 1.5v2" stroke="#273736" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/><path d="M7 4.5V7l1.5 1.5" stroke="#273736" stroke-width="1.2" stroke-linecap="round"/></svg>
+          מתוך 22 ימים
+        </div>
+      </div>
+      <div class="tl" style="margin-top:4px">
+        <div class="tl-nums">
+          <div class="tl-num"><div class="tl-n">8</div><div class="tl-l">נותרו</div></div>
+          <div class="tl-num"><div class="tl-n">14</div><div class="tl-l">עברו</div></div>
+        </div>
+        <div class="tl-bar"><div class="tl-fill" style="width:64%"></div></div>
+        <div class="tl-ends"><span>8 נותרו</span><span>22 ימים בחודש</span></div>
+      </div>
+      <div class="ct" style="margin-top:8px"><span class="chip st">נדרש: ₪2,900 ליום</span></div>
+      <div class="cd" style="margin-top:6px">כדי לעמוד ביעד החודשי</div>
+    </div>
+  </div>
+
+  <!-- ═══ ROW 2 ═══ -->
+  <div class="sec">לידים ושיווק</div>
+  <div class="g5">
+
+    <!-- 5. לידים -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">סה״כ לידים
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M7 2a3 3 0 100 6 3 3 0 000-6zM2 12c0-1.8 2.2-3 5-3s5 1.2 5 3" stroke="#273736" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          יעד: 400
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val">352</div><div class="cm-lbl">לידים</div></div>
+      <div class="cpb">
+        <div class="pbl"><span style="color:var(--cyan)">88%</span><span>יעד 400</span></div>
+        <div class="pbt"><div class="pbf" style="width:88%"></div></div>
+      </div>
+      <div class="ct"><span class="chip up">↑ +22%</span><span class="sep">|</span><span class="tgt">vs. אשתקד</span></div>
+      <div class="csp"><svg class="sp" id="sp4" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">01.05.2026 | עודכן היום</div>
+    </div>
+
+    <!-- 6. ממומן/אורגני -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">לידים ממומן / אורגני
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/><path d="M7 1.5A5.5 5.5 0 0112.5 7H7V1.5z" fill="#273736" opacity=".18"/></svg>
+        </div>
+      </div>
+      <div class="donut-body">
+        <svg width="70" height="70" viewBox="0 0 70 70" style="flex-shrink:0">
+          <circle cx="35" cy="35" r="25" fill="none" stroke="#edf0f5" stroke-width="10"/>
+          <circle cx="35" cy="35" r="25" fill="none" stroke="var(--cyan)" stroke-width="10"
+            stroke-dasharray="94.2 62.8" stroke-dashoffset="0" transform="rotate(-90 35 35)"/>
+          <circle cx="35" cy="35" r="25" fill="none" stroke="#6fcef5" stroke-width="10"
+            stroke-dasharray="62.8 94.2" stroke-dashoffset="-94.2" transform="rotate(-90 35 35)"/>
+          <text x="35" y="39" text-anchor="middle" font-family="Rubik,sans-serif" font-size="11" fill="var(--cyan)" font-weight="500">60%</text>
+        </svg>
+        <div class="dc-list">
+          <div class="dc-row"><div class="dc-dot" style="background:var(--cyan)"></div>
+            <div><div style="font-size:12px;color:var(--dark);font-weight:500">211 ממומן</div><div style="font-size:10px;color:var(--gray)">60% | ↑ +15%</div></div>
+          </div>
+          <div class="dc-row"><div class="dc-dot" style="background:#6fcef5"></div>
+            <div><div style="font-size:12px;color:var(--dark);font-weight:500">141 אורגני</div><div style="font-size:10px;color:var(--gray)">40% | ↑ +31%</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cd" style="margin-top:12px">01.05.2026 | עודכן היום</div>
+    </div>
+
+    <!-- 7. CPL -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">עלות לליד (CPL)
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M4.5 4.5l2.5-2.5 2.5 2.5M4.5 9.5l2.5 2.5 2.5-2.5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          יעד: ₪35
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val green">₪28.5</div><div class="cm-lbl green">לליד — מתחת ליעד ✓</div></div>
+      <div class="ct" style="margin-top:6px"><span class="chip up">↓ −10%</span><span class="sep">|</span><span class="tgt">ירידה = שיפור</span></div>
+      <div class="csp"><svg class="sp" id="sp5" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">יעד: ₪35 | עודכן היום</div>
+    </div>
+
+    <!-- 8. תקציב שיווק -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">תקציב שיווק
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="3" width="11" height="8" rx="1.3" stroke="#273736" stroke-width="1.2"/><path d="M1.5 6h11" stroke="#273736" stroke-width="1.2"/><rect x="3" y="7.5" width="3.5" height="1.5" rx=".5" fill="#273736"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 10l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          תקציב: ₪20,000
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val red">₪22,000</div><div class="cm-lbl red">בוצע — חריגה</div></div>
+      <div class="cpb">
+        <div class="pbl"><span style="color:var(--red)">110% — חריגה</span><span>₪20K</span></div>
+        <div class="pbt"><div class="pbf rd" style="width:100%"></div></div>
+      </div>
+      <div class="ct"><span class="chip dn">↑ +10%</span><span class="sep">|</span><span class="tgt">חריגה ב־₪2,000</span></div>
+      <div class="cd" style="margin-top:10px">01.05.2026 | עודכן היום</div>
+    </div>
+
+    <!-- 9. המרה 1 -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">אחוז המרה 1
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 9l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/></svg>
+          יעד: 30%
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val">32.4%</div><div class="cm-lbl">ליד ← פגישה — מעל יעד ✓</div></div>
+      <div class="ct" style="margin-top:6px"><span class="chip up">↑ +5%</span><span class="sep">|</span><span class="tgt">יעד: 30%</span></div>
+      <div class="csp"><svg class="sp" id="sp6" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">01.05.2026 | משפך מכירה</div>
+    </div>
+  </div>
+
+  <!-- ═══ ROW 3 ═══ -->
+  <div class="sec">תהליך ופוקוסים</div>
+  <div class="g4">
+
+    <!-- 10. המרה 2 -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">אחוז המרה 2
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 9l3-3 2.5 2 4.5-5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="ch-sub">
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/></svg>
+          יעד: 60%
+        </div>
+      </div>
+      <div class="cm"><div class="cm-val red">55.8%</div><div class="cm-lbl red">פגישה ← עסקה — מתחת ליעד</div></div>
+      <div class="ct" style="margin-top:6px"><span class="chip dn">↓ −3%</span><span class="sep">|</span><span class="tgt">יעד: 60%</span></div>
+      <div class="csp"><svg class="sp" id="sp7" viewBox="0 0 260 72" preserveAspectRatio="none"></svg></div>
+      <div class="cd">01.05.2026 | משפך מכירה</div>
+    </div>
+
+    <!-- 11. תהליך ליווי -->
+    <div class="card">
+      <div class="ch">
+        <div class="ch-title">תהליך ליווי עסקי
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="#273736" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="tl" style="margin-top:6px">
+        <div class="tl-nums">
+          <div class="tl-num"><div class="tl-n">14</div><div class="tl-l">פגישות</div></div>
+          <div class="tl-num"><div class="tl-n">7</div><div class="tl-l">חודשים</div></div>
+        </div>
+        <div class="tl-bar"><div class="tl-fill" style="width:58%"></div></div>
+        <div class="tl-ends"><span>7 חודשים</span><span>12 מתוכנן</span></div>
+      </div>
+      <div class="cd" style="margin-top:12px">התחלה: 01.10.2025</div>
+    </div>
+
+    <!-- 12. פגישה הבאה -->
+    <div class="card">
+      <div class="ch" style="padding-bottom:4px">
+        <div class="ch-title">הפגישה הבאה
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="2.5" width="11" height="10" rx="1.5" stroke="#273736" stroke-width="1.2"/><path d="M1.5 5.5h11M4.5 1.5v2M9.5 1.5v2" stroke="#273736" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="mc-body">
+        <div class="mc-d">יום ג׳, 12.05</div>
+        <div class="mc-nm">סקירת ביצועים חודשית — מאי</div>
+        <div class="mc-t">10:00 – 11:00 | זום</div>
+        <div class="mc-ag">
+          <div class="mc-ai">תכנון חודש יוני</div>
+          <div class="mc-ai dim">סקירת תזרים</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. פוקוסים -->
+    <div class="card">
+      <div class="ch" style="padding-bottom:4px">
+        <div class="ch-title">פוקוסים — מאי
+          <svg class="ic" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#273736" stroke-width="1.2"/><circle cx="7" cy="7" r="2.5" stroke="#273736" stroke-width="1.2"/><circle cx="7" cy="7" r=".8" fill="#273736"/></svg>
+        </div>
+      </div>
+      <div class="fc">
+        <div class="fi"><span style="flex:1">הגדלת שיעור המרה 2 ל-60%</span><div class="fn">1</div></div>
+        <div class="fi"><span style="flex:1">הורדת עלות לליד ל-₪25</span><div class="fn">2</div></div>
+        <div class="fi"><span style="flex:1">סגירת 10 עסקאות נוספות עד סוף החודש</span><div class="fn">3</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ROW 4 ═══ -->
+  <div class="sec">מסמכים ודוחות</div>
+  <div class="g2">
+
+    <!-- 14. מסמכים -->
+    <div class="card">
+      <div class="list-hd">
+        <span class="ch-title" style="font-size:14px">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 1h5l4 4V11a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="var(--dark)" stroke-width="1.2"/><path d="M8 1v4h4" stroke="var(--dark)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          מסמכים אחרונים
+        </span>
+      </div>
+      <div class="li"><div class="li-dt">28.04.2026</div><div class="li-r"><div><div class="li-nm">דוח ביצועים אפריל 2026</div><div class="li-sub">PDF · 2.4 MB</div></div><div class="li-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1h4l3.5 3.5V10a1 1 0 01-1 1h-6a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="var(--cyan)" stroke-width="1.2"/><path d="M6.5 1v4h4" stroke="var(--cyan)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div>
+      <div class="li"><div class="li-dt">15.04.2026</div><div class="li-r"><div><div class="li-nm">תכנית שיווק Q2</div><div class="li-sub">DOCX · 1.1 MB</div></div><div class="li-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1h4l3.5 3.5V10a1 1 0 01-1 1h-6a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="var(--cyan)" stroke-width="1.2"/><path d="M6.5 1v4h4" stroke="var(--cyan)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div>
+      <div class="li"><div class="li-dt">01.04.2026</div><div class="li-r"><div><div class="li-nm">חוזה שירות — לקוח חדש</div><div class="li-sub">PDF · 0.8 MB</div></div><div class="li-ico"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 1h4l3.5 3.5V10a1 1 0 01-1 1h-6a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="var(--cyan)" stroke-width="1.2"/><path d="M6.5 1v4h4" stroke="var(--cyan)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div>
+    </div>
+
+    <!-- 15. דוחות -->
+    <div class="card">
+      <div class="list-hd">
+        <span class="ch-title" style="font-size:14px">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5" stroke="var(--dark)" stroke-width="1.2"/><path d="M4 5h5M4 7.5h5M4 10h3" stroke="var(--dark)" stroke-width="1.2" stroke-linecap="round"/></svg>
+          דוחות אחרונים
+        </span>
+      </div>
+      <div class="li"><div class="li-dt">29.04.2026</div><div class="li-r"><div><div class="li-nm">דוח תזרים חודשי</div><div class="li-sub">Excel · 0.6 MB</div></div><div class="li-ico gr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1" stroke="var(--green)" stroke-width="1.2"/><path d="M3.5 6l2 2 3.5-3.5" stroke="var(--green)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div>
+      <div class="li"><div class="li-dt">20.04.2026</div><div class="li-r"><div><div class="li-nm">דוח לידים — אפריל</div><div class="li-sub">PDF · 1.2 MB</div></div><div class="li-ico gr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1" stroke="var(--green)" stroke-width="1.2"/><path d="M3.5 6l2 2 3.5-3.5" stroke="var(--green)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div>
+      <div class="li"><div class="li-dt">10.04.2026</div><div class="li-r"><div><div class="li-nm">דוח המרות Q1</div><div class="li-sub">PDF · 2.0 MB</div></div><div class="li-ico gr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1.5" y="1.5" width="9" height="9" rx="1" stroke="var(--green)" stroke-width="1.2"/><path d="M3.5 6l2 2 3.5-3.5" stroke="var(--green)" stroke-width="1.2" stroke-linecap="round"/></svg></div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MONTHS = ['נוב','דצמ','ינו','פבר','מרץ','אפר','מאי'];
+
+function spark(id, pts, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const W=260, CH=50, LH=18, H=CH+LH, PX=10, PY=5;
+  const c = color || '#39ABE2';
+  const mn=Math.min(...pts), mx=Math.max(...pts), rng=mx-mn||1;
+  const step=(W-PX*2)/(pts.length-1);
+  const coords = pts.map((v,i)=>({
+    x: PX + i*step,
+    y: PY + (1-(v-mn)/rng)*(CH-PY-8)
+  }));
+  const line = coords.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+  const area = line+` L${coords.at(-1).x},${CH} L${coords[0].x},${CH} Z`;
+
+  el.innerHTML = `
+    <defs>
+      <linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${c}" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="${c}" stop-opacity="0.01"/>
+      </linearGradient>
+    </defs>
+    <line x1="${PX}" y1="${CH-1}" x2="${W-PX}" y2="${CH-1}" stroke="#f0f2f5" stroke-width="1"/>
+    <path d="${area}" fill="url(#g${id})"/>
+    <path d="${line}" fill="none" stroke="${c}" stroke-width="1.8"
+          stroke-linejoin="round" stroke-linecap="round"/>
+    ${coords.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3"
+      fill="#fff" stroke="${c}" stroke-width="1.6"/>`).join('')}
+    ${coords.map((p,i)=>`<text x="${p.x.toFixed(1)}" y="${H-3}"
+      text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#b0b8c8">${MONTHS[i]}</text>`).join('')}
+  `;
+}
+
+spark('sp1',[210000,228000,215000,240000,252000,261000,276400]);
+spark('sp2',[85,92,88,96,102,108,114]);
+spark('sp3',[1800,1920,2050,2100,2200,2380,2425]);
+spark('sp4',[220,255,248,270,298,330,352]);
+spark('sp5',[42,40,38,36,33,30,28.5],'#1e8a4c');
+spark('sp6',[26,27,29,28,30,31,32.4]);
+spark('sp7',[60,62,59,61,58,57,55.8],'#d93025');
+</script>
+</body>
+</html>

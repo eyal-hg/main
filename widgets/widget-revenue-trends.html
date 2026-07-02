@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>מגמות מחזור הכנסות — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:48px; padding:48px 32px;
+    }
+    .section-label{font-size:11px;font-weight:500;color:var(--gray2);letter-spacing:.5px;text-transform:uppercase;text-align:center;}
+    .section-group{display:flex;flex-direction:column;align-items:center;gap:10px;}
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white); border:1.5px solid #e6ecf2; border-radius:12px;
+      width:200px; display:flex; flex-direction:column; overflow:hidden;
+      transition:box-shadow .18s,transform .18s,border-color .18s; cursor:pointer;
+    }
+    .wcard:hover{box-shadow:0 6px 20px rgba(12,64,104,.12);border-color:var(--cyan);transform:translateY(-2px);}
+    .wcard.added{border-color:var(--cyan);}
+    .wcard-text{padding:12px 12px 6px;}
+    .wcard-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;}
+    .wcard-desc{font-size:10px;color:var(--gray);line-height:1.4;}
+    .wcard-preview{
+      height:100px;padding:8px 10px 6px;background:#f7fafd;
+      display:flex;flex-direction:column;justify-content:space-between;
+      position:relative;overflow:hidden;
+    }
+    .wcard-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:7px 10px 9px;border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{font-size:10px;color:var(--gray2);}
+    .wcard-btn{
+      border:1.5px solid var(--navy);background:transparent;color:var(--navy);
+      font-family:'Rubik',sans-serif;font-size:11px;font-weight:500;
+      padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s;
+    }
+    .wcard-btn:hover{background:rgba(12,64,104,.06);}
+    .wcard-counter{display:none;align-items:center;background:var(--cyan);border-radius:20px;overflow:hidden;}
+    .wcard-counter button{background:transparent;border:none;color:#fff;font-size:15px;font-weight:600;padding:3px 9px;cursor:pointer;font-family:'Rubik',sans-serif;}
+    .cnt-num{color:#fff;font-size:12px;font-weight:600;min-width:20px;text-align:center;}
+    .wcard.added .wcard-btn{display:none;}
+    .wcard.added .wcard-counter{display:flex;}
+
+    /* picker preview internals */
+    .pv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+    .pv-num{font-size:18px;font-weight:600;color:var(--cyan);line-height:1;}
+    .pv-sub{font-size:9px;color:var(--gray2);margin-top:1px;}
+    .pv-chips{display:flex;flex-direction:column;gap:3px;align-items:flex-end;}
+    .pv-chip{font-size:8px;font-weight:500;padding:2px 5px;border-radius:4px;white-space:nowrap;}
+    .pv-chip.up{color:var(--green);background:rgba(30,138,76,.1);}
+    .pv-cat-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+    .pv-cat-label{font-size:8px;color:var(--gray2);min-width:44px;white-space:nowrap;}
+    .pv-cat-bar{flex:1;height:5px;background:#e2eef8;border-radius:6px;overflow:hidden;direction:ltr;}
+    .pv-cat-fill{height:100%;border-radius:6px;}
+
+    /* ══ FULL WIDGET ══ */
+    .widget{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);width:640px;overflow:hidden;}
+
+    /* ── Header ── */
+    .w-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;gap:10px;}
+    .w-head-right{display:flex;align-items:center;gap:8px;}
+.w-title{font-size:14px;font-weight:500;color:var(--dark);}
+    .w-head-left{display:flex;align-items:center;gap:8px;}
+
+    /* ── Live badge ── */
+    .w-live{
+      display:flex;align-items:center;gap:5px;
+      font-size:11px;font-weight:500;color:var(--green);
+      background:rgba(30,138,76,.08);
+      border:1px solid rgba(30,138,76,.18);
+      border-radius:20px;padding:4px 10px;
+    }
+
+    /* ── Single KPI ── */
+    .w-metric{padding:4px 18px 0;text-align:right;}
+    .w-val{font-size:36px;font-weight:600;color:var(--cyan);line-height:1.15;direction:ltr;display:inline-block;}
+
+    /* ── Chips row ── */
+    .w-chips{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:6px 18px 0;flex-wrap:wrap;}
+    .chip{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;}
+    .chip.up{color:var(--green);background:rgba(30,138,76,.08);}
+    .chip.dn{color:var(--red);background:rgba(217,48,37,.08);}
+    .chip.st{color:var(--yellow);background:rgba(240,180,41,.08);}
+    .chip.tgt{color:var(--gray2);background:#f0f4f8;font-weight:400;}
+
+    /* ── Progress bar (יעד חודשי) ── */
+    .w-bar-section{padding:18px 18px 6px;}
+    .w-bar-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:30px;}
+    .w-bar-info{}
+    .w-bar-target{font-size:12px;font-weight:500;color:var(--navy);}
+    .w-bar-sub{font-size:10px;color:var(--gray2);margin-top:2px;}
+    .w-bar-pct{font-size:13px;font-weight:600;color:var(--cyan);display:flex;align-items:center;gap:5px;}
+    .w-bar-pct-label{font-size:11px;font-weight:400;color:var(--gray2);}
+    .w-bar-wrap{position:relative;}
+    .w-bar-bubble{
+      position:absolute;top:-24px;left:92.6%;
+      transform:translateX(-50%);
+      background:var(--white);border:1px solid #e2eaf2;
+      border-radius:20px;padding:2px 8px;
+      font-size:11px;font-weight:500;color:var(--navy);
+      white-space:nowrap;box-shadow:0 1px 6px rgba(12,64,104,.08);
+    }
+    .w-bar{height:12px;background:#deeef8;border-radius:20px;overflow:hidden;direction:ltr;}
+    .w-fill{height:100%;border-radius:20px;background:var(--cyan);}
+    .w-bar-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--gray2);margin-top:5px;}
+
+    /* ── Divider ── */
+    .w-divider{height:1px;background:#f0f4f8;margin:14px 18px 0;}
+
+    /* ── Category breakdown ── */
+    .w-cats{padding:16px 18px 8px;}
+    .w-cats-title{font-size:11px;font-weight:500;color:var(--gray2);letter-spacing:.3px;margin-bottom:14px;}
+    .cat-row{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+    .cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .cat-name{font-size:12px;font-weight:500;color:var(--dark);min-width:120px;}
+    .cat-bar-wrap{flex:1;height:7px;background:#f0f4f8;border-radius:10px;overflow:hidden;direction:ltr;}
+    .cat-bar-fill{height:100%;border-radius:10px;transition:width .4s ease;}
+    .cat-val{font-size:12px;font-weight:500;color:var(--navy);min-width:62px;text-align:left;direction:ltr;}
+    .cat-pct{font-size:11px;color:var(--gray2);min-width:28px;text-align:left;}
+
+    /* ── Footer ── */
+    .w-update{font-size:10px;color:var(--gray2);padding:8px 18px 14px;text-align:left;}
+  </style>
+</head>
+<body>
+
+  <!-- ══ PICKER CARD ══ -->
+  <div class="section-group">
+    <div class="section-label">כרטיסיית גלריה</div>
+    <div class="wcard" id="wc">
+      <div class="wcard-text">
+        <div class="wcard-title">הכנסות החודש מול תקציב</div>
+        <div class="wcard-desc">מחזור חודשי עם פילוח לפי קטגוריות הכנסה</div>
+      </div>
+
+      <div class="wcard-preview">
+        <div class="pv-top">
+          <div>
+            <div class="pv-num">₪162K</div>
+            <div class="pv-sub">מחזור חודשי</div>
+          </div>
+          <div class="pv-chips">
+            <div class="pv-chip up">↑ 17% חודש קודם</div>
+            <div class="pv-chip up">↑ 24% שנה קודמת</div>
+          </div>
+        </div>
+
+        <!-- mini category bars -->
+        <div>
+          <div class="pv-cat-row">
+            <div class="pv-cat-label">ייעוץ עסקי</div>
+            <div class="pv-cat-bar"><div class="pv-cat-fill" style="width:42%;background:#39ABE2;"></div></div>
+            <div style="font-size:8px;color:#39ABE2;font-weight:600;min-width:20px;text-align:left;direction:ltr;">42%</div>
+          </div>
+          <div class="pv-cat-row">
+            <div class="pv-cat-label">תוכניות ליווי</div>
+            <div class="pv-cat-bar"><div class="pv-cat-fill" style="width:30%;background:#0C4068;opacity:.7;"></div></div>
+            <div style="font-size:8px;color:#0C4068;font-weight:600;min-width:20px;text-align:left;direction:ltr;">30%</div>
+          </div>
+          <div class="pv-cat-row">
+            <div class="pv-cat-label">הדרכות</div>
+            <div class="pv-cat-bar"><div class="pv-cat-fill" style="width:18%;background:#39ABE2;opacity:.5;"></div></div>
+            <div style="font-size:8px;color:#a0a8b8;font-weight:600;min-width:20px;text-align:left;direction:ltr;">18%</div>
+          </div>
+          <div class="pv-cat-row" style="margin-bottom:0">
+            <div class="pv-cat-label">מוצרים דיגיטליים</div>
+            <div class="pv-cat-bar"><div class="pv-cat-fill" style="width:10%;background:#a0a8b8;"></div></div>
+            <div style="font-size:8px;color:#a0a8b8;font-weight:600;min-width:20px;text-align:left;direction:ltr;">10%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wcard-foot">
+        <span class="wcard-cat">הכנסות</span>
+        <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+        <div class="wcard-counter">
+          <button onclick="change(-1)">−</button>
+          <div class="cnt-num" id="n">1</div>
+          <button onclick="change(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FULL WIDGET ══ -->
+  <div class="section-group">
+    <div class="section-label">ווידגט מלא</div>
+    <div class="widget">
+
+      <!-- Header -->
+      <div class="w-head">
+        <div class="w-head-right">
+          <div class="w-title">הכנסות החודש מול תקציב</div>
+        </div>
+        <div class="w-head-left">
+          <div class="w-live">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M11.5 6.5A5 5 0 1 1 9 2.07" stroke="#1e8a4c" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M9 0.5v2h2" stroke="#1e8a4c" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            מסונכרן אוטומטית
+          </div>
+        </div>
+      </div>
+
+      <!-- Main value -->
+      <div class="w-metric">
+        <div class="w-val">₪162,000</div>
+      </div>
+
+      <!-- Chips -->
+      <div class="w-chips">
+        <div class="chip up">↑ 17% לעומת חודש קודם</div>
+        <div class="chip up">↑ 24% לעומת שנה קודמת</div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="w-bar-section">
+        <div class="w-bar-top">
+          <div class="w-bar-info">
+            <div class="w-bar-target">יעד חודשי: ₪175,000</div>
+            <div class="w-bar-sub">נותר: ₪13,000</div>
+          </div>
+          <div class="w-bar-pct">92.6%<span class="w-bar-pct-label" style="margin-right:4px">עמידה ביעד</span></div>
+        </div>
+        <div class="w-bar-wrap">
+          <div class="w-bar-bubble">₪162K</div>
+          <div class="w-bar">
+            <div class="w-fill" style="width:92.6%"></div>
+          </div>
+        </div>
+        <div class="w-bar-scale">
+          <span>₪175,000</span>
+          <span>0</span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="w-divider"></div>
+
+      <!-- Category breakdown -->
+      <div class="w-cats">
+        <div class="w-cats-title">פילוח לפי קטגוריית הכנסה — מרץ 2026</div>
+
+        <div class="cat-row">
+          <div class="cat-dot" style="background:#39ABE2;"></div>
+          <div class="cat-name">ייעוץ עסקי</div>
+          <div class="cat-bar-wrap">
+            <div class="cat-bar-fill" style="width:42%;background:#39ABE2;"></div>
+          </div>
+          <div class="cat-val">₪68,000</div>
+          <div class="cat-pct">42%</div>
+        </div>
+
+        <div class="cat-row">
+          <div class="cat-dot" style="background:#0C4068;"></div>
+          <div class="cat-name">תוכניות ליווי</div>
+          <div class="cat-bar-wrap">
+            <div class="cat-bar-fill" style="width:30%;background:#0C4068;opacity:.65;"></div>
+          </div>
+          <div class="cat-val">₪48,600</div>
+          <div class="cat-pct">30%</div>
+        </div>
+
+        <div class="cat-row">
+          <div class="cat-dot" style="background:#39ABE2;opacity:.5;"></div>
+          <div class="cat-name">הדרכות</div>
+          <div class="cat-bar-wrap">
+            <div class="cat-bar-fill" style="width:18%;background:#39ABE2;opacity:.45;"></div>
+          </div>
+          <div class="cat-val">₪29,200</div>
+          <div class="cat-pct">18%</div>
+        </div>
+
+        <div class="cat-row" style="margin-bottom:0;">
+          <div class="cat-dot" style="background:#a0a8b8;"></div>
+          <div class="cat-name">מוצרים דיגיטליים</div>
+          <div class="cat-bar-wrap">
+            <div class="cat-bar-fill" style="width:10%;background:#a0a8b8;"></div>
+          </div>
+          <div class="cat-val">₪16,200</div>
+          <div class="cat-pct">10%</div>
+        </div>
+      </div>
+
+      <div class="w-update">עדכון אחרון: 31.03.2026</div>
+    </div>
+  </div>
+
+  <script>
+    function change(d){
+      const el=document.getElementById('n');
+      let n=parseInt(el.textContent)+d;
+      if(n<=0){document.getElementById('wc').classList.remove('added');el.textContent='1';}
+      else el.textContent=n;
+    }
+  </script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

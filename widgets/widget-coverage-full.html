@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>כיסוי הוצאות — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:48px; padding:48px 32px;
+    }
+    .section-label{ font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; text-transform:uppercase; text-align:center; }
+    .section-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white); border:1.5px solid #e6ecf2; border-radius:12px;
+      width:200px; display:flex; flex-direction:column; overflow:hidden;
+      cursor:pointer; transition:box-shadow .18s,transform .18s,border-color .18s;
+    }
+    .wcard:hover{ box-shadow:0 6px 20px rgba(12,64,104,.12); border-color:var(--cyan); transform:translateY(-2px); }
+    .wcard.added{ border-color:var(--cyan); }
+    .wcard-text{ padding:12px 12px 6px; }
+    .wcard-title{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+    .wcard-desc{ font-size:10px; color:var(--gray); line-height:1.4; }
+    .wcard-preview{
+      height:100px; background:#f7fafd; overflow:hidden;
+      padding:8px 10px 6px; display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .pv-gap-label{ font-size:8px; color:var(--gray2); }
+    .pv-gap-val{ font-size:20px; font-weight:600; direction:ltr; line-height:1.1; }
+    .pv-gap-val.neg{ color:var(--red); }
+    .pv-gap-val.pos{ color:var(--green); }
+    .pv-gap-sub{ font-size:8px; font-weight:500; }
+    .pv-gap-sub.neg{ color:var(--red); }
+    .pv-gap-sub.pos{ color:var(--green); }
+    .pv-rows{ display:flex; flex-direction:column; gap:3px; }
+    .pv-row{ display:flex; align-items:center; gap:4px; }
+    .pv-dot{ width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+    .pv-row-label{ font-size:8px; color:var(--gray2); flex:1; }
+    .pv-row-val{ font-size:8px; font-weight:600; direction:ltr; }
+    .pv-row-val.g{ color:var(--green); }
+    .pv-row-val.r{ color:var(--red); }
+    .pv-row-val.rl{ color:#e88; }
+    .wcard-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 10px 9px; border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{ font-size:10px; color:var(--gray2); }
+    .wcard-btn{
+      border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500;
+      padding:4px 12px; border-radius:20px; cursor:pointer; transition:all .15s;
+    }
+    .wcard-btn:hover{ background:rgba(12,64,104,.06); }
+    .wcard-counter{ display:none; align-items:center; background:var(--cyan); border-radius:20px; overflow:hidden; }
+    .wcard-counter button{ background:transparent; border:none; color:#fff; font-size:15px; font-weight:600; padding:3px 9px; cursor:pointer; font-family:'Rubik',sans-serif; }
+    .cnt-num{ color:#fff; font-size:12px; font-weight:600; min-width:20px; text-align:center; }
+    .wcard.added .wcard-btn    { display:none; }
+    .wcard.added .wcard-counter{ display:flex; }
+
+    /* ══ FULL WIDGET ══ */
+    .widget{ background:var(--white); border-radius:var(--r); box-shadow:var(--shadow); width:640px; overflow:hidden; }
+
+    /* Header */
+    .w-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px 12px;
+    }
+    .w-title{ font-size:14px; font-weight:600; color:var(--navy); }
+    .w-month{
+      display:flex; align-items:center; gap:5px;
+      font-size:12px; font-weight:500; color:var(--navy);
+      background:#f0f4f8; border-radius:8px; padding:5px 10px;
+      border:1px solid #e2eaf2; cursor:pointer;
+    }
+    .w-month select{
+      appearance:none; -webkit-appearance:none; background:transparent; border:none;
+      font-family:'Rubik',sans-serif; font-size:12px; font-weight:500;
+      color:var(--navy); cursor:pointer; outline:none; padding:0; margin:0;
+      min-width:90px; direction:rtl;
+    }
+
+    /* ── Main gap metric ── */
+    .w-main{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 22px 18px;
+      border-top:1px solid #f0f4f7;
+      border-bottom:1px solid #f0f4f7;
+    }
+    .w-main-left{ display:flex; flex-direction:column; gap:4px; }
+    .w-main-label{ font-size:12px; color:var(--gray2); }
+    .w-main-val{
+      font-size:42px; font-weight:600; direction:ltr; line-height:1;
+    }
+    .w-main-val.neg{ color:var(--red); }
+    .w-main-val.pos{ color:var(--green); }
+    .w-main-sub{ font-size:12px; font-weight:500; }
+    .w-main-sub.neg{ color:var(--red); }
+    .w-main-sub.pos{ color:var(--green); }
+
+    /* formula pill */
+    .w-formula{
+      display:flex; flex-direction:column; align-items:flex-start;
+      gap:5px; padding:10px 14px;
+      background:#f7fafd; border-radius:10px; border:1px solid #e8eef5;
+      font-size:11px; color:var(--gray2); direction:ltr;
+    }
+    .w-formula-row{ display:flex; align-items:center; gap:6px; white-space:nowrap; }
+    .f-op{ font-size:14px; font-weight:600; color:var(--gray2); width:14px; text-align:center; }
+    .f-val{ font-weight:600; }
+    .f-val.g{ color:var(--green); }
+    .f-val.r{ color:var(--red); }
+    .f-label{ font-size:10px; color:var(--gray2); }
+    .f-divider{ height:1px; background:#e2eaf2; width:100%; }
+    .f-result-row{ display:flex; align-items:center; gap:6px; }
+    .f-result-val{ font-size:14px; font-weight:600; }
+    .f-result-val.neg{ color:var(--red); }
+    .f-result-val.pos{ color:var(--green); }
+
+    /* ── Progress bar ── */
+    .w-progress-section{ padding:16px 22px 0; }
+    .w-progress-top{
+      display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;
+    }
+    .w-progress-label{ font-size:11px; color:var(--gray2); }
+    .w-progress-pct{ font-size:13px; font-weight:600; color:var(--navy); }
+    .w-progress-track{
+      height:14px; background:#f0f4f8; border-radius:20px;
+      overflow:hidden; direction:ltr; position:relative;
+    }
+    /* actual revenue fill */
+    .w-progress-rev{
+      position:absolute; top:0; right:0; height:100%; border-radius:20px;
+      background:var(--green); transition:width .4s;
+    }
+    /* expected revenue fill (stacked) */
+    .w-progress-exp-rev{
+      position:absolute; top:0; height:100%;
+      background:rgba(30,138,76,.25); transition:width .4s, right .4s;
+      border-radius:20px 0 0 20px;
+    }
+    /* target line = total expenses */
+    .w-progress-target{
+      position:absolute; top:0; width:2px; height:100%;
+      background:var(--navy); opacity:.5;
+    }
+    .w-progress-scale{
+      display:flex; justify-content:space-between;
+      font-size:10px; color:var(--gray2); margin-top:5px;
+    }
+
+    /* ── Breakdown rows ── */
+    .w-breakdown{ padding:16px 22px 0; }
+    .w-breakdown-title{ font-size:11px; color:var(--gray2); margin-bottom:10px; }
+
+    .br-row{
+      display:flex; align-items:center; gap:12px;
+      padding:7px 0; border-bottom:1px solid #f5f7fa;
+    }
+    .br-row:last-child{ border-bottom:none; }
+    .br-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .br-label{ flex:1; font-size:12px; color:var(--dark); }
+    .br-tag{
+      font-size:10px; font-weight:500; padding:2px 7px; border-radius:8px; flex-shrink:0;
+    }
+    .br-tag.actual  { color:var(--navy); background:#edf4f9; }
+    .br-tag.expected{ color:var(--gray2); background:#f4f6f8; }
+    .br-bar-wrap{
+      width:140px; height:7px; background:#f0f4f8; border-radius:20px;
+      overflow:hidden; direction:ltr; flex-shrink:0;
+    }
+    .br-bar-fill{ height:100%; border-radius:20px; transition:width .4s; }
+    .br-amount{ font-size:12px; font-weight:600; direction:ltr; width:72px; text-align:left; flex-shrink:0; }
+    .br-amount.g { color:var(--green); }
+    .br-amount.r { color:var(--red); }
+    .br-amount.rl{ color:#b03020; }
+    .br-amount.gy{ color:var(--gray2); }
+
+    /* total expenses row */
+    .br-total{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 0 0; margin-top:2px;
+    }
+    .br-total-label{ font-size:11px; font-weight:600; color:var(--navy); }
+    .br-total-val{ font-size:14px; font-weight:600; color:var(--navy); direction:ltr; }
+
+    /* ── Expected revenue note ── */
+    .w-expected-note{
+      display:flex; align-items:center; justify-content:space-between;
+      margin:14px 22px 0;
+      padding:9px 14px;
+      background:#f7fafd;
+      border-radius:9px;
+      border:1px dashed #cce0f0;
+    }
+    .wen-left{ display:flex; flex-direction:column; gap:2px; }
+    .wen-label{ font-size:11px; color:var(--gray2); }
+    .wen-sub{ font-size:10px; color:var(--gray2); }
+    .wen-val{ font-size:16px; font-weight:600; color:var(--cyan); direction:ltr; }
+    .wen-result{
+      font-size:11px; font-weight:500; padding:4px 10px; border-radius:10px;
+    }
+    .wen-result.pos{ color:var(--green); background:rgba(30,138,76,.1); }
+    .wen-result.neg{ color:var(--red); background:rgba(217,48,37,.08); }
+
+    /* Footer */
+    .w-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 22px 14px; border-top:1px solid #f0f4f7; margin-top:16px;
+    }
+    .w-update{ font-size:10px; color:var(--gray2); }
+  </style>
+</head>
+<body>
+
+<!-- ══ PICKER CARD ══ -->
+<div class="section-group">
+  <div class="section-label">כרטיסיית גלריה</div>
+  <div class="wcard" id="wc">
+    <div class="wcard-text">
+      <div class="wcard-title">כיסוי הוצאות</div>
+      <div class="wcard-desc">פער בין הכנסות בפועל לסך ההוצאות החודש</div>
+    </div>
+    <div class="wcard-preview">
+      <div>
+        <div class="pv-gap-label">עוד לכיסוי הוצאות</div>
+        <div class="pv-gap-val neg">−₪12,600</div>
+        <div class="pv-gap-sub neg">78% מהוצאות מכוסות</div>
+      </div>
+      <div class="pv-rows">
+        <div class="pv-row">
+          <div class="pv-dot" style="background:var(--green)"></div>
+          <div class="pv-row-label">הכנסות בפועל</div>
+          <div class="pv-row-val g">+₪58,200</div>
+        </div>
+        <div class="pv-row">
+          <div class="pv-dot" style="background:var(--red)"></div>
+          <div class="pv-row-label">הוצאות בפועל</div>
+          <div class="pv-row-val r">−₪48,500</div>
+        </div>
+        <div class="pv-row">
+          <div class="pv-dot" style="background:#e88080"></div>
+          <div class="pv-row-label">הוצאות צפויות</div>
+          <div class="pv-row-val rl">−₪22,300</div>
+        </div>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">תזרים</span>
+      <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="cp(-1)">−</button>
+        <span class="cnt-num" id="n">1</span>
+        <button onclick="cp(1)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FULL WIDGET ══ -->
+<div class="section-group">
+  <div class="section-label">ווידגט מלא</div>
+  <div class="widget">
+
+    <div class="w-head">
+      <div class="w-title">כיסוי הוצאות החודש</div>
+      <div class="w-month">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+          <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+        </svg>
+        <select id="month-sel" onchange="render()">
+          <option value="0">ינואר 2026</option>
+          <option value="1">פברואר 2026</option>
+          <option value="2">מרץ 2026</option>
+          <option value="3" selected>אפריל 2026</option>
+        </select>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+          <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Main gap -->
+    <div class="w-main">
+      <div class="w-main-left">
+        <div class="w-main-label" id="main-label">עוד לכיסוי כל ההוצאות</div>
+        <div class="w-main-val neg" id="main-val">−₪12,600</div>
+        <div class="w-main-sub neg" id="main-sub">78% מההוצאות מכוסות</div>
+      </div>
+
+      <!-- formula box -->
+      <div class="w-formula" id="formula-box"></div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-progress-section">
+      <div class="w-progress-top">
+        <span class="w-progress-label">הכנסות בפועל מול סך הוצאות</span>
+        <span class="w-progress-pct" id="prog-pct">78%</span>
+      </div>
+      <div class="w-progress-track">
+        <div class="w-progress-rev"    id="prog-rev"    style="width:0%"></div>
+        <div class="w-progress-exp-rev" id="prog-exp-rev" style="width:0%;right:0%"></div>
+        <div class="w-progress-target"  id="prog-target" style="right:100%"></div>
+      </div>
+      <div class="w-progress-scale">
+        <div id="prog-scale-left">סך הוצאות</div>
+        <div>₪0</div>
+      </div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="w-breakdown">
+      <div class="w-breakdown-title">פירוט</div>
+      <div id="br-rows"></div>
+      <div class="br-total">
+        <span class="br-total-label">סך הוצאות (בפועל + צפויות)</span>
+        <span class="br-total-val" id="br-total-val"></span>
+      </div>
+    </div>
+
+    <!-- Expected revenue note -->
+    <div class="w-expected-note">
+      <div class="wen-left">
+        <div class="wen-label">הכנסות צפויות עוד החודש</div>
+        <div class="wen-sub" id="wen-sub">בהנחה שיגיעו — הפער הצפוי</div>
+      </div>
+      <div class="wen-val" id="wen-val">+₪15,600</div>
+      <div class="wen-result" id="wen-result">עודף צפוי ₪3,000</div>
+    </div>
+
+    <div class="w-foot">
+      <div class="w-update">עדכון אחרון: 28.04.2026</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ─── Data per month ───────────────────────────────────────────── */
+const MONTHS_LBL = ['ינואר','פברואר','מרץ','אפריל'];
+
+const DATA = [
+  /* ינואר */ { rev:108229, expActual:61200, expExpected:26791, expRev:18000 },
+  /* פברואר */ { rev:111405, expActual:55300, expExpected:22686, expRev:12000 },
+  /* מרץ */   { rev:117433, expActual:82400, expExpected:31813, expRev:9500  },
+  /* אפריל */ { rev:58200,  expActual:48500, expExpected:22300, expRev:15600 },
+];
+
+/* ─── Helpers ──────────────────────────────────────────────────── */
+function fmt(v, sign) {
+  const abs = Math.abs(v).toLocaleString('he-IL');
+  if (sign === false) return '₪' + abs;
+  return (v >= 0 ? '+₪' : '−₪') + abs;
+}
+function fmtPlain(v) { return '₪' + Math.abs(v).toLocaleString('he-IL'); }
+
+/* ─── Render ───────────────────────────────────────────────────── */
+function render() {
+  const idx = +document.getElementById('month-sel').value;
+  const d   = DATA[idx];
+
+  const totalExp = d.expActual + d.expExpected;
+  const gap      = d.rev - totalExp;          // negative = need more revenue
+  const isPos    = gap >= 0;
+  const covPct   = Math.min(Math.round(d.rev / totalExp * 100), 100);
+
+  /* ── Main metric ── */
+  const mainVal = document.getElementById('main-val');
+  mainVal.textContent = (isPos ? '+₪' : '−₪') + Math.abs(gap).toLocaleString('he-IL');
+  mainVal.className   = 'w-main-val ' + (isPos ? 'pos' : 'neg');
+
+  document.getElementById('main-label').textContent = isPos
+    ? 'עודף מעל סך ההוצאות' : 'עוד לכיסוי כל ההוצאות';
+
+  const sub = document.getElementById('main-sub');
+  sub.textContent = covPct + '% מההוצאות מכוסות';
+  sub.className   = 'w-main-sub ' + (isPos ? 'pos' : 'neg');
+
+  /* ── Formula box ── */
+  document.getElementById('formula-box').innerHTML =
+    '<div class="w-formula-row">' +
+      '<span class="f-op"> </span>' +
+      '<div>' +
+        '<div class="f-val g">' + fmtPlain(d.rev) + '</div>' +
+        '<div class="f-label">הכנסות בפועל</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="f-divider"></div>' +
+    '<div class="w-formula-row">' +
+      '<span class="f-op">−</span>' +
+      '<div>' +
+        '<div class="f-val r">' + fmtPlain(d.expActual) + '</div>' +
+        '<div class="f-label">הוצאות בפועל</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="w-formula-row">' +
+      '<span class="f-op">−</span>' +
+      '<div>' +
+        '<div class="f-val r">' + fmtPlain(d.expExpected) + '</div>' +
+        '<div class="f-label">הוצאות צפויות</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="f-divider"></div>' +
+    '<div class="f-result-row">' +
+      '<span class="f-op">=</span>' +
+      '<div class="f-result-val ' + (isPos?'pos':'neg') + '">' + (isPos?'+₪':'−₪') + Math.abs(gap).toLocaleString('he-IL') + '</div>' +
+    '</div>';
+
+  /* ── Progress bar ── */
+  const maxVal   = Math.max(totalExp, d.rev + d.expRev) * 1.05;
+  const revW     = Math.min(d.rev / maxVal * 100, 100);
+  const expRevW  = Math.min(d.expRev / maxVal * 100, 100);
+  const targetW  = Math.min(totalExp / maxVal * 100, 100);
+
+  document.getElementById('prog-pct').textContent = covPct + '%';
+  document.getElementById('prog-rev').style.width = revW + '%';
+  document.getElementById('prog-exp-rev').style.cssText =
+    'width:' + expRevW + '%;right:' + revW + '%';
+  document.getElementById('prog-target').style.right = targetW + '%';
+  document.getElementById('prog-scale-left').textContent = fmtPlain(totalExp);
+  document.getElementById('prog-pct').style.color = isPos ? 'var(--green)' : 'var(--navy)';
+
+  /* ── Breakdown rows ── */
+  const maxBar = Math.max(d.rev, d.expActual, d.expExpected);
+  const rows = [
+    { label:'הכנסות בפועל',    dot:'#1e8a4c', tag:'actual',   color:'g',  val:d.rev,         barColor:'#1e8a4c' },
+    { label:'הוצאות בפועל',   dot:'#d93025', tag:'actual',   color:'r',  val:d.expActual,   barColor:'#d93025' },
+    { label:'הוצאות צפויות',  dot:'#e88080', tag:'expected', color:'rl', val:d.expExpected, barColor:'#e88080' },
+  ];
+
+  const tagLabel = { actual:'בפועל', expected:'צפוי' };
+
+  document.getElementById('br-rows').innerHTML = rows.map(r => {
+    const barW = Math.round(r.val / maxBar * 100);
+    const prefix = r.color === 'g' ? '+₪' : '−₪';
+    return '<div class="br-row">' +
+      '<div class="br-dot" style="background:' + r.dot + '"></div>' +
+      '<div class="br-label">' + r.label + '</div>' +
+      '<span class="br-tag ' + r.tag + '">' + tagLabel[r.tag] + '</span>' +
+      '<div class="br-bar-wrap"><div class="br-bar-fill" style="width:' + barW + '%;background:' + r.barColor + '"></div></div>' +
+      '<div class="br-amount ' + r.color + '">' + prefix + r.val.toLocaleString('he-IL') + '</div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('br-total-val').textContent = '−₪' + totalExp.toLocaleString('he-IL');
+
+  /* ── Expected revenue note ── */
+  const withExpRev = gap + d.expRev;
+  const isExpPos   = withExpRev >= 0;
+  document.getElementById('wen-val').textContent = '+₪' + d.expRev.toLocaleString('he-IL');
+  document.getElementById('wen-sub').textContent = 'בהנחה שיגיעו — הפער הצפוי';
+  const wenResult = document.getElementById('wen-result');
+  wenResult.textContent = (isExpPos ? 'עודף צפוי ₪' : 'חסר צפוי ₪') + Math.abs(withExpRev).toLocaleString('he-IL');
+  wenResult.className   = 'wen-result ' + (isExpPos ? 'pos' : 'neg');
+}
+
+let cnt = 1;
+function cp(d){ cnt = Math.max(1,cnt+d); document.getElementById('n').textContent = cnt; }
+
+render();
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

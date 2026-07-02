@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>התהליך שלי</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #e8eef4;
+      direction: rtl;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .wcard {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #e6ecf2;
+      width: 220px;
+      overflow: hidden;
+    }
+
+    .wcard-text {
+      padding: 14px 14px 8px;
+    }
+    .wcard-title {
+      font-size: 14px; font-weight: 600; color: #0C4068;
+      margin-bottom: 3px;
+    }
+    .wcard-desc {
+      font-size: 11px; color: #7a8898; line-height: 1.4;
+    }
+
+    .wcard-preview {
+      padding: 10px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── mini widget replica ── */
+    .mini-widget {
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e6ecf2;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mini-widget-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mini-widget-title {
+      font-size: 12px; font-weight: 600; color: #0C4068;
+    }
+    .mini-widget-icon {
+      color: #b8c4ce;
+    }
+    .mini-widget-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mini-widget-bar {
+      height: 5px;
+      border-radius: 3px;
+      background: #e6ecf2;
+      overflow: hidden;
+    }
+    .mini-widget-fill {
+      height: 100%;
+      width: 6%;
+      border-radius: 3px;
+      background: #39ABE2;
+    }
+    .mini-widget-label {
+      font-size: 10px;
+      color: #7a8898;
+      text-align: left;
+    }
+
+    /* ── Footer ── */
+    .wcard-foot {
+      padding: 9px 14px 11px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid #f0f4f7;
+    }
+    .wcard-cat { font-size: 11px; color: #b8c4ce; }
+
+    .wcard-btn {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 14px; border-radius: 20px;
+      border: 1.5px solid #0C4068;
+      background: transparent; color: #0C4068;
+      font-family: 'Rubik', sans-serif;
+      font-size: 12px; font-weight: 500;
+      cursor: pointer;
+    }
+    .wcard-btn:hover { background: rgba(12,64,104,.05); }
+
+    .wcard-counter {
+      display: none; align-items: center; border-radius: 20px; overflow: hidden;
+    }
+    .wcard-counter button {
+      width: 30px; height: 28px; background: #39ABE2; color: #fff;
+      font-size: 16px; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wcard-counter .cnt-num {
+      min-width: 28px; height: 28px; background: #39ABE2; color: #fff;
+      font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wcard.added .wcard-btn     { display: none; }
+    .wcard.added .wcard-counter { display: flex; }
+  </style>
+</head>
+<body>
+
+  <div class="wcard" id="wc">
+    <div class="wcard-text">
+      <div class="wcard-title">התהליך שלי</div>
+      <div class="wcard-desc">בר המציג את התקדמות הלקוח בתהליך הליווי</div>
+    </div>
+    <div class="wcard-preview">
+      <div class="mini-widget">
+        <div class="mini-widget-top">
+          <div class="mini-widget-title">תהליך ליווי עסקי</div>
+          <div class="mini-widget-icon">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6.5" stroke="#b8c4ce" stroke-width="1.4"/>
+              <path d="M8 5v3.5l2 2" stroke="#b8c4ce" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="mini-widget-bar-wrap">
+          <div class="mini-widget-bar">
+            <div class="mini-widget-fill"></div>
+          </div>
+          <div class="mini-widget-label">שלב 1 מתוך 16</div>
+        </div>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">תפעול</span>
+      <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="change(-1)">−</button>
+        <div class="cnt-num" id="n">1</div>
+        <button onclick="change(1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function change(d) {
+      const el = document.getElementById('n');
+      let n = parseInt(el.textContent) + d;
+      if (n <= 0) { document.getElementById('wc').classList.remove('added'); el.textContent = '1'; }
+      else el.textContent = n;
+    }
+  </script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

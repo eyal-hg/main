@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>תזרים קדימה — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:48px; padding:48px 32px;
+    }
+    .section-label{ font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; text-transform:uppercase; text-align:center; }
+    .section-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white); border:1.5px solid #e6ecf2; border-radius:12px;
+      width:200px; display:flex; flex-direction:column; overflow:hidden;
+      cursor:pointer; transition:box-shadow .18s,transform .18s,border-color .18s;
+    }
+    .wcard:hover{ box-shadow:0 6px 20px rgba(12,64,104,.12); border-color:var(--cyan); transform:translateY(-2px); }
+    .wcard.added{ border-color:var(--cyan); }
+    .wcard-text{ padding:12px 12px 6px; }
+    .wcard-title{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+    .wcard-desc{ font-size:10px; color:var(--gray); line-height:1.4; }
+    .wcard-preview{
+      height:100px; background:#f7fafd; overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .pv-top-bar{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:5px 10px; border-bottom:1px solid #eaf0f7;
+    }
+    .pv-top-label{ font-size:8px; color:var(--gray2); }
+    .pv-top-val{ font-size:11px; font-weight:600; color:var(--cyan); }
+    .pv-day-hdr{
+      padding:3px 10px; background:#eef5fc;
+      font-size:8px; font-weight:600; color:var(--navy);
+      display:flex; justify-content:space-between;
+    }
+    .pv-day-risk{ font-size:7px; font-weight:500; padding:1px 5px; border-radius:8px; }
+    .pv-day-risk.warn{ color:#9a6e00; background:rgba(240,180,41,.2); }
+    .pv-day-risk.bad { color:var(--red); background:rgba(217,48,37,.1); }
+    .pv-tx{
+      display:flex; justify-content:space-between;
+      padding:2px 10px; font-size:8px;
+    }
+    .pv-tx-name{ color:var(--gray); }
+    .pv-tx-amt{ font-weight:600; }
+    .pv-tx-amt.pos{ color:var(--green); }
+    .pv-tx-amt.neg{ color:var(--red); }
+    .pv-eod{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:3px 10px; border-top:1px solid #eaf0f7;
+      background:#f0f6fd; margin-top:auto;
+      font-size:8px;
+    }
+    .pv-eod-lbl{ color:var(--gray2); }
+    .pv-eod-val{ font-weight:600; }
+    .pv-eod-val.warn{ color:var(--yellow); }
+    .pv-eod-val.neg { color:var(--red); }
+    .wcard-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 10px 9px; border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{ font-size:10px; color:var(--gray2); }
+    .wcard-btn{
+      border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500;
+      padding:4px 12px; border-radius:20px; cursor:pointer; transition:all .15s;
+    }
+    .wcard-btn:hover{ background:rgba(12,64,104,.06); }
+    .wcard-counter{ display:none; align-items:center; background:var(--cyan); border-radius:20px; overflow:hidden; }
+    .wcard-counter button{ background:transparent; border:none; color:#fff; font-size:15px; font-weight:600; padding:3px 9px; cursor:pointer; font-family:'Rubik',sans-serif; }
+    .cnt-num{ color:#fff; font-size:12px; font-weight:600; min-width:20px; text-align:center; }
+    .wcard.added .wcard-btn    { display:none; }
+    .wcard.added .wcard-counter{ display:flex; }
+
+    /* ══ FULL WIDGET ══ */
+    .widget{ background:var(--white); border-radius:12px; box-shadow:var(--shadow); width:640px; overflow:hidden; }
+
+    /* Header */
+    .w-head{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      padding:14px 18px 12px;
+    }
+    .w-head-right{ display:flex; flex-direction:column; gap:2px; }
+    .w-title{ font-size:14px; font-weight:600; color:var(--navy); }
+    .w-subtitle{ font-size:11px; color:var(--gray2); }
+    .w-head-controls{ display:flex; align-items:center; gap:8px; }
+    .w-range{ display:flex; background:#f0f4f8; border-radius:8px; padding:2px; gap:2px; border:1px solid #e2eaf2; }
+    .range-tab{
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500; color:var(--gray2);
+      background:transparent; border:none; padding:4px 10px; border-radius:6px;
+      cursor:pointer; transition:all .15s; white-space:nowrap;
+    }
+    .range-tab.active{ background:var(--white); color:var(--navy); box-shadow:0 1px 4px rgba(12,64,104,.1); }
+    .range-tab:hover:not(.active){ color:var(--navy); }
+    .w-account{
+      display:flex; align-items:center; gap:5px;
+      font-size:12px; font-weight:500; color:var(--navy);
+      background:#f0f4f8; border-radius:8px; padding:5px 10px;
+      border:1px solid #e2eaf2; cursor:pointer;
+    }
+    .w-account select{
+      appearance:none; -webkit-appearance:none; background:transparent; border:none;
+      font-family:'Rubik',sans-serif; font-size:12px; font-weight:500;
+      color:var(--navy); cursor:pointer; outline:none; padding:0; margin:0;
+    }
+
+    /* Opening balance */
+    .w-balance-strip{
+      display:flex; align-items:center; justify-content:space-between;
+      margin:0 18px 0; padding:10px 16px;
+      background:#f0f8fd; border-radius:10px; border:1px solid #cfe8f5;
+    }
+    .w-balance-left{ display:flex; flex-direction:column; gap:1px; }
+    .w-balance-label{ font-size:11px; color:var(--gray2); }
+    .w-balance-date{ font-size:10px; color:var(--gray2); }
+    .w-balance-amount{ font-size:24px; font-weight:600; color:var(--cyan); direction:ltr; }
+    .risk-chip{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:20px; font-size:11px; font-weight:500;
+    }
+    .risk-chip .rdot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .risk-chip.ok  { color:var(--green); background:rgba(30,138,76,.1); }
+    .risk-chip.ok   .rdot { background:var(--green); }
+    .risk-chip.warn{ color:#9a6e00; background:rgba(240,180,41,.14); }
+    .risk-chip.warn .rdot { background:var(--yellow); }
+    .risk-chip.bad { color:var(--red); background:rgba(217,48,37,.1); }
+    .risk-chip.bad  .rdot { background:var(--red); }
+
+    /* ── Scroll area — flat list, no cards ── */
+    .w-scroll{
+      max-height:380px;
+      overflow-y:auto;
+      padding:14px 0 0;
+      scrollbar-width:thin;
+      scrollbar-color:#d0e8f5 transparent;
+    }
+    .w-scroll::-webkit-scrollbar{ width:4px; }
+    .w-scroll::-webkit-scrollbar-thumb{ background:#d0e8f5; border-radius:4px; }
+
+    /* Day section header */
+    .day-hdr{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 18px;
+      background:#f4f8fc;
+      border-top:1px solid #edf2f7;
+      border-bottom:1px solid #edf2f7;
+    }
+
+    .day-hdr-left{ display:flex; align-items:center; gap:8px; }
+    .day-hdr-name{ font-size:12px; font-weight:600; color:var(--navy); }
+    .day-hdr-date{ font-size:11px; color:var(--gray2); }
+    .day-tag{
+      font-size:10px; font-weight:500; padding:2px 9px; border-radius:10px;
+    }
+    .day-tag.warn{ color:#9a6e00; background:rgba(240,180,41,.2); }
+    .day-tag.bad { color:var(--red); background:rgba(217,48,37,.12); }
+
+    .day-hdr-balance{
+      display:flex; flex-direction:column; align-items:flex-end; gap:2px;
+    }
+    .day-hdr-bal-label{
+      font-size:9px; color:var(--gray2); letter-spacing:.3px;
+    }
+    .day-hdr-bal-pill{
+      display:flex; align-items:center; gap:6px;
+      padding:4px 10px 4px 12px;
+      border-radius:20px;
+      border:1.5px solid;
+    }
+    .day-hdr-bal-pill.ok  { border-color:rgba(57,171,226,.35); background:rgba(57,171,226,.08); }
+    .day-hdr-bal-pill.warn{ border-color:rgba(240,180,41,.4);  background:rgba(240,180,41,.1);  }
+    .day-hdr-bal-pill.bad { border-color:rgba(217,48,37,.35);  background:rgba(217,48,37,.08);  }
+    .day-hdr-bal-pill::before{
+      content:''; width:6px; height:6px; border-radius:50%; flex-shrink:0;
+    }
+    .day-hdr-bal-pill.ok::before  { background:var(--cyan); }
+    .day-hdr-bal-pill.warn::before{ background:var(--yellow); }
+    .day-hdr-bal-pill.bad::before { background:var(--red); }
+    .day-hdr-bal-val{ font-size:14px; font-weight:600; direction:ltr; line-height:1; }
+    .day-hdr-bal-val.ok  { color:var(--cyan); }
+    .day-hdr-bal-val.warn{ color:#9a6e00; }
+    .day-hdr-bal-val.bad { color:var(--red); }
+
+    /* Transaction row */
+    .tx-row{
+      display:flex; align-items:center;
+      padding:7px 18px; gap:10px;
+      border-bottom:1px solid #f5f7fa;
+    }
+    .tx-row:last-of-type{ border-bottom:none; }
+    .tx-bullet{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .tx-bullet.in { background:var(--green); }
+    .tx-bullet.out{ background:var(--red); }
+    .tx-body{ flex:1; min-width:0; }
+    .tx-desc{ font-size:12px; color:var(--dark); }
+    .tx-cat { font-size:10px; color:var(--gray2); }
+    .tx-amt{ font-size:13px; font-weight:600; direction:ltr; white-space:nowrap; }
+    .tx-amt.in { color:var(--green); }
+    .tx-amt.out{ color:var(--red); }
+
+    /* EOD balance row */
+    .eod-row{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 18px 10px;
+      border-bottom:2px solid #e0eaf4;
+    }
+    .eod-row.ok  { background:#f0f9ff; }
+    .eod-row.warn{ background:#fffbf0; }
+    .eod-row.bad { background:#fff5f5; }
+
+    .eod-left{ display:flex; flex-direction:column; gap:1px; }
+    .eod-label{ font-size:10px; font-weight:500; color:var(--gray2); text-transform:uppercase; letter-spacing:.4px; }
+    .eod-delta{ font-size:10px; }
+    .eod-delta.pos{ color:var(--green); }
+    .eod-delta.neg{ color:var(--red); }
+
+    .eod-val{ font-size:22px; font-weight:600; direction:ltr; line-height:1; }
+    .eod-val.ok  { color:var(--cyan); }
+    .eod-val.warn{ color:var(--yellow); }
+    .eod-val.bad { color:var(--red); }
+
+    /* carry balance row */
+    .carry-balance-row{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 18px 10px;
+      background:#fdf6e3;
+      border-top:1px solid #f0e0a0;
+    }
+    .carry-bal-label{ font-size:11px; font-weight:600; color:#7a5a00; }
+
+    /* ── Carry-overs (נגררות) section ── */
+    .carry-section{
+      border-bottom:2px solid #e8eef5;
+      background:#fffdf5;
+    }
+    .carry-hdr{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 18px 6px;
+      background:#fdf6e3;
+      border-bottom:1px solid #f5e8c0;
+    }
+    .carry-hdr-left{ display:flex; align-items:center; gap:7px; }
+    .carry-hdr-title{ font-size:12px; font-weight:600; color:#7a5a00; }
+    .carry-hdr-sub{ font-size:10px; color:#a07820; }
+    .carry-hdr-count{
+      font-size:10px; font-weight:600; color:#7a5a00;
+      background:rgba(240,180,41,.25); padding:2px 7px; border-radius:10px;
+    }
+    .carry-tx-row{
+      display:flex; align-items:center;
+      padding:6px 18px; gap:10px;
+      border-bottom:1px solid #f5f0e0;
+    }
+    .carry-tx-row:last-of-type{ border-bottom:none; }
+    .carry-bullet{ width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .carry-bullet.in { background:var(--green); }
+    .carry-bullet.out{ background:var(--red); }
+    .carry-body{ flex:1; min-width:0; }
+    .carry-desc{ font-size:12px; color:var(--dark); }
+    .carry-meta{ font-size:10px; color:#b09040; }
+    .carry-amt{ font-size:13px; font-weight:600; direction:ltr; white-space:nowrap; }
+    .carry-amt.in { color:var(--green); }
+    .carry-amt.out{ color:var(--red); }
+    /* Summary bar */
+    .carry-summary{
+      display:flex; align-items:center; gap:0;
+      padding:7px 18px;
+      border-top:1px solid #f5e8c0;
+      background:#fdf6e3;
+    }
+    .carry-sum-item{ flex:1; display:flex; flex-direction:column; gap:1px; }
+    .carry-sum-item + .carry-sum-item{ border-right:1px solid #ede0b0; padding-right:14px; margin-right:0; }
+    .carry-sum-item:first-child{ padding-left:14px; }
+    .carry-sum-label{ font-size:10px; color:#a07820; }
+    .carry-sum-val{ font-size:13px; font-weight:600; direction:ltr; }
+    .carry-sum-val.pos{ color:var(--green); }
+    .carry-sum-val.neg{ color:var(--red); }
+    .carry-sum-val.net{ color:var(--navy); }
+
+    /* Footer */
+    .w-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px 14px; border-top:1px solid #f0f4f7; margin-top:4px;
+    }
+    .w-update{ font-size:10px; color:var(--gray2); }
+    .w-actions{ display:flex; align-items:center; gap:14px; }
+    .w-action{
+      display:flex; align-items:center; gap:4px;
+      font-size:11px; font-weight:500; cursor:pointer; text-decoration:none;
+    }
+    .w-action.primary  { color:var(--cyan); }
+    .w-action.secondary{ color:var(--navy); }
+    .w-action:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+
+<!-- ══ PICKER CARD ══ -->
+<div class="section-group">
+  <div class="section-label">כרטיסיית גלריה</div>
+  <div class="wcard" id="wc">
+    <div class="wcard-text">
+      <div class="wcard-title">תזרים 30–60 ימים קדימה</div>
+      <div class="wcard-desc">פירוט תנועות יומי עם יתרות ואינדיקציית סיכון</div>
+    </div>
+    <div class="wcard-preview">
+      <div class="pv-top-bar">
+        <span class="pv-top-label">יתרה נוכחית</span>
+        <span class="pv-top-val">75,187 ₪</span>
+      </div>
+      <div class="pv-day-hdr">
+        <span>יום ב׳ — 27.04</span>
+      </div>
+      <div class="pv-tx">
+        <span class="pv-tx-name">הכנסות מסליקה</span>
+        <span class="pv-tx-amt pos">+12,400 ₪</span>
+      </div>
+      <div class="pv-tx">
+        <span class="pv-tx-name">משכורות עובדים</span>
+        <span class="pv-tx-amt neg">-65,000 ₪</span>
+      </div>
+      <div class="pv-eod">
+        <span class="pv-eod-lbl">יתרת סוף יום</span>
+        <span class="pv-eod-val warn">22,587 ₪</span>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">תזרים</span>
+      <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="cp(-1)">−</button>
+        <span class="cnt-num" id="n">1</span>
+        <button onclick="cp(1)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FULL WIDGET ══ -->
+<div class="section-group">
+  <div class="section-label">ווידגט מלא</div>
+  <div class="widget">
+
+    <div class="w-head">
+      <div class="w-head-right">
+        <div class="w-title">תחזית תזרים</div>
+        <div class="w-subtitle">נכון לבוקר יום ב׳, 27.04.2026</div>
+      </div>
+      <div class="w-head-controls">
+        <div class="w-range">
+          <button class="range-tab" onclick="setRange(7,this)">שבוע</button>
+          <button class="range-tab active" onclick="setRange(14,this)">14 י׳</button>
+          <button class="range-tab" onclick="setRange(30,this)">30 י׳</button>
+        </div>
+        <div class="w-account">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <rect x="1" y="3" width="10" height="8" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+            <path d="M4 3V2a2 2 0 014 0v1" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <select>
+            <option>כל החשבונות</option>
+            <option>עו״ש ראשי · 1234</option>
+            <option>עסקי · 5678</option>
+          </select>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.45">
+            <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-balance-strip">
+      <div class="w-balance-left">
+        <div class="w-balance-label">יתרת עו״ש נוכחית</div>
+        <div class="w-balance-date">נכון ל-27.04.2026</div>
+      </div>
+      <div class="w-balance-amount">75,187 ₪</div>
+      <div class="risk-chip bad" id="risk-chip">
+        <span class="rdot"></span>
+        <span id="risk-label">סיכון גבוה</span>
+      </div>
+    </div>
+
+    <div class="w-scroll" id="days-list"></div>
+
+    <div class="w-foot">
+      <div class="w-update">עדכון אחרון: 27.04.2026</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const OPENING = 75187;
+const CREDIT  = 10000;
+const DAY_NAMES = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+const PLAN = [
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:12400},{d:'תשלום ספק מזון מרכזי',c:'ספקים',a:-25000}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:4105},{d:'תשלומי לקוח עסקי',c:'הכנסות',a:864},{d:'משכורות עובדים',c:'שכר',a:-65000}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:667},{d:'ספק מזון גדול',c:'ספקים',a:-4000}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:9200},{d:'העברה לקרן פנסיה',c:'שכר',a:-12639}]},
+  {txs:[{d:'החזר לקוח VIP',c:'הכנסות',a:18500},{d:'ארנונה רבעונית',c:'קבועות',a:-8400}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:3800}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:5600},{d:'חשמל ומים',c:'קבועות',a:-2100}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:7800},{d:'הכנסות מסליקה',c:'הכנסות',a:3200},{d:'תשלום ספק ציוד',c:'ספקים',a:-14000}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:4500},{d:'שכירות משרד',c:'קבועות',a:-22000}]},
+  {txs:[{d:'הכנסות — פרויקט A',c:'הכנסות',a:45000},{d:'הוצאות תפעול',c:'תפעול',a:-5800}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:6200},{d:'תשלום לקבלן',c:'ספקים',a:-9500}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:8900},{d:'שיווק דיגיטלי',c:'שיווק',a:-6200}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:5100},{d:'ביטוח עסקי',c:'קבועות',a:-3600}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:4800},{d:'החזר מע״מ',c:'הכנסות',a:11200},{d:'משכורות (חלקיות)',c:'שכר',a:-32000}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:7300},{d:'הוצאות תפעול',c:'תפעול',a:-4100}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:9600},{d:'ספק מזון קטן',c:'ספקים',a:-2800}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:12000},{d:'שכירות — סניף',c:'קבועות',a:-8500}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:4200},{d:'תשלום ספק מרכזי',c:'ספקים',a:-19000}]},
+  {txs:[{d:'הכנסות — פרויקט B',c:'הכנסות',a:28000},{d:'הוצאות שיווק',c:'שיווק',a:-5400}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:6800},{d:'משכורות עובדים',c:'שכר',a:-65000},{d:'קרן פנסיה',c:'שכר',a:-12639}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:9400},{d:'תחזוקה ותפעול',c:'תפעול',a:-3200}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:7100},{d:'ביטוח רכב',c:'קבועות',a:-2400}]},
+  {txs:[{d:'הכנסות — לקוח חדש',c:'הכנסות',a:52000},{d:'עמלת יעוץ',c:'תפעול',a:-4800}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:5900},{d:'ספק ציוד',c:'ספקים',a:-7600}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:8300},{d:'הוצאות כלליות',c:'תפעול',a:-2900}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:6700},{d:'חשמל חודשי',c:'קבועות',a:-1800}]},
+  {txs:[{d:'הכנסות — פרויקט C',c:'הכנסות',a:38000},{d:'תשלום ספק גדול',c:'ספקים',a:-31000}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:5400},{d:'ניקיון ואחזקה',c:'תפעול',a:-1600}]},
+  {txs:[{d:'הכנסות אונליין',c:'הכנסות',a:11200},{d:'ארנונה חודשית',c:'קבועות',a:-2800}]},
+  {txs:[{d:'הכנסות מסליקה',c:'הכנסות',a:7800},{d:'תשלום קבלן משנה',c:'ספקים',a:-5200}]},
+];
+
+// ─── Carry-overs: נגררות ─────────────────────────────
+const CARRY = [
+  { d:'חשבונית פתוחה — לקוח ABC',      c:'גבייה',    a:+18500, due:'25.04.2026' },
+  { d:'שיק מלקוח — טרם נפרע',           c:'גבייה',    a:+7200,  due:'26.04.2026' },
+  { d:'החזר מע״מ — ממתין לאישור',       c:'מס הכנסה', a:+4900,  due:'24.04.2026' },
+  { d:'חשבונית ספק X — עצורה לבדיקה',  c:'ספקים',    a:-12000, due:'26.04.2026' },
+  { d:'שכר דירה — תשלום שהתעכב',        c:'קבועות',   a:-4500,  due:'24.04.2026' },
+];
+
+let currentRange = 14;
+
+function dayDate(i) {
+  const d = new Date(2026, 3, 27);
+  d.setDate(d.getDate() + i);
+  return d;
+}
+function fmtDate(d) {
+  return d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+}
+function fmtAmt(a) {
+  return (a >= 0 ? '+' : '-') + Math.abs(a).toLocaleString('he-IL') + ' ₪';
+}
+function fmtBal(v) {
+  if (v < 0) return '-' + Math.abs(v).toLocaleString('he-IL') + ' ₪';
+  return v.toLocaleString('he-IL') + ' ₪';
+}
+function riskOf(v) {
+  if (v < CREDIT)        return 'bad';
+  if (v < CREDIT * 2.5) return 'warn';
+  return 'ok';
+}
+
+function setRange(n, btn) {
+  currentRange = n;
+  document.querySelectorAll('.range-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function render() {
+  const days = PLAN.slice(0, currentRange);
+
+  // find worst day + first bad day for risk chip
+  let bal = OPENING, minBal = OPENING;
+  let firstBadIdx = -1;
+  days.forEach((day, i) => {
+    day.txs.forEach(t => bal += t.a);
+    if (bal < minBal) minBal = bal;
+    if (firstBadIdx === -1 && bal < CREDIT) firstBadIdx = i;
+  });
+  const rc = riskOf(minBal);
+  const chip = document.getElementById('risk-chip');
+  chip.className = 'risk-chip ' + rc;
+  let chipText = 'מצב תקין';
+  if (rc === 'warn') chipText = 'סיכון בינוני';
+  if (rc === 'bad')  chipText = 'חריגה צפויה · ' + fmtDate(dayDate(firstBadIdx));
+  document.getElementById('risk-label').textContent = chipText;
+
+  // ── נגררות block (always first) ──────────────────────
+  const carryIn  = CARRY.filter(t => t.a > 0);
+  const carryOut = CARRY.filter(t => t.a < 0);
+  const sumIn    = carryIn.reduce((s,t)  => s + t.a, 0);
+  const sumOut   = carryOut.reduce((s,t) => s + t.a, 0);
+  const netCarry = sumIn + sumOut;
+
+  let html = '<div class="carry-section">';
+
+  // header
+  html += '<div class="carry-hdr">' +
+            '<div class="carry-hdr-left">' +
+              '<span class="carry-hdr-title">נגררות מימים קודמים</span>' +
+              '<span class="carry-hdr-sub">פריטים שטרם סולקו</span>' +
+            '</div>' +
+            '<span class="carry-hdr-count">' + CARRY.length + ' פריטים</span>' +
+          '</div>';
+
+  // income items
+  carryIn.forEach(t => {
+    html += '<div class="carry-tx-row">' +
+              '<span class="carry-bullet in"></span>' +
+              '<div class="carry-body">' +
+                '<div class="carry-desc">' + t.d + '</div>' +
+                '<div class="carry-meta">תאריך מקורי: ' + t.due + '</div>' +
+              '</div>' +
+              '<div class="carry-amt in">' + fmtAmt(t.a) + '</div>' +
+            '</div>';
+  });
+
+  // expense items
+  carryOut.forEach(t => {
+    html += '<div class="carry-tx-row">' +
+              '<span class="carry-bullet out"></span>' +
+              '<div class="carry-body">' +
+                '<div class="carry-desc">' + t.d + '</div>' +
+                '<div class="carry-meta">תאריך מקורי: ' + t.due + '</div>' +
+              '</div>' +
+              '<div class="carry-amt out">' + fmtAmt(t.a) + '</div>' +
+            '</div>';
+  });
+
+  // summary bar (סה״כ נגררות) removed per request
+
+  // balance after carry-overs
+  const balAfterCarry = OPENING + netCarry;
+  const bacRisk = riskOf(balAfterCarry);
+  html += '<div class="carry-balance-row">' +
+            '<span class="carry-bal-label">יתרה אחרי נגררות</span>' +
+            '<div class="day-hdr-bal-pill ' + bacRisk + '">' +
+              '<span class="day-hdr-bal-val ' + bacRisk + '">' + fmtBal(balAfterCarry) + '</span>' +
+            '</div>' +
+          '</div>';
+
+  html += '</div>'; // end carry-section
+
+  // ── Daily breakdown ───────────────────────────────────
+  bal = OPENING;
+
+  days.forEach((day, i) => {
+    const d    = dayDate(i);
+    const name = 'יום ' + DAY_NAMES[d.getDay()];
+    const date = fmtDate(d);
+
+    const eod  = bal + day.txs.reduce((s,t) => s + t.a, 0);
+    const er   = riskOf(eod);
+    const tag  = er === 'bad'
+      ? '<span class="day-tag bad">⚠ חריגה ממסגרת</span>'
+      : '';
+
+    // day header — clean
+    html += '<div class="day-hdr">' +
+              '<div class="day-hdr-left">' +
+                '<span class="day-hdr-name">' + name + '</span>' +
+                '<span class="day-hdr-date">' + date + '</span>' +
+              '</div>' +
+            '</div>';
+
+    // income rows
+    day.txs.filter(t => t.a > 0).forEach(t => {
+      html += '<div class="tx-row">' +
+                '<span class="tx-bullet in"></span>' +
+                '<div class="tx-body"><div class="tx-desc">' + t.d + '</div><div class="tx-cat">' + t.c + '</div></div>' +
+                '<div class="tx-amt in">' + fmtAmt(t.a) + '</div>' +
+              '</div>';
+    });
+
+    // expense rows
+    day.txs.filter(t => t.a < 0).forEach(t => {
+      html += '<div class="tx-row">' +
+                '<span class="tx-bullet out"></span>' +
+                '<div class="tx-body"><div class="tx-desc">' + t.d + '</div><div class="tx-cat">' + t.c + '</div></div>' +
+                '<div class="tx-amt out">' + fmtAmt(t.a) + '</div>' +
+              '</div>';
+    });
+
+    // balance row — after all transactions, tag lives here
+    html += '<div class="eod-row ' + er + '">' +
+              '<span class="eod-label">יתרה עתידית</span>' +
+              '<div style="display:flex;align-items:center;gap:8px">' +
+                tag +
+                '<div class="day-hdr-bal-pill ' + er + '">' +
+                  '<span class="day-hdr-bal-val ' + er + '">' + fmtBal(eod) + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+
+    bal = eod;
+  });
+
+  document.getElementById('days-list').innerHTML = html;
+}
+
+let cnt = 1;
+function cp(d) { cnt = Math.max(1,cnt+d); document.getElementById('n').textContent = cnt; }
+
+render();
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

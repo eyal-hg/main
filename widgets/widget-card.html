@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widget Card — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0C4068;
+      --cyan:  #39ABE2;
+      --warm:  #E48375;
+      --bg:    #FFFEFE;
+      --gray:  #7a8898;
+      --gray2: #b8c4ce;
+      --white: #FFFFFF;
+    }
+    body {
+      font-family: 'Rubik', sans-serif;
+      background: #e8eef4;
+      direction: rtl;
+      padding: 40px 32px;
+    }
+
+    h2 {
+      font-size: 13px; font-weight: 500; color: var(--gray);
+      letter-spacing: .5px; margin-bottom: 20px;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      max-width: 1000px;
+    }
+
+    /* ═══════════════════════════════════════
+       WIDGET CARD — exact Meital design
+    ═══════════════════════════════════════ */
+    .wcard {
+      background: var(--white);
+      border-radius: 14px;
+      border: 1.5px solid #e6ecf2;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .wcard:hover {
+      box-shadow: 0 8px 32px rgba(12,64,104,.12);
+      transform: translateY(-2px);
+    }
+
+    /* ── Text area ── */
+    .wcard-text {
+      padding: 16px 16px 10px;
+      text-align: right;
+    }
+    .wcard-title {
+      font-size: 15px; font-weight: 600; color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .wcard-desc {
+      font-size: 12px; color: var(--gray); line-height: 1.5;
+    }
+
+    /* ── Preview / Illustration area ── */
+    .wcard-preview {
+      flex: 1;
+      min-height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 10px 16px;
+      position: relative;
+    }
+
+    /* ── Bottom action row ── */
+    .wcard-foot {
+      padding: 10px 14px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f0f4f7;
+    }
+    .wcard-cat {
+      font-size: 11px; font-weight: 400; color: var(--gray2);
+    }
+
+    /* ── Add button (default: outlined) ── */
+    .wcard-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--navy);
+      background: transparent;
+      color: var(--navy);
+      font-family: 'Rubik', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .wcard-btn:hover { background: rgba(12,64,104,.06); }
+
+    /* ── Counter state (when added) ── */
+    .wcard-counter {
+      display: none;
+      align-items: center; gap: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      border: none;
+    }
+    .wcard-counter button {
+      width: 34px; height: 32px;
+      background: var(--cyan); color: var(--white);
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px; font-weight: 400; line-height: 1;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .12s;
+    }
+    .wcard-counter button:hover { background: #2a96cc; }
+    .wcard-counter .cnt-num {
+      min-width: 32px; height: 32px;
+      background: var(--cyan); color: var(--white);
+      font-family: 'Rubik', sans-serif;
+      font-size: 14px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Added state: show counter, hide button ── */
+    .wcard.added .wcard-btn     { display: none; }
+    .wcard.added .wcard-counter { display: flex; }
+
+    /* ════════════════════════════════
+       Preview illustrations per type
+    ════════════════════════════════ */
+
+    /* Lines + icon (פוקוסים / מסמכים) */
+    .prev-lines {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 10px; width: 100%;
+    }
+    .prev-line {
+      height: 8px; border-radius: 4px;
+      background: #e8eef4;
+    }
+    .prev-line.short { width: 55%; }
+    .prev-icon {
+      position: absolute; left: 22px; bottom: 18px;
+    }
+
+    /* Sparkline chart */
+    .prev-chart { width: 100%; }
+
+    /* Progress bar */
+    .prev-progress {
+      width: 100%; display: flex; flex-direction: column; gap: 8px;
+    }
+    .prev-prog-label {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--gray);
+    }
+    .prev-prog-num { font-size: 18px; font-weight: 600; color: var(--cyan); }
+    .prev-prog-bar { height: 7px; border-radius: 4px; background: #e8eef4; overflow: hidden; }
+    .prev-prog-fill { height: 100%; border-radius: 4px; background: var(--cyan); }
+  </style>
+</head>
+<body>
+
+<h2>דוגמאות — קוביית ווידגט</h2>
+
+<div class="grid">
+
+  <!-- ── 1. פוקוסים ── -->
+  <div class="wcard" id="wc1">
+    <div class="wcard-text">
+      <div class="wcard-title">פוקוסים</div>
+      <div class="wcard-desc">רשימות משימות חשובות</div>
+    </div>
+    <div class="wcard-preview">
+      <div class="prev-lines">
+        <div class="prev-line"></div>
+        <div class="prev-line short"></div>
+      </div>
+      <div class="prev-icon">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+          <rect x="2" y="2" width="40" height="40" rx="8" fill="rgba(57,171,226,.07)"/>
+          <path d="M14 22h16M14 15h16M14 29h10" stroke="#39ABE2" stroke-width="2" stroke-linecap="round"/>
+          <path d="M32 28l-6 6-3-3" stroke="#39ABE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">תפעול</span>
+      <button class="wcard-btn" onclick="addWidget('wc1')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="changeCount('wc1',-1)">−</button>
+        <div class="cnt-num" id="wc1-n">1</div>
+        <button onclick="changeCount('wc1',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. מסמכים ── -->
+  <div class="wcard" id="wc2">
+    <div class="wcard-text">
+      <div class="wcard-title">מסמכים</div>
+      <div class="wcard-desc">המסמכים האחרונים שנשלחו או הועלו למערכת</div>
+    </div>
+    <div class="wcard-preview">
+      <div class="prev-lines">
+        <div class="prev-line"></div>
+        <div class="prev-line short"></div>
+      </div>
+      <div class="prev-icon">
+        <svg width="44" height="50" viewBox="0 0 44 50" fill="none">
+          <rect x="4" y="2" width="32" height="42" rx="4" fill="rgba(57,171,226,.07)" stroke="#39ABE2" stroke-width="1.5"/>
+          <path d="M12 16h20M12 22h20M12 28h14" stroke="#39ABE2" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M28 2v10h10" stroke="#39ABE2" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">מסמכים</span>
+      <button class="wcard-btn" onclick="addWidget('wc2')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="changeCount('wc2',-1)">−</button>
+        <div class="cnt-num" id="wc2-n">1</div>
+        <button onclick="changeCount('wc2',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. מחזור הכנסות (sparkline) ── -->
+  <div class="wcard" id="wc3">
+    <div class="wcard-text">
+      <div class="wcard-title">מחזור הכנסות</div>
+      <div class="wcard-desc">גרף שמציג את מחזור ההכנסות בשנה האחרונה</div>
+    </div>
+    <div class="wcard-preview" style="padding:8px 10px;">
+      <svg class="prev-chart" height="88" viewBox="0 0 220 88" fill="none">
+        <defs>
+          <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#39ABE2" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#39ABE2" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0,72 C20,68 40,74 60,60 C80,46 100,50 120,38 C140,26 160,20 180,14 C196,9 210,6 220,4 L220,88 L0,88Z" fill="url(#cg1)"/>
+        <path d="M0,72 C20,68 40,74 60,60 C80,46 100,50 120,38 C140,26 160,20 180,14 C196,9 210,6 220,4" stroke="#39ABE2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="3.5" fill="#39ABE2"/>
+        <circle cx="120" cy="38" r="3.5" fill="#39ABE2"/>
+        <circle cx="180" cy="14" r="3.5" fill="#39ABE2"/>
+        <circle cx="220" cy="4" r="4" fill="#39ABE2" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">פיננסי</span>
+      <button class="wcard-btn" onclick="addWidget('wc3')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="changeCount('wc3',-1)">−</button>
+        <div class="cnt-num" id="wc3-n">1</div>
+        <button onclick="changeCount('wc3',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. יעד מכירות (progress) ── -->
+  <div class="wcard" id="wc4">
+    <div class="wcard-text">
+      <div class="wcard-title">יעד מכירות</div>
+      <div class="wcard-desc">בר המציג מצב נתון של מכירות מול היעד</div>
+    </div>
+    <div class="wcard-preview" style="padding:12px 18px;">
+      <div class="prev-progress">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+          <div style="font-size:11px;color:var(--gray);">יעד: 20,000</div>
+          <div class="prev-prog-num">16,000</div>
+        </div>
+        <div class="prev-prog-bar">
+          <div class="prev-prog-fill" style="width:80%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray2);">
+          <span>20,000</span>
+          <span>0</span>
+        </div>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">פיננסי</span>
+      <button class="wcard-btn" onclick="addWidget('wc4')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="changeCount('wc4',-1)">−</button>
+        <div class="cnt-num" id="wc4-n">1</div>
+        <button onclick="changeCount('wc4',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. התהליך שלי ── -->
+  <div class="wcard" id="wc5">
+    <div class="wcard-text">
+      <div class="wcard-title">התהליך שלי</div>
+      <div class="wcard-desc">שלבי הליווי ופגישות לפי תהליך מותאם אישית</div>
+    </div>
+    <div class="wcard-preview" style="padding:14px 16px 10px;">
+      <svg width="100%" height="88" viewBox="0 0 200 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- connecting line -->
+        <line x1="20" y1="30" x2="180" y2="30" stroke="#d8e6f0" stroke-width="2" stroke-dasharray="4 3"/>
+
+        <!-- Step 1 — completed -->
+        <circle cx="20" cy="30" r="10" fill="#39ABE2"/>
+        <path d="M15 30l3.5 3.5L25 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Step 2 — completed -->
+        <circle cx="60" cy="30" r="10" fill="#39ABE2"/>
+        <path d="M55 30l3.5 3.5L65 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Step 3 — active (current) -->
+        <circle cx="100" cy="30" r="12" fill="white" stroke="#39ABE2" stroke-width="2.5"/>
+        <!-- calendar icon inside -->
+        <rect x="93" y="23" width="14" height="14" rx="2" stroke="#39ABE2" stroke-width="1.5" fill="white"/>
+        <line x1="93" y1="27" x2="107" y2="27" stroke="#39ABE2" stroke-width="1.5"/>
+        <line x1="97" y1="21" x2="97" y2="25" stroke="#39ABE2" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="103" y1="21" x2="103" y2="25" stroke="#39ABE2" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="97" cy="32" r="1.2" fill="#39ABE2"/>
+        <circle cx="100" cy="32" r="1.2" fill="#39ABE2"/>
+        <circle cx="103" cy="32" r="1.2" fill="#39ABE2"/>
+        <!-- pulse ring -->
+        <circle cx="100" cy="30" r="16" stroke="#39ABE2" stroke-width="1" stroke-opacity="0.3"/>
+
+        <!-- Step 4 — upcoming -->
+        <circle cx="140" cy="30" r="10" fill="white" stroke="#d8e6f0" stroke-width="2"/>
+        <circle cx="140" cy="30" r="3" fill="#d8e6f0"/>
+
+        <!-- Step 5 — upcoming -->
+        <circle cx="180" cy="30" r="10" fill="white" stroke="#d8e6f0" stroke-width="2"/>
+        <circle cx="180" cy="30" r="3" fill="#d8e6f0"/>
+
+        <!-- Labels -->
+        <text x="20"  y="52" text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#39ABE2">היכרות</text>
+        <text x="60"  y="52" text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#39ABE2">אבחון</text>
+        <text x="100" y="56" text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#0C4068" font-weight="600">בנייה</text>
+        <text x="140" y="52" text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#b8c4ce">יישום</text>
+        <text x="180" y="52" text-anchor="middle" font-family="Rubik,sans-serif" font-size="9" fill="#b8c4ce">סיכום</text>
+
+        <!-- current step badge -->
+        <rect x="68" y="64" width="64" height="18" rx="9" fill="rgba(57,171,226,.1)"/>
+        <text x="100" y="76" text-anchor="middle" font-family="Rubik,sans-serif" font-size="10" fill="#0C4068" font-weight="500">שלב 3 מתוך 5</text>
+
+      </svg>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">תפעול</span>
+      <button class="wcard-btn" onclick="addWidget('wc5')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="changeCount('wc5',-1)">−</button>
+        <div class="cnt-num" id="wc5-n">1</div>
+        <button onclick="changeCount('wc5',1)">+</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function addWidget(id) {
+    document.getElementById(id).classList.add('added');
+  }
+
+  function changeCount(id, delta) {
+    const el = document.getElementById(id + '-n');
+    let n = parseInt(el.textContent) + delta;
+    if (n <= 0) {
+      document.getElementById(id).classList.remove('added');
+      el.textContent = '1';
+    } else {
+      el.textContent = n;
+    }
+  }
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

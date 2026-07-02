@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>לידים — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2; --warm:#E48375;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:48px; padding:48px 32px;
+    }
+
+    /* ── Section label ── */
+    .section-label{ font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; text-transform:uppercase; text-align:center; }
+    .section-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white); border:1.5px solid #e6ecf2; border-radius:12px;
+      width:200px; display:flex; flex-direction:column; overflow:hidden;
+      transition:box-shadow .18s,transform .18s,border-color .18s; cursor:pointer;
+    }
+    .wcard:hover{ box-shadow:0 6px 20px rgba(12,64,104,.12); border-color:var(--cyan); transform:translateY(-2px); }
+    .wcard.added{ border-color:var(--cyan); }
+    .wcard-text{ padding:12px 12px 6px; }
+    .wcard-title{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+    .wcard-desc{ font-size:10px; color:var(--gray); line-height:1.4; }
+    .wcard-preview{
+      height:100px; padding:8px 10px 6px; background:#f7fafd;
+      display:flex; flex-direction:column; justify-content:space-between;
+      position:relative; overflow:hidden;
+    }
+    .wcard-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 10px 9px; border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{ font-size:10px; color:var(--gray2); }
+    .wcard-btn{
+      border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500;
+      padding:4px 12px; border-radius:20px; cursor:pointer; transition:all .15s;
+    }
+    .wcard-btn:hover{ background:rgba(12,64,104,.06); }
+    .wcard-counter{ display:none; align-items:center; background:var(--cyan); border-radius:20px; overflow:hidden; }
+    .wcard-counter button{ background:transparent; border:none; color:#fff; font-size:15px; font-weight:600; padding:3px 9px; cursor:pointer; font-family:'Rubik',sans-serif; }
+    .cnt-num{ color:#fff; font-size:12px; font-weight:600; min-width:20px; text-align:center; }
+    .wcard.added .wcard-btn{ display:none; }
+    .wcard.added .wcard-counter{ display:flex; }
+
+    /* picker preview internals */
+    .pv-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+    .pv-num{ font-size:18px; font-weight:600; color:var(--cyan); line-height:1; }
+    .pv-chips{ display:flex; flex-direction:column; gap:3px; align-items:flex-end; }
+    .pv-chip{ font-size:8px; font-weight:500; padding:2px 5px; border-radius:4px; white-space:nowrap; }
+    .pv-chip.up{ color:var(--green); background:rgba(30,138,76,.1); }
+
+    /* ══ FULL WIDGET ══ */
+    .widget{
+      background:var(--white); border-radius:var(--r);
+      box-shadow:var(--shadow); width:640px; overflow:hidden;
+    }
+
+    /* ── Header ── */
+    .w-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px 10px; gap:10px;
+    }
+    .w-title{ font-size:14px; font-weight:500; color:var(--dark); white-space:nowrap; }
+    .w-head-left{ display:flex; align-items:center; gap:8px; }
+    .w-month{
+      display:flex; align-items:center; gap:5px;
+      font-size:12px; font-weight:500; color:var(--navy);
+      background:#f0f4f8; border-radius:8px; padding:5px 10px;
+      border:1px solid #e2eaf2; cursor:pointer;
+    }
+    .w-month select{
+      appearance:none; -webkit-appearance:none; background:transparent; border:none;
+      font-family:'Rubik',sans-serif; font-size:12px; font-weight:500;
+      color:var(--navy); cursor:pointer; outline:none; padding:0; margin:0;
+    }
+
+    /* filter chips */
+    .w-filters{ display:flex; align-items:center; gap:6px; }
+    .f-chip{
+      font-size:11px; font-weight:500; padding:4px 12px; border-radius:20px;
+      cursor:pointer; transition:all .15s; border:1px solid #e2eaf2;
+      background:#f7fafd; color:var(--gray2);
+    }
+    .f-chip.active{ background:var(--cyan); color:#fff; border-color:var(--cyan); }
+    .f-chip:hover:not(.active){ background:#eef5fb; color:var(--navy); }
+
+    /* ── Main metric ── */
+    .w-metric{ padding:10px 18px 0; }
+    .w-val-row{ display:flex; align-items:baseline; gap:8px; margin-bottom:14px; }
+    .w-val{ font-size:38px; font-weight:600; color:var(--cyan); line-height:1; direction:ltr; }
+    .w-val-label{ font-size:13px; color:var(--gray2); font-weight:400; }
+
+    /* progress bar */
+    .w-bar-section{ padding:0 0 4px; }
+    .w-bar-wrap{ position:relative; margin-bottom:5px; }
+    .w-bar-bubble{
+      position:absolute; top:-24px; left:88%;
+      transform:translateX(-50%);
+      background:var(--white); border:1px solid #e2eaf2;
+      border-radius:20px; padding:2px 8px;
+      font-size:11px; font-weight:500; color:var(--navy);
+      white-space:nowrap; box-shadow:0 1px 6px rgba(12,64,104,.08);
+    }
+    .w-bar{ height:12px; background:#deeef8; border-radius:20px; overflow:hidden; direction:ltr; }
+    .w-bar-fill{ height:100%; width:88%; border-radius:20px; background:var(--cyan); }
+    .w-bar-scale{ display:flex; justify-content:space-between; font-size:10px; color:var(--gray2); margin-top:4px; }
+
+    /* ── Chips row ── */
+    .w-chips{
+      display:flex; align-items:center; justify-content:flex-end;
+      gap:8px; padding:10px 18px 0; flex-wrap:wrap;
+    }
+    .chip{
+      display:flex; align-items:center; gap:4px;
+      font-size:12px; font-weight:500; padding:4px 10px; border-radius:20px;
+    }
+    .chip.up  { color:var(--green); background:rgba(30,138,76,.08); }
+    .chip.dn  { color:var(--red);   background:rgba(217,48,37,.08); }
+    .chip.st  { color:var(--yellow);background:rgba(240,180,41,.08); }
+    .chip.tgt { color:var(--navy);  background:#eef4f8; font-weight:400; font-size:12px; }
+
+    /* ── Divider ── */
+    .w-divider{ height:1px; background:#f2f4f7; margin:16px 0 0; }
+
+    /* ── Donuts section ── */
+    .w-donuts{
+      display:flex; align-items:center; justify-content:center;
+      gap:28px; padding:20px 18px 18px;
+    }
+
+    /* Main donut */
+    .donut-main{ position:relative; flex-shrink:0; }
+    .donut-main svg{ display:block; }
+    .donut-center{
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      text-align:center; pointer-events:none;
+    }
+    .donut-center .dc-num{ font-size:22px; font-weight:600; color:var(--dark); line-height:1; }
+    .donut-center .dc-lbl{ font-size:10px; color:var(--gray2); margin-top:2px; }
+
+    /* Small donut */
+    .donut-small{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .donut-small-wrap{ position:relative; }
+    .donut-small-wrap svg{ display:block; }
+    .donut-small-center{
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      text-align:center;
+    }
+    .donut-small-center .dsc-num{ font-size:14px; font-weight:600; color:var(--dark); line-height:1; }
+    .donut-small-center .dsc-pct{ font-size:9px; color:var(--gray2); }
+    .donut-small-label{
+      text-align:center;
+    }
+    .donut-small-label .dsl-name{ font-size:11px; font-weight:500; color:var(--dark); }
+    .donut-small-label .dsl-count{ font-size:10px; color:var(--gray2); }
+
+    /* Legend dots */
+    .donut-legend{
+      display:flex; gap:14px; justify-content:center;
+      padding-top:4px;
+    }
+    .legend-item{ display:flex; align-items:center; gap:5px; font-size:10px; color:var(--gray2); }
+    .legend-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* ── Footer ── */
+    .w-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 18px 12px; border-top:1px solid #f2f4f7;
+    }
+    .w-update{ font-size:10px; color:var(--gray2); }
+    .w-action{
+      font-size:11px; font-weight:500; color:var(--cyan); cursor:pointer;
+      display:flex; align-items:center; gap:4px;
+    }
+    .w-action:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ PICKER CARD ══ -->
+  <div class="section-group">
+    <div class="section-label">כרטיסיית גלריה</div>
+    <div class="wcard" id="wc">
+      <div class="wcard-text">
+        <div class="wcard-title">פירוט מדד מחובר</div>
+        <div class="wcard-desc">חלוקה בין שני מדדים מחוברים עם השוואה לתקופה קודמת</div>
+      </div>
+      <div class="wcard-preview">
+        <div class="pv-top">
+          <div class="pv-num">352</div>
+          <div class="pv-chips">
+            <div class="pv-chip up">↑ 22% חודש קודם</div>
+            <div class="pv-chip up">↑ 8% שנה קודמת</div>
+          </div>
+        </div>
+        <!-- mini donut -->
+        <div style="display:flex;align-items:center;justify-content:center;flex:1;gap:10px;padding-top:4px">
+          <svg width="54" height="54" viewBox="0 0 54 54">
+            <circle cx="27" cy="27" r="20" fill="none" stroke="#deeef8" stroke-width="8"/>
+            <circle cx="27" cy="27" r="20" fill="none" stroke="#39ABE2" stroke-width="8"
+              stroke-dasharray="78.5 47.1" stroke-dashoffset="-31.4"
+              transform="rotate(-90 27 27)"/>
+            <circle cx="27" cy="27" r="20" fill="none" stroke="#E48375" stroke-width="8"
+              stroke-dasharray="47.1 78.5" stroke-dashoffset="-109.9"
+              transform="rotate(-90 27 27)"/>
+            <text x="27" y="31" text-anchor="middle" font-family="Rubik" font-size="9" font-weight="600" fill="#273736">352</text>
+          </svg>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:9px;color:#39ABE2;font-weight:500">● ממומן 220</div>
+            <div style="font-size:9px;color:#E48375;font-weight:500">● אורגני 132</div>
+          </div>
+        </div>
+      </div>
+      <div class="wcard-foot">
+        <span class="wcard-cat">שיווק</span>
+        <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+        <div class="wcard-counter">
+          <button onclick="change(-1)">−</button>
+          <div class="cnt-num" id="n">1</div>
+          <button onclick="change(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FULL WIDGET ══ -->
+  <div class="section-group">
+    <div class="section-label">ווידגט מלא</div>
+    <div class="widget" id="widget">
+
+      <!-- Header -->
+      <div class="w-head">
+        <div class="w-title">סה״כ לידים</div>
+        <div class="w-filters">
+          <div class="f-chip active" onclick="setFilter('all',this)">הכל</div>
+          <div class="f-chip" onclick="setFilter('paid',this)">ממומן</div>
+          <div class="f-chip" onclick="setFilter('organic',this)">אורגני</div>
+        </div>
+        <div class="w-head-left">
+          <div class="w-month">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+              <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+            </svg>
+            <select>
+              <option>ינואר 2026</option>
+              <option>דצמבר 2025</option>
+              <option>נובמבר 2025</option>
+              <option>אוקטובר 2025</option>
+              <option>ספטמבר 2025</option>
+              <option>אוגוסט 2025</option>
+            </select>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+              <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main metric + comparison bars -->
+      <div class="w-metric">
+        <div class="w-val-row">
+          <div class="w-val" id="main-val">352</div>
+          <div class="w-val-label" id="main-lbl">לידים החודש</div>
+        </div>
+        <div class="w-bar-section">
+          <div class="w-bar-wrap">
+            <div class="w-bar-bubble" id="bar-bubble">352</div>
+            <div class="w-bar">
+              <div class="w-bar-fill" id="bar-fill"></div>
+            </div>
+          </div>
+          <div class="w-bar-scale">
+            <div style="font-size:11px;font-weight:500;color:var(--navy)" id="bar-target-label">יעד: 400</div>
+            <span>0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chips -->
+      <div class="w-chips">
+        <div class="chip up" id="chip-mom">↑ 22% לעומת חודש קודם</div>
+        <div class="chip up" id="chip-yoy">↑ 8% לעומת שנה קודמת</div>
+        <div class="chip tgt" id="chip-tgt">יעד: 400 · 88% עמידה</div>
+      </div>
+
+      <div class="w-divider"></div>
+
+      <!-- Donuts -->
+      <div class="w-donuts">
+
+        <!-- Small: אורגני -->
+        <div class="donut-small">
+          <div class="donut-small-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88">
+              <circle cx="44" cy="44" r="32" fill="none" stroke="#f0ede9" stroke-width="12"/>
+              <circle cx="44" cy="44" r="32" fill="none" stroke="#E48375" stroke-width="12"
+                stroke-dasharray="133.8 67.8" stroke-dashoffset="0"
+                transform="rotate(-90 44 44)" id="donut-organic"/>
+            </svg>
+            <div class="donut-small-center">
+              <div class="dsc-num" id="organic-num">132</div>
+              <div class="dsc-pct" id="organic-pct">38%</div>
+            </div>
+          </div>
+          <div class="donut-small-label">
+            <div class="dsl-name" style="color:var(--warm)">אורגני</div>
+          </div>
+        </div>
+
+        <!-- Main donut -->
+        <div class="donut-main">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="52" fill="none" stroke="#deeef8" stroke-width="18"/>
+            <!-- paid segment -->
+            <circle cx="75" cy="75" r="52" fill="none" stroke="#39ABE2" stroke-width="18"
+              stroke-dasharray="204.2 122.5" stroke-dashoffset="0"
+              transform="rotate(-90 75 75)" id="donut-paid-arc"/>
+            <!-- organic segment -->
+            <circle cx="75" cy="75" r="52" fill="none" stroke="#E48375" stroke-width="18"
+              stroke-dasharray="122.5 204.2" stroke-dashoffset="-204.2"
+              transform="rotate(-90 75 75)" id="donut-organic-arc"/>
+          </svg>
+          <div class="donut-center">
+            <div class="dc-num" id="donut-total">352</div>
+            <div class="dc-lbl" id="donut-lbl">לידים</div>
+          </div>
+        </div>
+
+        <!-- Small: ממומן -->
+        <div class="donut-small">
+          <div class="donut-small-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88">
+              <circle cx="44" cy="44" r="32" fill="none" stroke="#deeef8" stroke-width="12"/>
+              <circle cx="44" cy="44" r="32" fill="none" stroke="#39ABE2" stroke-width="12"
+                stroke-dasharray="133.8 67.8" stroke-dashoffset="0"
+                transform="rotate(-90 44 44)" id="donut-paid-small"/>
+            </svg>
+            <div class="donut-small-center">
+              <div class="dsc-num" id="paid-num">220</div>
+              <div class="dsc-pct" id="paid-pct">62%</div>
+            </div>
+          </div>
+          <div class="donut-small-label">
+            <div class="dsl-name" style="color:var(--cyan)">ממומן</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Legend -->
+      <div class="donut-legend" style="padding-bottom:6px">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>ממומן — 220 לידים</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--warm)"></div>אורגני — 132 לידים</div>
+      </div>
+
+      <!-- Footer -->
+      <div class="w-foot">
+        <div class="w-update">עדכון אחרון: 14.01.2026</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const STATE = {
+      all:     { total:352, paid:220, organic:132, target:400, momPct:22, momDir:'up', yoyPct:8, yoyDir:'up' },
+      paid:    { total:220, paid:220, organic:0,   target:250, momPct:18, momDir:'up', yoyPct:5, yoyDir:'up' },
+      organic: { total:132, paid:0,   organic:132, target:150, momPct:31, momDir:'up', yoyPct:14,yoyDir:'up' }
+    };
+    const C_MAIN = 2 * Math.PI * 52;  // ≈ 326.7
+    const C_SMALL= 2 * Math.PI * 32;  // ≈ 201.1
+
+    function setFilter(mode, el){
+      document.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));
+      el.classList.add('active');
+      const d = STATE[mode];
+      const paidFrac = d.paid / (d.total || 1);
+      const orgFrac  = d.organic / (d.total || 1);
+      const pct = Math.round(d.total / d.target * 100);
+
+      // main value
+      document.getElementById('main-val').textContent = d.total;
+      document.getElementById('main-lbl').textContent =
+        mode==='all' ? 'לידים החודש' : mode==='paid' ? 'לידים ממומנים' : 'לידים אורגניים';
+
+      // bar
+      const barPct = Math.round(d.total / d.target * 100);
+      document.getElementById('bar-fill').style.width = barPct+'%';
+      document.getElementById('bar-bubble').textContent = d.total;
+      document.getElementById('bar-bubble').style.left = barPct+'%';
+      document.getElementById('bar-target-label').textContent = 'יעד: '+d.target;
+
+      // chips
+      const momChip = document.getElementById('chip-mom');
+      momChip.className = 'chip '+(d.momDir==='up'?'up':'dn');
+      momChip.textContent = (d.momDir==='up'?'↑ ':'↓ ')+d.momPct+'% לעומת חודש קודם';
+      const yoyChip = document.getElementById('chip-yoy');
+      yoyChip.className = 'chip '+(d.yoyDir==='up'?'up':'dn');
+      yoyChip.textContent = (d.yoyDir==='up'?'↑ ':'↓ ')+d.yoyPct+'% לעומת שנה קודמת';
+      document.getElementById('chip-tgt').textContent = 'יעד: '+d.target+' · '+pct+'% עמידה';
+
+      // main donut
+      document.getElementById('donut-total').textContent = d.total;
+      const paidArc = C_MAIN * paidFrac;
+      const orgArc  = C_MAIN * orgFrac;
+      document.getElementById('donut-paid-arc').setAttribute('stroke-dasharray', paidArc.toFixed(1)+' '+(C_MAIN-paidArc).toFixed(1));
+      document.getElementById('donut-organic-arc').setAttribute('stroke-dasharray', orgArc.toFixed(1)+' '+(C_MAIN-orgArc).toFixed(1));
+      document.getElementById('donut-organic-arc').setAttribute('stroke-dashoffset', '-'+paidArc.toFixed(1));
+
+      // small donuts
+      const paidSmallArc = C_SMALL * paidFrac;
+      const orgSmallArc  = C_SMALL * orgFrac;
+      document.getElementById('donut-paid-small').setAttribute('stroke-dasharray', paidSmallArc.toFixed(1)+' '+(C_SMALL-paidSmallArc).toFixed(1));
+      document.getElementById('donut-organic').setAttribute('stroke-dasharray', orgSmallArc.toFixed(1)+' '+(C_SMALL-orgSmallArc).toFixed(1));
+      document.getElementById('paid-num').textContent = d.paid;
+      document.getElementById('paid-pct').textContent = Math.round(paidFrac*100)+'%';
+      document.getElementById('organic-num').textContent = d.organic;
+      document.getElementById('organic-pct').textContent = Math.round(orgFrac*100)+'%';
+
+      // legend
+      const leg = document.querySelector('.donut-legend');
+      if(mode==='all'){
+        leg.style.display='flex';
+        leg.children[0].lastChild.textContent = 'ממומן — '+d.paid+' לידים';
+        leg.children[1].lastChild.textContent = 'אורגני — '+d.organic+' לידים';
+      } else {
+        leg.style.display='none';
+      }
+    }
+
+    function change(delta){
+      const el=document.getElementById('n');
+      let n=parseInt(el.textContent)+delta;
+      if(n<=0){document.getElementById('wc').classList.remove('added');el.textContent='1';}
+      else el.textContent=n;
+    }
+  </script>
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

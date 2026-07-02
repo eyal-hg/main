@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>רווחיות — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:48px; padding:48px 32px;
+    }
+    .section-label{ font-size:11px; font-weight:500; color:var(--gray2); letter-spacing:.5px; text-transform:uppercase; text-align:center; }
+    .section-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white); border:1.5px solid #e6ecf2; border-radius:12px;
+      width:200px; display:flex; flex-direction:column; overflow:hidden;
+      cursor:pointer; transition:box-shadow .18s,transform .18s,border-color .18s;
+    }
+    .wcard:hover{ box-shadow:0 6px 20px rgba(12,64,104,.12); border-color:var(--cyan); transform:translateY(-2px); }
+    .wcard.added{ border-color:var(--cyan); }
+    .wcard-text{ padding:12px 12px 6px; }
+    .wcard-title{ font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+    .wcard-desc{ font-size:10px; color:var(--gray); line-height:1.4; }
+    .wcard-preview{
+      height:100px; background:#f7fafd; overflow:hidden;
+      padding:8px 10px 6px; display:flex; flex-direction:column; gap:5px;
+    }
+    .pv-month-lbl{ font-size:8px; color:var(--gray2); }
+    .pv-row{ display:flex; justify-content:space-between; align-items:center; }
+    .pv-row-label{ font-size:9px; color:var(--gray2); }
+    .pv-row-val{ font-size:11px; font-weight:600; direction:ltr; }
+    .pv-row-val.cyan { color:var(--cyan); }
+    .pv-row-val.green{ color:var(--green); }
+    .pv-row-val.red  { color:var(--red); }
+    .pv-divider{ height:1px; background:#e8eef4; }
+    .wcard-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:7px 10px 9px; border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{ font-size:10px; color:var(--gray2); }
+    .wcard-btn{
+      border:1.5px solid var(--navy); background:transparent; color:var(--navy);
+      font-family:'Rubik',sans-serif; font-size:11px; font-weight:500;
+      padding:4px 12px; border-radius:20px; cursor:pointer; transition:all .15s;
+    }
+    .wcard-btn:hover{ background:rgba(12,64,104,.06); }
+    .wcard-counter{ display:none; align-items:center; background:var(--cyan); border-radius:20px; overflow:hidden; }
+    .wcard-counter button{ background:transparent; border:none; color:#fff; font-size:15px; font-weight:600; padding:3px 9px; cursor:pointer; font-family:'Rubik',sans-serif; }
+    .cnt-num{ color:#fff; font-size:12px; font-weight:600; min-width:20px; text-align:center; }
+    .wcard.added .wcard-btn    { display:none; }
+    .wcard.added .wcard-counter{ display:flex; }
+
+    /* ══ FULL WIDGET ══ */
+    .widget{ background:var(--white); border-radius:var(--r); box-shadow:var(--shadow); width:640px; overflow:hidden; }
+
+    /* Header */
+    .w-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px 0;
+    }
+    .w-title{ font-size:14px; font-weight:600; color:var(--navy); }
+    .w-month{
+      display:flex; align-items:center; gap:5px;
+      font-size:12px; font-weight:500; color:var(--navy);
+      background:#f0f4f8; border-radius:8px; padding:5px 10px;
+      border:1px solid #e2eaf2; cursor:pointer;
+    }
+    .w-month select{
+      appearance:none; -webkit-appearance:none; background:transparent; border:none;
+      font-family:'Rubik',sans-serif; font-size:12px; font-weight:500;
+      color:var(--navy); cursor:pointer; outline:none; padding:0; margin:0;
+    }
+
+    /* ── 3 clickable KPI panels ── */
+    .w-profits{
+      display:flex; margin-top:14px;
+      border-top:1px solid #f0f4f7;
+      border-bottom:1px solid #f0f4f7;
+    }
+    .profit-panel{
+      flex:1; padding:14px 18px 12px;
+      cursor:pointer; position:relative;
+      transition:background .15s;
+      border-bottom:3px solid transparent;
+    }
+    .profit-panel + .profit-panel{ border-right:1px solid #f0f4f7; }
+    .profit-panel:hover{ background:#fafcff; }
+    .profit-panel.active{
+      background:#f5fbff;
+      border-bottom-color:var(--cyan);
+    }
+    .pp-label{
+      font-size:11px; color:var(--gray2); margin-bottom:5px;
+      display:flex; align-items:center; gap:5px;
+    }
+    .pp-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .pp-val{
+      font-size:24px; font-weight:600; direction:ltr; line-height:1.1;
+      margin-bottom:5px;
+    }
+    .pp-val.cyan { color:var(--cyan); }
+    .pp-val.green{ color:var(--green); }
+    .pp-val.red  { color:var(--red); }
+    .pp-sub{ font-size:10px; color:var(--gray2); margin-bottom:4px; }
+    .pp-chip{
+      display:inline-flex; align-items:center; gap:3px;
+      font-size:10px; font-weight:500; padding:2px 8px; border-radius:10px;
+    }
+    .pp-chip.up  { color:var(--green); background:rgba(30,138,76,.09); }
+    .pp-chip.dn  { color:var(--red);   background:rgba(217,48,37,.08); }
+    .pp-chip.neu { color:var(--gray2); background:#f0f4f8; }
+
+    /* ── Chart ── */
+    .w-chart-section{ padding:18px 18px 0; }
+    .w-chart-title{ font-size:11px; color:var(--gray2); margin-bottom:10px; }
+    .w-chart-wrap svg{ width:100%; display:block; }
+    .w-chart-months{
+      display:flex; justify-content:space-around;
+      padding:5px 0 0; font-size:10px; color:var(--gray2);
+    }
+
+    /* Footer */
+    .w-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 18px 14px; border-top:1px solid #f0f4f7; margin-top:16px;
+    }
+    .w-update{ font-size:10px; color:var(--gray2); }
+    .w-action{
+      font-size:11px; font-weight:500; color:var(--cyan); cursor:pointer;
+      display:flex; align-items:center; gap:4px; text-decoration:none;
+    }
+    .w-action:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+
+<!-- ══ PICKER CARD ══ -->
+<div class="section-group">
+  <div class="section-label">כרטיסיית גלריה</div>
+  <div class="wcard" id="wc">
+    <div class="wcard-text">
+      <div class="wcard-title">רווחיות חודשית</div>
+      <div class="wcard-desc">גולמי, תפעולי ותזרימי עם מגמה 4 חודשים</div>
+    </div>
+    <div class="wcard-preview">
+      <div class="pv-month-lbl">אפריל 2026</div>
+      <div class="pv-row">
+        <span class="pv-row-label">רווח גולמי</span>
+        <span class="pv-row-val cyan">₪72,959</span>
+      </div>
+      <div class="pv-divider"></div>
+      <div class="pv-row">
+        <span class="pv-row-label">רווח תפעולי</span>
+        <span class="pv-row-val green">₪6,087</span>
+      </div>
+      <div class="pv-divider"></div>
+      <div class="pv-row">
+        <span class="pv-row-label">רווח תזרימי</span>
+        <span class="pv-row-val red">−₪13,314</span>
+      </div>
+    </div>
+    <div class="wcard-foot">
+      <span class="wcard-cat">רווחיות</span>
+      <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+      <div class="wcard-counter">
+        <button onclick="cp(-1)">−</button>
+        <span class="cnt-num" id="n">1</span>
+        <button onclick="cp(1)">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FULL WIDGET ══ -->
+<div class="section-group">
+  <div class="section-label">ווידגט מלא</div>
+  <div class="widget">
+
+    <div class="w-head">
+      <div class="w-title">רווחיות חודשית</div>
+      <div class="w-month">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+          <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+        </svg>
+        <select id="month-sel" onchange="render()">
+          <option value="0">ינואר 2026</option>
+          <option value="1">פברואר 2026</option>
+          <option value="2">מרץ 2026</option>
+          <option value="3" selected>אפריל 2026</option>
+        </select>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+          <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 3 profit panels -->
+    <div class="w-profits">
+      <div class="profit-panel active" id="pp-0" onclick="selectMetric(0)">
+        <div class="pp-label">
+          <span class="pp-dot" style="background:#0C4068"></span>
+          רווח גולמי
+        </div>
+        <div class="pp-val" id="pp-val-0"></div>
+        <div class="pp-sub" id="pp-sub-0"></div>
+        <div class="pp-chip" id="pp-chip-0"></div>
+      </div>
+      <div class="profit-panel" id="pp-1" onclick="selectMetric(1)">
+        <div class="pp-label">
+          <span class="pp-dot" style="background:#1e8a4c"></span>
+          רווח תפעולי
+        </div>
+        <div class="pp-val" id="pp-val-1"></div>
+        <div class="pp-sub" id="pp-sub-1"></div>
+        <div class="pp-chip" id="pp-chip-1"></div>
+      </div>
+      <div class="profit-panel" id="pp-2" onclick="selectMetric(2)">
+        <div class="pp-label">
+          <span class="pp-dot" style="background:#39ABE2"></span>
+          רווח תזרימי
+        </div>
+        <div class="pp-val" id="pp-val-2"></div>
+        <div class="pp-sub" id="pp-sub-2"></div>
+        <div class="pp-chip" id="pp-chip-2"></div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="w-chart-section">
+      <div class="w-chart-title" id="chart-title">מגמת רווח גולמי — 4 חודשים</div>
+      <div class="w-chart-wrap">
+        <svg id="chart-svg" height="120" viewBox="0 0 604 120" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="w-chart-months">
+        <span>ינואר</span><span>פברואר</span><span>מרץ</span><span>אפריל</span>
+      </div>
+    </div>
+
+    <div class="w-foot">
+      <div class="w-update">עדכון אחרון: 04.05.2026</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ─── Data ─────────────────────────────────────────── */
+const MONTHS_LBL = ['ינואר','פברואר','מרץ','אפריל'];
+
+// [gross, operating, cashflow] per month
+const SERIES = {
+  gross:    [108229, 110194, 108006,  72959],
+  op:       [ 20239,  32208,  -6208,   6087],
+  cash:     [ 58497,  11555,  -5339, -13314],
+};
+const REVENUE = [108229, 111405, 117433, 79858];
+
+const METRICS = [
+  { key:'gross', label:'רווח גולמי',   titleLabel:'מגמת רווח גולמי',   color:'#0C4068' },
+  { key:'op',    label:'רווח תפעולי',  titleLabel:'מגמת רווח תפעולי',  color:'#1e8a4c' },
+  { key:'cash',  label:'רווח תזרימי',  titleLabel:'מגמת רווח תזרימי',  color:'#39ABE2' },
+];
+
+let activeMetric = 0;
+let activeMonth  = 3;
+
+/* ─── Helpers ───────────────────────────────────────── */
+function fmt(v) {
+  if (v < 0) return '−₪' + Math.abs(v).toLocaleString('he-IL');
+  return '₪' + v.toLocaleString('he-IL');
+}
+function pctOf(a,b){ return b ? Math.round(a/b*100) : 0; }
+function chgPct(cur, prev){ return prev ? Math.round((cur-prev)/Math.abs(prev)*100) : null; }
+
+/* ─── Select metric ─────────────────────────────────── */
+function selectMetric(idx) {
+  activeMetric = idx;
+  document.querySelectorAll('.profit-panel').forEach((el,i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  drawChart();
+}
+
+/* ─── Draw bar chart ────────────────────────────────── */
+function drawChart() {
+  const m    = METRICS[activeMetric];
+  const data = SERIES[m.key];
+  const month = activeMonth;
+  const color = m.color;
+
+  const W=604, H=120, padT=20, padB=6, padL=44, padR=16;
+  const cW = W - padL - padR;
+  const cH = H - padT - padB;
+
+  const minV = Math.min(0, ...data);
+  const maxV = Math.max(0, ...data);
+  const range = maxV - minV || 1;
+
+  const barW = Math.floor(cW / data.length * 0.45);
+  const gap  = cW / data.length;
+
+  // render RTL: index 0 (ינואר) on right, last index (אפריל) on left
+  function xCenter(i){ return padL + gap * (data.length - 1 - i) + gap / 2; }
+  function yOf(v){     return padT + cH - ((v - minV) / range) * cH; }
+
+  const zeroY = yOf(0);
+
+  // y-axis ticks
+  const maxAbs = Math.max(Math.abs(minV), Math.abs(maxV));
+  const step = maxAbs > 50000 ? 50000 : maxAbs > 20000 ? 20000 : maxAbs > 10000 ? 10000 : 5000;
+  let ticks = '';
+  for (let t = Math.ceil(minV/step)*step; t <= maxV + step*0.1; t += step) {
+    const ty = yOf(t);
+    if (ty < padT - 5 || ty > H - padB + 5) continue;
+    const lbl = Math.abs(t) >= 1000 ? (t/1000).toFixed(0)+'k' : t;
+    ticks += '<line x1="' + padL + '" y1="' + ty.toFixed(1) + '" x2="' + (W-padR) + '" y2="' + ty.toFixed(1) + '" stroke="#f0f4f8" stroke-width="1"/>';
+    ticks += '<text x="' + (padL-5) + '" y="' + (ty+4).toFixed(1) + '" font-family="Rubik" font-size="9" fill="#a0a8b8" text-anchor="end">' + lbl + '</text>';
+  }
+
+  // zero line
+  const zeroLine = (zeroY > padT && zeroY < H - padB)
+    ? '<line x1="' + padL + '" y1="' + zeroY.toFixed(1) + '" x2="' + (W-padR) + '" y2="' + zeroY.toFixed(1) + '" stroke="#c8d8e8" stroke-width="1"/>'
+    : '';
+
+  // bars
+  let bars = '';
+  data.forEach((v, i) => {
+    const cx   = xCenter(i);
+    const x    = cx - barW/2;
+    const isPos = v >= 0;
+    const barH = Math.abs((v / range) * cH);
+    const y    = isPos ? zeroY - barH : zeroY;
+    const isActive = i === month;
+    const barColor = isActive ? color : color + '55';
+    const radius = 3;
+
+    // rounded top
+    const rx = radius, ry = radius;
+    const bH = Math.max(barH, 2);
+    let path;
+    if (isPos) {
+      path = 'M' + (x+rx) + ',' + (y+bH) +
+             ' L' + (x+rx) + ',' + (y+ry) +
+             ' Q' + x + ',' + y + ' ' + (x+rx) + ',' + y +
+             ' L' + (x+barW-rx) + ',' + y +
+             ' Q' + (x+barW) + ',' + y + ' ' + (x+barW) + ',' + (y+ry) +
+             ' L' + (x+barW) + ',' + (y+bH) + 'Z';
+    } else {
+      path = 'M' + x + ',' + y +
+             ' L' + (x+barW) + ',' + y +
+             ' L' + (x+barW) + ',' + (y+bH-ry) +
+             ' Q' + (x+barW) + ',' + (y+bH) + ' ' + (x+barW-rx) + ',' + (y+bH) +
+             ' L' + (x+rx) + ',' + (y+bH) +
+             ' Q' + x + ',' + (y+bH) + ' ' + x + ',' + (y+bH-ry) + 'Z';
+    }
+
+    bars += '<path d="' + path + '" fill="' + barColor + '"/>';
+
+    // value label on active bar
+    if (isActive) {
+      const labelY = isPos ? y - 5 : y + bH + 13;
+      bars += '<text x="' + cx + '" y="' + labelY.toFixed(1) + '" text-anchor="middle" font-family="Rubik" font-size="10" font-weight="600" fill="' + color + '">' + fmt(v) + '</text>';
+    }
+  });
+
+  document.getElementById('chart-svg').innerHTML = ticks + zeroLine + bars;
+  document.getElementById('chart-title').textContent = METRICS[activeMetric].titleLabel + ' — 4 חודשים';
+}
+
+/* ─── Render panels ─────────────────────────────────── */
+function renderPanels(monthIdx) {
+  const prev = monthIdx > 0 ? monthIdx - 1 : null;
+
+  METRICS.forEach((m, mi) => {
+    const cur  = SERIES[m.key][monthIdx];
+    const prevV = prev !== null ? SERIES[m.key][prev] : null;
+    const rev  = REVENUE[monthIdx];
+
+    // value — always green/red based on sign
+    const valEl = document.getElementById('pp-val-' + mi);
+    valEl.textContent = fmt(cur);
+    valEl.className = 'pp-val ' + (cur >= 0 ? 'green' : 'red');
+
+    // sub: % of revenue
+    const p = pctOf(Math.abs(cur), rev);
+    document.getElementById('pp-sub-' + mi).textContent = 'מהכנסות: ' + (cur < 0 ? '−' : '') + p + '%';
+
+    // chip: vs prev month
+    const chipEl = document.getElementById('pp-chip-' + mi);
+    if (prevV !== null) {
+      const chg = cur - prevV;
+      const chgPct = prevV !== 0 ? Math.round(chg / Math.abs(prevV) * 100) : null;
+      const cls = chg >= 0 ? 'up' : 'dn';
+      const arrow = chg >= 0 ? '↑' : '↓';
+      const pctStr = chgPct !== null ? Math.abs(chgPct) + '%' : '—';
+      chipEl.textContent = arrow + ' ' + pctStr + ' מחודש קודם';
+      chipEl.className = 'pp-chip ' + cls;
+    } else {
+      chipEl.textContent = 'חודש ראשון';
+      chipEl.className = 'pp-chip neu';
+    }
+  });
+}
+
+/* ─── Main render ───────────────────────────────────── */
+function render() {
+  activeMonth = +document.getElementById('month-sel').value;
+  renderPanels(activeMonth);
+  drawChart();
+}
+
+let cnt = 1;
+function cp(d){ cnt = Math.max(1,cnt+d); document.getElementById('n').textContent = cnt; }
+
+render();
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>

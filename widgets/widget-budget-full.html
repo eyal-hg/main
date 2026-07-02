@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>תקציב שיווק — HK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0C4068; --cyan:#39ABE2; --warm:#E48375;
+      --white:#FFFFFF; --dark:#273736;
+      --gray:#818181; --gray2:#a0a8b8;
+      --green:#1e8a4c; --red:#d93025; --yellow:#f0b429;
+      --shadow:0px 1px 50px rgba(0,0,0,0.08);
+      --r:12px;
+    }
+    body{
+      font-family:'Rubik',sans-serif; background:#e8eef4;
+      direction:rtl; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:48px; padding:48px 32px;
+    }
+
+    .section-label{font-size:11px;font-weight:500;color:var(--gray2);letter-spacing:.5px;text-transform:uppercase;text-align:center;}
+    .section-group{display:flex;flex-direction:column;align-items:center;gap:10px;}
+
+    /* ══ PICKER CARD ══ */
+    .wcard{
+      background:var(--white);border:1.5px solid #e6ecf2;border-radius:12px;
+      width:200px;display:flex;flex-direction:column;overflow:hidden;
+      transition:box-shadow .18s,transform .18s,border-color .18s;cursor:pointer;
+    }
+    .wcard:hover{box-shadow:0 6px 20px rgba(12,64,104,.12);border-color:var(--cyan);transform:translateY(-2px);}
+    .wcard.added{border-color:var(--cyan);}
+    .wcard-text{padding:12px 12px 6px;}
+    .wcard-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;}
+    .wcard-desc{font-size:10px;color:var(--gray);line-height:1.4;}
+    .wcard-preview{
+      height:100px;padding:8px 10px 6px;background:#f7fafd;
+      display:flex;flex-direction:column;justify-content:space-between;
+      position:relative;overflow:hidden;
+    }
+    .wcard-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:7px 10px 9px;border-top:1px solid #f0f4f7;
+    }
+    .wcard-cat{font-size:10px;color:var(--gray2);}
+    .wcard-btn{
+      border:1.5px solid var(--navy);background:transparent;color:var(--navy);
+      font-family:'Rubik',sans-serif;font-size:11px;font-weight:500;
+      padding:4px 12px;border-radius:20px;cursor:pointer;transition:all .15s;
+    }
+    .wcard-btn:hover{background:rgba(12,64,104,.06);}
+    .wcard-counter{display:none;align-items:center;background:var(--cyan);border-radius:20px;overflow:hidden;}
+    .wcard-counter button{background:transparent;border:none;color:#fff;font-size:15px;font-weight:600;padding:3px 9px;cursor:pointer;font-family:'Rubik',sans-serif;}
+    .cnt-num{color:#fff;font-size:12px;font-weight:600;min-width:20px;text-align:center;}
+    .wcard.added .wcard-btn{display:none;}
+    .wcard.added .wcard-counter{display:flex;}
+
+    /* picker preview */
+    .pv-row1{display:flex;justify-content:space-between;align-items:flex-start;}
+    .pv-icon-wrap{display:flex;align-items:center;gap:4px;}
+    .pv-icon-label{font-size:9px;font-weight:500;color:var(--navy);}
+    .pv-num{font-size:20px;font-weight:600;line-height:1;}
+    .pv-num.red{color:var(--red);}
+    .pv-num.yellow{color:var(--yellow);}
+    .pv-num.green{color:var(--green);}
+    .pv-badge{
+      font-size:8px;font-weight:500;padding:2px 5px;border-radius:4px;
+      white-space:nowrap;margin-top:2px;display:inline-block;
+    }
+    .pv-badge.red{color:var(--red);background:rgba(217,48,37,.1);}
+    .pv-badge.yellow{color:#c49000;background:rgba(240,180,41,.12);}
+    .pv-badge.green{color:var(--green);background:rgba(30,138,76,.1);}
+    .pv-bar-wrap{position:relative;}
+    .pv-bar{height:6px;background:#deeef8;border-radius:20px;overflow:hidden;direction:ltr;position:relative;}
+    .pv-fill{height:100%;border-radius:20px;}
+    .pv-fill.red{background:var(--red);}
+    .pv-fill.yellow{background:var(--yellow);}
+    .pv-fill.green{background:var(--green);}
+    .pv-budget-tick{position:absolute;top:0;bottom:0;width:1.5px;background:rgba(255,255,255,0.75);}
+    .pv-row2{display:flex;align-items:center;gap:5px;font-size:8.5px;color:var(--gray2);}
+    .pv-sep{color:#d0d8e8;}
+    .pv-mom{font-weight:500;}
+    .pv-mom.dn{color:var(--red);}
+    .pv-mom.up{color:var(--green);}
+
+    /* ══ FULL WIDGET ══ */
+    .widget{
+      background:var(--white);border-radius:var(--r);
+      box-shadow:var(--shadow);width:640px;overflow:hidden;
+    }
+
+    /* Header */
+    .w-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 18px 10px;
+    }
+    .w-head-right{display:flex;align-items:center;gap:8px;}
+    .w-icon{
+      width:32px;height:32px;border-radius:8px;background:#f0f8fd;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .w-title{font-size:14px;font-weight:500;color:var(--dark);}
+    .w-month{
+      display:flex;align-items:center;gap:5px;
+      font-size:12px;font-weight:500;color:var(--navy);
+      background:#f0f4f8;border-radius:8px;padding:5px 10px;
+      border:1px solid #e2eaf2;cursor:pointer;
+    }
+    .w-month select{
+      appearance:none;-webkit-appearance:none;background:transparent;border:none;
+      font-family:'Rubik',sans-serif;font-size:12px;font-weight:500;
+      color:var(--navy);cursor:pointer;outline:none;padding:0;margin:0;
+    }
+
+    /* Main metric */
+    .w-metric{padding:8px 18px 0;}
+    .w-val-row{display:flex;align-items:center;gap:14px;margin-bottom:4px;}
+    .w-val{font-size:38px;font-weight:600;line-height:1;direction:ltr;transition:color .25s;}
+    .w-val.green{color:var(--green);}
+    .w-val.yellow{color:var(--yellow);}
+    .w-val.red{color:var(--red);}
+    .w-val-meta{display:flex;flex-direction:column;gap:4px;}
+    .w-val-label{font-size:12px;color:var(--gray2);}
+    .w-status-badge{
+      display:inline-flex;align-items:center;gap:5px;
+      font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;
+      transition:all .25s;
+    }
+    .w-status-badge.green{color:var(--green);background:rgba(30,138,76,.1);}
+    .w-status-badge.yellow{color:#c49000;background:rgba(240,180,41,.12);}
+    .w-status-badge.red{color:var(--red);background:rgba(217,48,37,.1);}
+    .badge-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background .25s;}
+    .green .badge-dot{background:var(--green);}
+    .yellow .badge-dot{background:var(--yellow);}
+    .red .badge-dot{background:var(--red);}
+
+    /* Chips */
+    .w-chips{
+      display:flex;align-items:center;justify-content:flex-end;
+      gap:8px;padding:8px 18px 0;flex-wrap:wrap;
+    }
+    .chip{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;}
+    .chip.up{color:var(--green);background:rgba(30,138,76,.08);}
+    .chip.dn{color:var(--red);background:rgba(217,48,37,.08);}
+    .chip.st{color:var(--yellow);background:rgba(240,180,41,.08);}
+    .chip.tgt{color:var(--gray2);background:#f0f4f8;font-weight:400;}
+
+    /* Progress bar */
+    .w-bar-section{padding:16px 18px 4px;}
+    .w-bar-wrap{position:relative;margin-top:28px;margin-bottom:5px;}
+    .w-bar-bubble{
+      position:absolute;top:-24px;transform:translateX(-50%);
+      background:var(--white);border:1px solid #e2eaf2;
+      border-radius:20px;padding:2px 8px;
+      font-size:11px;font-weight:500;color:var(--navy);
+      white-space:nowrap;box-shadow:0 1px 6px rgba(12,64,104,.08);
+      transition:left .35s;
+    }
+    .w-bar{height:12px;background:#deeef8;border-radius:20px;overflow:hidden;direction:ltr;position:relative;}
+    .w-bar-fill{height:100%;border-radius:20px;transition:width .4s,background .3s;}
+    .w-bar-fill.green{background:var(--green);}
+    .w-bar-fill.yellow{background:var(--yellow);}
+    .w-bar-fill.red{background:var(--red);}
+    /* budget boundary marker inside bar (visible when over-budget) */
+    .w-budget-tick{
+      position:absolute;top:0;bottom:0;width:2px;
+      background:rgba(255,255,255,0.72);
+      border-radius:1px;
+      transition:left .4s;
+    }
+    .w-bar-scale{
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:10px;color:var(--gray2);margin-top:5px;
+    }
+    .bar-scale-left{display:flex;align-items:center;gap:7px;}
+    .bar-pct-pill{
+      font-size:11px;font-weight:600;padding:1px 7px;border-radius:20px;
+      transition:all .25s;
+    }
+    .bar-pct-pill.green{color:var(--green);background:rgba(30,138,76,.1);}
+    .bar-pct-pill.yellow{color:#c49000;background:rgba(240,180,41,.12);}
+    .bar-pct-pill.red{color:var(--red);background:rgba(217,48,37,.1);}
+
+    /* Divider */
+    .w-divider{height:1px;background:#f2f4f7;margin:14px 0 0;}
+
+    /* Stats row */
+    .w-stats{display:grid;grid-template-columns:1fr 1fr;padding:14px 18px 0;}
+    .stat-col{display:flex;flex-direction:column;gap:8px;}
+    .stat-col:first-child{border-left:1px solid #f2f4f7;padding-left:20px;}
+    .stat-item{display:flex;justify-content:space-between;align-items:center;}
+    .stat-key{font-size:11px;color:var(--gray2);}
+    .stat-val{font-size:12px;font-weight:600;color:var(--dark);transition:color .25s;}
+    .stat-val.accent{color:var(--cyan);}
+    .stat-val.warn{color:var(--red);}
+    .stat-val.ok{color:var(--green);}
+    .stat-val.mild{color:var(--yellow);}
+
+    /* Alert banner */
+    .w-alert{
+      margin:12px 18px 0;padding:10px 14px;
+      border-radius:8px;display:flex;align-items:flex-start;gap:10px;
+      transition:all .25s;
+    }
+    .w-alert.red{background:rgba(217,48,37,.07);border:1px solid rgba(217,48,37,.2);}
+    .w-alert.yellow{background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.22);}
+    .w-alert.hidden{display:none;}
+    .alert-icon{font-size:15px;flex-shrink:0;padding-top:1px;}
+    .alert-body{flex:1;}
+    .alert-title{font-size:12px;font-weight:600;margin-bottom:3px;}
+    .alert-title.red{color:var(--red);}
+    .alert-title.yellow{color:#b88a00;}
+    .alert-desc{font-size:11px;color:var(--gray2);line-height:1.6;}
+
+    /* Footer */
+    .w-foot{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 18px 14px;border-top:1px solid #f2f4f7;margin-top:14px;
+    }
+    .w-update{font-size:10px;color:var(--gray2);}
+    .w-action{
+      font-size:11px;font-weight:500;color:var(--cyan);cursor:pointer;
+      display:flex;align-items:center;gap:4px;text-decoration:none;
+    }
+    .w-action:hover{text-decoration:underline;}
+  </style>
+</head>
+<body>
+
+  <!-- ══ PICKER CARD ══ -->
+  <div class="section-group">
+    <div class="section-label">כרטיסיית גלריה</div>
+    <div class="wcard" id="wc">
+      <div class="wcard-text">
+        <div class="wcard-title">תקציב שיווק</div>
+        <div class="wcard-desc">מעקב הוצאות מול תקציב עם התראת חריגה צפויה</div>
+      </div>
+
+      <div class="wcard-preview">
+        <div class="pv-row1">
+          <div>
+            <div class="pv-icon-wrap">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                <rect x="1" y="3.5" width="10" height="7" rx="1.5" stroke="#39ABE2" stroke-width="1.2"/>
+                <path d="M4 3.5V3a2.5 2.5 0 015 0v.5" stroke="#39ABE2" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="8.5" cy="7.5" r="1" fill="#39ABE2"/>
+              </svg>
+              <span class="pv-icon-label">תקציב שיווק</span>
+            </div>
+            <span class="pv-badge red">● חריגה</span>
+          </div>
+          <div style="text-align:left">
+            <div class="pv-num red">₪22.4K</div>
+          </div>
+        </div>
+
+        <div class="pv-bar-wrap">
+          <div class="pv-bar">
+            <div class="pv-fill red" style="width:100%"></div>
+            <div class="pv-budget-tick" style="left:89%"></div>
+          </div>
+        </div>
+
+        <div class="pv-row2">
+          <span class="pv-mom dn">↑ 15%</span>
+          <span class="pv-sep">|</span>
+          <span>תקציב: 20K · 112%</span>
+        </div>
+      </div>
+
+      <div class="wcard-foot">
+        <span class="wcard-cat">שיווק</span>
+        <button class="wcard-btn" onclick="document.getElementById('wc').classList.add('added')">+ הוספה</button>
+        <div class="wcard-counter">
+          <button onclick="change(-1)">−</button>
+          <div class="cnt-num" id="n">1</div>
+          <button onclick="change(1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FULL WIDGET ══ -->
+  <div class="section-group">
+    <div class="section-label">ווידגט מלא</div>
+    <div class="widget">
+
+      <!-- Header -->
+      <div class="w-head">
+        <div class="w-head-right">
+          <div class="w-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <rect x="1.5" y="5.5" width="15" height="10" rx="2" stroke="#39ABE2" stroke-width="1.4"/>
+              <path d="M5 5.5V5a4 4 0 018 0v.5" stroke="#39ABE2" stroke-width="1.4" stroke-linecap="round"/>
+              <rect x="10.5" y="8.5" width="4" height="4" rx="1" fill="#e8f5fc" stroke="#39ABE2" stroke-width="1.1"/>
+              <circle cx="12.5" cy="10.5" r="1" fill="#39ABE2"/>
+            </svg>
+          </div>
+          <div class="w-title">תקציב שיווק</div>
+        </div>
+        <div class="w-month">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="#0C4068" stroke-width="1.2"/>
+            <path d="M4 1v2M8 1v2" stroke="#0C4068" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M1 5h10" stroke="#0C4068" stroke-width="1.2"/>
+          </svg>
+          <select id="month-select" onchange="updateWidget(this.value)">
+            <option value="apr">אפריל 2026</option>
+            <option value="mar">מרץ 2026</option>
+            <option value="feb">פברואר 2026</option>
+            <option value="jan">ינואר 2026</option>
+          </select>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.4">
+            <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Main value -->
+      <div class="w-metric">
+        <div class="w-val-row">
+          <div class="w-val red" id="main-val">₪22,400</div>
+          <div class="w-val-meta">
+            <div class="w-val-label">הוצאה בפועל</div>
+            <div class="w-status-badge red" id="status-badge">
+              <div class="badge-dot"></div>
+              <span id="status-text">חריגה מתקציב</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chips -->
+      <div class="w-chips">
+        <div class="chip dn" id="chip-mom">↑ 15% לעומת חודש קודם</div>
+        <div class="chip tgt" id="chip-budget">תקציב: ₪20,000 · 112%</div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="w-bar-section">
+        <div class="w-bar-wrap">
+          <div class="w-bar-bubble" id="bar-bubble" style="left:96%">₪22,400</div>
+          <div class="w-bar">
+            <div class="w-bar-fill red" id="bar-fill" style="width:100%"></div>
+            <div class="w-budget-tick" id="budget-tick" style="left:89%"></div>
+          </div>
+        </div>
+        <div class="w-bar-scale">
+          <div class="bar-scale-left">
+            <span id="bar-target-text">יעד: ₪20,000</span>
+            <span class="bar-pct-pill red" id="bar-pct-pill">112%</span>
+          </div>
+          <span>0</span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="w-divider"></div>
+
+      <!-- Stats row -->
+      <div class="w-stats">
+        <div class="stat-col">
+          <div class="stat-item">
+            <span class="stat-key">קצב יומי</span>
+            <span class="stat-val warn" id="stat-daily-rate">₪1,400 / יום</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-key">יעד יומי</span>
+            <span class="stat-val accent" id="stat-daily-target">₪667 / יום</span>
+          </div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-item">
+            <span class="stat-key" id="stat-days-label">ימים שנותרו</span>
+            <span class="stat-val" id="stat-days-val">14 ימים</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-key" id="stat-proj-label">צפי לסוף חודש</span>
+            <span class="stat-val warn" id="stat-proj-val">₪42,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert banner -->
+      <div class="w-alert red" id="alert-banner">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-title red" id="alert-title">חריגה מהתקציב</div>
+          <div class="alert-desc" id="alert-desc">
+            בקצב הנוכחי (₪1,400/יום), ההוצאה תגיע ל-<strong>₪42,000</strong> עד סוף החודש — חריגה של <strong>₪22,000</strong> מהתקציב המאושר.
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="w-foot">
+        <div class="w-update" id="last-update">עדכון אחרון: 16.04.2026</div>
+        <a class="w-action" href="#">
+          כל ההוצאות
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M8 6H4M4 6l2-2M4 6l2 2" stroke="#39ABE2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* ── Data ──────────────────────────────────── */
+    const DATA = {
+      apr: { actual:22400, budget:20000, prevActual:19500, daysElapsed:16, totalDays:30, date:'16.04.2026' },
+      mar: { actual:19500, budget:20000, prevActual:18000, daysElapsed:31, totalDays:31, date:'31.03.2026' },
+      feb: { actual:15800, budget:20000, prevActual:16200, daysElapsed:28, totalDays:28, date:'28.02.2026' },
+      jan: { actual:16200, budget:20000, prevActual:14900, daysElapsed:31, totalDays:31, date:'31.01.2026' }
+    };
+
+    /* ── Helpers ───────────────────────────────── */
+    function fmt(n){
+      return '₪' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    function fmtK(n){
+      if(n % 1000 === 0) return '₪' + (n/1000) + 'K';
+      return '₪' + (n/1000).toFixed(1) + 'K';
+    }
+    function statusOf(pct){
+      if(pct >= 100) return 'red';
+      if(pct >= 85)  return 'yellow';
+      return 'green';
+    }
+    function statusLabel(s){
+      if(s === 'red')    return 'חריגה מתקציב';
+      if(s === 'yellow') return 'קרוב לתקציב';
+      return 'במסגרת תקציב';
+    }
+    function alertIcon(s){ return s === 'red' ? '⚠️' : '⚡'; }
+
+    /* ── Main update ───────────────────────────── */
+    function updateWidget(key){
+      const d = DATA[key];
+      const pct         = Math.round(d.actual / d.budget * 100);
+      const status      = statusOf(pct);
+      const isComplete  = d.daysElapsed === d.totalDays;
+      const momChange   = Math.round((d.actual - d.prevActual) / d.prevActual * 100);
+      const dailyRate   = Math.round(d.actual / d.daysElapsed);
+      const dailyTarget = Math.round(d.budget / d.totalDays);
+      const daysLeft    = d.totalDays - d.daysElapsed;
+      const projected   = Math.round(dailyRate * d.totalDays);
+      const overrun     = projected - d.budget;
+
+      /* main value */
+      const valEl = document.getElementById('main-val');
+      valEl.textContent = fmt(d.actual);
+      valEl.className   = 'w-val ' + status;
+
+      /* status badge */
+      const badgeEl = document.getElementById('status-badge');
+      badgeEl.className = 'w-status-badge ' + status;
+      document.getElementById('status-text').textContent = statusLabel(status);
+
+      /* chips */
+      const momChip = document.getElementById('chip-mom');
+      const absChange = Math.abs(momChange);
+      const momUp = momChange > 0;
+      momChip.className   = 'chip ' + (momUp ? 'dn' : 'up');
+      momChip.textContent = (momUp ? '↑ ' : '↓ ') + absChange + '% לעומת חודש קודם';
+
+      document.getElementById('chip-budget').textContent =
+        'תקציב: ' + fmtK(d.budget) + ' · ' + pct + '%';
+
+      /* progress bar */
+      const fillPct  = Math.min(pct, 100);
+      const bubblePos = Math.min(fillPct, 96);
+
+      const barFill = document.getElementById('bar-fill');
+      barFill.style.width  = fillPct + '%';
+      barFill.className    = 'w-bar-fill ' + status;
+
+      const bubble = document.getElementById('bar-bubble');
+      bubble.textContent = fmt(d.actual);
+      bubble.style.left  = bubblePos + '%';
+
+      /* budget tick — only visible when over budget */
+      const tick = document.getElementById('budget-tick');
+      if(pct > 100){
+        tick.style.display = 'block';
+        tick.style.left    = Math.round(d.budget / d.actual * 100) + '%';
+      } else {
+        tick.style.display = 'none';
+      }
+
+      document.getElementById('bar-target-text').textContent = 'יעד: ' + fmt(d.budget);
+      const pill = document.getElementById('bar-pct-pill');
+      pill.textContent  = pct + '%';
+      pill.className    = 'bar-pct-pill ' + status;
+
+      /* stats */
+      const rateEl = document.getElementById('stat-daily-rate');
+      rateEl.textContent = fmt(dailyRate) + ' / יום';
+      rateEl.className   = 'stat-val ' + (dailyRate > dailyTarget ? 'warn' : 'ok');
+
+      document.getElementById('stat-daily-target').textContent = fmt(dailyTarget) + ' / יום';
+
+      if(isComplete){
+        document.getElementById('stat-days-label').textContent = 'סה״כ ימים';
+        document.getElementById('stat-days-val').textContent   = d.totalDays + ' ימים';
+        document.getElementById('stat-proj-label').textContent = 'סיכום חודש';
+        const projEl = document.getElementById('stat-proj-val');
+        projEl.textContent = fmt(d.actual);
+        projEl.className   = 'stat-val ' + status;
+      } else {
+        document.getElementById('stat-days-label').textContent = 'ימים שנותרו';
+        document.getElementById('stat-days-val').textContent   = daysLeft + ' ימים';
+        document.getElementById('stat-proj-label').textContent = 'צפי לסוף חודש';
+        const projEl = document.getElementById('stat-proj-val');
+        projEl.textContent = fmt(projected);
+        projEl.className   = 'stat-val ' + statusOf(Math.round(projected / d.budget * 100));
+      }
+
+      /* alert banner */
+      const banner     = document.getElementById('alert-banner');
+      const alertTitle = document.getElementById('alert-title');
+      const alertDesc  = document.getElementById('alert-desc');
+
+      if(isComplete || projected <= d.budget){
+        banner.className = 'w-alert hidden';
+      } else if(pct >= 100){
+        /* already over budget */
+        banner.className = 'w-alert red';
+        alertTitle.className = 'alert-title red';
+        alertTitle.textContent = 'חריגה מהתקציב';
+        alertDesc.innerHTML =
+          'בקצב הנוכחי (' + fmt(dailyRate) + '/יום), ההוצאה תגיע ל-<strong>' +
+          fmt(projected) + '</strong> עד סוף החודש — חריגה של <strong>' +
+          fmt(overrun) + '</strong> מהתקציב המאושר.';
+      } else {
+        /* projected to exceed */
+        banner.className = 'w-alert yellow';
+        alertTitle.className = 'alert-title yellow';
+        alertTitle.textContent = 'חריגה צפויה מהתקציב';
+        alertDesc.innerHTML =
+          'בקצב הנוכחי (' + fmt(dailyRate) + '/יום), ההוצאה צפויה להגיע ל-<strong>' +
+          fmt(projected) + '</strong> עד סוף החודש — חריגה של <strong>' +
+          fmt(overrun) + '</strong> מהתקציב.';
+      }
+
+      /* footer */
+      document.getElementById('last-update').textContent = 'עדכון אחרון: ' + d.date;
+    }
+
+    /* ── Picker counter ────────────────────────── */
+    function change(d){
+      const el = document.getElementById('n');
+      let n = parseInt(el.textContent) + d;
+      if(n <= 0){ document.getElementById('wc').classList.remove('added'); el.textContent = '1'; }
+      else el.textContent = n;
+    }
+  </script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed{--red:#d16a60 !important;--warm:#e2a196 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important;align-items:flex-start !important;justify-content:flex-start !important;gap:0 !important}
+html.embed .section-label,html.embed .screen-head,html.embed .nav{display:none !important}
+html.embed .section-group:has(.wcard),html.embed .wcard{display:none !important}
+html.embed .section-group{gap:0 !important;padding:0 !important;width:100% !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:640px !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+
+
+
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){
+    var el=document.querySelector(".widget")||document.body;
+    var h=Math.ceil(el.getBoundingClientRect().height)+10;
+    if(h>80)parent.postMessage({hkEmbed:1,src:file,h:h},"*");
+  }
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+
+</body>
+</html>
