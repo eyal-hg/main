@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+ *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+ :root{--navy:#0C4068;--cyan:#39ABE2;--green:#1e8a4c;--red:#d93025;--yellow:#f0b429;--amber:#e8743a;--gray:#818181;--gray2:#a0a8b8;--line:#e6ecf2;--shadow:0px 1px 50px rgba(0,0,0,0.08)}
+ body{font-family:'Rubik',sans-serif;background:#e8eef4;direction:rtl;color:#273736;display:flex;justify-content:center;padding:28px}
+ .widget{background:#fff;border-radius:14px;box-shadow:var(--shadow);width:560px;max-width:100%;overflow:hidden}
+ .w-head{display:flex;align-items:center;gap:11px;padding:16px 20px 8px}
+ .w-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#39ABE2,#0C4068);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+ .w-title{font-size:16px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:7px}
+ .w-title .ai{font-size:9.5px;font-weight:600;color:var(--cyan);background:rgba(57,171,226,.12);border-radius:20px;padding:2px 8px}
+ .w-sub{font-size:11px;color:var(--gray2);margin-top:1px}
+ .list{padding:6px 16px 6px}
+ .al{display:flex;gap:11px;padding:12px;border-radius:11px;margin-top:8px;background:#fafcfe;border:1px solid #eef3f7;border-inline-start:3px solid var(--gray2)}
+ .al:first-child{margin-top:2px}
+ .al.high{border-inline-start-color:var(--red);background:#fff7f5;border-color:#f6e0da}
+ .al.mid{border-inline-start-color:var(--amber)}
+ .al.info{border-inline-start-color:var(--cyan)}
+ .al.good{border-inline-start-color:var(--green)}
+ .al-ic{width:26px;height:26px;border-radius:7px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:14px}
+ .al.high .al-ic{background:rgba(217,48,37,.12)} .al.mid .al-ic{background:rgba(232,116,58,.14)}
+ .al.info .al-ic{background:rgba(57,171,226,.14)} .al.good .al-ic{background:rgba(30,138,76,.13)}
+ .al-b{flex:1;min-width:0}
+ .al-t{font-size:13px;font-weight:600;color:var(--navy)}
+ .al-d{font-size:11.5px;color:var(--gray);margin-top:2px;line-height:1.5}
+ .al-m{display:flex;align-items:center;gap:9px;margin-top:6px}
+ .al-time{font-size:10px;color:var(--gray2)}
+ .al-act{font-size:10.5px;font-weight:600;color:var(--cyan);cursor:pointer}
+ .w-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 20px 14px;border-top:1px solid #f0f4f7}
+ .w-update{font-size:10px;color:var(--gray2)} .w-link{font-size:11px;font-weight:500;color:var(--cyan);cursor:pointer}
+</style></head>
+<body>
+<div class="widget">
+ <div class="w-head"><div class="w-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.2 4.9L19 9l-3.5 3.4L16.3 18 12 15.3 7.7 18l.8-5.6L5 9l4.8-1.1L12 3z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+ <div><div class="w-title">התראות תזרים חכמות <span class="ai">AI</span></div><div class="w-sub">קישור בין חריגות תקציב לתזרים הצפוי · מדורג לפי דחיפות</div></div></div>
+ <div class="list" id="list"></div>
+ <div class="w-foot"><div class="w-update">מנוע חיזוי HK · מתעדכן כל שעה</div><div class="w-link">כל ההתראות ←</div></div>
+</div>
+<script>
+const A=[
+ {sev:'high',ic:'⚠️',t:'מטעי גבעון — חריגת תקציב תוביל לחריגת מסגרת',
+  d:'שכר העבודה חרג ב-36k מהתקציב. בקצב הזה היתרה תרד מתחת למסגרת בעוד 6 ימים.',time:'לפני 20 דק׳',act:'פתח תזרים'},
+ {sev:'mid',ic:'📉',t:'אנרגי גולני — תשלום ספק מעל התכנון',
+  d:'תשלום מתוכנן של 210k ב-14.7 יביא את סעיף הספקים ל-106% מהתקציב.',time:'לפני שעה',act:'בדוק תקציב'},
+ {sev:'info',ic:'🔔',t:'ריכוז חריגות — 2 חברות מעל 95% מהתקציב',
+  d:'מומלץ לעדכן תחזית תזרים לחברות: מטעי גבעון (114%) ואנרגי גולני (96%).',time:'היום 08:10',act:'צפה ברשימה'},
+ {sev:'good',ic:'✅',t:'רימון יצחק — חזרה לתוך התקציב',
+  d:'לאחר גבייה של 118k, הסעיף חזר ל-63% מהתקציב והתזרים יציב.',time:'אתמול',act:'סגור'},
+];
+document.getElementById('list').innerHTML=A.map(a=>`
+ <div class="al ${a.sev}">
+   <div class="al-ic">${a.ic}</div>
+   <div class="al-b"><div class="al-t">${a.t}</div><div class="al-d">${a.d}</div>
+     <div class="al-m"><span class="al-time">${a.time}</span><span class="al-act">${a.act} ←</span></div></div>
+ </div>`).join('');
+</script>
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important}
+html.embed .widget{margin:0 !important;width:100% !important;max-width:none !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){var el=document.querySelector(".widget")||document.body;var h=Math.ceil(el.getBoundingClientRect().height)+10;if(h>60)parent.postMessage({hkEmbed:1,src:file,h:h},"*");}
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+</body></html>

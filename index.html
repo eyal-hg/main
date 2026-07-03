@@ -50,6 +50,18 @@
   .switcher .chev{margin-inline-start:auto;color:var(--muted);flex:0 0 auto}
 
   .top-mid{display:flex;gap:8px;flex:0 0 auto}
+  .ddl-wrap{position:relative}
+  .prod-menu{position:absolute;top:calc(100% + 8px);inset-inline-start:0;min-width:268px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);padding:9px;z-index:45;display:none}
+  .prod-menu.show{display:block}
+  .prod-opt{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border-radius:11px;cursor:pointer;font-size:13.5px;color:var(--navy);font-weight:500}
+  .prod-opt:hover{background:var(--bg)}
+  .prod-opt input{accent-color:var(--blue);width:16px;height:16px;cursor:pointer}
+  /* HK product logo — cyan HK mark + Rubik navy wordmark */
+  .hklogo{display:inline-flex;align-items:center;gap:.42em;line-height:1;white-space:nowrap;font-family:'Rubik',system-ui,sans-serif;vertical-align:middle}
+  .hklogo .hkm{height:1.18em;width:auto;display:block;flex:none}
+  .hklogo .hkw{font-weight:500;color:var(--navy);letter-spacing:-.015em;font-size:1.04em}
+  .hklogo.sm{font-size:12.5px}
+  .hklogo.lg{font-size:17px}
   .ddl{font-size:12.5px;color:var(--navy);background:#fff;border:1px solid var(--line);
     border-radius:10px;padding:8px 13px;display:flex;align-items:center;gap:14px;cursor:pointer;white-space:nowrap}
   .ddl span{color:var(--muted)}
@@ -62,6 +74,9 @@
   /* ===== shell: rail + main ===== */
   .shell{display:grid;grid-template-columns:var(--rail) 1fr;min-height:calc(100vh - 58px);transition:grid-template-columns .22s}
   .shell.collapsed{grid-template-columns:var(--rail-collapsed) 1fr}
+  .shell.no-rail{grid-template-columns:1fr}
+  .shell.no-rail .rail{display:none}
+  .shell.no-rail .main{max-width:1360px;width:100%;justify-self:center;margin-inline:auto}
 
   /* ===== client rail (right side in RTL) ===== */
   .rail{background:#fff;border-inline-start:1px solid var(--line);display:flex;flex-direction:column;
@@ -76,8 +91,21 @@
     border:1px solid var(--line);border-radius:10px;padding:8px 11px}
   .rail-search input{border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;color:var(--ink)}
   .rail-search svg{opacity:.5;flex:0 0 auto}
-  .rail-tabs{display:flex;gap:6px;padding:0 16px 8px}
-  .rtab{flex:1;text-align:center;font-size:12px;color:var(--muted);padding:6px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+  .rail-tabs{display:flex;gap:6px;padding:0 16px 8px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .rail-tabs::-webkit-scrollbar{display:none}
+  .rtcnt{font-size:10px;font-weight:700;background:var(--coral);color:#fff;border-radius:999px;min-width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px}
+  .rtab.on .rtcnt{background:var(--navy);color:#fff}
+  .d-done{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:inherit;
+    font-weight:600;font-size:12.5px;border-radius:9px;padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;margin-inline-start:auto}
+  .d-done:hover{background:rgba(255,255,255,.28)}
+  .d-head .x{margin-inline-start:8px}
+  .mt-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .mt-h-title{font-size:20px;font-weight:600;color:var(--navy)}
+  .mt-new{background:var(--coral);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-family:inherit;
+    font-weight:600;font-size:13.5px;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .mt-new:hover{background:var(--coral-deep)}
+  .mt-client{font-size:12px;color:var(--blue);font-weight:500;margin-bottom:4px}
+  .rtab{flex:0 0 auto;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);padding:6px 10px;border-radius:999px;cursor:pointer;border:1px solid var(--line);background:#fff}
   .rtab.on{background:var(--blue-bg);color:var(--navy);font-weight:600;border-color:#d4ecfb}
   .rail-list{flex:1;overflow-y:auto;padding:2px 10px 16px}
 
@@ -86,7 +114,7 @@
   .cli:hover{background:var(--bg)}
   .cli.on{background:var(--blue-bg);border-color:#d4ecfb}
   .cli .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-  .cli .dot.active{background:var(--green)} .cli .dot.warn{background:var(--coral)} .cli .dot.off{background:#c7d0da}
+  .cli .dot.active{background:var(--green)} .cli .dot.warn{background:var(--coral)} .cli .dot.off{background:#c7d0da} .cli .dot.prog{background:var(--amber)}
   .cli .ci{min-width:0;flex:1}
   .cli .cn{font-size:13.5px;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cli .cs{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -165,6 +193,22 @@
   .mc-act{display:flex;gap:9px;color:var(--muted);flex:0 0 auto}
   .mc-act svg{cursor:pointer;transition:.12s}
   .mc-act svg:hover{color:var(--coral)}
+  .mcard .mc-head{margin-bottom:14px}
+  .mc-cur{font-size:15px;font-weight:700;color:var(--navy);flex:0 0 auto;direction:ltr;white-space:nowrap}
+  .mc-cur.bad{color:var(--coral-deep)}
+  .mc-alert{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:11px 14px}
+  .mc-alert.off{opacity:.55}
+  .mc-tog{position:relative;flex:0 0 auto;width:38px;height:22px;cursor:pointer}
+  .mc-tog input{position:absolute;opacity:0;width:0;height:0}
+  .mc-tog span{position:absolute;inset:0;background:#d5dde6;border-radius:20px;transition:.18s}
+  .mc-tog span::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .mc-tog input:checked+span{background:var(--green)}
+  .mc-tog input:checked+span::after{inset-inline-start:18px}
+  .mc-arow{flex:1;min-width:0;display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .mc-albl{font-weight:600;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:20px;padding:3px 10px;font-size:11px}
+  .mc-th{width:64px;font-family:inherit;font-size:13px;font-weight:600;color:var(--navy);text-align:center;border:1px solid var(--line);border-radius:8px;padding:5px 6px;background:#fff}
+  .mc-th:focus{outline:none;border-color:var(--blue)}
+  .mc-type{margin-inline-start:auto;font-family:inherit;font-size:12px;color:var(--navy);border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:#fff;cursor:pointer}
 
   .mc-bar{height:12px;border-radius:20px;background:#deeef8;position:relative;margin-bottom:22px;direction:ltr}
   .mc-fill{height:100%;border-radius:20px;background:var(--blue);transition:width .3s}
@@ -183,10 +227,11 @@
   .mc-mrow select:focus{outline:none;border-color:var(--blue)}
 
   /* ===== widgets board ===== */
-  .wboard{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));grid-auto-rows:8px;column-gap:18px}
+  .wboard{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:8px;column-gap:18px}
   .wframe{position:relative;min-height:120px;grid-column:span 2;grid-row-end:span 60}
   .wframe.sm{grid-column:span 1}
-  @media(max-width:900px){.wframe,.wframe.sm{grid-column:1/-1}}
+  @media(max-width:1250px){.wboard{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:900px){.wboard{grid-template-columns:1fr}.wframe,.wframe.sm{grid-column:1/-1}}
   .wframe iframe{width:100%;border:0;display:block;background:transparent}
   .wframe.loading::before{content:"טוען ווידג'ט…";position:absolute;inset:0;display:flex;
     align-items:center;justify-content:center;color:var(--muted);font-size:13px;
@@ -248,6 +293,8 @@
     cursor:pointer;border:1px solid #d4ecfb;background:#f4fbfe}
   .rail-portfolio:hover{background:var(--blue-bg)}
   .rail-portfolio.on{background:var(--navy);border-color:var(--navy)}
+  .rp-ico{width:30px;height:30px;border-radius:9px;background:#e6f1fb;color:var(--navy);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .rail-portfolio.on .rp-ico{background:rgba(255,255,255,.2);color:#fff}
   .rail-portfolio.on .cn,.rail-portfolio.on .cs{color:#fff}
   .rail-portfolio.on .cs{opacity:.8}
   .rail-portfolio .cn{font-size:13.5px;font-weight:600;color:var(--navy)}
@@ -292,10 +339,171 @@
     cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
   .chat-send:hover{background:#2f9ad0}
 
+  /* ===== operations queue (operator home) ===== */
+  .opsq-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+  .opsq-stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 17px;box-shadow:var(--shadow)}
+  .opsq-stat .n{font-size:25px;font-weight:700;color:var(--navy);line-height:1}
+  .opsq-stat .l{font-size:12px;color:var(--muted);margin-top:6px}
+  .opsq-stat.warn .n{color:var(--coral-deep)}
+  .opsq-stat.accent{background:#f0f7fc;border-color:#cfe6f8}
+  .opsq-stat.accent .n{color:var(--blue)}
+  .opsq-filters{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+  .opsq-filters .ofilter{background:#fff;border:1px solid var(--line);padding:7px 15px;border-radius:999px;font-size:13px;color:var(--muted);cursor:pointer}
+  .opsq-filters .ofilter.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+  .opsq-filters .cnt{background:var(--coral);color:#fff;font-size:10px;font-weight:700;border-radius:999px;padding:1px 6px;margin-inline-start:5px}
+  .opsq-filters .ofilter.on .cnt{background:#fff;color:var(--navy)}
+  .opsq-head{flex-wrap:wrap;gap:12px}
+  .opsq-head .opsq-status{margin:0}
+  .opsq-status{align-items:stretch}
+  .sseg{display:inline-flex;flex-direction:column;gap:5px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:7px 13px;cursor:pointer;min-width:100px;transition:.12s}
+  .sseg:hover{border-color:var(--blue)}
+  .sseg.on{border-color:var(--navy);background:var(--blue-bg)}
+  .sseg-top{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--navy);white-space:nowrap}
+  .sseg-count{background:var(--bg);border:1px solid var(--line);border-radius:999px;font-size:10.5px;font-weight:700;padding:0 6px;min-width:16px;text-align:center}
+  .sseg.on .sseg-count{background:#fff}
+  .sseg-bar{height:4px;border-radius:3px;background:#e6ecf2;overflow:hidden}
+  .sseg-bar .fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+  .sseg-done{font-size:9.5px;color:var(--muted);white-space:nowrap}
+  .sarch{width:38px;border-radius:10px;background:#fff;border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+  .sarch:hover{border-color:var(--blue);color:var(--navy)}
+  .oq-stat{font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;flex:0 0 auto;display:inline-flex;align-items:center;gap:3px}
+  .oq-stat.clickable{cursor:pointer}
+  .oq-stat.clickable:hover{filter:brightness(.96)}
+  .stat-chev{opacity:.6}
+  .stat-menu{position:fixed;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow-lg);padding:5px;z-index:84;display:none;min-width:132px}
+  .stat-menu.show{display:block}
+  .stat-opt{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:8px;font-size:13px;color:var(--navy);cursor:pointer}
+  .stat-opt:hover{background:var(--bg)}
+  .stat-opt.on{font-weight:600;background:var(--blue-bg)}
+  .stat-opt .sdot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .oq-stat.st-active{background:var(--green-bg);color:var(--green)}
+  .oq-stat.st-trial{background:#fdf4e3;color:#b9791f}
+  .oq-stat.st-setup{background:var(--blue-bg);color:var(--blue)}
+  .opsq-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .opsq-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .opsq-title{font-size:16px;font-weight:600;color:var(--navy)}
+  .opsq-list{display:flex;flex-direction:column}
+  .oqitem{border-bottom:1px solid #f0f4f8}
+  .oqitem:last-child{border-bottom:none}
+  .oqhead,.oqrow{display:grid;grid-template-columns:minmax(200px,1.5fr) 118px 92px 134px 78px 150px 116px;gap:10px;align-items:center;border-inline-start:3px solid transparent;padding:0 18px}
+  .oqhead{font-size:11px;color:var(--muted);font-weight:600;padding-top:11px;padding-bottom:11px;border-bottom:1px solid var(--line);background:var(--bg)}
+  .oqhead>div{white-space:nowrap}
+  .oqrow{padding-top:12px;padding-bottom:12px;transition:.12s;cursor:pointer;border-bottom:1px solid #f0f4f8}
+  .oqrow:last-child{border-bottom:none}
+  .oqrow:hover{background:#fafcff}
+  .oqc{display:flex;align-items:center;min-width:0}
+  .oqc-name{gap:11px}
+  .oqc-act .oq-btn{width:100%;min-width:0}
+  .oqrow.acc-coral{border-inline-start-color:var(--coral)}
+  .oqrow.acc-amber{border-inline-start-color:var(--amber)}
+  .oqrow.acc-green{border-inline-start-color:var(--green)}
+  .oqrow.acc-gray{border-inline-start-color:#dbe3ec}
+  .oq-av{width:38px;height:38px;border-radius:11px;background:var(--blue-bg);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;flex:0 0 auto}
+  .oq-id{flex:1;min-width:0}
+  .oq-name{font-size:14.5px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:6px}
+  .oq-chev{opacity:.45;transition:.2s;flex:0 0 auto}
+  .oqrow.open .oq-chev{transform:rotate(180deg)}
+  .oq-sub{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:8px}
+  .oq-sep{color:#c7d2dd;font-weight:700}
+  .oq-none{color:#c7d2dd}
+  /* ===== attention focus / alerts (advisor + HK) — uniform widget board ===== */
+  .al-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .al-tl{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .al-wtitle{font-size:16px;font-weight:600;color:var(--navy)}
+  .al-note{font-size:11.5px;color:var(--muted)}
+  .al-board{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start}
+  @media(max-width:1050px){.al-board{grid-template-columns:1fr}}
+  .awdg{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .awdg-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .awdg-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--bg);color:var(--muted)}
+  .awdg--coral .awdg-ic{background:rgba(228,131,117,.16);color:var(--coral-deep)}
+  .awdg--amber .awdg-ic{background:rgba(232,161,58,.16);color:#b8860b}
+  .awdg--blue .awdg-ic{background:rgba(57,171,226,.14);color:var(--blue)}
+  .awdg-t{font-size:14.5px;font-weight:600;color:var(--navy);flex:1;min-width:0}
+  .awdg-n{font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);border-radius:20px;padding:2px 10px}
+  .awdg-body{padding:4px 12px 10px}
+  .awdg-body .afeed{background:none;border:none;border-inline-start:3px solid var(--muted);border-radius:0;margin-top:0;padding:13px 8px;border-top:1px solid #f2f5f8}
+  .awdg-body .afeed:first-child{border-top:none}
+  .awdg-body .afeed.high{border-inline-start-color:var(--coral)}
+  .awdg-body .afeed.mid{border-inline-start-color:var(--amber)}
+  .awdg-body .afeed.low{border-inline-start-color:var(--blue)}
+  .al-feed{padding:6px 12px 12px}
+  .afeed{display:flex;gap:13px;align-items:flex-start;padding:14px 12px;border-radius:12px;margin-top:8px;border:1px solid #eef3f7;background:#fafcfe;border-inline-start:3px solid var(--muted)}
+  .afeed:first-child{margin-top:6px}
+  .afeed.high{border-inline-start-color:var(--coral);background:#fff7f5;border-color:#f6e0da}
+  .afeed.mid{border-inline-start-color:var(--amber)}
+  .afeed.low{border-inline-start-color:var(--blue)}
+  .afeed-ic{width:30px;height:30px;border-radius:8px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:15px;background:#eef3f7}
+  .afeed.high .afeed-ic{background:rgba(228,131,117,.16)} .afeed.mid .afeed-ic{background:rgba(232,161,58,.16)} .afeed.low .afeed-ic{background:rgba(57,171,226,.14)}
+  .afeed-b{flex:1;min-width:0}
+  .afeed-t{font-size:13.5px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .afeed-d{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.55}
+  .afeed-m{display:flex;align-items:center;gap:12px;margin-top:7px}
+  .afeed-meta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+  .afeed-act{font-size:11.5px;font-weight:600;color:var(--blue);cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+  .afeed-sev{font-size:10px;font-weight:600;border-radius:20px;padding:2px 9px}
+  .afeed-sev.high{color:var(--coral-deep);background:rgba(228,131,117,.16)}
+  .afeed-sev.mid{color:#b8860b;background:rgba(232,161,58,.16)}
+  .afeed-sev.low{color:var(--blue);background:rgba(57,171,226,.12)}
+  .al-empty{padding:40px;text-align:center;color:var(--muted);font-size:14px}
+  .al-whead-l{display:flex;align-items:center;gap:14px}
+  .al-cfg{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:500;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 12px;cursor:pointer}
+  .al-cfg:hover{border-color:var(--blue);color:var(--blue)}
+  .afeed-metric{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:2px 9px}
+  /* rules editor modal */
+  .ar-ov{position:fixed;inset:0;background:rgba(12,64,104,.42);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.2s;z-index:88}
+  .ar-ov.show{opacity:1;pointer-events:auto}
+  .ar-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);width:520px;max-width:94vw;max-height:86vh;overflow-y:auto;background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);z-index:89;opacity:0;pointer-events:none;transition:.2s}
+  .ar-modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+  .ar-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+  .ar-title{font-size:17px;font-weight:600;color:var(--navy)}
+  .ar-sub{font-size:12px;color:var(--muted);margin-top:3px}
+  .ar-x{background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer;line-height:1}
+  .ar-list{padding:10px 16px}
+  .ar-row{display:flex;align-items:center;gap:14px;padding:14px 8px;border-bottom:1px solid #f2f5f8}
+  .ar-row.off{opacity:.5}
+  .ar-tog{position:relative;flex:0 0 auto;width:38px;height:22px;cursor:pointer}
+  .ar-tog input{position:absolute;opacity:0;width:0;height:0}
+  .ar-tog span{position:absolute;inset:0;background:#d5dde6;border-radius:20px;transition:.18s}
+  .ar-tog span::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .ar-tog input:checked+span{background:var(--green)}
+  .ar-tog input:checked+span::after{inset-inline-start:18px}
+  .ar-main{flex:1;min-width:0}
+  .ar-name{font-size:14px;font-weight:600;color:var(--navy)}
+  .ar-cond{font-size:12.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .ar-th{width:66px;font-family:inherit;font-size:13px;font-weight:600;color:var(--navy);text-align:center;border:1px solid var(--line);border-radius:8px;padding:5px 6px}
+  .ar-th:focus{outline:none;border-color:var(--blue)}
+  .ar-add{padding:13px 8px;font-size:12.5px;font-weight:500;color:var(--blue);cursor:pointer}
+  .ar-foot{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+  .ar-done{font-family:inherit;font-size:13px;font-weight:500;color:#fff;background:var(--navy);border:none;border-radius:9px;padding:8px 20px;cursor:pointer}
+  .oq-alert{color:var(--coral-deep);display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;flex:0 0 auto}
+  .oq-debt{display:inline-flex;align-items:center;gap:5px;background:var(--amber-bg);color:#a5701a;border:1px solid #f0dcae;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;flex:0 0 auto;white-space:nowrap}
+  .oq-msg{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);color:var(--green);border:1px solid #cdebd9;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;cursor:pointer;flex:0 0 auto;font-family:inherit}
+  .oq-msg.zero{background:var(--bg);color:var(--muted);border-color:var(--line);cursor:default}
+  .oq-msg:hover:not(.zero){background:#d7f2e2}
+  .oq-status{font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+  .oq-status .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .oq-status.wait{background:var(--bg);color:var(--muted)}
+  .oq-status.prog{background:#fff4f1;color:var(--coral-deep)}
+  .oq-status.done{background:var(--green-bg);color:var(--green)}
+  .oq-btn{border:1px solid var(--coral);background:var(--coral);color:#fff;font-family:inherit;font-weight:600;font-size:12.5px;border-radius:9px;padding:8px 15px;cursor:pointer;flex:0 0 auto;min-width:100px}
+  .oq-btn:hover{background:var(--coral-deep)}
+  .oq-btn.ghost{background:#fff;color:var(--green);border-color:var(--green)}
+  .oq-btn.ghost:hover{background:var(--green-bg)}
+  .oq-tasks{padding:2px 20px 14px;padding-inline-start:66px;display:flex;flex-direction:column;gap:7px;background:#fafcff}
+  .oq-task{display:flex;align-items:center;gap:11px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;transition:.12s}
+  .oq-task:hover{border-color:var(--blue);box-shadow:0 3px 10px rgba(57,171,226,.1)}
+  .oq-tbody{flex:1;min-width:0}
+  .oq-tt{font-size:13px;color:var(--navy);font-weight:500}
+  .oq-ts{font-size:11px;color:var(--muted);margin-top:2px}
+  .oq-tgo{font-size:12px;color:var(--blue);font-weight:600;flex:0 0 auto}
+  .oq-notask{font-size:13px;color:var(--muted);padding:8px 12px}
+
   /* ===== operations mode ===== */
-  .demo-role{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);cursor:pointer;
-    background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;user-select:none}
-  .demo-role input{accent-color:var(--coral)}
+  .role-sel{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);
+    background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 13px}
+  .role-sel select{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;
+    font-family:inherit;font-size:12.5px;color:var(--navy);font-weight:600;cursor:pointer;outline:none}
   .ops-banner{display:flex;align-items:center;gap:13px;background:linear-gradient(95deg,#E48375,#d96a5a);
     border:none;border-radius:14px;padding:15px 20px;margin-bottom:18px;color:#fff;
     box-shadow:0 10px 26px rgba(217,106,90,.32)}
@@ -307,7 +515,7 @@
   @keyframes opspulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.9);opacity:0}}
   .ops-clock{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);
     color:#fff;font-size:13px;font-weight:600;padding:6px 13px;border-radius:999px;font-variant-numeric:tabular-nums}
-  .ops-actions{display:flex;gap:10px}
+  .ops-actions{display:flex;gap:14px}
   .ops-close{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:10px;
     padding:10px 15px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px}
   .ops-close:hover{background:rgba(255,255,255,.28)}
@@ -353,8 +561,7 @@
     font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;margin-bottom:16px}
 
   /* ops KPI strip */
-  .ops-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-  @media(max-width:1050px){.ops-kpis{grid-template-columns:repeat(2,1fr)}}
+  .ops-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-bottom:16px}
   .okpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;
     display:flex;align-items:center;gap:13px;transition:.15s;box-shadow:var(--shadow)}
   .okpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -393,6 +600,155 @@
 
   /* ops side */
   .ops-side{display:flex;flex-direction:column;gap:16px}
+
+  /* ops task chips (6 types) */
+  .ochip.carry{background:var(--amber-bg);color:#c98a1e}
+  .ochip.unexpected{background:#fdeee9;color:var(--coral-deep)}
+  .ochip.overdraft{background:var(--red-bg);color:var(--red)}
+  /* ops kanban (by task type) */
+  #mgrToggle{margin-bottom:16px}
+  .mgr-seg{display:inline-flex;background:var(--bg);border-radius:11px;padding:3px;gap:2px}
+  .mseg{font-size:13.5px;color:var(--muted);padding:8px 18px;border-radius:9px;cursor:pointer;font-weight:500}
+  .mseg.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .ops-kanban{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;align-items:start}
+  @media(max-width:1150px){.ops-kanban{grid-auto-flow:column;grid-auto-columns:210px;grid-template-columns:none;overflow-x:auto;padding-bottom:6px}}
+  .kcol{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px;min-height:110px}
+  .kcol-head{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:10px;padding:2px 3px}
+  .kcol-head .ochip{width:26px;height:26px;border-radius:8px;flex:0 0 auto}
+  .kcol-n{margin-inline-start:auto;background:#fff;border:1px solid var(--line);border-radius:999px;font-size:11px;padding:1px 8px;color:var(--navy);font-weight:700}
+  .kcol-cards{display:flex;flex-direction:column;gap:8px}
+  .kcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer;transition:.12s;border-inline-start:3px solid var(--line)}
+  .kcard:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+  .kcard.msg{border-inline-start-color:var(--green)}
+  .kcard.doc{border-inline-start-color:var(--blue)}
+  .kcard.ai{border-inline-start-color:#6b5fd0}
+  .kcard.carry{border-inline-start-color:var(--amber)}
+  .kcard.unexpected{border-inline-start-color:var(--coral)}
+  .kcard.overdraft{border-inline-start-color:var(--red)}
+  .kc-title{font-size:12.5px;font-weight:500;color:var(--navy);line-height:1.45;margin-bottom:6px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .kc-time{font-size:10.5px;color:var(--muted)}
+  .kc-empty{font-size:11px;color:var(--muted);text-align:center;padding:12px 4px}
+
+  /* ops task detail modal */
+  .otd-ov{position:fixed;inset:0;background:rgba(12,64,104,.5);backdrop-filter:blur(3px);display:none;
+    align-items:center;justify-content:center;z-index:86;padding:20px}
+  .otd-ov.show{display:flex}
+  .otd-modal{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);width:580px;max-width:94vw;max-height:88vh;overflow-y:auto;padding:24px;position:relative}
+  .otd-x{position:absolute;top:16px;inset-inline-end:18px;background:var(--bg);border:1px solid var(--line);width:32px;height:32px;border-radius:9px;cursor:pointer;color:var(--muted);font-size:15px;z-index:2}
+  .otd-modal .ot-actions{padding-inline-start:0}
+  .otd-modal .ot-body{margin-inline-start:0}
+
+  /* ops console: list (right) + detail (left) */
+  .ops-console{display:grid;grid-template-columns:350px 1fr;gap:16px;align-items:start}
+  @media(max-width:900px){.ops-console{grid-template-columns:1fr}}
+  .ops-qcol{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .ops-qhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .ops-qlist{max-height:calc(100vh - 340px);overflow-y:auto}
+  .oq2{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid #f0f4f8;cursor:pointer;border-inline-start:3px solid transparent;transition:.12s}
+  .oq2:last-child{border-bottom:none}
+  .oq2:hover{background:#fafcff}
+  .oq2.sel{background:var(--blue-bg);border-inline-start-color:var(--blue)}
+  .oq2 .ochip{width:34px;height:34px;border-radius:10px;flex:0 0 auto}
+  .oq2-body{flex:1;min-width:0}
+  .oq2-title{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .oq2-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .oq2-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex:0 0 auto}
+  .oq2-check{color:var(--green);font-weight:700;flex:0 0 auto}
+  .ops-detail{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px 24px;min-height:440px}
+  .otd-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .otd-head .ochip{width:42px;height:42px;border-radius:12px;flex:0 0 auto}
+  .otd-htext{flex:1;min-width:0}
+  .otd-title{font-size:17px;font-weight:600;color:var(--navy);line-height:1.35}
+  .otd-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .otd-body{margin-bottom:20px}
+  .otd-done{font-size:14px;color:var(--muted);padding:20px 0}
+  .ops-detail .ot-actions{padding-inline-start:0}
+  .ops-detail .ot-body{margin-inline-start:0}
+  /* ops list head: ממתין/טופל toggle */
+  .ops-list-head{padding:14px 18px}
+  .ops-toggle{display:inline-flex;background:var(--bg);border-radius:10px;padding:3px;gap:2px}
+  .otg{font-size:13px;color:var(--muted);padding:7px 15px;border-radius:8px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:7px}
+  .otg.on{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .otg-n{background:var(--coral);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 6px;min-width:16px;text-align:center}
+  .otg.on .otg-n{background:var(--navy)}
+  .olh-note{font-size:12px;color:var(--muted)}
+  /* task card */
+  .ops-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+  @media(max-width:900px){.ops-grid2{grid-template-columns:1fr}}
+  /* ops rows (single-column list, expand on click) */
+  .ops-rows{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .ops-rows-head{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line)}
+  .orh-l{display:flex;align-items:center;gap:9px;font-size:14.5px;font-weight:600;color:var(--navy);margin-inline-end:auto}
+  .orh-l svg{color:var(--coral-deep);flex:0 0 auto}
+  .ops-rows-head .olh-note{margin-inline-start:4px}
+  .orow2item{border-bottom:1px solid #f0f4f8;border-inline-start:3px solid transparent}
+  .orow2item:last-child{border-bottom:none}
+  .orow2item.is-done{opacity:.72}
+  .orow2item.msg{border-inline-start-color:var(--green)}
+  .orow2item.doc{border-inline-start-color:var(--blue)}
+  .orow2item.ai{border-inline-start-color:#6b5fd0}
+  .orow2item.carry{border-inline-start-color:var(--amber)}
+  .orow2item.unexpected{border-inline-start-color:var(--coral)}
+  .orow2item.overdraft{border-inline-start-color:var(--red)}
+  .orow2{display:flex;align-items:center;gap:13px;padding:12px 18px;transition:.12s}
+  .orow2item:not(.is-done) .orow2:hover{background:#fafcff}
+  .orow2 .ochip{width:34px;height:34px;border-radius:10px;flex:0 0 auto;cursor:pointer}
+  .orow2-body{flex:1;min-width:0;cursor:pointer}
+  .orow2-title{font-size:13.5px;font-weight:500;color:var(--navy);line-height:1.4}
+  .orow2-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .orow2-act{display:flex;gap:8px;flex:0 0 auto}
+  .orow2-act .ot-btn{font-size:12px;padding:7px 13px}
+  .orow2-chev{color:var(--muted);cursor:pointer;transition:.2s;flex:0 0 auto}
+  .orow2item.open .orow2-chev{transform:rotate(180deg)}
+  .orow2-doneflag{font-size:12px;font-weight:600;color:var(--green);flex:0 0 auto}
+  .orow2-detail{padding:0 18px 16px;padding-inline-start:65px;background:#fafcff}
+  .otask{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:17px 19px;border-inline-start:3px solid var(--line)}
+  .otask.is-done{opacity:.72}
+  .otask.msg{border-inline-start-color:var(--green)}
+  .otask.doc{border-inline-start-color:var(--blue)}
+  .otask.ai{border-inline-start-color:#6b5fd0}
+  .otask.carry{border-inline-start-color:var(--amber)}
+  .otask.unexpected{border-inline-start-color:var(--coral)}
+  .otask.overdraft{border-inline-start-color:var(--red)}
+  .ot-doneline{font-size:13px;color:var(--muted);margin-top:8px;padding-inline-start:48px}
+  .ot-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:11px}
+  .ot-head .ochip{width:36px;height:36px;border-radius:11px;flex:0 0 auto}
+  .ot-htext{flex:1;min-width:0}
+  .ot-title{font-size:14.5px;font-weight:600;color:var(--navy);line-height:1.35}
+  .ot-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .ot-status{font-size:11.5px;font-weight:600;color:var(--blue);background:var(--blue-bg);padding:4px 11px;border-radius:999px;flex:0 0 auto;white-space:nowrap}
+  .ot-status.done{color:var(--green);background:var(--green-bg)}
+  .ot-body{margin:0 0 12px;margin-inline-start:48px}
+  .ot-text{font-size:13.5px;color:var(--ink);line-height:1.6}
+  .ot-text.muted{color:var(--muted)}
+  .ot-thread{display:flex;flex-direction:column;gap:6px}
+  .ot-bub{background:#f0f2f5;border-radius:12px;padding:9px 13px;font-size:13px;color:var(--navy);line-height:1.5;width:fit-content;max-width:90%}
+  .ot-reply{display:none;margin-top:10px;gap:8px}
+  .ot-reply.show{display:flex}
+  .ot-reply input{flex:1;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-family:inherit;font-size:13px;outline:none}
+  .ot-reply input:focus{border-color:var(--blue)}
+  .ot-reply button{background:var(--blue);color:#fff;border:none;border-radius:9px;padding:0 16px;cursor:pointer;font-family:inherit;font-weight:600;font-size:13px}
+  .ot-doc{margin-bottom:0}
+  .ot-docprev{border:1px dashed var(--line);border-radius:12px;background:#fafcff;height:120px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;position:relative}
+  .ot-docprev:hover{border-color:var(--blue);color:var(--blue)}
+  .ot-zoom{position:absolute;top:8px;inset-inline-start:8px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--navy)}
+  .ot-ai{background:var(--bg);border-radius:12px;padding:13px 15px}
+  .ot-airow{display:flex;gap:10px;font-size:13px;padding:4px 0}
+  .ot-ailbl{color:var(--muted);min-width:110px;flex:0 0 auto}
+  .ot-rec{color:#6b5fd0;font-weight:600}
+  .ot-reason{font-size:12.5px;color:var(--ink);line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+  .ot-reason b{color:var(--navy)}
+  .ot-src{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.3px}
+  .ot-actions{display:flex;gap:9px;justify-content:flex-start;padding-inline-start:48px;flex-wrap:wrap}
+  .ot-btn{border:1px solid var(--blue);background:var(--blue);color:#fff;font-family:inherit;font-weight:600;font-size:12.5px;border-radius:9px;padding:8px 16px;cursor:pointer}
+  .ot-btn:hover{background:#2f9ad0}
+  .ot-btn.ghost{background:#fff;color:var(--navy);border-color:var(--line)}
+  .ot-btn.ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .ot-btn.done{background:var(--green);border-color:var(--green)}
+  .ot-btn.done:hover{background:#12833d}
+  .ot-handled{font-size:12px;color:var(--muted)}
   .ops-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px}
   .osc-title{font-size:14.5px;font-weight:600;color:var(--navy);margin-bottom:12px}
   .osc-prog{height:12px;border-radius:20px;background:#deeef8;overflow:hidden;direction:ltr;margin:8px 0 14px}
@@ -494,9 +850,9 @@
   .d-body{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:11px;background:#eef3f7}
   .d-empty{margin:auto;text-align:center;color:var(--muted);font-size:13.5px;display:flex;flex-direction:column;align-items:center;gap:10px}
   .d-empty svg{opacity:.4}
-  .msg{display:flex;gap:7px;align-items:flex-end;max-width:86%;position:relative}
-  .msg.hk{margin-inline-start:auto;flex-direction:row-reverse}
-  .msg.user{margin-inline-end:auto}
+  .d-body .msg{display:flex;gap:7px;align-items:flex-end;max-width:86%;position:relative}
+  .d-body .msg.hk{margin-inline-start:auto;flex-direction:row-reverse}
+  .d-body .msg.user{margin-inline-end:auto}
   .av{width:30px;height:30px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;
     justify-content:center;font-size:11px;font-weight:600;color:#fff}
   .av.hk{background:var(--blue)} .av.user{background:var(--navy)}
@@ -513,6 +869,102 @@
   .d-foot input:focus{border-color:var(--wa)}
   .d-foot .send{width:42px;height:42px;border-radius:50%;background:var(--wa);color:#fff;
     border:none;cursor:pointer;font-size:17px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+
+  /* ===== top-bar messages inbox ===== */
+  .tb-msg{position:relative;width:38px;height:38px;border-radius:50%;background:var(--bg);border:1px solid var(--line);color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .tb-msg:hover{border-color:var(--blue)}
+  .tb-badge{position:absolute;top:-4px;inset-inline-start:-4px;background:var(--wa);color:#fff;font-size:10.5px;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+  .inbox-ov{position:fixed;inset:0;z-index:78;display:none}
+  .inbox-ov.show{display:block}
+  .inbox{position:fixed;top:62px;left:20px;width:440px;max-width:94vw;max-height:76vh;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);z-index:79;display:none;flex-direction:column;overflow:hidden}
+  .mev{border-bottom:1px solid var(--line);padding:15px 17px}
+  .mev:last-child{border-bottom:none}
+  .mev-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .mev-co{font-size:14.5px;font-weight:600;color:var(--navy)}
+  .mev-meta{font-size:10.5px;color:var(--muted);text-align:left;line-height:1.45;flex:0 0 auto}
+  .mev-bubble{background:#f0f2f5;border-radius:12px;padding:11px 13px;display:flex;flex-direction:column;gap:6px;margin-bottom:11px}
+  .mev-bubble div{font-size:13px;color:var(--navy);line-height:1.5}
+  .mev-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mev-status{font-size:11.5px;color:var(--blue);font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .mev-status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .mev-actions{display:flex;gap:8px}
+  .mev-btn{border:1px solid var(--line);background:#fff;color:var(--navy);font-family:inherit;font-weight:600;font-size:12px;border-radius:8px;padding:7px 13px;cursor:pointer}
+  .mev-btn:hover{border-color:var(--blue)}
+  .mev-btn.done{border-color:var(--green);color:var(--green)}
+  .mev-btn.done:hover{background:var(--green-bg)}
+  .mev-reply{display:none;margin-top:11px;gap:8px}
+  .mev-reply.show{display:flex}
+  .mev-reply input{flex:1;border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-family:inherit;font-size:13px;outline:none}
+  .mev-reply input:focus{border-color:var(--blue)}
+  .mev-reply .snd{background:var(--blue);color:#fff;border:none;border-radius:9px;padding:0 15px;cursor:pointer;font-family:inherit;font-weight:600;font-size:13px}
+  .inbox.show{display:flex}
+  .inbox-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .inbox-head .ih-t{font-size:16px;font-weight:600;color:var(--navy)}
+  .inbox-sub{font-size:12px;color:var(--muted)}
+  .inbox-list{overflow-y:auto}
+  .ibrow{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f0f4f8;cursor:pointer;transition:.12s}
+  .ibrow:hover{background:#fafcff}
+  .ib-av{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;flex:0 0 auto}
+  .ib-body{flex:1;min-width:0}
+  .ib-top{display:flex;justify-content:space-between;gap:8px}
+  .ib-name{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ib-time{font-size:11px;color:var(--muted);flex:0 0 auto}
+  .ib-prev{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .ib-badge{background:var(--wa);color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 6px;flex:0 0 auto}
+  .inbox-empty{padding:36px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* ===== meetings — uniform card (header + filters + rows) ===== */
+  .mt-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .mt-whead{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);gap:10px}
+  .mt-wtitle{font-size:16px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:9px}
+  .mt-wtitle svg{color:var(--coral-deep)}
+  .mt-filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;border-bottom:1px solid #f2f5f8}
+  .mt-filters .ofilter{background:var(--bg);border:1px solid var(--line);padding:7px 14px;border-radius:999px;font-size:12.5px;color:var(--muted);cursor:pointer}
+  .mt-filters .ofilter.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+  .mt-filters .cnt{background:var(--coral);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 6px;margin-inline-start:5px}
+  .mtcard{display:flex;align-items:center;gap:16px;padding:15px 18px;border-top:1px solid #f2f5f8}
+  .mt-list .mtcard:first-child{border-top:none}
+  .mtcard:hover{background:#fafcff}
+  .mt-info{flex:1;min-width:0}
+  .mt-name{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:9px}
+  .mt-meta{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+  .mt-meta span{display:flex;align-items:center;gap:6px}
+  .mt-meta svg{opacity:.5}
+  .mt-btn{border:1px solid var(--coral);background:#fff;color:var(--coral-deep);font-family:inherit;font-weight:600;font-size:13px;border-radius:10px;padding:9px 17px;cursor:pointer;flex:0 0 auto}
+  .mt-btn:hover{background:#fff4f1}
+  .mt-btn.view{border-color:var(--blue);color:var(--blue)}
+  .mt-btn.view:hover{background:var(--blue-bg)}
+
+  /* ===== meeting summary modal ===== */
+  .ms-ov{position:fixed;inset:0;background:rgba(12,64,104,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:85;padding:20px}
+  .ms-ov.show{display:flex}
+  .ms{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);width:720px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+  .ms-head{padding:18px 22px 0;position:relative}
+  .ms-x{position:absolute;top:14px;inset-inline-end:18px;background:var(--bg);border:1px solid var(--line);width:32px;height:32px;border-radius:9px;cursor:pointer;color:var(--muted);font-size:15px}
+  .ms-title,.ms-meta{padding-inline-end:44px}
+  .ms-title{font-size:18px;font-weight:600;color:var(--navy)}
+  .ms-meta{display:flex;gap:16px;margin-top:6px;font-size:12.5px;color:var(--muted)}
+  .ms-meta span{display:flex;align-items:center;gap:6px}
+  .ms-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:14px 22px 0}
+  .ms-tab{font-size:13.5px;color:var(--muted);padding:9px 14px;cursor:pointer;border-bottom:2px solid transparent;font-weight:500}
+  .ms-tab.on{color:var(--navy);border-bottom-color:var(--coral);font-weight:600}
+  .ms-body{overflow-y:auto;padding:20px 24px}
+  .ms-sec{font-size:16px;font-weight:600;color:var(--blue);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+  .ms-sec.t2{margin-top:26px}
+  .ms-point{display:flex;gap:9px;font-size:13.5px;color:var(--ink);line-height:1.65;margin-bottom:12px}
+  .ms-point .num{color:var(--blue);font-weight:600;flex:0 0 auto}
+  .ms-insight{margin-bottom:18px;padding-inline-start:4px;border-inline-start:3px solid var(--blue-bg)}
+  .ms-insight{padding-inline-start:12px}
+  .ms-ititle{font-size:14.5px;font-weight:600;color:var(--navy);margin-bottom:5px}
+  .ms-itext{font-size:13px;color:var(--muted);line-height:1.65}
+  .ms-more{color:var(--blue);font-weight:600;cursor:pointer;font-size:12.5px}
+  .ms-foot{display:flex;gap:12px;padding:15px 22px;border-top:1px solid var(--line)}
+  .ms-foot button{flex:1;font-family:inherit;font-weight:600;font-size:14px;border-radius:11px;padding:12px;cursor:pointer}
+  .ms-send{background:var(--coral);color:#fff;border:none;display:flex;align-items:center;justify-content:center;gap:8px}
+  .ms-send:hover{background:var(--coral-deep)}
+  .ms-nosend{background:#fff;border:1px solid var(--line);color:var(--navy)}
+  .ms-nosend:hover{border-color:var(--blue)}
+  .ms-placeholder{padding:44px 20px;text-align:center;color:var(--muted);font-size:14px}
 
   .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
     background:var(--navy);color:#fff;padding:13px 22px;border-radius:12px;font-size:14px;
@@ -538,18 +990,33 @@
 
   <div class="top-mid">
     <div class="ddl">כל מנהלי התזרים <span>▾</span></div>
-    <div class="ddl">מוצרים <span>▾</span></div>
+    <div class="ddl-wrap">
+      <div class="ddl" id="prodDdl" onclick="toggleProd(event)">מוצרים <span>▾</span></div>
+      <div class="prod-menu" id="prodMenu"></div>
+    </div>
   </div>
 
   <div class="top-right">
-    <label class="demo-role" title="הדגמה — מדמה התחברות כמתפעל"><input type="checkbox" id="opRole" checked onchange="setOperator(this.checked)"> מחובר כמתפעל</label>
+    <div class="role-sel" title="הדגמה — תצוגה לפי תפקיד">
+      תצוגה:
+      <select id="roleSel" onchange="setRole(this.value)">
+        <option value="manager">מנהל תזרים</option>
+        <option value="advisor">יועץ</option>
+        <option value="client1">לקוח · חברה אחת</option>
+        <option value="clientN">לקוח · רב-חברות</option>
+      </select>
+    </div>
+    <button class="tb-msg" id="tbMsg" onclick="toggleInbox(event)" aria-label="הודעות">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      <span class="tb-badge" id="tbBadge">8</span>
+    </button>
     <div class="who">ערב טוב, אייל חזות<br><b>לאיזור האישי</b></div>
     <div class="avatar">אח</div>
   </div>
 </div>
 
 <!-- ===== shell ===== -->
-<div class="shell" id="shell">
+<div class="shell collapsed" id="shell">
 
   <!-- client rail -->
   <aside class="rail">
@@ -561,16 +1028,12 @@
       </button>
     </div>
     <div class="rail-portfolio" id="railPortfolio" onclick="selectPortfolio()" title="דשבורד כלל החברות">
-      <span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--navy);flex:0 0 auto"></span>
+      <span class="rp-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/></svg></span>
       <div class="ci"><div class="cn">כל החברות</div><div class="cs">תיק לקוחות · 12 חברות</div></div>
     </div>
     <div class="rail-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
       <input id="railQ" placeholder="חיפוש לקוח / מנהל תזרים" oninput="renderRail()">
-    </div>
-    <div class="rail-tabs">
-      <div class="rtab on" data-t="all" onclick="setRailTab(this,'all')">הכל</div>
-      <div class="rtab" data-t="active" onclick="setRailTab(this,'active')">פעיל</div>
     </div>
     <div class="rail-list" id="railList"></div>
   </aside>
@@ -581,6 +1044,7 @@
       <h1 id="headName">אנרגי אינטרנשיונל</h1>
       <span class="hp2" id="headHp">511327876</span>
       <span class="st active">פעיל</span>
+      <div class="opsq-filters opsq-status" id="opsqStatus" style="margin-inline-start:auto;display:none"></div>
       <div class="db-actions">
         <div class="rep" id="repDd">
           <button class="chip-btn" onclick="toggleRep(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg> דוחות <svg class="repchev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
@@ -599,11 +1063,11 @@
     <!-- section tabs -->
     <div class="tabs">
       <div class="tab on" onclick="switchTab(this,'dash')">דשבורד</div>
-      <div class="tab" onclick="switchTab(this,'chat')">צ'אט</div>
-      <div class="tab" onclick="switchTab(this,'metrics')">מדדים</div>
+      <div class="tab advisor-only" onclick="switchTab(this,'chat')">צ'אט</div>
+      <div class="tab advisor-only" onclick="switchTab(this,'metrics')">מדדים</div>
       <div class="tab" onclick="switchTab(this,'meetings')">פגישות</div>
-      <div class="tab" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
-      <div class="tab" onclick="switchTab(this,'flow')">התהליך שלי</div>
+      <div class="tab advisor-only" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
+      <div class="tab advisor-only" onclick="switchTab(this,'flow')">התהליך שלי</div>
       <div id="wbActions" style="margin-inline-start:auto;display:flex;gap:8px;align-self:center">
         <button class="chip-btn" id="btnAdd" onclick="openPicker()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> הוספת ווידג'ט</button>
         <button class="chip-btn" id="btnEdit" onclick="toggleEdit()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> עריכת לוח</button>
@@ -612,8 +1076,39 @@
 
     <!-- ===== DASHBOARD view ===== -->
     <div id="viewDash">
+    <!-- manager home toggle: ops queue vs financial dashboard -->
+    <div id="mgrToggle" style="display:none">
+      <div class="mgr-seg">
+        <div class="mseg on" onclick="setMgrView('ops')">תור תפעול</div>
+        <div class="mseg" onclick="setMgrView('dash')">מוקד התראות</div>
+      </div>
+    </div>
+    <!-- consolidated report — only on the "כל החברות" screen (advisor / multi-company client) -->
+    <div id="crBar" style="display:none;margin-bottom:14px">
+      <button class="chip-btn" onclick="openCR()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg> דוח תזרים מאוחד</button>
+    </div>
     <!-- widgets board -->
     <div class="wboard" id="wboard"></div>
+
+    <!-- attention focus: exception-driven alerts as uniform widgets (advisor + HK) -->
+    <div id="alertsView" style="display:none">
+      <div class="al-topbar">
+        <div class="al-tl"><span class="al-wtitle">מוקד התראות — חברות שדורשות טיפול</span><span class="al-note" id="alNote"></span></div>
+        <button class="al-cfg" onclick="goToMetrics()" title="ההתראות מוגדרות בכל מדד"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg> ההתראות מוגדרות במדדים ←</button>
+      </div>
+      <div class="al-board" id="alBoard"></div>
+    </div>
+
+
+    <!-- operator home: cross-company operations queue -->
+    <div id="opsQueueView" style="display:none">
+      <div class="opsq-strip" id="opsqStrip"></div>
+      <div class="opsq-filters" id="opsqFilters"></div>
+      <div class="opsq-card">
+        <div class="opsq-head"><span class="opsq-title">תור התפעול — כל החברות</span></div>
+        <div class="opsq-list" id="opsqList"></div>
+      </div>
+    </div>
     </div><!-- /viewDash -->
 
     <!-- ===== METRICS (definition) view ===== -->
@@ -640,6 +1135,18 @@
       </div>
     </div>
 
+    <!-- ===== MEETINGS view ===== -->
+    <div id="viewMeetings" style="display:none">
+      <div class="mt-wrap">
+        <div class="mt-whead">
+          <div class="mt-wtitle"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>פגישות</span></div>
+          <button class="mt-new" onclick="toast('פתיחת קביעת פגישה')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> קביעת פגישה</button>
+        </div>
+        <div class="mt-filters" id="mtFilters"></div>
+        <div class="mt-list" id="mtList"></div>
+      </div>
+    </div>
+
     <!-- ===== placeholder views ===== -->
     <div id="viewOther" style="display:none">
       <div class="placeholder">
@@ -656,49 +1163,22 @@
         <div class="ops-title">מצב תפעול — <span id="opsScope">אנרגי אינטרנשיונל</span> <span class="sub" id="opsCount"></span></div>
         <span class="ops-clock" id="opsClock">0:00</span>
         <div class="ops-actions">
-          <button class="ops-close" onclick="exitOps()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> סגירת מצב תפעול</button>
           <button class="ops-done" onclick="finishOps()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול</button>
+          <button class="ops-close" onclick="exitOps()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> סגירת מצב תפעול</button>
         </div>
       </div>
 
-      <div class="ops-kpis" id="opsKpis"></div>
-
-      <div class="ops-grid">
-        <div class="ops-list-card">
-          <div class="ops-list-head">
-            <span class="olh-title">תור התפעול</span>
-            <div class="ops-filters" id="opsFilters"></div>
-          </div>
-          <div class="ops-list" id="opsList"></div>
-        </div>
-
-        <div class="ops-side">
-          <div class="ops-card">
-            <div class="osc-title">סגירת חודש — יוני 2026</div>
-            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">התקדמות</span><span style="font-weight:600;color:var(--navy)">72%</span></div>
-            <div class="osc-prog"><div class="fill" style="width:72%"></div></div>
-            <div class="osc-row"><span class="l">חשבונות סונכרנו</span><span class="v">9 / 12</span></div>
-            <div class="osc-row"><span class="l">התאמות פתוחות</span><span class="v">3</span></div>
-            <div class="osc-row"><span class="l">ממתין לאישור לקוח</span><span class="v">1</span></div>
-          </div>
-          <div class="ops-card">
-            <div class="osc-title">היום</div>
-            <div class="osc-row"><span class="l">טופלו משימות</span><span class="v" id="opsDone">14</span></div>
-            <div class="osc-row"><span class="l">קיטלוגי AI שאושרו</span><span class="v">23</span></div>
-            <div class="osc-row"><span class="l">חברות שנסגרו</span><span class="v">4</span></div>
-          </div>
-        </div>
-      </div>
+      <div id="opsGrid"></div>
     </div>
   </main>
 </div>
 
-<!-- ===== chat FAB ===== -->
-<button class="fab" onclick="openChat()">
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5a8.4 8.4 0 1 1 16.1-4z"/></svg>
-  הודעות
-  <span class="fbadge" id="fbadge">5</span>
-</button>
+<!-- ===== messages inbox (top-bar) ===== -->
+<div class="inbox-ov" id="inboxOv" onclick="closeInbox()"></div>
+<div class="inbox" id="inbox">
+  <div class="inbox-head"><span class="ih-t">הודעות</span><span class="inbox-sub" id="inboxSub"></span></div>
+  <div class="inbox-list" id="inboxList"></div>
+</div>
 
 <!-- ===== widget picker modal ===== -->
 <div class="pk-ov" id="pkOv" onclick="closePicker()"></div>
@@ -722,6 +1202,7 @@
       <div class="dn" id="dName">אנרגי אינטרנשיונל</div>
       <div class="ds" id="dStatus">פעיל · לירון בן כליפא</div>
     </div>
+    <button class="d-done" onclick="markHandled()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> טופל</button>
     <button class="x" onclick="closeChat()">✕</button>
   </div>
   <div class="d-userbar">
@@ -751,19 +1232,58 @@
   </div>
 </div>
 
+<!-- ===== meeting summary modal ===== -->
+<div class="ms-ov" id="msOv">
+  <div class="ms">
+    <div class="ms-head">
+      <button class="ms-x" onclick="closeMeeting()">✕</button>
+      <div class="ms-title" id="msTitle">פ.ע - חודש יוני</div>
+      <div class="ms-meta">
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span id="msDate">01.06.2026</span></span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="msTime">11:00-12:00</span></span>
+      </div>
+    </div>
+    <div class="ms-tabs" id="msTabs">
+      <div class="ms-tab on" onclick="msTab(this,'summary')">סיכום פגישה</div>
+      <div class="ms-tab" onclick="msTab(this,'tasks')">משימות</div>
+      <div class="ms-tab" onclick="msTab(this,'feedback')">משוב</div>
+      <div class="ms-tab" onclick="msTab(this,'transcript')">תמלול</div>
+    </div>
+    <div class="ms-body" id="msBody"></div>
+    <div class="ms-foot">
+      <button class="ms-nosend" onclick="closeMeeting()">אישור ללא שליחה</button>
+      <button class="ms-send" onclick="sendSummary()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> אישור ושליחת סיכום</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== consolidated cashflow report modal ===== -->
+<div class="ms-ov" id="crOv">
+  <div class="ms" style="width:860px">
+    <div class="ms-head">
+      <button class="ms-x" onclick="closeCR()">✕</button>
+      <div class="ms-title">דוח תזרים חברות מאוחד</div>
+      <div class="ms-meta"><span>כלל החברות שלך · נכון ל-1.7.2026</span></div>
+    </div>
+    <div class="ms-body" style="padding:14px"><iframe id="crFrame" title="דוח תזרים מאוחד" style="width:100%;height:540px;border:0;border-radius:12px;background:#fff"></iframe></div>
+  </div>
+</div>
+
+<div class="stat-menu" id="statMenu"></div>
+
 <div class="toast" id="toast"></div>
 
 <script>
   const CLIENTS = [
-    { name:'אנרגי אינטרנשיונל', hp:'511327876', mgr:'לירון בן כליפא', status:'active', unread:5, sync:'01.07 10:54', warn:true,
+    { name:'אנרגי אינטרנשיונל', hp:'511327876', mgr:'לירון בן כליפא', status:'active', unread:5, sync:'01.07 10:54', warn:true, opsPending:7, opsAlert:true,
       thread:[
         {from:'hk', name:'HK', auto:true, t:'היי צחי, סיימתי כעת לעדכן ולנהל עבורך את תזרים המזומנים להיום. רוצה לראות מה חדש?', when:'02.06 13:05'},
         {from:'user', name:'צחי עובד', t:'צפייה בתזרים שלי', when:'02.06 13:11'},
         {from:'hk', name:'HK', auto:true, t:'תחזית תזרים שבועית · יתרה נוכחית 430,481 ₪. צפויה חריגה ב-13.7', when:'02.06 13:11'} ] },
-    { name:'אנרגי גולני', hp:'511200341', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:27' },
-    { name:'מטעי גבעון', hp:'514778220', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:26' },
-    { name:'משה עובד', hp:'039112774', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:26' },
-    { name:'רימון יצחק', hp:'025664109', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:26' },
+    { name:'אנרגי גולני', hp:'511200341', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:27', opsPending:2 },
+    { name:'מטעי גבעון', hp:'514778220', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:26', opsPending:3, opsAlert:true },
+    { name:'משה עובד', hp:'039112774', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:26', opsPending:0 },
+    { name:'רימון יצחק', hp:'025664109', mgr:'לירון בן כליפא', status:'active', unread:0, sync:'01.07 10:26', opsPending:1 },
   ];
   let CUR = 0, RAIL_TAB='all';
 
@@ -771,19 +1291,18 @@
   function renderRail(){
     const q=document.getElementById('railQ').value.trim();
     let list=CLIENTS.map((c,i)=>({c,i}));
-    if(RAIL_TAB==='active') list=list.filter(x=>x.c.status==='active');
     if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q));
     document.getElementById('cliCount').textContent=list.length;
     document.getElementById('railList').innerHTML=list.map(({c,i})=>{
-      const dot=c.warn?'warn':(c.status==='active'?'active':'off');
+      const k='c'+i;
+      const dot = opsAccum[k] ? 'prog' : (c.opsAlert ? 'warn' : (c.status==='active'?'active':'off'));
       const badge=c.unread>0?`<span class="cbadge">${c.unread}</span>`:'';
-      return `<div class="cli ${i===CUR?'on':''}" onclick="selectClient(${i})" title="${c.name}">
+      return `<div class="cli ${i===CUR?'on':''}" onclick="selectClient(${i})" title="${c.name} · ${c.mgr}">
         <span class="dot ${dot}"></span>
         <div class="ci"><div class="cn">${c.name}</div><div class="cs">${c.mgr} · ${c.sync||''}</div></div>
         ${badge}</div>`;
     }).join('');
   }
-  function setRailTab(el,t){document.querySelectorAll('.rtab').forEach(x=>x.classList.remove('on'));el.classList.add('on');RAIL_TAB=t;renderRail();}
   function selectClient(i){
     CUR=i; const c=CLIENTS[i];
     document.getElementById('curName').textContent=c.name;
@@ -829,14 +1348,24 @@
       {f:'widget-next-process.html',        t:'השלב הבא',           d:'השלב הבא בתהליך עם אג׳נדה',                    cat:'ליווי',   h:500},
     ],
     portfolio:[
-      {f:'widget-overdraft-today.html',     t:'לקוחות בחריגה היום', d:'כל הלקוחות בחריגת מסגרת אשראי נכון להיום',      cat:'תיק',     h:640},
-      {f:'widget-cashflow-portfolio.html',  t:'תזרים — תיק לקוחות', d:'תחזית תזרים מצרפית לכלל החברות',               cat:'תיק',     h:560},
+      {f:'widget-pf-kpi-balance.html',       t:'יתרה מצרפית',            d:'סך יתרות עו״ש לכלל החברות',                    cat:'מספרים', h:160, s:'sm'},
+      {f:'widget-pf-kpi-budget.html',        t:'עמידה בתקציב',           d:'כמה חברות בתוך מסגרת התקציב',                  cat:'תקציב',  h:160, s:'sm'},
+      {f:'widget-pf-kpi-risk.html',          t:'חברות בסיכון',           d:'חברות שצפויות לחרוג מהתקציב',                  cat:'תקציב',  h:160, s:'sm'},
+      {f:'widget-pf-kpi-overdraft.html',     t:'חריגה צפויה מצרפית',     d:'סכום החריגה הצפוי לכלל התיק',                  cat:'מספרים', h:160, s:'sm'},
+      {f:'widget-pf-cashflow-budget.html',   t:'בקרת תזרים מול תקציב',   d:'יתרה צפויה מול רצפת התקציב — צבוע בחריגות',     cat:'תזרים',  h:430},
+      {f:'widget-pf-alerts.html',            t:'התראות תזרים חכמות',     d:'קישור בין חריגות תקציב לתזרים הצפוי',           cat:'תיק',    h:470},
+      {f:'widget-pf-budget-companies.html',  t:'עמידה בתקציב לפי חברה',  d:'ביצוע הוצאות מול התקציב לכל חברה',              cat:'תקציב',  h:400},
+      {f:'widget-pf-budget-categories.html', t:'חריגות תקציב לפי קטגוריה',d:'ביצוע מול תקציב לפי סעיף הוצאה',               cat:'תקציב',  h:410},
+      {f:'widget-pf-risk-list.html',         t:'חברות בסיכון תזרימי',    d:'צפי חריגה מרצפת התקציב עם מועד וסכום',          cat:'תזרים',  h:340},
+      {f:'widget-pf-collections.html',       t:'סטטוס גבייה',            d:'חובות פתוחים לפי גיל — השפעה על התזרים',        cat:'תזרים',  h:440},
+      {f:'widget-overdraft-today.html',      t:'לקוחות בחריגה היום',     d:'כל הלקוחות בחריגת מסגרת אשראי נכון להיום',       cat:'תיק',    h:640},
+      {f:'widget-cashflow-portfolio.html',   t:'תזרים — תיק לקוחות',     d:'תחזית תזרים מצרפית לכלל החברות',                cat:'תיק',    h:560},
     ],
   };
   let SCOPE='client';
   const BOARDS={
     client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-cashflow-full.html','widget-profitability-full.html','widget-metric-full.html'],
-    portfolio:['widget-overdraft-today.html','widget-cashflow-portfolio.html'],
+    portfolio:['widget-pf-kpi-balance.html','widget-pf-kpi-budget.html','widget-pf-kpi-risk.html','widget-pf-kpi-overdraft.html','widget-pf-cashflow-budget.html','widget-pf-alerts.html','widget-pf-budget-companies.html','widget-pf-budget-categories.html','widget-pf-risk-list.html','widget-pf-collections.html'],
   };
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};
   const rowSpan=h=>Math.max(6,Math.ceil((h+18)/8));
@@ -956,6 +1485,7 @@
 
   /* scope: single client vs whole portfolio */
   function setScope(s){
+    if(OPSMODE) exitOps();
     SCOPE=s;
     const hp=document.getElementById('headHp'), st=document.querySelector('.client-head .st');
     const acts=document.querySelector('.db-actions'), kpi=document.getElementById('kpiHero');
@@ -964,13 +1494,13 @@
       document.getElementById('curName').textContent='כל החברות';
       document.getElementById('curHp').textContent='תיק לקוחות';
       document.getElementById('headName').textContent='כל החברות';
-      hp.style.display='none'; st.style.display='none'; acts.style.visibility='hidden';
+      hp.style.display='none'; st.style.display='none'; acts.style.display='none';
       if(kpi)kpi.style.display='none';
       sub.textContent='תיק לקוחות · 12 חברות · 4 בחריגה היום · נכון ל-1.7.2026';
       document.getElementById('railPortfolio').classList.add('on');
       document.querySelectorAll('.cli.on').forEach(x=>x.classList.remove('on'));
     }else{
-      hp.style.display=''; st.style.display=''; acts.style.visibility='visible';
+      hp.style.display=''; st.style.display=''; acts.style.display='flex'; acts.style.visibility='visible';
       if(kpi)kpi.style.display='';
       sub.textContent='חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 1.7.2026 10:54';
       document.getElementById('railPortfolio').classList.remove('on');
@@ -980,14 +1510,41 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display = (s==='portfolio') ? 'none' : '';
     document.getElementById('wbActions').style.display='flex';
+    // portfolio sub-view routing by persona:
+    //  manager (HK) → תור תפעול / מוקד התראות (toggle)   advisor → מוקד התראות   clientN → מבט מאוחד
+    const inPortfolio=(s==='portfolio');
+    let pView='board';
+    if(inPortfolio){
+      if(isOperator) pView=(MGR_VIEW==='ops')?'queue':'alerts';
+      else if(ROLE==='clientN') pView='board';
+      else pView='alerts';
+    }
+    const showQueue=inPortfolio && pView==='queue';
+    const showAlerts=inPortfolio && pView==='alerts';
+    const showBoard = !inPortfolio || pView==='board';
+    document.getElementById('mgrToggle').style.display=(inPortfolio && isOperator)?'':'none';
+    document.querySelectorAll('#mgrToggle .mseg').forEach((el,ix)=>el.classList.toggle('on',(ix===0)===(MGR_VIEW==='ops')));
+    document.getElementById('opsQueueView').style.display=showQueue?'':'none';
+    document.getElementById('alertsView').style.display=showAlerts?'':'none';
+    document.getElementById('wboard').style.display=showBoard?'':'none';
+    document.getElementById('wbActions').style.display=showBoard?'flex':'none';
+    document.getElementById('crBar').style.display=(inPortfolio && pView==='board')?'':'none';
+    document.getElementById('opsqStatus').style.display=showQueue?'flex':'none';
+    if(inPortfolio){
+      document.querySelector('.sub-line').textContent=
+        (pView==='queue'?'מבט-על תפעולי':pView==='alerts'?'מוקד התראות · חברות שדורשות טיפול':'מבט מאוחד')
+        +' · '+CLIENTS.length+' חברות במעקב · נכון ל-2.7.2026';
+    }
     updateOpsBtn();
-    renderBoard();
+    if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else renderBoard();
   }
   function selectPortfolio(){setScope('portfolio');}
+  let MGR_VIEW='ops';
+  function setMgrView(v){MGR_VIEW=v;setScope('portfolio');}
 
   /* ---- chat drawer ---- */
   function openChat(){
@@ -1034,10 +1591,11 @@
   function switchTab(el,t){
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     el.classList.add('on');
-    ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
     else if(t==='chat'){document.getElementById('viewChat').style.display='';renderChat();}
+    else if(t==='meetings'){document.getElementById('viewMeetings').style.display='';renderMeetings();}
     else{document.getElementById('viewOther').style.display='';document.getElementById('otherName').textContent=el.textContent;}
     document.querySelector('.db-actions').style.visibility = t==='dash' ? 'visible' : 'hidden';
     document.getElementById('wbActions').style.display = t==='dash' ? 'flex' : 'none';
@@ -1045,18 +1603,30 @@
 
   /* ---- metrics definition ---- */
   let WORKDAYS=22;
+  // metrics carry their own alert rule — defined here, read by the alerts focus.
+  // per-company values live on CLIENTS[i].metrics (+ c.debt). key maps a metric to its value.
   const METRICS=[
-    {name:'מלאי + אובליגו חודשי', current:142522, target:150000, type:'עצמאי'},
-    {name:'סך הליטרים - לפי סוג דלק', current:0, target:0, type:'עצמאי'},
-    {name:'רווח / הפסד תזרימי כולל אובליגו ומלאי', current:-21639, target:30000, type:'עצמאי'},
-    {name:'מדד מגמות חודשי', current:88000, target:100000, type:'מחובר'},
+    {name:'עמידה בתקציב',        key:'budget',    unit:'%',    goal:'low',  type:'עצמאי', alert:{on:true, cmp:'over',       th:100, near:95}},
+    {name:'חריגה צפויה בעו״ש',   key:'overdraft', unit:'ימים', goal:'low',  type:'עצמאי', alert:{on:true, cmp:'withinDays', th:14}},
+    {name:'חוב פתוח לגבייה',     key:'debt',      unit:'₪',    goal:'low',  type:'עצמאי', alert:{on:true, cmp:'over',       th:0}},
+    {name:'סך הליטרים מול יעד',  key:'liters',    unit:'%',    goal:'high', type:'מחובר', alert:{on:true, cmp:'belowPct',   th:85}},
+    {name:'רווח תזרימי מול יעד', key:'cfprofit',  unit:'%',    goal:'high', type:'עצמאי', alert:{on:true, cmp:'belowPct',   th:80}},
   ];
   const fmt=n=>Math.round(n).toLocaleString('en-US');
+  const CMP_TXT={over:'מעל',withinDays:'בתוך',belowPct:'מתחת ל-'};
+  function metricCur(m,c){
+    const v=mVal(c,m.key);
+    if(m.key==='debt')      return (v||0)>0 ? (v).toLocaleString('en-US')+' ₪' : 'אין חוב פתוח';
+    if(m.key==='overdraft') return v>0 ? v+' ימים לחריגה' : 'אין חריגה צפויה';
+    if(v==null) return '—';
+    return v+'% '+(m.key==='budget'?'מהתקציב':'מהיעד');
+  }
   function renderMetrics(){
+    const c=CLIENTS[typeof CUR==='number'?CUR:0]||{};
     document.getElementById('mcards').innerHTML=METRICS.map((m,i)=>{
-      const pct=m.target>0?Math.min(100,Math.max(0,Math.round(m.current/m.target*100))):0;
-      const daily=m.target>0?Math.round(m.target/WORKDAYS):0;
-      const bubble=m.target>0?`<div class="mc-bubble" style="left:${pct}%">${fmt(m.current)} ₪ · ${pct}%</div>`:'';
+      const a=m.alert||{on:false,cmp:'over',th:0};
+      const suffix = a.cmp==='withinDays'?'ימים':(a.cmp==='belowPct'?'% מהיעד':m.unit);
+      const breach = a.on && evalMetric(m,c);
       const opt=v=>`<option ${m.type===v?'selected':''}>${v}</option>`;
       return `<div class="mcard">
         <div class="mc-head">
@@ -1064,27 +1634,26 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg>
             <span class="mc-name" contenteditable="true" onblur="setName(${i},this.textContent)">${m.name}</span>
           </div>
-          <div class="mc-val"><input type="text" value="${fmt(m.target)}" onchange="setTarget(${i},this.value)"><span class="cur">₪</span></div>
+          <div class="mc-cur ${breach?'bad':''}" title="ערך נוכחי · ${c.name||''}">${metricCur(m,c)}</div>
           <div class="mc-act">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" title="קובץ מקושר"><path d="M21 8.5 12.8 16.7a4 4 0 0 1-5.7-5.7l8.5-8.5a2.7 2.7 0 0 1 3.8 3.8l-8.5 8.5a1.3 1.3 0 0 1-1.9-1.9l7.6-7.6"/></svg>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="delMetric(${i})" title="מחיקה"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
           </div>
         </div>
-        <div class="mc-bar"><div class="mc-fill" style="width:${pct}%"></div>${bubble}</div>
-        <div class="mc-meta">
-          <div class="mc-mrow"><span class="ml">סוג מדד</span>
-            <select onchange="setType(${i},this.value)">${opt('עצמאי')}${opt('מחובר')}${opt('מצטבר')}</select></div>
-          <div class="mc-mrow"><span class="ml">יעד יומי</span><span class="mv">${fmt(daily)} ₪</span></div>
+        <div class="mc-alert ${a.on?'':'off'}">
+          <label class="mc-tog" title="הפעלת התראה"><input type="checkbox" ${a.on?'checked':''} onchange="setMetricAlertOn(${i})"><span></span></label>
+          <div class="mc-arow"><span class="mc-albl">התראה</span>התרע כאשר ${CMP_TXT[a.cmp]||''} <input class="mc-th" type="number" value="${a.th}" onchange="setMetricAlertTh(${i},this.value)"> ${suffix}
+            <select class="mc-type" onchange="setType(${i},this.value)">${opt('עצמאי')}${opt('מחובר')}${opt('מצטבר')}</select></div>
         </div>
       </div>`;
     }).join('');
   }
-  function setTarget(i,v){METRICS[i].target=parseFloat(String(v).replace(/[^\d.-]/g,''))||0;renderMetrics();}
   function setType(i,v){METRICS[i].type=v;}
   function setName(i,v){METRICS[i].name=v.trim()||'מדד ללא שם';}
   function setDays(v){WORKDAYS=parseInt(v)||22;renderMetrics();}
+  function setMetricAlertOn(i){METRICS[i].alert.on=!METRICS[i].alert.on;renderMetrics();}
+  function setMetricAlertTh(i,v){METRICS[i].alert.th=parseFloat(String(v).replace(/[^\d.-]/g,''))||0;renderMetrics();}
   function delMetric(i){METRICS.splice(i,1);renderMetrics();toast('המדד נמחק');}
-  function addMetric(){METRICS.push({name:'מדד חדש',current:0,target:0,type:'עצמאי'});renderMetrics();toast('נוסף מדד חדש');}
+  function addMetric(){METRICS.push({name:'מדד חדש',key:'m'+METRICS.length,unit:'%',goal:'high',type:'עצמאי',alert:{on:true,cmp:'belowPct',th:90}});renderMetrics();toast('נוסף מדד חדש');}
 
   /* ---- AI chat (assistant) ---- */
   const CHAT=[
@@ -1124,50 +1693,81 @@
 
   /* ---- operations mode (מתפעל בלבד) ---- */
   let isOperator=true, OPSMODE=false;
-  const opsDoneSet=new Set(), opsDur={};
-  let opsStart=0, opsTimer=null, opsElapsed=0;
+  const opsDoneSet=new Set(), opsDur={}, opsAccum={};
+  let opsStart=0, opsTimer=null, opsTotal=0, opsActiveKey=null;
   const opsKey=()=>SCOPE==='portfolio'?'portfolio':'c'+CUR;
   const OPS_ICO_GEAR='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>';
   const OPS_ICO_CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
   const OPS_ICO_CLOCK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const fmtDur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
-  function startOpsTimer(){opsStart=Date.now();const el=document.getElementById('opsClock');
-    const tick=()=>{el.innerHTML=OPS_ICO_CLOCK+' '+fmtDur(Math.floor((Date.now()-opsStart)/1000));};
+  function startOpsTimer(){opsStart=Date.now();const base=opsAccum[opsActiveKey]||0;const el=document.getElementById('opsClock');
+    const tick=()=>{el.innerHTML=OPS_ICO_CLOCK+' '+fmtDur(base+Math.floor((Date.now()-opsStart)/1000));};
     tick();clearInterval(opsTimer);opsTimer=setInterval(tick,1000);}
   function stopOpsTimer(){clearInterval(opsTimer);opsTimer=null;}
+  const opsSession=()=>Math.floor((Date.now()-opsStart)/1000);
   function updateOpsBtn(){
     const btn=document.getElementById('btnOps');
     btn.style.display=(isOperator&&!OPSMODE)?'flex':'none';
-    const done=opsDoneSet.has(opsKey()), dur=opsDur[opsKey()];
+    const k=opsKey(), done=opsDoneSet.has(k);
     btn.classList.toggle('done',done);
-    btn.innerHTML = done ? OPS_ICO_CHECK+' התפעול הושלם'+(dur!=null?' · '+fmtDur(dur):'') : OPS_ICO_GEAR+' תפעל';
+    if(done) btn.innerHTML=OPS_ICO_CHECK+' התפעול הושלם'+(opsDur[k]!=null?' · '+fmtDur(opsDur[k]):'');
+    else if(opsAccum[k]) btn.innerHTML=OPS_ICO_GEAR+' תפעל · '+fmtDur(opsAccum[k]);
+    else btn.innerHTML=OPS_ICO_GEAR+' תפעל';
   }
-  function setOperator(v){isOperator=v; if(!v&&OPSMODE){exitOps();} else {updateOpsBtn();}}
+  let ROLE='manager';
+  function setRole(r){
+    ROLE=r; isOperator=(r==='manager');
+    if(OPSMODE) exitOps();
+    const client=(r==='client1'||r==='clientN'), single=(r==='client1');
+    document.getElementById('shell').classList.toggle('no-rail', single);
+    document.getElementById('railPortfolio').style.display = single?'none':'';
+    document.querySelector('#railPortfolio .cn').textContent = client?'כל החברות שלי':'כל החברות';
+    document.querySelectorAll('.tab.advisor-only').forEach(t=>t.style.display=client?'none':'');
+    document.querySelector('.top-mid').style.display = client ? 'none' : 'flex';   /* מנהלי תזרים / מוצרים — כלי משרד */
+    document.querySelector('.switcher').style.display = single ? 'none' : 'flex';   /* חברה אחת — אין מה להחליף */
+    renderRail();
+    if(r==='manager') selectPortfolio();        /* מנהל תזרים = תור התפעול */
+    else selectClient(0);                        /* יועץ/לקוח = דשבורד חברה */
+  }
   function enterOps(){
-    OPSMODE=true; document.body.classList.add('ops-on');
+    OPSMODE=true; opsActiveKey=opsKey(); document.body.classList.add('ops-on');
     document.querySelector('.tabs').style.display='none';
     ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('opsScope').textContent = SCOPE==='portfolio' ? 'כל החברות' : document.getElementById('headName').textContent;
     document.getElementById('opsView').style.display='';
-    renderOps();
+    OPS_VIEW='open'; renderOps();
     startOpsTimer();
     updateOpsBtn();
+    if(location.hash!=='#ops') history.pushState({hkOps:1},'','#ops');
   }
-  function exitOps(){
+  function restoreDash(){
     stopOpsTimer();
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
     if(SCOPE!=='portfolio') document.querySelector('.tabs').style.display='';
     const t=document.querySelectorAll('.tab'); t.forEach(x=>x.classList.remove('on')); t[0].classList.add('on');
     document.getElementById('viewDash').style.display='';
-    updateOpsBtn(); toast('מצב תפעול נסגר');
+    updateOpsBtn();
   }
+  function closeOpsTeardown(){   /* סגירת מצב תפעול — שומר את הזמן שנצבר, בלי לגעת בהיסטוריה */
+    if(OPSMODE&&opsActiveKey!=null) opsAccum[opsActiveKey]=(opsAccum[opsActiveKey]||0)+opsSession();
+    restoreDash();
+    toast('מצב תפעול נסגר · הזמן נשמר');
+  }
+  function exitOps(){   /* לחיצה על "סגירת מצב תפעול" — סוגר וגם מנקה את ה-URL */
+    closeOpsTeardown();
+    if(location.hash==='#ops') history.back();
+  }
+  // כפתור back בדפדפן יוצא ממצב התפעול (ה-URL חוזר ללא #ops)
+  window.addEventListener('popstate',function(){
+    if(OPSMODE && location.hash!=='#ops') closeOpsTeardown();
+  });
 
   /* סיום תפעול — רענון מ-Bizibox + בדיקת חריגות */
   const FIN_STEPS=['רענון נתונים מ-Bizibox','סנכרון תנועות בנק אחרונות','אימות התאמות פתוחות','בדיקת חריגות תזרים ועו״ש'];
   let finTimers=[];
   function finishOps(){
-    opsElapsed=Math.floor((Date.now()-opsStart)/1000); stopOpsTimer();
+    opsTotal=(opsAccum[opsActiveKey]||0)+opsSession(); stopOpsTimer();
     const ov=document.getElementById('finOv'); ov.classList.add('show');
     document.getElementById('finFoot').classList.remove('show');
     document.getElementById('finTitle').textContent='מסיים תפעול…';
@@ -1191,55 +1791,391 @@
     const ico=document.getElementById('finIco'); ico.className='fin-ico ok';
     ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
     document.getElementById('finTitle').textContent='התפעול הושלם בהצלחה';
-    document.getElementById('finSub').textContent='הנתונים עודכנו מ-Bizibox · הושלם ב-'+fmtDur(opsElapsed)+' · לא נמצאו חריגות';
+    document.getElementById('finSub').textContent='הנתונים עודכנו מ-Bizibox · הושלם ב-'+fmtDur(opsTotal)+' · לא נמצאו חריגות';
     document.getElementById('finFoot').classList.add('show');
   }
-  function finishDone(){opsDur[opsKey()]=opsElapsed;opsDoneSet.add(opsKey());document.getElementById('finOv').classList.remove('show');exitOps();toast('התפעול הושלם בהצלחה ✓');}
+  function finishDone(){opsDur[opsActiveKey]=opsTotal;opsDoneSet.add(opsActiveKey);delete opsAccum[opsActiveKey];document.getElementById('finOv').classList.remove('show');restoreDash();toast('התפעול הושלם בהצלחה ✓');if(location.hash==='#ops') history.back();}
 
   /* ops console data + render */
   const OPS_TYPES={
-    doc:   {label:'מסמכים שהתקבלו', act:'קטלוג', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'},
-    ai:    {label:'קיטלוג AI לאישור', act:'אישור', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>'},
-    action:{label:'פעולות לטיפול', act:'טיפול', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'},
-    msg:   {label:'הודעות מלקוחות', act:'מענה', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>'},
+    msg:       {label:'הודעות מלקוח', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>'},
+    doc:       {label:'מסמכים', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'},
+    ai:        {label:'קיטלוג AI', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>'},
+    carry:     {label:'נגררות', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 8v4l3 2"/></svg>'},
+    unexpected:{label:'לא צפויות', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>'},
+    overdraft: {label:'חריגות', icon:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l6 6 4-4 8 8M21 17v-4h-4"/></svg>'},
   };
-  let OPS_TASKS=[], OPS_FILTER='all', OPS_DONE=14;
-  function seedOps(){OPS_TASKS=[
-    {type:'doc',    t:'חשבונית ספק — סונול · 4,820 ₪',                         client:'אנרגי אינטרנשיונל', time:'לפני 12 דק׳'},
-    {type:'ai',     t:'קיטלוג אוטומטי: 5,550 ₪- ← "אלבר צי רכב" (רכב / ליסינג)', client:'אנרגי אינטרנשיונל', time:'לפני 40 דק׳'},
-    {type:'ai',     t:'קיטלוג אוטומטי: 6,773 ₪+ ← "קיר זי בע״מ" (הלוואות)',       client:'מטעי גבעון',        time:'לפני 55 דק׳'},
-    {type:'action', t:'חשבון בנק לא מעודכן — נדרש חיבור מחדש ל-Bizibox',         client:'אקוסרוויס בע״מ',    time:'לפני שעה'},
-    {type:'doc',    t:'דף חשבון — בנק לאומי · יוני 2026',                       client:'רימון יצחק',        time:'לפני שעה'},
-    {type:'msg',    t:'שאלה מלקוח: מתי נסגר החודש?',                             client:'טיב השוק קמעונאות', time:'לפני שעתיים'},
-    {type:'action', t:'סגירת חודש יוני — 2 התאמות פתוחות',                       client:'מטעי גבעון',        time:'היום 09:14'},
-  ];}
-  const opsCount=t=>OPS_TASKS.filter(x=>x.type===t).length;
-  function renderOps(){
-    document.getElementById('opsCount').textContent = OPS_TASKS.length ? '· '+OPS_TASKS.length+' משימות ממתינות' : '· הכל טופל';
-    document.getElementById('opsKpis').innerHTML=Object.keys(OPS_TYPES).map(k=>{const on=OPS_FILTER===k;
-      return `<div class="okpi ${on?'active':''}" onclick="opsFilter('${on?'all':k}')">
-        <div class="ochip ${k}">${OPS_TYPES[k].icon}</div>
-        <div><div class="ok-n">${opsCount(k)}</div><div class="ok-l">${OPS_TYPES[k].label}</div></div></div>`;}).join('');
-    document.getElementById('opsFilters').innerHTML=
-      `<div class="ofilter ${OPS_FILTER==='all'?'on':''}" onclick="opsFilter('all')">הכל</div>`+
-      Object.keys(OPS_TYPES).map(k=>`<div class="ofilter ${OPS_FILTER===k?'on':''}" onclick="opsFilter('${k}')">${OPS_TYPES[k].label}</div>`).join('');
-    const list=OPS_FILTER==='all'?OPS_TASKS:OPS_TASKS.filter(x=>x.type===OPS_FILTER);
-    const el=document.getElementById('opsList');
-    if(!list.length){el.innerHTML='<div class="ops-empty"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.2 2.2 4.8-4.8"/></svg>אין משימות תפעול פתוחות — כל הכבוד</div>';return;}
-    el.innerHTML=list.map(task=>{const gi=OPS_TASKS.indexOf(task);
-      return `<div class="orow">
-        <div class="ochip ${task.type}">${OPS_TYPES[task.type].icon}</div>
-        <div class="obody"><div class="ot">${task.t}</div>
-          <div class="os">${task.client}<span class="dot"></span>${task.time}</div></div>
-        <button class="oact" onclick="opsDo(${gi})">${OPS_TYPES[task.type].act}</button></div>`;}).join('');
+  let OPS_FILTER='all', OPS_VIEW='open', OPS_DONE=14;
+  function seedOps(){
+    CLIENTS[0].tasks=[
+      {type:'msg', who:'תומר לוי', thread:['האם עדכנת את כל התשלומים?','מה הצפי סה"כ בשלוש החשבונות?'], time:'לפני 12 דק׳'},
+      {type:'doc', name:'חשבונית ספק — סונול · 4,820 ₪', time:'לפני 40 דק׳'},
+      {type:'ai', op:'עמלת מסלול · 29 ₪- · 1.7.2026', cur:'בנקאיות', rec:'עמלות וריביות בנק', reason:'העסקה היא עמלת מסלול בנקאית עבור ניהול חשבון, ובהתאם להיסטוריה ולמידע מהרשת הקטגוריה המתאימה ביותר היא עמלות וריביות בנק.', src:'HISTORY, SEARCH', time:'לפני 50 דק׳'},
+      {type:'carry', text:'בחשבון מזרחי 295199 צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪. הפעולה טרם הופיעה — נגררת 11 ימים.', time:'לפני שעה'},
+      {type:'unexpected', text:'בחשבון מזרחי 139287 הופיעה פעולה בשם "כהן טוב" ע"ס 238 ₪ שלא צפינו.', time:'לפני שעה'},
+      {type:'overdraft', text:'חשבון מרכנתיל 69855155 נמצא בחריגה ע"ס 42,445 ₪ ממסגרת האשראי. נא טיפול בהקדם.', time:'היום 09:14'},
+      {type:'msg', who:'לירון', thread:['תודה על העדכון!'], time:'אתמול', done:true, result:'טופל · ✓ נשלח ללקוח', handledAt:'אתמול 16:20'},
+      {type:'ai', op:'הוצאת ביטוח · 890 ₪-', cur:'כללי', rec:'ביטוחים', reason:'לפי תיאור הספק.', src:'HISTORY', time:'אתמול', done:true, result:'אושר — קוטלג בביטוחים', handledAt:'אתמול 15:05'},
+    ];
+    CLIENTS[1].tasks=[
+      {type:'doc', name:'דף חשבון — מזרחי טפחות · יוני', time:'לפני 20 דק׳'},
+      {type:'ai', op:'תשלום ספקים · 2,100 ₪-', cur:'כללי', rec:'ספקים', reason:'לפי היסטוריית התשלומים לספק זה.', src:'HISTORY', time:'לפני שעה'},
+    ];
+    CLIENTS[2].tasks=[
+      {type:'overdraft', text:'חשבון בחריגה — נדרש טיפול בהקדם.', time:'לפני 30 דק׳'},
+      {type:'ai', op:'6,773 ₪+ ← "קיר זי בע״מ"', cur:'כללי', rec:'הלוואות', reason:'לפי דפוסי ההכנסה מהמקור.', src:'HISTORY, SEARCH', time:'לפני 55 דק׳'},
+      {type:'carry', text:'תשלום צפוי שטרם הופיע — נגררת 4 ימים.', time:'היום 09:14'},
+    ];
+    CLIENTS[3].tasks=[];
+    CLIENTS[4].tasks=[];
+    CLIENTS[2].unread=2; CLIENTS[4].unread=1;
+    CLIENTS[1].debt=1200; CLIENTS[3].debt=480;
+    opsDoneSet.add('c4'); opsDur['c4']=320;
+    CLIENTS[0].preview='תחזרו אליי היום · צפייה בתזרים';
+    CLIENTS[2].preview='האם היתרה שלי מספיקה?';
+    CLIENTS[4].preview='אפשר דוח תזרים מעודכן?';
+    CLIENTS[2].stat='trial'; CLIENTS[3].stat='setup';
+    CLIENTS[0].product='money'; CLIENTS[1].product='meeting'; CLIENTS[2].product='money+'; CLIENTS[3].product='money'; CLIENTS[4].product='money+';
+    // per-company metric values feeding the alert-rule engine (order: אינטרנשיונל · גולני · גבעון · עובד · יצחק)
+    // budget=% ביצוע · overdraft=ימים לחריגת עו״ש (0=אין) · liters/cfprofit=% מהיעד
+    const MET=[
+      {budget:82,  overdraft:9, liters:78,  cfprofit:104},
+      {budget:96,  overdraft:0, liters:96,  cfprofit:88},
+      {budget:114, overdraft:0, liters:120, cfprofit:70},
+      {budget:85,  overdraft:0, liters:101, cfprofit:83},
+      {budget:63,  overdraft:0, liters:112, cfprofit:130},
+    ];
+    MET.forEach((m,i)=>{if(CLIENTS[i]){CLIENTS[i].metrics=m;CLIENTS[i].budgetPct=m.budget;}});
+    CLIENTS.forEach(c=>{if(!c.stat)c.stat='active'; c.opsPending=(c.tasks||[]).filter(t=>!t.done).length;});
   }
-  function opsFilter(k){OPS_FILTER=k;renderOps();}
-  function opsDo(i){const task=OPS_TASKS[i];if(!task)return;OPS_TASKS.splice(i,1);OPS_DONE++;
-    const dn=document.getElementById('opsDone');if(dn)dn.textContent=OPS_DONE;
-    renderOps();toast('בוצע: '+OPS_TYPES[task.type].act);}
+  function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
+  function taskTitle(t){
+    if(t.type==='msg') return (t.who?t.who+': ':'')+(t.thread?t.thread[t.thread.length-1]:'הודעה');
+    if(t.type==='doc') return t.name;
+    if(t.type==='ai') return 'קיטלוג: '+t.op;
+    return (t.text||'').replace(/\s+/g,' ').slice(0,70);
+  }
+  let OPS_OPEN=new Set();
+  function renderOps(){
+    const T=curTasks();
+    const open=T.filter(x=>!x.done), done=T.filter(x=>x.done);
+    document.getElementById('opsCount').textContent = open.length?'· '+open.length+' משימות ממתינות':'· הכל טופל';
+    const pool=(OPS_VIEW==='open'?open:done);
+    const head=`<div class="ops-rows-head">
+      <div class="orh-l"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg><span>משימות תפעול</span></div>
+      <div class="ops-toggle">
+        <div class="otg ${OPS_VIEW==='open'?'on':''}" onclick="opsSetView('open')">ממתין <span class="otg-n">${open.length}</span></div>
+        <div class="otg ${OPS_VIEW==='done'?'on':''}" onclick="opsSetView('done')">טופל <span class="otg-n">${done.length}</span></div>
+      </div>
+      <span class="olh-note">טופלו היום: ${OPS_DONE}</span>
+    </div>`;
+    const body = pool.length
+      ? pool.map(t=>opsRow(t,T.indexOf(t))).join('')
+      : '<div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div>';
+    document.getElementById('opsGrid').innerHTML = '<div class="ops-rows">'+head+body+'</div>';
+  }
+  function opsSetView(v){OPS_VIEW=v;renderOps();}
+  function opsToggleRow(i){OPS_OPEN.has(i)?OPS_OPEN.delete(i):OPS_OPEN.add(i);renderOps();}
+  function rowBtns(t,i){
+    const B=(cls,label,h)=>`<button class="ot-btn ${cls}" onclick="event.stopPropagation();${h}">${label}</button>`;
+    if(t.type==='msg') return B('done','טופל',`otHandle(${i},'טופל · ✓ ללקוח',1)`);
+    if(t.type==='doc') return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('done','טופל',`otHandle(${i},'טופל · ✓ ללקוח',1)`);
+    if(t.type==='ai') return B('ghost','החלפת קטגוריה',`otHandle(${i},'קוטלג בקטגוריה אחרת')`)+B('done','אשר המלצה',`otHandle(${i},'אושר — קוטלג ב${t.rec}')`);
+    return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שלח הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
+  }
+  function taskBody(t,i){
+    const rep=`<div class="ot-reply" style="display:flex"><input id="oti${i}" placeholder="הקלד תגובה ללקוח…" onkeydown="if(event.key==='Enter')otSend(${i})"><button onclick="otSend(${i})">שלח</button></div>`;
+    if(t.type==='msg') return `<div class="ot-thread">${(t.thread||[]).map(m=>`<div class="ot-bub">${m}</div>`).join('')}</div>${rep}`;
+    if(t.type==='doc') return `<div class="ot-doc"><div class="ot-docprev" onclick="toast('הגדלת מסמך')"><span class="ot-zoom">⤢ הגדלה</span><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>תצוגה מקדימה של המסמך</div></div>${rep}`;
+    if(t.type==='ai') return `<div class="ot-ai"><div class="ot-airow"><span class="ot-ailbl">פעולה</span><span>${t.op}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה נוכחית</span><span>${t.cur}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה מומלצת</span><span class="ot-rec">${t.rec}</span></div><div class="ot-reason"><b>סיבה:</b> ${t.reason}</div><div class="ot-src">מקורות: ${t.src}</div></div>`;
+    return `<div class="ot-text">${t.text}</div>`+(t.type==='unexpected'?`<div style="margin-top:10px"><button class="ot-btn ghost" onclick="toast('צפייה בתנועות קשורות')">צפייה בתנועות קשורות</button></div>`:'');
+  }
+  function opsRow(t,i){
+    const tp=OPS_TYPES[t.type], op=OPS_OPEN.has(i);
+    if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><span class="ochip ${t.type}">${tp.icon}</span><div class="orow2-body"><div class="orow2-title">${taskTitle(t)}</div><div class="orow2-sub">${tp.label} · טופל ${t.handledAt||''}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
+    return `<div class="orow2item ${t.type} ${op?'open':''}">
+      <div class="orow2">
+        <span class="ochip ${t.type}" onclick="opsToggleRow(${i})">${tp.icon}</span>
+        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${taskTitle(t)}</div><div class="orow2-sub">${tp.label} · ${t.time||''}</div></div>
+        <div class="orow2-act">${rowBtns(t,i)}</div>
+        <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      ${op?`<div class="orow2-detail">${taskBody(t,i)}</div>`:''}
+    </div>`;
+  }
+  function otHandle(i,result,toClient){const t=curTasks()[i];if(!t)return;
+    t.done=true;t.result=result;t.handledAt='עכשיו';OPS_DONE++;
+    CLIENTS[CUR].opsPending=curTasks().filter(x=>!x.done).length;
+    OPS_OPEN.delete(i);renderOps();toast(toClient?'✓ נשלח אישור טיפול ללקוח':result);}
+  function otSend(i){const inp=document.getElementById('oti'+i);if(!inp)return;const v=inp.value.trim();if(!v)return;inp.value='';toast('נשלחה תגובה ללקוח בוואטסאפ');}
   seedOps();
 
-  renderRail(); renderBoard(); updateOpsBtn();
+  /* operator home — cross-company operations queue */
+  const pendOf=i=>(CLIENTS[i].tasks||[]).filter(t=>!t.done).length;
+  const totalOpsTime=()=>{let s=0;CLIENTS.forEach((c,i)=>{s+=(opsDur['c'+i]||0)+(opsAccum['c'+i]||0);});return s;};
+  let OPSQ_FILTER='all', OPSQ_STATUS='all'; const opsqOpen=new Set();
+  const OPS_STATMAP={active:['st-active','פעיל'],trial:['st-trial','ניסיון'],setup:['st-setup','בהקמה']};
+  function opsqSetStatus(k){OPSQ_STATUS=k;renderOpsQueue();}
+  function opsStatusOf(i){const k='c'+i;
+    if(opsDoneSet.has(k))return{cls:'done',acc:'acc-green',txt:'הושלם · '+fmtDur(opsDur[k]||0),btn:'פתח שוב',ghost:true};
+    if(opsAccum[k])return{cls:'prog',acc:'acc-amber',txt:'בתהליך · '+fmtDur(opsAccum[k]),btn:'המשך תפעול',ghost:false};
+    if(pendOf(i)>0)return{cls:'wait',acc:CLIENTS[i].opsAlert?'acc-coral':'acc-gray',txt:'ממתין · '+pendOf(i)+' משימות',btn:'תפעל',ghost:false};
+    return{cls:'done',acc:'acc-gray',txt:'אין משימות',btn:'פתח',ghost:true};
+  }
+  const PRODUCTS={meeting:'HK Meeting', money:'HK Money', 'money+':'HK Money+'};
+  const HKMARK='<svg class="hkm" viewBox="0 0 187.078 137.291" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M60.6393 86H31.0117C29.7449 86 28.6893 84.9561 28.6893 83.6513V46.0962C28.6893 44.8152 27.6571 43.7476 26.3669 43.7476H2.32236C1.05562 43.7476 0 44.7914 0 46.0962V134.919C0 136.2 1.03216 137.268 2.32236 137.268H26.3904C27.6571 137.268 28.7128 136.224 28.7128 134.919V97.1977C28.7128 95.9166 29.7449 94.849 31.0351 94.849H60.6627C61.9295 94.849 62.9851 93.8052 62.9851 92.5004V88.3249C62.9851 87.0438 61.9529 85.9763 60.6627 85.9763L60.6393 86Z" fill="#39ABE2"/><path d="M68.3108 20.1417H91.6282C92.895 20.1417 93.9506 21.1855 93.9506 22.4903V134.942C93.9506 136.223 92.9184 137.291 91.6282 137.291H68.3108C67.0441 137.291 65.9885 136.247 65.9885 134.942V22.4903C65.9885 21.2092 67.0206 20.1417 68.3108 20.1417ZM159.61 0H184.757C186.657 0 187.76 2.18261 186.61 3.72467L126.628 88.0634C126.018 88.8938 126.018 90.0088 126.628 90.8391L157.288 133.542C158.39 135.084 157.288 137.267 155.411 137.267H130.076C129.325 137.267 128.622 136.887 128.176 136.271L96.531 90.8154C95.968 90.0088 95.968 88.9175 96.531 88.1109L157.71 0.972683C158.155 0.35586 158.836 0 159.586 0H159.61Z" fill="#39ABE2"/></svg>';
+  const PRODWORD={money:'Money','money+':'Money +',meeting:'Meeting'};
+  const prodLogo=(p,cls)=>p?`<span dir="ltr" class="hklogo ${cls||''}">${HKMARK}<span class="hkw">${PRODWORD[p]}</span></span>`:'';
+  let PROD_FILTER=new Set();
+  function opsqMatch(i){
+    if(PROD_FILTER.size>0 && !PROD_FILTER.has(CLIENTS[i].product))return false;
+    if(OPSQ_STATUS!=='all' && (CLIENTS[i].stat||'active')!==OPSQ_STATUS)return false;
+    if(OPSQ_FILTER==='all')return true;
+    if(OPSQ_FILTER==='alert')return !!CLIENTS[i].opsAlert;
+    const T=(CLIENTS[i].tasks||[]).filter(x=>!x.done);
+    if(OPSQ_FILTER==='doc')return T.some(x=>x.type==='doc');
+    if(OPSQ_FILTER==='task')return T.some(x=>x.type==='ai'||x.type==='carry'||x.type==='unexpected'||x.type==='overdraft');
+    if(OPSQ_FILTER==='msg')return (CLIENTS[i].unread>0)||T.some(x=>x.type==='msg');
+    return true;}
+  function opsqRank(i){const k='c'+i;
+    if(CLIENTS[i].opsAlert&&!opsDoneSet.has(k))return 0;
+    if(!opsDoneSet.has(k)&&!opsAccum[k]&&pendOf(i)>0)return 1;
+    if(opsAccum[k]&&!opsDoneSet.has(k))return 2;
+    if(opsDoneSet.has(k))return 4;
+    return 3;}
+  const OQ_MSGICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>';
+  const OQ_COINICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="M17 8.2a6 6 0 1 1-5.2 10.5"/></svg>';
+  function opsqRow(i){
+    const c=CLIENTS[i],st=opsStatusOf(i),sm=OPS_STATMAP[c.stat||'active'];
+    const alert=c.opsAlert?'<span class="oq-alert"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>חריגה</span>':'';
+    const msg=c.unread>0
+      ? `<button class="oq-msg" title="הודעות מהלקוח" onclick="event.stopPropagation();opsQueueMsg(${i})">${OQ_MSGICO} ${c.unread}</button>`
+      : `<span class="oq-msg zero">${OQ_MSGICO} 0</span>`;
+    const debt=(c.debt>0)?`<span class="oq-debt" title="חוב לתשלום ב-Bizibox">${OQ_COINICO} חוב · ${c.debt.toLocaleString('en-US')} ₪</span>`:'';
+    return `<div class="oqrow ${st.acc}" onclick="opsQueueEnter(${i})">
+        <div class="oqc oqc-name">
+          <div class="oq-id"><div class="oq-name">${c.name} <span class="oq-stat ${sm[0]} clickable" title="החלפת סטטוס" onclick="event.stopPropagation();opsStatMenu(${i},this)">${sm[1]}<svg class="stat-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></span></div><div class="oq-sub">${c.mgr}</div></div>
+        </div>
+        <div class="oqc oqc-prod">${c.product?prodLogo(c.product,'sm'):'<span class="oq-none">—</span>'}</div>
+        <div class="oqc">${alert}</div>
+        <div class="oqc">${debt}</div>
+        <div class="oqc">${msg}</div>
+        <div class="oqc"><span class="oq-status ${st.cls}"><span class="dot"></span>${st.txt}</span></div>
+        <div class="oqc oqc-act"><button class="oq-btn ${st.ghost?'ghost':''}" onclick="event.stopPropagation();opsQueueEnter(${i})">${st.btn}</button></div>
+      </div>`;
+  }
+  function renderOpsQueue(){
+    let waiting=0,prog=0,done=0,total=0;
+    CLIENTS.forEach((c,i)=>{const k='c'+i,p=pendOf(i);total+=p;
+      if(opsDoneSet.has(k))done++; else if(opsAccum[k])prog++; else if(p>0)waiting++;});
+    document.getElementById('opsqStrip').innerHTML=
+      `<div class="opsq-stat warn"><div class="n">${waiting}</div><div class="l">חברות ממתינות</div></div>`+
+      `<div class="opsq-stat"><div class="n">${prog}</div><div class="l">בתהליך תפעול</div></div>`+
+      `<div class="opsq-stat"><div class="n">${done}</div><div class="l">הושלמו היום</div></div>`+
+      `<div class="opsq-stat"><div class="n">${total}</div><div class="l">משימות ממתינות</div></div>`+
+      `<div class="opsq-stat accent"><div class="n">${fmtDur(totalOpsTime())}</div><div class="l">זמן תפעול כולל</div></div>`;
+    const SS=[['all','הכל'],['active','פעיל'],['trial','ניסיון'],['setup','בהקמה']];
+    const statTot=s=>s==='all'?CLIENTS.length:CLIENTS.filter(c=>(c.stat||'active')===s).length;
+    const statDone=s=>CLIENTS.filter((c,ix)=>(s==='all'||(c.stat||'active')===s)&&opsDoneSet.has('c'+ix)).length;
+    document.getElementById('opsqStatus').innerHTML=SS.map(s=>{
+      const tot=statTot(s[0]), dn=statDone(s[0]), pct=tot?Math.round(dn/tot*100):0;
+      return `<div class="sseg ${OPSQ_STATUS===s[0]?'on':''}" onclick="opsqSetStatus('${s[0]}')">
+        <div class="sseg-top">${s[1]}<span class="sseg-count">${tot}</span></div>
+        <div class="sseg-bar"><div class="fill" style="width:${pct}%"></div></div>
+        <div class="sseg-done">${dn} מתוך ${tot} סיימו תפעול</div>
+      </div>`;}).join('')
+      +`<div class="sarch" title="לקוחות בארכיון" onclick="toast('לקוחות בארכיון')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg></div>`;
+    const F=[['all','הכל'],['alert','חריגות'],['doc','מסמכים'],['task','משימות'],['msg','הודעות']];
+    document.getElementById('opsqFilters').innerHTML=F.map(f=>`<div class="ofilter ${OPSQ_FILTER===f[0]?'on':''}" onclick="opsqFilter('${f[0]}')">${f[1]}</div>`).join('');
+    const order=CLIENTS.map((c,i)=>i).filter(opsqMatch).sort((a,b)=>opsqRank(a)-opsqRank(b));
+    const listEl=document.getElementById('opsqList');
+    const HDR='<div class="oqhead"><div>חברה</div><div>מוצר</div><div>חריגה</div><div>חוב</div><div>הודעות</div><div>תפעול</div><div></div></div>';
+    listEl.innerHTML = order.length ? HDR+order.map(opsqRow).join('') : '<div class="ops-empty" style="padding:40px">אין חברות בסינון הזה</div>';
+  }
+  function opsqFilter(k){OPSQ_FILTER=k;renderOpsQueue();}
+
+  /* ===== מוקד התראות — reads each metric's own alert rule (defined in METRICS) ===== */
+  const mVal=(c,key)=> key==='debt' ? (c.debt||0) : (c.metrics||{})[key];
+  function evalMetric(m,c){
+    const v=mVal(c,m.key); if(v==null) return null;
+    const r=m.alert; if(!r||!r.on) return null;
+    if(m.key==='budget'){ if(v>r.th) return {sev:'high',v}; if(v>=(r.near||r.th)) return {sev:'mid',v}; return null; }
+    if(r.cmp==='withinDays') return (v>0 && v<=r.th) ? {sev:'high',v} : null;
+    if(r.cmp==='over')       return (v>r.th)          ? {sev:'mid', v} : null;
+    if(r.cmp==='belowPct')   return (v<r.th)          ? {sev:'mid', v} : null;
+    return null;
+  }
+  function alertText(m,c,v){
+    const n=c.name;
+    switch(m.key){
+      case 'budget': return v>100
+        ? {ic:'⚠️',t:n+' — חריגת תקציב תוביל לחריגת מסגרת',d:'ההוצאות חרגו ב-'+(v-100)+'% מהתקציב. היתרה צפויה לרדת מתחת למסגרת האשראי.',meta:'צפי חריגה בעוד 6 ימים'}
+        : {ic:'📉',t:n+' — קרוב לתקרת התקציב ('+v+'%)',d:'תשלום ספק מתוכנן צפוי להעלות את הביצוע מעל 100% מהתקציב.',meta:'לבדיקה השבוע'};
+      case 'overdraft': return {ic:'🏦',t:n+' — חריגה צפויה בעו״ש',d:'התזרים הצפוי מצביע על חריגה ממסגרת האשראי בקרוב.',meta:'בעוד '+v+' ימים'};
+      case 'debt': return {ic:'💰',t:n+' — חוב פתוח לגבייה',d:'חוב של '+(c.debt).toLocaleString('en-US')+' ₪ בפיגור — משפיע ישירות על התזרים.',meta:'בפיגור'};
+      case 'liters': return {ic:'⛽',t:n+' — סך הליטרים מתחת ליעד ('+v+'%)',d:'המדד מתחת ליעד החודשי — מחליש את ההכנסות והתזרים הצפוי.',meta:'מדד חודשי'};
+      case 'cfprofit': return {ic:'📈',t:n+' — רווח תזרימי מתחת ליעד ('+v+'%)',d:'שחיקת רווחיות מעמיקה את הלחץ התזרימי.',meta:'מדד חודשי'};
+      default: return {ic:'🔔',t:n+' — '+m.name,d:'המדד חרג מהיעד שהוגדר.',meta:'מדד'};
+    }
+  }
+  function buildAlerts(){
+    const RANK={high:0,mid:1,low:2}, out=[];
+    CLIENTS.forEach((c,i)=>METRICS.forEach(m=>{
+      const r=evalMetric(m,c); if(!r) return;
+      out.push({sev:r.sev, i, mkey:m.key, metric:m.name, ...alertText(m,c,r.v)});
+    }));
+    return out.sort((a,b)=>RANK[a.sev]-RANK[b.sev]);
+  }
+  function renderAlerts(){
+    const alerts=buildAlerts();
+    document.getElementById('alNote').textContent=alerts.length+' התראות · '+CLIENTS.length+' חברות במעקב';
+    const board=document.getElementById('alBoard');
+    if(!alerts.length){board.innerHTML='<div class="al-empty">✅ אין התראות פתוחות — כל המדדים בתוך היעד</div>';return;}
+    // grouped into uniform widget cards by domain (same visual language as the widgets board)
+    const THEMES=[
+      {cls:'coral',title:'תקציב ומסגרת אשראי',keys:['budget','overdraft'],ic:'<path d="M12 3l9 16H3l9-16z"/><path d="M12 10v4M12 17h.01"/>'},
+      {cls:'amber',title:'גבייה וחובות',keys:['debt'],ic:'<path d="M3 7h18v12H3zM3 11h18"/><path d="M7 15h4"/>'},
+      {cls:'blue', title:'מדדים עסקיים',keys:['liters','cfprofit'],ic:'<path d="M3 15l5-5 4 3 6-7"/><path d="M3 20h18"/>'},
+    ];
+    board.innerHTML=THEMES.map(th=>{
+      const rows=alerts.filter(a=>th.keys.includes(a.mkey));
+      if(!rows.length) return '';
+      return `<div class="awdg awdg--${th.cls}">
+        <div class="awdg-head"><div class="awdg-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${th.ic}</svg></div><div class="awdg-t">${th.title}</div><span class="awdg-n">${rows.length}</span></div>
+        <div class="awdg-body">${rows.map(afeedRow).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+  const SEV_LBL={high:'דחוף',mid:'לבדיקה',low:'מידע'};
+  function afeedRow(a){
+    return `<div class="afeed ${a.sev}">
+      <div class="afeed-ic">${a.ic}</div>
+      <div class="afeed-b">
+        <div class="afeed-t">${a.t} <span class="afeed-sev ${a.sev}">${SEV_LBL[a.sev]}</span><span class="afeed-metric">${a.metric}</span>${CLIENTS[a.i].product?prodLogo(CLIENTS[a.i].product,'sm'):''}</div>
+        <div class="afeed-d">${a.d}</div>
+        <div class="afeed-m"><span class="afeed-meta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2.5"/></svg>${a.meta}</span><button class="afeed-act" onclick="alertOpen(${a.i})">פתח חברה ←</button></div>
+      </div>
+    </div>`;
+  }
+  function alertOpen(i){selectClient(i);}
+  // alerts are defined ON each metric — jump to the metric editor to change them
+  function goToMetrics(){
+    selectClient(typeof CUR==='number'?CUR:0);
+    const t=[...document.querySelectorAll('.tab')].find(x=>x.textContent.trim()==='מדדים');
+    if(t) switchTab(t,'metrics');
+  }
+
+  const STAT_LIST=[['active','פעיל','#16a34a'],['trial','ניסיון','#e8a13a'],['setup','בהקמה','#39ABE2']];
+  function opsStatMenu(i,el){
+    const m=document.getElementById('statMenu'), cur=CLIENTS[i].stat||'active';
+    m.innerHTML=STAT_LIST.map(s=>`<div class="stat-opt ${cur===s[0]?'on':''}" onclick="setCompanyStat(${i},'${s[0]}')"><span class="sdot" style="background:${s[2]}"></span>${s[1]}</div>`).join('');
+    const r=el.getBoundingClientRect();
+    m.style.top=(r.bottom+6)+'px';
+    m.style.right=Math.max(8,(window.innerWidth-r.right))+'px';
+    m.classList.add('show');
+  }
+  function setCompanyStat(i,s){CLIENTS[i].stat=s;document.getElementById('statMenu').classList.remove('show');renderOpsQueue();toast('סטטוס הלקוח עודכן');}
+  function renderProdMenu(){document.getElementById('prodMenu').innerHTML=Object.keys(PRODUCTS).map(p=>`<label class="prod-opt">${prodLogo(p,'lg')}<input type="checkbox" ${PROD_FILTER.has(p)?'checked':''} onchange="toggleProdFilter('${p}')"></label>`).join('');}
+  function toggleProd(e){e.stopPropagation();renderProdMenu();document.getElementById('prodMenu').classList.toggle('show');}
+  function toggleProdFilter(p){PROD_FILTER.has(p)?PROD_FILTER.delete(p):PROD_FILTER.add(p);renderProdMenu();if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();}
+  document.addEventListener('click',function(e){const m=document.getElementById('prodMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target)&&e.target.id!=='prodDdl')m.classList.remove('show');});
+  document.addEventListener('click',function(e){const m=document.getElementById('statMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target))m.classList.remove('show');});
+  function opsqToggle(i){opsqOpen.has(i)?opsqOpen.delete(i):opsqOpen.add(i);renderOpsQueue();}
+  function opsQueueMsg(i){CUR=i;openChat();}
+  function opsQueueEnter(i){selectClient(i);enterOps();}
+
+  /* ---- messages inbox (top bar) ---- */
+  function totalUnread(){return CLIENTS.reduce((s,c)=>s+(c.unread||0),0);}
+  function refreshMsgBadge(){const n=totalUnread();const b=document.getElementById('tbBadge');b.textContent=n;b.style.display=n?'flex':'none';}
+  function toggleInbox(e){e.stopPropagation();const open=document.getElementById('inbox').classList.contains('show');closeInbox();
+    if(!open){renderInbox();document.getElementById('inbox').classList.add('show');document.getElementById('inboxOv').classList.add('show');}}
+  function closeInbox(){document.getElementById('inbox').classList.remove('show');document.getElementById('inboxOv').classList.remove('show');}
+  function renderInbox(){
+    const convos=CLIENTS.map((c,i)=>({c,i})).filter(x=>x.c.unread>0).sort((a,b)=>b.c.unread-a.c.unread);
+    document.getElementById('inboxSub').textContent=totalUnread()+' חדשות';
+    const el=document.getElementById('inboxList');
+    if(!convos.length){el.innerHTML='<div class="inbox-empty">אין הודעות חדשות</div>';return;}
+    el.innerHTML=convos.map(({c,i})=>`<div class="ibrow" onclick="openChatFor(${i})">
+      <div class="ib-av">${c.name.trim().charAt(0)}</div>
+      <div class="ib-body"><div class="ib-top"><span class="ib-name">${c.name}</span><span class="ib-time">${c.sync||''}</span></div>
+      <div class="ib-prev">${c.preview||'הודעה חדשה מהלקוח'}</div></div>
+      <span class="ib-badge">${c.unread}</span></div>`).join('');
+  }
+  function openChatFor(i){CUR=i;closeInbox();openChat();}
+  function markHandled(){CLIENTS[CUR].unread=0;refreshMsgBadge();closeChat();toast('הלקוח סומן כטופל');}
+
+  /* consolidated cashflow report */
+  function openCR(){const fr=document.getElementById('crFrame');if(!fr.getAttribute('src'))fr.setAttribute('src','widgets/widget-cashflow-portfolio.html#embed');document.getElementById('crOv').classList.add('show');}
+  function closeCR(){document.getElementById('crOv').classList.remove('show');}
+
+  /* ---- meetings + summary ---- */
+  const MEETINGS=[
+    {name:'פ.ע - חודש יוני', client:'אנרגי אינטרנשיונל', date:'01.06.2026', time:'11:00-12:00', adv:'אילון אשכנזי', status:'summary'},
+    {name:'פגישת עבודה - קורס מנחות', client:'מטעי גבעון', date:'12.05.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'summary'},
+    {name:'סקירת רבעון Q3', client:'משה עובד', date:'10.07.2026', time:'14:00-15:00', adv:'אילון אשכנזי', status:'upcoming'},
+    {name:'לימוד בנדל - לחיות בתשוקה', client:'אנרגי גולני', date:'05.05.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'done'},
+    {name:'פגישה חודשית - מרץ', client:'רימון יצחק', date:'17.03.2026', time:'12:00-13:00', adv:'אילון אשכנזי', status:'done'},
+    {name:'פ.ע - חודש פברואר', client:'טיב השוק', date:'04.02.2026', time:'10:30-11:30', adv:'אילון אשכנזי', status:'noshow'},
+  ];
+  let MEET_FILTER='all';
+  const CAL_ICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>';
+  const CLK_ICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  const USR_ICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>';
+  function renderMeetings(){
+    const isClient=(ROLE==='client1'||ROLE==='clientN');
+    document.getElementById('mtFilters').style.display = isClient ? 'none' : 'flex';
+    if(!isClient){
+      const cnt=s=>MEETINGS.filter(m=>m.status===s).length;
+      const F=[['upcoming','פגישות קרובות',cnt('upcoming')],['summary','ממתינות לאישור',cnt('summary')],['done','הושלמו',cnt('done')],['noshow','לא התקיימו',cnt('noshow')]];
+      document.getElementById('mtFilters').innerHTML=
+        `<div class="ofilter ${MEET_FILTER==='all'?'on':''}" onclick="meetFilter('all')">הכל</div>`+
+        F.map(f=>`<div class="ofilter ${MEET_FILTER===f[0]?'on':''}" onclick="meetFilter('${f[0]}')">${f[1]}${f[2]?`<span class="cnt">${f[2]}</span>`:''}</div>`).join('');
+    }
+    let list=MEETINGS.map((m,i)=>({m,i}));
+    if(isClient) list=list.filter(x=>x.m.client===CLIENTS[CUR].name);
+    else if(MEET_FILTER!=='all') list=list.filter(x=>x.m.status===MEET_FILTER);
+    const el=document.getElementById('mtList');
+    if(!list.length){el.innerHTML='<div class="ms-placeholder">אין פגישות</div>';return;}
+    el.innerHTML=list.map(({m,i})=>{
+      let btn;
+      if(isClient) btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
+      else if(m.status==='summary')btn=`<button class="mt-btn" onclick="openMeeting(${i})">אישור הסיכום</button>`;
+      else if(m.status==='done')btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
+      else if(m.status==='upcoming')btn=`<button class="mt-btn view" onclick="toast('פרטי הפגישה')">פרטי פגישה</button>`;
+      else btn=`<button class="mt-btn view" onclick="toast('תיאום פגישה מחדש')">תיאום מחדש</button>`;
+      return `<div class="mtcard">
+        <div class="mt-info">${isClient?'':`<div class="mt-client">${m.client}</div>`}<div class="mt-name">${m.name}</div>
+          <div class="mt-meta"><span>${CAL_ICO}${m.date}</span><span>${CLK_ICO}${m.time}</span><span>${USR_ICO}${m.adv}</span></div></div>
+        ${btn}</div>`;}).join('');
+  }
+  function meetFilter(k){MEET_FILTER=k;renderMeetings();}
+  const MS_SUMMARY=`
+    <div class="ms-sec"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg> תמונת מצב ונתוני יסוד</div>
+    <div class="ms-point"><span class="num">1.</span><span>בוצע ניתוח תזרים לרבעון מרץ-מאי (הכנסות 116 אש"ח, תוצאה מאוזנת), אפריל (הכנסות 140 אש"ח, עודף 22 אש"ח), מאי (הכנסות 120 אש"ח, גירעון 22.7 אש"ח).</span></div>
+    <div class="ms-point"><span class="num">2.</span><span>אומת כי העסק שמר על יציבות תזרימית לאורך הרבעון, עם יתרת סיום כמעט זהה ליתרת הפתיחה (סיום מאי: מינוס 66,178 ₪).</span></div>
+    <div class="ms-point"><span class="num">3.</span><span>זוהה פער בנתונים: כרטיס האשראי החדש של 'מקס' אינו מחובר למערכת ה-Bizibox, מה שמקשה על מעקב שוטף אחר הוצאות השיווק.</span></div>
+    <div class="ms-point"><span class="num">4.</span><span>זוהתה תקלה אפשרית במערכת: חיוב כפול מחברת 'Payment' טכנולוגיות בחודש אפריל, הנושא דורש בדיקה.</span></div>
+    <div class="ms-point"><span class="num">5.</span><span>עודכן תקציב יוני עם הוצאות חד-פעמיות הקשורות לריטריט (ספק 'ירוק עז' 7,500 ₪, ספקית אוכל 5,000 ₪).</span></div>
+    <div class="ms-point"><span class="num">6.</span><span>זוהה חוסר עדכון בטבלת מעקב המכירות היומית מאז ה-8 במאי.</span></div>
+    <div class="ms-sec t2"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg> תובנות מרכזיות</div>
+    <div class="ms-insight"><div class="ms-ititle">1. שמירה על יציבות תזרימית ברבעון האחרון חרף גידול בהכנסות</div><div class="ms-itext">למרות גידול של כ-40% בהכנסות ומהלכים עסקיים שלא צלחו, העסק שמר על איזון תזרימי מלא ברבעון מרץ-מאי, מה שמעיד על חוסן פיננסי ויכולת לספוג אתגרים. <span class="ms-more">קרא עוד</span></div></div>
+    <div class="ms-insight"><div class="ms-ititle">2. אופטימיזציה של מבנה כוח האדם: החלפת פונקציית שירות לקוחות</div><div class="ms-itext">הוחלט על סיום העסקה של מיכל וגיוס מחליפה בתפקיד שירות לקוחות ותפעול, בעלות חודשית נמוכה יותר של כ-2,880 ₪. <span class="ms-more">קרא עוד</span></div></div>
+  `;
+  function openMeeting(i){const m=MEETINGS[i];
+    document.getElementById('msTitle').textContent=m.name;
+    document.getElementById('msDate').textContent=m.date;
+    document.getElementById('msTime').textContent=m.time;
+    document.querySelectorAll('.ms-tab').forEach((t,ix)=>t.classList.toggle('on',ix===0));
+    document.getElementById('msBody').innerHTML=MS_SUMMARY;
+    document.getElementById('msOv').classList.add('show');}
+  function closeMeeting(){document.getElementById('msOv').classList.remove('show');}
+  function msTab(el,t){document.querySelectorAll('.ms-tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+    document.getElementById('msBody').innerHTML = (t==='summary')?MS_SUMMARY:'<div class="ms-placeholder">תוכן "'+el.textContent+'" — בקרוב</div>';}
+  function sendSummary(){closeMeeting();toast('הסיכום אושר ונשלח ללקוח');}
+
+  if(location.hash==='#ops') history.replaceState(null,'',location.pathname+location.search);
+  renderRail(); renderBoard(); updateOpsBtn(); refreshMsgBadge();
+  setRole('manager');
 </script>
 </body>
 </html>

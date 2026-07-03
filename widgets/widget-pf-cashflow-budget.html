@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+ *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+ :root{--navy:#0C4068;--cyan:#39ABE2;--green:#1e8a4c;--red:#d93025;--yellow:#f0b429;--amber:#e8743a;--gray:#818181;--gray2:#a0a8b8;--line:#e6ecf2;--shadow:0px 1px 50px rgba(0,0,0,0.08)}
+ body{font-family:'Rubik',sans-serif;background:#e8eef4;direction:rtl;color:#273736;display:flex;justify-content:center;padding:28px}
+ .widget{background:#fff;border-radius:14px;box-shadow:var(--shadow);width:600px;max-width:100%;overflow:hidden}
+ .w-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;gap:10px}
+ .w-hl{display:flex;align-items:center;gap:11px}
+ .w-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0C4068,#39ABE2);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+ .w-title{font-size:16px;font-weight:600;color:var(--navy)}
+ .w-sub{font-size:11px;color:var(--gray2);margin-top:1px}
+ .legend{display:flex;gap:12px}
+ .lg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray)}
+ .lg .d{width:9px;height:9px;border-radius:3px}
+ .strip{display:flex;margin:4px 20px 6px;border:1px solid var(--line);border-radius:11px;overflow:hidden}
+ .si{flex:1;padding:10px 14px}
+ .si+.si{border-right:1px solid var(--line)}
+ .si .l{font-size:10.5px;color:var(--gray2)}
+ .si .v{font-size:17px;font-weight:700;color:var(--navy);direction:ltr;text-align:right;margin-top:2px}
+ .si .v.red{color:var(--red)} .si .v.green{color:var(--green)}
+ .chart{padding:8px 16px 4px}
+ .ribbon{display:flex;gap:6px;padding:6px 20px 4px}
+ .rc{flex:1;text-align:center}
+ .rc .bar{height:6px;border-radius:3px;background:#e9eef3}
+ .rc.ok .bar{background:var(--green)} .rc.near .bar{background:var(--yellow)} .rc.over .bar{background:var(--red)}
+ .rc .wk{font-size:9.5px;color:var(--gray2);margin-top:4px}
+ .w-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 20px 14px;border-top:1px solid #f0f4f7;margin-top:6px}
+ .w-update{font-size:10px;color:var(--gray2)}
+ .w-link{font-size:11px;font-weight:500;color:var(--cyan);cursor:pointer}
+</style></head>
+<body>
+<div class="widget">
+ <div class="w-head">
+   <div class="w-hl">
+     <div class="w-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M3 15l5-5 4 3 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 20h18" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/></svg></div>
+     <div><div class="w-title">בקרת תזרים מול תקציב</div><div class="w-sub">יתרה צפויה מול רצפת התקציב · תיק לקוחות · 8 שבועות</div></div>
+   </div>
+   <div class="legend">
+     <div class="lg"><span class="d" style="background:#39ABE2"></span>בתקציב</div>
+     <div class="lg"><span class="d" style="background:#d93025"></span>חריגה</div>
+   </div>
+ </div>
+ <div class="strip">
+   <div class="si"><div class="l">תקציב תזרים חודשי</div><div class="v">2,400,000 ₪</div></div>
+   <div class="si"><div class="l">ביצוע מתחילת החודש</div><div class="v">1,932,400 ₪</div></div>
+   <div class="si"><div class="l">פער מול תקציב</div><div class="v red">-289,161 ₪</div></div>
+   <div class="si"><div class="l">צפי סוף חודש</div><div class="v green">+118,000 ₪</div></div>
+ </div>
+ <div class="chart"><svg id="cf" width="100%" viewBox="0 0 560 210" preserveAspectRatio="xMidYMid meet"></svg></div>
+ <div class="ribbon" id="ribbon"></div>
+ <div class="w-foot"><div class="w-update">מתעדכן אוטומטית מ-Bizibox · נכון ל-2.7.2026</div><div class="w-link">פתיחת תזרים מלא ←</div></div>
+</div>
+<script>
+// weekly projected end-of-week balance (₪ thousands) vs budget floor
+const FLOOR=550;                    // רצפת התקציב — היתרה המינימלית המתוכננת
+const WK=[820,760,690,560,470,505,610,715];
+const LABELS=['ש1','ש2','ש3','ש4','ש5','ש6','ש7','ש8'];
+const W=560,H=210,padX=34,padTop=16,padBot=34, plotW=W-padX*2, plotH=H-padTop-padBot;
+const max=880,min=380, span=max-min;
+const x=i=>padX+plotW*(i/(WK.length-1));
+const y=v=>padTop+plotH*(1-(v-min)/span);
+const yFloor=y(FLOOR);
+let pts=WK.map((v,i)=>[x(i),y(v)]);
+let line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+let area=line+` L${x(WK.length-1)},${padTop+plotH} L${padX},${padTop+plotH} Z`;
+// red segments where balance dips below floor
+let redSegs='';
+for(let i=0;i<WK.length-1;i++){
+  if(WK[i]<FLOOR||WK[i+1]<FLOOR){
+    redSegs+=`<path d="M${pts[i][0]},${pts[i][1]} L${pts[i+1][0]},${pts[i+1][1]}" stroke="#d93025" stroke-width="3" stroke-linecap="round"/>`;
+  }
+}
+let dots=pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.4" fill="${WK[i]<FLOOR?'#d93025':'#39ABE2'}"/>`).join('');
+document.getElementById('cf').innerHTML=`
+ <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#39ABE2" stop-opacity=".18"/><stop offset="1" stop-color="#39ABE2" stop-opacity="0"/></linearGradient></defs>
+ <rect x="${padX}" y="${yFloor}" width="${plotW}" height="${padTop+plotH-yFloor}" fill="#d93025" opacity=".05"/>
+ <line x1="${padX}" y1="${yFloor}" x2="${padX+plotW}" y2="${yFloor}" stroke="#d93025" stroke-width="1.3" stroke-dasharray="5 4"/>
+ <text x="${padX+plotW-2}" y="${yFloor-6}" text-anchor="end" font-size="10" fill="#d93025" font-family="Rubik">רצפת תקציב · ${FLOOR}k ₪</text>
+ <path d="${area}" fill="url(#ar)"/>
+ <path d="${line}" fill="none" stroke="#39ABE2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+ ${redSegs}${dots}
+ ${LABELS.map((l,i)=>`<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="10" fill="#a0a8b8" font-family="Rubik">${l}</text>`).join('')}
+`;
+document.getElementById('ribbon').innerHTML=WK.map((v,i)=>{
+  const st=v<FLOOR?'over':(v<FLOOR+70?'near':'ok');
+  return `<div class="rc ${st}"><div class="bar"></div><div class="wk">${LABELS[i]}</div></div>`;
+}).join('');
+</script>
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important}
+html.embed .widget{margin:0 !important;width:100% !important;max-width:none !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+<script id="hk-embed-js">
+(function(){
+  if(location.hash!=="#embed"&&self===top)return;
+  document.documentElement.classList.add("embed");
+  var file=(location.pathname.split("/").pop()||"");
+  function report(){var el=document.querySelector(".widget")||document.body;var h=Math.ceil(el.getBoundingClientRect().height)+10;if(h>60)parent.postMessage({hkEmbed:1,src:file,h:h},"*");}
+  addEventListener("load",function(){report();[120,400,900,1600].forEach(function(t){setTimeout(report,t);});});
+  addEventListener("resize",report);
+  if(window.ResizeObserver){try{new ResizeObserver(report).observe(document.documentElement);}catch(e){}}
+})();
+</script>
+</body></html>
