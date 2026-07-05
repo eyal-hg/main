@@ -7,28 +7,43 @@
  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
  :root{--navy:#0C4068;--cyan:#39ABE2;--green:#1e8a4c;--red:#d93025;--yellow:#f0b429;--amber:#e8743a;--gray:#818181;--gray2:#a0a8b8;--line:#e6ecf2;--shadow:0px 1px 50px rgba(0,0,0,0.08)}
  body{font-family:'Rubik',sans-serif;background:#e8eef4;direction:rtl;color:#273736;display:flex;justify-content:center;padding:28px}
- .widget{background:#fff;border-radius:14px;box-shadow:var(--shadow);width:600px;max-width:100%;overflow:hidden}
+ .widget{background:#fff;border-radius:14px;box-shadow:var(--shadow);width:640px;max-width:100%;overflow:hidden}
  .w-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;gap:10px}
  .w-hl{display:flex;align-items:center;gap:11px}
  .w-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0C4068,#39ABE2);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
  .w-title{font-size:16px;font-weight:600;color:var(--navy)}
  .w-sub{font-size:11px;color:var(--gray2);margin-top:1px}
- .legend{display:flex;gap:12px}
- .lg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray)}
- .lg .d{width:9px;height:9px;border-radius:3px}
  .strip{display:flex;margin:4px 20px 6px;border:1px solid var(--line);border-radius:11px;overflow:hidden}
  .si{flex:1;padding:10px 14px}
  .si+.si{border-right:1px solid var(--line)}
  .si .l{font-size:10.5px;color:var(--gray2)}
  .si .v{font-size:17px;font-weight:700;color:var(--navy);direction:ltr;text-align:right;margin-top:2px}
  .si .v.red{color:var(--red)} .si .v.green{color:var(--green)}
- .chart{padding:8px 16px 4px}
- .ribbon{display:flex;gap:6px;padding:6px 20px 4px}
- .rc{flex:1;text-align:center}
- .rc .bar{height:6px;border-radius:3px;background:#e9eef3}
- .rc.ok .bar{background:var(--green)} .rc.near .bar{background:var(--yellow)} .rc.over .bar{background:var(--red)}
- .rc .wk{font-size:9.5px;color:var(--gray2);margin-top:4px}
- .w-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 20px 14px;border-top:1px solid #f0f4f7;margin-top:6px}
+ /* category groups */
+ .grp{padding:2px 20px}
+ .grp-t{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--navy);margin:10px 0 2px}
+ .grp-t .gl{font-size:10px;font-weight:500;color:var(--gray2)}
+ .crow{display:grid;grid-template-columns:96px 1fr 46px 132px 104px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #f5f7fa}
+ .crow:first-of-type{border-top:none}
+ .cn{font-size:12.5px;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .track{position:relative;height:9px;background:#eef3f7;border-radius:6px}
+ .fill{position:absolute;inset-inline-start:0;top:0;height:100%;border-radius:6px}
+ .fill.ok{background:var(--green)} .fill.near{background:var(--yellow)} .fill.over{background:var(--red)} .fill.inc{background:var(--cyan)}
+ .mk{position:absolute;top:-3px;width:2px;height:15px;background:var(--navy);border-radius:2px;inset-inline-start:84.7%}
+ .pct{font-size:10.5px;font-weight:700;direction:ltr;text-align:center;border-radius:999px;padding:2px 0}
+ .pct.ok{color:var(--green);background:rgba(30,138,76,.1)} .pct.near{color:#b8860b;background:rgba(240,180,41,.14)} .pct.over{color:var(--red);background:rgba(217,48,37,.1)} .pct.inc{color:#1668a0;background:rgba(57,171,226,.13)}
+ .amt{font-size:11px;color:var(--gray2);text-align:start;white-space:nowrap}
+ .amt b{color:var(--navy);font-weight:600;font-size:11.5px}
+ .eff{font-size:10.5px;font-weight:700;direction:ltr;text-align:center;border-radius:999px;padding:3px 0;white-space:nowrap}
+ .eff.plus{color:var(--green);background:rgba(30,138,76,.1)}
+ .eff.minus{color:var(--red);background:rgba(217,48,37,.1)}
+ .eff.zero{color:var(--gray2);background:#f1f4f7}
+ /* summary equation */
+ .sum{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 20px 0;background:#f4f9f6;border:1px solid #d9ecdf;border-radius:11px;padding:11px 16px;flex-wrap:wrap}
+ .sum .st{font-size:12px;color:var(--navy);font-weight:500}
+ .sum .st b{font-weight:700}
+ .sum .sv{font-size:16px;font-weight:700;color:var(--green);direction:ltr}
+ .w-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 20px 14px;border-top:1px solid #f0f4f7;margin-top:12px}
  .w-update{font-size:10px;color:var(--gray2)}
  .w-link{font-size:11px;font-weight:500;color:var(--cyan);cursor:pointer}
 </style></head>
@@ -37,11 +52,7 @@
  <div class="w-head">
    <div class="w-hl">
      <div class="w-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M3 15l5-5 4 3 6-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 20h18" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/></svg></div>
-     <div><div class="w-title">בקרת תזרים מול תקציב</div><div class="w-sub">יתרה צפויה מול רצפת התקציב · תיק לקוחות · 8 שבועות</div></div>
-   </div>
-   <div class="legend">
-     <div class="lg"><span class="d" style="background:#39ABE2"></span>בתקציב</div>
-     <div class="lg"><span class="d" style="background:#d93025"></span>חריגה</div>
+     <div><div class="w-title">בקרת תזרים מול תקציב</div><div class="w-sub">התקציב לפי קטגוריות — ביצוע וצפי, וההשפעה על התזרים · יולי · תיק לקוחות</div></div>
    </div>
  </div>
  <div class="strip">
@@ -50,45 +61,46 @@
    <div class="si"><div class="l">פער מול תקציב</div><div class="v red">-289,161 ₪</div></div>
    <div class="si"><div class="l">צפי סוף חודש</div><div class="v green">+118,000 ₪</div></div>
  </div>
- <div class="chart"><svg id="cf" width="100%" viewBox="0 0 560 210" preserveAspectRatio="xMidYMid meet"></svg></div>
- <div class="ribbon" id="ribbon"></div>
+ <div id="groups"></div>
+ <div class="sum" id="sum"></div>
  <div class="w-foot"><div class="w-update">מתעדכן אוטומטית מ-Bizibox · נכון ל-2.7.2026</div><div class="w-link">פתיחת תזרים מלא ←</div></div>
 </div>
 <script>
-// weekly projected end-of-week balance (₪ thousands) vs budget floor
-const FLOOR=550;                    // רצפת התקציב — היתרה המינימלית המתוכננת
-const WK=[820,760,690,560,470,505,610,715];
-const LABELS=['ש1','ש2','ש3','ש4','ש5','ש6','ש7','ש8'];
-const W=560,H=210,padX=34,padTop=16,padBot=34, plotW=W-padX*2, plotH=H-padTop-padBot;
-const max=880,min=380, span=max-min;
-const x=i=>padX+plotW*(i/(WK.length-1));
-const y=v=>padTop+plotH*(1-(v-min)/span);
-const yFloor=y(FLOOR);
-let pts=WK.map((v,i)=>[x(i),y(v)]);
-let line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
-let area=line+` L${x(WK.length-1)},${padTop+plotH} L${padX},${padTop+plotH} Z`;
-// red segments where balance dips below floor
-let redSegs='';
-for(let i=0;i<WK.length-1;i++){
-  if(WK[i]<FLOOR||WK[i+1]<FLOOR){
-    redSegs+=`<path d="M${pts[i][0]},${pts[i][1]} L${pts[i+1][0]},${pts[i+1][1]}" stroke="#d93025" stroke-width="3" stroke-linecap="round"/>`;
-  }
+// תקציב לפי קטגוריות: budget=תקציב חודשי, fc=צפי לסוף החודש. eff = ההשפעה על התזרים מול התקציב
+// (הכנסה מעל תקציב = פלוס לתזרים; הוצאה מעל תקציב = מינוס)
+const INCOME=[{n:'הכנסות ממכירות', budget:2400000, fc:2496000}];
+const EXPENSE=[
+  {n:'שכר עבודה',   budget:640000, fc:676000},
+  {n:'ספקים',       budget:820000, fc:838000},
+  {n:'שכירות',      budget:210000, fc:210000},
+  {n:'מסים ואגרות', budget:180000, fc:134000},
+  {n:'שיווק',       budget:120000, fc:82000},
+  {n:'אחזקה',       budget:90000,  fc:98000},
+];
+const fk=v=>(v<0?'-':'+')+Math.round(Math.abs(v)/1000)+'k ₪';
+const fm=v=>Math.round(v/1000)+'k';
+const CAP=118, MK=100/CAP*100; // סוף הסקאלה 118% — כדי שחריגה תיראה; הקו השחור = 100% תקציב
+function row(c,isInc){
+  const p=Math.round(c.fc/c.budget*100);
+  const eff=isInc ? (c.fc-c.budget) : (c.budget-c.fc);   // effect on cashflow
+  const st=isInc?'inc':(p>100?'over':(p>=95?'near':'ok'));
+  const w=Math.min(p,CAP)/CAP*100;
+  return `<div class="crow">
+    <span class="cn">${c.n}</span>
+    <div class="track"><div class="fill ${st}" style="width:${w}%"></div><div class="mk"></div></div>
+    <span class="pct ${st}">${p}%</span>
+    <span class="amt">צפי <b>${fm(c.fc)}</b> / תקציב ${fm(c.budget)}</span>
+    <span class="eff ${eff>0?'plus':(eff<0?'minus':'zero')}">${eff===0?'בדיוק בתקציב':fk(eff)+' לתזרים'}</span>
+  </div>`;
 }
-let dots=pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.4" fill="${WK[i]<FLOOR?'#d93025':'#39ABE2'}"/>`).join('');
-document.getElementById('cf').innerHTML=`
- <defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#39ABE2" stop-opacity=".18"/><stop offset="1" stop-color="#39ABE2" stop-opacity="0"/></linearGradient></defs>
- <rect x="${padX}" y="${yFloor}" width="${plotW}" height="${padTop+plotH-yFloor}" fill="#d93025" opacity=".05"/>
- <line x1="${padX}" y1="${yFloor}" x2="${padX+plotW}" y2="${yFloor}" stroke="#d93025" stroke-width="1.3" stroke-dasharray="5 4"/>
- <text x="${padX+plotW-2}" y="${yFloor-6}" text-anchor="end" font-size="10" fill="#d93025" font-family="Rubik">רצפת תקציב · ${FLOOR}k ₪</text>
- <path d="${area}" fill="url(#ar)"/>
- <path d="${line}" fill="none" stroke="#39ABE2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
- ${redSegs}${dots}
- ${LABELS.map((l,i)=>`<text x="${x(i)}" y="${H-14}" text-anchor="middle" font-size="10" fill="#a0a8b8" font-family="Rubik">${l}</text>`).join('')}
-`;
-document.getElementById('ribbon').innerHTML=WK.map((v,i)=>{
-  const st=v<FLOOR?'over':(v<FLOOR+70?'near':'ok');
-  return `<div class="rc ${st}"><div class="bar"></div><div class="wk">${LABELS[i]}</div></div>`;
-}).join('');
+const incEff=INCOME.reduce((s,c)=>s+(c.fc-c.budget),0);
+const expEff=EXPENSE.reduce((s,c)=>s+(c.budget-c.fc),0);
+document.getElementById('groups').innerHTML=
+  `<div class="grp"><div class="grp-t">הכנסות <span class="gl">צפי מול תקציב</span></div>${INCOME.map(c=>row(c,true)).join('')}</div>`+
+  `<div class="grp"><div class="grp-t">הוצאות <span class="gl">לפי קטגוריות התקציב · הקו השחור = 100% תקציב</span></div>${EXPENSE.map(c=>row(c,false)).join('')}</div>`;
+document.getElementById('sum').innerHTML=
+  `<span class="st">צפי סוף חודש: הכנסות <b>${fk(incEff)}</b> · הוצאות <b>${fk(expEff)}</b> מול התקציב</span>
+   <span class="sv">= +118,000 ₪ לתזרים</span>`;
 </script>
 <style id="hk-embed-style">
 html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important;width:auto !important}

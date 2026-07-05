@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jampa · דשבורד מטפל</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- shared HK core -->
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+<link rel="stylesheet" href="../css/portfolio.css">
+<link rel="stylesheet" href="../css/ops.css">
+<link rel="stylesheet" href="../css/chat.css">
+<link rel="stylesheet" href="../css/meetings.css">
+<!-- Jampa brand layer -->
+<link rel="stylesheet" href="css/theme.css">
+<style>
+  /* Jampa-only bits */
+  .rec-badge{font-size:10.5px;font-weight:600;color:var(--blue);background:var(--blue-bg);border-radius:20px;padding:2px 9px;margin-inline-start:8px;vertical-align:middle}
+  .hc-mood{flex:0 0 auto;opacity:.9}
+  .prep-head{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .prep-tag{font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-bg);border-radius:20px;padding:4px 12px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+  @media(max-width:1050px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .awdg--blue .awdg-ic,.awdg--coral .awdg-ic,.awdg--navy .awdg-ic{font-size:15px}
+  #homeStrip{margin-bottom:16px}
+  .ms-meta2{font-size:12px;color:var(--muted);margin-top:3px}
+</style>
+</head>
+<body>
+
+<!-- ===== top bar ===== -->
+<div class="topbar">
+  <div class="logo j-logo">
+    <svg width="30" height="28" viewBox="0 0 32 30" fill="none">
+      <path d="M4 4h24a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 6v-6H4a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3z" fill="#E5E7FF" stroke="#7557E3" stroke-width="1.6"/>
+      <path d="M16 20s-6-3.6-6-7.4c0-2 1.6-3.6 3.5-3.6 1 0 2 .5 2.5 1.3.5-.8 1.5-1.3 2.5-1.3 1.9 0 3.5 1.6 3.5 3.6 0 3.8-6 7.4-6 7.4z" fill="#7557E3"/>
+    </svg>
+    <span class="jl-word">Jampa</span>
+  </div>
+
+  <div class="switcher-wrap">
+    <div class="switcher" onclick="toggleSwitcher(event)" title="החלפת מטופל">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+      <span class="cur" id="curName">כל המטופלים</span>
+      <span class="hp" id="curHp">מבט-על</span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="sw-dd" id="swDD"></div>
+  </div>
+
+  <div class="top-right">
+    <div class="role-sel" title="הדגמה — תצוגה לפי תפקיד">
+      תצוגה:
+      <select id="roleSel" onchange="setRole(this.value)">
+        <option value="therapist">מטפל</option>
+        <option value="patient">מטופל</option>
+      </select>
+    </div>
+    <div class="who">ערב טוב, ענת<br><b>לאיזור האישי</b></div>
+    <div class="avatar" style="background:#7557E3">ע</div>
+  </div>
+</div>
+
+<!-- ===== shell ===== -->
+<div class="shell collapsed" id="shell">
+
+  <!-- patients rail -->
+  <aside class="rail">
+    <div class="rail-head">
+      <span class="rt">מטופלים</span>
+      <span class="badge" id="cliCount">6</span>
+      <button class="collapse-btn" onclick="toggleRail()" title="כווץ / הרחב">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div class="rail-portfolio" id="railPortfolio" onclick="selectHome()" title="כל המטופלים">
+      <span class="rp-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <div class="ci"><div class="cn">כל המטופלים</div><div class="cs">מוקד טיפולי · מבט-על</div></div>
+    </div>
+    <div class="rail-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+      <input id="railQ" placeholder="חיפוש מטופל / נושא טיפול" oninput="renderRail()">
+    </div>
+    <div class="rail-list" id="railList"></div>
+  </aside>
+
+  <!-- main -->
+  <main class="main">
+    <div class="client-head">
+      <h1 id="headName">כל המטופלים</h1>
+      <span class="hp2" id="headSub" style="display:none"></span>
+      <span class="st active" id="headStage" style="display:none"></span>
+      <div class="db-actions">
+        <div class="chip-btn" onclick="toast('הנתונים עודכנו')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/></svg> רענון</div>
+        <button class="chip-btn primary" id="btnRec" onclick="enterRec()" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"/></svg>
+          הקלט פגישה
+        </button>
+      </div>
+    </div>
+    <div class="sub-line">מוקד טיפולי · 6 מטופלים במעקב</div>
+
+    <!-- tabs (patient scope) -->
+    <div class="tabs" style="display:none">
+      <div class="tab on" onclick="switchTab(this,'dash')">דשבורד</div>
+      <div class="tab" onclick="switchTab(this,'meet')">פגישות</div>
+      <div class="tab" onclick="switchTab(this,'chat')">צ'אט וליווי</div>
+      <div class="tab pro-only" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
+    </div>
+
+    <!-- therapist home: attention focus -->
+    <div id="viewHome">
+      <div class="opsq-strip" id="homeStrip"></div>
+      <div class="al-health" id="homeHealth"></div>
+      <div class="al-board" id="homeBoard"></div>
+    </div>
+
+    <!-- patient dashboard -->
+    <div id="viewDash" style="display:none">
+      <div class="kpis" id="pKpis"></div>
+      <div class="al-board" id="pBoard"></div>
+    </div>
+
+    <!-- meetings -->
+    <div id="viewMeet" style="display:none">
+      <div class="mt-wrap">
+        <div class="mt-whead">
+          <div class="mt-wtitle"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>פגישות והקלטות</span></div>
+          <button class="mt-new" onclick="toast('נשלחו הצעות זמנים למטופל')" style="background:var(--blue)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> קביעת פגישה</button>
+        </div>
+        <div class="mt-filters" id="mtFilters"></div>
+        <div class="mt-list" id="mtList"></div>
+      </div>
+    </div>
+
+    <!-- chat -->
+    <div id="viewChat" style="display:none">
+      <div class="chat">
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-input">
+          <input id="chatInput" placeholder="כתיבת הודעה למטופל — תישלח בוואטסאפ בטון הטיפולי שלך" onkeydown="if(event.key==='Enter')chatSend()">
+          <button class="chat-send" onclick="chatSend()" aria-label="שליחה"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- prep brief -->
+    <div id="viewPrep" style="display:none"><div id="prepBody"></div></div>
+
+    <!-- recording mode (המקבילה של מצב התפעול) -->
+    <div id="viewRec" style="display:none">
+      <div class="ops-banner">
+        <span class="ops-live"></span>
+        <div class="ops-title">מקליטה פגישה — <span id="recScope"></span> <span class="sub">השיחה מתומללת ומנותחת בסיום</span></div>
+        <span class="ops-clock" id="recClock">⏺ 0:00</span>
+        <div class="ops-actions">
+          <button class="ops-done" onclick="finishRec()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="7" width="10" height="10" rx="2"/></svg> סיום הקלטה</button>
+          <button class="ops-close" onclick="exitRec()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> ביטול</button>
+        </div>
+      </div>
+      <div class="ops-rows">
+        <div class="ops-rows-head"><div class="orh-l"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-10"/><path d="M12 19v3"/></svg><span>הפגישה מוקלטת</span></div></div>
+        <div style="padding:36px;text-align:center;color:var(--muted);font-size:14px;line-height:1.8">
+          🎙 ההקלטה רצה ברקע — אפשר להתרכז במטופל.<br>בסיום: תמלול, ניתוח רגשי, סיכום אישי, סופרוויזיון ומשימות — הכול אוטומטי.
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- AI processing modal (reuses the fin- skeleton from ops.css) -->
+<div class="fin-ov" id="finOv">
+  <div class="fin">
+    <div class="fin-head">
+      <div class="fin-ico" id="finIco"><div class="spin"></div></div>
+      <div class="fin-title" id="finTitle" style="font-size:19px;font-weight:600;color:var(--navy)">מעבדת את הפגישה…</div>
+      <div class="fin-sub" id="finSub" style="font-size:12.5px;color:var(--muted);margin-top:4px"></div>
+    </div>
+    <div class="fin-steps" id="finSteps"></div>
+    <div class="fin-findings" id="finFindings"></div>
+    <div class="fin-foot" id="finFoot"></div>
+  </div>
+</div>
+
+<!-- meeting summary modal -->
+<div class="ms-ov" id="msOv" onclick="if(event.target===this)closeSummary()">
+  <div class="ms">
+    <div class="ms-head">
+      <button class="ms-x" onclick="closeSummary()" style="position:absolute;inset-inline-end:18px;top:16px;background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer">✕</button>
+      <div style="font-size:18px;font-weight:600;color:var(--navy)" id="msTitle"></div>
+      <div class="ms-meta2" id="msMeta"></div>
+      <div style="display:flex;gap:4px;margin-top:14px;border-bottom:1px solid var(--line)">
+        <div class="ms-tab on" data-t="sum" onclick="msFill('sum')" style="padding:9px 16px;font-size:13.5px;cursor:pointer">סיכום פגישה</div>
+        <div class="ms-tab" data-t="sup" onclick="msFill('sup')" style="padding:9px 16px;font-size:13.5px;cursor:pointer">סופרוויזיון</div>
+        <div class="ms-tab" data-t="tasks" onclick="msFill('tasks')" style="padding:9px 16px;font-size:13.5px;cursor:pointer">משימות</div>
+      </div>
+    </div>
+    <div style="padding:18px 22px;overflow-y:auto" id="msBody"></div>
+    <div style="display:flex;gap:10px;padding:14px 22px;border-top:1px solid var(--line)">
+      <button class="fin-wa" style="margin:0;flex:1" onclick="approveSummary()">אישור ושליחת סיכום למטופל</button>
+      <button class="chip-btn" onclick="closeSummary()">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<style>.ms-tab.on{color:var(--blue);font-weight:600;box-shadow:inset 0 -2px 0 var(--blue)}</style>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/screens.js"></script>
+<script src="js/record.js"></script>
+<script src="js/meetings.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

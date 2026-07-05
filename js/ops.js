@@ -25,9 +25,10 @@
   let ROLE='manager';
   function setRole(r){
     ROLE=r; isOperator=(r==='manager');
+    const rs=document.getElementById('roleSel'); if(rs&&rs.value!==r) rs.value=r;
     if(OPSMODE) exitOps();
     const client=(r==='client1'||r==='clientN'), single=(r==='client1');
-    document.getElementById('shell').classList.toggle('no-rail', single);
+    document.getElementById('shell').classList.toggle('no-rail', client);           /* לקוחות — בלי סרגל צדדי: המחליף העליון מספיק */
     document.getElementById('railPortfolio').style.display = single?'none':'';
     document.querySelector('#railPortfolio .cn').textContent = client?'כל החברות שלי':'כל החברות';
     document.querySelectorAll('.tab.advisor-only').forEach(t=>t.style.display=client?'none':'');

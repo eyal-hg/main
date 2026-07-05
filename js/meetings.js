@@ -1,11 +1,15 @@
 /* HK Dashboard — meetings list + summary modal */
   /* ---- meetings + summary ---- */
+  // status: upcoming | ai (הוקלטה, ה-AI מעבד) | summary (סיכום ממתין לאישור) | done | noshow
+  // rec = משך ההקלטה — כל פגישה מוקלטת ומתועדת אוטומטית
   const MEETINGS=[
-    {name:'פ.ע - חודש יוני', client:'אנרגי אינטרנשיונל', date:'01.06.2026', time:'11:00-12:00', adv:'אילון אשכנזי', status:'summary'},
-    {name:'פגישת עבודה - קורס מנחות', client:'מטעי גבעון', date:'12.05.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'summary'},
+    {name:'פגישה שוטפת - סקירת תזרים', client:'אנרגי אינטרנשיונל', date:'02.07.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'ai', rec:'46 דק׳'},
+    {name:'פ.ע - חודש יוני', client:'אנרגי אינטרנשיונל', date:'01.06.2026', time:'11:00-12:00', adv:'אילון אשכנזי', status:'summary', rec:'58 דק׳'},
+    {name:'פגישת עבודה - קורס מנחות', client:'מטעי גבעון', date:'12.05.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'summary', rec:'52 דק׳'},
+    {name:'פגישה חודשית - יולי (Money+)', client:'מטעי גבעון', date:'15.07.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'upcoming'},
     {name:'סקירת רבעון Q3', client:'משה עובד', date:'10.07.2026', time:'14:00-15:00', adv:'אילון אשכנזי', status:'upcoming'},
-    {name:'לימוד בנדל - לחיות בתשוקה', client:'אנרגי גולני', date:'05.05.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'done'},
-    {name:'פגישה חודשית - מרץ', client:'רימון יצחק', date:'17.03.2026', time:'12:00-13:00', adv:'אילון אשכנזי', status:'done'},
+    {name:'לימוד בנדל - לחיות בתשוקה', client:'אנרגי גולני', date:'05.05.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'done', rec:'55 דק׳'},
+    {name:'פגישה חודשית - מרץ', client:'רימון יצחק', date:'17.03.2026', time:'12:00-13:00', adv:'אילון אשכנזי', status:'done', rec:'61 דק׳'},
     {name:'פ.ע - חודש פברואר', client:'טיב השוק', date:'04.02.2026', time:'10:30-11:30', adv:'אילון אשכנזי', status:'noshow'},
   ];
   let MEET_FILTER='all';
@@ -17,7 +21,7 @@
     document.getElementById('mtFilters').style.display = isClient ? 'none' : 'flex';
     if(!isClient){
       const cnt=s=>MEETINGS.filter(m=>m.status===s).length;
-      const F=[['upcoming','פגישות קרובות',cnt('upcoming')],['summary','ממתינות לאישור',cnt('summary')],['done','הושלמו',cnt('done')],['noshow','לא התקיימו',cnt('noshow')]];
+      const F=[['upcoming','פגישות קרובות',cnt('upcoming')],['ai','בעיבוד AI',cnt('ai')],['summary','ממתינות לאישור',cnt('summary')],['done','הושלמו',cnt('done')],['noshow','לא התקיימו',cnt('noshow')]];
       document.getElementById('mtFilters').innerHTML=
         `<div class="ofilter ${MEET_FILTER==='all'?'on':''}" onclick="meetFilter('all')">הכל</div>`+
         F.map(f=>`<div class="ofilter ${MEET_FILTER===f[0]?'on':''}" onclick="meetFilter('${f[0]}')">${f[1]}${f[2]?`<span class="cnt">${f[2]}</span>`:''}</div>`).join('');
@@ -28,14 +32,17 @@
     const el=document.getElementById('mtList');
     if(!list.length){el.innerHTML='<div class="ms-placeholder">אין פגישות</div>';return;}
     el.innerHTML=list.map(({m,i})=>{
+      const rec=m.rec?`<span class="rec-badge">🎙 ${m.rec}</span>`:'';
+      const ai=m.status==='ai'?`<span class="ai-badge"><span class="ai-spin"></span> ה-AI מעבד את ההקלטה</span>`:'';
       let btn;
-      if(isClient) btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
+      if(m.status==='ai') btn=`<button class="mt-btn view" disabled style="opacity:.55;cursor:default">סיכום בהכנה…</button>`;
+      else if(isClient) btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
       else if(m.status==='summary')btn=`<button class="mt-btn" onclick="openMeeting(${i})">אישור הסיכום</button>`;
       else if(m.status==='done')btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
       else if(m.status==='upcoming')btn=`<button class="mt-btn view" onclick="toast('פרטי הפגישה')">פרטי פגישה</button>`;
       else btn=`<button class="mt-btn view" onclick="toast('תיאום פגישה מחדש')">תיאום מחדש</button>`;
       return `<div class="mtcard">
-        <div class="mt-info">${isClient?'':`<div class="mt-client">${m.client}</div>`}<div class="mt-name">${m.name}</div>
+        <div class="mt-info">${isClient?'':`<div class="mt-client">${m.client}</div>`}<div class="mt-name">${m.name} ${rec}${ai}</div>
           <div class="mt-meta"><span>${CAL_ICO}${m.date}</span><span>${CLK_ICO}${m.time}</span><span>${USR_ICO}${m.adv}</span></div></div>
         ${btn}</div>`;}).join('');
   }

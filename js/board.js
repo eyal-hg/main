@@ -37,7 +37,7 @@
   let SCOPE='client';
   const BOARDS={
     client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-cashflow-full.html','widget-profitability-full.html','widget-metric-full.html'],
-    portfolio:['widget-pf-kpi-balance.html','widget-pf-kpi-budget.html','widget-pf-kpi-risk.html','widget-pf-kpi-overdraft.html','widget-pf-cashflow-budget.html','widget-pf-alerts.html','widget-pf-budget-companies.html','widget-pf-budget-categories.html','widget-pf-risk-list.html','widget-pf-collections.html'],
+    portfolio:['widget-pf-kpi-balance.html','widget-pf-kpi-budget.html','widget-pf-kpi-risk.html','widget-pf-kpi-overdraft.html','widget-pf-cashflow-budget.html','widget-pf-alerts.html','widget-pf-budget-companies.html','widget-pf-risk-list.html','widget-pf-collections.html'],
   };
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};
   const rowSpan=h=>Math.max(6,Math.ceil((h+18)/8));
@@ -48,9 +48,12 @@
   function renderBoard(){
     const active=BOARDS[SCOPE];
     const b=document.getElementById('wboard');
+    // portfolio board = ordered rows (pairs), no masonry — keeps the layout tidy at full width
+    const rows=(SCOPE==='portfolio');
+    b.classList.toggle('rows',rows);
     if(!active.length){b.innerHTML='<div class="wb-empty">אין ווידג\'טים בלוח — לחצו "הוספת ווידג\'ט"</div>';return;}
     b.innerHTML=active.map((f,i)=>{const w=wmeta(f);const sm=sizeOf(f)==='sm';
-      return `<div class="wframe loading ${sm?'sm':''}" data-idx="${i}" draggable="false" style="grid-row-end:span ${rowSpan(w.h)}">
+      return `<div class="wframe loading ${sm?'sm':''}" data-idx="${i}" draggable="false" ${rows?'':`style="grid-row-end:span ${rowSpan(w.h)}"`}>
         <div class="wf-tools">
           <button class="wf-btn wf-grip" title="גרירה לסידור" aria-label="גרירה"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg></button>
           <button class="wf-btn wf-size" title="${sm?'הרחבה לרוחב מלא':'צמצום לחצי רוחב'}" aria-label="רוחב" onclick="toggleSize('${f}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7 4 12l4 5M16 7l4 5-4 5M4 12h16"/></svg></button>
@@ -120,7 +123,8 @@
     const d=e.data; if(!d||!d.hkEmbed) return;
     const fr=document.querySelector('#wboard iframe[data-file="'+d.src+'"]');
     if(fr&&d.h>60){fr.style.height=d.h+'px';
-      const wf=fr.closest('.wframe'); if(wf) wf.style.gridRowEnd='span '+rowSpan(d.h);
+      const wf=fr.closest('.wframe');
+      if(wf&&!document.getElementById('wboard').classList.contains('rows')) wf.style.gridRowEnd='span '+rowSpan(d.h);
       fr.parentElement.classList.remove('loading');}
   });
   function removeWidget(f){const a=BOARDS[SCOPE];const i=a.indexOf(f);if(i>=0){a.splice(i,1);renderBoard();toast('הווידג\'ט הוסר');}}

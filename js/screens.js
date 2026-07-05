@@ -28,7 +28,6 @@
     ['viewDash','viewMetrics','viewChat','viewMeetings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display = (s==='portfolio') ? 'none' : '';
-    document.getElementById('wbActions').style.display='flex';
     // portfolio sub-view routing by persona:
     //  manager (HK) → תור תפעול / מוקד התראות (toggle)   advisor → מוקד התראות   clientN → מבט מאוחד
     const inPortfolio=(s==='portfolio');
@@ -46,7 +45,9 @@
     document.getElementById('opsQueueView').style.display=showQueue?'':'none';
     document.getElementById('alertsView').style.display=showAlerts?'':'none';
     document.getElementById('wboard').style.display=showBoard?'':'none';
-    document.getElementById('wbActions').style.display=showBoard?'flex':'none';
+    // ללקוחות אין עריכת לוח — HK מגדירה את הלוח עבורם
+    const canEdit=!(ROLE==='client1'||ROLE==='clientN');
+    document.getElementById('wbActions').style.display=(showBoard&&canEdit)?'flex':'none';
     document.getElementById('crBar').style.display=(inPortfolio && pView==='board')?'':'none';
     document.getElementById('opsqStatus').style.display=showQueue?'flex':'none';
     if(inPortfolio){
@@ -56,6 +57,7 @@
     }
     updateOpsBtn();
     if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else renderBoard();
+    renderCoAlerts();
   }
   function selectPortfolio(){setScope('portfolio');}
   let MGR_VIEW='ops';
@@ -113,62 +115,235 @@
     else if(t==='meetings'){document.getElementById('viewMeetings').style.display='';renderMeetings();}
     else{document.getElementById('viewOther').style.display='';document.getElementById('otherName').textContent=el.textContent;}
     document.querySelector('.db-actions').style.visibility = t==='dash' ? 'visible' : 'hidden';
-    document.getElementById('wbActions').style.display = t==='dash' ? 'flex' : 'none';
+    document.getElementById('wbActions').style.display = (t==='dash'&&ROLE!=='client1'&&ROLE!=='clientN') ? 'flex' : 'none';
   }
 
-  /* ---- metrics definition ---- */
+  /* ---- metrics definition ----
+     שלושה סוגי מדדים:
+       manual — מדד עצמאי: יעד ₪/מספר, בפועל ידני או Google Sheets (עם לוגיקת סנכרון)
+       calc   — מדד מחושב: בין שני מדדים, הבפועל לא ניתן להגדרה
+       cats   — מדד לפי קטגוריות: הבפועל מנתוני אמת מ-Bizibox
+     ההתראות הן חלק מהמדד (m.alerts — רשימה) — נערכות מהפעמון שעל הכרטיס. */
   let WORKDAYS=22;
-  // metrics carry their own alert rule — defined here, read by the alerts focus.
-  // per-company values live on CLIENTS[i].metrics (+ c.debt). key maps a metric to its value.
+  const SHEET_LOGIC={
+    none:'ללא לוגיקה — עדכן רק את החודש הנוכחי מהתא שנבחר',
+    same:'אותו תא לכל החודשים — מלא את כל חודשי המדד מאותו תא',
+    cols:'חודשים לפי עמודות — התא הוא החודש הנוכחי, עמודות סמוכות הן חודשים סמוכים',
+    name:'לפי שם הגיליון — קרא את אותו תא מגיליון בשם חודש ושנה בעברית'};
+  const SHEET_LOGIC_SHORT={none:'ללא לוגיקה',same:'אותו תא לכל החודשים',cols:'חודשים לפי עמודות',name:'לפי שם הגיליון'};
+  const CF_CATS={'הכנסות':['הכנסות ממכירות - סליקה','הכנסות אחרות'],
+                 'הוצאות':['אחזקת עסק','פרסום ושיווק','הוצאות פרטיות','הוצאות שכר','ספקים','שכירות','מסים ואגרות']};
+  /* התראות גנריות — לכל מדד רשימת חוקים (אפשר יותר מהתראה אחת):
+       mode: 'pct' (אחוז מהיעד) | 'abs' (הערך עצמו)
+       dir : 'above' | 'below'   ·   th: סף   ·   sev: חומרה ('high'/'mid') */
   const METRICS=[
-    {name:'עמידה בתקציב',        key:'budget',    unit:'%',    goal:'low',  type:'עצמאי', alert:{on:true, cmp:'over',       th:100, near:95}},
-    {name:'חריגה צפויה בעו״ש',   key:'overdraft', unit:'ימים', goal:'low',  type:'עצמאי', alert:{on:true, cmp:'withinDays', th:14}},
-    {name:'חוב פתוח לגבייה',     key:'debt',      unit:'₪',    goal:'low',  type:'עצמאי', alert:{on:true, cmp:'over',       th:0}},
-    {name:'סך הליטרים מול יעד',  key:'liters',    unit:'%',    goal:'high', type:'מחובר', alert:{on:true, cmp:'belowPct',   th:85}},
-    {name:'רווח תזרימי מול יעד', key:'cfprofit',  unit:'%',    goal:'high', type:'עצמאי', alert:{on:true, cmp:'belowPct',   th:80}},
+    {key:'revenue',  name:'מחזור הכנסות', kind:'manual', unit:'₪', target:150000, actual:142522,
+     sheets:{on:true, logic:'name', cell:'B4', gid:'0'}, alerts:[{on:false, mode:'pct', dir:'below', th:80, sev:'mid'}]},
+    {key:'liters',   name:'סך הליטרים - לפי סוג דלק', kind:'manual', unit:'num', target:120000, actual:93600,
+     sheets:{on:true, logic:'cols', cell:'C7', gid:'1824'}, alerts:[{on:true, mode:'pct', dir:'below', th:85, sev:'mid'}]},
+    {key:'budget',   name:'עמידה בתקציב', kind:'cats', unit:'%', target:100, cats:['כל קטגוריות ההוצאות'],
+     alerts:[{on:true, mode:'pct', dir:'above', th:100, sev:'high'},
+             {on:true, mode:'pct', dir:'above', th:95,  sev:'mid'}]},
+    {key:'salesclr', name:'הכנסות ממכירות - סליקה', kind:'cats', unit:'₪', target:90000, actual:99642,
+     cats:['הכנסות ממכירות - סליקה'], alerts:[{on:false, mode:'pct', dir:'below', th:75, sev:'mid'}]},
+    {key:'cfprofit', name:'רווח / הפסד תזרימי', kind:'calc', unit:'₪', target:30000,
+     calc:{a:'מחזור הכנסות', op:'−', b:'סך הוצאות (Bizibox)'}, alerts:[{on:true, mode:'pct', dir:'below', th:80, sev:'mid'}]},
+    {key:'overdraft',name:'חריגה צפויה בעו״ש', kind:'calc', unit:'ימים',
+     calc:{a:'תחזית תזרים', op:'מול', b:'מסגרת אשראי'}, alerts:[{on:true, mode:'abs', dir:'below', th:14, sev:'high'}]},
+    {key:'debt',     name:'חוב פתוח לגבייה', kind:'cats', unit:'₪', target:0,
+     cats:['גבייה מלקוחות'], alerts:[{on:true, mode:'abs', dir:'above', th:0, sev:'mid'}]},
+    {key:'meeting',  name:'פגישה חודשית · Money+', kind:'auto', unit:'בחודש', alerts:[{on:true, mode:'abs', dir:'below', th:1, sev:'high'}]},
   ];
   const fmt=n=>Math.round(n).toLocaleString('en-US');
-  const CMP_TXT={over:'מעל',withinDays:'בתוך',belowPct:'מתחת ל-'};
-  function metricCur(m,c){
-    const v=mVal(c,m.key);
-    if(m.key==='debt')      return (v||0)>0 ? (v).toLocaleString('en-US')+' ₪' : 'אין חוב פתוח';
-    if(m.key==='overdraft') return v>0 ? v+' ימים לחריגה' : 'אין חריגה צפויה';
-    if(v==null) return '—';
-    return v+'% '+(m.key==='budget'?'מהתקציב':'מהיעד');
+  // מה נמדד בפועל בכל מדד — מזין את משפט ההסבר בהגדרת ההתראה
+  const MEASURE_TXT={overdraft:'ימים עד חריגה צפויה בעו״ש',debt:'חוב פתוח לגבייה בש״ח',meeting:'מספר פגישות שנקבעו לחודש הקרוב'};
+  const hasUpcomingMeeting=c=>MEETINGS.some(x=>x.client===c.name&&x.status==='upcoming');
+  // ניסוח חוק התראה — משמש גם את "למה קיבלתי התראה" במוקד
+  function ruleSentence(r,m){
+    const u=r.mode==='pct'?'% מהיעד':'';
+    let s=`התרע ("${r.sev==='high'?'דחוף':'לבדיקה'}") כאשר הבפועל ${r.dir==='above'?'יעלה מעל':'ירד מתחת ל-'}${r.th}${u}`;
+    if(m&&MEASURE_TXT[m.key]) s+=` · הערך הנמדד: ${MEASURE_TXT[m.key]}`;
+    return s;
+  }
+  const KIND_META={
+    manual:{lbl:'עצמאי', cls:'manual', ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>'},
+    calc:  {lbl:'מחושב', cls:'calc', ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 12h3M13 12h3M8 16h3M13 16h3"/></svg>'},
+    cats:  {lbl:'לפי קטגוריות', cls:'cats', ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>'},
+    auto:  {lbl:'אוטומטי', cls:'auto', ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>'},
+  };
+  const unitTxt=m=>m.unit==='₪'?'₪':(m.unit==='num'?'':m.unit);
+  // display state per metric for the current company
+  function mDisp(m,c){
+    if(m.key==='meeting'){
+      if(c.product!=='money+') return {txt:'רלוונטי ל-Money+ בלבד', muted:1};
+      const up=MEETINGS.find(x=>x.client===c.name&&x.status==='upcoming');
+      return up?{txt:'נקבעה · '+up.date.slice(0,5)}:{txt:'לא נקבעה החודש',bad:1};
+    }
+    if(m.key==='overdraft'){const v=mVal(c,m.key);return v>0?{txt:v+' ימים לחריגה צפויה',bad:1}:{txt:'אין חריגה צפויה'};}
+    if(m.key==='debt'){const v=mVal(c,m.key)||0;return v>0?{txt:fmt(v)+' ₪ בפיגור',bad:1}:{txt:'אין חוב פתוח'};}
+    if(m.key==='budget'){const v=mVal(c,m.key)||0;return {pct:v, big:v+'%', sub:'מהתקציב · יעד עד 100%', bad:v>100};}
+    if(m.key==='cfprofit'){const v=mVal(c,m.key)||0;const act=Math.round((m.target||0)*v/100);
+      return {pct:v, big:fmt(act)+' ₪', sub:'מתוך יעד '+fmt(m.target)+' ₪', bad:!!evalMetric(m,c)};}
+    if(m.actual!=null&&m.target>0){const p=Math.round(m.actual/m.target*100);
+      return {pct:p, big:fmt(m.actual)+(m.unit==='₪'?' ₪':''), sub:'מתוך יעד '+fmt(m.target)+(m.unit==='₪'?' ₪':''), bad:!!evalMetric(m,c)};}
+    return {txt:'—'};
+  }
+  function srcLine(m){
+    if(m.kind==='manual') return m.sheets&&m.sheets.on
+      ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1e8a4c" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Google Sheets · ${SHEET_LOGIC_SHORT[m.sheets.logic]||''} · תא ${m.sheets.cell}`
+      : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> הזנה ידנית — מתעדכן כל חודש`;
+    if(m.kind==='calc') return `<b>ƒ</b> ${m.calc.a} <b>${m.calc.op}</b> ${m.calc.b} · מחושב אוטומטית`;
+    if(m.kind==='cats') return `<span class="src-bz">Bizibox</span> נתוני אמת · ${(m.cats||[]).join(' + ')}`;
+    return 'מתעדכן אוטומטית מיומן הפגישות';
   }
   function renderMetrics(){
     const c=CLIENTS[typeof CUR==='number'?CUR:0]||{};
     document.getElementById('mcards').innerHTML=METRICS.map((m,i)=>{
-      const a=m.alert||{on:false,cmp:'over',th:0};
-      const suffix = a.cmp==='withinDays'?'ימים':(a.cmp==='belowPct'?'% מהיעד':m.unit);
-      const breach = a.on && evalMetric(m,c);
-      const opt=v=>`<option ${m.type===v?'selected':''}>${v}</option>`;
-      return `<div class="mcard">
-        <div class="mc-head">
-          <div class="mc-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg>
-            <span class="mc-name" contenteditable="true" onblur="setName(${i},this.textContent)">${m.name}</span>
-          </div>
-          <div class="mc-cur ${breach?'bad':''}" title="ערך נוכחי · ${c.name||''}">${metricCur(m,c)}</div>
+      const k=KIND_META[m.kind]||KIND_META.auto, d=mDisp(m,c);
+      const nAl=(m.alerts||[]).filter(r=>r.on).length;
+      const daily=(m.target>0&&m.unit!=='%')?`יעד יומי: <b>${fmt(m.target/WORKDAYS)}${m.unit==='₪'?' ₪':''}</b>`:'';
+      const bar=d.pct!=null?`
+        <div class="mc-bar"><div class="mc-fill ${d.bad?'bad':''}" style="width:${Math.min(100,Math.max(0,d.pct))}%"></div>
+          <div class="mc-bubble" style="left:${Math.min(97,Math.max(3,d.pct))}%">${d.pct}%</div></div>`:'';
+      const val=d.big!=null
+        ? `<div class="mc2-val ${d.bad?'bad':''}">${d.big}<span class="mc2-sub">${d.sub||''}</span></div>`
+        : `<div class="mc2-val ${d.bad?'bad':''} ${d.muted?'mut':''}" style="font-size:17px">${d.txt}</div>`;
+      return `<div class="mcard mcard2">
+        <div class="mc2-top">
+          <span class="mkind ${k.cls}">${k.ic} ${k.lbl}</span>
           <div class="mc-act">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="delMetric(${i})" title="מחיקה"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+            <button class="mbell ${nAl?'on':''}" title="${nAl?nAl+' התראות פעילות — לחצו לעריכה':'הגדרת התראות'}" onclick="openAlertCfg(${i})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+              ${nAl?`<span class="mbell-dot n">${nAl}</span>`:''}
+            </button>
+            ${m.kind==='auto'?'':`<button class="mbell" title="עריכת המדד" onclick="openMx(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>`}
+            <button class="mbell del" title="מחיקה" onclick="delMetric(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
           </div>
         </div>
-        <div class="mc-alert ${a.on?'':'off'}">
-          <label class="mc-tog" title="הפעלת התראה"><input type="checkbox" ${a.on?'checked':''} onchange="setMetricAlertOn(${i})"><span></span></label>
-          <div class="mc-arow"><span class="mc-albl">התראה</span>התרע כאשר ${CMP_TXT[a.cmp]||''} <input class="mc-th" type="number" value="${a.th}" onchange="setMetricAlertTh(${i},this.value)"> ${suffix}
-            <select class="mc-type" onchange="setType(${i},this.value)">${opt('עצמאי')}${opt('מחובר')}${opt('מצטבר')}</select></div>
-        </div>
+        <div class="mc2-name" onclick="${m.kind==='auto'?'':`openMx(${i})`}">${m.name}</div>
+        ${val}${bar}
+        <div class="mc2-foot"><span class="mc2-src">${srcLine(m)}</span><span>${daily}</span></div>
       </div>`;
     }).join('');
   }
-  function setType(i,v){METRICS[i].type=v;}
-  function setName(i,v){METRICS[i].name=v.trim()||'מדד ללא שם';}
   function setDays(v){WORKDAYS=parseInt(v)||22;renderMetrics();}
-  function setMetricAlertOn(i){METRICS[i].alert.on=!METRICS[i].alert.on;renderMetrics();}
-  function setMetricAlertTh(i,v){METRICS[i].alert.th=parseFloat(String(v).replace(/[^\d.-]/g,''))||0;renderMetrics();}
   function delMetric(i){METRICS.splice(i,1);renderMetrics();toast('המדד נמחק');}
-  function addMetric(){METRICS.push({name:'מדד חדש',key:'m'+METRICS.length,unit:'%',goal:'high',type:'עצמאי',alert:{on:true,cmp:'belowPct',th:90}});renderMetrics();toast('נוסף מדד חדש');}
+
+  /* ---- alert config — רשימת חוקים למדד (אפשר יותר מהתראה אחת) ---- */
+  let AL_IX=-1, AC_RULES=[];
+  function openAlertCfg(i){
+    AL_IX=i; const m=METRICS[i];
+    AC_RULES=(m.alerts||[]).map(r=>({...r}));   // עותק עבודה — נשמר רק באישור
+    document.getElementById('acName').textContent=m.name+(MEASURE_TXT[m.key]?' · הערך הנמדד: '+MEASURE_TXT[m.key]:'');
+    renderAcRules();
+    document.getElementById('acOv').classList.add('show');
+  }
+  function closeAlertCfg(){document.getElementById('acOv').classList.remove('show');}
+  function renderAcRules(){
+    document.getElementById('acRules').innerHTML=AC_RULES.length?AC_RULES.map((r,ri)=>`
+      <div class="ac-rule ${r.on?'':'off'}">
+        <label class="mc-tog sm"><input type="checkbox" ${r.on?'checked':''} onchange="acSet(${ri},'on',this.checked)"><span></span></label>
+        <select class="mx2-inp s" onchange="acSet(${ri},'mode',this.value)">
+          <option value="pct" ${r.mode==='pct'?'selected':''}>אחוז מהיעד</option>
+          <option value="abs" ${r.mode==='abs'?'selected':''}>הערך עצמו</option>
+        </select>
+        <select class="mx2-inp s" onchange="acSet(${ri},'dir',this.value)">
+          <option value="below" ${r.dir==='below'?'selected':''}>ירד מתחת ל-</option>
+          <option value="above" ${r.dir==='above'?'selected':''}>יעלה מעל</option>
+        </select>
+        <input class="mx2-inp s th" type="number" value="${r.th}" onchange="acSet(${ri},'th',this.value)">
+        <select class="mx2-inp s" onchange="acSet(${ri},'sev',this.value)">
+          <option value="high" ${r.sev==='high'?'selected':''}>דחוף</option>
+          <option value="mid" ${r.sev==='mid'?'selected':''}>לבדיקה</option>
+        </select>
+        <button class="mbell del" title="מחיקת התראה" onclick="acDel(${ri})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+      </div>`).join('')
+      :'<div class="ac-empty">אין התראות למדד הזה — הוסיפו את הראשונה</div>';
+  }
+  function acSet(ri,f,v){AC_RULES[ri][f]=f==='th'?(parseFloat(v)||0):v;if(f==='on')renderAcRules();}
+  function acDel(ri){AC_RULES.splice(ri,1);renderAcRules();}
+  function acAdd(){AC_RULES.push({on:true,mode:'pct',dir:'below',th:80,sev:'mid'});renderAcRules();}
+  function saveAlertCfg(){
+    METRICS[AL_IX].alerts=AC_RULES.map(r=>({...r}));
+    closeAlertCfg(); renderMetrics(); toast('ההתראות עודכנו');
+  }
+
+  /* ---- metric editor (new / edit) ---- */
+  let MX_IX=-1;
+  function openMx(i){
+    MX_IX=(i==null?-1:i);
+    const m=MX_IX>=0?METRICS[MX_IX]:{kind:'manual',unit:'₪',target:'',actual:'',sheets:{on:false,logic:'none',cell:'',gid:''},calc:{a:'מחזור הכנסות',op:'−',b:'סך הוצאות (Bizibox)'},cats:[]};
+    document.getElementById('mxTitle').textContent=MX_IX>=0?'עריכת מדד':'מדד חדש';
+    document.getElementById('mxKind').value=m.kind==='auto'?'manual':m.kind;
+    document.getElementById('mxName').value=MX_IX>=0?m.name:'';
+    document.querySelector(`input[name=mxUnit][value="${m.unit==='num'?'num':'₪'}"]`).checked=true;
+    document.getElementById('mxTarget').value=m.target||'';
+    document.getElementById('mxActual').value=m.actual!=null?m.actual:'';
+    const sh=m.sheets||{on:false,logic:'none',cell:'',gid:''};
+    document.getElementById('mxShOn').checked=!!sh.on;
+    document.getElementById('mxShLogic').value=sh.logic||'none';
+    document.getElementById('mxShCell').value=sh.cell||'';
+    document.getElementById('mxShGid').value=sh.gid||'';
+    const cc=m.calc||{a:'מחזור הכנסות',op:'−',b:'סך הוצאות (Bizibox)'};
+    const opts=['מחזור הכנסות','סך הוצאות (Bizibox)','סך הליטרים','תחזית תזרים','מסגרת אשראי','עמידה בתקציב'];
+    document.getElementById('mxCalcA').innerHTML=opts.map(o=>`<option ${o===cc.a?'selected':''}>${o}</option>`).join('');
+    document.getElementById('mxCalcB').innerHTML=opts.map(o=>`<option ${o===cc.b?'selected':''}>${o}</option>`).join('');
+    document.getElementById('mxCalcOp').value=cc.op||'−';
+    // categories tree
+    const sel=new Set(m.cats||[]);
+    document.getElementById('mxCats').innerHTML=Object.keys(CF_CATS).map(g=>`
+      <div class="cat-grp">
+        <label class="cat-row grp"><input type="checkbox" onchange="mxCatGrp(this,'${g}')"> ${g}</label>
+        ${CF_CATS[g].map(x=>`<label class="cat-row"><input type="checkbox" data-cat="${x}" ${sel.has(x)?'checked':''} onchange="mxDaily()"> ${x}</label>`).join('')}
+      </div>`).join('');
+    mxSetKind(); mxDaily();
+    document.getElementById('mxOv').classList.add('show');
+  }
+  function closeMx(){document.getElementById('mxOv').classList.remove('show');}
+  function mxSetKind(){
+    const k=document.getElementById('mxKind').value;
+    document.getElementById('mxPaneManual').style.display=k==='manual'?'':'none';
+    document.getElementById('mxPaneCalc').style.display=k==='calc'?'':'none';
+    document.getElementById('mxPaneCats').style.display=k==='cats'?'':'none';
+    mxSheets();
+  }
+  function mxSheets(){
+    const on=document.getElementById('mxShOn').checked;
+    document.getElementById('mxShFields').style.display=on?'':'none';
+    document.getElementById('mxActualWrap').style.display=on?'none':'';
+  }
+  function mxCatGrp(el,g){
+    document.querySelectorAll('#mxCats input[data-cat]').forEach(x=>{if(CF_CATS[g].includes(x.dataset.cat))x.checked=el.checked;});
+  }
+  function mxDaily(){
+    const t=parseFloat(document.getElementById('mxTarget').value)||0;
+    const cur=document.querySelector('input[name=mxUnit]:checked').value==='₪'?' ₪':'';
+    document.getElementById('mxDaily').textContent='יעד יומי: '+fmt(t/WORKDAYS)+cur;
+  }
+  function mxSave(){
+    const kind=document.getElementById('mxKind').value;
+    const name=document.getElementById('mxName').value.trim()||'מדד ללא שם';
+    const unit=document.querySelector('input[name=mxUnit]:checked').value==='₪'?'₪':'num';
+    const target=parseFloat(document.getElementById('mxTarget').value)||0;
+    if(target<=0){document.getElementById('mxErr').style.display='';return;}
+    document.getElementById('mxErr').style.display='none';
+    const m=MX_IX>=0?METRICS[MX_IX]:{key:'m'+Date.now()%100000, alerts:[]};
+    m.kind=kind; m.name=name; m.unit=unit; m.target=target;
+    if(kind==='manual'){
+      m.sheets={on:document.getElementById('mxShOn').checked, logic:document.getElementById('mxShLogic').value,
+        cell:document.getElementById('mxShCell').value, gid:document.getElementById('mxShGid').value};
+      m.actual=m.sheets.on?(m.actual!=null?m.actual:0):(parseFloat(document.getElementById('mxActual').value)||0);
+      delete m.calc; delete m.cats;
+    }else if(kind==='calc'){
+      m.calc={a:document.getElementById('mxCalcA').value, op:document.getElementById('mxCalcOp').value, b:document.getElementById('mxCalcB').value};
+      delete m.actual; delete m.sheets; delete m.cats;
+    }else{
+      m.cats=[...document.querySelectorAll('#mxCats input[data-cat]:checked')].map(x=>x.dataset.cat);
+      delete m.sheets;
+    }
+    if(MX_IX<0) METRICS.push(m);
+    closeMx(); renderMetrics(); toast(MX_IX>=0?'המדד עודכן':'נוסף מדד חדש');
+  }
 
   /* ---- AI chat (assistant) ---- */
   const CHAT=[
