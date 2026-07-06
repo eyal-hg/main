@@ -51,8 +51,9 @@
     // portfolio board = ordered rows (pairs), no masonry — keeps the layout tidy at full width
     const rows=(SCOPE==='portfolio');
     b.classList.toggle('rows',rows);
-    if(!active.length){b.innerHTML='<div class="wb-empty">אין ווידג\'טים בלוח — לחצו "הוספת ווידג\'ט"</div>';return;}
-    b.innerHTML=active.map((f,i)=>{const w=wmeta(f);const sm=sizeOf(f)==='sm';
+    const top=document.getElementById('wboardTop');
+    if(!active.length){b.innerHTML='<div class="wb-empty">אין ווידג\'טים בלוח — לחצו "הוספת ווידג\'ט"</div>';if(top){top.style.display='none';top.innerHTML='';}return;}
+    const frame=(f,i)=>{const w=wmeta(f);const sm=sizeOf(f)==='sm';
       return `<div class="wframe loading ${sm?'sm':''}" data-idx="${i}" draggable="false" ${rows?'':`style="grid-row-end:span ${rowSpan(w.h)}"`}>
         <div class="wf-tools">
           <button class="wf-btn wf-grip" title="גרירה לסידור" aria-label="גרירה"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg></button>
@@ -60,7 +61,23 @@
           <button class="wf-btn wf-x" title="הסרה מהלוח" onclick="removeWidget('${f}')">✕</button>
         </div>
         <iframe loading="lazy" scrolling="no" data-file="${f}" src="widgets/${encodeURI(f)}#embed" style="height:${w.h}px" onload="this.parentElement.classList.remove('loading')"></iframe>
-      </div>`;}).join('');
+      </div>`;};
+    if(SCOPE==='client'&&typeof ROLE!=='undefined'&&ROLE==='manager'){
+      // המתפעל לא צריך את קוביות ה-KPI בחברה — נשארים רק הווидג'טים הגדולים
+      if(top){top.style.display='none';top.innerHTML='';}
+      const lgIx=active.map((f,i)=>i).filter(i=>sizeOf(active[i])!=='sm');
+      b.innerHTML=lgIx.map(i=>frame(active[i],i)).join('');
+    }else if(SCOPE==='client'&&top){
+      // הקטנים (KPI) עולים לקונטיינר העליון — מעל כרטיסי הלקוח; הגדולים נשארים בלוח
+      const smIx=active.map((f,i)=>i).filter(i=>sizeOf(active[i])==='sm');
+      const lgIx=active.map((f,i)=>i).filter(i=>sizeOf(active[i])!=='sm');
+      top.style.display=smIx.length?'grid':'none';
+      top.innerHTML=smIx.map(i=>frame(active[i],i)).join('');
+      b.innerHTML=lgIx.map(i=>frame(active[i],i)).join('');
+    }else{
+      if(top){top.style.display='none';top.innerHTML='';}
+      b.innerHTML=active.map(frame).join('');
+    }
     wireDnD();
   }
 
@@ -69,6 +86,7 @@
   function toggleEdit(){
     EDIT=!EDIT;
     document.getElementById('wboard').classList.toggle('editing',EDIT);
+    const _wt=document.getElementById('wboardTop'); if(_wt)_wt.classList.toggle('editing',EDIT);
     document.getElementById('btnAdd').style.display=EDIT?'flex':'none';
     const be=document.getElementById('btnEdit');
     be.classList.toggle('primary',EDIT);
@@ -80,7 +98,7 @@
   /* drag-to-reorder (edit mode only; grip handle; iframes muted while dragging) */
   let dragIdx=null;
   function wireDnD(){
-    document.querySelectorAll('#wboard .wframe').forEach(el=>{
+    document.querySelectorAll('#wboard .wframe, #wboardTop .wframe').forEach(el=>{
       const grip=el.querySelector('.wf-grip');
       grip.addEventListener('mousedown',()=>{if(EDIT)el.draggable=true;});
       grip.addEventListener('mouseup',()=>{el.draggable=false;});
@@ -117,14 +135,14 @@
     });
   }
   function dropBefore(e,el){const r=el.getBoundingClientRect();return e.clientY < r.top + r.height/2;}
-  function clearDrops(){document.querySelectorAll('#wboard .wframe').forEach(x=>x.classList.remove('drop-before','drop-after'));}
+  function clearDrops(){document.querySelectorAll('#wboard .wframe, #wboardTop .wframe').forEach(x=>x.classList.remove('drop-before','drop-after'));}
   // widgets report their exact height via postMessage (works across file:// sandbox)
   window.addEventListener('message',function(e){
     const d=e.data; if(!d||!d.hkEmbed) return;
-    const fr=document.querySelector('#wboard iframe[data-file="'+d.src+'"]');
+    const fr=document.querySelector('.wboard iframe[data-file="'+d.src+'"]');
     if(fr&&d.h>60){fr.style.height=d.h+'px';
-      const wf=fr.closest('.wframe');
-      if(wf&&!document.getElementById('wboard').classList.contains('rows')) wf.style.gridRowEnd='span '+rowSpan(d.h);
+      const wf=fr.closest('.wframe'), wb=fr.closest('.wboard');
+      if(wf&&wb&&!wb.classList.contains('rows')) wf.style.gridRowEnd='span '+rowSpan(d.h);
       fr.parentElement.classList.remove('loading');}
   });
   function removeWidget(f){const a=BOARDS[SCOPE];const i=a.indexOf(f);if(i>=0){a.splice(i,1);renderBoard();toast('הווידג\'ט הוסר');}}

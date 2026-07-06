@@ -32,8 +32,7 @@
     document.getElementById('railPortfolio').style.display = single?'none':'';
     document.querySelector('#railPortfolio .cn').textContent = client?'כל החברות שלי':'כל החברות';
     document.querySelectorAll('.tab.advisor-only').forEach(t=>t.style.display=client?'none':'');
-    document.querySelector('.top-mid').style.display = client ? 'none' : 'flex';   /* מנהלי תזרים / מוצרים — כלי משרד */
-    document.querySelector('.ddl-wrap').style.display = isOperator ? '' : 'none';  /* מוצרים — רק למנהל תזרים; ליועץ לא רלוונטי */
+    document.querySelector('.top-mid').style.display = isOperator ? 'flex' : 'none';   /* מנהלי תזרים / מוצרים — כלי משרד בלבד */
     document.querySelector('.switcher').style.display = single ? 'none' : 'flex';   /* חברה אחת — אין מה להחליף */
     renderRail();
     if(r==='manager') selectPortfolio();        /* מנהל תזרים = תור התפעול */
@@ -72,7 +71,7 @@
       if(opsDoneSet.has(opsActiveKey)) opsDur[opsActiveKey]=opsAccum[opsActiveKey]; // חברה שהושלמה — הזמן ממשיך להיצבר
     }
     restoreDash();
-    toast('מצב תפעול נסגר · הזמן נשמר');
+    toast('מצב התפעול הושהה · הזמן נשמר');
   }
   function exitOps(){   /* לחיצה על "סגירת מצב תפעול" — סוגר וגם מנקה את ה-URL */
     closeOpsTeardown();
@@ -140,9 +139,9 @@
       // same buttons as ops mode per task kind
       let btns;
       if(f.ai) btns=`<button class="ot-btn ghost" onclick="finResolve(${ix},'קוטלג בקטגוריה אחרת')">החלפת קטגוריה</button>
-          <button class="ot-btn done" onclick="finResolve(${ix},'אושר — קוטלג ב${f.rec}')">אשר המלצה</button>`;
+          <button class="ot-btn done" onclick="finResolve(${ix},'אושר — קוטלג ב${f.rec}')">אישור ההמלצה</button>`;
       else if(f.send) btns=`<button class="ot-btn ghost" onclick="finResolve(${ix},'לא רלוונטי')">לא רלוונטי</button>
-          <button class="ot-btn" onclick="finResolve(${ix},'נשלחה הודעה ללקוח בוואטסאפ')">שלח הודעה</button>`;
+          <button class="ot-btn" onclick="finResolve(${ix},'נשלחה הודעה ללקוח בוואטסאפ')">שליחת הודעה</button>`;
       else btns=`<button class="ot-btn ghost" onclick="finResolve(${ix},'לא רלוונטי')">לא רלוונטי</button>
           <button class="ot-btn done" onclick="finResolve(${ix},'${f.act}')">${f.act}</button>`;
       return `<div class="ffind ${f.sev}">
@@ -153,7 +152,8 @@
   }
   function finResolve(ix,action){
     finOpen=finOpen.filter(x=>x!==ix);
-    toast(action+' ✓');
+    if(action==='לא רלוונטי') toastUndo('הממצא סומן כלא רלוונטי',()=>{finOpen.push(ix);finOpen.sort();renderFinFindings();});
+    else toast(action+' ✓');
     if(!finOpen.length){
       const ico=document.getElementById('finIco'); ico.className='fin-ico ok';
       ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -171,7 +171,7 @@
     foot.innerHTML=`
       <div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> אין חריגות — התזרים מוכן לשליחה</div>
       <button class="fin-wa" onclick="finSendCF()"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.14-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.04-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.57-.48-.5-.66-.5h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.75-.72 2-1.4.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.15l-.3-.18-3 .8.8-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg> שליחת תזרים ללקוח</button>
-      <button class="chip-btn" style="width:100%;justify-content:center" onclick="finishDone()">סיום ללא שליחה</button>`;
+      <button class="chip-btn" style="width:100%;justify-content:center" onclick="finishDone()">שמירה ללא שליחה</button>`;
     foot.classList.add('show');
   }
   function finSendCF(){
@@ -208,7 +208,7 @@
     CLIENTS[0].tasks=[
       {type:'msg', who:'תומר לוי', thread:['האם עדכנת את כל התשלומים?','מה הצפי סה"כ בשלוש החשבונות?'], time:'לפני 12 דק׳'},
       {type:'doc', name:'חשבונית ספק — סונול · 4,820 ₪', time:'לפני 40 דק׳'},
-      {type:'ai', op:'עמלת מסלול · 29 ₪- · 1.7.2026', cur:'בנקאיות', rec:'עמלות וריביות בנק', reason:'העסקה היא עמלת מסלול בנקאית עבור ניהול חשבון, ובהתאם להיסטוריה ולמידע מהרשת הקטגוריה המתאימה ביותר היא עמלות וריביות בנק.', src:'HISTORY, SEARCH', time:'לפני 50 דק׳'},
+      {type:'ai', op:'עמלת מסלול · 29 ₪- · 2.7.2026', cur:'בנקאיות', rec:'עמלות וריביות בנק', reason:'העסקה היא עמלת מסלול בנקאית עבור ניהול חשבון, ובהתאם להיסטוריה ולמידע מהרשת הקטגוריה המתאימה ביותר היא עמלות וריביות בנק.', src:'HISTORY, SEARCH', time:'לפני 50 דק׳'},
       {type:'carry', text:'בחשבון מזרחי 295199 צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪. הפעולה טרם הופיעה — נגררת 11 ימים.', time:'לפני שעה'},
       {type:'unexpected', text:'בחשבון מזרחי 139287 הופיעה פעולה בשם "כהן טוב" ע"ס 238 ₪ שלא צפינו.', time:'לפני שעה'},
       {type:'overdraft', text:'חשבון מרכנתיל 69855155 נמצא בחריגה ע"ס 42,445 ₪ ממסגרת האשראי. נא טיפול בהקדם.', time:'היום 09:14'},
@@ -278,8 +278,8 @@
     const B=(cls,label,h)=>`<button class="ot-btn ${cls}" onclick="event.stopPropagation();${h}">${label}</button>`;
     if(t.type==='msg') return B('done','טופל',`otHandle(${i},'טופל · ✓ ללקוח',1)`);
     if(t.type==='doc') return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('done','טופל',`otHandle(${i},'טופל · ✓ ללקוח',1)`);
-    if(t.type==='ai') return B('ghost','החלפת קטגוריה',`otHandle(${i},'קוטלג בקטגוריה אחרת')`)+B('done','אשר המלצה',`otHandle(${i},'אושר — קוטלג ב${t.rec}')`);
-    return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שלח הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
+    if(t.type==='ai') return B('ghost','החלפת קטגוריה',`otHandle(${i},'קוטלג בקטגוריה אחרת')`)+B('done','אישור ההמלצה',`otHandle(${i},'אושר — קוטלג ב${t.rec}')`);
+    return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
   }
   function taskBody(t,i){
     const rep=`<div class="ot-reply" style="display:flex"><input id="oti${i}" placeholder="הקלד תגובה ללקוח…" onkeydown="if(event.key==='Enter')otSend(${i})"><button onclick="otSend(${i})">שלח</button></div>`;
@@ -304,7 +304,14 @@
   function otHandle(i,result,toClient){const t=curTasks()[i];if(!t)return;
     t.done=true;t.result=result;t.handledAt='עכשיו';OPS_DONE++;
     CLIENTS[CUR].opsPending=curTasks().filter(x=>!x.done).length;
-    OPS_OPEN.delete(i);renderOps();toast(toClient?'✓ נשלח אישור טיפול ללקוח':result);}
+    OPS_OPEN.delete(i);renderOps();
+    if(result==='לא רלוונטי'){
+      // פעולה "שקטה" ובלתי הפיכה — נותנים חלון ביטול
+      toastUndo('המשימה סומנה כלא רלוונטית',()=>{
+        t.done=false;delete t.result;delete t.handledAt;OPS_DONE--;
+        CLIENTS[CUR].opsPending=curTasks().filter(x=>!x.done).length;renderOps();
+      });
+    } else toast(toClient?'✓ נשלח אישור טיפול ללקוח':result);}
   function otSend(i){const inp=document.getElementById('oti'+i);if(!inp)return;const v=inp.value.trim();if(!v)return;inp.value='';toast('נשלחה תגובה ללקוח בוואטסאפ');}
   seedOps();
 

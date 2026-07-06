@@ -15,7 +15,7 @@
 
   .mcards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
   @media(max-width:1050px){.mcards{grid-template-columns:1fr}}
-  .mcard{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px}
+  .mcard{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px}
   .mc-head{display:flex;align-items:center;gap:12px;margin-bottom:26px}
   .mc-title{font-size:15px;font-weight:600;color:var(--navy);flex:1;min-width:0;display:flex;align-items:center;gap:8px}
   .mc-title svg{color:var(--blue);flex:0 0 auto}
@@ -56,7 +56,7 @@
   /* ===== metric cards v2 — 3 kinds + bell-driven alerts ===== */
   .mcard2{display:flex;flex-direction:column;gap:10px;padding:16px 18px}
   .mc2-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .mkind{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 11px}
+  .mkind{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;border-radius:999px;padding:3px 11px}
   .mkind.manual{background:var(--blue-bg);color:#1668a0}
   .mkind.calc{background:#f0edfb;color:#6b4fd6}
   .mkind.cats{background:var(--green-bg);color:var(--green)}
@@ -65,7 +65,7 @@
   .mbell:hover{color:var(--navy);border-color:var(--blue)}
   .mbell.on{color:var(--blue);border-color:var(--blue);background:var(--blue-bg)}
   .mbell.del:hover{color:var(--coral);border-color:var(--coral)}
-  .mbell-dot{position:absolute;top:-3px;inset-inline-end:-3px;width:9px;height:9px;border-radius:50%;background:var(--coral);border:2px solid #fff}
+  .mbell-dot{position:absolute;top:-3px;inset-inline-end:-3px;width:9px;height:9px;border-radius:50%;background:var(--coral-ink);border:2px solid #fff}
   .mc2-name{font-size:15px;font-weight:600;color:var(--navy);cursor:pointer}
   .mc2-name:hover{color:#1668a0}
   .mc2-val{font-size:24px;font-weight:700;color:var(--navy);line-height:1;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
@@ -74,7 +74,7 @@
   .mc2-sub{font-size:12px;color:var(--muted);font-weight:400}
   .mcard2 .mc-bar{margin-bottom:6px;margin-top:14px}
   .mc-fill.bad{background:var(--coral)}
-  .mc2-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--muted);border-top:1px solid #f2f5f8;padding-top:10px;flex-wrap:wrap}
+  .mc2-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);border-top:1px solid #f2f5f8;padding-top:10px;flex-wrap:wrap}
   .mc2-src{display:inline-flex;align-items:center;gap:6px}
   .mc2-src b{color:var(--navy)}
   .src-bz{font-size:10px;font-weight:700;color:var(--green);background:var(--green-bg);border-radius:20px;padding:1px 8px}
@@ -90,6 +90,7 @@
   .mx2-lbl{display:block;font-size:12.5px;font-weight:600;color:var(--navy);margin:13px 0 6px}
   .mx2-inp{width:100%;font-family:inherit;font-size:13.5px;color:var(--navy);border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
   .mx2-inp:focus{outline:none;border-color:var(--blue);background:var(--blue-bg)}
+  textarea.mx2-inp{resize:vertical;min-height:64px;line-height:1.55}
   .mx2-row{display:flex;align-items:center;gap:10px}
   .mx2-radio{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--navy);cursor:pointer;flex:0 0 auto}
   .mx2-radio input{accent-color:var(--blue);width:16px;height:16px}
@@ -120,7 +121,7 @@
   .mc-tog.sm input:checked+span::after{inset-inline-start:16px}
   .ac-empty{padding:22px;text-align:center;font-size:12.5px;color:var(--muted)}
   .ac-add{display:block;width:100%;margin-top:10px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--blue);background:var(--blue-bg);border:1px dashed var(--blue);border-radius:10px;padding:9px;cursor:pointer}
-  .mbell-dot.n{width:14px;height:14px;font-size:9px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;top:-5px;inset-inline-end:-5px}
+  .mbell-dot.n{width:15px;height:15px;font-size:9.5px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;top:-5px;inset-inline-end:-5px}
   .mc-meta{display:flex;flex-direction:column;gap:0}
   .mc-mrow{display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:11px 0}
   .mc-mrow+.mc-mrow{border-top:1px solid #f0f4f8}
@@ -136,6 +137,7 @@
   .wframe.sm{grid-column:span 1}
   /* rows mode (portfolio) — ordered pairs, natural row heights, no masonry holes */
   .wboard.rows{grid-auto-rows:auto;row-gap:18px;align-items:start}
+  #wboardTop{margin-bottom:18px}   /* שורת ה-KPI שמעל כרטיסי הלקוח */
   .wboard.rows .wframe{grid-row-end:auto;min-height:0}
   @media(max-width:1250px){.wboard{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:900px){.wboard{grid-template-columns:1fr}.wframe,.wframe.sm{grid-column:1/-1}}
@@ -246,3 +248,16 @@
     cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
   .chat-send:hover{background:#2f9ad0}
 
+
+  /* confirm dialog + undo toast */
+  .mx2.cf{width:400px}
+  .cf-msg{font-size:13.5px;color:var(--ink);line-height:1.6;margin-top:4px}
+  .mx2-btn.danger{background:var(--red);border-color:var(--red);color:#fff}
+  .toast-undo{font-family:inherit;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);border:none;border-radius:999px;padding:3px 13px;cursor:pointer;margin-inline-start:10px}
+  .toast-undo:hover{background:rgba(255,255,255,.34)}
+
+  /* month picker (working) + hover-reveal card actions */
+  .mx-month{font-family:inherit;font-size:15px;font-weight:600;color:var(--navy);border:1px solid var(--line);border-radius:10px;padding:7px 12px;background:#fff;cursor:pointer}
+  .mx-month:focus{outline:none;border-color:var(--blue)}
+  .mcard2 .mbell.rev{opacity:0}
+  .mcard2:hover .mbell.rev,.mcard2 .mbell.rev:focus-visible{opacity:1}

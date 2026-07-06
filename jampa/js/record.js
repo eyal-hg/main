@@ -19,8 +19,11 @@ function restoreView(){
   selectPatient(CUR);
 }
 function exitRec(){
-  restoreView(); toast('ההקלטה בוטלה — לא נשמר דבר');
-  if(location.hash==='#rec') history.back();
+  const mins=fmtDur(Math.floor((Date.now()-recStart)/1000));
+  hkConfirm('ביטול ההקלטה','ההקלטה של '+mins+' דקות תימחק ולא ניתן יהיה לשחזר אותה. לבטל?','מחיקת ההקלטה',()=>{
+    restoreView(); toast('ההקלטה בוטלה — לא נשמר דבר');
+    if(location.hash==='#rec') history.back();
+  });
 }
 window.addEventListener('popstate',function(){ if(RECMODE && location.hash!=='#rec'){restoreView();toast('ההקלטה בוטלה');} });
 

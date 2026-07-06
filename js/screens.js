@@ -11,13 +11,13 @@
       document.getElementById('headName').textContent='כל החברות';
       hp.style.display='none'; st.style.display='none'; acts.style.display='none';
       if(kpi)kpi.style.display='none';
-      sub.textContent='תיק לקוחות · 12 חברות · 4 בחריגה היום · נכון ל-1.7.2026';
+      sub.textContent='תיק לקוחות · 12 חברות · 4 בחריגה היום · נכון ל-2.7.2026';
       document.getElementById('railPortfolio').classList.add('on');
       document.querySelectorAll('.cli.on').forEach(x=>x.classList.remove('on'));
     }else{
       hp.style.display=''; st.style.display=''; acts.style.display='flex'; acts.style.visibility='visible';
       if(kpi)kpi.style.display='';
-      sub.textContent='חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 1.7.2026 10:54';
+      sub.textContent='חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 2.7.2026 10:54';
       document.getElementById('railPortfolio').classList.remove('on');
     }
     // force dashboard tab
@@ -58,6 +58,12 @@
     updateOpsBtn();
     if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else renderBoard();
     renderCoAlerts();
+    renderClientRow();
+    // כדור ה-AI — ללקוחות בלבד, ורק כשנבחרה חברה ספציפית (הצ'אט הוא פר-חברה)
+    const aiOn=(ROLE==='client1'||ROLE==='clientN')&&SCOPE==='client';
+    const orb=document.getElementById('aiOrb');
+    if(orb) orb.style.display=aiOn?'flex':'none';
+    if(!aiOn){const p=document.getElementById('aiPanel');if(p)p.classList.remove('show');}
   }
   function selectPortfolio(){setScope('portfolio');}
   let MGR_VIEW='ops';
@@ -216,8 +222,8 @@
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
               ${nAl?`<span class="mbell-dot n">${nAl}</span>`:''}
             </button>
-            ${m.kind==='auto'?'':`<button class="mbell" title="עריכת המדד" onclick="openMx(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>`}
-            <button class="mbell del" title="מחיקה" onclick="delMetric(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+            ${m.kind==='auto'?'':`<button class="mbell rev" title="עריכת המדד" aria-label="עריכת המדד" onclick="openMx(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>`}
+            ${SYS_METRIC(m)?'':`<button class="mbell del rev" title="מחיקת המדד" aria-label="מחיקת המדד" onclick="delMetric(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>`}
           </div>
         </div>
         <div class="mc2-name" onclick="${m.kind==='auto'?'':`openMx(${i})`}">${m.name}</div>
@@ -227,7 +233,14 @@
     }).join('');
   }
   function setDays(v){WORKDAYS=parseInt(v)||22;renderMetrics();}
-  function delMetric(i){METRICS.splice(i,1);renderMetrics();toast('המדד נמחק');}
+  // מדדי מערכת (מזינים את מוקד ההתראות) — מוגנים ממחיקה; אחרים דורשים אישור
+  const SYS_METRIC=m=>['budget','overdraft','debt','liters','cfprofit','meeting'].includes(m.key);
+  function delMetric(i){
+    const m=METRICS[i];
+    hkConfirm('מחיקת מדד','המדד "'+m.name+'" יימחק יחד עם ההתראות שלו. לא ניתן לשחזר.','מחיקה',()=>{
+      METRICS.splice(i,1);renderMetrics();toast('המדד נמחק');
+    });
+  }
 
   /* ---- alert config — רשימת חוקים למדד (אפשר יותר מהתראה אחת) ---- */
   let AL_IX=-1, AC_RULES=[];

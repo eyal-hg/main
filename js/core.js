@@ -1,8 +1,44 @@
 /* HK Dashboard — client rail, company switcher */
+  /* ---- action safety: confirm dialog + undoable toast ---- */
+  let _confirmYes=null;
+  function hkConfirm(title,msg,yesLabel,onYes){
+    _confirmYes=onYes;
+    document.getElementById('cfTitle').textContent=title;
+    document.getElementById('cfMsg').textContent=msg;
+    document.getElementById('cfYes').textContent=yesLabel||'אישור';
+    document.getElementById('cfOv').classList.add('show');
+  }
+  function cfClose(ok){
+    document.getElementById('cfOv').classList.remove('show');
+    if(ok&&_confirmYes)_confirmYes();
+    _confirmYes=null;
+  }
+  let _undoFn=null,_undoTimer=null;
+  function toastUndo(msg,undoFn){
+    _undoFn=undoFn;
+    const t=document.getElementById('toast');
+    t.innerHTML='✓ '+msg+' <button class="toast-undo" onclick="doUndo()">ביטול</button>';
+    t.classList.add('show');
+    clearTimeout(_undoTimer);
+    _undoTimer=setTimeout(()=>{t.classList.remove('show');_undoFn=null;},5000);
+  }
+  function doUndo(){
+    if(_undoFn)_undoFn();
+    _undoFn=null;clearTimeout(_undoTimer);
+    document.getElementById('toast').classList.remove('show');
+  }
+  // Esc סוגר כל חלונית פתוחה
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape')return;
+    [['cfOv','show'],['ctOv','show'],['mxOv','show'],['acOv','show'],['msOv','show'],['pkOv','show'],['pk','show'],['crOv','show'],['drawerOv','show'],['drawer','show'],['inboxOv','show'],['inbox','show'],['swDD','show'],['prodMenu','show'],['statMenu','show']]
+      .forEach(([id,cls])=>{const el=document.getElementById(id);if(el)el.classList.remove(cls);});
+  });
+
   /* ---- rail ---- */
   function renderRail(){
     const q=document.getElementById('railQ').value.trim();
     let list=CLIENTS.map((c,i)=>({c,i}));
+    if(typeof MGR_FILTER!=='undefined'&&MGR_FILTER) list=list.filter(x=>x.c.mgr===MGR_FILTER);
     if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q));
     document.getElementById('cliCount').textContent=list.length;
     document.getElementById('railList').innerHTML=list.map(({c,i})=>{

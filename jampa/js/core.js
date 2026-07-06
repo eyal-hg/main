@@ -1,5 +1,19 @@
 /* Jampa — patients rail + switcher + shared helpers */
 let CUR=0, SCOPE='home', ROLE='therapist';
+/* confirm dialog לפעולות הרסניות */
+let _confirmYes=null;
+function hkConfirm(title,msg,yesLabel,onYes){
+  _confirmYes=onYes;
+  document.getElementById('cfTitle').textContent=title;
+  document.getElementById('cfMsg').textContent=msg;
+  document.getElementById('cfYes').textContent=yesLabel||'אישור';
+  document.getElementById('cfOv').classList.add('show');
+}
+function cfClose(ok){
+  document.getElementById('cfOv').classList.remove('show');
+  if(ok&&_confirmYes)_confirmYes();
+  _confirmYes=null;
+}
 const isTherapist=()=>ROLE==='therapist';
 function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 const moodSpark=(mood,w,h)=>{

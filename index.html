@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="css/ops.css">
 <link rel="stylesheet" href="css/chat.css">
 <link rel="stylesheet" href="css/meetings.css">
+<link rel="stylesheet" href="css/client.css">
+<link rel="stylesheet" href="css/theme-hk.css"><!-- שכבת העיצוב מהפיגמה — נטענת אחרונה -->
 </head>
 <body>
 
@@ -31,7 +33,10 @@
   </div>
 
   <div class="top-mid">
-    <div class="ddl">כל מנהלי התזרים <span>▾</span></div>
+    <div class="ddl-wrap">
+      <div class="ddl" id="mgrDdl" onclick="toggleMgr(event)">כל מנהלי התזרים <span>▾</span></div>
+      <div class="prod-menu" id="mgrMenu"></div>
+    </div>
     <div class="ddl-wrap">
       <div class="ddl" id="prodDdl" onclick="toggleProd(event)">מוצרים <span>▾</span></div>
       <div class="prod-menu" id="prodMenu"></div>
@@ -100,12 +105,12 @@
         <button class="chip-btn primary" id="btnOps" onclick="enterOps()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg> תפעל</button>
       </div>
     </div>
-    <div class="sub-line">חברת ייעוץ · לירון בן כליפא · סונכרן אוטומטית 1.7.2026 10:54</div>
+    <div class="sub-line">חברת ייעוץ · לירון בן כליפא · סונכרן אוטומטית 2.7.2026 10:54</div>
 
     <!-- section tabs -->
     <div class="tabs">
       <div class="tab on" onclick="switchTab(this,'dash')">דשבורד</div>
-      <div class="tab advisor-only" onclick="switchTab(this,'chat')">צ'אט</div>
+      <div class="tab advisor-only" onclick="switchTab(this,'chat')">עוזר AI</div>
       <div class="tab advisor-only" onclick="switchTab(this,'metrics')">מדדים</div>
       <div class="tab" onclick="switchTab(this,'meetings')">פגישות</div>
       <div class="tab advisor-only" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
@@ -131,6 +136,10 @@
     </div>
     <!-- active-alerts banner for the selected company -->
     <div id="coAlerts" style="display:none"></div>
+    <!-- KPI קטנים — מעל כרטיסי הלקוח -->
+    <div class="wboard" id="wboardTop" style="display:none"></div>
+    <!-- client extras: document uploads + operator activity -->
+    <div id="clientRow" class="client-row" style="display:none"></div>
     <!-- widgets board -->
     <div class="wboard" id="wboard"></div>
 
@@ -140,13 +149,35 @@
     </div>
 
 
-    <!-- operator home: cross-company operations queue -->
+    <!-- operator home: היומן של המנהל בחצי מסך + תור תפעול מצומצם -->
     <div id="opsQueueView" style="display:none">
       <div class="opsq-strip" id="opsqStrip"></div>
-      <div class="opsq-filters" id="opsqFilters"></div>
-      <div class="opsq-card">
-        <div class="opsq-head"><span class="opsq-title">תור התפעול — כל החברות</span></div>
-        <div class="opsq-list" id="opsqList"></div>
+      <div class="mgr-split">
+        <div class="opsq-card mgrcal-card">
+          <div class="opsq-head mgrcal-head">
+            <span class="opsq-title">היומן שלי</span>
+            <span class="mgrcal-date"></span>
+            <div class="mc-seg">
+              <span id="mcSegDay" class="on" onclick="mcView('day')">יום</span>
+              <span id="mcSegWeek" onclick="mcView('week')">שבוע</span>
+            </div>
+            <button class="cx-add" onclick="mcQuick()">+ משימה</button>
+          </div>
+          <div class="mgrcal-quick" id="mcQuickRow" style="display:none">
+            <input class="mx2-inp" id="mcQTime" type="time" title="בלי שעה — המשימה תישאר במשימות הפתוחות">
+            <input class="mx2-inp" id="mcQTitle" placeholder="מה צריך לעשות? (שעה — אופציונלי)" onkeydown="if(event.key==='Enter')mcAdd()">
+            <select class="mx2-inp" id="mcQPri" style="width:110px;flex:0 0 auto"><option value="mid">בינונית</option><option value="high">גבוהה</option></select>
+            <button class="mx2-btn primary" onclick="mcAdd()">הוספה</button>
+          </div>
+          <div class="mgrcal-list" id="mgrCal"></div>
+        </div>
+        <div class="mgr-split-q">
+          <div class="opsq-filters" id="opsqFilters"></div>
+          <div class="opsq-card">
+            <div class="opsq-head"><span class="opsq-title">תור התפעול — כל החברות</span></div>
+            <div class="opsq-list" id="opsqList"></div>
+          </div>
+        </div>
       </div>
     </div>
     </div><!-- /viewDash -->
@@ -154,8 +185,11 @@
     <!-- ===== METRICS (definition) view ===== -->
     <div id="viewMetrics" style="display:none">
       <div class="mx-head">
-        <h2>יעדים לחודש יולי 2026 <span>▾</span></h2>
-        <button class="mx-add" onclick="openMx()" title="הוספת מדד">+</button>
+        <h2>יעדים לחודש</h2>
+        <select class="mx-month" onchange="renderMetrics();toast('נטענו יעדי '+this.value)">
+          <option>יולי 2026</option><option>יוני 2026</option><option>מאי 2026</option><option>אפריל 2026</option>
+        </select>
+        <button class="mx-add" onclick="openMx()" title="הוספת מדד" aria-label="הוספת מדד">+</button>
       </div>
       <div class="mx-days">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
@@ -204,7 +238,7 @@
         <span class="ops-clock" id="opsClock">0:00</span>
         <div class="ops-actions">
           <button class="ops-done" id="opsFinBtn" onclick="finishOps()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול</button>
-          <button class="ops-close" onclick="exitOps()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> סגירת מצב תפעול</button>
+          <button class="ops-close" onclick="exitOps()" title="יציאה בלי לסיים — הזמן שנצבר נשמר"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> השהיה · הזמן נשמר</button>
         </div>
       </div>
 
@@ -301,7 +335,7 @@
     <div class="ms-head">
       <button class="ms-x" onclick="closeCR()">✕</button>
       <div class="ms-title">דוח תזרים חברות מאוחד</div>
-      <div class="ms-meta"><span>כלל החברות שלך · נכון ל-1.7.2026</span></div>
+      <div class="ms-meta"><span>כלל החברות שלך · נכון ל-2.7.2026</span></div>
     </div>
     <div class="ms-body" style="padding:14px"><iframe id="crFrame" title="דוח תזרים מאוחד" style="width:100%;height:540px;border:0;border-radius:12px;background:#fff"></iframe></div>
   </div>
@@ -404,6 +438,65 @@
   </div>
 </div>
 
+<!-- ===== client AI orb + panel ===== -->
+<button class="ai-orb" id="aiOrb" style="display:none" onclick="aiToggle()" aria-label="עוזר AI">
+  <span class="ai-orb-ring"></span>
+  <span class="ai-orb-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 1.9 1.9.6-1.5 1.2.4 2-1.6-.9-1.6.9.4-2-1.5-1.2 1.9-.6z" stroke-width="1.4"/></svg></span>
+  <span class="ai-orb-lbl">העוזר הפיננסי</span>
+</button>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-head">
+    <div class="ai-avatar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg></div>
+    <div class="ai-ht"><b>העוזר הפיננסי שלך</b><span id="aiHeadSub">מחובר לנתוני האמת של החברה · Bizibox</span></div>
+    <button class="ai-x" onclick="aiToggle()" aria-label="סגירה">✕</button>
+  </div>
+  <div class="ai-body" id="aiBody"></div>
+  <div class="ai-input">
+    <button class="ai-mic" title="שאלה קולית" onclick="toast('הקלטה קולית — בקרוב')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></button>
+    <input id="aiInput" placeholder="שאלו כל דבר על העסק שלכם…" onkeydown="if(event.key==='Enter')aiSend()">
+    <button class="ai-send" onclick="aiSend()" aria-label="שליחה"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+  </div>
+</div>
+
+<!-- client task → cashflow manager -->
+<div class="mx-ov" id="ctOv">
+  <div class="mx2">
+    <button class="mx2-x" onclick="closeCt()">✕</button>
+    <div class="mx2-title">משימה חדשה למנהל התזרים</div>
+    <div class="mx2-note" id="ctMgr" style="margin-top:-4px"></div>
+
+    <label class="mx2-lbl">נושא</label>
+    <input class="mx2-inp" id="ctSubj" placeholder="למשל: עדכון תקציב שיווק ליולי">
+
+    <label class="mx2-lbl">פירוט</label>
+    <textarea class="mx2-inp" id="ctBody" rows="3" placeholder="מה צריך לבדוק / לעדכן / לטפל?"></textarea>
+
+    <label class="mx2-lbl">דחיפות</label>
+    <div class="mx2-row">
+      <label class="mx2-radio"><input type="radio" name="ctUrg" value="reg" checked> רגיל</label>
+      <label class="mx2-radio"><input type="radio" name="ctUrg" value="urgent"> דחוף</label>
+    </div>
+    <div class="mx2-err" id="ctErr" style="display:none">חסר נושא למשימה</div>
+
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" onclick="ctSend()">שליחת המשימה</button>
+      <button class="mx2-btn" onclick="closeCt()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- confirm dialog (פעולות הרסניות) -->
+<div class="mx-ov" id="cfOv">
+  <div class="mx2 cf">
+    <div class="mx2-title" id="cfTitle"></div>
+    <div class="cf-msg" id="cfMsg"></div>
+    <div class="mx2-foot">
+      <button class="mx2-btn danger" id="cfYes" onclick="cfClose(true)">אישור</button>
+      <button class="mx2-btn" onclick="cfClose(false)">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 
@@ -416,6 +509,7 @@
 <script src="js/alerts.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/meetings.js"></script>
+<script src="js/client.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

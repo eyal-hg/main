@@ -32,7 +32,7 @@
       case 'debt': return {t:n+' — חוב פתוח לגבייה',meta:'בפיגור'};
       case 'liters': return {t:n+' — סך הליטרים מתחת ליעד',meta:'מדד חודשי'};
       case 'cfprofit': return {t:n+' — רווח תזרימי מתחת ליעד',meta:'מדד חודשי'};
-      case 'meeting': return {t:n+' — לא נקבעה פגישה חודשית (Money+)',meta:'חובה החודש',btn:'שליחת זמנים ללקוח',click:"toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')"};
+      case 'meeting': return {t:n+' — לא נקבעה פגישה חודשית (Money+)',meta:'חובה החודש',chip:'לא נקבעה פגישה חודשית',btn:'שליחת זמנים ללקוח',click:"toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')"};
       default: return {t:n+' — '+m.name,meta:'מדד'};
     }
   }
@@ -51,15 +51,23 @@
       const r=evalMetric(m,c); if(!r) return;
       out.push({sev:r.sev, i, mi, mkey:m.key, metric:m.name, rule:r.rule, ...alertVis(m,r.v), ...alertText(m,c,r.v)});
     }));
-    // ליועץ: סיכומי פגישות שה-AI סיים לעבד וממתינים לאישורו
+    // ליועץ: אירועי פגישות — סיכומים לאישור + פגישות שלא התקיימו
     if(ROLE==='advisor'){
       MEETINGS.forEach((mt,ix)=>{
-        if(mt.status!=='summary') return;
         const i=CLIENTS.findIndex(c=>c.name===mt.client); if(i<0) return;
-        out.push({sev:'mid', i, mkey:'summary', metric:'פגישות',
-          t:mt.client+' — סיכום פגישה ממתין לאישור',
-          meta:'הוקלטה '+mt.date.slice(0,5)+(mt.rec?' · '+mt.rec:''), btn:'אישור הסיכום', click:'openMeeting('+ix+')',
-          why:'כל פגישה מוקלטת ומתועדת אוטומטית: ההקלטה ('+(mt.rec||'')+' מ-'+mt.date.slice(0,5)+') תומללה ונותחה על ידי ה-AI, והסיכום ממתין לאישורך לפני שליחה ללקוח.'});
+        if(mt.status==='summary'){
+          out.push({sev:'mid', i, mkey:'summary', metric:'פגישות',
+            t:mt.client+' — סיכום פגישה ממתין לאישור',
+            chip:'סיכום פגישה ממתין לאישור',
+            meta:'הוקלטה '+mt.date.slice(0,5)+(mt.rec?' · '+mt.rec:''), btn:'אישור הסיכום', click:'openMeeting('+ix+')',
+            why:'כל פגישה מוקלטת ומתועדת אוטומטית: ההקלטה ('+(mt.rec||'')+' מ-'+mt.date.slice(0,5)+') תומללה ונותחה על ידי ה-AI, והסיכום ממתין לאישורך לפני שליחה ללקוח.'});
+        }else if(mt.status==='noshow'){
+          out.push({sev:'high', i, mkey:'noshow', metric:'פגישות',
+            t:mt.client+' — הפגישה לא התקיימה',
+            chip:'פגישה לא התקיימה',
+            meta:mt.date.slice(0,5)+' · '+mt.name, btn:'תיאום מחדש', click:"toast('נשלחה ללקוח הצעה לתיאום מחדש בוואטסאפ')",
+            why:'הפגישה "'+mt.name+'" מ-'+mt.date.slice(0,5)+' סומנה כלא התקיימה — וטרם תואמה פגישה חלופית.'});
+        }
       });
     }
     return out.sort((a,b)=>RANK[a.sev]-RANK[b.sev]);
@@ -79,14 +87,18 @@
        pick:a=>a.mkey==='overdraft', empty:'אין חריגות צפויות בעו״ש'},
       {cls:'navy', title:'פגישות', sub:'פגישה חודשית Money+ · סיכומי AI · קרובות',
        ic:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>',
-       pick:a=>a.mkey==='meeting'||a.mkey==='summary', empty:'אין פגישות שדורשות טיפול', meetings:true},
+       pick:a=>['meeting','summary','noshow'].includes(a.mkey), empty:'אין פגישות שדורשות טיפול', meetings:true},
       {cls:'amber', title:'חריגות תקציב', sub:'הוצאות מעל התקציב · אי-עמידה בקצב ההכנסות',
        ic:'<path d="M12 3l9 16H3l9-16z"/><path d="M12 10v4M12 17h.01"/>',
        pick:a=>['budget','revenue','salesclr'].includes(a.mkey), empty:'התקציב וההכנסות בקצב תקין'},
     ];
-    board.innerHTML=WIDGETS.map(wd=>{
+    board.innerHTML=WIDGETS.map((wd,wi)=>{
       const rows=alerts.filter(wd.pick);
-      let body=rows.length?rows.map(afeedRow).join(''):`<div class="awdg-ok"><span>✓</span>${wd.empty}</div>`;
+      // תקרת תצוגה — בעשרות חברות הווидג'ט לא מתנפח; "הצגת הכול" פורש
+      const CAP=5, expanded=AW_EXPAND.has(wi);
+      const shown=expanded?rows:rows.slice(0,CAP);
+      let body=rows.length?shown.map(afeedRow).join(''):`<div class="awdg-ok"><span>✓</span>${wd.empty}</div>`;
+      if(rows.length>CAP) body+=`<button class="awdg-more" onclick="awToggle(${wi})">${expanded?'הצגת פחות ▴':'הצגת כל '+rows.length+' ההתראות ▾'}</button>`;
       // ווидג'ט הפגישות: אחרי ההתראות — הפגישות הקרובות והמתועדות
       if(wd.meetings){
         const up=MEETINGS.map((m,ix)=>({m,ix})).filter(x=>['upcoming','ai'].includes(x.m.status)).slice(0,4);
@@ -115,6 +127,8 @@
     }).join('');
   }
   const SEV_LBL={high:'דחוף',mid:'לבדיקה',low:'מידע'};
+  const AW_EXPAND=new Set();
+  function awToggle(wi){AW_EXPAND.has(wi)?AW_EXPAND.delete(wi):AW_EXPAND.add(wi);renderAlerts();}
   // "למה קיבלתי התראה" — expanded rule explanation per alert row
   const AF_OPEN=new Set();
   function afToggle(id){AF_OPEN.has(id)?AF_OPEN.delete(id):AF_OPEN.add(id);renderAlerts();}
@@ -133,7 +147,7 @@
     return `<div class="afeed ${a.sev}">
       <div class="afeed-b">
         <div class="afeed-t">${a.t} <span class="afeed-sev ${a.sev}">${SEV_LBL[a.sev]}</span><span class="afeed-metric">${a.metric}</span>${(isOperator&&CLIENTS[a.i].product)?prodLogo(CLIENTS[a.i].product,'sm'):''}</div>
-        <div class="afeed-m"><span class="afeed-meta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2.5"/></svg>${a.meta}</span>${why}<button class="afeed-act" onclick="${a.click||`alertOpen(${a.i})`}">${a.btn||'פתח חברה'} ←</button></div>
+        <div class="afeed-m"><span class="afeed-meta"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2.5"/></svg>${a.meta}</span>${why}<button class="afeed-act" onclick="${a.click||`alertOpen(${a.i})`}">${a.btn||'פתיחת החברה'} ←</button></div>
         ${expl}
       </div>
       ${a.vTxt?`<div class="af-val ${a.sev}"><b>${a.vTxt}</b><span>${a.vSub}</span></div>`:''}
@@ -143,7 +157,8 @@
   /* company-dashboard alert banner — מוצג מעל הווידג'טים כשלחברה יש התראות פעילות */
   function renderCoAlerts(){
     const el=document.getElementById('coAlerts'); if(!el) return;
-    if(SCOPE!=='client'){el.style.display='none';return;}
+    // ללקוחות אין באנר התראות — הוא כלי עבודה של היועץ ומנהל התזרים
+    if(SCOPE!=='client'||ROLE==='client1'||ROLE==='clientN'){el.style.display='none';return;}
     const mine=buildAlerts().filter(a=>a.i===CUR);
     if(!mine.length){el.style.display='none';el.innerHTML='';return;}
     const high=mine.filter(a=>a.sev==='high').length;
@@ -153,7 +168,7 @@
       <span class="coal-t">${mine.length} התראות פעילות${high?' · '+high+' דחופות':''}</span>
       ${mine.map(a=>{
         const canEdit=!(ROLE==='client1'||ROLE==='clientN');
-        return `<span class="coal-chip ${a.sev}" title="${a.t}" ${canEdit&&a.mi!=null?`onclick="openAlertCfg(${a.mi})"`:'style="cursor:default"'}>${a.metric}${a.vTxt?' · '+a.vTxt:''}</span>`;}).join('')}
+        return `<span class="coal-chip ${a.sev}" title="${a.t}" ${canEdit&&a.mi!=null?`onclick="openAlertCfg(${a.mi})"`:'style="cursor:default"'}>${a.chip||(a.metric+(a.vTxt?' · '+a.vTxt:''))}</span>`;}).join('')}
       ${(ROLE==='client1'||ROLE==='clientN')?'':'<button class="coal-btn" onclick="goToMetrics()">להגדרות המדדים ←</button>'}
     </div>`;
   }

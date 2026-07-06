@@ -1,0 +1,230 @@
+/* HK Dashboard — client extras: AI chat orb, document uploads, operator activity feed */
+
+  /* ---- operator activity (מה המתפעל עשה עבורך) ---- */
+  const OPS_LOG=[
+    {ic:'check', t:'הושלם תפעול מלא · 32 דק׳', d:'כל הבדיקות עברו — התזרים תקין ומעודכן', when:'אתמול · 09:40'},
+    {ic:'ai',    t:'קוטלגו 4 תנועות חדשות', d:'המלצות ה-AI אושרו על ידי המתפעל', when:'אתמול · 09:12'},
+    {ic:'doc',   t:'טופלה חשבונית ספק — סונול · 4,820 ₪', d:'שויכה להוצאות דלק ונרשמה בתזרים', when:'30.06'},
+    {ic:'send',  t:'נשלח אליך עדכון תזרים שבועי', d:'בוואטסאפ — כולל צפי לסוף החודש', when:'28.06'},
+    {ic:'fix',   t:'זוהתה וטופלה כפילות חיוב', d:'Payment טכנולוגיות · 3,540 ₪ — הוסרה מהתזרים', when:'28.06'},
+  ];
+  const LOG_ICO={
+    check:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>',
+    ai:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>',
+    doc:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+    send:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
+    fix:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a5 5 0 0 0-6.6 6.6L3 18l3 3 5.1-5.1a5 5 0 0 0 6.6-6.6l-3 3-2-2 3-3z"/></svg>',
+  };
+
+  /* ---- client tasks → cashflow manager ---- */
+  let CLIENT_TASKS=[
+    {t:'עדכון תקציב שיווק ליולי',        st:'prog', when:'30.06', urgent:false},
+    {t:'בירור חיוב כפול — Payment',      st:'done', when:'28.06', urgent:false},
+    {t:'הוספת הרשאה לרו״ח בדוח החודשי', st:'done', when:'24.06', urgent:false},
+  ];
+  const CT_ST={new:'נשלחה',prog:'בטיפול',done:'✓ הושלמה'};
+  function renderCxTasks(){
+    const el=document.getElementById('cxTasks'); if(!el) return;
+    el.innerHTML=CLIENT_TASKS.map(k=>`
+      <div class="cxf">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>
+        <span class="cxf-n">${k.t}${k.urgent?' <span class="cxt-urg">דחוף</span>':''}</span>
+        <span class="cxf-st ${k.st==='done'?'done':k.st==='prog'?'ops':'ai'}">${CT_ST[k.st]}</span>
+        <span class="cxf-w">${k.when}</span>
+      </div>`).join('');
+  }
+  function openCt(){
+    const c=CLIENTS[CUR]||{};
+    document.getElementById('ctMgr').textContent='המשימה תישלח ל'+(c.mgr||'מנהל התזרים')+' — מנהל התזרים של '+(c.name||'החברה');
+    document.getElementById('ctSubj').value='';document.getElementById('ctBody').value='';
+    document.querySelector('input[name="ctUrg"][value="reg"]').checked=true;
+    document.getElementById('ctErr').style.display='none';
+    document.getElementById('ctOv').classList.add('show');
+    setTimeout(()=>document.getElementById('ctSubj').focus(),80);
+  }
+  function closeCt(){document.getElementById('ctOv').classList.remove('show');}
+  function ctSend(){
+    const subj=document.getElementById('ctSubj').value.trim();
+    if(!subj){document.getElementById('ctErr').style.display='';return;}
+    const urgent=document.querySelector('input[name="ctUrg"]:checked').value==='urgent';
+    const k={t:subj, st:'new', when:'עכשיו', urgent};
+    CLIENT_TASKS.unshift(k); renderCxTasks(); closeCt();
+    const c=CLIENTS[CUR]||{};
+    toast('המשימה נשלחה ל'+(c.mgr||'מנהל התזרים'));
+    setTimeout(()=>{k.st='prog';renderCxTasks();},3200);   // סימולציה: המנהל קיבל והתחיל לטפל
+  }
+
+  /* ---- client documents ---- */
+  let CLIENT_DOCS=[
+    {name:'חשבונית ספק — סונול 06.pdf', when:'30.06', st:'done'},
+    {name:'דוח סליקה יוני.xlsx',         when:'28.06', st:'done'},
+  ];
+  /* שורת ווидג'טים אחת — כותרות קומפקטיות שנפתחות בלחיצה (אקורדיון) */
+  let CX_OPEN=null;
+  function cxToggle(k){CX_OPEN=CX_OPEN===k?null:k;renderClientRow();}
+  function renderClientRow(){
+    const el=document.getElementById('clientRow'); if(!el) return;
+    const isClient=(ROLE==='client1'||ROLE==='clientN');
+    if(!isClient||SCOPE!=='client'){el.style.display='none';return;}
+    el.style.display='';
+    const c=CLIENTS[CUR]||{};
+    const CX_ICONS={
+      meet:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+      rep:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
+      docs:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>',
+      task:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
+      ops:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'};
+    const cards=[
+      {k:'meet', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון אשכנזי · יועץ HK', badge:'10 יולי · 14:00', body:`
+        <div class="cx-meet">
+          <div class="cxm-date"><b>10</b><span>יולי</span></div>
+          <div class="cxm-b">
+            <div class="cxm-t">סקירת רבעון Q3</div>
+            <div class="cxm-d">עם אילון אשכנזי · יועץ HK</div>
+            <div class="cxm-meta"><span dir="ltr">14:00–15:00</span><span class="cxm-zoom">Zoom</span><span>בעוד 4 ימים</span></div>
+          </div>
+        </div>
+        <div class="cxm-actions">
+          <button class="cxm-btn primary" onclick="toast('הפגישה נוספה ליומן שלך')">הוספה ליומן</button>
+          <button class="cxm-btn" onclick="toast('בקשת תיאום מחדש נשלחה לאילון')">תיאום מחדש</button>
+        </div>`},
+      {k:'rep', icc:'rep', t:'דוחות', sub:'מופקים מנתוני התזרים העדכניים', badge:'2 דוחות', body:`
+        <div class="cx-files">
+          <div class="cxf">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+            <span class="cxf-n">תזרים חודשי</span><span class="cxf-w">יוני 2026</span>
+            <button class="cx-dl" onclick="toast('תזרים חודשי — הופק ויורד כ-PDF')">הורדה</button>
+          </div>
+          <div class="cxf">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/><path d="M17 7h2v2"/></svg>
+            <span class="cxf-n">תזרים חודשי עתידי</span><span class="cxf-w">6 חודשים קדימה</span>
+            <button class="cx-dl" onclick="toast('תזרים עתידי — הופק ויורד כ-PDF')">הורדה</button>
+          </div>
+        </div>`},
+      {k:'docs', icc:'docs', t:'העלאת מסמכים', sub:'נשלחים לקיטלוג אצל המתפעל', badge:CLIENT_DOCS.length+' קבצים', body:`
+        <div class="cx-drop" id="cxDrop"
+             ondragover="event.preventDefault();this.classList.add('over')"
+             ondragleave="this.classList.remove('over')"
+             ondrop="cxDrop(event)"
+             onclick="cxPick()">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+          <b>גררו קובץ לכאן</b> או לחצו לבחירה
+          <span>PDF · Excel · תמונות</span>
+        </div>
+        <div class="cx-files" id="cxFiles"></div>`},
+      {k:'task', icc:'task', t:'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', body:`
+        <div class="cx-body-bar"><button class="cx-add" onclick="openCt()">+ משימה חדשה</button></div>
+        <div class="cx-files" id="cxTasks"></div>`},
+      {k:'ops', icc:'ops', t:'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
+        <div class="cx-log">
+          ${OPS_LOG.map(l=>`
+            <div class="cxl">
+              <span class="cxl-ic ${l.ic}">${LOG_ICO[l.ic]}</span>
+              <div class="cxl-b"><div class="cxl-t">${l.t}</div><div class="cxl-d">${l.d}</div></div>
+              <span class="cxl-w">${l.when}</span>
+            </div>`).join('')}
+        </div>`},
+    ];
+    el.innerHTML=cards.map(cd=>{
+      const open=CX_OPEN===cd.k;
+      return `<div class="cxcard ${open?'open':''}">
+        <button class="cx-head" onclick="cxToggle('${cd.k}')" aria-expanded="${open}">
+          <div class="cx-ic ${cd.icc}">${CX_ICONS[cd.k]}</div>
+          <div class="awdg-tt"><div class="awdg-t">${cd.t}</div><div class="awdg-sub">${cd.sub}</div></div>
+          <span class="cx-badge">${cd.badge}</span>
+          <svg class="cx-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="cx-body">${cd.body}</div>
+      </div>`;}).join('');
+    renderCxFiles();
+    renderCxTasks();
+  }
+  function renderCxFiles(){
+    const el=document.getElementById('cxFiles'); if(!el) return;
+    el.innerHTML=CLIENT_DOCS.map(f=>`
+      <div class="cxf">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <span class="cxf-n">${f.name}</span>
+        <span class="cxf-st ${f.st}">${f.st==='ai'?'<span class="ai-spin"></span> בקיטלוג AI':f.st==='ops'?'אצל המתפעל':'✓ קוטלג'}</span>
+        <span class="cxf-w">${f.when}</span>
+      </div>`).join('');
+  }
+  function cxAdd(name){
+    const f={name, when:'עכשיו', st:'ai'};
+    CLIENT_DOCS.unshift(f); renderCxFiles();
+    toast('הקובץ הועלה — נשלח לקיטלוג AI');
+    setTimeout(()=>{f.st='ops';renderCxFiles();},2600);   // סימולציה: AI סיים → עבר למתפעל
+  }
+  function cxDrop(e){
+    e.preventDefault(); document.getElementById('cxDrop').classList.remove('over');
+    const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+    cxAdd(f?f.name:'מסמך חדש.pdf');
+  }
+  const CX_DEMO=['חשבונית ספק — יולי.pdf','אישור ניכוי מס.pdf','דוח מכירות שבועי.xlsx'];
+  let cxDemoIx=0;
+  function cxPick(){cxAdd(CX_DEMO[cxDemoIx++%CX_DEMO.length]);}
+
+  /* ---- AI chat orb (הלקוח שואל על החברה הנוכחית) ---- */
+  /* העוזר עובד פר-חברה — עונה רק על החברה שנבחרה למעלה */
+  const AI_CHIPS=['מה המצב של החברה?','למה צפויה חריגה ביולי?','מה המתפעל עשה השבוע?','מתי הפגישה הבאה שלי?'];
+  const BAL={'אנרגי אינטרנשיונל':'1,029,208','אנרגי גולני':'312,400','מטעי גבעון':'568,900','משה עובד':'174,300','רימון יצחק':'421,050'};
+  function aiAnswer(q){
+    const c=CLIENTS[CUR];
+    if(q.includes('מצב')){
+      const bad=(c.budgetPct||0)>100;
+      return {t:'הנה תמונת המצב של '+c.name+' — יתרה נוכחית וסטטוס תקציב:',
+        cards:`<div class="aic ${bad?'bad':''}"><b>${c.name}</b><span dir="ltr">${BAL[c.name]||'—'} ₪</span><i>${bad?'חריגת תקציב':'תקין'}</i></div>
+               <div class="aic"><b>ניצול תקציב חודשי</b><span dir="ltr">${c.budgetPct||0}%</span><i>${bad?'מעל היעד':'בתוך היעד'}</i></div>`};
+    }
+    if(q.includes('חריגה')||q.includes('יולי')){
+      return {t:'צפויה חריגה של ‎-289,161 ₪ ב-13.7 בעו״ש המאוחד. הגורם המרכזי: הוצאות השכר חרגו ב-14% מהתקציב החודשי, ובמקביל תשלום ספק גדול (210k) מתוכנן ל-14.7. המתפעל כבר קיבל התראה — מומלץ לתאם שיחה עם היועץ.',
+        cards:'<div class="aic bad"><b>חריגה צפויה</b><span dir="ltr">-289,161 ₪</span><i>13.7.2026 · בעוד 12 ימים</i></div>'};
+    }
+    if(q.includes('מתפעל')){
+      return {t:'השבוע המתפעל השלים תפעול מלא (32 דק׳), קיטלג 4 תנועות חדשות, טיפל בחשבונית סונול, שלח לך עדכון תזרים והסיר חיוב כפול של 3,540 ₪. הפירוט המלא בכרטיס "מה המתפעל עשה עבורך".'};
+    }
+    if(q.includes('פגישה')){
+      return {t:'הפגישה הבאה שלך: סקירת רבעון Q3 עם אילון אשכנזי ב-10.07 בשעה 14:00. רוצה שאשלח תזכורת יום לפני?'};
+    }
+    return {t:'שאלה טובה. על בסיס נתוני התזרים של '+c.name+': היתרה הנוכחית '+(BAL[c.name]||'—')+' ₪, התקציב בניצול '+(c.budgetPct||0)+'%. אפשר לשאול אותי על יתרות, חריגות, תקציב, מסמכים או פגישות של החברה.'};
+  }
+  function aiToggle(){
+    const p=document.getElementById('aiPanel');
+    const open=p.classList.toggle('show');
+    // שיחה חדשה בפתיחה ראשונה או אחרי מעבר חברה — ההקשר תמיד של החברה הנוכחית
+    if(open&&p.dataset.co!==String(CUR)){p.dataset.co=String(CUR);aiGreet();}
+  }
+  function aiGreet(){
+    const c=CLIENTS[CUR];
+    const sub=document.getElementById('aiHeadSub'); if(sub) sub.textContent=c.name+' · נתוני אמת מ-Bizibox';
+    document.getElementById('aiBody').innerHTML=`
+      <div class="aim bot"><div class="aim-b">היי 👋 אני העוזר הפיננסי של ${c.name}. אני מכיר את התזרים, התקציב, המסמכים והפגישות של החברה. מה תרצה לדעת?</div></div>
+      <div class="ai-chips">${AI_CHIPS.map(s=>`<button class="ai-chip" onclick="aiAsk('${s}')">${s}</button>`).join('')}</div>`;
+  }
+  function aiSend(){
+    const inp=document.getElementById('aiInput'); const v=inp.value.trim(); if(!v) return;
+    inp.value=''; aiAsk(v);
+  }
+  function aiAsk(q){
+    const body=document.getElementById('aiBody');
+    body.insertAdjacentHTML('beforeend',`<div class="aim user"><div class="aim-b">${q}</div></div>
+      <div class="aim bot" id="aiTyping"><div class="aim-b"><span class="ai-dots"><i></i><i></i><i></i></span></div></div>`);
+    body.scrollTop=body.scrollHeight;
+    const ans=aiAnswer(q);
+    setTimeout(()=>{
+      const tEl=document.getElementById('aiTyping'); if(!tEl) return;
+      tEl.removeAttribute('id');
+      const bub=tEl.querySelector('.aim-b'); bub.innerHTML='';
+      // הקלדה חיה — תו-תו, ואז כרטיסי הנתונים
+      let i=0; const txt=ans.t;
+      const tick=setInterval(()=>{
+        bub.textContent=txt.slice(0,++i);
+        body.scrollTop=body.scrollHeight;
+        if(i>=txt.length){
+          clearInterval(tick);
+          if(ans.cards) bub.insertAdjacentHTML('afterend',`<div class="aic-row">${ans.cards}</div>`);
+          body.scrollTop=body.scrollHeight;
+        }
+      },12);
+    },900);
+  }

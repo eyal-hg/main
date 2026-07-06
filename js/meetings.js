@@ -10,7 +10,7 @@
     {name:'סקירת רבעון Q3', client:'משה עובד', date:'10.07.2026', time:'14:00-15:00', adv:'אילון אשכנזי', status:'upcoming'},
     {name:'לימוד בנדל - לחיות בתשוקה', client:'אנרגי גולני', date:'05.05.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'done', rec:'55 דק׳'},
     {name:'פגישה חודשית - מרץ', client:'רימון יצחק', date:'17.03.2026', time:'12:00-13:00', adv:'אילון אשכנזי', status:'done', rec:'61 דק׳'},
-    {name:'פ.ע - חודש פברואר', client:'טיב השוק', date:'04.02.2026', time:'10:30-11:30', adv:'אילון אשכנזי', status:'noshow'},
+    {name:'פ.ע - חודש יוני', client:'אנרגי גולני', date:'24.06.2026', time:'10:30-11:30', adv:'אילון אשכנזי', status:'noshow'},
   ];
   let MEET_FILTER='all';
   const CAL_ICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>';
