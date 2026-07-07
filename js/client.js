@@ -59,13 +59,12 @@
     {name:'חשבונית ספק — סונול 06.pdf', when:'30.06', st:'done'},
     {name:'דוח סליקה יוני.xlsx',         when:'28.06', st:'done'},
   ];
-  /* שורת ווидג'טים אחת — כותרות קומפקטיות שנפתחות בלחיצה (אקורדיון) */
-  let CX_OPEN=null;
-  function cxToggle(k){CX_OPEN=CX_OPEN===k?null:k;renderClientRow();}
+  /* כרטיסי שירות — ווидג'טים קבועים: שורה נמוכה (רבע/רבע/חצי) ושורה גבוהה (חצי/חצי).
+     מסך חברה אחיד: היועץ רואה בדיוק את מה שהלקוח רואה; המתפעל במצב עבודה — בלעדיהם. */
   function renderClientRow(){
     const el=document.getElementById('clientRow'); if(!el) return;
-    const isClient=(ROLE==='client1'||ROLE==='clientN');
-    if(!isClient||SCOPE!=='client'){el.style.display='none';return;}
+    const show=(SCOPE==='client')&&(typeof ROLE==='undefined'||ROLE!=='manager');
+    if(!show){el.style.display='none';return;}
     el.style.display='';
     const c=CLIENTS[CUR]||{};
     const CX_ICONS={
@@ -75,7 +74,7 @@
       task:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
       ops:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'};
     const cards=[
-      {k:'meet', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון אשכנזי · יועץ HK', badge:'10 יולי · 14:00', body:`
+      {k:'meet', cls:'w25 h-low', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון אשכנזי · יועץ HK', badge:'10 יולי · 14:00', body:`
         <div class="cx-meet">
           <div class="cxm-date"><b>10</b><span>יולי</span></div>
           <div class="cxm-b">
@@ -88,7 +87,7 @@
           <button class="cxm-btn primary" onclick="toast('הפגישה נוספה ליומן שלך')">הוספה ליומן</button>
           <button class="cxm-btn" onclick="toast('בקשת תיאום מחדש נשלחה לאילון')">תיאום מחדש</button>
         </div>`},
-      {k:'rep', icc:'rep', t:'דוחות', sub:'מופקים מנתוני התזרים העדכניים', badge:'2 דוחות', body:`
+      {k:'rep', cls:'w25 h-low', icc:'rep', t:'דוחות', sub:'מופקים מנתוני התזרים העדכניים', badge:'2 דוחות', body:`
         <div class="cx-files">
           <div class="cxf">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
@@ -101,22 +100,23 @@
             <button class="cx-dl" onclick="toast('תזרים עתידי — הופק ויורד כ-PDF')">הורדה</button>
           </div>
         </div>`},
-      {k:'docs', icc:'docs', t:'העלאת מסמכים', sub:'נשלחים לקיטלוג אצל המתפעל', badge:CLIENT_DOCS.length+' קבצים', body:`
-        <div class="cx-drop" id="cxDrop"
-             ondragover="event.preventDefault();this.classList.add('over')"
-             ondragleave="this.classList.remove('over')"
-             ondrop="cxDrop(event)"
-             onclick="cxPick()">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
-          <b>גררו קובץ לכאן</b> או לחצו לבחירה
-          <span>PDF · Excel · תמונות</span>
-        </div>
-        <div class="cx-files" id="cxFiles"></div>`},
-      {k:'task', icc:'task', t:'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', body:`
-        <div class="cx-body-bar"><button class="cx-add" onclick="openCt()">+ משימה חדשה</button></div>
-        <div class="cx-files" id="cxTasks"></div>`},
-      {k:'ops', icc:'ops', t:'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
-        <div class="cx-log">
+      {k:'docs', cls:'w50 h-low', icc:'docs', t:'העלאת מסמכים', sub:'נשלחים לקיטלוג אצל המתפעל', badge:CLIENT_DOCS.length+' קבצים', body:`
+        <div class="cx-docrow">
+          <div class="cx-drop" id="cxDrop"
+               ondragover="event.preventDefault();this.classList.add('over')"
+               ondragleave="this.classList.remove('over')"
+               ondrop="cxDrop(event)"
+               onclick="cxPick()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+            <b>גררו קובץ לכאן</b> או לחצו לבחירה
+            <span>PDF · Excel · תמונות</span>
+          </div>
+          <div class="cx-files cx-scroll" id="cxFiles"></div>
+        </div>`},
+      {k:'task', cls:'w50 h-high', icc:'task', t:'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', hbtn:'<button class="cx-add" onclick="openCt()">+ משימה חדשה</button>', body:`
+        <div class="cx-files cx-scroll" id="cxTasks" style="padding:4px 16px 12px"></div>`},
+      {k:'ops', cls:'w50 h-high', icc:'ops', t:'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
+        <div class="cx-log cx-scroll">
           ${OPS_LOG.map(l=>`
             <div class="cxl">
               <span class="cxl-ic ${l.ic}">${LOG_ICO[l.ic]}</span>
@@ -125,17 +125,15 @@
             </div>`).join('')}
         </div>`},
     ];
-    el.innerHTML=cards.map(cd=>{
-      const open=CX_OPEN===cd.k;
-      return `<div class="cxcard ${open?'open':''}">
-        <button class="cx-head" onclick="cxToggle('${cd.k}')" aria-expanded="${open}">
+    el.innerHTML=cards.map(cd=>`<div class="cxcard ${cd.cls}">
+        <div class="cx-head">
           <div class="cx-ic ${cd.icc}">${CX_ICONS[cd.k]}</div>
           <div class="awdg-tt"><div class="awdg-t">${cd.t}</div><div class="awdg-sub">${cd.sub}</div></div>
+          ${cd.hbtn||''}
           <span class="cx-badge">${cd.badge}</span>
-          <svg class="cx-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
+        </div>
         <div class="cx-body">${cd.body}</div>
-      </div>`;}).join('');
+      </div>`).join('');
     renderCxFiles();
     renderCxTasks();
   }
