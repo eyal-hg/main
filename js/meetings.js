@@ -4,6 +4,7 @@
   // rec = משך ההקלטה — כל פגישה מוקלטת ומתועדת אוטומטית
   const MEETINGS=[
     {name:'פגישה שוטפת - סקירת תזרים', client:'אנרגי אינטרנשיונל', date:'02.07.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'ai', rec:'46 דק׳'},
+    {name:'פגישה חודשית - יולי (Money+)', client:'משה עובד', date:'02.07.2026', time:'16:00-17:00', adv:'אילון אשכנזי', status:'upcoming'},
     {name:'פ.ע - חודש יוני', client:'אנרגי אינטרנשיונל', date:'01.06.2026', time:'11:00-12:00', adv:'אילון אשכנזי', status:'summary', rec:'58 דק׳'},
     {name:'פגישת עבודה - קורס מנחות', client:'מטעי גבעון', date:'12.05.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'summary', rec:'52 דק׳'},
     {name:'פגישה חודשית - יולי (Money+)', client:'מטעי גבעון', date:'15.07.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'upcoming'},
@@ -17,6 +18,7 @@
   const CLK_ICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const USR_ICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>';
   function renderMeetings(){
+    closeMeeting();   // כניסה לסקציה תמיד מתחילה ברשימה
     const isClient=(ROLE==='client1'||ROLE==='clientN');
     document.getElementById('mtFilters').style.display = isClient ? 'none' : 'flex';
     if(!isClient){
@@ -31,9 +33,21 @@
     else if(MEET_FILTER!=='all') list=list.filter(x=>x.m.status===MEET_FILTER);
     const el=document.getElementById('mtList');
     if(!list.length){el.innerHTML='<div class="ms-placeholder">אין פגישות</div>';return;}
-    el.innerHTML=list.map(({m,i})=>{
+    /* פגישת-גיבור: הפגישה של היום שממתינה להקלטה — כפתור הקלטה ישר בראש */
+    const TODAY='02.07.2026';
+    const hero=list.find(x=>x.m.date===TODAY&&x.m.status==='upcoming');
+    const heroHtml=hero?`
+      <div class="mt-hero">
+        <div class="advh-date"><b>${hero.m.date.slice(0,2)}</b><span>יולי</span></div>
+        <div class="mt-hero-b">
+          <div class="mt-hero-t">${hero.m.name}</div>
+          <div class="mt-hero-s">${hero.m.client} · <span dir="ltr">${hero.m.time}</span> · היום</div>
+        </div>
+        <button class="mrec-btn on-card" onclick="startMeetRec('${hero.m.client}')"><span class="mrec-dot"></span> הקלטת הפגישה</button>
+      </div>`:'';
+    el.innerHTML=heroHtml+list.map(({m,i})=>{
       const rec=m.rec?`<span class="rec-badge">🎙 ${m.rec}</span>`:'';
-      const ai=m.status==='ai'?`<span class="ai-badge"><span class="ai-spin"></span> ה-AI מעבד את ההקלטה</span>`:'';
+      const chip=MS_STATCHIP[m.status]?`<span class="msp-chip ${MS_STATCHIP[m.status][1]}">${MS_STATCHIP[m.status][0]}</span>`:'';
       let btn;
       if(m.status==='ai') btn=`<button class="mt-btn view" disabled style="opacity:.55;cursor:default">סיכום בהכנה…</button>`;
       else if(isClient) btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
@@ -41,8 +55,8 @@
       else if(m.status==='done')btn=`<button class="mt-btn view" onclick="openMeeting(${i})">צפייה בסיכום</button>`;
       else if(m.status==='upcoming')btn=`<button class="mt-btn view" onclick="toast('פרטי הפגישה')">פרטי פגישה</button>`;
       else btn=`<button class="mt-btn view" onclick="toast('תיאום פגישה מחדש')">תיאום מחדש</button>`;
-      return `<div class="mtcard">
-        <div class="mt-info">${isClient?'':`<div class="mt-client">${m.client}</div>`}<div class="mt-name">${m.name} ${rec}${ai}</div>
+      return `<div class="mtcard st-${m.status}">
+        <div class="mt-info">${isClient?'':`<div class="mt-client">${m.client}</div>`}<div class="mt-name">${m.name} ${chip} ${rec}</div>
           <div class="mt-meta"><span>${CAL_ICO}${m.date}</span><span>${CLK_ICO}${m.time}</span><span>${USR_ICO}${m.adv}</span></div></div>
         ${btn}</div>`;}).join('');
   }
@@ -59,15 +73,80 @@
     <div class="ms-insight"><div class="ms-ititle">1. שמירה על יציבות תזרימית ברבעון האחרון חרף גידול בהכנסות</div><div class="ms-itext">למרות גידול של כ-40% בהכנסות ומהלכים עסקיים שלא צלחו, העסק שמר על איזון תזרימי מלא ברבעון מרץ-מאי, מה שמעיד על חוסן פיננסי ויכולת לספוג אתגרים. <span class="ms-more">קרא עוד</span></div></div>
     <div class="ms-insight"><div class="ms-ititle">2. אופטימיזציה של מבנה כוח האדם: החלפת פונקציית שירות לקוחות</div><div class="ms-itext">הוחלט על סיום העסקה של מיכל וגיוס מחליפה בתפקיד שירות לקוחות ותפעול, בעלות חודשית נמוכה יותר של כ-2,880 ₪. <span class="ms-more">קרא עוד</span></div></div>
   `;
-  function openMeeting(i){const m=MEETINGS[i];
-    document.getElementById('msTitle').textContent=m.name;
-    document.getElementById('msDate').textContent=m.date;
-    document.getElementById('msTime').textContent=m.time;
-    document.querySelectorAll('.ms-tab').forEach((t,ix)=>t.classList.toggle('on',ix===0));
-    document.getElementById('msBody').innerHTML=MS_SUMMARY;
-    document.getElementById('msOv').classList.add('show');}
-  function closeMeeting(){document.getElementById('msOv').classList.remove('show');}
+  /* עמוד פגישה — נפתח בתוך סקציית הפגישות במקום פופאפ */
+  let MS_CUR=-1;
+  const MS_STATCHIP={summary:['ממתין לאישור','amber'],done:['הושלם','green'],ai:['בעיבוד AI','purple'],upcoming:['מתוכננת','blue'],noshow:['לא התקיימה','coral']};
+  function openMeeting(i){
+    MS_CUR=i; const m=MEETINGS[i];
+    const isClient=(ROLE==='client1'||ROLE==='clientN');
+    const chip=MS_STATCHIP[m.status]||['',''];
+    const foot=(!isClient&&m.status==='summary')?`
+      <div class="ms-foot">
+        <button class="ms-nosend" onclick="approveSummary(false)">אישור ללא שליחה</button>
+        <button class="ms-send" onclick="approveSummary(true)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> אישור ושליחת סיכום</button>
+      </div>`:'';
+    document.getElementById('mtDetail').innerHTML=`
+      <div class="ms-back" onclick="closeMeeting()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> כל הפגישות</div>
+      <div class="ms msp">
+        <div class="ms-head">
+          <div class="ms-title">${m.name} <span class="msp-chip ${chip[1]}">${chip[0]}</span></div>
+          <div class="ms-meta">
+            <span>${m.client} · ${m.adv}</span>
+            <span>${CAL_ICO}<span>${m.date}</span></span>
+            <span>${CLK_ICO}<span>${m.time}</span></span>
+            ${m.rec?`<span>🎙 ${m.rec}</span>`:''}
+          </div>
+        </div>
+        <div class="ms-tabs">
+          <div class="ms-tab on" onclick="msTab(this,'summary')">סיכום פגישה</div>
+          <div class="ms-tab" onclick="msTab(this,'tasks')">משימות</div>
+          <div class="ms-tab" onclick="msTab(this,'feedback')">משוב</div>
+          <div class="ms-tab" onclick="msTab(this,'transcript')">תמלול</div>
+        </div>
+        <div class="ms-body" id="msBody">${MS_SUMMARY}</div>
+        ${foot}
+      </div>`;
+    document.querySelector('#viewMeetings .mt-wrap').style.display='none';
+    document.getElementById('mtDetail').style.display='';
+    document.querySelector('.main').scrollTop=0; window.scrollTo(0,0);
+  }
+  function closeMeeting(){
+    document.getElementById('mtDetail').style.display='none';
+    const w=document.querySelector('#viewMeetings .mt-wrap'); if(w)w.style.display='';
+  }
   function msTab(el,t){document.querySelectorAll('.ms-tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');
     document.getElementById('msBody').innerHTML = (t==='summary')?MS_SUMMARY:'<div class="ms-placeholder">תוכן "'+el.textContent+'" — בקרוב</div>';}
-  function sendSummary(){closeMeeting();toast('הסיכום אושר ונשלח ללקוח');}
+  function approveSummary(send){
+    if(MS_CUR>=0){MEETINGS[MS_CUR].status='done';}
+    closeMeeting(); renderMeetings();
+    toast(send?'הסיכום אושר ונשלח ללקוח':'הסיכום אושר — לא נשלח ללקוח');
+  }
+  function sendSummary(){approveSummary(true);}   // תאימות
+  /* פתיחת עמוד פגישה מהבית של היועץ — נכנס לחברה, לסקציית הפגישות, ולפגישה */
+  function openMeetingFrom(ci,ix){selectClient(ci);showTab('meetings');openMeeting(ix);}
+
+  /* ===== הקלטת פגישה — מכל מקום בדשבורד ===== */
+  let MREC=null;
+  const fmtRec=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  function startMeetRec(name){
+    if(MREC){toast('כבר מתבצעת הקלטה');return;}
+    const client=name||(SCOPE==='client'?CLIENTS[CUR].name:'פגישה כללית');
+    MREC={sec:0,client};
+    document.getElementById('mrecWho').textContent='מקליט פגישה · '+client;
+    document.getElementById('mrecClock').textContent='00:00';
+    document.getElementById('mrecBar').style.display='flex';
+    MREC.iv=setInterval(()=>{MREC.sec++;const el=document.getElementById('mrecClock');if(el)el.textContent=fmtRec(MREC.sec);},1000);
+    toast('ההקלטה החלה — '+client);
+  }
+  function stopMeetRec(){
+    if(!MREC) return;
+    clearInterval(MREC.iv);
+    const mins=Math.max(1,Math.round(MREC.sec/60));
+    MEETINGS.unshift({name:'פגישה מוקלטת', client:MREC.client, date:'02.07.2026', time:'עכשיו', adv:'אילון אשכנזי', status:'ai', rec:mins+' דק׳'});
+    MREC=null;
+    document.getElementById('mrecBar').style.display='none';
+    toast('ההקלטה הסתיימה — נשלחה לעיבוד AI');
+    if(document.getElementById('viewMeetings').style.display!=='none') renderMeetings();
+    if(typeof renderAdvisorHome==='function'&&ROLE==='advisor'&&SCOPE==='portfolio') renderAlerts();
+  }
 

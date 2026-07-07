@@ -59,7 +59,7 @@
           out.push({sev:'mid', i, mkey:'summary', metric:'פגישות',
             t:mt.client+' — סיכום פגישה ממתין לאישור',
             chip:'סיכום פגישה ממתין לאישור',
-            meta:'הוקלטה '+mt.date.slice(0,5)+(mt.rec?' · '+mt.rec:''), btn:'אישור הסיכום', click:'openMeeting('+ix+')',
+            meta:'הוקלטה '+mt.date.slice(0,5)+(mt.rec?' · '+mt.rec:''), btn:'אישור הסיכום', click:'openMeetingFrom('+i+','+ix+')',
             why:'כל פגישה מוקלטת ומתועדת אוטומטית: ההקלטה ('+(mt.rec||'')+' מ-'+mt.date.slice(0,5)+') תומללה ונותחה על ידי ה-AI, והסיכום ממתין לאישורך לפני שליחה ללקוח.'});
         }else if(mt.status==='noshow'){
           out.push({sev:'high', i, mkey:'noshow', metric:'פגישות',
@@ -73,8 +73,10 @@
     return out.sort((a,b)=>RANK[a.sev]-RANK[b.sev]);
   }
   function renderAlerts(){
+    if(ROLE==='advisor'){renderAdvisorHome();return;}   // ליועץ — "הבוקר של היועץ"; למנהל נשאר מוקד ההתראות
     const alerts=buildAlerts();
     const board=document.getElementById('alBoard');
+    board.classList.remove('advh');
     /* בית היועץ = בדיוק 4 ווидג'טים קבועים:
        1 מדדים עסקיים · 2 חריגות צפויות · 3 פגישות · 4 חריגות תקציב (הוצאות + קצב הכנסות) */
     const FIXED=['overdraft','budget','meeting','summary','revenue','salesclr'];
@@ -179,3 +181,127 @@
     if(t) switchTab(t,'metrics');
   }
 
+
+  /* ===== הבוקר של היועץ — הבית של "כל החברות" ליועץ =====
+     שלוש שאלות לפי הסדר: מה היום שלי → איפה בוער → מה המצב הכללי (+ מה השתפר) */
+  function goPrep(i){selectClient(i);showTab('prep');}
+  function advPulse(c){
+    // דופק פר חברה: אדום = חריגה צפויה/תקציב פרוץ · ענבר = חוב/מדד מתחת ליעד/בלי פגישה · ירוק = תקין
+    const m=c.metrics||{};
+    if((m.overdraft>0)||(m.budget>100)) return 'red';
+    if((c.debt>0)||(m.liters&&m.liters<100)||(c.product==='money+'&&!hasUpcomingMeeting(c))) return 'amber';
+    return 'green';
+  }
+  /* היומן של היועץ להיום — פגישות + משימות, נבנה פעם אחת מהנתונים */
+  let ADV_AGENDA=null, ADV_TODO=null;
+  const ADV_NOW='10:54';
+  function advInit(){
+    if(ADV_AGENDA) return;
+    const TODAY='02.07.2026';
+    ADV_AGENDA=[];
+    MEETINGS.forEach((m,ix)=>{
+      if(m.date!==TODAY||m.time==='עכשיו') return;
+      ADV_AGENDA.push({time:m.time.split('-')[0], kind:'meet', mix:ix, client:m.client,
+        title:m.name, sub:m.client+' · '+m.time+(m.rec?' · 🎙 '+m.rec:''), st:m.status, done:false});
+    });
+    ADV_AGENDA.push(
+      {time:'11:00', kind:'task',   title:'הכנה לפגישת משה עובד',      sub:'תקציר AI מוכן · 10 דק׳', done:false, act:'goPrep(3)', actLbl:'להכנה'},
+      {time:'13:00', kind:'client', title:'שיחת מעקב — מטעי גבעון',     sub:'אחרי חריגת התקציב (114%)', done:false, act:'selectClient(2)', actLbl:'פתיחה'},
+      {time:'17:30', kind:'task',   title:'עדכוני וואטסאפ ללקוחות',     sub:'סיכום יום · 4 חברות', done:false});
+    ADV_AGENDA.sort((a,b)=>a.time.localeCompare(b.time));
+    ADV_TODO=[];
+    MEETINGS.forEach((m,ix)=>{
+      const ci=CLIENTS.findIndex(c=>c.name===m.client);
+      if(m.status==='summary') ADV_TODO.push({t:'אישור סיכום — '+m.name+' · '+m.client, act:`openMeetingFrom(${ci},${ix})`, lbl:'אישור', done:false});
+      else if(m.status==='noshow') ADV_TODO.push({t:'תיאום מחדש — '+m.client+' (הפגישה לא התקיימה)', act:"toast('נשלחה ללקוח הצעה לתיאום מחדש בוואטסאפ')", lbl:'תיאום', done:false});
+    });
+    CLIENTS.forEach((c,i)=>{
+      if(c.product==='money+'&&!hasUpcomingMeeting(c))
+        ADV_TODO.push({t:'שליחת זמנים לפגישה חודשית — '+c.name+' (Money+)', act:"toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')", lbl:'שליחה', done:false});
+    });
+  }
+  function advTgl(ix){ADV_AGENDA[ix].done=!ADV_AGENDA[ix].done;renderAlerts();if(ADV_AGENDA[ix].done)toast('סומן כבוצע');}
+  function advTodoDone(ix){ADV_TODO[ix].done=!ADV_TODO[ix].done;renderAlerts();}
+
+  function renderAdvisorHome(){
+    const board=document.getElementById('alBoard');
+    board.classList.add('advh');
+    advInit();
+    const alerts=buildAlerts();
+    const AK={meet:['פגישה','meet'],task:['משימה','task'],client:['לקוח','client']};
+    /* --- היומן: משימות פתוחות + ציר היום --- */
+    const openTodo=ADV_TODO.filter(x=>!x.done).length;
+    const todoHtml=`<div class="mc-todo">
+      <div class="mc-todo-h">משימות פתוחות <span class="mc-todo-n">${openTodo}</span><i>אישורים, תיאומים ומעקבים</i></div>
+      ${ADV_TODO.map((x,i)=>`
+        <div class="mc-todo-row ${x.done?'done':''}">
+          <label class="mc-chk"><input type="checkbox" ${x.done?'checked':''} onchange="advTodoDone(${i})"><span></span></label>
+          <span class="mc-todo-t">${x.t}</span>
+          ${x.done?'':`<button class="mt-btn ${x.lbl==='אישור'?'':'view'}" onclick="${x.act}">${x.lbl}</button>`}
+        </div>`).join('')}
+    </div>`;
+    let nowDrawn=false, tl='';
+    ADV_AGENDA.forEach((it,ix)=>{
+      if(!nowDrawn && it.time>ADV_NOW){
+        tl+=`<div class="mc-now"><span class="mc-now-t" dir="ltr">${ADV_NOW}</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>`;
+        nowDrawn=true;
+      }
+      const k=AK[it.kind]||AK.task;
+      let action='';
+      if(it.kind==='meet'&&it.st==='upcoming'&&!it.done) action=`<button class="mrec-btn on-card sm" onclick="startMeetRec('${it.client}')"><span class="mrec-dot"></span> הקלטה</button>`;
+      else if(it.kind==='meet'&&it.st==='ai') action=`<span class="msp-chip purple">בעיבוד AI</span>`;
+      else if(it.act&&!it.done) action=`<button class="mt-btn view" onclick="${it.act}">${it.actLbl}</button>`;
+      tl+=`<div class="mc-item ${k[1]} ${it.done?'done':''}">
+        <div class="mc-time" dir="ltr">${it.time}</div>
+        <label class="mc-chk"><input type="checkbox" ${it.done?'checked':''} onchange="advTgl(${ix})"><span></span></label>
+        <div class="mc-b"><div class="mc-t">${it.title}</div><div class="mc-s">${it.sub}</div></div>
+        ${action}
+        <span class="mc-tag ${k[1]}">${k[0]}</span>
+      </div>`;
+    });
+    if(!nowDrawn) tl+=`<div class="mc-now"><span class="mc-now-t" dir="ltr">${ADV_NOW}</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>`;
+    const leftCnt=ADV_AGENDA.filter(x=>!x.done).length;
+    const calCard=`<div class="advl advcal">
+      <div class="advl-head">
+        <span class="advl-title">היומן שלי</span><span class="advl-sub">יום חמישי · 2.7.2026</span>
+        <button class="mrec-btn on-card sm" style="margin-inline-start:auto" onclick="startMeetRec()"><span class="mrec-dot"></span> התחל פגישה</button>
+        <button class="mt-btn view" onclick="gnavGo('cal')">היומן המלא</button>
+      </div>
+      ${todoHtml}${tl}
+      <div class="mc-foot">${leftCnt} פריטים נותרו להיום</div>
+    </div>`;
+    /* --- התראות: חריגות צפויות (הכי חשוב), מדדים, ומה השתפר --- */
+    const ovd=alerts.filter(a=>a.mkey==='overdraft');
+    const ovdCard=`<div class="advl advov">
+      <div class="advl-head"><span class="advl-title">חריגות צפויות</span><span class="advl-sub">תחזית עו״ש מול מסגרת האשראי</span></div>
+      ${ovd.length?ovd.map(a=>`
+        <div class="advl-row high">
+          <span class="af-val high big"><b>${a.vTxt}</b><i>${a.vSub}</i></span>
+          <div class="advl-b"><div class="advl-t">${a.t}</div><div class="advl-s">${a.meta||''}</div></div>
+          <button class="mt-btn" onclick="selectClient(${a.i})">פתיחת החברה</button>
+        </div>`).join(''):'<div class="advh-ok" style="padding:16px">✓ אין חריגות צפויות בעו״ש</div>'}
+    </div>`;
+    const ORD={budget:0,revenue:1,salesclr:1,liters:2,cfprofit:2,debt:3};
+    const fin=alerts.filter(a=>a.mkey in ORD)
+      .sort((a,b)=>(a.sev==='high'?0:1)-(b.sev==='high'?0:1)||ORD[a.mkey]-ORD[b.mkey]);
+    const finCard=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">התראות מדדים</span><span class="advl-sub">תקציב · קצב הכנסות · מדדים אישיים · גבייה</span></div>
+      ${fin.map((a,ix)=>`
+        <div class="advl-row ${a.sev}">
+          <span class="advl-rank">${ix+1}</span>
+          <div class="advl-b"><div class="advl-t">${a.t}</div><div class="advl-s">${a.meta||''} · ${a.metric}</div></div>
+          <span class="af-val ${a.sev}"><b>${a.vTxt}</b><i>${a.vSub}</i></span>
+          <button class="mt-btn ${a.sev==='high'?'':'view'}" onclick="${a.click||('selectClient('+a.i+')')}">${a.btn||'פתיחת החברה'}</button>
+        </div>`).join('')||'<div class="advh-ok" style="padding:16px">✓ כל המדדים בתוך היעד</div>'}
+    </div>`;
+    const wins=[
+      ['אנרגי אינטרנשיונל','הכנסות יוני +12% מהחודש הקודם'],
+      ['מטעי גבעון','3 שבועות רצופים בלי חריגת תקציב'],
+      ['אנרגי גולני','סך הליטרים חצה את היעד החודשי'],
+    ].map(w=>`<div class="advw-row"><span class="advw-ic">↑</span><b>${w[0]}</b><span>${w[1]}</span></div>`).join('');
+    const winsCard=`<div class="advl"><div class="advl-head"><span class="advl-title">מה השתפר השבוע</span></div>${wins}</div>`;
+    board.innerHTML=`<div class="advh2">
+      <div class="advcal-col">${calCard}</div>
+      <div class="advh-side">${ovdCard}${finCard}${winsCard}</div>
+    </div>`;
+  }

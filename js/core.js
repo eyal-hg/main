@@ -36,6 +36,8 @@
 
   /* ---- rail ---- */
   function renderRail(){
+    // הסרגל הפך לניווט גלובלי — רשימת הלקוחות עברה לתצוגת "לקוחות"
+    if(!document.getElementById('railQ')){if(typeof renderGlobalRail==='function')renderGlobalRail();return;}
     const q=document.getElementById('railQ').value.trim();
     let list=CLIENTS.map((c,i)=>({c,i}));
     if(typeof MGR_FILTER!=='undefined'&&MGR_FILTER) list=list.filter(x=>x.c.mgr===MGR_FILTER);

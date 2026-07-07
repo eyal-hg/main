@@ -25,7 +25,53 @@
   .mt-btn.view{border-color:var(--blue);color:var(--blue)}
   .mt-btn.view:hover{background:var(--blue-bg)}
 
-  /* ===== meeting summary modal ===== */
+  /* ===== הקלטת פגישה ===== */
+  .mrec-btn{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:12.5px;font-weight:700;
+    color:#fff;background:linear-gradient(120deg,#d9534f,#c0392b);border:none;border-radius:999px;padding:9px 16px;cursor:pointer;transition:.12s;white-space:nowrap}
+  .mrec-btn:hover{filter:brightness(1.08)}
+  .mrec-btn.on-card{flex:0 0 auto}
+  .mrec-dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:mrecPulse 1.4s ease-out infinite;flex:0 0 auto}
+  .mrec-dot.big{width:11px;height:11px}
+  @keyframes mrecPulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .mrec-bar{position:fixed;top:0;inset-inline:0;z-index:95;display:flex;align-items:center;gap:14px;
+    background:linear-gradient(90deg,#c0392b,#d9534f);color:#fff;padding:10px 22px;box-shadow:0 6px 24px rgba(192,57,43,.35)}
+  .mrec-who{font-size:13.5px;font-weight:700}
+  .mrec-clock{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+  .mrec-note{font-size:12px;opacity:.85;margin-inline-start:auto}
+  .mrec-stop{font-family:inherit;font-size:12.5px;font-weight:700;color:#c0392b;background:#fff;border:none;border-radius:999px;padding:8px 16px;cursor:pointer}
+  .mrec-stop:hover{background:#ffe9e6}
+
+  /* פגישת-גיבור בראש רשימת הפגישות */
+  .mt-hero{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,#f6fbff,#fff);
+    border:1px solid #cfe6f8;border-radius:14px;padding:14px 18px;margin-bottom:14px}
+  .mt-hero-b{flex:1;min-width:0}
+  .mt-hero-t{font-size:15px;font-weight:700;color:var(--navy)}
+  .mt-hero-s{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .mtcard{border-inline-start:3px solid transparent}
+  .mtcard.st-summary{border-inline-start-color:var(--amber)}
+  .mtcard.st-ai{border-inline-start-color:#6b4fd6}
+  .mtcard.st-upcoming{border-inline-start-color:var(--blue)}
+  .mtcard.st-noshow{border-inline-start-color:var(--coral)}
+  .mtcard.st-done{border-inline-start-color:var(--green)}
+
+  /* היומן המלא — מוטמע כסקציה */
+  #viewCal{height:calc(100vh - 150px)}
+  #calFrame{width:100%;height:100%;border:0;border-radius:14px;background:#fff;box-shadow:var(--shadow)}
+
+  /* ===== עמוד פגישה בתוך הסקציה ===== */
+  .ms-back{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#1668a0;cursor:pointer;padding:6px 12px;border-radius:999px;margin-bottom:10px}
+  .ms-back:hover{background:var(--blue-bg)}
+  .ms.msp{width:100%;max-width:1100px;max-height:none;border:1px solid var(--line);box-shadow:var(--shadow)}
+  .msp-chip{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:3px 11px;vertical-align:2px;margin-inline-start:8px}
+  .msp-chip.amber{color:#b9791f;background:#fdf4e3}
+  .msp-chip.green{color:var(--green);background:var(--green-bg)}
+  .msp-chip.purple{color:#6b4fd6;background:#efecfd}
+  .msp-chip.blue{color:#1668a0;background:var(--blue-bg)}
+  .msp-chip.coral{color:var(--coral-ink);background:rgba(228,131,117,.14)}
+  .msp .ms-foot{justify-content:flex-end}
+  .msp .ms-foot button{flex:0 0 auto;min-width:220px}
+
+  /* ===== meeting summary modal (עדיין בשימוש בדוח המאוחד) ===== */
   .ms-ov{position:fixed;inset:0;background:rgba(12,64,104,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:85;padding:20px}
   .ms-ov.show{display:flex}
   .ms{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);width:720px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}

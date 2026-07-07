@@ -28,20 +28,17 @@
     const rs=document.getElementById('roleSel'); if(rs&&rs.value!==r) rs.value=r;
     if(OPSMODE) exitOps();
     const client=(r==='client1'||r==='clientN'), single=(r==='client1');
-    document.getElementById('shell').classList.toggle('no-rail', client);           /* לקוחות — בלי סרגל צדדי: המחליף העליון מספיק */
-    document.getElementById('railPortfolio').style.display = single?'none':'';
-    document.querySelector('#railPortfolio .cn').textContent = client?'כל החברות שלי':'כל החברות';
     document.querySelectorAll('.tab.advisor-only').forEach(t=>t.style.display=client?'none':'');
     document.querySelector('.top-mid').style.display = isOperator ? 'flex' : 'none';   /* מנהלי תזרים / מוצרים — כלי משרד בלבד */
     document.querySelector('.switcher').style.display = single ? 'none' : 'flex';   /* חברה אחת — אין מה להחליף */
-    renderRail();
-    if(r==='manager') selectPortfolio();        /* מנהל תזרים = תור התפעול */
-    else selectClient(0);                        /* יועץ/לקוח = דשבורד חברה */
+    if(r==='manager'||r==='advisor') selectPortfolio();   /* הבית: יועץ = היום, מנהל = תפעול */
+    else if(r==='clientN') selectPortfolio();              /* לקוח רב-חברות = מבט מאוחד */
+    else selectClient(0);                                  /* לקוח יחיד = דשבורד החברה */
   }
   function enterOps(){
     OPSMODE=true; opsActiveKey=opsKey(); document.body.classList.add('ops-on');
     document.querySelector('.tabs').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewCal','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('opsScope').textContent = SCOPE==='portfolio' ? 'כל החברות' : document.getElementById('headName').textContent;
     document.getElementById('opsView').style.display='';
     // re-entry after completed finish: keep counting from the recorded duration, button becomes refresh

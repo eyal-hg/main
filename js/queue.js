@@ -102,7 +102,6 @@
       ${open?oqsPop(key):''}</div>`;};
     document.getElementById('opsqStrip').innerHTML=
       stat('wait','warn',OQS_IC.wait,'coral',waiting,'מתוך '+T,'חברות ממתינות',waiting/T*100,'var(--coral)')+
-      stat('prog','',OQS_IC.prog,'amber',prog,'מתוך '+T,'בתהליך תפעול',prog/T*100,'var(--amber)')+
       stat('done','',OQS_IC.done,'green',done,'מתוך '+T,'הושלמו היום',done/T*100,'var(--green)')+
       stat('msg',(msgs?'warn':''),OQS_IC.msg,'blue',msgs,'ב-'+msgCos+' חברות','הודעות מלקוחות',msgCos/T*100,'var(--blue)')+
       stat('doc','',OQS_IC.doc,'purple',docsN,'ב-'+docsCos.size+' חברות','מסמכים להזין',docsCos.size/T*100,'#6b4fd6')+

@@ -63,36 +63,28 @@
 </div>
 
 <!-- ===== shell ===== -->
-<div class="shell collapsed" id="shell">
+<div class="shell" id="shell">
 
-  <!-- client rail -->
-  <aside class="rail">
-    <div class="rail-head">
-      <span class="rt">לקוחות</span>
-      <span class="badge" id="cliCount">5</span>
-      <button class="collapse-btn" onclick="toggleRail()" title="כווץ / הרחב">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
-    </div>
-    <div class="rail-portfolio" id="railPortfolio" onclick="selectPortfolio()" title="דשבורד כלל החברות">
-      <span class="rp-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/></svg></span>
-      <div class="ci"><div class="cn">כל החברות</div><div class="cs">תיק לקוחות · 12 חברות</div></div>
-    </div>
-    <div class="rail-search">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
-      <input id="railQ" placeholder="חיפוש לקוח / מנהל תזרים" oninput="renderRail()">
-    </div>
-    <div class="rail-list" id="railList"></div>
+  <!-- סרגל גלובלי — קבוע וזהה בכל מסך; שתי רמות ניווט: גלובלי כאן, סקציות בתוך עמוד הלקוח -->
+  <aside class="rail gnav">
+    <div class="gnav-list" id="gnavList"></div>
+    <div class="gnav-bottom" id="gnavBottom"></div>
   </aside>
 
   <!-- main dashboard -->
   <main class="main">
+    <div class="crumb" id="crumb" style="display:none"></div>
     <div class="client-head">
       <h1 id="headName">אנרגי אינטרנשיונל</h1>
       <span class="hp2" id="headHp">511327876</span>
       <span class="st active">פעיל</span>
       <div class="opsq-filters opsq-status" id="opsqStatus" style="margin-inline-start:auto;display:none"></div>
       <div class="db-actions">
+        <button class="mrec-btn" id="btnMeet" onclick="startMeetRec()" style="display:none"></button>
+        <div id="wbActions" style="display:flex;gap:8px">
+          <button class="chip-btn" id="btnAdd" onclick="openPicker()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> הוספת ווידג'ט</button>
+          <button class="chip-btn" id="btnEdit" onclick="toggleEdit()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> עריכת לוח</button>
+        </div>
         <div class="rep" id="repDd">
           <button class="chip-btn" onclick="toggleRep(event)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg> דוחות <svg class="repchev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
           <div class="rep-menu" id="repMenu">
@@ -109,16 +101,12 @@
 
     <!-- section tabs -->
     <div class="tabs">
-      <div class="tab on" onclick="switchTab(this,'dash')">דשבורד</div>
-      <div class="tab advisor-only" onclick="switchTab(this,'chat')">עוזר AI</div>
-      <div class="tab advisor-only" onclick="switchTab(this,'metrics')">מדדים</div>
-      <div class="tab" onclick="switchTab(this,'meetings')">פגישות</div>
-      <div class="tab advisor-only" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
-      <div class="tab advisor-only" onclick="switchTab(this,'flow')">התהליך שלי</div>
-      <div id="wbActions" style="margin-inline-start:auto;display:flex;gap:8px;align-self:center">
-        <button class="chip-btn" id="btnAdd" onclick="openPicker()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> הוספת ווידג'ט</button>
-        <button class="chip-btn" id="btnEdit" onclick="toggleEdit()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> עריכת לוח</button>
-      </div>
+      <div class="tab on" data-t="dash" onclick="switchTab(this,'dash')">דשבורד</div>
+      <div class="tab advisor-only" data-t="chat" onclick="switchTab(this,'chat')">עוזר AI</div>
+      <div class="tab advisor-only" data-t="metrics" onclick="switchTab(this,'metrics')">מדדים</div>
+      <div class="tab" data-t="meetings" onclick="switchTab(this,'meetings')">פגישות</div>
+      <div class="tab advisor-only" data-t="prep" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
+      <div class="tab advisor-only" data-t="flow" onclick="switchTab(this,'flow')">התהליך שלי</div>
     </div>
 
     <!-- ===== DASHBOARD view ===== -->
@@ -146,6 +134,14 @@
     <!-- attention focus: exception-driven alerts as uniform widgets (advisor + HK) -->
     <div id="alertsView" style="display:none">
       <div class="al-board" id="alBoard"></div>
+    </div>
+
+    <!-- לקוחות — רשימת החברות של היועץ (יעד גלובלי) -->
+    <div id="clientsView" style="display:none">
+      <div class="clv-head">
+        <input class="clv-q" id="clvQ" placeholder="חיפוש לקוח / מנהל תזרים…" oninput="renderClientsView()">
+      </div>
+      <div class="clv-grid" id="clvGrid"></div>
     </div>
 
 
@@ -214,12 +210,24 @@
       <div class="mt-wrap">
         <div class="mt-whead">
           <div class="mt-wtitle"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>פגישות</span></div>
+          <button class="mt-btn view" onclick="showTab('cal')" style="margin-inline-start:auto">היומן המלא</button>
           <button class="mt-new" onclick="toast('פתיחת קביעת פגישה')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> קביעת פגישה</button>
+          <button class="mrec-btn on-card" onclick="startMeetRec()"><span class="mrec-dot"></span> התחל פגישה</button>
         </div>
         <div class="mt-filters" id="mtFilters"></div>
         <div class="mt-list" id="mtList"></div>
       </div>
+      <!-- עמוד פגישה — נפתח בתוך הסקציה במקום פופאפ -->
+      <div id="mtDetail" style="display:none"></div>
     </div>
+
+    <!-- ===== CALENDAR view — ניהול היומן המלא, מוטמע מ-calendar.html ===== -->
+    <div id="viewCal" style="display:none">
+      <iframe id="calFrame" data-src="calendar.html" title="היומן שלי"></iframe>
+    </div>
+
+    <!-- ===== SETTINGS view — הגדרות היועץ ===== -->
+    <div id="viewSettings" style="display:none"></div>
 
     <!-- ===== placeholder views ===== -->
     <div id="viewOther" style="display:none">
@@ -301,31 +309,6 @@
     <div class="fin-steps" id="finSteps"></div>
     <div class="fin-findings" id="finFindings"></div>
     <div class="fin-foot" id="finFoot"></div>
-  </div>
-</div>
-
-<!-- ===== meeting summary modal ===== -->
-<div class="ms-ov" id="msOv">
-  <div class="ms">
-    <div class="ms-head">
-      <button class="ms-x" onclick="closeMeeting()">✕</button>
-      <div class="ms-title" id="msTitle">פ.ע - חודש יוני</div>
-      <div class="ms-meta">
-        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span id="msDate">01.06.2026</span></span>
-        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="msTime">11:00-12:00</span></span>
-      </div>
-    </div>
-    <div class="ms-tabs" id="msTabs">
-      <div class="ms-tab on" onclick="msTab(this,'summary')">סיכום פגישה</div>
-      <div class="ms-tab" onclick="msTab(this,'tasks')">משימות</div>
-      <div class="ms-tab" onclick="msTab(this,'feedback')">משוב</div>
-      <div class="ms-tab" onclick="msTab(this,'transcript')">תמלול</div>
-    </div>
-    <div class="ms-body" id="msBody"></div>
-    <div class="ms-foot">
-      <button class="ms-nosend" onclick="closeMeeting()">אישור ללא שליחה</button>
-      <button class="ms-send" onclick="sendSummary()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> אישור ושליחת סיכום</button>
-    </div>
   </div>
 </div>
 
@@ -456,6 +439,15 @@
     <input id="aiInput" placeholder="שאלו כל דבר על העסק שלכם…" onkeydown="if(event.key==='Enter')aiSend()">
     <button class="ai-send" onclick="aiSend()" aria-label="שליחה"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </div>
+</div>
+
+<!-- פס הקלטת פגישה — צף מעל הכל בזמן הקלטה -->
+<div class="mrec-bar" id="mrecBar" style="display:none">
+  <span class="mrec-dot big"></span>
+  <span class="mrec-who" id="mrecWho">מקליט פגישה</span>
+  <span class="mrec-clock" id="mrecClock" dir="ltr">00:00</span>
+  <span class="mrec-note">ההקלטה תעבור עיבוד AI ותסוכם אוטומטית</span>
+  <button class="mrec-stop" onclick="stopMeetRec()">■ סיום הקלטה</button>
 </div>
 
 <!-- client task → cashflow manager -->
