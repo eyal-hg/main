@@ -1,43 +1,302 @@
-/* HK Dashboard — שכבת עיצוב לפי קובץ הפיגמה HK-Website (V9HvPFrk…)
-   נטען אחרון ודורס טוקנים + מראה כרטיסים/כפתורים. */
+/* HK Dashboard — שכבת העיצוב לפי מערכת העיצוב בפיגמה (HK-Website)
+   מפרט מסונתז מ-30+ מסכים: רקע בהיר, כרטיסים r8 עם צל Gentle, פס סטטוס 6px,
+   פילים עם קו-מתאר (navy לפעולות שורה, coral לפעולות כותרת), coral מלא רק במודאלים,
+   צ'יפים r30, טאבים עם קו תחתון coral. נטען אחרון ודורס. */
 
   :root{
-    /* רקע תכלת של הדשבורד בפיגמה, אפורים ניטרליים (Grey Text #949494, Divider #E3E3E3) */
-    --bg:#E2F1FA;
-    --line:#E4E7EA;
-    --muted:#8C949C;
-    /* Green #52C41A מהפיגמה */
-    --green:#52C41A; --green-bg:#EFFAE5;
-    /* צל "Card" הכפול והרך מהפיגמה + צל חלוניות "Shadow 01" */
-    --shadow:-3px -6px 19px rgba(138,138,138,.13), 7px 5px 21px rgba(104,105,106,.10);
-    --shadow-lg:0 1px 18px rgba(0,0,0,.10), 0 18px 50px rgba(12,64,104,.16);
+    --bg:#F0F4F7;                 /* קנבס העמוד — אפרפר-תכלכל עדין */
+    --line:#E3E3E3;               /* Divider */
+    --muted:#7E7E7E;              /* Grey text */
+    --ink:#273736;                /* Dark Green — טקסט גוף */
+    --blue-bg:#D6EFFB;            /* צ'יפ פעיל */
+    --green:#52C41A; --green-bg:#F2FFEB;
+    --amber:#EAD061; --amber-bg:#FFFDEC;
+    --coral-bg:#FFE9E6;
+    --sky:#E1F6FF;                /* Baby Blue 3 — מסלולי פרוגרס, תאי יומן */
+    --tint:#E9F4FB;               /* כותרות טבלה, קופסת AI */
+    --shadow:0 0 5px rgba(12,64,104,.15);          /* Gentle */
+    --shadow-lg:0 1px 18px rgba(0,0,0,.10);        /* Shadow 01 */
   }
+  body{color:var(--ink)}
 
-  /* ===== כרטיסים: לבנים, בלי מסגרת, צפים על התכלת ===== */
-  .opsq-stat,.opsq-card,.cxcard,.awdg,.mcard2,.hcard,.oqs-pop,.ai-panel,
-  .prod-menu,.sw-dd,.mx2,.al-card{border-color:transparent}
-  .opsq-stat,.opsq-card,.cxcard,.awdg,.mcard2,.hcard{border-radius:12px}
+  /* ===== משטחים: כרטיסים r8, צל Gentle, בלי מסגרת ===== */
+  .opsq-stat,.opsq-card,.cxcard,.awdg,.mcard2,.hcard,.advl,.clv-card,.set-card,.set-empty,
+  .mtcard,.mt-wrap,.ms.msp,.oqs-pop,.prod-menu,.sw-dd,.mx2,.al-card,.ai-panel,.mt-hero{
+    border-radius:8px;border-color:transparent;box-shadow:var(--shadow)}
+  .oqs-pop,.prod-menu,.sw-dd,.mx2,.ai-panel,.rep-menu{box-shadow:var(--shadow-lg)}
   .opsq-stat.accent{background:#fff;border-color:transparent}
-  .opsq-stat.open{border-color:var(--blue)}
-  .cxcard.open{border-color:var(--blue)}
+  .opsq-stat.open,.cxcard.open{border-color:#39ABE2}
+  .wframe iframe{border-radius:8px}
+  .clv-fig,.cx-drop{border-radius:8px}
 
-  /* ===== כפתורים: פילים כמו בפיגמה ===== */
-  .chip-btn,.oq-btn,.mx2-btn,.cxm-btn,.mt-new,.ms-send{border-radius:999px}
-  /* ראשי = קורל מלא (כמו "אישור" במודאלים של הפיגמה) */
-  .chip-btn.primary,.mx2-btn.primary,.cxm-btn.primary,.mt-new,.ms-send,.cx-add{
-    background:var(--coral);border-color:var(--coral);color:#fff}
-  .chip-btn.primary:hover,.mx2-btn.primary:hover,.cxm-btn.primary:hover,.mt-new:hover,.ms-send:hover,.cx-add:hover{
-    background:var(--coral-deep);border-color:var(--coral-deep)}
-  /* פעולה בשורה = קו־מתאר קורל (כמו הצ'יפים "קביעת פגישה / הוספת משימה") */
-  .oq-btn{background:#fff;border:1px solid var(--coral);color:var(--coral-ink)}
-  .oq-btn:hover{background:var(--coral);border-color:var(--coral);color:#fff}
+  /* פס סטטוס בקצה הכרטיס — 6px כמו בפיגמה */
+  .mtcard{border-inline-start-width:6px}
+  .oqrow{border-inline-start-width:6px}
+  .advl-row.high,.advl-row.mid{border-inline-start-width:4px}
+
+  /* ===== טופ-בר וכותרות ===== */
+  .topbar{box-shadow:0 1px 9px rgba(0,0,0,.10);border-bottom:none}
+  .who b{color:#39ABE2;border-bottom:1px solid #39ABE2;font-weight:400;cursor:pointer}
+
+  /* ===== סרגל ניווט — פריט פעיל בכחול-תינוק, לא מילוי כהה ===== */
+  .gn-item{font-size:15px;color:#0C4068}
+  .gn-item.on{background:var(--blue-bg);color:#0C4068;font-weight:600}
+  .gn-item.on svg{color:#39ABE2}
+  .gn-item svg{color:#0C4068;opacity:.75}
+  .gn-co{border-top-color:var(--line)}
+
+  /* ===== כפתורים ===== */
+  /* פעולות שורה — פיל קו-מתאר navy (אושר/דחייה/תגובה בפיגמה) */
+  .chip-btn,.oq-btn,.mt-btn,.mx2-btn,.cxm-btn,.mt-new,.ms-send,.ms-nosend,.cx-add,.cx-dl,.mcw-todaybtn{
+    border-radius:37px;font-weight:400}
+  .oq-btn{background:#fff;border:1px solid #0C4068;color:#0C4068}
+  .oq-btn:hover{background:#0C4068;color:#fff;border-color:#0C4068}
   .oq-btn.ghost{border-color:var(--line);color:var(--muted)}
-  .oq-btn.ghost:hover{border-color:var(--coral);color:var(--coral-ink);background:#fff}
+  .mt-btn{background:#fff;border:1px solid #0C4068;color:#0C4068;font-weight:400}
+  .mt-btn:hover{background:#F0F7FC}
+  /* פעולות כותרת מהירות — פיל קו-מתאר coral (קביעת פגישה/הוספת משימה בפיגמה) */
+  .mt-btn.view,.chip-btn{background:#fff;border:1px solid #E48375;color:#E48375}
+  .mt-btn.view:hover,.chip-btn:hover{background:var(--coral-bg);border-color:#E48375;color:#d96a5a}
+  .chip-btn.primary,.mt-new{background:#fff;border:1px solid #E48375;color:#E48375}
+  .chip-btn.primary:hover,.mt-new:hover{background:var(--coral-bg);color:#d96a5a}
+  /* מודאלים — אישור מלא coral, ביטול קו-מתאר coral */
+  .mx2-btn.primary,.ms-send,.cxm-btn.primary,.cx-add{background:#E48375;border:1px solid #E48375;color:#fff}
+  .mx2-btn.primary:hover,.ms-send:hover,.cxm-btn.primary:hover,.cx-add:hover{background:#d96a5a;border-color:#d96a5a}
+  .mx2-btn,.ms-nosend,.cxm-btn{background:#fff;border:1px solid #E48375;color:#E48375}
+  .mx2-btn:hover,.ms-nosend:hover,.cxm-btn:hover{background:var(--coral-bg);border-color:#E48375;color:#d96a5a}
+  .mx2-btn.danger{background:#E48375;border-color:#E48375;color:#fff}
+  /* הקלטת פגישה — פיל לבן עם נקודה אדומה, כמו בפיגמה */
+  .mrec-btn{background:#fff;border:1px solid var(--line);color:#0C4068;box-shadow:var(--shadow);
+    background-image:none;font-weight:500}
+  .mrec-btn:hover{filter:none;border-color:#E48375}
+  .mrec-btn .mrec-dot{background:#e02f2f}
+  .mrec-btn.on-card{background:#fff}
+  /* פס ההקלטה — צ'יפ לבן צף עם טיימר navy וכפתור עצירה אדום */
+  .mrec-bar{background:#fff;color:#0C4068;box-shadow:var(--shadow-lg);border-bottom:1px solid #F0F0F0}
+  .mrec-bar .mrec-dot.big{background:#e02f2f}
+  .mrec-who{color:#0C4068}
+  .mrec-clock{color:#0C4068}
+  .mrec-note{color:var(--muted);opacity:1}
+  .mrec-stop{background:#e02f2f;color:#fff}
+  .mrec-stop:hover{background:#c62828}
 
-  /* ===== טפסים ותגים ===== */
-  .mx2-inp{border-radius:10px}
-  .cx-badge{border-radius:999px}
-  .sseg-bar .fill,.oqs-bar i{transition:width .4s}
+  /* ===== צ'יפים ותגים ===== */
+  .ofilter{border:1px solid #D7D7D7;border-radius:30px;color:var(--ink);background:#fff;font-size:13px;font-weight:400;padding:4px 10px}
+  .ofilter.on,.opsq-filters .ofilter.on,.mt-filters .ofilter.on{
+    background:var(--blue-bg);border-color:#39ABE2;color:#1668a0;font-weight:500}
+  .msp-chip{border-radius:24px;font-weight:400;border:.5px solid transparent}
+  .msp-chip.amber{background:var(--amber-bg);border-color:var(--amber);color:#0C4068}
+  .msp-chip.green{background:#E8FFE4;border-color:#65CB60;color:#0C4068}
+  .msp-chip.blue{background:var(--blue-bg);border-color:#39ABE2;color:#0C4068}
+  .msp-chip.coral{background:#FFEDEB;border-color:#E48375;color:#E48375}
+  .msp-chip.purple{background:#F3EDFD;border-color:#B49AE8;color:#0C4068}
+  .cx-badge{background:rgba(177,223,243,.5);color:#0C4068;font-weight:400;border-radius:8px}
+  .mc-tag{border:1px solid #D7D7D7;background:#fff;font-weight:400}
+  .mc-tag.ops{color:#0C4068;background:#fff;border-color:#D7D7D7}
+  .mc-tag.task{color:#0C4068}
+  .mc-tag.client{color:#E48375;border-color:#E48375;background:#fff}
+  .mc-tag.meet{color:#0C4068;background:#fff;border-color:#65CB60}
+  .mc-pri.high{background:#FFEDEB;color:#E48375}
+  .mc-pri.mid{background:var(--amber-bg);color:#b9791f}
+  .oq-stat{border-radius:24px;font-weight:400}
 
-  /* קווי הפרדה פנימיים — Divider ניטרלי */
-  .opsq-head,.cx-head,.oqhead{border-bottom-color:var(--line)}
+  /* ===== באנר התראות / רצועת אזהרה — כמו בפיגמה ===== */
+  #coAlerts>div,.af-strip{background:var(--coral-bg)!important;border:.5px solid #E48375!important;border-radius:8px}
+
+  /* ===== טאבים — קו תחתון coral, טקסט אפור→כהה ===== */
+  .ms-tab{color:var(--muted);font-weight:400;border-bottom:2px solid transparent}
+  .ms-tab.on{color:var(--ink);border-bottom-color:#E48375;font-weight:500}
+  .ms-tabs{border-bottom:1px solid var(--line)}
+  .mseg,.sseg{border-radius:30px}
+  .mseg.on{background:var(--blue-bg);color:#1668a0}
+
+  /* ===== פרוגרס — מסלול בהיר, מילוי כחול ===== */
+  .oqs-bar{background:#F0F0F0;border-radius:16px}
+  .oqs-bar i{background:#39ABE2!important;border-radius:16px}
+  .sseg-bar{background:#F0F0F0}
+  .sseg-bar .fill{background:#39ABE2}
+
+  /* ===== חיפוש — פיל עם צל פנימי ===== */
+  .clv-q,.rail-search input{border-radius:40px;box-shadow:inset 0 0 4px rgba(0,0,0,.12);border:none;background:#fff}
+  .clv-q::placeholder{color:#949494}
+
+  /* ===== קוביות סטטיסטיקה — אווריריות, מספר navy ===== */
+  .opsq-stat .n{color:#0C4068;font-weight:400;font-size:24px}
+  .opsq-stat .n em{font-weight:400}
+  .opsq-stat.warn .n{color:#E48375}
+  .oqs-ic{border-radius:8px}
+
+  /* ===== יומן/רשימות — שורות עם מפרידי #E3E3E3 ===== */
+  .mc-item,.advl-row,.advh-row,.cxf,.cxl,.set-row{border-bottom-color:#F0F0F0}
+  .mc-todo{background:#FAFCFE;border-bottom-color:var(--line)}
+  .mc-chk input:checked+span{background:#39ABE2;border-color:#39ABE2}
+  .mc-now-line{background:#E48375}
+  .mc-now-lbl{background:#E48375}
+  .mcw-hdr .mcw-day.today{background:var(--blue-bg);color:#0C4068;border-bottom-color:#39ABE2}
+  .mcw-hdr .mcw-day.today span{color:#1668a0}
+  .mcw-cell.today{background:var(--sky)}
+  .mcw-ev{border-radius:6px}
+
+  /* ===== ערכים/תגי מספר בהתראות ===== */
+  .af-val{border-radius:8px;font-weight:400}
+  .af-val b{font-weight:500}
+  .advl-rank{background:#F0F0F0;color:#0C4068}
+  .advl-row.high .advl-rank{background:#FFEDEB;color:#E48375}
+
+  /* ===== קופסת AI ותקצירים ===== */
+  .msp .ms-body,.ms-body{background:#fff}
+  .ms-sec{color:#0C4068}
+  .ms-insight{background:var(--tint);border-radius:8px;padding:12px 14px}
+
+  /* ===== טיפוגרפיה — היררכיה לפי הפיגמה ===== */
+  .client-head h1{font-size:24px;font-weight:400}
+  .awdg-t,.advl-title,.opsq-title,.mt-wtitle span,.set-title{font-weight:500;color:#0C4068}
+  .awdg-sub,.advl-sub{color:var(--muted)}
+  .mc-t,.advl-t,.mt-name,.clv-n{font-weight:500}
+  .sub-line{color:var(--muted)}
+
+  /* ===== מודאלים ===== */
+  .mx2{border-radius:8px}
+  .mx2-title{font-weight:500}
+  .mx2-inp{border-radius:8px;border-color:#D7D7D7}
+  .cf-msg{color:var(--ink)}
+
+  /* ===== גריד היומן והצ'יפים בו ===== */
+  .mc-seg{border-radius:30px;background:#fff;border-color:#D7D7D7}
+  .mc-seg span.on{background:var(--blue-bg);color:#1668a0}
+  .cx-head{border-bottom-color:var(--line)}
+
+  /* דוחות ותפעול עברו לסרגל החברה — יורדים מכותרת הדשבורד */
+  .db-actions #repDd,.db-actions #btnOps{display:none!important}
+  .gn-sub{padding:7px 14px 7px 14px;margin-inline-start:34px;font-size:12.5px;color:#1668a0;cursor:pointer;border-radius:8px}
+  .gn-sub:hover{background:var(--blue-bg)}
+  /* תפעול — CTA בראש סרגל החברה, שני מצבים */
+  .gn-opsbtn{margin:4px 10px 10px;padding:11px 14px;border-radius:10px;background:#E48375;color:#fff;cursor:pointer;transition:.12s;text-align:center}
+  .gn-opsbtn:hover{background:#d96a5a}
+  .gn-opsbtn b{display:block;font-size:14.5px;font-weight:600}
+  .gn-opsbtn span{display:block;font-size:11px;opacity:.9;margin-top:2px}
+  .gn-opsbtn.done{background:var(--green-bg);color:#2e7d32;border:1px solid #65CB60}
+  .gn-opsbtn.done:hover{background:#e6f8dd}
+  .coal-more{font-family:inherit;font-size:11.5px;font-weight:700;color:#E48375;background:#fff;border:1px solid #E48375;border-radius:30px;padding:3px 10px;cursor:pointer}
+  .coal.open{flex-wrap:wrap}
+
+  /* עוגן ללקוח — כדור הצ'אט בכחול המותג */
+  .ai-orb{background:linear-gradient(135deg,#39ABE2,#1668a0);border:none}
+  .ai-send{background:#39ABE2;border-radius:12px}
+  .aic{border-radius:8px}
+
+  /* שלבי עבודה בתפעול — כותרות סקציה לפי סדר טיפול */
+  .ost-head{display:flex;align-items:center;gap:10px;padding:12px 18px 8px;background:#FAFCFE;border-bottom:1px solid var(--line)}
+  .ost-num{width:22px;height:22px;border-radius:50%;background:#0C4068;color:#fff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .ost-b{flex:1;min-width:0}
+  .ost-b b{font-size:13.5px;color:#0C4068;font-weight:600}
+  .ost-b i{font-style:normal;font-size:11px;color:var(--muted);margin-inline-start:8px}
+  .ost-cnt{font-size:11px;font-weight:700;color:#1668a0;background:var(--blue-bg);border-radius:30px;padding:3px 10px}
+  .gn-lock{margin:6px 12px;padding:9px 12px;border-radius:8px;background:var(--coral-bg);border:.5px solid #E48375;font-size:11.5px;color:#E48375;line-height:1.5}
+  /* שלבי תפעול כווидג'טים */
+  .ops-wgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  @media(max-width:1150px){.ops-wgrid{grid-template-columns:1fr}}
+  .ops-wdg{background:#fff;border-radius:8px;box-shadow:var(--shadow);overflow:hidden;border-top:3px solid #D7D7D7}
+  .ops-wdg .ost-head{border-bottom:1px solid var(--line)}
+  .ops-wdg.st-msg{border-top-color:#65CB60}
+  .ops-wdg.st-overdraft{border-top-color:#E48375}
+  .ops-wdg.st-carry{border-top-color:#EAD061}
+  .ops-wdg.st-unexpected{border-top-color:#f0925c}
+  .ops-wdg.st-doc{border-top-color:#39ABE2}
+  .ops-wdg.st-ai{border-top-color:#B49AE8}
+  /* תרשים זרימת התפעול */
+  .ofl{display:flex;align-items:center;padding:12px 18px 16px;overflow-x:auto}
+  .ofl-nd{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto}
+  .ofl-nd b{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#F0F0F0;color:#949494;border:1px solid #D7D7D7}
+  .ofl-nd i{font-style:normal;font-size:10.5px;color:#949494;white-space:nowrap}
+  .ofl-nd.done b{background:var(--green-bg);color:#2e7d32;border-color:#65CB60}
+  .ofl-nd.done i{color:#2e7d32}
+  .ofl-nd.cur b{background:#E48375;color:#fff;border-color:#E48375;box-shadow:0 0 0 4px #FFE9E6}
+  .ofl-nd.cur i{color:#E48375;font-weight:700}
+  .ofl-ln{flex:1;min-width:18px;height:2px;background:#E3E3E3;margin:0 6px 16px}
+  .ofl-ln.done{background:#65CB60}
+  .ops-wdg.wlock{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+  .ops-wdg.wdone{opacity:.8}
+  .ost-num.ok{background:var(--green-bg);color:#2e7d32;border:1px solid #65CB60}
+  .ost-cnt.done{background:var(--green-bg);color:#2e7d32}
+  .ofl-nd{cursor:pointer;position:relative}
+  .ofl-nd em{font-style:normal;position:absolute;top:-6px;inset-inline-end:-8px;background:#E48375;color:#fff;font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 5px}
+  .ofl-nd.peek b{outline:2px dashed #39ABE2;outline-offset:2px}
+  .fstages{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;font-size:12px;color:var(--muted);margin-top:10px}
+  .fstages b{color:#0C4068}
+  .gn-mr{font-style:normal;font-size:9.5px;font-weight:700;border-radius:20px;padding:2px 7px;flex:0 0 auto}
+  .gn-mr.ok{background:var(--green-bg);color:#2e7d32;border:.5px solid #65CB60}
+  .gn-mr.no{background:#FFEDEB;color:#E48375;border:.5px solid #E48375}
+  .ofl-nd{cursor:default}
+  .ofl-nd.clk{cursor:pointer}
+  .coal-chip.mrep{background:#E48375;color:#fff;font-weight:700;border-color:#E48375;cursor:pointer}
+  .coal-chip.mrep:hover{background:#d96a5a}
+  .fs-num{width:20px;height:20px;border-radius:50%;background:#0C4068;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+  /* סיום תפעול — מסך בתוך מצב העבודה, פס בדיקות אופקי */
+  .fin-screen{position:relative;background:#fff;border-radius:8px;box-shadow:var(--shadow);padding:20px 22px}
+  .fin-screen .fin-head{display:flex;align-items:center;gap:14px;text-align:start;padding:0 0 14px}
+  .fin-screen .fin-steps{display:flex;flex-wrap:wrap;gap:0;align-items:center;border-block:1px solid var(--line);padding:12px 4px;margin-bottom:14px}
+  .fin-screen .fin-step{display:flex;align-items:center;gap:7px;padding:4px 10px;border:none;background:none}
+  .fin-screen .fin-step:not(:last-child)::after{content:"";width:26px;height:2px;background:#E3E3E3;margin-inline-start:10px}
+  .fin-screen .fin-step.done:not(:last-child)::after{background:#65CB60}
+  .fin-screen #finFindings{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:1150px){.fin-screen #finFindings{grid-template-columns:1fr}}
+  .fin-screen .fin-foot{justify-content:flex-end}
+  /* פס "מצב היום" — משטח אחד, טיפוגרפיה */
+  .daybar{background:#fff;border-radius:8px;box-shadow:var(--shadow);display:flex;align-items:stretch;padding:6px 0}
+  .db-sec{position:relative;flex:1;min-width:0;padding:14px 22px;cursor:pointer;border-inline-start:1px solid #F0F0F0;transition:.12s}
+  .db-sec:first-child{border-inline-start:none}
+  .db-sec:hover{background:#FAFCFE}
+  .db-sec.q{flex:1.7}
+  .db-big{font-size:26px;font-weight:400;color:#0C4068;line-height:1.1;display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+  .db-big em{font-style:normal;font-size:12.5px;color:#7E7E7E}
+  .db-sub{font-size:12px;color:#7E7E7E;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .db-sub b{color:#0C4068;font-weight:600}
+  .dbq{display:flex;gap:6px;margin-top:8px}
+  .dbq-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0C4068;background:#fff;border:2px solid #D7D7D7}
+  .dbq-dot.done{border-color:#65CB60;background:var(--green-bg);color:#2e7d32}
+  .dbq-dot.check{border-color:#39ABE2;background:var(--blue-bg);color:#1668a0}
+  .dbq-dot.prog{border-color:#39ABE2;background:#fff}
+  .dbq-dot.alert{border-color:#E48375;background:#FFEDEB;color:#E48375}
+  .dbq-dot.wait{border-color:#EAD061;background:#FFFDEC}
+  .oq-status.check .dot{background:#39ABE2}
+  .oqrow.acc-blue{border-inline-start-color:#39ABE2}
+  .gn-opsbtn.check{background:var(--blue-bg);color:#1668a0;border:1px solid #39ABE2}
+  .gn-opsbtn.check:hover{background:#c4e6f8}
+  /* פס היום — ליטוש: אוויר, היררכיה, ורמז לחיצה */
+  .daybar{padding:2px 0}
+  .db-sec{padding:18px 26px 16px}
+  .db-sec::after{content:"▾";position:absolute;top:12px;inset-inline-end:14px;font-size:10px;color:#c2cfdc}
+  .db-sec:hover::after{color:#39ABE2}
+  .db-sec.open{background:#FAFCFE}
+  .db-big{font-size:29px;gap:10px}
+  .db-big em{font-size:12px;letter-spacing:-.1px}
+  .db-sub{margin-top:6px;font-size:12.5px}
+  .dbq{margin-top:10px;gap:7px}
+  .dbq-dot{width:27px;height:27px;font-size:12px;box-shadow:0 1px 3px rgba(12,64,104,.08)}
+  .db-sec .oqs-pop{top:calc(100% - 6px)}
+  /* פס היום — אנטומיית KPI מהפיגמה: כותרת navy, מספר כחול גדול, כיתוב אפור */
+  .db-sec::after{content:none}
+  .db-l{font-size:13.5px;font-weight:500;color:#0C4068;white-space:nowrap}
+  .db-frac{font-weight:400;font-size:12px;color:#7E7E7E;margin-inline-start:6px}
+  .db-big{font-size:27px;font-weight:400;color:#39ABE2;line-height:1.15;margin-top:4px}
+  .db-big i{font-style:normal;font-size:15px;color:#9CCFEA}
+  .db-big em{display:none}
+  .db-sub{margin-top:3px}
+  .db-sec.q .db-l{margin-bottom:2px}
+  .dbq{margin-top:8px}
+  /* תור בסרגל — שורות עם שלב ופרוגרס */
+  .gn-q{align-items:flex-start;padding:9px 12px}
+  .gn-q .dbq-dot{margin-top:2px}
+  .gn-qn{display:flex;align-items:center;gap:6px;font-size:13px}
+  .gn-qs{font-size:11px;margin-top:1px}
+  .gn-qs.check{color:#1668a0;font-weight:600}
+  .gn-qs.done{color:#2e7d32}
+  .gn-qs.alert{color:#E48375}
+  .gn-qs.prog{color:#0C4068}
+  .gn-qbar{height:3px;border-radius:99px;background:#F0F0F0;margin-top:5px;overflow:hidden}
+  .gn-qbar i{display:block;height:100%;border-radius:99px;background:#39ABE2}
+  .gn-qbar i.done{background:#65CB60}
+  .gn-qbar i.alert{background:#E48375}
+  .gn-qbar i.wait{background:#EAD061}
+  .gn-co.qdiv{padding:0;margin-top:12px;height:0}

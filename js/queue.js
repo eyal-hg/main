@@ -6,6 +6,8 @@
   const OPS_STATMAP={active:['st-active','פעיל'],trial:['st-trial','ניסיון'],setup:['st-setup','בהקמה']};
   function opsqSetStatus(k){OPSQ_STATUS=k;renderOpsQueue();}
   function opsStatusOf(i){const k='c'+i;
+    if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k)
+      return{cls:'check',acc:'acc-blue',txt:'בבדיקות · שלב '+(FIN_STATE.step+1)+'/'+FIN_STEPS.length,btn:'המשך בדיקות',ghost:false};
     if(opsDoneSet.has(k))return{cls:'done',acc:'acc-green',txt:'הושלם · '+fmtDur(opsDur[k]||0),btn:'פתח שוב',ghost:true};
     if(opsAccum[k])return{cls:'prog',acc:'acc-amber',txt:'בתהליך · '+fmtDur(opsAccum[k]),btn:'המשך תפעול',ghost:false};
     if(pendOf(i)>0)return{cls:'wait',acc:CLIENTS[i].opsAlert?'acc-coral':'acc-gray',txt:'ממתין · '+pendOf(i)+' משימות',btn:'תפעל',ghost:false};
@@ -45,12 +47,39 @@
     if(OPSQ_FILTER==='task')return T.some(x=>x.type==='ai'||x.type==='carry'||x.type==='unexpected'||x.type==='overdraft');
     if(OPSQ_FILTER==='msg')return (CLIENTS[i].unread>0)||T.some(x=>x.type==='msg');
     return true;}
+  /* ===== סדר תור התפעול — חוקים שהאדמין מסדר בהגדרות =====
+     החוק הראשון שתופס קובע את המיקום; "לקוחות של יועצים" דוחף לסוף; הושלמו תמיד אחרונים */
+  let QUEUE_RULES=[
+    {id:'req',      label:'בקשת לקוח — תפעול יומי עד שעה קבועה', on:true,  match:c=>!!c.reqBy,               why:c=>'עד '+c.reqBy},
+    {id:'alert',    label:'לקוחות בחריגה בפועל',                  on:true,  match:c=>!!c.opsAlert,            why:()=>'חריגה בפועל'},
+    {id:'forecast', label:'לקוחות בחריגה צפויה',                  on:true,  match:c=>((c.metrics||{}).overdraft||0)>0, why:c=>'חריגה צפויה'},
+    {id:'group',    label:'קבוצות חברות גדולות',                  on:true,  match:c=>!!c.group,               why:()=>'קבוצת חברות'},
+    {id:'advisor',  label:'לקוחות של יועצים — בסוף התור',         on:true,  match:c=>!!c.advClient, last:true, why:()=>'לקוח של יועץ'},
+  ];
+  function qRule(i){
+    const c=CLIENTS[i];
+    for(let r=0;r<QUEUE_RULES.length;r++){
+      const rule=QUEUE_RULES[r];
+      if(rule.on&&rule.match(c)) return {rank:rule.last?90:r, why:rule.why(c)};
+    }
+    return {rank:50, why:''};
+  }
   function opsqRank(i){const k='c'+i;
-    if(CLIENTS[i].opsAlert&&!opsDoneSet.has(k))return 0;
-    if(!opsDoneSet.has(k)&&!opsAccum[k]&&pendOf(i)>0)return 1;
-    if(opsAccum[k]&&!opsDoneSet.has(k))return 2;
-    if(opsDoneSet.has(k))return 4;
-    return 3;}
+    if(opsDoneSet.has(k))return 1000;                 // הושלמו — תמיד בסוף
+    return qRule(i).rank*10+(opsAccum[k]?1:0);        // בתהליך מעט אחרי ממתין באותו חוק
+  }
+  function qrMove(ix,d){
+    const j=ix+d; if(j<0||j>=QUEUE_RULES.length)return;
+    const t=QUEUE_RULES[ix];QUEUE_RULES[ix]=QUEUE_RULES[j];QUEUE_RULES[j]=t;
+    renderSettings();renderGlobalRail();
+    if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();
+    toast('סדר התור עודכן');
+  }
+  function qrToggle(ix){
+    QUEUE_RULES[ix].on=!QUEUE_RULES[ix].on;
+    renderSettings();renderGlobalRail();
+    if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();
+  }
   const OQ_MSGICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>';
   const OQ_COINICO='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="M17 8.2a6 6 0 1 1-5.2 10.5"/></svg>';
   function opsqRow(i){
@@ -88,25 +117,31 @@
       doc:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
       sheet:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',
       time:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 22h14M5 2h14M7 22v-4.2a2 2 0 0 1 .6-1.4L12 12 7.6 7.6A2 2 0 0 1 7 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2"/></svg>'};
-    // כל קובייה: מספר "מתוך", פס התקדמות, ולחיצה שפותחת תצוגה מקדימה עם הפירוט
+    // פס "מצב היום" — משטח אחד, טיפוגרפיה במקום קוביות
     const T=CLIENTS.length, msgCos=CLIENTS.filter(c=>c.unread>0).length;
-    const stat=(key,cls,ic,icc,n,of,l,pct,bar)=>{
+    const sec=(key,label,big,sub)=>{
       const open=OQS_OPEN===key;
-      return `<div class="opsq-stat click ${cls} ${open?'open':''}" onclick="oqsToggle('${key}')">
-      <span class="oqs-ic ${icc}">${ic}</span>
-      <div class="oqs-b">
-        <div class="n">${n}${of?` <em>${of}</em>`:''}</div>
-        <div class="l">${l}</div>
-        ${bar?`<div class="oqs-bar"><i style="width:${Math.min(100,Math.round(pct))}%;background:${bar}"></i></div>`:''}
+      return `<div class="db-sec ${open?'open':''}" onclick="oqsToggle('${key}')">
+        <div class="db-l">${label}</div><div class="db-big">${big}</div><div class="db-sub">${sub}</div>
+        ${open?oqsPop(key):''}</div>`;};
+    const qorder=CLIENTS.map((c,i)=>i).sort((a,b)=>opsqRank(a)-opsqRank(b));
+    const dots=qorder.map(i=>{const c=CLIENTS[i],k='c'+i;
+      const st=(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k)?'check':opsDoneSet.has(k)?'done':opsAccum[k]?'prog':c.opsAlert?'alert':'wait';
+      return `<span class="dbq-dot ${st}" title="${c.name}">${c.name.charAt(0)}</span>`;}).join('');
+    const nxt=qorder.find(i=>!opsDoneSet.has('c'+i)&&pendOf(i)>0);
+    const mrepN=CLIENTS.filter(c=>c.mReport).length;
+    document.getElementById('opsqStrip').innerHTML=`<div class="daybar">
+      <div class="db-sec q ${OQS_OPEN==='wait'?'open':''}" onclick="oqsToggle('wait')">
+        <div class="db-l">תור התפעול <span class="db-frac">${done}/${T} הושלמו</span></div>
+        <div class="dbq">${dots}</div>
+        <div class="db-sub">${nxt!=null?'הבא בתור: <b>'+CLIENTS[nxt].name+'</b>'+(qRule(nxt).why?' · '+qRule(nxt).why:''):'התור נקי — כל הכבוד'}</div>
+        ${OQS_OPEN==='wait'?oqsPop('wait'):''}
       </div>
-      ${open?oqsPop(key):''}</div>`;};
-    document.getElementById('opsqStrip').innerHTML=
-      stat('wait','warn',OQS_IC.wait,'coral',waiting,'מתוך '+T,'חברות ממתינות',waiting/T*100,'var(--coral)')+
-      stat('done','',OQS_IC.done,'green',done,'מתוך '+T,'הושלמו היום',done/T*100,'var(--green)')+
-      stat('msg',(msgs?'warn':''),OQS_IC.msg,'blue',msgs,'ב-'+msgCos+' חברות','הודעות מלקוחות',msgCos/T*100,'var(--blue)')+
-      stat('doc','',OQS_IC.doc,'purple',docsN,'ב-'+docsCos.size+' חברות','מסמכים להזין',docsCos.size/T*100,'#6b4fd6')+
-      stat('sheet','',OQS_IC.sheet,'teal',6,'ב-4 מדדים','שינויים בגוגל שיט',50,'#0d9488')+
-      stat('time','accent',OQS_IC.time,'navy',fmtDur(totalOpsTime()),'','זמן תפעול כולל',0,'');
+      ${sec('msg','הודעות לקוח',msgs,'מ-'+msgCos+' חברות · למענה')}
+      ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות')}
+      ${sec('mrep','דוח חודשי',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
+      ${sec('time','זמן תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
+    </div>`;
     const SS=[['all','הכל'],['active','פעיל'],['trial','ניסיון'],['setup','בהקמה']];
     const statTot=s=>s==='all'?CLIENTS.length:CLIENTS.filter(c=>(c.stat||'active')===s).length;
     const statDone=s=>CLIENTS.filter((c,ix)=>(s==='all'||(c.stat||'active')===s)&&opsDoneSet.has('c'+ix)).length;
@@ -133,14 +168,15 @@
   let OQS_OPEN=null;
   function oqsToggle(k){OQS_OPEN=OQS_OPEN===k?null:k;renderOpsQueue();}
   document.addEventListener('click',e=>{
-    if(OQS_OPEN&&!e.target.closest('.opsq-stat')){OQS_OPEN=null;renderOpsQueue();}
+    if(OQS_OPEN&&!e.target.closest('.opsq-stat, .db-sec')){OQS_OPEN=null;renderOpsQueue();}
   });
+  function mrSend(i){CLIENTS[i].mReport=true;toast('הדוח החודשי נשלח ל'+CLIENTS[i].name+' בוואטסאפ');if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();if(typeof renderGlobalRail==='function')renderGlobalRail();if(typeof renderCoAlerts==='function')renderCoAlerts();}
   const OQS_CHEV='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>';
   function oqsRow(act,name,sub){
     return `<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;${act}"><b>${name}</b><span>${sub}</span>${OQS_CHEV}</div>`;
   }
   function oqsPop(key){
-    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'שינויים אחרונים בגיליונות',time:'פירוט זמן תפעול'};
+    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'שינויים אחרונים בגיליונות',time:'פירוט זמן תפעול',mrep:'דוח חודשי — עד 10.7'};
     let rows='',foot='';
     if(key==='wait') CLIENTS.forEach((c,i)=>{const k='c'+i;
       if(!opsDoneSet.has(k)&&!opsAccum[k]&&pendOf(i)>0) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,pendOf(i)+' משימות'+(c.opsAlert?' · חריגה':''));});
@@ -165,6 +201,10 @@
       ['מחזור הכנסות — משה עובד','B5 עודכן · 61,200 → 63,900'],
       ['ליטרים בחודש — מטעי גבעון','C8 עודכן · 2,940 → 3,010'],
     ].forEach(x=>rows+=oqsRow(`toast('נפתח המדד — ${x[0]}')`,x[0],x[1]));
+    if(key==='mrep') CLIENTS.forEach((c,i)=>{
+      rows+=c.mReport
+        ?oqsRow(`toast('הדוח של ${c.name} כבר נשלח')`,c.name,'✓ נשלח')
+        :`<div class="oqs-row"><b>${c.name}</b><button class="mt-btn view" onclick="event.stopPropagation();mrSend(${i})">שליחת דוח</button></div>`;});
     if(key==='time') CLIENTS.forEach((c,i)=>{const k='c'+i,s=(opsDur[k]||0)+(opsAccum[k]||0);
       if(s) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,fmtDur(s)+(opsDoneSet.has(k)?' · הושלם':' · בתהליך'));});
     if(!rows) rows='<div class="oqs-empty">אין פריטים כרגע — הכל נקי ✓</div>';

@@ -1,6 +1,18 @@
 /* HK Dashboard — operations mode: timer, role, enter/exit, finish flow (Bizibox checks), task handling */
   /* ---- operations mode (מתפעל בלבד) ---- */
   let isOperator=true, OPSMODE=false;
+  /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
+  const OPS_STAGES=[
+    ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
+    ['payee','מוטבים','שיוך מוטבים חדשים'],
+    ['carry','נגררות','פעולות צפויות שטרם נמשכו'],
+    ['unexpected','לא צפויות','פעולות שהופיעו בלי צפי'],
+    ['doc','מסמכים','מסמכים שהתקבלו — להזין לתזרים'],
+    ['sheet','גוגל שיט','עדכוני מדדים מהגיליונות'],
+    ['msg','הודעות לקוח','מענה והזנה של מה שהלקוח שלח'],
+  ];
+  let OPS_STAGE_LOG=[];
+  function opsPeek(i){window._opsPeek=(i==null||window._opsPeek===i)?null:i;renderOps();}
   const opsDoneSet=new Set(), opsDur={}, opsAccum={};
   let opsStart=0, opsTimer=null, opsTotal=0, opsActiveKey=null;
   const opsKey=()=>SCOPE==='portfolio'?'portfolio':'c'+CUR;
@@ -36,11 +48,15 @@
     else selectClient(0);                                  /* לקוח יחיד = דשבורד החברה */
   }
   function enterOps(){
-    OPSMODE=true; opsActiveKey=opsKey(); document.body.classList.add('ops-on');
+    OPSMODE=true; opsActiveKey=opsKey(); OPS_STAGE_LOG=[]; window._stgIx=null; window._opsPeek=null; document.body.classList.add('ops-on'); if(typeof renderGlobalRail==='function')renderGlobalRail();
     document.querySelector('.tabs').style.display='none';
     ['viewDash','viewMetrics','viewChat','viewCal','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('opsScope').textContent = SCOPE==='portfolio' ? 'כל החברות' : document.getElementById('headName').textContent;
     document.getElementById('opsView').style.display='';
+    // מסך עבודה נקי: שם החברה חי בבאנר — בלי כותרת כפולה ובלי סרגל
+    document.querySelector('.client-head').style.display='none';
+    document.querySelector('.sub-line').style.display='none';
+    document.getElementById('shell').classList.add('no-rail');
     // re-entry after completed finish: keep counting from the recorded duration, button becomes refresh
     const wasDone=opsDoneSet.has(opsActiveKey);
     if(wasDone && opsAccum[opsActiveKey]==null) opsAccum[opsActiveKey]=opsDur[opsActiveKey]||0;
@@ -49,6 +65,12 @@
       ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg> רענון נתונים'
       : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול';
     OPS_VIEW='open'; renderOps();
+    // אם יצאנו באמצע הבדיקות — חוזרים ישר אליהן
+    if(finPaused&&FIN_STATE&&FIN_STATE.key===opsActiveKey){
+      document.getElementById('opsGrid').style.display='none';
+      document.getElementById('finView').style.display='';
+      finPaused=false;
+    }
     startOpsTimer();
     updateOpsBtn();
     if(location.hash!=='#ops') history.pushState({hkOps:1},'','#ops');
@@ -57,12 +79,23 @@
     stopOpsTimer();
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    if(SCOPE!=='portfolio') document.querySelector('.tabs').style.display='';
     const t=document.querySelectorAll('.tab'); t.forEach(x=>x.classList.remove('on')); t[0].classList.add('on');
     document.getElementById('viewDash').style.display='';
+    document.getElementById('shell').classList.remove('no-rail');
+    document.querySelector('.client-head').style.display='flex';
+    document.querySelector('.sub-line').style.display='';
     updateOpsBtn();
+    if(typeof renderGlobalRail==='function')renderGlobalRail();
   }
   function closeOpsTeardown(){   /* סגירת מצב תפעול — שומר את הזמן שנצבר, בלי לגעת בהיסטוריה */
+    // יציאה מכל נתיב בזמן שהבדיקות פתוחות — נשמר סטטוס "בבדיקות" והשלב
+    const fv=document.getElementById('finView');
+    if(fv&&fv.style.display!=='none'){
+      FIN_STATE={key:opsActiveKey,step:finCurStep};
+      finPaused=true;
+      fv.style.display='none';
+      document.getElementById('opsGrid').style.display='';
+    }
     if(OPSMODE&&opsActiveKey!=null){
       opsAccum[opsActiveKey]=(opsAccum[opsActiveKey]||0)+opsSession();
       if(opsDoneSet.has(opsActiveKey)) opsDur[opsActiveKey]=opsAccum[opsActiveKey]; // חברה שהושלמה — הזמן ממשיך להיצבר
@@ -80,21 +113,43 @@
   });
 
   /* סיום תפעול — רענון מ-Bizibox + בדיקת חריגות */
-  const FIN_STEPS=['רענון נתונים מ-Bizibox','בדיקת חסרים בתזרים מול התקציב','בדיקת הוצאות והכנסות כפולות','בדיקת נגררות','בדיקת לא צפויות','בדיקת תקינות התזרים'];
+  /* סיום תפעול — שלבים בסדר קבוע; קל להוסיף בדיקות בהמשך */
+  const FIN_STEPS=[
+    'רענון נתונים מ-Bizibox',
+    'בדיקת שורה תקציבית',
+    'כפילויות בתזרים',
+    'כפילויות כרטיסי אשראי',
+    'בדיקת דוח חודשי',
+    'בדיקת דוח תקציבי'];
   // findings from the Bizibox validation — each maps to the step that found it.
   // send:1 → פעולה ראשית "שלח הודעה" (כמו במצב תפעול); אחרת act ייעודי
   const FIN_FINDINGS=[
     {kind:'missing', step:1, sev:'high', t:'חסר בתזרים — שכירות יוני', d:'בתקציב מתוכננת שכירות 12,000 ₪ לחודש יוני, אך לא נמצאה תנועה מתאימה בתזרים.', act:'הוספה לתזרים'},
     {kind:'missing', step:1, sev:'mid',  t:'חסר בתזרים — ביטוח עסק',   d:'בתקציב מופיע ביטוח חודשי 1,850 ₪ שטרם נרשם בתזרים החודש.', act:'הוספה לתזרים'},
     {kind:'dup',     step:2, sev:'high', t:'הוצאה כפולה — Payment טכנולוגיות', d:'נמצאו שתי הוצאות זהות של 3,540 ₪ בתאריך 28.6 — ייתכן חיוב כפול.', act:'מחיקת כפילות'},
-    {kind:'carry',   step:3, sev:'mid',  t:'נגררת 11 ימים — הראל (שילוח)', d:'בחשבון מזרחי 295199 צפינו הוצאה של 2,049 ₪ שטרם הופיעה בבנק — נגררת 11 ימים.', send:1},
-    {kind:'unexpected', step:4, sev:'mid', t:'פעולה לא צפויה — "כהן טוב"', d:'בחשבון מזרחי 139287 הופיעה פעולה ע"ס 238 ₪ שלא צפינו בתזרים.', send:1},
-    {kind:'invalid', step:5, sev:'mid',  t:'תנועה ללא קטגוריה — העברה 8,200 ₪', d:'תנועה מ-30.6 ללא סיווג. המלצת AI: <b>העברות בין חשבונות</b> — לפי היסטוריית תנועות דומות.', ai:1, rec:'העברות בין חשבונות'},
+    {kind:'ccdup',   step:3, sev:'mid',  t:'חיוב כפול בכ.אשראי מקס — 812 ₪', d:'אותו חיוב מופיע גם בכרטיס וגם בהוראת קבע בבנק — כפילות בין מקורות.', act:'מחיקת כפילות'},
+    {kind:'mrep',    step:4, sev:'mid',  t:'הדוח החודשי טרם נשלח ללקוח', d:'עברנו את ה-1 לחודש והדוח החודשי של יוני עדיין לא נשלח — חובה עד ה-10.7.', act:'שליחת הדוח'},
+    {kind:'breport', step:5, sev:'mid',  t:'סעיף פרסום ללא יעד בדוח התקציבי', d:'בדוח התקציבי סעיף "פרסום ושיווק" מופיע ללא יעד חודשי — הבקרה עליו לא פעילה.', act:'עדכון היעד'},
   ];
-  let finTimers=[], finOpen=[];
+  let finTimers=[], finOpen=[], finPaused=false, FIN_STATE=null;
+  /* יציאה באמצע הסיום — הטיימר ממשיך, וחוזרים בדיוק לאותו שלב */
+  function finClose(){
+    document.getElementById('finView').style.display='none';
+    document.getElementById('opsGrid').style.display='';
+    finPaused=true;
+    FIN_STATE={key:opsActiveKey,step:finCurStep};
+    if(typeof renderGlobalRail==='function')renderGlobalRail();
+    opsAccum[opsActiveKey]=opsTotal;
+    startOpsTimer(); updateOpsBtn();
+    toast('הסיום הושהה — לחיצה על "סיום תפעול" תחזיר אתכם לאותו שלב');
+  }
   function finishOps(){
     opsTotal=(opsAccum[opsActiveKey]||0)+opsSession(); stopOpsTimer();
-    const ov=document.getElementById('finOv'); ov.classList.add('show');
+    if(finPaused){finPaused=false;document.getElementById('opsGrid').style.display='none';document.getElementById('finView').style.display='';return;}   // חזרה לאותו שלב
+    if(window._stgIx!=null&&window._stgT0){const secs=Math.round((Date.now()-window._stgT0)/1000);
+      OPS_STAGE_LOG.push({n:'שלב אחרון',s:secs});window._stgIx=null;}
+    document.getElementById('opsGrid').style.display='none';
+    document.getElementById('finView').style.display='';
     document.getElementById('finFoot').classList.remove('show');
     document.getElementById('finFoot').innerHTML='';
     document.getElementById('finFindings').innerHTML='';
@@ -103,36 +158,44 @@
     document.getElementById('finSub').textContent='מרענן נתונים מ-Bizibox ובודק את תקינות התזרים מול התקציב';
     const ico=document.getElementById('finIco'); ico.className='fin-ico'; ico.innerHTML='<div class="spin"></div>';
     document.getElementById('finSteps').innerHTML=FIN_STEPS.map((s,i)=>
-      `<div class="fin-step" id="fstep${i}"><span class="fs-ico"></span><span>${s}</span><span class="fs-tag" id="ftag${i}"></span></div>`).join('');
+      `<div class="fin-step" id="fstep${i}"><span class="fs-num">${i+1}</span><span class="fs-ico"></span><span>${s}</span><span class="fs-tag" id="ftag${i}"></span></div>`).join('');
     finTimers.forEach(clearTimeout); finTimers=[];
-    let d=400;
-    FIN_STEPS.forEach((s,i)=>{
-      finTimers.push(setTimeout(()=>{const el=document.getElementById('fstep'+i);
-        if(el){el.className='fin-step run';el.querySelector('.fs-ico').innerHTML='<span class="mini-spin"></span>';}},d));
-      d+=750;
-      finTimers.push(setTimeout(()=>{
-        const el=document.getElementById('fstep'+i); if(!el) return;
-        const hits=FIN_FINDINGS.filter((f,ix)=>f.step===i&&finOpen.includes(ix)).length;
-        if(hits){el.className='fin-step warn';el.querySelector('.fs-ico').innerHTML='!';
-          document.getElementById('ftag'+i).textContent=hits+' ממצאים';}
-        else{el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
-        if(i===FIN_STEPS.length-1) finVerdict();},d));
-      d+=250;
-    });
+    finCurStep=0; runFinStep(0);
   }
-  function finVerdict(){
-    const open=finOpen.length;
-    const ico=document.getElementById('finIco');
-    if(open){
-      ico.className='fin-ico warn'; ico.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
-      document.getElementById('finTitle').textContent='נמצאו '+open+' ממצאים בתזרים';
-      document.getElementById('finSub').textContent='יש לטפל בממצאים לפני שליחת התזרים ללקוח';
-    }
+  /* מכונת שלבים: כל שלב רץ, ואם יש ממצאים — עוצרים בו עד שמטפלים, ואז ממשיכים */
+  let finCurStep=0;
+  function runFinStep(i){
+    finCurStep=i;
+    if(i>=FIN_STEPS.length){finAllDone();return;}
+    const el=document.getElementById('fstep'+i);
+    if(el){el.className='fin-step run';el.querySelector('.fs-ico').innerHTML='<span class="mini-spin"></span>';}
+    document.getElementById('finFindings').innerHTML='';
+    finTimers.push(setTimeout(()=>{
+      const hits=FIN_FINDINGS.filter((f,ix)=>f.step===i&&finOpen.includes(ix)).length;
+      if(hits){
+        el.className='fin-step warn';el.querySelector('.fs-ico').innerHTML='!';
+        document.getElementById('ftag'+i).textContent=hits+' ממצאים';
+        const ico=document.getElementById('finIco');
+        ico.className='fin-ico warn'; ico.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+        document.getElementById('finTitle').textContent='שלב '+(i+1)+': נמצאו '+hits+' ממצאים';
+        document.getElementById('finSub').textContent=FIN_STEPS[i]+' — טפלו בממצאים כדי להמשיך לשלב הבא';
+        renderFinFindings();
+      }else{
+        el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+        finTimers.push(setTimeout(()=>runFinStep(i+1),350));
+      }
+    },900));
+  }
+  function finAllDone(){
+    const ico=document.getElementById('finIco'); ico.className='fin-ico ok';
+    ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
+    document.getElementById('finTitle').textContent='התזרים תקין ומעודכן';
+    document.getElementById('finSub').textContent='כל הבדיקות עברו · הושלם ב-'+fmtDur(opsTotal);
     renderFinFindings();
   }
   function renderFinFindings(){
     const box=document.getElementById('finFindings');
-    box.innerHTML=finOpen.map(ix=>{const f=FIN_FINDINGS[ix];
+    box.innerHTML=finOpen.filter(ix=>FIN_FINDINGS[ix].step===finCurStep).map(ix=>{const f=FIN_FINDINGS[ix];
       // same buttons as ops mode per task kind
       let btns;
       if(f.ai) btns=`<button class="ot-btn ghost" onclick="finResolve(${ix},'קוטלג בקטגוריה אחרת')">החלפת קטגוריה</button>
@@ -151,6 +214,14 @@
     finOpen=finOpen.filter(x=>x!==ix);
     if(action==='לא רלוונטי') toastUndo('הממצא סומן כלא רלוונטי',()=>{finOpen.push(ix);finOpen.sort();renderFinFindings();});
     else toast(action+' ✓');
+    const stillHere=finOpen.some(x=>FIN_FINDINGS[x].step===finCurStep);
+    if(!stillHere&&finCurStep<FIN_STEPS.length){
+      const el=document.getElementById('fstep'+finCurStep);
+      if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';document.getElementById('ftag'+finCurStep).textContent='טופל';}
+      renderFinFindings();
+      setTimeout(()=>runFinStep(finCurStep+1),400);
+      return;
+    }
     if(!finOpen.length){
       const ico=document.getElementById('finIco'); ico.className='fin-ico ok';
       ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -183,13 +254,25 @@
       <div class="fin-msg"><div class="fin-msg-b">שלום 👋 סיימנו כעת את התפעול שלך — להלן התזרים המעודכן 📊<span class="fin-msg-t">15:47 ✓✓</span></div></div>
       <div class="fin-stats">
         <div class="fstat"><div class="fs-n">${fmtDur(opsTotal)}</div><div class="fs-l">משך התפעול</div></div>
+        ${OPS_STAGE_LOG.length?`<div class="fstages">${OPS_STAGE_LOG.map(l=>`<span>${l.n} · <b>${fmtDur(l.s)}</b></span>`).join('')}</div>`:''}
         <div class="fstat"><div class="fs-n">${FIN_FINDINGS.length}</div><div class="fs-l">ממצאים טופלו</div></div>
         <div class="fstat"><div class="fs-n">6</div><div class="fs-l">בדיקות תקינות</div></div>
       </div>`;
     document.getElementById('finFoot').innerHTML='<button class="chip-btn primary" style="width:100%;justify-content:center" onclick="finishDone()">חזרה לדשבורד</button>';
     document.getElementById('finFoot').classList.add('show');
   }
-  function finishDone(){opsDur[opsActiveKey]=opsTotal;opsDoneSet.add(opsActiveKey);delete opsAccum[opsActiveKey];document.getElementById('finOv').classList.remove('show');restoreDash();toast('התפעול הושלם בהצלחה ✓');if(location.hash==='#ops') history.back();}
+  function finishDone(){finPaused=false;FIN_STATE=null;
+    opsDur[opsActiveKey]=opsTotal;opsDoneSet.add(opsActiveKey);delete opsAccum[opsActiveKey];
+    document.getElementById('finView').style.display='none';document.getElementById('opsGrid').style.display='';
+    restoreDash();
+    if(location.hash==='#ops') history.back();
+    // למה לחזור? — ישר ללקוח הבא לפי סדר התור
+    const next=CLIENTS.map((c,i)=>i)
+      .filter(i=>!opsDoneSet.has('c'+i)&&pendOf(i)>0)
+      .sort((a,b)=>opsqRank(a)-opsqRank(b))[0];
+    if(next!=null){selectClient(next);toast('התפעול הושלם ✓ עוברים ללקוח הבא: '+CLIENTS[next].name);}
+    else{selectPortfolio();toast('התפעול הושלם ✓ התור נקי — כל הכבוד');}
+  }
 
   /* ops console data + render */
   const OPS_TYPES={
@@ -264,10 +347,51 @@
       </div>
       <span class="olh-note">טופלו היום: ${OPS_DONE}</span>
     </div>`;
-    const body = pool.length
-      ? pool.map(t=>opsRow(t,T.indexOf(t))).join('')
-      : '<div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div>';
-    document.getElementById('opsGrid').innerHTML = '<div class="ops-rows">'+head+body+'</div>';
+    const STAGES=OPS_STAGES;
+    const openBy=ty=>T.filter(t=>t.type===ty&&!t.done).length;
+    let curIx=STAGES.findIndex(st=>openBy(st[0])>0); if(curIx<0)curIx=STAGES.length;
+    // מדידת זמן פר שלב — נסגר במעבר שלב או בסיום תפעול
+    if(OPSMODE){
+      if(window._stgIx==null){window._stgIx=curIx;window._stgT0=Date.now();}
+      else if(curIx!==window._stgIx){
+        const secs=Math.round((Date.now()-window._stgT0)/1000);
+        if(STAGES[window._stgIx]) OPS_STAGE_LOG.push({n:STAGES[window._stgIx][1],s:secs});
+        window._stgIx=curIx;window._stgT0=Date.now();
+      }
+    }
+    // פס הזרימה
+    // פס הזרימה — עם מונה "כמה מחכה" בכל שלב, ולחיצה לתצוגה מקדימה
+    const flow='<div class="ofl">'+STAGES.map((st,i)=>{
+      const state=i<curIx?'done':i===curIx?'cur':'lock';
+      const n=openBy(st[0]);
+      const clk=(state==='lock'&&n>0);   // לחיץ רק אם באמת מחכה שם משהו
+      return (i?'<span class="ofl-ln '+(i<=curIx?'done':'')+'"></span>':'')+
+        `<span class="ofl-nd ${state} ${clk?'clk':''} ${window._opsPeek===i?'peek':''}" ${clk?`onclick="opsPeek(${i})"`:''} title="${st[1]}${clk?' — תצוגה מקדימה':''}">
+          <b>${i<curIx?'✓':i+1}</b><i>${st[1]}</i>${n&&i>curIx?`<em>${n}</em>`:''}</span>`;
+    }).join('')+'</div>';
+    let cards='';
+    if(OPS_VIEW==='open'){
+      // מסך מלא לשלב אחד: הנוכחי — או שלב בתצוגה מקדימה (נעול למגע)
+      const showIx=(window._opsPeek!=null&&window._opsPeek!==curIx)?window._opsPeek:curIx;
+      if(showIx<STAGES.length){
+        const [ty,label,sub]=STAGES[showIx];
+        const rows=pool.filter(t=>t.type===ty);
+        const isPeek=showIx!==curIx;
+        cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}" style="grid-column:1/-1">
+          <div class="ost-head"><span class="ost-num">${showIx+1}</span>
+            <div class="ost-b"><b>${label}</b><i>${sub}</i></div>
+            ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length} לטיפול</span>`}
+          </div>
+          ${rows.length?rows.map(t=>opsRow(t,T.indexOf(t))).join(''):'<div class="ops-empty" style="padding:18px">אין משימות בשלב זה</div>'}
+        </div>`;
+      }
+    }else{
+      cards=pool.length?`<div class="ops-wdg"><div class="ost-head"><div class="ost-b"><b>טופלו</b></div></div>`+pool.map(t=>opsRow(t,T.indexOf(t))).join('')+'</div>':'';
+    }
+    document.getElementById('opsGrid').innerHTML =
+      '<div class="ops-rows" style="margin-bottom:14px">'+head+flow+'</div>'+
+      (cards?'<div class="ops-wgrid flow">'+cards+'</div>'
+        :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>');
   }
   function opsSetView(v){OPS_VIEW=v;renderOps();}
   function opsToggleRow(i){OPS_OPEN.has(i)?OPS_OPEN.delete(i):OPS_OPEN.add(i);renderOps();}

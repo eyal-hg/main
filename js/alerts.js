@@ -161,17 +161,30 @@
     const el=document.getElementById('coAlerts'); if(!el) return;
     // ללקוחות אין באנר התראות — הוא כלי עבודה של היועץ ומנהל התזרים
     if(SCOPE!=='client'||ROLE==='client1'||ROLE==='clientN'){el.style.display='none';return;}
-    const mine=buildAlerts().filter(a=>a.i===CUR);
+    // התראות תפעוליות של החברה — חיבורים ועדכניות נתונים (יתווספו עוד בהמשך)
+    const sys=(CLIENTS[CUR].name==='אנרגי אינטרנשיונל')?[
+      {sev:'high', chip:'2 חשבונות בנק לא מעודכנים',  t:'חשבון לאומי ופועלים לא נמשכו מ-28.06'},
+      {sev:'high', chip:'כ.אשראי מקס לא מעודכן',       t:'הכרטיס אינו מחובר ל-Bizibox'},
+      {sev:'mid',  chip:'חשבון סליקה לא מחובר',        t:'קארדקום — נדרש חיבור מחדש'},
+    ]:[];
+    // דוח חודשי — חובה עד ה-10: מודגש בפס אם טרם נשלח
+    if(!CLIENTS[CUR].mReport) sys.unshift({sev:'high', cls:'mrep', click:'mrSend('+CUR+')',
+      chip:'📄 דוח חודשי טרם נשלח · עד 10.7 — שליחה', t:'לחיצה שולחת את הדוח החודשי ללקוח בוואטסאפ'});
+    const mine=sys.concat(buildAlerts().filter(a=>a.i===CUR));
     if(!mine.length){el.style.display='none';el.innerHTML='';return;}
+    mine.sort((a,b)=>(a.sev==='high'?0:1)-(b.sev==='high'?0:1));
     const high=mine.filter(a=>a.sev==='high').length;
+    // כשיש הרבה התראות: שלוש הדחופות + "עוד N" שנפתח לשורה מלאה
+    const CAP=3, open=window._coalOpen||false, shown=open?mine:mine.slice(0,CAP);
     el.style.display='';
-    el.innerHTML=`<div class="coal ${high?'hot':''}">
+    el.innerHTML=`<div class="coal ${high?'hot':''} ${open?'open':''}">
       <span class="coal-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
-      <span class="coal-t">${mine.length} התראות פעילות${high?' · '+high+' דחופות':''}</span>
-      ${mine.map(a=>{
+      <span class="coal-t">${mine.length} התראות${high?' · '+high+' דחופות':''}</span>
+      ${shown.map(a=>{
         const canEdit=!(ROLE==='client1'||ROLE==='clientN');
-        return `<span class="coal-chip ${a.sev}" title="${a.t}" ${canEdit&&a.mi!=null?`onclick="openAlertCfg(${a.mi})"`:'style="cursor:default"'}>${a.chip||(a.metric+(a.vTxt?' · '+a.vTxt:''))}</span>`;}).join('')}
-      ${(ROLE==='client1'||ROLE==='clientN')?'':'<button class="coal-btn" onclick="goToMetrics()">להגדרות המדדים ←</button>'}
+        return `<span class="coal-chip ${a.sev} ${a.cls||''}" title="${a.t}" ${a.click?`onclick="${a.click}"`:canEdit&&a.mi!=null?`onclick="openAlertCfg(${a.mi})"`:'style="cursor:default"'}>${a.chip||(a.metric+(a.vTxt?' · '+a.vTxt:''))}</span>`;}).join('')}
+      ${mine.length>CAP?`<button class="coal-more" onclick="window._coalOpen=${!open};renderCoAlerts()">${open?'פחות ▴':'+ עוד '+(mine.length-CAP)}</button>`:''}
+      <button class="coal-btn" onclick="goToMetrics()">להגדרות המדדים ←</button>
     </div>`;
   }
   // alerts are defined ON each metric — jump to the metric editor to change them

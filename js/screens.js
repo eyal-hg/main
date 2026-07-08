@@ -40,7 +40,7 @@
     const inPortfolio=(s==='portfolio');
     let pView='board';
     if(inPortfolio){
-      if(isOperator) pView=(MGR_VIEW==='ops')?'queue':'alerts';
+      if(isOperator) pView='queue';               // מוקד ההתראות ירד — הבית של המנהל הוא התפעול
       else if(ROLE==='clientN') pView='board';
       else pView=(ADV_PVIEW==='clients')?'clients':'alerts';
     }
@@ -49,8 +49,13 @@
     const showClients=inPortfolio && pView==='clients';
     const showBoard = !inPortfolio || pView==='board';
     document.getElementById('clientsView').style.display=showClients?'':'none';
-    document.getElementById('mgrToggle').style.display=(inPortfolio && isOperator)?'':'none';
-    document.querySelectorAll('#mgrToggle .mseg').forEach((el,ix)=>el.classList.toggle('on',(ix===0)===(MGR_VIEW==='ops')));
+    document.getElementById('mgrToggle').style.display='none';   // אין יותר טאבים במסך המנהל
+    // מסך המנהל מתחיל ישר בקוביות — בלי כותרת ושורת משנה
+    const slim=(inPortfolio&&isOperator);
+    if(slim){
+      document.querySelector('.client-head').style.display='none';
+      document.querySelector('.sub-line').style.display='none';
+    }
     document.getElementById('opsQueueView').style.display=showQueue?'':'none';
     document.getElementById('alertsView').style.display=showAlerts?'':'none';
     document.getElementById('wboard').style.display=showBoard?'':'none';
@@ -211,24 +216,70 @@
       // סרגל מתחלף: בתוך חברה — כולו של החברה. חזרה למעלה, סקציות מתחת
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
-      const backLbl=ROLE==='manager'?'תור התפעול':ROLE==='advisor'?'כל הלקוחות':'הבית';
+      const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
       const SEC=[['dash',0],['chat',1],['metrics',1],['meetings',0],['prep',1],['flow',1]];
       html=(ROLE==='client1'?'':`<div class="gn-back" onclick="${backGo}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> ${backLbl}</div>`)+
         `<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`+
-        SEC.filter(s=>!s[1]||!isClientP).map(s=>`
+        // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
+        (typeof OPSMODE!=='undefined'&&OPSMODE?'<div class="gn-lock">מצב תפעול פעיל — הניווט נעול עד סיום או השהיה</div>':'')+
+        (ROLE==='manager'&&!(typeof OPSMODE!=='undefined'&&OPSMODE)?(function(){
+          const k='c'+CUR, done=opsDoneSet.has(k);
+          if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k)
+            return `<div class="gn-opsbtn check" onclick="enterOps()"><b>בבדיקות · שלב ${FIN_STATE.step+1}/${FIN_STEPS.length}</b><span>המשך בדיקות</span></div>`;
+          return done
+            ?`<div class="gn-opsbtn done" onclick="enterOps()"><b>✓ התפעול הסתיים</b><span>ארך ${fmtDur(opsDur[k]||0)} · רענון נתונים</span></div>`
+            :`<div class="gn-opsbtn" onclick="enterOps()"><b>תפעול</b><span>כניסה למצב עבודה</span></div>`;
+        })():'')+
+        (typeof OPSMODE!=='undefined'&&OPSMODE?'':SEC.filter(s=>!s[1]||!isClientP).map(s=>`
           <div class="gn-item sec ${CUR_TAB===s[0]?'on':''}" onclick="showTab('${s[0]}')">
             ${SEC_ICO[s[0]]}<span>${TAB_LABELS[s[0]]}</span>${s[0]==='meetings'&&ROLE==='advisor'?'<i class="gn-dot" title="סיכום פגישה ממתין לאישור"></i>':''}
-          </div>`).join('');
+          </div>`).join(''));
+      // דוחות — אקורדיון בסרגל במקום כפתור בכותרת (מוסתר במצב תפעול)
+      if(typeof OPSMODE==='undefined'||!OPSMODE){
+      html+=`<div class="gn-item sec" onclick="gnRepToggle()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+          <span>דוחות</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-inline-start:auto;transform:rotate(${GN_REP?'180deg':'0deg'})"><path d="m6 9 6 6 6-6"/></svg>
+        </div>`;
+      if(GN_REP) html+=['דו״ח תקציבי','דו״ח תזרים חודשי','דוח תזרים עתידי'].map(n=>
+        `<div class="gn-sub" onclick="openReport('${n}')">${n}</div>`).join('');
+      }
     }else{
       // מחוץ לחברה — היעדים של בעל התפקיד
       html=gnavItems().map(it=>`
         <div class="gn-item ${GNAV===it.k?'on':''}" onclick="${it.go}">${GNAV_ICO[it.k]}<span>${it.l}</span></div>`).join('');
+    }
+    // מנהל תזרים: תור התפעול בסרגל — רק במסך הראשי (בתוך חברה הסרגל שייך לחברה)
+    if(typeof ROLE!=='undefined'&&ROLE==='manager'&&GNAV==='ops'&&typeof qRule==='function'){
+      const order=CLIENTS.map((c,i)=>i).sort((a,b)=>opsqRank(a)-opsqRank(b));
+      html+=`<div class="gn-co qdiv"></div>`+order.map(i=>{
+        const c=CLIENTS[i], k='c'+i, r=qRule(i);
+        const tot=(c.tasks||[]).length, doneT=(c.tasks||[]).filter(t=>t.done).length;
+        // באיזה שלב החברה — עבודה / בדיקות / הושלם
+        let st='wait', line=r.why||'ממתין', pct=tot?Math.round(doneT/tot*100):0;
+        if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k){
+          st='check'; line='בבדיקות · שלב '+(FIN_STATE.step+1)+'/'+FIN_STEPS.length; pct=85;
+        }else if(opsDoneSet.has(k)){st='done';line='✓ הושלם · '+fmtDur(opsDur[k]||0);pct=100;}
+        else if(opsAccum[k]||doneT>0){
+          const cur=OPS_STAGES.find(sg=>(c.tasks||[]).some(t=>t.type===sg[0]&&!t.done));
+          st='prog'; line=cur?'בשלב: '+cur[1]+' · '+(tot-doneT)+' נותרו':'בתהליך · '+fmtDur(opsAccum[k]||0);
+        }else if(c.opsAlert){st='alert';}
+        return `<div class="gn-q" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
+          <span class="dbq-dot ${st}">${c.name.charAt(0)}</span>
+          <div class="gn-qb">
+            <div class="gn-qn">${c.name}<i class="gn-mr ${c.mReport?'ok':'no'}">${c.mReport?'✓ דוח':'דוח'}</i></div>
+            <div class="gn-qs ${st}">${line}</div>
+            <div class="gn-qbar"><i class="${st}" style="width:${pct}%"></i></div>
+          </div>
+        </div>`;}).join('');
     }
     list.innerHTML=html;
     // הכל למעלה, בתפריט אחד — אין אזור תחתון
     document.getElementById('gnavBottom').innerHTML='';
   }
   function renderRailNav(){renderGlobalRail();}   // תאימות לקריאות ישנות
+  let GN_REP=false;
+  function gnRepToggle(){GN_REP=!GN_REP;renderGlobalRail();}
 
   /* פירור לחם — מיותר כשהסרגל המתחלף נושא חזרה + שם חברה */
   function renderCrumb(){
@@ -252,11 +303,29 @@
       </div>`;}).join('')||'<div class="ops-empty" style="padding:40px">לא נמצאו לקוחות</div>';
   }
 
-  /* הגדרות — ריק בינתיים; כאן ייכנסו תהליכים, מאגר ידע, תבניות ועוד */
+  /* הגדרות — כרגע רק סדר תור התפעול; השאר בבנייה */
   function renderSettings(){
     const el=document.getElementById('viewSettings'); if(!el) return;
+    const rules=(typeof QUEUE_RULES!=='undefined')?QUEUE_RULES.map((r,ix)=>`
+      <div class="qr-row ${r.on?'':'off'}">
+        <span class="qr-num">${ix+1}</span>
+        <span class="qr-t">${r.label}</span>
+        <span class="qr-acts">
+          <button class="qr-btn" ${ix===0?'disabled':''} onclick="qrMove(${ix},-1)" title="העלאה">▲</button>
+          <button class="qr-btn" ${ix===QUEUE_RULES.length-1?'disabled':''} onclick="qrMove(${ix},1)" title="הורדה">▼</button>
+          <label class="mc-tog qr-tog" title="הפעלה/כיבוי"><input type="checkbox" ${r.on?'checked':''} onchange="qrToggle(${ix})"><span></span></label>
+        </span>
+      </div>`).join(''):'';
     el.innerHTML=`
       <div class="set-title">הגדרות</div>
+      <div class="set-card" style="max-width:640px;margin-bottom:14px">
+        <div class="set-head">
+          <span class="set-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h13M10 18h10"/></svg></span>
+          <div class="awdg-tt"><div class="awdg-t">סדר תור התפעול</div><div class="awdg-sub">החוק הראשון שתופס קובע את מיקום החברה בתור — סדרו לפי העדיפות שלכם</div></div>
+        </div>
+        ${rules}
+        <div class="qr-note">הושלמו — תמיד בסוף התור · חברות ללא חוק תואם — באמצע</div>
+      </div>
       <div class="set-empty">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <b>מסך ההגדרות בבנייה</b>
