@@ -251,7 +251,7 @@
     }
     // מנהל תזרים: תור התפעול בסרגל — רק במסך הראשי (בתוך חברה הסרגל שייך לחברה)
     if(typeof ROLE!=='undefined'&&ROLE==='manager'&&GNAV==='ops'&&typeof qRule==='function'){
-      const order=CLIENTS.map((c,i)=>i).sort((a,b)=>opsqRank(a)-opsqRank(b));
+      const order=CLIENTS.map((c,i)=>i).filter(i=>typeof firmOk==='undefined'||firmOk(CLIENTS[i])).sort((a,b)=>opsqRank(a)-opsqRank(b));
       html+=`<div class="gn-co qdiv"></div>`+order.map(i=>{
         const c=CLIENTS[i], k='c'+i, r=qRule(i);
         const tot=(c.tasks||[]).length, doneT=(c.tasks||[]).filter(t=>t.done).length;
@@ -264,13 +264,14 @@
           const cur=OPS_STAGES.find(sg=>(c.tasks||[]).some(t=>t.type===sg[0]&&!t.done));
           st='prog'; line=cur?'בשלב: '+cur[1]+' · '+(tot-doneT)+' נותרו':'בתהליך · '+fmtDur(opsAccum[k]||0);
         }else if(c.opsAlert){st='alert';}
-        return `<div class="gn-q" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
+        return `<div class="gn-q ${c.bankDown?'bank':opsDoneSet.has(k)?'opsdone':''}" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
           <span class="dbq-dot ${st}">${c.name.charAt(0)}</span>
           <div class="gn-qb">
-            <div class="gn-qn">${c.name}<i class="gn-mr ${c.mReport?'ok':'no'}">${c.mReport?'✓ דוח':'דוח'}</i></div>
-            <div class="gn-qs ${st}">${line}</div>
-            <div class="gn-qbar"><i class="${st}" style="width:${pct}%"></i></div>
+            <div class="gn-qn"><span class="nm">${c.name}</span><i class="gn-mr ${c.mReport?'ok':'no'}">${c.mReport?'✓':'דוח'}</i></div>
+            <div class="gn-qm"><span class="nm">${c.mgr}</span>${c.product?prodLogo(c.product,'sm'):''}</div>
+            <div class="gn-qs ${st}">${c.bankDown?'⚠ חשבונות בנק לא מחוברים':line}</div>
           </div>
+          <span class="gn-biz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></span>
         </div>`;}).join('');
     }
     list.innerHTML=html;
@@ -291,7 +292,8 @@
     const grid=document.getElementById('clvGrid'); if(!grid) return;
     const q=(document.getElementById('clvQ').value||'').trim();
     let list=CLIENTS.map((c,i)=>({c,i}));
-    if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q));
+    if(typeof firmOk==='function') list=list.filter(x=>firmOk(x.c));
+    if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q)||(x.c.firm||'').includes(q));
     grid.innerHTML=list.map(({c,i})=>{
       const p=(typeof advPulse==='function')?advPulse(c):'green';
       const fig=(typeof BAL!=='undefined'&&BAL[c.name])?BAL[c.name]:'—';
@@ -338,7 +340,8 @@
     const grid=document.getElementById('clvGrid'); if(!grid) return;
     const q=(document.getElementById('clvQ').value||'').trim();
     let list=CLIENTS.map((c,i)=>({c,i}));
-    if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q));
+    if(typeof firmOk==='function') list=list.filter(x=>firmOk(x.c));
+    if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q)||(x.c.firm||'').includes(q));
     grid.innerHTML=list.map(({c,i})=>{
       const p=(typeof advPulse==='function')?advPulse(c):'green';
       const fig=(typeof BAL!=='undefined'&&BAL[c.name])?BAL[c.name]:'—';

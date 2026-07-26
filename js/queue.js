@@ -19,7 +19,25 @@
   const prodLogo=(p,cls)=>p?`<span dir="ltr" class="hklogo ${cls||''}">${HKMARK}<span class="hkw">${PRODWORD[p]}</span></span>`:'';
   let PROD_FILTER=new Set();
   /* פילטר מנהלי תזרים — הדרופדאון בסרגל העליון */
-  let MGR_FILTER='';
+  let MGR_FILTER='', FIRM_FILTER='';
+  const firmOk=c=>!FIRM_FILTER||c.firm===FIRM_FILTER;
+  function toggleFirm(e){
+    e.stopPropagation();
+    const m=document.getElementById('firmMenu');
+    const firms=[...new Set(CLIENTS.map(c=>c.firm).filter(Boolean))];
+    m.innerHTML=`<div class="prod-opt ${FIRM_FILTER===''?'on':''}" onclick="pickFirm('')">כל חברות הייעוץ</div>`+
+      firms.map(f=>`<div class="prod-opt ${FIRM_FILTER===f?'on':''}" onclick="pickFirm('${f}')">${f} <span class="mgr-n">${CLIENTS.filter(c=>c.firm===f).length}</span></div>`).join('');
+    m.classList.toggle('show');
+  }
+  function pickFirm(f){
+    FIRM_FILTER=f;
+    document.getElementById('firmMenu').classList.remove('show');
+    document.getElementById('firmDdl').innerHTML=(f||'כל חברות הייעוץ')+' <span>▾</span>';
+    if(typeof renderGlobalRail==='function')renderGlobalRail();
+    if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();
+    if(document.getElementById('clientsView').style.display!=='none'&&typeof renderClientsView==='function')renderClientsView();
+  }
+  document.addEventListener('click',function(e){const m=document.getElementById('firmMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target)&&e.target.id!=='firmDdl')m.classList.remove('show');});
   function toggleMgr(e){
     e.stopPropagation();
     const m=document.getElementById('mgrMenu');
@@ -37,6 +55,7 @@
   }
   document.addEventListener('click',function(e){const m=document.getElementById('mgrMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target)&&e.target.id!=='mgrDdl')m.classList.remove('show');});
   function opsqMatch(i){
+    if(!firmOk(CLIENTS[i]))return false;
     if(MGR_FILTER && CLIENTS[i].mgr!==MGR_FILTER)return false;
     if(PROD_FILTER.size>0 && !PROD_FILTER.has(CLIENTS[i].product))return false;
     if(OPSQ_STATUS!=='all' && (CLIENTS[i].stat||'active')!==OPSQ_STATUS)return false;
@@ -106,9 +125,9 @@
     CLIENTS.forEach((c,i)=>{const k='c'+i,p=pendOf(i);total+=p;
       if(opsDoneSet.has(k))done++; else if(opsAccum[k])prog++; else if(p>0)waiting++;});
     // תיבות עבודה לפי סוג — לחיצה מסננת את התור
-    const msgs=CLIENTS.reduce((s,c)=>s+(c.unread||0),0);
+    const msgs=CLIENTS.filter(firmOk).reduce((s,c)=>s+(c.unread||0),0);
     let docsN=0; const docsCos=new Set();
-    CLIENTS.forEach((c,i)=>{const n=(c.tasks||[]).filter(t=>!t.done&&t.type==='doc').length;if(n){docsN+=n;docsCos.add(i);}});
+    CLIENTS.forEach((c,i)=>{if(!firmOk(c))return;const n=(c.tasks||[]).filter(t=>!t.done&&t.type==='doc').length;if(n){docsN+=n;docsCos.add(i);}});
     const OQS_IC={
       wait:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
       prog:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -118,30 +137,23 @@
       sheet:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',
       time:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 22h14M5 2h14M7 22v-4.2a2 2 0 0 1 .6-1.4L12 12 7.6 7.6A2 2 0 0 1 7 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2"/></svg>'};
     // פס "מצב היום" — משטח אחד, טיפוגרפיה במקום קוביות
-    const T=CLIENTS.length, msgCos=CLIENTS.filter(c=>c.unread>0).length;
+    const FC=CLIENTS.filter(firmOk);
+    const T=FC.length, msgCos=FC.filter(c=>c.unread>0).length;
+    const doneN=CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c)&&opsDoneSet.has('c'+o.i)).length;
     const sec=(key,label,big,sub)=>{
       const open=OQS_OPEN===key;
       return `<div class="db-sec ${open?'open':''}" onclick="oqsToggle('${key}')">
         <div class="db-l">${label}</div><div class="db-big">${big}</div><div class="db-sub">${sub}</div>
         ${open?oqsPop(key):''}</div>`;};
-    const qorder=CLIENTS.map((c,i)=>i).sort((a,b)=>opsqRank(a)-opsqRank(b));
-    const dots=qorder.map(i=>{const c=CLIENTS[i],k='c'+i;
-      const st=(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k)?'check':opsDoneSet.has(k)?'done':opsAccum[k]?'prog':c.opsAlert?'alert':'wait';
-      return `<span class="dbq-dot ${st}" title="${c.name}">${c.name.charAt(0)}</span>`;}).join('');
-    const nxt=qorder.find(i=>!opsDoneSet.has('c'+i)&&pendOf(i)>0);
-    const mrepN=CLIENTS.filter(c=>c.mReport).length;
+    const mrepN=FC.filter(c=>c.mReport).length;
     document.getElementById('opsqStrip').innerHTML=`<div class="daybar">
-      <div class="db-sec q ${OQS_OPEN==='wait'?'open':''}" onclick="oqsToggle('wait')">
-        <div class="db-l">תור התפעול <span class="db-frac">${done}/${T} הושלמו</span></div>
-        <div class="dbq">${dots}</div>
-        <div class="db-sub">${nxt!=null?'הבא בתור: <b>'+CLIENTS[nxt].name+'</b>'+(qRule(nxt).why?' · '+qRule(nxt).why:''):'התור נקי — כל הכבוד'}</div>
-        ${OQS_OPEN==='wait'?oqsPop('wait'):''}
-      </div>
-      ${sec('msg','הודעות לקוח',msgs,'מ-'+msgCos+' חברות · למענה')}
-      ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות')}
-      ${sec('mrep','דוח חודשי',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
-      ${sec('time','זמן תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
+      ${sec('time','זמני תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
+      ${sec('status','סטטוס תפעול',doneN+'<i>/'+T+'</i>','תופעלו · '+(T-doneN)+' נותרו להיום')}
+      ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות · לפי מקור')}
+      ${sec('sheet','גוגל שיט','<span class="db-ago">לפני 3 דק׳</span>','עדכון אחרון · הכנסות והוצאות · 3 להזנה')}
+      ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
     </div>`;
+    renderOpsInfo();
     const SS=[['all','הכל'],['active','פעיל'],['trial','ניסיון'],['setup','בהקמה']];
     const statTot=s=>s==='all'?CLIENTS.length:CLIENTS.filter(c=>(c.stat||'active')===s).length;
     const statDone=s=>CLIENTS.filter((c,ix)=>(s==='all'||(c.stat||'active')===s)&&opsDoneSet.has('c'+ix)).length;
@@ -171,12 +183,14 @@
     if(OQS_OPEN&&!e.target.closest('.opsq-stat, .db-sec')){OQS_OPEN=null;renderOpsQueue();}
   });
   function mrSend(i){CLIENTS[i].mReport=true;toast('הדוח החודשי נשלח ל'+CLIENTS[i].name+' בוואטסאפ');if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();if(typeof renderGlobalRail==='function')renderGlobalRail();if(typeof renderCoAlerts==='function')renderCoAlerts();}
+  function chatFrom(i){OQS_OPEN=null;selectClient(i);openChat();}
+  function qReply(inp,i){const v=inp.value.trim();if(!v)return;inp.value='';toast('התגובה נשלחה ל'+CLIENTS[i].name+' בוואטסאפ');}
   const OQS_CHEV='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>';
   function oqsRow(act,name,sub){
     return `<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;${act}"><b>${name}</b><span>${sub}</span>${OQS_CHEV}</div>`;
   }
   function oqsPop(key){
-    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'שינויים אחרונים בגיליונות',time:'פירוט זמן תפעול',mrep:'דוח חודשי — עד 10.7'};
+    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'גיליונות הכנסות והוצאות — שינויים להזנה למערכת',time:'פירוט זמני תפעול — לפי חברה',status:'סטטוס תפעול — לפי חברה',mrep:'דוח חודשי — עד 10.7'};
     let rows='',foot='';
     if(key==='wait') CLIENTS.forEach((c,i)=>{const k='c'+i;
       if(!opsDoneSet.has(k)&&!opsAccum[k]&&pendOf(i)>0) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,pendOf(i)+' משימות'+(c.opsAlert?' · חריגה':''));});
@@ -185,26 +199,45 @@
     if(key==='done') CLIENTS.forEach((c,i)=>{const k='c'+i;
       if(opsDoneSet.has(k)) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,'הושלם · '+fmtDur(opsDur[k]||0));});
     if(key==='msg'){
-      CLIENTS.forEach((c,i)=>{if(c.unread>0) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,c.unread+' הודעות ממתינות');});
-      foot=`<div class="oqs-foot" onclick="event.stopPropagation();OQS_OPEN=null;opsqFilter('msg')">סינון התור להודעות בלבד</div>`;
+      CLIENTS.forEach((c,i)=>{
+        if(!firmOk(c)||!(c.unread>0)) return;
+        const last=[...(c.thread||[])].reverse().find(m=>m.from==='user');
+        const who=last?last.name:'הלקוח', when=last?last.when:'היום',
+              txt=last?last.t:'היי, אפשר לקבל עדכון על מצב החשבון?';
+        rows+=`<div class="oqs-chat" onclick="event.stopPropagation()">
+          <div class="oqs-chat-h"><b>${c.name}</b><span>${c.unread} הודעות שלא נענו</span></div>
+          <div class="oqs-bub"><div class="oqs-bub-h">${who} · ${when}</div>${txt}</div>
+          <div class="oqs-reply"><input placeholder="תגובה מהירה בוואטסאפ…" onkeydown="if(event.key==='Enter')qReply(this,${i})"><button class="oqs-send" onclick="qReply(this.previousElementSibling,${i})">שליחה</button></div>
+          <div class="oqs-openchat" onclick="chatFrom(${i})">לשיחה המלאה ←</div>
+        </div>`;});
     }
     if(key==='doc'){
-      CLIENTS.forEach((c,i)=>{const n=(c.tasks||[]).filter(t=>!t.done&&t.type==='doc').length;
-        if(n) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,n+' מסמכים להזנה');});
-      foot=`<div class="oqs-foot" onclick="event.stopPropagation();OQS_OPEN=null;opsqFilter('doc')">סינון התור למסמכים בלבד</div>`;
+      CLIENTS.forEach((c,i)=>{
+        if(!firmOk(c)) return;
+        (c.tasks||[]).filter(t=>!t.done&&t.type==='doc').forEach(t=>{
+          rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${i})">
+            <b>${t.name}</b><span class="oqs-src ${t.src==='גוגל שיט'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`;});
+      });
     }
     if(key==='sheet') [
-      ['מחזור הכנסות — אנרגי אינטרנשיונל','B4 עודכן · 118,500 → 124,300'],
-      ['ליטרים בחודש — מטעי גבעון','C7 עודכן · 3,180 → 3,240'],
-      ['יעד מכירות — אנרגי גולני','B2 עודכן · 90,000 → 95,000'],
-      ['מדד שירות — רימון יצחק','נוסף גיליון "יולי 2026"'],
-      ['מחזור הכנסות — משה עובד','B5 עודכן · 61,200 → 63,900'],
-      ['ליטרים בחודש — מטעי גבעון','C8 עודכן · 2,940 → 3,010'],
-    ].forEach(x=>rows+=oqsRow(`toast('נפתח המדד — ${x[0]}')`,x[0],x[1]));
+      [0,'אנרגי אינטרנשיונל','נוספו 3 שורות הוצאה · ספקים יוני','לפני 3 דק׳',false],
+      [1,'מטעי גבעון','נוספו 2 שורות הכנסה · לקוחות מזומן','לפני 25 דק׳',false],
+      [2,'אנרגי גולני','עודכנה שורת הוצאה · שכירות מבנה','לפני שעה',false],
+      [4,'משה עובד','נוספה שורת הכנסה · צ׳ק דחוי','08:40',true],
+      [1,'מטעי גבעון','עודכנו 2 שורות הוצאה · דלק ורכב','אתמול',true],
+    ].forEach(x=>rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${x[0]})">
+        <b>${x[1]}<i class="oqs-sub">${x[2]} · ${x[3]}</i></b><span class="oqs-src ${x[4]?'okk':'gs'}">${x[4]?'✓ הוזן':'להזנה'}</span></div>`);
     if(key==='mrep') CLIENTS.forEach((c,i)=>{
       rows+=c.mReport
         ?oqsRow(`toast('הדוח של ${c.name} כבר נשלח')`,c.name,'✓ נשלח')
         :`<div class="oqs-row"><b>${c.name}</b><button class="mt-btn view" onclick="event.stopPropagation();mrSend(${i})">שליחת דוח</button></div>`;});
+    if(key==='status') CLIENTS.forEach((c,i)=>{
+      if(!firmOk(c)) return; const st=opsStatusOf(i);
+      const tot=(c.tasks||[]).length, dn=(c.tasks||[]).filter(t=>t.done).length;
+      const pct=opsDoneSet.has('c'+i)?100:(tot?Math.round(dn/tot*100):0);
+      rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${i})">
+        <div class="oi-rb"><b>${c.name}</b><div class="gn-qbar"><i class="${st.cls}" style="width:${pct}%"></i></div></div>
+        <span class="oi-st ${st.cls}">${st.txt}</span></div>`;});
     if(key==='time') CLIENTS.forEach((c,i)=>{const k='c'+i,s=(opsDur[k]||0)+(opsAccum[k]||0);
       if(s) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,fmtDur(s)+(opsDoneSet.has(k)?' · הושלם':' · בתהליך'));});
     if(!rows) rows='<div class="oqs-empty">אין פריטים כרגע — הכל נקי ✓</div>';
@@ -273,10 +306,10 @@
   }
   /* משימות פתוחות — בלי שעה, יושבות מעל היומן */
   let MGR_TODO=[
-    {t:'אישור דוח חודשי — מאי',            pri:'high', done:false},
-    {t:'בדיקת התאמות בנקאיות',             pri:'high', done:false},
-    {t:'עדכון מחירון לקוחות 2026',         pri:'mid',  done:false},
-    {t:'מענה לפניית מס הכנסה — משה עובד',  pri:'high', done:false},
+    {t:'אישור דוח חודשי — מאי',            pri:'high', done:false, due:'היום'},
+    {t:'בדיקת התאמות בנקאיות',             pri:'high', done:false, due:'היום'},
+    {t:'עדכון מחירון לקוחות 2026',         pri:'mid',  done:false, due:'12.07'},
+    {t:'מענה לפניית מס הכנסה — משה עובד',  pri:'high', done:false, due:'15.07'},
   ];
   function mcTodoHtml(){
     const open=MGR_TODO.filter(x=>!x.done).length;
@@ -294,6 +327,7 @@
   function mcTodoToggle(i){
     MGR_TODO[i].done=!MGR_TODO[i].done;
     renderMgrCal();
+    if(typeof renderOpsInfo==='function')renderOpsInfo();
     if(MGR_TODO[i].done) toast('סומן כבוצע');
   }
   /* גרירת משימה פתוחה אל שעה ביומן */
@@ -313,7 +347,7 @@
     const x=MGR_TODO[MC_DRAG]; if(!x) return;
     MGR_TODO.splice(MC_DRAG,1); MC_DRAG=-1;
     MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:x.t, sub:'משימה שלי', done:false, pri:x.pri});
-    renderMgrCal(); toast('שובץ ביומן ל-'+time);
+    renderMgrCal(); if(typeof renderOpsInfo==='function')renderOpsInfo(); toast('שובץ ביומן ל-'+time);
   }
   function mcDropWeek(e,d,time){
     e.preventDefault();
@@ -341,7 +375,7 @@
     const slots=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
     const entries=[...slots.map(t=>({slot:true,time:t})),...items.map(x=>({slot:false,time:x.time,x}))]
       .sort((a,b)=>a.time.localeCompare(b.time)||(a.slot?-1:1));
-    let html=mcTodoHtml(), nowDrawn=false;
+    let html='', nowDrawn=false;
     entries.forEach(en=>{
       if(!nowDrawn && en.time>MC_NOW){
         html+=`<div class="mc-now"><span class="mc-now-t" dir="ltr">${MC_NOW}</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>`;
@@ -366,7 +400,7 @@
     });
     if(!nowDrawn) html+=`<div class="mc-now"><span class="mc-now-t" dir="ltr">${MC_NOW}</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>`;
     const left=MGR_AGENDA.filter(x=>!x.done).length;
-    el.innerHTML=html+`<div class="mc-foot">${left} משימות נותרו להיום</div>`;
+    el.innerHTML=`<div class="mcal-wrap"><aside class="mcal-side">${mgrTodoPanel()}</aside><div class="mcal-main">${html}<div class="mc-foot">${left} משימות נותרו להיום</div></div></div>`;
   }
   /* תצוגת שבוע — גריד שעות × ימים, עם דפדוף בין שבועות */
   function renderMgrWeek(el){
@@ -375,7 +409,7 @@
              : MC_WOFF===1  ? MC_WEEK_NEXT : [];
     const dates=MC_DAYS.map((_,i)=>{const dt=new Date(2026,5,28+MC_WOFF*7+i);return dt.getDate()+'.'+String(dt.getMonth()+1).padStart(2,'0');});
     const hours=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
-    let html=mcTodoHtml();
+    let html='';
     // חיצים ב-SVG — תווי ‹ › מתהפכים ב-RTL
     html+=`<div class="mcw-nav">
       <button class="mcw-arr" onclick="mcwNav(-1)" title="שבוע קודם"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -443,3 +477,56 @@
     renderMgrCal();
   }
 
+
+  /* פאנל "המשימות שלי" — חי בתוך כרטיס היומן */
+  function mgrTodoPanel(){
+    const todo=MGR_TODO.map((x,i)=>({x,i})).filter(o=>!o.x.done);
+    const tToday=todo.filter(o=>!o.x.due||o.x.due==='היום'), tFut=todo.filter(o=>o.x.due&&o.x.due!=='היום');
+    const trow=o=>`<div class="mc-todo-row" draggable="true" ondragstart="mcDragStart(event,${o.i})" ondragend="mcDragEnd()" title="גררו לציר כדי לשבץ שעה">
+        <span class="mc-grip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="5" r="2"/><circle cx="16" cy="5" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg></span>
+        <label class="mc-chk"><input type="checkbox" onchange="mcTodoToggle(${o.i})"><span></span></label><span class="mc-todo-t">${o.x.t}</span>${o.x.due&&o.x.due!=='היום'?`<span class="oi-due">${o.x.due}</span>`:''}<span class="mc-pri ${o.x.pri}">${o.x.pri==='high'?'גבוהה':'בינונית'}</span></div>`;
+    return `<div class="mcal-side-h">המשימות שלי <span>${tToday.length} להיום · ${tFut.length} עתידיות</span></div>
+      <div class="mcal-side-hint">גררו משימה אל הציר כדי לשבץ לה שעה</div>
+      ${tToday.length?`<div class="oi-grp">להיום</div>`+tToday.map(trow).join(''):''}
+      ${tFut.length?`<div class="oi-grp fut">עתידיות</div>`+tFut.map(trow).join(''):''}
+      ${todo.length?'':'<div class="advh-ok" style="padding:12px 16px">✓ אין משימות פתוחות</div>'}`;
+  }
+  /* שורת מידע שנייה: התראות מערכת · סטטוס תפעול */
+  function renderOpsInfo(){
+    const el=document.getElementById('opsqInfo'); if(!el) return;
+    const al=(typeof buildAlerts==='function'?buildAlerts():[]).filter(a=>firmOk(CLIENTS[a.i]));
+    const hi=al.filter(a=>a.sev==='high').length;
+    const c2=`<div class="advl oi"><div class="advl-head"><span class="advl-title">התראות מערכת</span><span class="advl-sub">${al.length} פעילות · ${hi} דחופות</span></div>
+      <div class="oi-alerts">${al.slice(0,6).map(a=>`<div class="oqs-row" onclick="selectClient(${a.i})"><b>${a.t}</b><span class="msp-chip ${a.sev==='high'?'coral':'amber'}">${a.sev==='high'?'דחוף':'לבדיקה'}</span></div>`).join('')}</div>
+      ${al.length>6?`<div class="qr-note" style="padding:8px 16px;border:none;margin:0">+ עוד ${al.length-6} התראות</div>`:''}
+    </div>`;
+    const list=CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c));
+    const doneCnt=list.filter(o=>opsDoneSet.has('c'+o.i)).length;
+    const pctAll=list.length?Math.round(doneCnt/list.length*100):0;
+    const rows=list.map(o=>{const st=opsStatusOf(o.i);
+      const tot=(o.c.tasks||[]).length, dn=(o.c.tasks||[]).filter(t=>t.done).length;
+      const pct=opsDoneSet.has('c'+o.i)?100:(tot?Math.round(dn/tot*100):0);
+      return `<div class="oqs-row" onclick="selectClient(${o.i})">
+        <div class="oi-rb"><b>${o.c.name}</b><div class="gn-qbar"><i class="${st.cls}" style="width:${pct}%"></i></div></div>
+        <span class="oi-st ${st.cls}">${st.txt}</span></div>`;}).join('');
+    const c3=`<div class="advl oi"><div class="advl-head"><span class="advl-title">סטטוס תפעול</span><span class="advl-sub">${doneCnt} מתוך ${list.length} תופעלו</span></div>
+      <div class="oi-prog"><div class="oi-track"><i style="width:${pctAll}%"></i></div><span>${list.length-doneCnt} נותרו לתפעול היום</span></div>
+      ${rows}</div>`;
+    const msgCos=list.filter(o=>o.c.unread>0);
+    const totMsg=msgCos.reduce((t,o)=>t+o.c.unread,0);
+    const c1=`<div class="advl oi msgs"><div class="advl-head"><span class="advl-title">הודעות לקוח</span><span class="advl-sub">${totMsg} שלא נענו · מ-${msgCos.length} חברות</span></div>
+      <div class="oi-chats">${msgCos.map(o=>{const c=o.c,i=o.i;
+        const last=[...(c.thread||[])].reverse().find(m=>m.from==='user');
+        const who=last?last.name:'הלקוח', when=last?last.when:'היום',
+              txt=last?last.t:'היי, אפשר לקבל עדכון על מצב החשבון?';
+        return `<div class="oqs-chat">
+          <div class="oqs-chat-h"><b>${c.name}</b><span>${c.unread} שלא נענו</span></div>
+          <div class="oqs-bub"><div class="oqs-bub-h">${who} · ${when}</div>${txt}</div>
+          <div class="oqs-reply"><input placeholder="תגובה מהירה בוואטסאפ…" onkeydown="if(event.key==='Enter')qReply(this,${i})"><button class="oqs-send" onclick="qReply(this.previousElementSibling,${i})">שליחה</button></div>
+          <div class="oqs-openchat" onclick="chatFrom(${i})">לשיחה המלאה ←</div>
+        </div>`;}).join('')}</div>
+      ${msgCos.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
+    </div>`;
+    el.innerHTML=c2;
+    const mEl=document.getElementById('msgCol'); if(mEl) mEl.innerHTML=c1;
+  }
