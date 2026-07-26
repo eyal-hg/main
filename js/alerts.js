@@ -187,6 +187,53 @@
       <button class="coal-btn" onclick="goToMetrics()">להגדרות המדדים ←</button>
     </div>`;
   }
+  /* דיי-בר פר-חברה — כלי של מנהל התזרים בכניסה לחברה */
+  function renderCoBar(){
+    const el=document.getElementById('coBar'); if(!el) return;
+    if(SCOPE!=='client'||ROLE!=='manager'||(typeof OPSMODE!=='undefined'&&OPSMODE)){el.style.display='none';el.innerHTML='';return;}
+    const c=CLIENTS[CUR]||{}, T=c.tasks||[];
+    const st=(typeof opsStatusOf==='function')?opsStatusOf(CUR):{cls:'wait',txt:'ממתין'};
+    /* שלבי התפעול כנקודות — כמה פתוח בכל שלב */
+    const stages=(typeof OPS_STAGES!=='undefined')?OPS_STAGES:[];
+    let curHit=false;
+    const dots=stages.map(sg=>{
+      const n=T.filter(t=>t.type===sg[0]&&!t.done).length;
+      const isCur=!curHit&&n>0&&st.cls!=='done'; if(isCur)curHit=true;
+      return `<span class="cb-dot ${st.cls==='done'?'ok':n?(isCur?'cur':'has'):'off'}" title="${sg[1]}${n?' · '+n+' פתוחות':' · נקי'}">${st.cls==='done'?'✓':(n||'')}</span>`;
+    }).join('<i class="cb-lnk"></i>');
+    const open=T.filter(t=>!t.done).length;
+    const stLine=st.cls==='done'?`<span class="db-ok">תופעל ✓</span>`:st.cls==='check'?`<span class="db-ago">${st.txt}</span>`:`<span class="db-ago">${open} משימות פתוחות</span>`;
+    /* ההודעה האחרונה — תצוגה מקדימה אמיתית */
+    const last=[...(c.thread||[])].reverse().find(m=>m.from==='user');
+    const bub=c.unread?`<div class="cb-bub"><div class="cb-bub-h">${last?last.name:'הלקוח'} · ${last?last.when:'היום'}</div>${last?last.t:'היי, אפשר לקבל עדכון על מצב החשבון?'}</div>`
+      :`<div class="cb-clean">אין הודעות פתוחות ✓</div>`;
+    /* המסמכים עצמם */
+    const docs=T.filter(t=>!t.done&&t.type==='doc');
+    const docRows=docs.length?docs.slice(0,2).map(t=>`<div class="cb-doc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nm">${t.name}</span><span class="oqs-src ${t.src==='גוגל שיט'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`).join('')+(docs.length>2?`<div class="cb-more">+ עוד ${docs.length-2}</div>`:'')
+      :`<div class="cb-clean">הכל הוזן ✓</div>`;
+    /* פיד שינויים בגיליון */
+    const FEED={0:['נוספו 3 שורות הוצאה · ספקים יוני','לפני 3 דק׳'],1:['נוספו 2 שורות הכנסה · לקוחות מזומן','לפני 25 דק׳'],2:['עודכנה שורת הוצאה · שכירות מבנה','לפני שעה'],4:['נוספה שורת הכנסה · צ׳ק דחוי','08:40']};
+    const fd=FEED[CUR];
+    const feed=fd?`<div class="cb-feed"><span class="cb-pulse"></span><div class="cb-fb"><b>${fd[0]}</b><span>${fd[1]} · ממתין להזנה</span></div></div>`
+      :`<div class="cb-clean">אין שינויים חדשים ✓</div>`;
+    el.style.display='';
+    el.innerHTML=`<div class="daybar cobar rich">
+      <div class="db-sec"><div class="db-l">סטטוס תפעול <span class="cb-big2">${stLine}</span></div>
+        <div class="cb-dots">${dots}</div>
+        <div class="db-sub">${st.cls==='done'?st.txt:'לפי סדר שלבי העבודה'}</div></div>
+      <div class="db-sec clk" onclick="chatFrom(${CUR})"><div class="db-l">הודעות לקוח ${c.unread?`<span class="cb-n">${c.unread}</span>`:''}</div>
+        ${bub}
+        <div class="db-sub">${c.unread?'לצפייה ומענה ←':''}</div></div>
+      <div class="db-sec"><div class="db-l">מסמכים להזנה ${docs.length?`<span class="cb-n">${docs.length}</span>`:''}</div>
+        ${docRows}</div>
+      <div class="db-sec"><div class="db-l">גוגל שיט</div>
+        ${feed}
+        <div class="db-sub">הכנסות והוצאות · 4 גיליונות</div></div>
+      <div class="db-sec"><div class="db-l">דוח חודשי</div>
+        ${c.mReport?`<div class="cb-rep ok"><span class="db-ok">✓</span><div class="cb-fb"><b>נשלח ללקוח</b><span>יוני 2026 · בוואטסאפ</span></div></div>`
+                   :`<button class="cb-send" onclick="mrSend(${CUR})">שליחת הדוח עכשיו</button><div class="db-sub">חובה עד 10.7</div>`}</div>
+    </div>`;
+  }
   // alerts are defined ON each metric — jump to the metric editor to change them
   function goToMetrics(){
     selectClient(typeof CUR==='number'?CUR:0);

@@ -75,6 +75,7 @@
     renderMeetBtn();
     if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showClients) renderClientsView(); else renderBoard();
     renderCoAlerts();
+    if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();
     // כדור ה-AI — ללקוחות בלבד, ורק כשנבחרה חברה ספציפית (הצ'אט הוא פר-חברה)
     const aiOn=(ROLE==='client1'||ROLE==='clientN')&&SCOPE==='client';

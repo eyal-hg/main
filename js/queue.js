@@ -496,9 +496,12 @@
     const el=document.getElementById('opsqInfo'); if(!el) return;
     const al=(typeof buildAlerts==='function'?buildAlerts():[]).filter(a=>firmOk(CLIENTS[a.i]));
     const hi=al.filter(a=>a.sev==='high').length;
-    const c2=`<div class="advl oi"><div class="advl-head"><span class="advl-title">התראות מערכת</span><span class="advl-sub">${al.length} פעילות · ${hi} דחופות</span></div>
-      <div class="oi-alerts">${al.slice(0,6).map(a=>`<div class="oqs-row" onclick="selectClient(${a.i})"><b>${a.t}</b><span class="msp-chip ${a.sev==='high'?'coral':'amber'}">${a.sev==='high'?'דחוף':'לבדיקה'}</span></div>`).join('')}</div>
-      ${al.length>6?`<div class="qr-note" style="padding:8px 16px;border:none;margin:0">+ עוד ${al.length-6} התראות</div>`:''}
+    const CAPA=3, aopen=window._oiAlOpen||false, shownA=aopen?al:al.slice(0,CAPA);
+    const c2=`<div class="coal ${hi?'hot':''} ${aopen?'open':''} oi-coal">
+      <span class="coal-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+      <span class="coal-t">${al.length} התראות${hi?' · '+hi+' דחופות':''}</span>
+      ${shownA.map(a=>`<span class="coal-chip ${a.sev}" title="${a.t}" onclick="selectClient(${a.i})">${a.t}</span>`).join('')}
+      ${al.length>CAPA?`<button class="coal-more" onclick="window._oiAlOpen=${!aopen};renderOpsInfo()">${aopen?'פחות ▴':'+ עוד '+(al.length-CAPA)}</button>`:''}
     </div>`;
     const list=CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c));
     const doneCnt=list.filter(o=>opsDoneSet.has('c'+o.i)).length;
