@@ -430,7 +430,7 @@
     });
     html+='</div>';
     const foot=evts.length?`${evts.length} אירועים בשבוע זה · הלחיצות והעריכה בתצוגת יום`:'אין אירועים מתוכננים בשבוע זה';
-    el.innerHTML=html+`<div class="mc-foot">${foot}</div>`;
+    el.innerHTML=`<div class="mcal-wrap"><aside class="mcal-side">${mgrTodoPanel()}</aside><div class="mcal-main">${html}<div class="mc-foot">${foot}</div></div></div>`;
   }
   function mcToggle(ix){
     MGR_AGENDA[ix].done=!MGR_AGENDA[ix].done;

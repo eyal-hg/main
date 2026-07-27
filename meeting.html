@@ -27,6 +27,13 @@
     --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  .who-form{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+  .who-form input{padding:11px 13px;border:1px solid var(--divider);border-radius:12px;font-size:.95rem;font-family:inherit;background:#fff}
+  .who-form input:focus{outline:none;border-color:var(--blue)}
+  .who-form #bkName{grid-column:1/-1}
+  .who-known{grid-column:1/-1;font-size:.85rem;border-radius:10px;padding:8px 12px}
+  .who-known.ok{background:var(--green-bg);color:var(--green);font-weight:500}
+  .who-known.new{background:var(--off);color:var(--muted)}
   html{direction:rtl}
   body{
     font-family:'Rubik',sans-serif;
@@ -472,6 +479,7 @@ const state = {
   selLoc: null,            // מזהה המקום שהלקוח בחר (או יחיד אוטומטי)
   availability: null,
   selDate: null, selTime: null,
+  who: {name:'', phone:'', mail:'', match:null},
   weekStart: null, today: null,
 };
 const app = document.getElementById('app');
@@ -590,6 +598,14 @@ function bookingBlock(){
 
       <div class="booking__selected" id="bookingSelected" hidden></div>
 
+      <div class="step-label">הפרטים שלך</div>
+      <div class="who-form">
+        <input id="bkName"  type="text" placeholder="שם מלא" value="${state.who.name||''}">
+        <input id="bkPhone" type="tel"  placeholder="טלפון" dir="ltr" value="${state.who.phone||''}">
+        <input id="bkMail"  type="email" placeholder="מייל (לא חובה)" dir="ltr" value="${state.who.mail||''}">
+        <div class="who-known" id="whoKnown" hidden></div>
+      </div>
+
       <button class="btn btn--primary btn--block" id="confirmBtn" disabled>אשר את הפגישה</button>
     </section>`;
 }
@@ -677,6 +693,15 @@ function wireBooking(){
     updateSelected();
   });
 
+  [['bkName','name'],['bkPhone','phone'],['bkMail','mail']].forEach(([id,key]) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => {
+      state.who[key] = el.value;
+      if (key === 'phone') identifyByPhone();
+      updateSelected();
+    });
+  });
+  identifyByPhone();
   document.getElementById('confirmBtn').addEventListener('click', confirmBooking);
 }
 
@@ -726,17 +751,42 @@ function renderTimes(){
   updateSelected();
 }
 
+const CLIENT_PHONES = [
+  {phone:'0521112233', name:'משה עובד',            client:'משה עובד'},
+  {phone:'0528837412', name:'רונית שקד',           client:'מטעי גבעון'},
+  {phone:'0543219876', name:'לירון בן כליפא',      client:'אנרגי אינטרנשיונל'},
+  {phone:'0501234567', name:'יוסי כהן',            client:'יוסי כהן'},
+];
+function normPhone(p){ return (p||'').replace(/\D/g,'').replace(/^972/,'0'); }
+function identifyByPhone(){
+  const p = normPhone(state.who.phone);
+  state.who.match = (p.length >= 9) ? CLIENT_PHONES.find(c => normPhone(c.phone) === p) || null : null;
+  const el = document.getElementById('whoKnown');
+  if (!el) return;
+  if (state.who.match){
+    el.hidden = false;
+    el.className = 'who-known ok';
+    el.innerHTML = '✓ זיהינו אותך לפי הטלפון: <b>' + esc(state.who.match.client) + '</b> — הפגישה תשויך אליך אוטומטית';
+    const nm = document.getElementById('bkName');
+    if (nm && !nm.value.trim()){ nm.value = state.who.match.name; state.who.name = state.who.match.name; }
+  } else if (p.length >= 9){
+    el.hidden = false;
+    el.className = 'who-known new';
+    el.textContent = 'משתתף חדש — הפגישה תיכנס ליומן עם הפרטים שמילאת';
+  } else {
+    el.hidden = true;
+  }
+}
 function updateSelected(){
   const sel = document.getElementById('bookingSelected');
   const btn = document.getElementById('confirmBtn');
   if (state.selDate && state.selTime){
     sel.hidden = false;
     sel.innerHTML = `📞 <span>נבחר: <b>${fmtLong(state.selDate)}</b> בשעה <b>${state.selTime}</b></span>`;
-    btn.disabled = false;
   } else {
     sel.hidden = true;
-    btn.disabled = true;
   }
+  btn.disabled = !(state.selDate && state.selTime && state.who.name.trim() && normPhone(state.who.phone).length >= 9);
 }
 
 async function selectLocation(locId){
@@ -761,6 +811,10 @@ async function confirmBooking(){
       location_id: state.selLoc,
       date: state.selDate,
       time: state.selTime,
+      name: state.who.name.trim(),
+      phone: normPhone(state.who.phone),
+      email: state.who.mail.trim(),
+      client_match: state.who.match ? state.who.match.client : null,
     });
     renderSuccess(state.selDate, state.selTime);
   } catch (err){
@@ -782,7 +836,7 @@ function renderSuccess(date, time){
       <h1>הפגישה נקבעה!</h1>
       <div class="success__when">${fmtLong(date)} · ${time}</div>
       ${locLine}
-      <p class="success__desc">אופיר יתקשר אליך בזמן שנקבע. שלחנו לך אישור עם כל הפרטים, ותקבל גם תזכורת לפני השיחה.</p>
+      <p class="success__desc">${state.who.match ? 'זוהית כלקוח <b>'+esc(state.who.match.client)+'</b> — הפגישה שויכה אליך ביומן.' : 'הפגישה נכנסה ליומן עם הפרטים שלך.'} שלחנו אישור${state.who.mail?' למייל':''} בוואטסאפ ל-<b dir="ltr">${esc(state.who.phone)}</b>, ותקבל גם תזכורת לפני.</p>
       <div class="success__meta">📞 שיחת אבחון · 30 דקות</div>
     </section>
     <div class="foot">© <b>HK Money</b> · נתראה בקרוב</div>`;

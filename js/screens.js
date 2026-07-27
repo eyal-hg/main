@@ -257,7 +257,7 @@
         const c=CLIENTS[i], k='c'+i, r=qRule(i);
         const tot=(c.tasks||[]).length, doneT=(c.tasks||[]).filter(t=>t.done).length;
         // באיזה שלב החברה — עבודה / בדיקות / הושלם
-        let st='wait', line=r.why||'ממתין', pct=tot?Math.round(doneT/tot*100):0;
+        let st='wait', line='ממתין', pct=tot?Math.round(doneT/tot*100):0;
         if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k){
           st='check'; line='בבדיקות · שלב '+(FIN_STATE.step+1)+'/'+FIN_STEPS.length; pct=85;
         }else if(opsDoneSet.has(k)){st='done';line='✓ הושלם · '+fmtDur(opsDur[k]||0);pct=100;}
@@ -266,11 +266,10 @@
           st='prog'; line=cur?'בשלב: '+cur[1]+' · '+(tot-doneT)+' נותרו':'בתהליך · '+fmtDur(opsAccum[k]||0);
         }else if(c.opsAlert){st='alert';}
         return `<div class="gn-q ${c.bankDown?'bank':opsDoneSet.has(k)?'opsdone':''}" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
-          <span class="dbq-dot ${st}">${c.name.charAt(0)}</span>
+          <span class="dbq-dot ${st}"></span>
           <div class="gn-qb">
             <div class="gn-qn"><span class="nm">${c.name}</span><i class="gn-mr ${c.mReport?'ok':'no'}">${c.mReport?'✓':'דוח'}</i></div>
             <div class="gn-qm"><span class="nm">${c.mgr}</span>${c.product?prodLogo(c.product,'sm'):''}</div>
-            <div class="gn-qs ${st}">${c.bankDown?'⚠ חשבונות בנק לא מחוברים':line}</div>
           </div>
           <span class="gn-biz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></span>
         </div>`;}).join('');
