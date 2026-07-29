@@ -197,7 +197,8 @@
     const stages=(typeof OPS_STAGES!=='undefined')?OPS_STAGES:[];
     let curHit=false;
     const dots=stages.map(sg=>{
-      const n=T.filter(t=>t.type===sg[0]&&!t.done).length;
+      const types=sg[0]==='carry'?['carry','unexpected']:[sg[0]];
+      const n=T.filter(t=>types.includes(t.type)&&!t.done).length;
       const isCur=!curHit&&n>0&&st.cls!=='done'; if(isCur)curHit=true;
       return `<span class="cb-dot ${st.cls==='done'?'ok':n?(isCur?'cur':'has'):'off'}" title="${sg[1]}${n?' · '+n+' פתוחות':' · נקי'}">${st.cls==='done'?'✓':(n||'')}</span>`;
     }).join('<i class="cb-lnk"></i>');

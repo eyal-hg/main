@@ -306,6 +306,14 @@
   }
 
   /* הגדרות — כרגע רק סדר תור התפעול; השאר בבנייה */
+  /* הגדרות שורה תקציבית */
+  let BL_SET={freq:'3', day:1, mark:true, show:'both', name:'תקציב: {קטגוריה} · {חודש}',
+    excluded:['לא לקיטלוג','הלוואות'], advisors:false};
+  const BL_CATS=['הכנסות ממכירות','הכנסות אחרות','קניות מלאי','ספקים','שכר עבודה','שכר קבלני משנה',
+    'שכירות ותפעול משרד','עמלות וריביות בנק','תשלומי הלוואה','הלוואות','ביטוחים','מיסים ואגרות','רכב ודלק','שיווק ופרסום','לא לקיטלוג'];
+  function blSet(k,v){BL_SET[k]=v;renderSettings();}
+  function blExAdd(sel){if(sel.value&&!BL_SET.excluded.includes(sel.value)){BL_SET.excluded.push(sel.value);renderSettings();}}
+  function blExDel(i){BL_SET.excluded.splice(i,1);renderSettings();}
   function renderSettings(){
     const el=document.getElementById('viewSettings'); if(!el) return;
     const rules=(typeof QUEUE_RULES!=='undefined')?QUEUE_RULES.map((r,ix)=>`
@@ -327,6 +335,49 @@
         </div>
         ${rules}
         <div class="qr-note">הושלמו — תמיד בסוף התור · חברות ללא חוק תואם — באמצע</div>
+      </div>
+      <div class="set-card" style="max-width:640px;margin-bottom:14px">
+        <div class="set-head">
+          <span class="set-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 13h3v5H7zM12 9h3v9h-3zM17 5h3v13h-3z"/></svg></span>
+          <div class="awdg-tt"><div class="awdg-t">שורות תקציביות</div><div class="awdg-sub">היתרה בין היעד החודשי למה שצבוע בתזרים — איך היא נפתחת ומוצגת</div></div>
+        </div>
+        <div class="bl-row"><span class="bl-l">פריסת השורה</span>
+          <span class="bl-c">
+            <select class="mx2-inp" onchange="blSet('freq',this.value)">
+              <option value="3" ${BL_SET.freq==='3'?'selected':''}>כל 3 ימים</option>
+              <option value="7" ${BL_SET.freq==='7'?'selected':''}>כל שבוע</option>
+              <option value="day" ${BL_SET.freq==='day'?'selected':''}>ביום קבוע בחודש</option>
+            </select>
+            ${BL_SET.freq==='day'?`<input class="mx2-inp bl-day" type="number" min="1" max="28" value="${BL_SET.day}" onchange="blSet('day',+this.value)" title="היום בחודש">`:''}
+          </span></div>
+        <div class="bl-row"><span class="bl-l">מה מוצג בשורה</span>
+          <span class="bl-c">
+            <select class="mx2-inp" onchange="blSet('show',this.value)">
+              <option value="rest" ${BL_SET.show==='rest'?'selected':''}>היתרה שנותרה בלבד</option>
+              <option value="both" ${BL_SET.show==='both'?'selected':''}>יעד חודשי + יתרה</option>
+              <option value="pace" ${BL_SET.show==='pace'?'selected':''}>יתרה + קצב הפריסה</option>
+            </select>
+            <label class="mc-tog qr-tog" title="סימן קריאה על השורה בתזרים"><input type="checkbox" ${BL_SET.mark?'checked':''} onchange="blSet('mark',this.checked)"><span></span></label>
+            <i class="bl-hint">סימן קריאה (!) על השורה בתזרים</i>
+          </span></div>
+        <div class="bl-row"><span class="bl-l">שם השורה</span>
+          <span class="bl-c bl-name">
+            <input class="mx2-inp" value="${BL_SET.name}" onchange="blSet('name',this.value)" style="flex:1">
+            <i class="bl-hint">תבנית: {קטגוריה} · {חודש} — לדוגמה: "${BL_SET.name.replace('{קטגוריה}','הכנסות ממכירות').replace('{חודש}','יולי')}"</i>
+          </span></div>
+        <div class="bl-row"><span class="bl-l">קטגוריות מוחרגות<br><i class="bl-hint">לא תיפתח להן שורה תקציבית</i></span>
+          <span class="bl-c bl-ex">
+            ${BL_SET.excluded.map((c,i)=>`<span class="bl-chip">${c}<b onclick="blExDel(${i})">✕</b></span>`).join('')}
+            <select class="mx2-inp bl-exadd" onchange="blExAdd(this)">
+              <option value="">+ החרגה…</option>
+              ${BL_CATS.filter(c=>!BL_SET.excluded.includes(c)).map(c=>`<option>${c}</option>`).join('')}
+            </select>
+          </span></div>
+        <div class="bl-row"><span class="bl-l">הרשאת יועצים</span>
+          <span class="bl-c">
+            <label class="mc-tog qr-tog"><input type="checkbox" ${BL_SET.advisors?'checked':''} onchange="blSet('advisors',this.checked)"><span></span></label>
+            <i class="bl-hint">יועצים יכולים לעדכן שורות תקציביות בחברות שלהם</i>
+          </span></div>
       </div>
       <div class="set-empty">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>

@@ -22,6 +22,17 @@
     clearTimeout(_undoTimer);
     _undoTimer=setTimeout(()=>{t.classList.remove('show');_undoFn=null;},5000);
   }
+  let _askFn=null,_askTimer=null;
+  function toastAsk(msg,q,fn){
+    _askFn=fn;
+    const t=document.getElementById('toast');
+    t.innerHTML='✓ '+msg+' · '+q+' <button class="toast-undo yes" onclick="doAsk()">כן, צור כלל</button><button class="toast-undo" onclick="dismissAsk()">לא עכשיו</button>';
+    t.classList.add('show');
+    clearTimeout(_askTimer);
+    _askTimer=setTimeout(()=>{t.classList.remove('show');_askFn=null;},8000);
+  }
+  function doAsk(){if(_askFn)_askFn();_askFn=null;clearTimeout(_askTimer);document.getElementById('toast').classList.remove('show');}
+  function dismissAsk(){_askFn=null;clearTimeout(_askTimer);document.getElementById('toast').classList.remove('show');}
   function doUndo(){
     if(_undoFn)_undoFn();
     _undoFn=null;clearTimeout(_undoTimer);

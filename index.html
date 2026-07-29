@@ -254,7 +254,7 @@
         <div class="ops-title">מצב תפעול — <span id="opsScope">אנרגי אינטרנשיונל</span> <span class="ops-donetag" id="opsDoneTag" style="display:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> התפעול הושלם</span> <span class="sub" id="opsCount"></span></div>
         <span class="ops-clock" id="opsClock">0:00</span>
         <div class="ops-actions">
-          <button class="ops-done" id="opsFinBtn" onclick="finishOps()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול</button>
+          <button class="ops-done" id="opsFinBtn" onclick="opsRefreshClick()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול</button>
           <button class="ops-close" onclick="exitOps()" title="יציאה בלי לסיים — הזמן שנצבר נשמר"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> השהיה · הזמן נשמר</button>
         </div>
       </div>
@@ -489,6 +489,159 @@
 </div>
 
 <!-- confirm dialog (פעולות הרסניות) -->
+<!-- הגדרות שורה תקציבית -->
+<div class="mx-ov" id="blCfgOv">
+  <div class="mx2" style="max-width:460px">
+    <div class="mx2-title" id="blCfgTitle">הגדרות שורה תקציבית</div>
+    <div class="bl-row" id="blCfgCatRow" style="display:none;border:none;padding:8px 0"><span class="bl-l">קטגוריה</span>
+      <span class="bl-c"><select class="mx2-inp" id="blCfgCat" style="flex:1"></select></span></div>
+    <div class="bl-row" style="border:none;padding:8px 0"><span class="bl-l">יעד חודשי (₪)</span>
+      <span class="bl-c"><input class="mx2-inp" id="blCfgTarget" type="number" placeholder="200,000" style="width:140px"></span></div>
+    <div class="bl-row" style="padding:8px 0"><span class="bl-l">פריסה</span>
+      <span class="bl-c"><select class="mx2-inp" id="blCfgFreq">
+        <option value="3">כל 3 ימים</option><option value="7">כל שבוע</option><option value="day">ביום קבוע בחודש</option>
+      </select></span></div>
+    <div class="bl-row" style="padding:8px 0"><span class="bl-l">שם השורה</span>
+      <span class="bl-c"><input class="mx2-inp" id="blCfgName" style="flex:1"></span></div>
+    <input type="checkbox" id="blCfgEx" style="display:none">
+    <div class="mx2-foot" style="justify-content:space-between">
+      <button class="mx2-btn danger" id="blCfgDropBtn" onclick="blCfgDrop()">מחיקת השורה התקציבית</button>
+      <span style="display:flex;gap:8px">
+        <button class="mx2-btn primary" onclick="blCfgSave()">שמירה</button>
+        <button class="mx2-btn" onclick="blCfgClose()">ביטול</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- מופעי שורה תקציבית -->
+<div class="mx-ov" id="blInstOv">
+  <div class="mx2" style="max-width:760px;width:94vw">
+    <div class="mx2-title" id="blInstTitle">המופעים בתזרים</div>
+    <div id="blInstBody"></div>
+    <div class="mx2-foot" style="justify-content:space-between">
+      <button class="mx2-btn danger" onclick="blInstClose();blCfgDropFromPop()">מחיקת השורה התקציבית</button>
+      <button class="mx2-btn" onclick="blInstClose()">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<!-- תנועות קטגוריה (דוח תקציבי) -->
+<div class="mx-ov" id="btxOv">
+  <div class="mx2" style="max-width:640px">
+    <div class="mx2-title" id="btxTitle">תנועות הקטגוריה</div>
+    <div id="btxBody"></div>
+    <div class="mx2-foot"><button class="mx2-btn" onclick="btxClose()">סגירה</button></div>
+  </div>
+</div>
+
+<!-- תיוג קטגוריות מהותיות -->
+<div class="mx-ov" id="essOv">
+  <div class="mx2" style="max-width:420px">
+    <div class="mx2-title">קטגוריות מהותיות לדוח התקציבי</div>
+    <div class="catm-sub">רק אלה ייבדקו ויוצגו בבדיקת הדוח התקציבי</div>
+    <div id="essBody"></div>
+    <div class="mx2-foot"><button class="mx2-btn" onclick="essClose()">סגירה</button></div>
+  </div>
+</div>
+
+<!-- רענון נתונים + סריקת כפילויות -->
+<div class="mx-ov" id="refOv">
+  <div class="mx2 refm">
+    <div class="mx2-title">רענון הנתונים</div>
+    <div id="refBody"></div>
+  </div>
+</div>
+
+<!-- הזנת מסמך למערכת -->
+<div class="mx-ov" id="docOv">
+  <div class="mx2 chkm">
+    <div class="mx2-title" id="docTitle">הזנה למערכת</div>
+    <div id="docBody"></div>
+  </div>
+</div>
+
+<!-- שליחת הודעה — תצוגה מקדימה -->
+<div class="mx-ov" id="smOv">
+  <div class="mx2" style="max-width:520px">
+    <div class="mx2-title">שליחת הודעה ללקוח</div>
+    <div class="sm-to">אל: <b id="smTo"></b></div>
+    <textarea class="mx2-inp sm-txt" id="smText" rows="4"></textarea>
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" onclick="smGo()">אישור ושליחה</button>
+      <button class="mx2-btn" onclick="smClose()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- לא רלוונטי — סיבה -->
+<div class="mx-ov" id="nrOv">
+  <div class="mx2" style="max-width:480px">
+    <div class="mx2-title">סימון כלא רלוונטי</div>
+    <div class="catm-sub">מה הסיבה? נשמרת ביומן הטיפול של החברה.</div>
+    <div class="cp-grid" id="nrChips" style="margin-bottom:10px">
+      <span class="cp-chip" onclick="nrChip(this)">פעולה פנימית בין חשבונות</span>
+      <span class="cp-chip" onclick="nrChip(this)">כבר הוזן ידנית בתזרים</span>
+      <span class="cp-chip" onclick="nrChip(this)">טעות בנק — בבירור</span>
+      <span class="cp-chip" onclick="nrChip(this)">סכום זניח</span>
+    </div>
+    <input class="mx2-inp" id="nrReason" placeholder="או סיבה חופשית…" style="width:100%">
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" onclick="nrGo()">אישור</button>
+      <button class="mx2-btn" onclick="nrClose()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- בחירת קטגוריה להחלפה -->
+<div class="mx-ov" id="cpOv">
+  <div class="mx2 cpm">
+    <div class="mx2-title" id="cpTitle">החלפת קטגוריה</div>
+    <div id="cpStep1">
+      <input class="mx2-inp" id="cpSearch" placeholder="חיפוש קטגוריה…" oninput="renderCatPick()" style="width:100%;margin-bottom:12px">
+      <div class="cp-grid" id="cpList"></div>
+      <div class="mx2-foot"><button class="mx2-btn" onclick="cpClose()">ביטול</button></div>
+    </div>
+    <div id="cpStep2" style="display:none">
+      <div class="cp-sum" id="cpSum"></div>
+      <label class="cp-rule">
+        <input type="checkbox" id="cpRuleChk">
+        <span>להוסיף כלל — כל פעולה עם התיאור הזה תקוטלג כך אוטומטית מעכשיו (בחברה הזו)</span>
+      </label>
+      <div class="mx2-foot">
+        <button class="mx2-btn primary" onclick="cpConfirmGo()">אישור הקיטלוג</button>
+        <button class="mx2-btn" id="cpBackBtn" onclick="cpBack()">חזרה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- כללי קיטלוג אוטומטי -->
+<div class="mx-ov" id="catOv">
+  <div class="mx2 catm">
+    <div class="mx2-title">כללי קיטלוג אוטומטי</div>
+    <div class="catm-sub">פעולה שעונה על כלל מקוטלגת מיד — בלי לחכות לאישור מנהל התזרים.</div>
+    <div class="cat-tabs">
+      <span class="cat-tab on" data-k="desc" onclick="catTab('desc')">לפי תיאור</span>
+      <span class="cat-tab" data-k="source" onclick="catTab('source')">לפי קטגוריית מקור</span>
+      <span class="cat-tab" data-k="pay" onclick="catTab('pay')">לפי סוג תשלום</span>
+    </div>
+    <div class="catm-hint" id="catHint"></div>
+    <div id="catRuleList"></div>
+    <div class="catm-add">
+      <input class="mx2-inp" id="crMatch" placeholder="">
+      <span class="cr-arrow">←</span>
+      <input class="mx2-inp" id="crTo" placeholder="קטגוריית היעד">
+      <select class="mx2-inp" id="crScope" style="flex:0 0 145px">
+        <option value="all">כל החברות</option>
+        <option value="cur">החברה הנוכחית</option>
+      </select>
+      <button class="mx2-btn primary" onclick="crAdd()">+ הוספה</button>
+    </div>
+    <div class="mx2-foot"><button class="mx2-btn" onclick="catClose()">סגירה</button></div>
+  </div>
+</div>
+
 <div class="mx-ov" id="cfOv">
   <div class="mx2 cf">
     <div class="mx2-title" id="cfTitle"></div>
