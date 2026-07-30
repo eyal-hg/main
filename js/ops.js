@@ -961,16 +961,15 @@
         :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>');
   }
   /* ===== כללי קיטלוג אוטומטי — פעולות שעונות על כלל מקוטלגות בלי אישור ===== */
-  const CAT_KIND={source:'קטגוריית מקור (Bizibox)', pay:'סוג תשלום', desc:'תיאור מכיל'};
+  const CAT_KIND={source:'קטגוריית מקור (Bizibox)', desc:'תיאור מכיל'};
+  const SOURCE_CATS=['כללי','בנקאיות','חיובים באשראי'];
   let CAT_RULES=[
     {kind:'source', match:'חיובים באשראי', to:'לא לקיטלוג',    scope:'all'},
-    {kind:'pay',    match:'הלוואות',       to:'תשלומי הלוואה', scope:'all'},
     {kind:'desc',   match:'ארנונה',        to:'מיסים ואגרות',  scope:0},
   ];
   function ruleMatches(r,t,ci){
     if(r.scope!=='all'&&r.scope!==ci) return false;
     if(r.kind==='source') return t.cur===r.match;
-    if(r.kind==='pay')    return t.payType===r.match;
     return !!(t.op&&t.op.includes(r.match));
   }
   function applyCatRules(){
@@ -985,11 +984,12 @@
   let CAT_TAB='desc';
   const CAT_HINT={
     desc:['כל פעולה שהתיאור שלה מכיל את הטקסט — תקוטלג אוטומטית.','למשל: ארנונה'],
-    source:['כל פעולה שמגיעה מ-Bizibox בקטגוריית המקור הזו — תקוטלג אוטומטית.','למשל: חיובים באשראי'],
-    pay:['כל פעולה עם סוג התשלום הזה — תקוטלג אוטומטית.','למשל: הלוואות'],
+    source:['כל פעולה שמגיעה מ-Bizibox בקטגוריית המקור הזו — תקוטלג אוטומטית.','בחירת קטגוריית מקור'],
   };
   function openCatRules(descPrefill){
     document.getElementById('catOv').classList.add('show');
+    document.getElementById('catCoName').textContent='ב'+CLIENTS[CUR].name;
+    document.getElementById('crTo').innerHTML='<option value="">בחירת קטגוריה…</option>'+COMPANY_CATS.map(c=>`<option>${c}</option>`).join('');
     catTab(descPrefill!=null?'desc':CAT_TAB);
     if(descPrefill!=null){
       document.getElementById('crMatch').value=descPrefill;
@@ -1000,12 +1000,17 @@
     CAT_TAB=k;
     document.querySelectorAll('.cat-tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
     document.getElementById('catHint').textContent=CAT_HINT[k][0];
-    document.getElementById('crMatch').placeholder=CAT_HINT[k][1];
+    const isSel=k==='source';
+    document.getElementById('crMatch').style.display=isSel?'none':'';
+    document.getElementById('crMatchSel').style.display=isSel?'':'none';
+    if(isSel) document.getElementById('crMatchSel').innerHTML='<option value="">'+CAT_HINT[k][1]+'</option>'+SOURCE_CATS.map(c=>`<option>${c}</option>`).join('');
+    else document.getElementById('crMatch').placeholder=CAT_HINT[k][1];
     renderCatRules();
   }
   function catClose(){document.getElementById('catOv').classList.remove('show');}
   function renderCatRules(){
-    const rules=CAT_RULES.map((r,i)=>({r,i})).filter(x=>x.r.kind===CAT_TAB);
+    // רק כללים גלובליים או של החברה הנוכחית — כללי חברות אחרות לא רלוונטיים כאן
+    const rules=CAT_RULES.map((r,i)=>({r,i})).filter(x=>x.r.kind===CAT_TAB&&(x.r.scope==='all'||x.r.scope===CUR));
     document.getElementById('catRuleList').innerHTML=rules.map(({r,i})=>`
       <div class="cr-row">
         <b>"${r.match}"</b><span class="cr-arrow">←</span><b class="cr-to">${r.to}</b>
@@ -1014,13 +1019,13 @@
       </div>`).join('')||'<div class="qr-note" style="border:none">אין כללים מהסוג הזה עדיין</div>';
   }
   function crAdd(){
-    const m=document.getElementById('crMatch').value.trim(), to=document.getElementById('crTo').value.trim();
+    const m=CAT_TAB==='source'?document.getElementById('crMatchSel').value:document.getElementById('crMatch').value.trim();
+    const to=document.getElementById('crTo').value;
     if(!m||!to){toast('צריך גם ערך להתאמה וגם קטגוריית יעד');return;}
-    CAT_RULES.push({kind:CAT_TAB, match:m, to,
-      scope:document.getElementById('crScope').value==='all'?'all':CUR});
-    document.getElementById('crMatch').value='';document.getElementById('crTo').value='';
+    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:CUR});
+    document.getElementById('crMatch').value='';document.getElementById('crMatchSel').value='';document.getElementById('crTo').value='';
     renderCatRules();renderOps();
-    toast('הכלל נוסף — פעולות מתאימות יקוטלגו אוטומטית');
+    toast('הכלל נוסף ל"'+CLIENTS[CUR].name+'" — פעולות מתאימות יקוטלגו אוטומטית');
   }
   function descOf(t){ return (t.op||'').split('·')[0].trim(); }
   /* קטגוריות התזרים של החברה (דמו — בפרודקשן: מהשרת פר חברה) */
