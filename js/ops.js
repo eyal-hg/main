@@ -868,8 +868,9 @@
     ];
     CLIENTS[3].tasks=[];
     CLIENTS[4].tasks=[];
-    CLIENTS[2].unread=2; CLIENTS[4].unread=1;
+    CLIENTS[2].unread=2; CLIENTS[4].unread=2;
     CLIENTS[1].debt=1200; CLIENTS[3].debt=480;
+    CLIENTS[0].ccDown=true; CLIENTS[2].clearDown=true;
     opsDoneSet.add('c4'); opsDur['c4']=320;
     CLIENTS[0].preview='תחזרו אליי היום · צפייה בתזרים';
     CLIENTS[2].preview='האם היתרה שלי מספיקה?';

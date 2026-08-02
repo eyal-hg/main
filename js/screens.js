@@ -188,7 +188,7 @@
       {k:'clients', l:'לקוחות',  go:"gnavGo('clients')"},
       {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
     if(ROLE==='manager') return [
-      {k:'ops',     l:'תפעול',   go:"gnavGo('ops')"},
+      {k:'ops',     l:'לקוחות',  go:"gnavGo('ops')"},
       {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
       {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
     if(ROLE==='clientN') return [

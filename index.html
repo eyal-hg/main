@@ -160,19 +160,15 @@
           <div class="opsq-head mgrcal-head">
             <span class="opsq-title">היומן שלי</span>
             <span class="mgrcal-date"></span>
-            <div class="mc-seg">
-              <span id="mcSegDay" class="on" onclick="mcView('day')">יום</span>
-              <span id="mcSegWeek" onclick="mcView('week')">שבוע</span>
+            <div class="mc-daynav">
+              <button class="mcw-arr" onclick="mcDayNav(-1)" title="יום קודם"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+              <span id="mcDayLbl"></span>
+              <button class="mcw-arr" onclick="mcDayNav(1)" title="יום הבא"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
             </div>
             <button class="mt-btn view" onclick="gnavGo('cal')">היומן המלא</button>
             <button class="cx-add" onclick="mcQuick()">+ משימה</button>
           </div>
-          <div class="mgrcal-quick" id="mcQuickRow" style="display:none">
-            <input class="mx2-inp" id="mcQTime" type="time" title="בלי שעה — המשימה תישאר במשימות הפתוחות">
-            <input class="mx2-inp" id="mcQTitle" placeholder="מה צריך לעשות? (שעה — אופציונלי)" onkeydown="if(event.key==='Enter')mcAdd()">
-            <select class="mx2-inp" id="mcQPri" style="width:110px;flex:0 0 auto"><option value="mid">בינונית</option><option value="high">גבוהה</option></select>
-            <button class="mx2-btn primary" onclick="mcAdd()">הוספה</button>
-          </div>
+
           <div class="mgrcal-list" id="mgrCal"></div>
         </div>
         <div id="msgCol"></div>
@@ -589,6 +585,63 @@
     <div class="mx2-foot">
       <button class="mx2-btn primary" onclick="nrGo()">אישור</button>
       <button class="mx2-btn" onclick="nrClose()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- משימה חדשה — של מנהל התזרים -->
+<div class="mx-ov" id="mtkOv">
+  <div class="mx2" style="max-width:540px">
+    <div class="mx2-title">משימה חדשה</div>
+    <input class="mx2-inp" id="mtkTitle" placeholder="מה צריך לעשות?" style="width:100%;margin-bottom:10px" onkeydown="if(event.key==='Enter')mtkSave()">
+    <div class="mtk-row">
+      <input class="mx2-inp" id="mtkTime" type="time" title="בלי שעה — המשימה נשארת במשימות הפתוחות">
+      <span style="flex:1;position:relative"><input class="mx2-inp" id="mtkClient" placeholder="חיפוש לקוח — לא חובה" autocomplete="off" style="width:100%;box-sizing:border-box" oninput="mtkClientChange();mtkCliFilter()" onfocus="mtkCliOpen()" onblur="setTimeout(()=>document.getElementById('mtkCliDd').classList.remove('show'),180)"><div class="ev-dd" id="mtkCliDd"></div></span>
+      <select class="mx2-inp" id="mtkOwner" style="flex:1"><option value="">אחראי: אני</option></select>
+    </div>
+    <div class="mtk-rep" id="mtkRep">
+      <span class="mtk-chip on" data-r="once" onclick="mtkRepSet('once')">חד פעמי</span>
+      <span class="mtk-chip" data-r="weekly" onclick="mtkRepSet('weekly')">שבועי</span>
+      <span class="mtk-chip" data-r="monthly" onclick="mtkRepSet('monthly')">חודשי</span>
+      <span class="mtk-repsub" id="mtkRepSub"></span>
+    </div>
+    <textarea class="mx2-inp" id="mtkDetail" placeholder="פירוט" rows="3" style="width:100%;resize:vertical;margin-bottom:10px"></textarea>
+    <label class="cp-rule" id="mtkRemindWrap" style="opacity:.4;pointer-events:none">
+      <input type="checkbox" id="mtkRemind">
+      <span>שליחת תזכורת ללקוח בוואטסאפ</span>
+    </label>
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" onclick="mtkSave()">הוספת המשימה</button>
+      <button class="mx2-btn" onclick="mtkClose()">ביטול</button>
+      <button class="mx2-btn danger" id="mtkDelBtn" style="display:none;margin-inline-start:auto" onclick="mtkDelete()">מחיקת המשימה</button>
+    </div>
+  </div>
+</div>
+
+<!-- פגישה חדשה — שיקוף הפופאפ מהיומן המלא -->
+<div class="mx-ov" id="evOv">
+  <div class="mx2" style="max-width:600px">
+    <div class="ev-head">
+      <div><div class="mx2-title" style="margin-bottom:2px">פגישה חדשה</div><div class="ev-sub">ביומן של אייל חזות</div></div>
+      <button class="ev-x" onclick="evClose()">✕</button>
+    </div>
+    <div class="evf-grid">
+      <div class="evf full"><label>כותרת</label><input class="mx2-inp" id="evTitle" placeholder="לדוגמה: פגישת תזרים עם משפחת לוי" onkeydown="if(event.key==='Enter')evSave()"></div>
+      <div class="evf"><label>תאריך</label><input class="mx2-inp" id="evDate" type="date"></div>
+      <div class="evf"><label>אורך (דק׳)</label><input class="mx2-inp" id="evDur" type="number" min="5" max="600" step="5" value="50" oninput="evDurChange()"></div>
+      <div class="evf"><label>התחלה</label><input class="mx2-inp" id="evStart" type="time" oninput="evDurChange()"></div>
+      <div class="evf"><label>סיום</label><input class="mx2-inp" id="evEnd" type="time" oninput="evEndChange()"></div>
+      <div class="evf full"><label>סוג פגישה</label><div class="ev-chips" id="evChips"></div></div>
+      <div class="evf" style="position:relative"><label>לקוח / משתתפים</label><input class="mx2-inp" id="evClient" placeholder="חיפוש לקוח, או כל שם אחר…" autocomplete="off" oninput="evCliFilter()" onfocus="evCliOpen()" onblur="setTimeout(()=>document.getElementById('evCliDd').classList.remove('show'),180)"><div class="ev-dd" id="evCliDd"></div></div>
+      <div class="evf"><label>מקום עבודה</label><select class="mx2-inp" id="evLoc"><option>משרד</option><option>בית</option><option>זום</option><option>אצל הלקוח</option></select></div>
+      <div class="evf full"><label>הערה למיקום (לא חובה)</label><input class="mx2-inp" id="evLocNote" placeholder="חדר, קומה או קישור מיוחד"></div>
+      <div class="evf"><label>תזכורת לפני</label><select class="mx2-inp" id="evRemind"><option>30 דקות</option><option>שעה</option><option>יום לפני</option><option>ללא</option></select></div>
+      <div class="evf"><label>חזרה</label><select class="mx2-inp" id="evRepeat"><option>ללא חזרה</option><option>שבועי</option><option>חודשי</option></select></div>
+      <div class="evf full"><label>הערות</label><textarea class="mx2-inp" id="evNotes" rows="3" placeholder="הערות פנימיות…" style="resize:vertical"></textarea></div>
+    </div>
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" onclick="evSave()">שמירה</button>
+      <button class="mx2-btn" onclick="evClose()">ביטול</button>
     </div>
   </div>
 </div>

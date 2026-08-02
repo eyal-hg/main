@@ -183,8 +183,16 @@
     if(OQS_OPEN&&!e.target.closest('.opsq-stat, .db-sec')){OQS_OPEN=null;renderOpsQueue();}
   });
   function mrSend(i){CLIENTS[i].mReport=true;toast('הדוח החודשי נשלח ל'+CLIENTS[i].name+' בוואטסאפ');if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();if(typeof renderGlobalRail==='function')renderGlobalRail();if(typeof renderCoAlerts==='function')renderCoAlerts();}
-  function chatFrom(i){OQS_OPEN=null;selectClient(i);openChat();}
+  function chatFrom(i){OQS_OPEN=null;CUR=i;openChat();} // נשארים בדשבורד — רק המגירה נפתחת
   function qReply(inp,i){const v=inp.value.trim();if(!v)return;inp.value='';toast('התגובה נשלחה ל'+CLIENTS[i].name+' בוואטסאפ');}
+  /* תגובה על הודעה ספציפית — מכל בועה */
+  function qReplyMsg(inp,ci,mi){
+    const v=inp.value.trim(); if(!v) return; inp.value='';
+    const c=CLIENTS[ci], users=(c.thread||[]).filter(m=>m.from==='user');
+    const pend=users.slice(-Math.min(c.unread||1,users.length));
+    const m=pend[mi];
+    toast('נשלחה תגובה על ״'+(m?m.t.slice(0,28):'')+'…״ בוואטסאפ');
+  }
   const OQS_CHEV='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>';
   function oqsRow(act,name,sub){
     return `<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;${act}"><b>${name}</b><span>${sub}</span>${OQS_CHEV}</div>`;
@@ -255,7 +263,8 @@
     {time:'09:45', dur:'35 דק׳', kind:'ops',    title:'תפעול — מטעי גבעון',        sub:'הושלם · 2 קיטלוגים אושרו',  done:true,  co:2},
     {time:'10:30', dur:'30 דק׳', kind:'task',   title:'בדיקת נגררות יוני — 5 חברות', sub:'משימה שלי',               done:false, pri:'high'},
     {time:'11:30', dur:'20 דק׳', kind:'client', title:'עדכון תקציב שיווק ליולי',    sub:'משימת לקוח · אנרגי אינטרנשיונל', done:false},
-    {time:'13:00', dur:'45 דק׳', kind:'meet',   title:'פגישת צוות שבועית',          sub:'עם לירון בן כליפא · Zoom',  done:false},
+    {time:'13:00', dur:'45 דק׳', kind:'meet',   title:'פגישת צוות שבועית',          sub:'עם לירון בן כליפא · Zoom',  done:false, link:'Zoom'},
+    {time:'15:00', dur:'45 דק׳', kind:'meet',   title:'פגישת תזרים — משה עובד',     sub:'מסונכרנת ללקוח · Google Meet', done:false, link:'Meet', client:'משה עובד'},
     {time:'14:30', dur:'25 דק׳', kind:'task',   title:'מעקב חוב — רימון יצחק',      sub:'משימה שלי · 421,050 ₪',    done:false, pri:'high'},
     {time:'16:00', dur:'30 דק׳', kind:'task',   title:'שליחת עדכוני תזרים ללקוחות', sub:'משימה שלי · 4 חברות נותרו', done:false, pri:'mid'},
   ];
@@ -298,15 +307,41 @@
     {d:3,time:'16:00',kind:'task',title:'עדכוני תזרים ללקוחות'},
   ];
   let MC_VIEW='day';
+  let MC_DOFF=0;
+  function mcDayNav(dir){MC_DOFF=Math.max(-4,Math.min(6,MC_DOFF+dir));renderMgrCal();}
+  function mcDayToday(){MC_DOFF=0;renderMgrCal();}
+  /* יום שאינו היום — אירועים מנתוני השבועות + סלוטים לשיבוץ */
+  function renderMgrOtherDay(el,woff,dayIx){
+    const evts=(woff===0?MC_WEEK:woff===1?MC_WEEK_NEXT:MC_WEEK_PAST).filter(e=>e.d===dayIx).sort((a,b)=>a.time.localeCompare(b.time));
+    const slots=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
+    let html='';
+    slots.forEach((h,si)=>{
+      const nxt=slots[si+1]||'17:00';
+      const cell=evts.filter(e=>e.time>=h&&e.time<nxt);
+      if(cell.length){
+        cell.forEach(e=>{html+=`<div class="mc-item ${e.kind} ${e.done?'done':''}">
+          <div class="mc-time" dir="ltr">${e.time}</div>
+          <div class="mc-b"><div class="mc-t">${e.title}</div></div>
+        </div>`;});
+      }else if(woff>=0){
+        html+=`<div class="mc-drop" onclick="evQuick('${h}',${dayIx})"><span dir="ltr">${h}–${mcEndOf(h)}</span><i class="add-t">+ הוספת אירוע</i></div>`;
+      }
+    });
+    const foot=evts.length?evts.length+' אירועים ביום זה':'יום פנוי';
+    el.innerHTML=`<div class="mcal-wrap"><aside class="mcal-side">${mgrTodoPanel()}</aside><div class="mcal-main">${html}<div class="mc-foot">${foot}</div></div></div>`;
+  }
   function mcView(v){
     MC_VIEW=v;
     document.getElementById('mcSegDay').classList.toggle('on',v==='day');
+    document.getElementById('mcSeg3d').classList.toggle('on',v==='3d');
     document.getElementById('mcSegWeek').classList.toggle('on',v==='week');
     renderMgrCal();
   }
   /* משימות פתוחות — בלי שעה, יושבות מעל היומן */
   let MGR_TODO=[
-    {t:'אישור דוח חודשי — מאי',            pri:'high', done:false, due:'היום'},
+    {t:'עדכון שורה תקציבית — קניות מלאי',  pri:'mid',  done:false, due:'היום', client:'מטעי גבעון', rep:'monthly'},
+    {t:'אישור דוח חודשי — מאי',            pri:'high', done:true,  due:'היום'},
+    {t:'לתאם מול בנק הפועלים הגדלת מסגרת אשראי לרבעון האחרון, כולל עדכון מסמכי ביטחונות וחתימת ערבים', pri:'mid', done:false, due:'היום'},
     {t:'בדיקת התאמות בנקאיות',             pri:'high', done:false, due:'היום'},
     {t:'עדכון מחירון לקוחות 2026',         pri:'mid',  done:false, due:'12.07'},
     {t:'מענה לפניית מס הכנסה — משה עובד',  pri:'high', done:false, due:'15.07'},
@@ -320,44 +355,49 @@
           <span class="mc-grip" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="5" r="2"/><circle cx="16" cy="5" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg></span>
           <label class="mc-chk"><input type="checkbox" ${x.done?'checked':''} onchange="mcTodoToggle(${i})"><span></span></label>
           <span class="mc-todo-t">${x.t}</span>
-          <span class="mc-pri ${x.pri}">${x.pri==='high'?'גבוהה':'בינונית'}</span>
+          
         </div>`).join('')}
     </div>`;
   }
+  function ctDone(i){
+    CLIENT_TASKS[i].st=(CLIENT_TASKS[i].st==='done'?'prog':'done');
+    renderMgrCal();
+    toastUndo('המשימה של הלקוח הושלמה',()=>{CLIENT_TASKS[i].st='prog';renderMgrCal();});
+  }
   function mcTodoToggle(i){
     MGR_TODO[i].done=!MGR_TODO[i].done;
+    const ev=MGR_AGENDA.find(a=>a.todoRef===MGR_TODO[i]); if(ev)ev.done=MGR_TODO[i].done;
     renderMgrCal();
     if(typeof renderOpsInfo==='function')renderOpsInfo();
-    if(MGR_TODO[i].done) toast('סומן כבוצע');
+    if(MGR_TODO[i].done) toastUndo('המשימה הושלמה',()=>{MGR_TODO[i].done=false;const e2=MGR_AGENDA.find(a=>a.todoRef===MGR_TODO[i]);if(e2)e2.done=false;renderMgrCal();if(typeof renderOpsInfo==='function')renderOpsInfo();});
   }
   /* גרירת משימה פתוחה אל שעה ביומן */
   let MC_DRAG=-1;
+  function mcEndOf(t){const p=t.split(':'),x=(+p[0])*60+(+p[1])+30;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');}
   function mcDragStart(e,i){
     MC_DRAG=i;
     e.dataTransfer.effectAllowed='move';
     try{e.dataTransfer.setData('text/plain',String(i));}catch(_){}
-    setTimeout(()=>{const el=document.getElementById('mgrCal');if(el)el.classList.add('drag-on');},0);
   }
-  function mcDragEnd(){
-    MC_DRAG=-1;
-    const el=document.getElementById('mgrCal');if(el)el.classList.remove('drag-on');
-  }
+  function mcDragEnd(){MC_DRAG=-1;}
   function mcDrop(e,time){
     e.preventDefault();
     const x=MGR_TODO[MC_DRAG]; if(!x) return;
-    MGR_TODO.splice(MC_DRAG,1); MC_DRAG=-1;
-    MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:x.t, sub:'משימה שלי', done:false, pri:x.pri});
-    renderMgrCal(); if(typeof renderOpsInfo==='function')renderOpsInfo(); toast('שובץ ביומן ל-'+time);
+    MC_DRAG=-1;
+    x.slot=time; // המשימה נשארת ברשימה — השיבוץ רק נותן לה שעה
+    MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:x.t, sub:x.client?('משימת לקוח · '+x.client):'משימה שלי', done:false, todoRef:x});
+    renderMgrCal(); if(typeof renderOpsInfo==='function')renderOpsInfo(); toast('שובץ ביומן ל-'+time+' — נשאר גם ברשימה');
   }
   function mcDropWeek(e,d,time){
     e.preventDefault();
     const x=MGR_TODO[MC_DRAG]; if(!x) return;
     if(MC_WOFF<0){toast('אי אפשר לשבץ לשבוע שעבר');return;}
-    MGR_TODO.splice(MC_DRAG,1); MC_DRAG=-1;
+    MC_DRAG=-1;
+    x.slot=MC_DAYS[d]+' '+time; // נשארת ברשימה
     if(MC_WOFF===0&&d===MC_TODAY){
-      MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:x.t, sub:'משימה שלי', done:false, pri:x.pri});
+      MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:x.t, sub:'משימה שלי', done:false, todoRef:x});
     }else{
-      (MC_WOFF===0?MC_WEEK:MC_WEEK_NEXT).push({d, time, kind:'task', title:x.t});
+      (MC_WOFF===0?MC_WEEK:MC_WEEK_NEXT).push({d, time, kind:'task', title:x.t, todoRef:x});
     }
     renderMgrCal(); toast('שובץ ליום '+MC_DAYS[d]+' ב-'+time);
   }
@@ -369,12 +409,25 @@
     meet:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'};
   function renderMgrCal(){
     const el=document.getElementById('mgrCal'); if(!el) return;
-    if(MC_VIEW==='week'){renderMgrWeek(el);return;}
-    const items=[...MGR_AGENDA].sort((a,b)=>a.time.localeCompare(b.time));
+    // ניווט יום: MC_DOFF=0 היום; אחרת מציגים את היום הנבחר מנתוני השבועות
+    const D=MC_TODAY+MC_DOFF;
+    const woff=D<0?-1:D>4?1:0, dayIx=((D%5)+5)%5;
+    MC_WOFF=woff; // הוספות וגרירות ינחתו ביום המוצג
+    const dLbl=document.getElementById('mcDayLbl');
+    if(dLbl){
+      const dt=new Date(2026,5,28+woff*7+dayIx);
+      dLbl.innerHTML=(MC_DOFF===0?'היום · ':'')+'יום '+MC_DAYS[dayIx]+' '+dt.getDate()+'.'+String(dt.getMonth()+1).padStart(2,'0')+
+        (MC_DOFF!==0?' <button class="mcw-todaybtn" onclick="mcDayToday()">חזרה להיום</button>':'');
+    }
+    if(MC_DOFF!==0){renderMgrOtherDay(el,woff,dayIx);return;}
+    // תפעול שהושלם לא מוצג — אין צורך לראות ביומן את מה שכבר נעשה
+    const items=MGR_AGENDA.filter(it=>!(it.kind==='ops'&&it.done)).sort((a,b)=>a.time.localeCompare(b.time));
     // סלוטים שעתיים לשחרור גרירה — נחשפים רק בזמן גרירת משימה פתוחה
     const slots=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
-    const entries=[...slots.map(t=>({slot:true,time:t})),...items.map(x=>({slot:false,time:x.time,x}))]
-      .sort((a,b)=>a.time.localeCompare(b.time)||(a.slot?-1:1));
+    // סלוט מוצג רק אם השעה פנויה — אין אירוע שמתחיל באותה שעה עגולה
+    const taken=new Set(items.map(x=>x.time.slice(0,2)+':00'));
+    const entries=[...slots.filter(t=>!taken.has(t)).map(t=>({slot:true,time:t})),...items.map(x=>({slot:false,time:x.time,x}))]
+      .sort((a,b)=>a.time.localeCompare(b.time)||(a.slot?1:-1));
     let html='', nowDrawn=false;
     entries.forEach(en=>{
       if(!nowDrawn && en.time>MC_NOW){
@@ -382,7 +435,7 @@
         nowDrawn=true;
       }
       if(en.slot){
-        html+=`<div class="mc-drop" onclick="mcSlotAdd('${en.time}')" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="mcDrop(event,'${en.time}')"><span dir="ltr">${en.time}</span><i class="add-t">+ הוספת משימה</i><i class="drop-t">שחררו כאן לשיבוץ</i></div>`;
+        html+=`<div class="mc-drop" onclick="mcSlotAdd('${en.time}')"><span dir="ltr">${en.time}–${mcEndOf(en.time)}</span><i class="add-t">+ הוספת אירוע</i></div>`;
         return;
       }
       const it=en.x;
@@ -392,10 +445,13 @@
         <div class="mc-time" dir="ltr">${it.time}</div>
         <label class="mc-chk" onclick="event.stopPropagation()"><input type="checkbox" ${it.done?'checked':''} onchange="mcToggle(${ix})"><span></span></label>
         <div class="mc-b">
-          <div class="mc-t">${it.title}${it.pri?` <span class="mc-pri ${it.pri}">${it.pri==='high'?'גבוהה':'בינונית'}</span>`:''}</div>
-          <div class="mc-s">${it.sub} · ${it.dur}</div>
+          <div class="mc-t">${it.title}${it.pri?` `:''}</div>
+          <div class="mc-s flexed"><span class="mc-s-txt">${it.sub} · ${it.dur}</span>
+            ${it.link&&!it.done?`<button class="mc-link" onclick="event.stopPropagation();toast('נפתח ${it.link} — ${it.title}')" title="פתיחת ${it.link}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> ${it.link} ↗</button>`:''}
+            ${it.client&&it.kind==='meet'&&!it.done?`<button class="mc-link rec" onclick="event.stopPropagation();startMeetRec('${it.client}')" title="הקלטת הפגישה — מסונכרנת ללקוח"><span class="mrec-dot"></span> הקלטה</button>`:''}
+          </div>
         </div>
-        <span class="mc-tag ${it.kind}">${MC_ICO[it.kind]} ${MC_KIND[it.kind]}</span>
+        ${it.kind==='ops'?`<span class="mc-tag ops">${MC_ICO.ops} ${MC_KIND.ops}</span>`:''}
       </div>`;
     });
     if(!nowDrawn) html+=`<div class="mc-now"><span class="mc-now-t" dir="ltr">${MC_NOW}</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>`;
@@ -403,98 +459,319 @@
     el.innerHTML=`<div class="mcal-wrap"><aside class="mcal-side">${mgrTodoPanel()}</aside><div class="mcal-main">${html}<div class="mc-foot">${left} משימות נותרו להיום</div></div></div>`;
   }
   /* תצוגת שבוע — גריד שעות × ימים, עם דפדוף בין שבועות */
-  function renderMgrWeek(el){
+  function renderMgrWeek(el,opt){
+    const days=(opt&&opt.days)||[0,1,2,3,4];
+    const withPanel=!opt||opt.panel!==false;
     const evts=MC_WOFF===0 ? MC_WEEK.concat(MGR_AGENDA.map(a=>({d:MC_TODAY,time:a.time,kind:a.kind,title:a.title,done:a.done})))
              : MC_WOFF===-1 ? MC_WEEK_PAST
              : MC_WOFF===1  ? MC_WEEK_NEXT : [];
     const dates=MC_DAYS.map((_,i)=>{const dt=new Date(2026,5,28+MC_WOFF*7+i);return dt.getDate()+'.'+String(dt.getMonth()+1).padStart(2,'0');});
     const hours=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
+    const cols='46px repeat('+days.length+',1fr)';
     let html='';
     // חיצים ב-SVG — תווי ‹ › מתהפכים ב-RTL
     html+=`<div class="mcw-nav">
       <button class="mcw-arr" onclick="mcwNav(-1)" title="שבוע קודם"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
-      <span class="mcw-range">${dates[0]} – ${dates[4]}${MC_WOFF!==0?` <button class="mcw-todaybtn" onclick="mcwToday()">חזרה להיום</button>`:''}</span>
+      <span class="mcw-range">${dates[days[0]]} – ${dates[days[days.length-1]]}${MC_WOFF!==0?` <button class="mcw-todaybtn" onclick="mcwToday()">חזרה להיום</button>`:''}</span>
       <button class="mcw-arr" onclick="mcwNav(1)" title="שבוע הבא"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
     </div>`;
     html+='<div class="mcw">';
-    html+='<div class="mcw-row mcw-hdr"><div class="mcw-time"></div>'+
-      MC_DAYS.map((d,i)=>`<div class="mcw-day ${MC_WOFF===0&&i===MC_TODAY?'today':''}">${d}<span>${dates[i]}</span></div>`).join('')+'</div>';
+    html+=`<div class="mcw-row mcw-hdr" style="grid-template-columns:${cols}"><div class="mcw-time"></div>`+
+      days.map(i=>`<div class="mcw-day ${MC_WOFF===0&&i===MC_TODAY?'today':''}">${MC_DAYS[i]}<span>${dates[i]}</span></div>`).join('')+'</div>';
     hours.forEach(h=>{
-      html+=`<div class="mcw-row"><div class="mcw-time" dir="ltr">${h}</div>`;
-      for(let d=0;d<5;d++){
+      html+=`<div class="mcw-row" style="grid-template-columns:${cols}"><div class="mcw-time" dir="ltr">${h}</div>`;
+      days.forEach(d=>{
         const cell=evts.filter(e=>e.d===d&&e.time>=h&&e.time<(hours[hours.indexOf(h)+1]||'17:00'));
         html+=`<div class="mcw-cell ${MC_WOFF===0&&d===MC_TODAY?'today':''} ${MC_WOFF>=0?'clickable':''}" title="הוספת משימה — ${MC_DAYS[d]} ${h}" onclick="mcCellAdd(${d},'${h}')" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="this.classList.remove('over');mcDropWeek(event,${d},'${h}')">${cell.map(e=>
           `<div class="mcw-ev ${e.kind} ${e.done?'done':''}" title="${e.title}"><b dir="ltr">${e.time}</b> ${e.title}</div>`).join('')}</div>`;
-      }
+      });
       html+='</div>';
     });
     html+='</div>';
     const foot=evts.length?`${evts.length} אירועים בשבוע זה · הלחיצות והעריכה בתצוגת יום`:'אין אירועים מתוכננים בשבוע זה';
-    el.innerHTML=`<div class="mcal-wrap"><aside class="mcal-side">${mgrTodoPanel()}</aside><div class="mcal-main">${html}<div class="mc-foot">${foot}</div></div></div>`;
+    const main=html+'<div class="mc-foot">'+foot+'</div>';
+    el.innerHTML=withPanel
+      ? `<div class="mcal-wrap"><aside class="mcal-side">${mgrTodoPanel()}</aside><div class="mcal-main">${main}</div></div>`
+      : main;
   }
   function mcToggle(ix){
     MGR_AGENDA[ix].done=!MGR_AGENDA[ix].done;
+    if(MGR_AGENDA[ix].todoRef){MGR_AGENDA[ix].todoRef.done=MGR_AGENDA[ix].done;}
     renderMgrCal();
     if(MGR_AGENDA[ix].done) toast('סומן כבוצע — כל הכבוד');
   }
-  function mcQuick(){
-    const r=document.getElementById('mcQuickRow');
-    const show=r.style.display==='none';
-    r.style.display=show?'flex':'none';
-    if(show) setTimeout(()=>document.getElementById('mcQTitle').focus(),60);
+  /* מודל משימה מלא: לקוח, חזרתיות, פירוט ותזכורת ללקוח */
+  let MC_ADD_DAY=null, MTK_REP='once';
+  function mcQuick(time){
+    MTK_EDIT=null;
+    const _tt=document.querySelector('#mtkOv .mx2-title'); if(_tt)_tt.textContent=time?('אירוע חדש · '+time):'משימה חדשה';
+    const _db=document.getElementById('mtkDelBtn'); if(_db)_db.style.display='none';
+    const _sb=document.querySelector('#mtkOv .mx2-btn.primary'); if(_sb)_sb.textContent=time?'הוספה ליומן':'הוספת המשימה';
+    document.getElementById('mtkTitle').placeholder=time?'מה האירוע?':'מה צריך לעשות?';
+    MC_ADD_DAY=null; MTK_REP='once';
+    document.getElementById('mtkTitle').value='';
+    document.getElementById('mtkTime').value=time||'';
+    document.getElementById('mtkDetail').value='';
+    document.getElementById('mtkRemind').checked=false;
+    document.getElementById('mtkClient').value='';
+    document.getElementById('mtkCliDd').classList.remove('show');
+    const team=[...new Set(CLIENTS.map(c=>c.mgr))];
+    document.getElementById('mtkOwner').innerHTML='<option value="">אחראי: אני</option>'+
+      team.map(n=>`<option value="${n}">${n}</option>`).join('');
+    document.querySelectorAll('#mtkRep .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.r==='once'));
+    mtkClientChange();
+    document.getElementById('mtkOv').classList.add('show');
+    setTimeout(()=>document.getElementById('mtkTitle').focus(),60);
   }
-  /* הוספה מתוך הלוח — לחיצה על שעה פותחת את ההוספה המהירה עם השעה מוכנה */
-  let MC_ADD_DAY=null;
-  function mcSlotAdd(time){
-    MC_ADD_DAY=null;
-    document.getElementById('mcQuickRow').style.display='flex';
-    document.getElementById('mcQTime').value=time;
-    document.getElementById('mcQTitle').focus();
+  function mcSlotAdd(time){ evQuick(time); }
+  /* ===== מודל פגישה — שיקוף של הפופאפ מהיומן המלא ===== */
+  const EV_TYPES=[['פגישה','#7557E3'],['תזרים','#1B6C9C'],['תפעול','#4CAF7D'],['אחר','#D9714E']];
+  let EV_TYPE='פגישה', EV_DAY=null;
+  function evMins(t){const p=t.split(':');return (+p[0])*60+(+p[1]);}
+  function evHHMM(x){return String(Math.floor(x/60)%24).padStart(2,'0')+':'+String(x%60).padStart(2,'0');}
+  function evQuick(time,dayIx){
+    EV_DAY=(dayIx==null?null:dayIx); EV_TYPE='פגישה';
+    const dIx=EV_DAY!=null?EV_DAY:MC_TODAY;
+    const dt=new Date(2026,5,28+(typeof MC_WOFF!=='undefined'?MC_WOFF:0)*7+dIx);
+    document.getElementById('evTitle').value='';
+    document.getElementById('evDate').value=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    document.getElementById('evStart').value=time||'12:00';
+    document.getElementById('evDur').value=50;
+    evDurChange();
+    document.getElementById('evClient').value='';
+    document.getElementById('evCliDd').classList.remove('show');
+    document.getElementById('evLocNote').value='';
+    document.getElementById('evNotes').value='';
+    document.getElementById('evLoc').selectedIndex=0;
+    document.getElementById('evRemind').selectedIndex=0;
+    document.getElementById('evRepeat').selectedIndex=0;
+    evChipsRender();
+    document.getElementById('evOv').classList.add('show');
+    setTimeout(()=>document.getElementById('evTitle').focus(),60);
+  }
+  function evChipsRender(){
+    document.getElementById('evChips').innerHTML=EV_TYPES.map(([n,c])=>
+      `<span class="ev-chip ${EV_TYPE===n?'on':''}" style="--c:${c}" onclick="EV_TYPE='${n}';evChipsRender()"><i></i>${n}</span>`).join('');
+  }
+  function evDurChange(){
+    const st=document.getElementById('evStart').value, d=+document.getElementById('evDur').value||50;
+    if(st) document.getElementById('evEnd').value=evHHMM(evMins(st)+d);
+  }
+  function evEndChange(){
+    const st=document.getElementById('evStart').value, en=document.getElementById('evEnd').value;
+    if(!st||!en) return;
+    const d=evMins(en)-evMins(st);
+    if(d>0) document.getElementById('evDur').value=d;
+  }
+  /* דרופדאון לקוחות עם חיפוש */
+  function evCliOpen(){document.getElementById('evCliDd').classList.add('show');evCliFilter();}
+  function evCliFilter(){
+    const q=document.getElementById('evClient').value.trim();
+    const list=CLIENTS.filter(c=>firmOk(c)&&(!q||c.name.includes(q)));
+    document.getElementById('evCliDd').innerHTML=list.length
+      ?list.map(c=>`<div class="ev-dd-row" onmousedown="evCliPick('${c.name}')"><span class="ev-dd-av">${c.name.charAt(0)}</span><div><b>${c.name}</b><i>${c.mgr}</i></div></div>`).join('')
+      :'<div class="ev-dd-empty">אין לקוח כזה — השם החופשי יישמר</div>';
+  }
+  function evCliPick(n){
+    document.getElementById('evClient').value=n;
+    document.getElementById('evCliDd').classList.remove('show');
+  }
+  function evClose(){document.getElementById('evOv').classList.remove('show');}
+  function evSave(){
+    const t=document.getElementById('evTitle').value.trim()||EV_TYPE;
+    const st=document.getElementById('evStart').value||'12:00';
+    const dur=+document.getElementById('evDur').value||50;
+    const cli=document.getElementById('evClient').value.trim();
+    const loc=document.getElementById('evLoc').value;
+    const kind=EV_TYPE==='תפעול'?'ops':'meet';
+    if(EV_DAY!=null && !(MC_WOFF===0&&EV_DAY===MC_TODAY)){
+      (MC_WOFF===0?MC_WEEK:MC_WEEK_NEXT).push({d:EV_DAY, time:st, kind, title:t});
+      toast('הפגישה נקבעה ליום '+MC_DAYS[EV_DAY]+' ב-'+st);
+    }else{
+      MGR_AGENDA.push({time:st, dur:dur+' דק׳', kind, title:t, sub:(cli?'עם '+cli+' · ':'')+loc+' · '+dur+' דק׳', done:false, client:cli||null});
+      toast('הפגישה נקבעה ל-'+st);
+    }
+    if(document.getElementById('evRepeat').selectedIndex>0) toast('נקבעה חזרה '+document.getElementById('evRepeat').value);
+    EV_DAY=null; evClose(); renderMgrCal();
   }
   function mcCellAdd(d,time){
     if(MC_WOFF<0){toast('אי אפשר להוסיף לשבוע שעבר');return;}
-    MC_ADD_DAY=d;
-    document.getElementById('mcQuickRow').style.display='flex';
-    document.getElementById('mcQTime').value=time;
-    document.getElementById('mcQTitle').focus();
+    mcQuick(time); MC_ADD_DAY=d;
   }
-  function mcAdd(){
-    const t=document.getElementById('mcQTitle').value.trim(); if(!t) return;
-    const time=document.getElementById('mcQTime').value, pri=document.getElementById('mcQPri').value;
-    if(time && MC_ADD_DAY!=null && MC_VIEW==='week' && !(MC_WOFF===0&&MC_ADD_DAY===MC_TODAY)){
-      (MC_WOFF===0?MC_WEEK:MC_WEEK_NEXT).push({d:MC_ADD_DAY, time, kind:'task', title:t});
-      toast('נוסף ליום '+MC_DAYS[MC_ADD_DAY]+' ב-'+time);
-    }else if(time){ // עם שעה → ליומן; בלי שעה → למשימות הפתוחות
-      MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:t, sub:'משימה שלי', done:false, pri});
-      toast('המשימה נוספה ליומן');
+  function mtkClose(){document.getElementById('mtkOv').classList.remove('show');}
+  function mtkRepSet(r){
+    MTK_REP=r;
+    document.querySelectorAll('#mtkRep .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.r===r));
+    mtkRepSubRender();
+  }
+  /* שדה משנה לפי סוג החזרה: תאריך / יום בשבוע / יום בחודש */
+  function mtkRepSubRender(){
+    const el=document.getElementById('mtkRepSub'); if(!el) return;
+    if(MTK_REP==='once'){
+      el.innerHTML='<i>לתאריך</i><input type="date" class="mx2-inp sub" id="mtkDate" value="2026-07-02">';
+    }else if(MTK_REP==='weekly'){
+      const wd=window._mtkWd??2;
+      el.innerHTML='<i>בכל יום</i>'+['א׳','ב׳','ג׳','ד׳','ה׳'].map((d,ix)=>
+        `<span class="mtk-chip day ${ix===wd?'on':''}" onclick="window._mtkWd=${ix};mtkRepSubRender()">${d}</span>`).join('');
     }else{
-      MGR_TODO.push({t, pri, done:false});
-      toast('נוספה למשימות הפתוחות');
+      const md=window._mtkMd??1;
+      el.innerHTML='<i>בכל</i><select class="mx2-inp sub" id="mtkMd" onchange="window._mtkMd=+this.value">'+
+        Array.from({length:28},(_,ix)=>`<option value="${ix+1}" ${ix+1===md?'selected':''}>${ix+1}</option>`).join('')+'</select><i>בחודש</i>';
     }
+  }
+  function mtkCliOpen(){document.getElementById('mtkCliDd').classList.add('show');mtkCliFilter();}
+  function mtkCliFilter(){
+    const q=document.getElementById('mtkClient').value.trim();
+    const list=CLIENTS.filter(c=>firmOk(c)&&(!q||c.name.includes(q)));
+    document.getElementById('mtkCliDd').innerHTML=list.length
+      ?list.map(c=>`<div class="ev-dd-row" onmousedown="mtkCliPick('${c.name}')"><span class="ev-dd-av">${c.name.charAt(0)}</span><div><b>${c.name}</b><i>${c.mgr}</i></div></div>`).join('')
+      :'<div class="ev-dd-empty">אין לקוח כזה</div>';
+  }
+  function mtkCliPick(n){
+    document.getElementById('mtkClient').value=n;
+    document.getElementById('mtkCliDd').classList.remove('show');
+    mtkClientChange();
+  }
+  function mtkClientChange(){
+    // תזכורת ללקוח — רלוונטית רק כשנבחר לקוח
+    const has=document.getElementById('mtkClient').value!=='';
+    const w=document.getElementById('mtkRemindWrap');
+    w.style.opacity=has?'':'0.4'; w.style.pointerEvents=has?'':'none';
+    if(!has) document.getElementById('mtkRemind').checked=false;
+  }
+  function mtkSave(){
+    const t=document.getElementById('mtkTitle').value.trim();
+    if(!t){toast('צריך שם למשימה');document.getElementById('mtkTitle').focus();return;}
+    const time=document.getElementById('mtkTime').value, pri='mid';
+    const client=document.getElementById('mtkClient').value.trim()||null;
+    const detail=document.getElementById('mtkDetail').value.trim();
+    const remind=document.getElementById('mtkRemind').checked;
+    const owner=document.getElementById('mtkOwner').value||null;
+    let due=null, repTxt=null;
+    if(MTK_REP==='once'){
+      const d=document.getElementById('mtkDate');
+      if(d&&d.value){const p=d.value.split('-'); due=(d.value==='2026-07-02')?'היום':(+p[2])+'.'+p[1];}
+    }else if(MTK_REP==='weekly'){
+      repTxt='כל יום '+['א׳','ב׳','ג׳','ד׳','ה׳'][window._mtkWd??2];
+    }else{
+      repTxt='כל '+(window._mtkMd??1)+' בחודש';
+    }
+    const extra={pri, client, rep:MTK_REP, detail, remind, owner, due, repTxt};
+    if(MTK_EDIT!=null){ // מצב עריכה — עדכון במקום
+      Object.assign(MGR_TODO[MTK_EDIT],{t,...extra});
+      MTK_EDIT=null; mtkClose(); renderMgrCal();
+      if(typeof renderOpsInfo==='function')renderOpsInfo();
+      toast('המשימה עודכנה'); return;
+    }
+    if(time && MC_ADD_DAY!=null && !(MC_WOFF===0&&MC_ADD_DAY===MC_TODAY)){
+      (MC_WOFF===0?MC_WEEK:MC_WEEK_NEXT).push({d:MC_ADD_DAY, time, kind:'task', title:t, ...extra});
+      toast('נוסף ליום '+MC_DAYS[MC_ADD_DAY]+' ב-'+time);
+    }else if(time){
+      MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:t, sub:client?('משימת לקוח · '+client):'משימה שלי', done:false, ...extra});
+      toast('המשימה נוספה ליומן'+(client?' — '+client:''));
+    }else{
+      MGR_TODO.push({t, done:false, ...extra});
+      toast('נוספה למשימות הפתוחות'+(client?' — '+client:''));
+    }
+    if(owner) toast('המשימה נפתחה ל'+owner+' — תופיע אצלו ביומן');
+    if(remind&&client) toast('תיקבע תזכורת ללקוח בוואטסאפ');
     MC_ADD_DAY=null;
-    document.getElementById('mcQTitle').value='';document.getElementById('mcQTime').value='';
-    document.getElementById('mcQuickRow').style.display='none';
+    mtkClose();
     renderMgrCal();
   }
 
 
   /* פאנל "המשימות שלי" — חי בתוך כרטיס היומן */
   function mgrTodoPanel(){
-    const todo=MGR_TODO.map((x,i)=>({x,i})).filter(o=>!o.x.done);
-    const tToday=todo.filter(o=>!o.x.due||o.x.due==='היום'), tFut=todo.filter(o=>o.x.due&&o.x.due!=='היום');
-    const trow=o=>`<div class="mc-todo-row" draggable="true" ondragstart="mcDragStart(event,${o.i})" ondragend="mcDragEnd()" title="גררו לציר כדי לשבץ שעה">
-        <span class="mc-grip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="5" r="2"/><circle cx="16" cy="5" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg></span>
-        <label class="mc-chk"><input type="checkbox" onchange="mcTodoToggle(${o.i})"><span></span></label><span class="mc-todo-t">${o.x.t}</span>${o.x.due&&o.x.due!=='היום'?`<span class="oi-due">${o.x.due}</span>`:''}<span class="mc-pri ${o.x.pri}">${o.x.pri==='high'?'גבוהה':'בינונית'}</span></div>`;
-    return `<div class="mcal-side-h">המשימות שלי <span>${tToday.length} להיום · ${tFut.length} עתידיות</span></div>
-      <div class="mcal-side-hint">גררו משימה אל הציר כדי לשבץ לה שעה</div>
-      ${tToday.length?`<div class="oi-grp">להיום</div>`+tToday.map(trow).join(''):''}
-      ${tFut.length?`<div class="oi-grp fut">עתידיות</div>`+tFut.map(trow).join(''):''}
-      ${todo.length?'':'<div class="advh-ok" style="padding:12px 16px">✓ אין משימות פתוחות</div>'}`;
+    const todo=MGR_TODO.map((x,i)=>({x,i,src:'my'}));
+    // משימה עם שם לקוח = משימת לקוח; משימות שהלקוח פתח מצטרפות לאותה רשימה
+    const fromClients=(typeof CLIENT_TASKS!=='undefined'?CLIENT_TASKS:[]).map((x,i)=>({x:{t:x.t,client:'אנרגי אינטרנשיונל',fromClient:true},i,src:'cli'}));
+    const tToday=[...todo.filter(o=>!o.x.due||o.x.due==='היום'),...fromClients];
+    const tFut=todo.filter(o=>o.x.due&&o.x.due!=='היום');
+    const isDn=o=>o.src==='cli'?CLIENT_TASKS[o.i].st==='done':!!o.x.done;
+    const opnT=tToday.filter(o=>!isDn(o)).length, opnF=tFut.filter(o=>!isDn(o)).length;
+    const trow=o=>{
+      const cli=o.x.client, dn=isDn(o);
+      const chk=o.src==='cli'?`onchange="ctDone(${o.i})"`:`onchange="mcTodoToggle(${o.i})"`;
+      const drag=(o.src==='my'&&!dn)?`draggable="true" ondragstart="mcDragStart(event,${o.i})" ondragend="mcDragEnd()" title="גררו למעלה/למטה כדי לשנות סדר"`:'';
+      const rdrop=o.src==='my'?`ondragover="mcRowOver(event,this)" ondragleave="this.classList.remove('ins-top','ins-bottom')" ondrop="this.classList.remove('ins-top','ins-bottom');mcReorderDrop(event,this,${o.i})"`:'';
+      const meta=[];
+      if(cli)meta.push('<b class="m-cli">'+o.x.client+'</b>');
+      if(o.x.owner)meta.push(o.x.owner);
+      if(o.x.due&&o.x.due!=='היום')meta.push(o.x.due);
+      if(o.x.repTxt)meta.push(o.x.repTxt);
+      return `<div class="mc-todo-row two ${dn?'isdone':''}" ${drag} ${rdrop}>
+        <label class="mc-chk"><input type="checkbox" ${dn?'checked':''} ${chk}><span></span></label>
+        <div class="mc-todo-b">
+          <div class="mc-todo-t full">${o.x.t}${o.x.rep&&o.x.rep!=='once'?' <i class="mc-rep" title="משימה חוזרת">↻</i>':''}</div>
+          ${meta.length?`<div class="mc-meta">${meta.join(' · ')}</div>`:''}
+        </div>
+        ${o.src==='my'&&!dn?`<span class="mc-tools"><button class="mc-edit" onclick="mtkEditOpen(${o.i})" title="עריכת המשימה"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button><span class="mc-grip"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="5" r="2"/><circle cx="16" cy="5" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg></span></span>`:''}
+      </div>`;};
+    return `<div class="mcal-side-h">המשימות שלי <span>${opnT} להיום</span></div>
+      <div class="mcal-side-hint">גררו משימה למעלה או למטה כדי לשנות את הסדר</div>
+      ${tToday.length?tToday.map(trow).join(''):'<div class="advh-ok" style="padding:12px 16px">✓ אין משימות להיום</div>'}
+      ${tFut.length?`<div class="mc-fut-toggle" onclick="window._mtFutOpen=!window._mtFutOpen;renderMgrCal()">${window._mtFutOpen?'▾':'◂'} עתידיות (${opnF})</div>`:''}
+      ${window._mtFutOpen?tFut.map(trow).join(''):''}`;
+  }
+  let MTK_EDIT=null;
+  function mtkEditOpen(i){
+    const x=MGR_TODO[i];
+    mcQuick('');
+    MTK_EDIT=i;
+    document.getElementById('mtkTitle').value=x.t;
+    document.getElementById('mtkTime').value='';
+    document.getElementById('mtkClient').value=x.client||'';
+    if(typeof mtkClientChange==='function')mtkClientChange();
+    const os=document.getElementById('mtkOwner'); if(os)os.value=x.owner||'';
+    document.getElementById('mtkDetail').value=x.detail||'';
+    document.getElementById('mtkRemind').checked=!!x.remind;
+    if(typeof mtkRepSet==='function')mtkRepSet(x.rep||'once');
+    document.querySelector('#mtkOv .mx2-title').textContent='עריכת משימה';
+    const db=document.getElementById('mtkDelBtn'); if(db)db.style.display='';
+    const sb=document.querySelector('#mtkOv .mx2-btn.primary'); if(sb)sb.textContent='שמירה';
+  }
+  function mtkDelete(){
+    if(MTK_EDIT==null) return;
+    const i=MTK_EDIT, x=MGR_TODO[i];
+    MGR_TODO.splice(i,1);
+    const ei=MGR_AGENDA.findIndex(a=>a.todoRef===x); if(ei>=0)MGR_AGENDA.splice(ei,1);
+    MTK_EDIT=null; mtkClose(); renderMgrCal();
+    if(typeof renderOpsInfo==='function')renderOpsInfo();
+    toastUndo('המשימה נמחקה',()=>{MGR_TODO.splice(i,0,x);renderMgrCal();if(typeof renderOpsInfo==='function')renderOpsInfo();});
+  }
+  /* סידור ידני — גרירת משימה מעל משימה אחרת ברשימה */
+  function mcRowOver(e,el){
+    if(MC_DRAG<0)return;
+    e.preventDefault();
+    const r=el.getBoundingClientRect(), after=(e.clientY-r.top)>r.height/2;
+    el.classList.toggle('ins-top',!after);
+    el.classList.toggle('ins-bottom',after);
+  }
+  function mcReorderDrop(e,el,j){
+    e.preventDefault(); e.stopPropagation();
+    const i=MC_DRAG; MC_DRAG=-1;
+    if(i<0||i===j) return;
+    const r=el.getBoundingClientRect(), after=(e.clientY-r.top)>r.height/2;
+    const x=MGR_TODO.splice(i,1)[0];
+    let k=j+(after?1:0); if(i<k)k--;
+    MGR_TODO.splice(k,0,x);
+    renderMgrCal();
+    if(typeof renderOpsInfo==='function')renderOpsInfo();
   }
   /* שורת מידע שנייה: התראות מערכת · סטטוס תפעול */
   function renderOpsInfo(){
     const el=document.getElementById('opsqInfo'); if(!el) return;
-    const al=(typeof buildAlerts==='function'?buildAlerts():[]).filter(a=>firmOk(CLIENTS[a.i]));
+    // רק התראות תפעוליות: חיבורי בנק/אשראי/סליקה וחובות אלינו — לא מדדי לקוח
+    const al=[];
+    CLIENTS.forEach((c,i)=>{
+      if(!firmOk(c)) return;
+      if(c.bankDown) al.push({i, sev:'high', t:c.name+' — חשבונות בנק לא מעודכנים'});
+      if(c.ccDown)   al.push({i, sev:'high', t:c.name+' — כ.אשראי לא מעודכן'});
+      if(c.clearDown)al.push({i, sev:'mid',  t:c.name+' — חשבון סליקה לא מחובר'});
+      if(c.debt)     al.push({i, sev:'mid',  t:c.name+' — חוב אלינו '+c.debt.toLocaleString()+' ₪'});
+    });
+    al.sort((a,b)=>(a.sev==='high'?0:1)-(b.sev==='high'?0:1));
     const hi=al.filter(a=>a.sev==='high').length;
     const CAPA=3, aopen=window._oiAlOpen||false, shownA=aopen?al:al.slice(0,CAPA);
     const c2=`<div class="coal ${hi?'hot':''} ${aopen?'open':''} oi-coal">
@@ -519,14 +796,18 @@
     const totMsg=msgCos.reduce((t,o)=>t+o.c.unread,0);
     const c1=`<div class="advl oi msgs"><div class="advl-head"><span class="advl-title">הודעות לקוח</span><span class="advl-sub">${totMsg} שלא נענו · מ-${msgCos.length} חברות</span></div>
       <div class="oi-chats">${msgCos.map(o=>{const c=o.c,i=o.i;
-        const last=[...(c.thread||[])].reverse().find(m=>m.from==='user');
-        const who=last?last.name:'הלקוח', when=last?last.when:'היום',
-              txt=last?last.t:'היי, אפשר לקבל עדכון על מצב החשבון?';
+        // כל ההודעות שלא נענו — לא רק האחרונה
+        const users=(c.thread||[]).filter(m=>m.from==='user');
+        const pend=users.slice(-Math.min(c.unread||1,users.length));
+        // לכל הודעה תיבת תגובה משלה — ברור על מה עונים
+        const bubs=(pend.length?pend:[{name:'הלקוח',when:'היום',t:'היי, אפשר לקבל עדכון על מצב החשבון?'}])
+          .map((m,mi)=>`<div class="oqs-msgblock">
+            <div class="oqs-bub"><div class="oqs-bub-h">${m.name} · ${m.when}</div>${m.t}</div>
+            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${mi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${mi})">שליחה</button></div>
+          </div>`).join('');
         return `<div class="oqs-chat">
-          <div class="oqs-chat-h"><b>${c.name}</b><span>${c.unread} שלא נענו</span></div>
-          <div class="oqs-bub"><div class="oqs-bub-h">${who} · ${when}</div>${txt}</div>
-          <div class="oqs-reply"><input placeholder="תגובה מהירה בוואטסאפ…" onkeydown="if(event.key==='Enter')qReply(this,${i})"><button class="oqs-send" onclick="qReply(this.previousElementSibling,${i})">שליחה</button></div>
-          <div class="oqs-openchat" onclick="chatFrom(${i})">לשיחה המלאה ←</div>
+          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${c.unread} שלא נענו</span></div>
+          ${bubs}
         </div>`;}).join('')}</div>
       ${msgCos.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
     </div>`;
