@@ -185,13 +185,30 @@
   function mrSend(i){CLIENTS[i].mReport=true;toast('הדוח החודשי נשלח ל'+CLIENTS[i].name+' בוואטסאפ');if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();if(typeof renderGlobalRail==='function')renderGlobalRail();if(typeof renderCoAlerts==='function')renderCoAlerts();}
   function chatFrom(i){OQS_OPEN=null;CUR=i;openChat();} // נשארים בדשבורד — רק המגירה נפתחת
   function qReply(inp,i){const v=inp.value.trim();if(!v)return;inp.value='';toast('התגובה נשלחה ל'+CLIENTS[i].name+' בוואטסאפ');}
-  /* תגובה על הודעה ספציפית — מכל בועה */
-  function qReplyMsg(inp,ci,mi){
-    const v=inp.value.trim(); if(!v) return; inp.value='';
-    const c=CLIENTS[ci], users=(c.thread||[]).filter(m=>m.from==='user');
+  /* ההודעות שממתינות לטיפול בחברה — אחרי סינון מה שסומן כטופל */
+  function msgPendOf(c,i){
+    const users=(c.thread||[]).filter(m=>m.from==='user');
     const pend=users.slice(-Math.min(c.unread||1,users.length));
-    const m=pend[mi];
-    toast('נשלחה תגובה על ״'+(m?m.t.slice(0,28):'')+'…״ בוואטסאפ');
+    const base=users.length-pend.length;
+    const list=pend.length?pend.map((m,ix)=>({m,gi:base+ix})):[{m:{name:'הלקוח',when:'היום',t:'היי, אפשר לקבל עדכון על מצב החשבון?'},gi:-1}];
+    window._msgHandled=window._msgHandled||new Set();
+    return list.filter(p=>!window._msgHandled.has(i+':'+p.gi));
+  }
+  function msgDone(i,gi){
+    window._msgHandled=window._msgHandled||new Set();
+    window._msgHandled.add(i+':'+gi);
+    renderOpsInfo();
+    toastUndo('ההודעה סומנה כטופלה',()=>{window._msgHandled.delete(i+':'+gi);renderOpsInfo();});
+  }
+  /* תגובה על הודעה ספציפית — שליחה גם מסמנת כטופל */
+  function qReplyMsg(inp,ci,gi){
+    const v=inp.value.trim(); if(!v) return; inp.value='';
+    const users=(CLIENTS[ci].thread||[]).filter(m=>m.from==='user');
+    const m=users[gi];
+    window._msgHandled=window._msgHandled||new Set();
+    window._msgHandled.add(ci+':'+gi);
+    toast('נשלחה תגובה על ״'+(m?m.t.slice(0,25):'')+'…״ — ההודעה טופלה');
+    renderOpsInfo();
   }
   const OQS_CHEV='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>';
   function oqsRow(act,name,sub){
@@ -793,23 +810,20 @@
       <div class="oi-prog"><div class="oi-track"><i style="width:${pctAll}%"></i></div><span>${list.length-doneCnt} נותרו לתפעול היום</span></div>
       ${rows}</div>`;
     const msgCos=list.filter(o=>o.c.unread>0);
-    const totMsg=msgCos.reduce((t,o)=>t+o.c.unread,0);
-    const c1=`<div class="advl oi msgs"><div class="advl-head"><span class="advl-title">הודעות לקוח</span><span class="advl-sub">${totMsg} שלא נענו · מ-${msgCos.length} חברות</span></div>
-      <div class="oi-chats">${msgCos.map(o=>{const c=o.c,i=o.i;
-        // כל ההודעות שלא נענו — לא רק האחרונה
-        const users=(c.thread||[]).filter(m=>m.from==='user');
-        const pend=users.slice(-Math.min(c.unread||1,users.length));
-        // לכל הודעה תיבת תגובה משלה — ברור על מה עונים
-        const bubs=(pend.length?pend:[{name:'הלקוח',when:'היום',t:'היי, אפשר לקבל עדכון על מצב החשבון?'}])
-          .map((m,mi)=>`<div class="oqs-msgblock">
-            <div class="oqs-bub"><div class="oqs-bub-h">${m.name} · ${m.when}</div>${m.t}</div>
-            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${mi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${mi})">שליחה</button></div>
+    const withPend=msgCos.map(o=>({...o, pf:msgPendOf(o.c,o.i)})).filter(o=>o.pf.length);
+    const totMsg=withPend.reduce((t,o)=>t+o.pf.length,0);
+    const c1=`<div class="advl oi msgs"><div class="advl-head"><span class="advl-title">הודעות לקוח</span><span class="advl-sub">${totMsg} שלא נענו · מ-${withPend.length} חברות</span></div>
+      <div class="oi-chats">${withPend.map(o=>{const c=o.c,i=o.i;
+        // לכל הודעה תיבת תגובה + כפתור טופל משלה
+        const bubs=o.pf.map(p=>`<div class="oqs-msgblock">
+            <div class="oqs-bub"><div class="oqs-bub-h">${p.m.name} · ${p.m.when}</div>${p.m.t}</div>
+            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
           </div>`).join('');
         return `<div class="oqs-chat">
-          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${c.unread} שלא נענו</span></div>
+          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length} שלא נענו</span></div>
           ${bubs}
         </div>`;}).join('')}</div>
-      ${msgCos.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
+      ${withPend.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
     </div>`;
     el.innerHTML=c2;
     const mEl=document.getElementById('msgCol'); if(mEl) mEl.innerHTML=c1;
