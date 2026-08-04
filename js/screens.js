@@ -517,7 +517,15 @@
   }
   function renderMetrics(){
     const c=CLIENTS[typeof CUR==='number'?CUR:0]||{};
-    document.getElementById('mcards').innerHTML=METRICS.map((m,i)=>{
+    // מדד אמיתי = יש יעד חודשי; בלי יעד = מעקב שמזין התראות, לא מדד
+    const isTracker=m=>!(m.target>0);
+    const MGROUPS=[
+      ['מדדים עצמאיים','יעד מול בפועל · הזנה ידנית או Google Sheets', m=>m.kind==='manual'&&!isTracker(m)],
+      ['מדדים לפי קטגוריות','הבפועל מנתוני אמת — Bizibox', m=>m.kind==='cats'&&!isTracker(m)],
+      ['מדדים מחושבים','נוסחה בין מדדים — הבפועל מחושב אוטומטית', m=>m.kind==='calc'&&!isTracker(m)],
+    ];
+    // בלי יעד = לא מדד — לא מוצג כאן (ההתראות שלו חיות במוקד ההתראות)
+    const card=(m,i)=>{
       const k=KIND_META[m.kind]||KIND_META.auto, d=mDisp(m,c);
       const nAl=(m.alerts||[]).filter(r=>r.on).length;
       const daily=(m.target>0&&m.unit!=='%')?`יעד יומי: <b>${fmt(m.target/WORKDAYS)}${m.unit==='₪'?' ₪':''}</b>`:'';
@@ -527,7 +535,7 @@
       const val=d.big!=null
         ? `<div class="mc2-val ${d.bad?'bad':''}">${d.big}<span class="mc2-sub">${d.sub||''}</span></div>`
         : `<div class="mc2-val ${d.bad?'bad':''} ${d.muted?'mut':''}" style="font-size:17px">${d.txt}</div>`;
-      return `<div class="mcard mcard2">
+      return `<div class="mcard mcard2 ${isTracker(m)?'mtrack':''}">
         <div class="mc2-top">
           <span class="mkind ${k.cls}">${k.ic} ${k.lbl}</span>
           <div class="mc-act">
@@ -543,6 +551,11 @@
         ${val}${bar}
         <div class="mc2-foot"><span class="mc2-src">${srcLine(m)}</span><span>${daily}</span></div>
       </div>`;
+    };
+    document.getElementById('mcards').innerHTML=MGROUPS.map(([t,sub,fn])=>{
+      const items=METRICS.map((m,i)=>({m,i})).filter(o=>fn(o.m));
+      if(!items.length) return '';
+      return `<div class="mgrp-h">${t}<span>${sub}</span></div>`+items.map(o=>card(o.m,o.i)).join('');
     }).join('');
   }
   function setDays(v){WORKDAYS=parseInt(v)||22;renderMetrics();}

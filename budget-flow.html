@@ -77,9 +77,26 @@ button{font-family:inherit;cursor:pointer}
 .bl-tgt span i{font-style:normal;opacity:0;transition:opacity .12s}
 .bl-tgt:hover span i{opacity:1}
 .bl-tgt b{font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.src-tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:999px;padding:1.5px 8px;margin-top:3px;white-space:nowrap}
+.src-tag.avg{background:repeating-linear-gradient(45deg,#eef2f8,#eef2f8 3px,#e0e7f1 3px,#e0e7f1 6px);color:#64748b;border:1px solid #d3dced}
+.src-tag.man{background:#EAF4FB;color:#2C7FB0;border:1px solid #bcd9f6}
+.src-tag.goal-inc{background:#e2f3e9;color:#13895b;border:1px solid #a7e0bf}
+.src-tag.goal-exp{background:#fdf4e3;color:#c98404;border:1px solid #ecd9a8}
 .bl-tgt input{width:100%;font-family:inherit;font-size:15px;font-weight:800;color:var(--text);border:none;border-bottom:2px solid var(--accent);background:transparent;outline:none;padding:0;font-variant-numeric:tabular-nums}
 .bl-row:hover{background:#FAFCFE}
-.bl-name{font-size:13px;font-weight:600}
+.bl-name{font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bl-name:hover{color:var(--accent)}
+.bl-name .cv{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:5px;background:var(--accent-soft);color:var(--accent);transition:transform .12s;flex:0 0 auto}
+.bl-name .cv.open{transform:rotate(180deg)}
+.bl-txs{grid-column:1/-1;background:#FBFDFF;border-top:1px dashed var(--border-strong);border-radius:0;margin:10px -22px -15px;padding:10px 22px 13px}
+.bl-tx{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12px;color:var(--muted)}
+.bl-tx+.bl-tx{border-top:1px solid #F1F6FA}
+.bl-tx .d{font-variant-numeric:tabular-nums;color:var(--soft);flex:0 0 44px}
+.bl-tx .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bl-tx .v{font-variant-numeric:tabular-nums;font-weight:700;color:var(--text)}
+.tx-tag{flex:0 0 auto;font-size:10px;font-weight:700;border-radius:999px;padding:2px 9px}
+.tx-tag.act{background:var(--act);color:#fff}
+.tx-tag.flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 4px,#D8EEF9 4px,#D8EEF9 8px);color:#2C7FB0}
 .bl-name .tiny{display:block;font-size:10.5px;color:var(--soft);font-weight:500;margin-top:1px}
 .bl-mid{min-width:0}
 .bl-bar{position:relative;height:11px;background:#E9EFF5;border-radius:999px;overflow:hidden;display:flex}
@@ -99,6 +116,19 @@ button{font-family:inherit;cursor:pointer}
 .bl-gap.warn b{color:var(--warn)}
 .bl-gap.zero b{color:var(--soft)}
 
+/* פופאפ פעולות הקטגוריה */
+.pop-ov{position:fixed;inset:0;background:rgba(12,64,104,.34);display:none;align-items:center;justify-content:center;z-index:60}
+.pop-ov.show{display:flex}
+.pop{background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(12,64,104,.25);width:min(600px,94vw);max-height:84vh;display:flex;flex-direction:column;overflow:hidden}
+.pop-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 22px 10px}
+.pop-h b{font-size:15.5px;font-weight:800}
+.pop-h .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.pop-x{border:0;background:none;font-size:15px;color:var(--soft);cursor:pointer;padding:4px 9px;border-radius:8px}
+.pop-x:hover{background:#F1F4F7;color:var(--text)}
+.pop-body{overflow-y:auto;padding:2px 22px 16px}
+.pop-body .bl-tx{padding:7px 0;font-size:12.5px}
+.pop-sum{display:flex;gap:18px;border-top:1.5px solid var(--border-strong);margin-top:8px;padding-top:10px;font-size:12px;color:var(--muted)}
+.pop-sum b{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
 #toast{position:fixed;bottom:18px;inset-inline-start:50%;transform:translateX(50%);background:#0C4068;color:#fff;font-size:12.5px;font-weight:600;border-radius:999px;padding:9px 20px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}
 #toast.on{opacity:1}
 
@@ -130,6 +160,12 @@ body.is-embedded .page-head{display:none}
   <div class="sumrow" id="sumrow"></div>
   <div id="groups"></div>
 </div>
+<div class="pop-ov" id="popOv">
+  <div class="pop">
+    <div class="pop-h"><div><b id="popTitle"></b><div class="sub" id="popSub"></div></div><button class="pop-x" onclick="closeTxPop()">✕</button></div>
+    <div class="pop-body" id="popBody"></div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -137,28 +173,28 @@ const nf=new Intl.NumberFormat('he-IL');
 /* target = היעד; act = בפועל החודש; flow = צבוע בתזרים קדימה; futFlow = הצבוע בחודש עתידי */
 const GROUPS=[
  {label:'הכנסות', kind:'inc', color:'#1B6C9C', rows:[
-   {label:'הכנסות ממכירות - מזומן',  target:89950, act:60000, flow:22000},
-   {label:'הכנסות ממכירות - סליקה',  target:77010, act:48000, flow:25000},
-   {label:'הכנסות מסליקה - דיירקט',  target:23501, act:15000, flow:6000},
-   {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000},
-   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000},
+   {label:'הכנסות ממכירות - מזומן',  target:89950, act:60000, flow:22000, src:'goal', parties:['פדיון קופה — סניף ראשי','פדיון קופה — סניף צפון']},
+   {label:'הכנסות ממכירות - סליקה',  target:77010, act:48000, flow:25000, src:'avg', parties:['ישראכרט סליקה','ויזה כאל סליקה']},
+   {label:'הכנסות מסליקה - דיירקט',  target:23501, act:15000, flow:6000, src:'avg', parties:['סליקה דיירקט']},
+   {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000, src:'manual', parties:['אלקטרה מוצרי צריכה','אלקטרה — חשבונית 4471']},
+   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000, src:'avg', parties:['וולט תקבולים','תן ביס']},
  ]},
  {label:'עלות המכר', kind:'exp', color:'#c98404', rows:[
-   {label:'קניות מלאי',  target:155000, act:90000, flow:40000},
-   {label:'קבלני משנה',  target:28333,  act:14000, flow:12000},
+   {label:'קניות מלאי',  target:155000, act:90000, flow:40000, src:'goal', parties:['בז״ן — דלקים','פז חברת נפט','ספקי משנה']},
+   {label:'קבלני משנה',  target:28333,  act:14000, flow:12000, src:'avg', parties:['י.כהן עבודות','ר.לוי קבלנות']},
  ]},
  {label:'הוצאות תפעוליות', kind:'exp', color:'#7557E3', rows:[
-   {label:'שכר עבודה',    target:97333, act:93000, flow:8000},
-   {label:'שכירות',       target:22000, act:22000, flow:0},
-   {label:'הוצאות תפעול', target:18433, act:9000,  flow:5000},
-   {label:'פרסום ושיווק', target:15667, act:7000,  flow:6000},
-   {label:'מוסדות מס',    target:24179, act:6000,  flow:17500},
+   {label:'שכר עבודה',    target:97333, act:93000, flow:8000, src:'manual', parties:['משכורות צוות','ביטוח לאומי','פנסיה — מנורה']},
+   {label:'שכירות',       target:22000, act:22000, flow:0, src:'avg', parties:['שכירות משרדים — נכסי רובע']},
+   {label:'הוצאות תפעול', target:18433, act:9000,  flow:5000, src:'avg', parties:['חשמל — חח״י','ארנונה','תקשורת — בזק']},
+   {label:'פרסום ושיווק', target:15667, act:7000,  flow:6000, src:'goal', parties:['גוגל אדס','פייסבוק']},
+   {label:'מוסדות מס',    target:24179, act:6000,  flow:17500, src:'avg', parties:['מקדמות מס הכנסה','מע״מ']},
  ]},
  {label:'מימון, השקעות ובעלים', kind:'exp', color:'#4CAF7D', rows:[
-   {label:'מימון ועמלות בנק', target:9100,  act:4500, flow:2500},
-   {label:'פיקדונות והשקעות', target:12000, act:6000, flow:6000},
-   {label:'תשלומי הלוואה',    target:8000,  act:8000, flow:0},
-   {label:'משיכות בעלים',     target:15000, act:5000, flow:5000},
+   {label:'מימון ועמלות בנק', target:9100,  act:4500, flow:2500, src:'avg', parties:['עמלות עו״ש — לאומי','ריבית מסגרת']},
+   {label:'פיקדונות והשקעות', target:12000, act:6000, flow:6000, src:'avg', parties:['הפקדה לפיקדון חודשי']},
+   {label:'תשלומי הלוואה',    target:8000,  act:8000, flow:0, src:'avg', parties:['החזר הלוואה — פועלים']},
+   {label:'משיכות בעלים',     target:15000, act:5000, flow:5000, src:'manual', parties:['משיכת בעלים — צחי']},
  ]},
 ];
 const MONTHS=[
@@ -192,6 +228,44 @@ function barHtml(r,kind,noTgt){
     ${noTgt?'':`<span class="n-tgt">יעד <b>${nf.format(t)}</b></span>`}
   </div>`;
 }
+/* דריל קטגוריה: כל הפעולות — בפועל + בתזרים */
+function txSplit(total,fracs,days,parties,f){
+  const out=[]; let acc=0;
+  fracs.forEach((fr,ix)=>{
+    const v=ix===fracs.length-1?total-acc:Math.round(total*fr/500)*500||Math.round(total*fr);
+    acc+=v;
+    out.push({d:days[ix],t:parties[ix%parties.length],v,f});
+  });
+  return out.filter(x=>x.v>0);
+}
+function txsOf(r){
+  const v=rowVals(r), P=r.parties||[r.label];
+  let out=[];
+  if(v.act>0) out=out.concat(txSplit(v.act, v.act>60000?[0.5,0.3,0.2]:v.act>15000?[0.6,0.4]:[1],
+    ['03.06','10.06','18.06'], P, 0));
+  if(v.flow>0) out=out.concat(txSplit(v.flow, v.flow>30000?[0.6,0.4]:[1],
+    ['24.06','29.06'], P.slice().reverse(), 1));
+  return out;
+}
+let TXPOP=null;
+function openTxPop(gi,ri){
+  TXPOP={gi,ri};
+  const g=GROUPS[gi], r=g.rows[ri], v=rowVals(r);
+  document.getElementById('popTitle').textContent=r.label+' · הפעולות החודש';
+  document.getElementById('popSub').textContent=MONTHS[mi].label+' · בפועל ומה שצבוע בתזרים קדימה';
+  const txs=txsOf(r);
+  document.getElementById('popBody').innerHTML=(txs.map(x=>`
+    <div class="bl-tx"><span class="tx-tag ${x.f?'flow':'act'}">${x.f?'בתזרים':'בפועל'}</span><span class="d">${x.d}</span><span class="t">${x.t}</span><span class="v">${nf.format(x.v)}</span></div>`).join('')||'<div class="bl-tx">אין פעולות החודש</div>')+
+    `<div class="pop-sum"><span>בפועל <b>${nf.format(v.act)}</b></span><span>בתזרים <b>${nf.format(v.flow)}</b></span><span>יעד <b>${nf.format(r.target)}</b></span></div>`;
+  document.getElementById('popOv').classList.add('show');
+}
+function closeTxPop(){document.getElementById('popOv').classList.remove('show');}
+/* מקור היעד — אותה שפה כמו בתזרים העתידי */
+function srcTag(r,kind){
+  if(r.src==='goal') return `<span class="src-tag goal-${kind==='inc'?'inc':'exp'}">${kind==='inc'?'↑ יעד הכנסה':'↓ יעד הוצאה'}</span>`;
+  if(r.src==='manual') return '<span class="src-tag man">שונה ידנית</span>';
+  return '<span class="src-tag avg">ממוצע 3 ח׳</span>';
+}
 /* עריכת יעד במקום — לחיצה על המספר */
 function tgtEdit(el,gi,ri){
   if(el.querySelector('input')) return;
@@ -200,10 +274,14 @@ function tgtEdit(el,gi,ri){
   const inp=el.querySelector('input'); inp.focus(); inp.select();
 }
 function tgtSave(gi,ri,v){
+  const r=GROUPS[gi].rows[ri];
   const n=Math.max(0,Math.round(+v||0));
-  if(n>0) GROUPS[gi].rows[ri].target=n;
+  if(n>0&&n!==r.target){
+    r.target=n;
+    if(r.src!=='goal') r.src='manual';   // עריכה ידנית משנה את מקור היעד
+    toast('היעד עודכן ל-'+nf.format(n)+' ₪'+(r.src==='goal'?' — היעד ללקוח עודכן':' · שונה ידנית'));
+  }
   render();
-  if(n>0) toast('היעד עודכן ל-'+nf.format(n)+' ₪');
 }
 function gapHtml(r,kind){
   const g=gapOf(r);
@@ -247,13 +325,14 @@ function render(){
     <div class="grp">
       <div class="grp-h"><span class="dot" style="background:${g.color}"></span>${g.label}
         <span class="cnt">${g.rows.length} קטגוריות</span></div>
-      ${g.rows.map((r,ri)=>`
+      ${g.rows.map((r,ri)=>{
+        return `
         <div class="bl-row">
-          <div class="bl-name">${r.label}${gapOf(r)===0?'<span class="tiny">היעד מכוסה — בפועל + בתזרים</span>':''}${gapOf(r)>0?'<span class="tiny">היתרה עוד לא נצבעה בתזרים</span>':''}</div>
-          <div class="bl-tgt" onclick="tgtEdit(this,${gi},${ri})" title="לחיצה לעדכון היעד"><span>יעד <i>✎</i></span><b>${nf.format(r.target)}</b></div>
+          <div class="bl-name" onclick="openTxPop(${gi},${ri})" title="לחיצה — כל הפעולות בפועל ובתזרים"><span class="cv"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span><span>${r.label}</span>${gapOf(r)===0?'<span class="tiny">היעד מכוסה — בפועל + בתזרים</span>':''}${gapOf(r)>0?'<span class="tiny">היתרה עוד לא נצבעה בתזרים</span>':''}</div>
+          <div class="bl-tgt" onclick="tgtEdit(this,${gi},${ri})" title="לחיצה לעדכון היעד"><span>יעד <i>✎</i></span><b>${nf.format(r.target)}</b>${srcTag(r,g.kind)}</div>
           <div class="bl-mid">${barHtml(r,g.kind,true)}</div>
           ${gapHtml(r,g.kind)}
-        </div>`).join('')}
+        </div>`;}).join('')}
     </div>`;
     if(PROFIT_AFTER[gi]){
       out+=`<div class="pr-row">
