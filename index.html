@@ -185,16 +185,16 @@
 
     <!-- ===== METRICS (definition) view ===== -->
     <div id="viewMetrics" style="display:none">
-      <div class="mx-head">
+      <div class="mx-head oneline">
         <h2>יעדים לחודש</h2>
         <select class="mx-month" onchange="renderMetrics();toast('נטענו יעדי '+this.value)">
           <option>יולי 2026</option><option>יוני 2026</option><option>מאי 2026</option><option>אפריל 2026</option>
         </select>
+        <span class="mx-days inline">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+          ימי עבודה: <input type="number" value="22" min="1" max="31" onchange="setDays(this.value)">
+        </span>
         <button class="mx-add" onclick="openMx()" title="הוספת מדד" aria-label="הוספת מדד">+</button>
-      </div>
-      <div class="mx-days">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
-        הגדרת ימי עבודה: <input type="number" value="22" min="1" max="31" onchange="setDays(this.value)">
       </div>
       <div class="mcards" id="mcards"></div>
     </div>
@@ -421,6 +421,7 @@
       <button class="mx2-btn primary" onclick="mxSave()">אישור</button>
       <button class="mx2-btn" onclick="closeMx()">ביטול</button>
       <span class="mx2-daily" id="mxDaily">יעד יומי 0 ₪</span>
+      <button class="mx2-btn danger" id="mxDelBtn" style="display:none;margin-inline-start:auto" onclick="delMetricFromMx()">מחיקת המדד</button>
     </div>
   </div>
 </div>

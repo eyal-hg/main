@@ -460,6 +460,8 @@
      sheets:{on:true, logic:'name', cell:'B4', gid:'0'}, alerts:[{on:false, mode:'pct', dir:'below', th:80, sev:'mid'}]},
     {key:'liters',   name:'סך הליטרים - לפי סוג דלק', kind:'manual', unit:'num', target:120000, actual:93600,
      sheets:{on:true, logic:'cols', cell:'C7', gid:'1824'}, alerts:[{on:true, mode:'pct', dir:'below', th:85, sev:'mid'}]},
+    {key:'collect',  name:'גבייה במזומן בשטח', kind:'manual', unit:'₪', target:25000, actual:17800,
+     sheets:{on:false}, alerts:[{on:false, mode:'pct', dir:'below', th:70, sev:'mid'}]},
     {key:'budget',   name:'עמידה בתקציב', kind:'cats', unit:'%', target:100, cats:['כל קטגוריות ההוצאות'],
      alerts:[{on:true, mode:'pct', dir:'above', th:100, sev:'high'},
              {on:true, mode:'pct', dir:'above', th:95,  sev:'mid'}]},
@@ -515,52 +517,55 @@
     if(m.kind==='cats') return `<span class="src-bz">Bizibox</span> נתוני אמת · ${(m.cats||[]).join(' + ')}`;
     return 'מתעדכן אוטומטית מיומן הפגישות';
   }
+  const MONTH_LBL='יולי';
   function renderMetrics(){
     const c=CLIENTS[typeof CUR==='number'?CUR:0]||{};
     // מדד אמיתי = יש יעד חודשי; בלי יעד = מעקב שמזין התראות, לא מדד
     const isTracker=m=>!(m.target>0);
     const MGROUPS=[
-      ['מדדים עצמאיים','יעד מול בפועל · הזנה ידנית או Google Sheets', m=>m.kind==='manual'&&!isTracker(m)],
-      ['מדדים לפי קטגוריות','הבפועל מנתוני אמת — Bizibox', m=>m.kind==='cats'&&!isTracker(m)],
+      ['הזנה ידנית','יעד מול בפועל — מוזן כל חודש', m=>m.kind==='manual'&&!(m.sheets&&m.sheets.on)&&!isTracker(m)],
+      ['Google Sheets','נמשך אוטומטית מהגיליון של הלקוח', m=>m.kind==='manual'&&m.sheets&&m.sheets.on&&!isTracker(m)],
       ['מדדים מחושבים','נוסחה בין מדדים — הבפועל מחושב אוטומטית', m=>m.kind==='calc'&&!isTracker(m)],
+      ['מדדים לפי קטגוריות','הבפועל מנתוני אמת — Bizibox', m=>m.kind==='cats'&&!isTracker(m)],
     ];
     // בלי יעד = לא מדד — לא מוצג כאן (ההתראות שלו חיות במוקד ההתראות)
-    const card=(m,i)=>{
+    const row=(m,i)=>{
       const k=KIND_META[m.kind]||KIND_META.auto, d=mDisp(m,c);
       const nAl=(m.alerts||[]).filter(r=>r.on).length;
-      const daily=(m.target>0&&m.unit!=='%')?`יעד יומי: <b>${fmt(m.target/WORKDAYS)}${m.unit==='₪'?' ₪':''}</b>`:'';
-      const bar=d.pct!=null?`
-        <div class="mc-bar"><div class="mc-fill ${d.bad?'bad':''}" style="width:${Math.min(100,Math.max(0,d.pct))}%"></div>
-          <div class="mc-bubble" style="left:${Math.min(97,Math.max(3,d.pct))}%">${d.pct}%</div></div>`:'';
-      const val=d.big!=null
-        ? `<div class="mc2-val ${d.bad?'bad':''}">${d.big}<span class="mc2-sub">${d.sub||''}</span></div>`
-        : `<div class="mc2-val ${d.bad?'bad':''} ${d.muted?'mut':''}" style="font-size:17px">${d.txt}</div>`;
-      return `<div class="mcard mcard2 ${isTracker(m)?'mtrack':''}">
-        <div class="mc2-top">
-          <span class="mkind ${k.cls}">${k.ic} ${k.lbl}</span>
-          <div class="mc-act">
-            <button class="mbell ${nAl?'on':''}" title="${nAl?nAl+' התראות פעילות — לחצו לעריכה':'הגדרת התראות'}" onclick="openAlertCfg(${i})">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-              ${nAl?`<span class="mbell-dot n">${nAl}</span>`:''}
-            </button>
-            ${m.kind==='auto'?'':`<button class="mbell rev" title="עריכת המדד" aria-label="עריכת המדד" onclick="openMx(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>`}
-            ${SYS_METRIC(m)?'':`<button class="mbell del rev" title="מחיקת המדד" aria-label="מחיקת המדד" onclick="delMetric(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>`}
-          </div>
+      const daily=(m.target>0&&m.unit!=='%')?'יעד יומי '+fmt(m.target/WORKDAYS)+(m.unit==='₪'?' ₪':''):'';
+      const tgt=m.target>0?fmt(m.target)+(m.unit==='₪'?' ₪':m.unit==='%'?'%':''):'—';
+      const act=d.big!=null?d.big:(d.txt||'—');
+      const pct=d.pct!=null?`<i class="mr-pct ${d.bad?'bad':''}">${d.pct}%</i>`:'';
+      return `<div class="mrow">
+        <div class="mr-main">
+          <div class="mr-name" onclick="${m.kind==='auto'?'':`openMx(${i})`}"><b>${m.name}</b><span class="mkind ${k.cls}">${k.ic} ${k.lbl}</span></div>
+          <div class="mr-src">${srcLine(m)}</div>
         </div>
-        <div class="mc2-name" onclick="${m.kind==='auto'?'':`openMx(${i})`}">${m.name}</div>
-        ${val}${bar}
-        <div class="mc2-foot"><span class="mc2-src">${srcLine(m)}</span><span>${daily}</span></div>
+        <div class="mr-col"><span>יעד</span><b>${tgt}</b><i>${daily}</i></div>
+        <div class="mr-col"><span>בפועל · ${MONTH_LBL}</span><b class="${d.bad?'bad':''}">${act}</b>${pct}</div>
+        <div class="mr-tools">
+          <button class="mbell ${nAl?'on':''}" title="${nAl?nAl+' חוקי התראה מוגדרים — ההתראות עצמן במוקד ההתראות':'הגדרת התראות'}" onclick="openAlertCfg(${i})">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          </button>
+          ${m.kind==='auto'?'':`<button class="mbell rev" title="עריכת המדד" onclick="openMx(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>`}
+        </div>
       </div>`;
     };
     document.getElementById('mcards').innerHTML=MGROUPS.map(([t,sub,fn])=>{
       const items=METRICS.map((m,i)=>({m,i})).filter(o=>fn(o.m));
       if(!items.length) return '';
-      return `<div class="mgrp-h">${t}<span>${sub}</span></div>`+items.map(o=>card(o.m,o.i)).join('');
+      return `<div class="mgrp-card"><div class="mgrp-hh">${t}<span>${sub}</span><i>${items.length} מדדים</i></div>${items.map(o=>row(o.m,o.i)).join('')}</div>`;
     }).join('');
   }
   function setDays(v){WORKDAYS=parseInt(v)||22;renderMetrics();}
   // מדדי מערכת (מזינים את מוקד ההתראות) — מוגנים ממחיקה; אחרים דורשים אישור
   const SYS_METRIC=m=>['budget','overdraft','debt','liters','cfprofit','meeting'].includes(m.key);
+  function delMetricFromMx(){
+    if(MX_IX<0) return;
+    const ix=MX_IX;
+    closeMx();
+    delMetric(ix);
+  }
   function delMetric(i){
     const m=METRICS[i];
     hkConfirm('מחיקת מדד','המדד "'+m.name+'" יימחק יחד עם ההתראות שלו. לא ניתן לשחזר.','מחיקה',()=>{
@@ -613,6 +618,8 @@
     MX_IX=(i==null?-1:i);
     const m=MX_IX>=0?METRICS[MX_IX]:{kind:'manual',unit:'₪',target:'',actual:'',sheets:{on:false,logic:'none',cell:'',gid:''},calc:{a:'מחזור הכנסות',op:'−',b:'סך הוצאות (Bizibox)'},cats:[]};
     document.getElementById('mxTitle').textContent=MX_IX>=0?'עריכת מדד':'מדד חדש';
+    const _db=document.getElementById('mxDelBtn');
+    if(_db)_db.style.display=(MX_IX>=0&&!SYS_METRIC(METRICS[MX_IX]))?'':'none';
     document.getElementById('mxKind').value=m.kind==='auto'?'manual':m.kind;
     document.getElementById('mxName').value=MX_IX>=0?m.name:'';
     document.querySelector(`input[name=mxUnit][value="${m.unit==='num'?'num':'₪'}"]`).checked=true;
