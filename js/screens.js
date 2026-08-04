@@ -462,13 +462,21 @@
      sheets:{on:true, logic:'cols', cell:'C7', gid:'1824'}, alerts:[{on:true, mode:'pct', dir:'below', th:85, sev:'mid'}]},
     {key:'collect',  name:'גבייה במזומן בשטח', kind:'manual', unit:'₪', target:25000, actual:17800,
      sheets:{on:false}, alerts:[{on:false, mode:'pct', dir:'below', th:70, sev:'mid'}]},
+    {key:'inventory',name:'שווי מלאי נוכחי', kind:'manual', unit:'₪', target:0, actual:618400,
+     sheets:{on:false}, alerts:[]},
     {key:'budget',   name:'עמידה בתקציב', kind:'cats', unit:'%', target:100, cats:['כל קטגוריות ההוצאות'],
      alerts:[{on:true, mode:'pct', dir:'above', th:100, sev:'high'},
              {on:true, mode:'pct', dir:'above', th:95,  sev:'mid'}]},
     {key:'salesclr', name:'הכנסות ממכירות - סליקה', kind:'cats', unit:'₪', target:90000, actual:99642,
      cats:['הכנסות ממכירות - סליקה'], alerts:[{on:false, mode:'pct', dir:'below', th:75, sev:'mid'}]},
     {key:'cfprofit', name:'רווח / הפסד תזרימי', kind:'calc', unit:'₪', target:30000,
-     calc:{a:'מחזור הכנסות', op:'−', b:'סך הוצאות (Bizibox)'}, alerts:[{on:true, mode:'pct', dir:'below', th:80, sev:'mid'}]},
+     calc:{a:'מחזור הכנסות', op:'−', b:'כל קטגוריות ההוצאות',
+           aSrc:{src:'metric',val:'מחזור הכנסות'}, bSrc:{src:'cats',val:'כל קטגוריות ההוצאות'}},
+     alerts:[{on:true, mode:'pct', dir:'below', th:80, sev:'mid'}]},
+    {key:'perday',  name:'הכנסה ליום עבודה', kind:'calc', unit:'₪', target:6800, actual:6478,
+     calc:{a:'תא B4 (Sheets)', op:'÷', b:'22 קבוע',
+           aSrc:{src:'sheet',val:'B4',logic:'name'}, bSrc:{src:'const',val:22}},
+     alerts:[{on:false, mode:'pct', dir:'below', th:85, sev:'mid'}]},
     {key:'overdraft',name:'חריגה צפויה בעו״ש', kind:'calc', unit:'ימים',
      calc:{a:'תחזית תזרים', op:'מול', b:'מסגרת אשראי'}, alerts:[{on:true, mode:'abs', dir:'below', th:14, sev:'high'}]},
     {key:'debt',     name:'חוב פתוח לגבייה', kind:'cats', unit:'₪', target:0,
@@ -507,13 +515,24 @@
       return {pct:v, big:fmt(act)+' ₪', sub:'מתוך יעד '+fmt(m.target)+' ₪', bad:!!evalMetric(m,c)};}
     if(m.actual!=null&&m.target>0){const p=Math.round(m.actual/m.target*100);
       return {pct:p, big:fmt(m.actual)+(m.unit==='₪'?' ₪':''), sub:'מתוך יעד '+fmt(m.target)+(m.unit==='₪'?' ₪':''), bad:!!evalMetric(m,c)};}
+    if(m.actual!=null) return {big:fmt(m.actual)+(m.unit==='₪'?' ₪':''), sub:''};   // גם בלי יעד — הבפועל נתון מלא
     return {txt:'—'};
   }
   function srcLine(m){
     if(m.kind==='manual') return m.sheets&&m.sheets.on
       ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1e8a4c" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Google Sheets · ${SHEET_LOGIC_SHORT[m.sheets.logic]||''} · תא ${m.sheets.cell}`
       : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> הזנה ידנית — מתעדכן כל חודש`;
-    if(m.kind==='calc') return `<b>ƒ</b> ${m.calc.a} <b>${m.calc.op}</b> ${m.calc.b} · מחושב אוטומטית`;
+    if(m.kind==='calc'){
+      const tag=o=>{
+        if(!o||!o.src) return `<span class="op-tag met">${o&&o.val||'?'}</span>`;
+        if(o.src==='sheet') return `<span class="op-tag sheet">Sheets · תא ${o.val||'?'} · ${SHEET_LOGIC_SHORT[o.logic||'none']}</span>`;
+        if(o.src==='cats')  return `<span class="op-tag bz">Bizibox · ${o.val}</span>`;
+        if(o.src==='const') return `<span class="op-tag cst">קבוע · ${(+o.val||0).toLocaleString('en-US')}</span>`;
+        return `<span class="op-tag met">מדד · ${o.val}</span>`;
+      };
+      const a=m.calc.aSrc||{src:'metric',val:m.calc.a}, b=m.calc.bSrc||{src:'metric',val:m.calc.b};
+      return `<b>ƒ</b> ${tag(a)} <b class="op-op">${m.calc.op}</b> ${tag(b)}`;
+    }
     if(m.kind==='cats') return `<span class="src-bz">Bizibox</span> נתוני אמת · ${(m.cats||[]).join(' + ')}`;
     return 'מתעדכן אוטומטית מיומן הפגישות';
   }
@@ -521,7 +540,7 @@
   function renderMetrics(){
     const c=CLIENTS[typeof CUR==='number'?CUR:0]||{};
     // מדד אמיתי = יש יעד חודשי; בלי יעד = מעקב שמזין התראות, לא מדד
-    const isTracker=m=>!(m.target>0);
+    const isTracker=m=>['overdraft','debt','meeting'].includes(m.key);   // מדד רגיל יכול להיות גם ללא יעד
     const MGROUPS=[
       ['הזנה ידנית','יעד מול בפועל — מוזן כל חודש', m=>m.kind==='manual'&&!(m.sheets&&m.sheets.on)&&!isTracker(m)],
       ['Google Sheets','נמשך אוטומטית מהגיליון של הלקוח', m=>m.kind==='manual'&&m.sheets&&m.sheets.on&&!isTracker(m)],
@@ -535,7 +554,8 @@
       const daily=(m.target>0&&m.unit!=='%')?'יעד יומי '+fmt(m.target/WORKDAYS)+(m.unit==='₪'?' ₪':''):'';
       const tgt=m.target>0?fmt(m.target)+(m.unit==='₪'?' ₪':m.unit==='%'?'%':''):'—';
       const act=d.big!=null?d.big:(d.txt||'—');
-      const pct=d.pct!=null?`<i class="mr-pct ${d.bad?'bad':''}">${d.pct}%</i>`:'';
+      // תג אחוז-מהיעד — רק כשהמדד עצמו אינו נמדד באחוזים (אחרת זו כפילות)
+      const pct=(d.pct!=null&&m.unit!=='%')?`<i class="mr-pct ${d.bad?'bad':''}">${d.pct}%</i>`:'';
       return `<div class="mrow">
         <div class="mr-main">
           <div class="mr-name" onclick="${m.kind==='auto'?'':`openMx(${i})`}"><b>${m.name}</b><span class="mkind ${k.cls}">${k.ic} ${k.lbl}</span></div>
@@ -614,6 +634,41 @@
 
   /* ---- metric editor (new / edit) ---- */
   let MX_IX=-1;
+  function mxNoTgtCh(){
+    const off=document.getElementById('mxNoTgt').checked;
+    const t=document.getElementById('mxTarget');
+    t.disabled=off; if(off) t.value='';
+    mxDaily();
+  }
+  /* אופרנד בנוסחה: מדד / קטגוריה / תא גיליון / מספר קבוע */
+  let MX_OPS={A:{src:'metric',val:''},B:{src:'metric',val:''}};
+  function mxOpSrc(side){
+    MX_OPS[side]={src:document.getElementById('mxSrc'+side).value, val:''};
+    mxOpRender(side);
+  }
+  function mxOpRender(side){
+    const o=MX_OPS[side], el=document.getElementById('mxOp'+side);
+    if(o.src==='metric'){
+      const names=METRICS.filter(x=>x.kind!=='calc').map(x=>x.name).concat(['סך הוצאות (Bizibox)','תחזית תזרים']);
+      el.innerHTML=`<select class="mx2-inp" style="width:100%" onchange="MX_OPS['${side}'].val=this.value">${[...new Set(names)].map(n=>`<option ${n===o.val?'selected':''}>${n}</option>`).join('')}</select>`;
+      if(!o.val) o.val=names[0];
+    }else if(o.src==='cats'){
+      const cats=['כל קטגוריות ההוצאות','כל קטגוריות ההכנסות'].concat(Object.values(CF_CATS).flat());
+      el.innerHTML=`<select class="mx2-inp" style="width:100%" onchange="MX_OPS['${side}'].val=this.value">${cats.map(c=>`<option ${c===o.val?'selected':''}>${c}</option>`).join('')}</select>`;
+      if(!o.val) o.val=cats[0];
+    }else if(o.src==='sheet'){
+      el.innerHTML=`<input class="mx2-inp" style="width:100%;margin-bottom:6px" placeholder="תא בגיליון — למשל B4" value="${o.val||''}" oninput="MX_OPS['${side}'].val=this.value">
+        <select class="mx2-inp" style="width:100%" onchange="MX_OPS['${side}'].logic=this.value" title="לוגיקת הסנכרון של הגיליון">${Object.keys(SHEET_LOGIC_SHORT).map(k=>`<option value="${k}" ${k===(o.logic||'none')?'selected':''}>${SHEET_LOGIC_SHORT[k]}</option>`).join('')}</select>`;
+    }else{
+      el.innerHTML=`<input class="mx2-inp" type="number" style="width:100%" placeholder="ערך קבוע — למשל 150000" value="${o.val||''}" oninput="MX_OPS['${side}'].val=this.value">`;
+    }
+  }
+  /* תיאור קריא לאופרנד — מוצג בשורת המקור של המדד */
+  function mxOpLabel(o){
+    if(o.src==='sheet') return 'תא '+(o.val||'?')+' (Sheets · '+(SHEET_LOGIC_SHORT[o.logic||'none'])+')';
+    if(o.src==='const') return (o.val?parseFloat(o.val).toLocaleString('en-US'):'?')+' קבוע';
+    return o.val||'?';
+  }
   function openMx(i){
     MX_IX=(i==null?-1:i);
     const m=MX_IX>=0?METRICS[MX_IX]:{kind:'manual',unit:'₪',target:'',actual:'',sheets:{on:false,logic:'none',cell:'',gid:''},calc:{a:'מחזור הכנסות',op:'−',b:'סך הוצאות (Bizibox)'},cats:[]};
@@ -624,6 +679,8 @@
     document.getElementById('mxName').value=MX_IX>=0?m.name:'';
     document.querySelector(`input[name=mxUnit][value="${m.unit==='num'?'num':'₪'}"]`).checked=true;
     document.getElementById('mxTarget').value=m.target||'';
+    document.getElementById('mxNoTgt').checked=(MX_IX>=0&&!(m.target>0));
+    document.getElementById('mxTarget').disabled=(MX_IX>=0&&!(m.target>0));
     document.getElementById('mxActual').value=m.actual!=null?m.actual:'';
     const sh=m.sheets||{on:false,logic:'none',cell:'',gid:''};
     document.getElementById('mxShOn').checked=!!sh.on;
@@ -631,9 +688,10 @@
     document.getElementById('mxShCell').value=sh.cell||'';
     document.getElementById('mxShGid').value=sh.gid||'';
     const cc=m.calc||{a:'מחזור הכנסות',op:'−',b:'סך הוצאות (Bizibox)'};
-    const opts=['מחזור הכנסות','סך הוצאות (Bizibox)','סך הליטרים','תחזית תזרים','מסגרת אשראי','עמידה בתקציב'];
-    document.getElementById('mxCalcA').innerHTML=opts.map(o=>`<option ${o===cc.a?'selected':''}>${o}</option>`).join('');
-    document.getElementById('mxCalcB').innerHTML=opts.map(o=>`<option ${o===cc.b?'selected':''}>${o}</option>`).join('');
+    MX_OPS={A:cc.aSrc||{src:'metric',val:cc.a},B:cc.bSrc||{src:'metric',val:cc.b}};
+    document.getElementById('mxSrcA').value=MX_OPS.A.src;
+    document.getElementById('mxSrcB').value=MX_OPS.B.src;
+    mxOpRender('A'); mxOpRender('B');
     document.getElementById('mxCalcOp').value=cc.op||'−';
     // categories tree
     const sel=new Set(m.cats||[]);
@@ -670,8 +728,9 @@
     const kind=document.getElementById('mxKind').value;
     const name=document.getElementById('mxName').value.trim()||'מדד ללא שם';
     const unit=document.querySelector('input[name=mxUnit]:checked').value==='₪'?'₪':'num';
-    const target=parseFloat(document.getElementById('mxTarget').value)||0;
-    if(target<=0){document.getElementById('mxErr').style.display='';return;}
+    const noTgt=document.getElementById('mxNoTgt').checked;
+    const target=noTgt?0:(parseFloat(document.getElementById('mxTarget').value)||0);
+    if(!noTgt&&target<=0){document.getElementById('mxErr').style.display='';return;}
     document.getElementById('mxErr').style.display='none';
     const m=MX_IX>=0?METRICS[MX_IX]:{key:'m'+Date.now()%100000, alerts:[]};
     m.kind=kind; m.name=name; m.unit=unit; m.target=target;
@@ -681,7 +740,8 @@
       m.actual=m.sheets.on?(m.actual!=null?m.actual:0):(parseFloat(document.getElementById('mxActual').value)||0);
       delete m.calc; delete m.cats;
     }else if(kind==='calc'){
-      m.calc={a:document.getElementById('mxCalcA').value, op:document.getElementById('mxCalcOp').value, b:document.getElementById('mxCalcB').value};
+      m.calc={a:mxOpLabel(MX_OPS.A), op:document.getElementById('mxCalcOp').value, b:mxOpLabel(MX_OPS.B),
+              aSrc:{...MX_OPS.A}, bSrc:{...MX_OPS.B}};
       delete m.actual; delete m.sheets; delete m.cats;
     }else{
       m.cats=[...document.querySelectorAll('#mxCats input[data-cat]:checked')].map(x=>x.dataset.cat);

@@ -369,6 +369,7 @@
       <label class="mx2-radio"><input type="radio" name="mxUnit" value="₪" checked onchange="mxDaily()"> ₪</label>
       <label class="mx2-radio"><input type="radio" name="mxUnit" value="num" onchange="mxDaily()"> 1-2</label>
       <input class="mx2-inp" id="mxTarget" type="number" placeholder="מספר" style="flex:1" oninput="mxDaily()">
+      <label class="mx2-radio" title="מדד מעקב — מציג בפועל בלבד, בלי יעד ובלי אחוז עמידה"><input type="checkbox" id="mxNoTgt" onchange="mxNoTgtCh()"> ללא יעד</label>
     </div>
     <div class="mx2-err" id="mxErr" style="display:none">היעד חייב להיות גדול מ-0</div>
 
@@ -400,14 +401,26 @@
     <!-- מדד מחושב: בין שני מדדים -->
     <div id="mxPaneCalc" style="display:none">
       <label class="mx2-lbl">נוסחת החישוב</label>
-      <div class="mx2-row">
-        <select class="mx2-inp" id="mxCalcA" style="flex:1"></select>
-        <select class="mx2-inp" id="mxCalcOp" style="width:74px;text-align:center">
+      <div class="mx2-row" style="align-items:flex-start">
+        <div class="mxop" style="flex:1">
+          <select class="mx2-inp" id="mxSrcA" onchange="mxOpSrc('A')" style="width:100%;margin-bottom:6px">
+            <option value="metric">מדד קיים</option><option value="cats">קטגוריה מ-Bizibox</option>
+            <option value="sheet">תא Google Sheets</option><option value="const">מספר קבוע</option>
+          </select>
+          <div id="mxOpA"></div>
+        </div>
+        <select class="mx2-inp" id="mxCalcOp" style="width:74px;text-align:center;margin-top:0">
           <option>−</option><option>+</option><option>÷</option><option>×</option><option>מול</option>
         </select>
-        <select class="mx2-inp" id="mxCalcB" style="flex:1"></select>
+        <div class="mxop" style="flex:1">
+          <select class="mx2-inp" id="mxSrcB" onchange="mxOpSrc('B')" style="width:100%;margin-bottom:6px">
+            <option value="metric">מדד קיים</option><option value="cats">קטגוריה מ-Bizibox</option>
+            <option value="sheet">תא Google Sheets</option><option value="const">מספר קבוע</option>
+          </select>
+          <div id="mxOpB"></div>
+        </div>
       </div>
-      <div class="mx2-note">הנתון בפועל מחושב אוטומטית משני המדדים — לא ניתן להזנה.</div>
+      <div class="mx2-note">כל צד בנוסחה יכול להיות מדד, קטגוריה, תא מגיליון או מספר קבוע — הבפועל מחושב אוטומטית ולא ניתן להזנה.</div>
     </div>
 
     <!-- מדד לפי קטגוריות: Bizibox -->
