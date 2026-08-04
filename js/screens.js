@@ -25,7 +25,7 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
@@ -129,12 +129,12 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'תקציב תזרימי'};
   let CUR_TAB='dash';
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
@@ -144,6 +144,21 @@
       document.getElementById('viewCal').style.display='';
       const f=document.getElementById('calFrame');
       if(!f.src) f.src=f.dataset.src;   // טעינה עצלה — היומן נטען רק בכניסה הראשונה
+    }
+    else if(t==='budget'){
+      document.getElementById('viewBudget').style.display='';
+      const bf=document.getElementById('budgetFrame');
+      if(!bf.src) bf.src=bf.dataset.src;
+    }
+    else if(t==='past'){
+      document.getElementById('viewPast').style.display='';
+      const pf=document.getElementById('pastFrame');
+      if(!pf.src) pf.src=pf.dataset.src;
+    }
+    else if(t==='fcast'){
+      document.getElementById('viewFcast').style.display='';
+      const ff=document.getElementById('fcastFrame');
+      if(!ff.src) ff.src=ff.dataset.src;   // טעינה עצלה כמו היומן
     }
     else if(t==='settings'){document.getElementById('viewSettings').style.display='';renderSettings();}
     else{document.getElementById('viewOther').style.display='';document.getElementById('otherName').textContent=TAB_LABELS[t]||t;}
@@ -209,7 +224,8 @@
     metrics:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
     meetings:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
     prep:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg>',
-    flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7.5"/></svg>'};
+    flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7.5"/></svg>',
+    fcast:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 14 4-4 3 3 5-6"/></svg>'};
   function renderGlobalRail(){
     const list=document.getElementById('gnavList'); if(!list) return;
     let html;
@@ -218,7 +234,7 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['chat',1],['metrics',1],['meetings',0],['prep',1],['flow',1]];
+      const SEC=[['dash',0],['chat',1],['metrics',1],['meetings',0],['prep',1]];
       html=(ROLE==='client1'?'':`<div class="gn-back" onclick="${backGo}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> ${backLbl}</div>`)+
         `<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
@@ -231,19 +247,36 @@
             ?`<div class="gn-opsbtn done" onclick="enterOps()"><b>✓ התפעול הסתיים</b><span>ארך ${fmtDur(opsDur[k]||0)} · רענון נתונים</span></div>`
             :`<div class="gn-opsbtn" onclick="enterOps()"><b>תפעול</b><span>כניסה למצב עבודה</span></div>`;
         })():'')+
-        (typeof OPSMODE!=='undefined'&&OPSMODE?'':SEC.filter(s=>!s[1]||!isClientP).map(s=>`
-          <div class="gn-item sec ${CUR_TAB===s[0]?'on':''}" onclick="showTab('${s[0]}')">
-            ${SEC_ICO[s[0]]}<span>${TAB_LABELS[s[0]]}</span>${s[0]==='meetings'&&ROLE==='advisor'?'<i class="gn-dot" title="סיכום פגישה ממתין לאישור"></i>':''}
-          </div>`).join(''));
-      // דוחות — אקורדיון בסרגל במקום כפתור בכותרת (מוסתר במצב תפעול)
+        '';
+      // הסרגל מסודר לנושאים — כותרות קבוצה קטנות, הכל גלוי
+      if(!(typeof OPSMODE!=='undefined'&&OPSMODE)){
+        const vis=k=>{const x=SEC.find(v=>v[0]===k);return x&&(!x[1]||!isClientP);};
+        const item=k=>`<div class="gn-item sec ${CUR_TAB===k?'on':''}" onclick="showTab('${k}')">
+            ${SEC_ICO[k]}<span>${TAB_LABELS[k]}</span>${k==='meetings'&&ROLE==='advisor'?'<i class="gn-dot" title="סיכום פגישה ממתין לאישור"></i>':''}
+          </div>`;
+        const seg=(title,keys)=>{
+          const ks=keys.filter(vis);
+          if(!ks.length) return '';
+          return (title?`<div class="gn-sec-h">${title}</div>`:'')+ks.map(item).join('');
+        };
+        html+=seg('',['dash','chat','metrics']);
+        html+=seg('פגישות',['meetings','prep']);
+      }
+      // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
       if(typeof OPSMODE==='undefined'||!OPSMODE){
-      html+=`<div class="gn-item sec" onclick="gnRepToggle()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
-          <span>דוחות</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-inline-start:auto;transform:rotate(${GN_REP?'180deg':'0deg'})"><path d="m6 9 6 6 6-6"/></svg>
-        </div>`;
-      if(GN_REP) html+=['דו״ח תקציבי','דו״ח תזרים חודשי','דוח תזרים עתידי'].map(n=>
-        `<div class="gn-sub" onclick="openReport('${n}')">${n}</div>`).join('');
+      html+=`<div class="gn-sec-h">תזרים</div>`;
+      html+=`<div class="gn-item sec ${CUR_TAB==='budget'?'on':''}" onclick="showTab('budget')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>תקציב תזרימי</span></div>`;
+      html+=`<div class="gn-item sec ${CUR_TAB==='past'?'on':''}" onclick="showTab('past')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
+          <span>תזרים עבר</span></div>`;
+      html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
+      // ליווי
+      if(!(ROLE==='client1'||ROLE==='clientN')){
+        html+=`<div class="gn-sec-h">ליווי</div>`;
+        html+=`<div class="gn-item sec ${CUR_TAB==='flow'?'on':''}" onclick="showTab('flow')">${SEC_ICO.flow}<span>${TAB_LABELS.flow}</span></div>`;
+      }
       }
     }else{
       // מחוץ לחברה — היעדים של בעל התפקיד

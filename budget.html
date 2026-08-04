@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>דו״ח תקציבי · בקרת תזרים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#eef2f8; --surface:#fff; --surface-alt:#f8fafc;
+  --border:#e6ecf4; --border-strong:#d3dced;
+  --text:#16243a; --text-muted:#64748b; --text-soft:#9aa7bb;
+  --accent:#1f7ae0; --accent-soft:#eaf3fd;
+  --positive:#13895b; --positive-soft:#e7f7ef;
+  --negative:#dc4436; --negative-soft:#fdeceb;
+  --warn:#c98404; --warn-soft:#fdf4e3;
+  --shadow-sm:0 2px 8px rgba(15,35,65,.06); --shadow-md:0 10px 30px rgba(15,35,65,.09);
+  --radius-lg:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:"Heebo",-apple-system,sans-serif;background:
+  radial-gradient(1200px 480px at 85% -10%, #e8f0fb 0%, rgba(238,242,248,0) 60%),var(--bg);
+  color:var(--text);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit}
+.app{max-width:1080px;margin:0 auto;padding:30px 24px 80px}
+.page-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.brand .dot{width:42px;height:42px;border-radius:12px;background:linear-gradient(140deg,#2a86ec,#0ea5a5);display:grid;place-items:center;color:#fff;font-weight:900;font-size:16px;box-shadow:var(--shadow-sm)}
+.page-head h1{font-size:23px;font-weight:900;margin:0;letter-spacing:-.4px}
+.page-head .sub{color:var(--text-muted);font-size:13px;margin-top:3px}
+.back{margin-inline-start:auto;font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid #bcd9f6;background:var(--accent-soft);border-radius:999px;padding:8px 14px}
+
+.months{display:flex;gap:8px;margin:16px 0}
+.mbtn{border:1px solid var(--border-strong);background:#fff;border-radius:999px;padding:8px 16px;font-weight:700;font-size:13px;color:var(--text-muted)}
+.mbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);overflow:hidden}
+.table-wrap{overflow:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:760px}
+thead th{position:sticky;top:0;z-index:5;background:#fff;font-weight:700;font-size:12px;color:var(--text-muted);padding:12px 12px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--border)}
+thead th.cat{inset-inline-end:0;z-index:7;text-align:start;min-width:210px;box-shadow:1px 0 0 var(--border)}
+td,tbody th{border-bottom:1px solid var(--border)}
+tbody th.cat{position:sticky;inset-inline-end:0;z-index:3;background:#fff;text-align:start;font-weight:600;font-size:13px;padding:11px 14px;min-width:210px;box-shadow:1px 0 0 var(--border)}
+.cell{padding:10px 12px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.cell.empty{color:var(--text-soft)}
+.pos{color:var(--positive)} .neg{color:var(--negative)}
+.btgt{background:var(--accent-soft);font-weight:800;color:#155bb0}
+
+tr.section th.cat{background:#f1f5fb;color:#33486a;font-weight:900;font-size:11px;letter-spacing:1px}
+tr.section td{background:#f1f5fb}
+tr.section.exp th.cat::before,tr.section th.cat::before{content:"";display:inline-block;width:8px;height:8px;border-radius:3px;margin-inline-end:8px;vertical-align:1px;background:var(--accent)}
+tr.section.exp th.cat::before{background:var(--warn)}
+tr.bal th.cat,tr.bal .cell{font-weight:800}
+tr.bal td,tr.bal th.cat{background:#eef4fc}
+tr.bal.close th.cat,tr.bal.close .cell{font-weight:900;font-size:14px}
+tr.total th.cat,tr.total .cell{font-weight:900}
+tr.total.income td,tr.total.income th.cat{background:var(--positive-soft)}
+tr.total.expense td,tr.total.expense th.cat{background:var(--warn-soft)}
+tr.profit td,tr.profit th.cat{background:#eef6ff;font-weight:900;color:#15498f}
+tr.profit.big td,tr.profit.big th.cat{background:#e7f6ee;color:#0f6f48}
+tr.data:hover td{background:#f6f9fd}
+.blcol{min-width:110px}
+.blval2{font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.bldash{color:var(--text-soft)}
+.amark{font-size:12px;margin-inline-end:5px;vertical-align:1px}
+.amark.bad{color:var(--negative)} .amark.warn{color:var(--warn)}
+.cell.warnc{color:var(--warn);font-weight:800}
+tr.alert-bad td,tr.alert-bad th.cat{background:var(--negative-soft)}
+tr.alert-warn td,tr.alert-warn th.cat{background:var(--warn-soft)}
+tr.alert-bad:hover td,tr.alert-warn:hover td{filter:brightness(.98)}
+.foot{margin-top:16px;color:var(--text-soft);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="page-head">
+    <div class="brand"><div class="dot">HK</div></div>
+    <div>
+      <h1>דו״ח תקציבי · בקרת תזרים</h1>
+      <div class="sub">התקציב = היעד שנקבע בתחזית · השוואה מול הביצוע בפועל</div>
+    </div>
+    <a class="back" href="index.html">← לתחזית והיעדים</a>
+  </div>
+
+  <div class="months" id="months"></div>
+
+  <div class="card"><div class="table-wrap"><table id="report"></table></div></div>
+  <div class="foot">
+    פער ירוק = בתוך התקציב (הוצאה) / מעל היעד (הכנסה) · פער אדום = חריגה.<br>
+    <b>שורה תקציבית:</b> הסכום שנותר בתקציב החודש (תקציב פחות בפועל). מוגדרת במקום אחר במערכת ומוזרקת לתזרים כצפי; כאן מוצג רק הסכום שנותר.
+  </div>
+</div>
+
+<script>
+const nf=new Intl.NumberFormat("he-IL",{maximumFractionDigits:0});
+const fmt=v=>{ if(v==null||isNaN(v))return"—"; const a=nf.format(Math.abs(Math.round(v))); return v<0?`-${a}`:a; };
+const SEED_OPEN=-77698;
+
+const INCOME=[
+  {id:"cash",     label:"הכנסות ממכירות - מזומן",  a:[82000,85950,101900], cur:60000},
+  {id:"clearing", label:"הכנסות ממכירות - סליקה",  a:[70000,76830, 84200], cur:48000},
+  {id:"direct",   label:"הכנסות מסליקה - דיירקט",  a:[20000,22293, 28210], cur:15000},
+  {id:"electra",  label:"הכנסות ממכירות - אלקטרה", a:[90000,87980, 63769], cur:40000},
+  {id:"shipping", label:"הכנסות - חברות שילוח",    a:[29000,30698, 28960], cur:18000},
+];
+const COGS=[
+  {id:"suppliers",label:"קניות מלאי", a:[150000,160000,155000], cur:90000},
+  {id:"subcon",   label:"קבלני משנה", a:[ 28000, 31000, 26000], cur:14000},
+];
+const OPEX=[
+  {id:"salary",   label:"שכר עבודה",    a:[95000,98000,99000], cur:93000},
+  {id:"rent",     label:"שכירות",       a:[22000,22000,22000], cur:22000},
+  {id:"opex",     label:"הוצאות תפעול", a:[18000,19500,17800], cur: 9000},
+  {id:"marketing",label:"פרסום ושיווק", a:[14000,21000,12000], cur: 7000},
+  {id:"tax",      label:"מוסדות מס",    a:[30000,32165,10371], cur: 6000},
+];
+const FIN=[
+  {id:"finance",  label:"מימון ועמלות בנק", a:[ 9000, 9500, 8800], cur:4500},
+  {id:"deposits", label:"פיקדונות והשקעות", a:[12000,12000,12000], cur:6000},
+  {id:"loan",     label:"תשלומי הלוואה",     a:[ 8000, 8000, 8000], cur:8000},
+  {id:"owners",   label:"משיכות בעלים",      a:[15000,10000,20000], cur:5000},
+];
+const ALL={}; [...INCOME,...COGS,...OPEX,...FIN].forEach(l=>ALL[l.id]=l);
+
+let overrides={}; try{ overrides=JSON.parse(localStorage.getItem("hk_overrides")||"{}"); }catch(e){}
+/* קטגוריות המוגדרות כ"שורה תקציבית" (ההגדרה נעשית במקום אחר במערכת) */
+const BUDGET_LINES=new Set(["cash","clearing","direct","suppliers","salary","marketing","tax"]);
+
+const MONTHS=[
+  {key:"2026-06", label:"יוני 2026",    tag:"החודש"},
+  {key:"2026-07", label:"יולי 2026",    tag:"חודש הבא"},
+  {key:"2026-08", label:"אוגוסט 2026",  tag:"עוד חודשיים"},
+];
+let mi=0;
+
+const baseAvg = id => Math.round(ALL[id].a.reduce((s,n)=>s+n,0)/ALL[id].a.length);
+const prevM   = id => { const a=ALL[id].a; return a[a.length-1]; };               // חודש קודם
+const budget  = (id,m)=>{ const ov=overrides[id+"|"+MONTHS[m].key]; return ov?ov.value:baseAvg(id); };
+const actual  = (id,m)=> m===0 ? ALL[id].cur : null;                              // בפועל רק לחודש הנוכחי
+
+const sumB=(arr,m)=>arr.reduce((s,l)=>s+budget(l.id,m),0);
+const sumA=(arr,m)=>arr.reduce((s,l)=> s+(actual(l.id,m)||0),0);
+function netBudget(m){ return sumB(INCOME,m)-(sumB(COGS,m)+sumB(OPEX,m)+sumB(FIN,m)); }
+function netActual(m){ return sumA(INCOME,m)-(sumA(COGS,m)+sumA(OPEX,m)+sumA(FIN,m)); }
+function openBal(m){ let o=SEED_OPEN; for(let i=0;i<m;i++) o+=netBudget(i); return o; }  // מתגלגל על התקציב
+
+function gapClass(kind,gap){ return kind==="exp" ? (gap>=0?"pos":"neg") : (gap<0?"pos":""); }
+function commonCells(a,p,b,ac){
+  return `<td class="cell ${a==null?'empty':''}">${a==null?'—':fmt(a)}</td>`+
+    `<td class="cell ${p==null?'empty':''}">${p==null?'—':fmt(p)}</td>`+
+    `<td class="cell btgt">${fmt(b)}</td>`+
+    `<td class="cell ${ac==null?'empty':''}">${ac==null?'—':fmt(ac)}</td>`;
+}
+/* שורת חישוב (יתרות/סה״כ/רווח) — בלי שורה תקציבית, פער אחרון */
+function compRow(label,cls,a,p,b,ac,kind){
+  const gap=(ac==null)?null:b-ac;
+  return `<tr class="${cls}"><th class="cat">${label}</th>`+commonCells(a,p,b,ac)+
+    `<td class="cell empty">—</td>`+
+    `<td class="cell ${gap==null?'empty':gapClass(kind,gap)}">${gap==null?'—':(gap>0?'+':'')+fmt(gap)}</td></tr>`;
+}
+/* שורת קטגוריה — שורה תקציבית + התראות, פער אחרון.
+   יש שורה תקציבית → הפער מכוסה (0). אין שורה תקציבית ויש פער → התראה. חריגה בהוצאה → אדום */
+function dataRow(l,kind){
+  const id=l.id, a=baseAvg(id), p=prevM(id), b=budget(id,mi), ac=actual(id,mi);
+  const hasLine=BUDGET_LINES.has(id);
+  const rawGap=(ac==null)?null:b-ac;
+  const over=(kind==="exp" && ac!=null && ac>b);                 // חריגה מהתקציב
+  const uncovered=(!hasLine && rawGap!=null && rawGap!==0 && !over); // פער לא מכוסה
+  const blHtml = hasLine ? `<span class="blval2">${fmt(b-(ac||0))}</span>` : `<span class="bldash">—</span>`;
+  let alertCls="", mark="", gapTd;
+  if(over){ alertCls="alert-bad"; mark=`<span class="amark bad">⚠</span>`; gapTd=`<td class="cell neg">${fmt(rawGap)} ⚠</td>`; }
+  else if(hasLine){ gapTd=`<td class="cell pos">✓ 0</td>`; }
+  else if(uncovered){ alertCls="alert-warn"; mark=`<span class="amark warn">⚠</span>`; gapTd=`<td class="cell warnc">${rawGap>0?'+':''}${fmt(rawGap)} ⚠</td>`; }
+  else { gapTd=`<td class="cell ${rawGap==null?'empty':gapClass(kind,rawGap)}">${rawGap==null?'—':(rawGap>0?'+':'')+fmt(rawGap)}</td>`; }
+  return `<tr class="data ${alertCls}"><th class="cat">${mark}${l.label}</th>`+commonCells(a,p,b,ac)+
+    `<td class="cell blcol">${blHtml}</td>`+gapTd+`</tr>`;
+}
+const sec=(label,exp)=>`<tr class="section${exp?' exp':''}"><th class="cat">${label}</th><td colspan="6"></td></tr>`;
+const sumRow=(label,cls,arr,kind)=> compRow(label,cls,
+  arr.reduce((s,l)=>s+baseAvg(l.id),0), arr.reduce((s,l)=>s+prevM(l.id),0),
+  sumB(arr,mi), (mi===0?sumA(arr,mi):null), kind);
+function profit(label,cls,incArr,expArrs){
+  const exp=[].concat(...expArrs);
+  const sb=fn=>incArr.reduce((s,l)=>s+fn(l),0)-exp.reduce((s,l)=>s+fn(l),0);
+  return compRow(label,cls, sb(l=>baseAvg(l.id)), sb(l=>prevM(l.id)), sb(l=>budget(l.id,mi)), mi===0?sb(l=>actual(l.id,mi)||0):null, "inc");
+}
+
+function render(){
+  document.getElementById("months").innerHTML=MONTHS.map((m,i)=>
+    `<button class="mbtn ${i===mi?'on':''}" data-i="${i}">${m.tag}<br><small>${m.label}</small></button>`).join("");
+  document.querySelectorAll(".mbtn").forEach(b=> b.addEventListener("click",()=>{ mi=+b.dataset.i; render(); }));
+
+  const head=`<thead><tr>
+    <th class="cat">קטגוריה</th><th>ממוצע 3 ח׳</th><th>חודש קודם</th>
+    <th>תקציב</th><th>בפועל</th><th>שורה תקציבית</th><th>פער</th>
+  </tr></thead>`;
+
+  const open=openBal(mi), closeB=open+netBudget(mi), closeA= mi===0? open+netActual(mi):null;
+  let rows="";
+  // ----- השורה התקציבית: יתרות פתיחה/סגירה -----
+  rows+=compRow("יתרת פתיחה בנק","bal",null,null,open,(mi===0?open:null),"inc");
+  rows+=compRow("יתרת סגירה תקציבית","bal close",null,null,closeB,closeA,"inc");
+
+  rows+=sec("הכנסות");
+  INCOME.forEach(l=> rows+=dataRow(l,"inc"));
+  rows+=sumRow("סה״כ הכנסות","total income",INCOME,"inc");
+
+  rows+=sec("עלות המכר",true);
+  COGS.forEach(l=> rows+=dataRow(l,"exp"));
+  rows+=sumRow("סה״כ עלות המכר","total expense",COGS,"exp");
+  rows+=profit("רווח גולמי","profit",INCOME,[COGS]);
+
+  rows+=sec("הוצאות תפעוליות",true);
+  OPEX.forEach(l=> rows+=dataRow(l,"exp"));
+  rows+=sumRow("סה״כ הוצאות תפעוליות","total expense",OPEX,"exp");
+  rows+=profit("רווח תפעולי","profit",INCOME,[COGS,OPEX]);
+
+  rows+=sec("הוצאות השקעות, מימון ובעלים",true);
+  FIN.forEach(l=> rows+=dataRow(l,"exp"));
+  rows+=sumRow("סה״כ השקעות, מימון ובעלים","total expense",FIN,"exp");
+  rows+=profit("רווח תזרימי","profit big",INCOME,[COGS,OPEX,FIN]);
+
+  document.getElementById("report").innerHTML=head+`<tbody>${rows}</tbody>`;
+}
+render();
+</script>
+</body>
+</html>

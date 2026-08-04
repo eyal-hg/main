@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>תקציב תזרימי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F4F7FA; --surface:#fff;
+  --border:#e6ecf4; --border-strong:#d3dced;
+  --text:#0C4068; --muted:#64748b; --soft:#9aa7bb;
+  --accent:#1B6C9C; --accent-soft:#EAF4FB;
+  --act:#3B9AD2;            /* בפועל */
+  --flow:#BFE2F5;           /* בתזרים — צבוע בחודש קדימה */
+  --pos:#13895b; --pos-soft:#e7f7ef;
+  --neg:#dc4436; --neg-soft:#fdeceb;
+  --warn:#c98404;
+  --shadow-sm:0 2px 8px rgba(15,35,65,.06);
+  --shadow-md:0 6px 18px rgba(12,64,104,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:"Rubik",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45}
+button{font-family:inherit;cursor:pointer}
+.app{max-width:1150px;margin:0 auto;padding:26px 22px 70px}
+
+/* כותרת */
+.page-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.brand-dot{width:44px;height:44px;border-radius:14px;background:#1B6C9C;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px}
+.page-head h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-.3px}
+.page-head .sub{color:var(--muted);font-size:13px;margin-top:2px}
+
+/* שורת חודשים + מקרא */
+.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mbtn{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:12.5px;font-weight:600;color:var(--muted);box-shadow:var(--shadow-sm)}
+.mbtn.on{background:var(--text);border-color:var(--text);color:#fff}
+.mbtn small{font-weight:500;opacity:.75;margin-inline-start:5px}
+.topbar .sp{flex:1}
+.lg{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 11px}
+.lg i{width:12px;height:12px;border-radius:4px}
+.lg .sw-act{background:var(--act)}
+.lg .sw-flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 3px,#D8EEF9 3px,#D8EEF9 6px)}
+.lg .sw-gap{background:#E9EFF5;border:1px solid var(--border-strong)}
+
+/* סיכום: שני כרטיסים — הכנסות והוצאות */
+.sumrow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+@media(max-width:980px){.sumrow{grid-template-columns:1fr}}
+/* שורת רווחיות בין קבוצות הדוח */
+.pr-row{display:grid;grid-template-columns:190px 1fr 1fr;gap:20px;align-items:center;background:#EEF7FD;border:1px solid #D8EAF6;border-radius:16px;box-shadow:var(--shadow-sm);padding:15px 22px;margin:4px 0 26px}
+.pr-row .pr-name{font-size:13.5px;font-weight:800}
+.pr-row .pr-cell span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.pr-row .pr-cell b{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.pr-row .pr-cell b.pos{color:var(--text)} .pr-row .pr-cell b.neg{color:var(--neg)}
+.pr-row .pr-d{text-align:start;font-size:11.5px;font-weight:600;color:var(--muted)}
+.pr-row .pr-d b{display:block;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.pr-row .pr-d.pos b{color:var(--text)} .pr-row .pr-d.neg b{color:var(--neg)}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);padding:16px 22px}
+.scard .sc-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.scard .k{font-size:13px;font-weight:700}
+.scard .k small{font-weight:500;color:var(--muted);margin-inline-start:6px}
+.scard .g{font-size:12px;font-weight:600;color:var(--muted)}
+.scard .g b{font-size:17px;font-weight:800;margin-inline-start:6px;font-variant-numeric:tabular-nums}
+.scard .g.pos b{color:var(--pos)} .scard .g.neg b{color:var(--neg)} .scard .g.warn b{color:var(--warn)}
+.scard .bl-bar{height:13px}
+
+/* קבוצות ושורות */
+.grp{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);margin-bottom:18px;overflow:hidden}
+.grp-h{display:flex;align-items:center;gap:8px;padding:12px 22px;font-size:13px;font-weight:700;background:var(--accent-soft)}
+.grp-h .dot{width:8px;height:8px;border-radius:50%}
+.grp-h .cnt{margin-inline-start:auto;font-size:11.5px;color:var(--muted);font-weight:500}
+.bl-row{display:grid;grid-template-columns:190px 120px 1fr 140px;gap:20px;align-items:center;padding:15px 22px;border-top:1px solid var(--border)}
+.bl-tgt{cursor:pointer;border-radius:10px;padding:4px 10px;margin:-4px -10px;transition:background .12s}
+.bl-tgt:hover{background:var(--accent-soft)}
+.bl-tgt span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.bl-tgt span i{font-style:normal;opacity:0;transition:opacity .12s}
+.bl-tgt:hover span i{opacity:1}
+.bl-tgt b{font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.bl-tgt input{width:100%;font-family:inherit;font-size:15px;font-weight:800;color:var(--text);border:none;border-bottom:2px solid var(--accent);background:transparent;outline:none;padding:0;font-variant-numeric:tabular-nums}
+.bl-row:hover{background:#FAFCFE}
+.bl-name{font-size:13px;font-weight:600}
+.bl-name .tiny{display:block;font-size:10.5px;color:var(--soft);font-weight:500;margin-top:1px}
+.bl-mid{min-width:0}
+.bl-bar{position:relative;height:11px;background:#E9EFF5;border-radius:999px;overflow:hidden;display:flex}
+.bl-bar .seg{height:100%}
+.bl-bar .seg.act{background:var(--act);border-start-start-radius:999px;border-end-start-radius:999px}
+.bl-bar .seg.flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 4px,#D8EEF9 4px,#D8EEF9 8px)}
+.bl-bar .seg.over{background:var(--neg)}
+.bl-nums{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:7px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.bl-nums b{font-weight:700;color:var(--text)}
+.bl-nums .n-act b{color:var(--act)}
+.bl-nums .n-flow b{color:#5AA8D6}
+.bl-nums .n-tgt{margin-inline-start:auto}
+.bl-gap{text-align:start;font-size:12px;font-weight:600;color:var(--muted)}
+.bl-gap b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.bl-gap.pos b{color:var(--pos)}
+.bl-gap.neg b{color:var(--neg)}
+.bl-gap.warn b{color:var(--warn)}
+.bl-gap.zero b{color:var(--soft)}
+
+#toast{position:fixed;bottom:18px;inset-inline-start:50%;transform:translateX(50%);background:#0C4068;color:#fff;font-size:12.5px;font-weight:600;border-radius:999px;padding:9px 20px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}
+#toast.on{opacity:1}
+
+body.is-embedded{background:transparent}
+body.is-embedded .app{max-width:none;padding:4px 2px 26px}
+body.is-embedded .page-head{display:none}
+</style>
+</head>
+<body>
+<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');</script>
+<div class="app">
+
+  <div class="page-head">
+    <div class="brand-dot">HK</div>
+    <div>
+      <h1>תקציב תזרימי</h1>
+      <div class="sub">היעד מול הבפועל ומה שכבר צבוע בתזרים — והפער שנשאר</div>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <span id="months"></span>
+    <span class="sp"></span>
+    <span class="lg"><i class="sw-act"></i> בפועל</span>
+    <span class="lg"><i class="sw-flow"></i> בתזרים · צבוע קדימה</span>
+    <span class="lg"><i class="sw-gap"></i> פער</span>
+  </div>
+
+  <div class="sumrow" id="sumrow"></div>
+  <div id="groups"></div>
+</div>
+<div id="toast"></div>
+
+<script>
+const nf=new Intl.NumberFormat('he-IL');
+/* target = היעד; act = בפועל החודש; flow = צבוע בתזרים קדימה; futFlow = הצבוע בחודש עתידי */
+const GROUPS=[
+ {label:'הכנסות', kind:'inc', color:'#1B6C9C', rows:[
+   {label:'הכנסות ממכירות - מזומן',  target:89950, act:60000, flow:22000},
+   {label:'הכנסות ממכירות - סליקה',  target:77010, act:48000, flow:25000},
+   {label:'הכנסות מסליקה - דיירקט',  target:23501, act:15000, flow:6000},
+   {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000},
+   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000},
+ ]},
+ {label:'עלות המכר', kind:'exp', color:'#c98404', rows:[
+   {label:'קניות מלאי',  target:155000, act:90000, flow:40000},
+   {label:'קבלני משנה',  target:28333,  act:14000, flow:12000},
+ ]},
+ {label:'הוצאות תפעוליות', kind:'exp', color:'#7557E3', rows:[
+   {label:'שכר עבודה',    target:97333, act:93000, flow:8000},
+   {label:'שכירות',       target:22000, act:22000, flow:0},
+   {label:'הוצאות תפעול', target:18433, act:9000,  flow:5000},
+   {label:'פרסום ושיווק', target:15667, act:7000,  flow:6000},
+   {label:'מוסדות מס',    target:24179, act:6000,  flow:17500},
+ ]},
+ {label:'מימון, השקעות ובעלים', kind:'exp', color:'#4CAF7D', rows:[
+   {label:'מימון ועמלות בנק', target:9100,  act:4500, flow:2500},
+   {label:'פיקדונות והשקעות', target:12000, act:6000, flow:6000},
+   {label:'תשלומי הלוואה',    target:8000,  act:8000, flow:0},
+   {label:'משיכות בעלים',     target:15000, act:5000, flow:5000},
+ ]},
+];
+const MONTHS=[
+  {label:'יוני 2026', tag:'החודש'},
+  {label:'יולי 2026', tag:'חודש הבא'},
+  {label:'אוגוסט 2026', tag:'עוד חודשיים'},
+];
+let mi=0;
+
+/* בחודש עתידי אין בפועל — רק מה שכבר צבוע בתזרים */
+function rowVals(r){
+  if(mi===0) return {act:r.act, flow:r.flow};
+  return {act:0, flow:Math.round(r.target*(mi===1?0.72:0.38))};
+}
+function gapOf(r){ const v=rowVals(r); return r.target-v.act-v.flow; }
+
+function barHtml(r,kind,noTgt){
+  const v=rowVals(r), t=r.target;
+  const total=v.act+v.flow, over=total>t;
+  const aPct=Math.min(v.act/t,1)*100;
+  const fPct=Math.max(Math.min(total/t,1)*100-aPct,0);
+  const oPct=over?Math.min((total-t)/t,0.25)*100:0;   // קצה חריגה
+  return `<div class="bl-bar">
+    <i class="seg act" style="width:${aPct.toFixed(1)}%"></i>
+    <i class="seg flow" style="width:${fPct.toFixed(1)}%"></i>
+    ${over?`<i class="seg over" style="width:${oPct.toFixed(1)}%"></i>`:''}
+  </div>
+  <div class="bl-nums">
+    <span class="n-act">בפועל <b>${nf.format(v.act)}</b></span>
+    <span class="n-flow">בתזרים <b>${nf.format(v.flow)}</b></span>
+    ${noTgt?'':`<span class="n-tgt">יעד <b>${nf.format(t)}</b></span>`}
+  </div>`;
+}
+/* עריכת יעד במקום — לחיצה על המספר */
+function tgtEdit(el,gi,ri){
+  if(el.querySelector('input')) return;
+  const r=GROUPS[gi].rows[ri];
+  el.innerHTML=`<span>יעד</span><input type="number" value="${r.target}" onkeydown="if(event.key==='Enter')this.blur()" onblur="tgtSave(${gi},${ri},this.value)">`;
+  const inp=el.querySelector('input'); inp.focus(); inp.select();
+}
+function tgtSave(gi,ri,v){
+  const n=Math.max(0,Math.round(+v||0));
+  if(n>0) GROUPS[gi].rows[ri].target=n;
+  render();
+  if(n>0) toast('היעד עודכן ל-'+nf.format(n)+' ₪');
+}
+function gapHtml(r,kind){
+  const g=gapOf(r);
+  let cls,txt;
+  if(g===0){cls='pos';txt='✓ מכוסה במלואו';}
+  else if(g<0){cls=kind==='exp'?'neg':'pos';txt=kind==='exp'?'חריגה מהיעד':'מעל היעד';}
+  else {cls='warn';txt='נותר לצביעה בתזרים';}   // פער = המנהל עוד לא צבע בתזרים — בהכנסות ובהוצאות
+  return `<div class="bl-gap ${cls}">${txt}<b>${g<0?'-':''}${nf.format(Math.abs(g))}</b></div>`;
+}
+
+function render(){
+  document.getElementById('months').innerHTML=MONTHS.map((m,i)=>
+    `<button class="mbtn ${i===mi?'on':''}" onclick="mi=${i};render()">${m.tag}<small>${m.label}</small></button>`).join('');
+
+  /* סיכום: הכנסות והוצאות — בר + פער לכל אחד */
+  const sumCard=(label,kind)=>{
+    const rows=GROUPS.filter(g=>g.kind===kind).flatMap(g=>g.rows);
+    const T=rows.reduce((s,r)=>s+r.target,0);
+    const A=rows.reduce((s,r)=>s+rowVals(r).act,0);
+    const F=rows.reduce((s,r)=>s+rowVals(r).flow,0);
+    const G=T-A-F;
+    const gCls=G===0?'pos':G<0?(kind==='exp'?'neg':'pos'):'warn';
+    const gTxt=G===0?'✓ מכוסה':G<0?(kind==='exp'?'חריגה':'מעל היעד'):'נותר לצביעה בתזרים';
+    return `<div class="scard">
+      <div class="sc-top"><span class="k">${label}<small>${MONTHS[mi].label}</small></span>
+        <span class="g ${gCls}">${gTxt}<b>${G<0?'-':''}${nf.format(Math.abs(G))} ₪</b></span></div>
+      ${barHtml({target:T,act:A,flow:F},kind)}
+    </div>`;
+  };
+  document.getElementById('sumrow').innerHTML=sumCard('כלל ההכנסות','inc')+sumCard('כלל ההוצאות','exp');
+
+  /* רווחיות מצטברת — שורות בין הקבוצות, כמו בדוח תזרים */
+  const PROFIT_AFTER={1:'רווח גולמי',2:'רווח תפעולי',3:'רווח נקי'};
+  const gAgg=g=>({T:g.rows.reduce((s,r)=>s+r.target,0),
+                  C:g.rows.reduce((s,r)=>s+rowVals(r).act+rowVals(r).flow,0)});
+  let cumT=0, cumC=0;
+  document.getElementById('groups').innerHTML=GROUPS.map((g,gi)=>{
+    const a=gAgg(g);
+    if(g.kind==='inc'){cumT+=a.T;cumC+=a.C;}else{cumT-=a.T;cumC-=a.C;}
+    let out=`
+    <div class="grp">
+      <div class="grp-h"><span class="dot" style="background:${g.color}"></span>${g.label}
+        <span class="cnt">${g.rows.length} קטגוריות</span></div>
+      ${g.rows.map((r,ri)=>`
+        <div class="bl-row">
+          <div class="bl-name">${r.label}${gapOf(r)===0?'<span class="tiny">היעד מכוסה — בפועל + בתזרים</span>':''}${gapOf(r)>0?'<span class="tiny">היתרה עוד לא נצבעה בתזרים</span>':''}</div>
+          <div class="bl-tgt" onclick="tgtEdit(this,${gi},${ri})" title="לחיצה לעדכון היעד"><span>יעד <i>✎</i></span><b>${nf.format(r.target)}</b></div>
+          <div class="bl-mid">${barHtml(r,g.kind,true)}</div>
+          ${gapHtml(r,g.kind)}
+        </div>`).join('')}
+    </div>`;
+    if(PROFIT_AFTER[gi]){
+      out+=`<div class="pr-row">
+        <div class="pr-name">${PROFIT_AFTER[gi]}</div>
+        <div class="pr-cell"><span>יעד</span><b class="${cumT<0?'neg':'pos'}">${nf.format(cumT)}</b></div>
+        <div class="pr-cell"><span>צפי · בפועל + בתזרים</span><b class="${cumC<0?'neg':'pos'}">${nf.format(cumC)}</b></div>
+      </div>`;
+    }
+    return out;
+  }).join('');
+}
+function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(window._tt); window._tt=setTimeout(()=>el.classList.remove('on'),2200); }
+render();
+</script>
+</body>
+</html>

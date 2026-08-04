@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>תזרים עבר · דו״ח תזרים חודשי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F4F7FA; --surface:#fff; --surface-alt:#f8fafc;
+  --border:#e6ecf4; --border-strong:#d3dced;
+  --text:#0C4068; --muted:#64748b; --soft:#9aa7bb;
+  --accent:#1B6C9C; --accent-soft:#EAF4FB;
+  --pos:#13895b; --pos-soft:#e7f7ef;
+  --neg:#dc4436; --neg-soft:#fdeceb;
+  --calc:#eef7fd;
+  --shadow-sm:0 2px 8px rgba(15,35,65,.06);
+  --shadow-md:0 6px 18px rgba(12,64,104,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:"Rubik",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45}
+button{font-family:inherit;cursor:pointer}
+.app{max-width:1280px;margin:0 auto;padding:26px 22px 70px}
+
+/* ---------- כותרת ---------- */
+.page-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.brand-dot{width:44px;height:44px;border-radius:14px;background:#1B6C9C;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px}
+.page-head h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-.3px}
+.page-head .sub{color:var(--muted);font-size:13px;margin-top:2px}
+
+/* ---------- סרגל בוררים ופעולות ---------- */
+.bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--text);box-shadow:var(--shadow-sm)}
+.pill .mut{color:var(--muted);font-weight:500}
+select.pill{appearance:none;padding-inline-end:26px;background-image:url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 3.5L5 6.5L8 3.5' stroke='%231B6C9C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 10px center;cursor:pointer}
+.bar .sp{flex:1}
+.btn-p{background:#E48375;border:1.5px solid #E48375;color:#fff;font-weight:700;font-size:12.5px;border-radius:999px;padding:8px 18px}
+.btn-p:hover{background:#D96A5A;border-color:#D96A5A}
+.btn-g{background:#fff;border:1.5px solid #F3C2BE;color:#C2372A;font-weight:700;font-size:12.5px;border-radius:999px;padding:8px 18px}
+.btn-g:hover{background:#FBEFED}
+
+/* ---------- פריסה: דוח + תובנות ---------- */
+.split{display:grid;grid-template-columns:1fr 250px;gap:14px;align-items:start}
+@media(max-width:1000px){.split{grid-template-columns:1fr}}
+
+/* ---------- הדוח — כרטיסי קבוצה על גריד אחיד ---------- */
+.r{display:grid;grid-template-columns:minmax(205px,1.45fr) repeat(4,1fr) 1.05fr;align-items:center}
+.c{padding:10px 14px;text-align:end;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:0}
+.c.cat{text-align:start;color:var(--text);white-space:normal}
+.c .dashv,.c.dash{color:var(--soft);font-weight:400}
+.c.neg{color:var(--neg)}
+
+.mhead{position:sticky;top:6px;z-index:8;background:var(--accent-soft);border:1px solid #D8EAF6;border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.mhead .c{font-size:12px;font-weight:700;padding:9px 14px;color:var(--text)}
+
+.gcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);margin-bottom:14px;overflow:hidden}
+.gh{display:flex;align-items:center;gap:8px;padding:11px 16px;font-size:13px;font-weight:700;background:var(--accent-soft)}
+.gh .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.gh .cnt{margin-inline-start:auto;font-size:11.5px;color:var(--muted);font-weight:500}
+.gcard .r{border-top:1px solid #EEF3F8}
+.gcard .r:hover:not(.tr){background:#F7FBFE}
+.r.tr{background:#FAFCFE;border-top:1.5px solid var(--border-strong)}
+.r.tr .c{font-weight:800;padding:12px 14px}
+.r.tr.inc .c:not(.cat){color:var(--pos)}
+.r.tr.exp .c:not(.cat){color:var(--neg)}
+
+/* רצועת רווח בין כרטיסים */
+.pr-strip{background:#EEF7FD;border:1px solid #D8EAF6;border-radius:16px;box-shadow:var(--shadow-sm);margin:2px 0 16px}
+.pr-strip .c{font-weight:800;padding:14px}
+.pr-strip .c.cat{font-size:13.5px}
+.pr-strip .c.neg{color:var(--neg)}
+.pr-strip.grand{background:var(--text);border-color:var(--text)}
+.pr-strip.grand .c{color:#fff}
+.pr-strip.grand .c.neg{color:#FFB9AD}
+
+/* דריל */
+.caret{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:6px;color:var(--accent);cursor:pointer;vertical-align:-4px;margin-inline-end:6px;transition:transform .12s;background:var(--accent-soft)}
+.caret:hover{background:#D8EAF6}
+.caret.open{transform:rotate(180deg)}
+.caret-sp{display:inline-block;width:24px}
+.r.factor .c{color:var(--muted);font-weight:500;font-size:12.5px;padding-block:8px;background:#FBFDFF}
+.r.factor .c.cat{padding-inline-start:34px;position:relative}
+.r.factor .c.cat::before{content:"";position:absolute;inset-inline-start:22px;top:0;bottom:0;width:2px;background:#E3EDF5;border-radius:2px}
+.r.factor .caret{width:15px;height:15px;background:none}
+.txmini{display:block;font-size:10.5px;color:var(--soft);font-weight:500;margin-top:2px;background:#F1F6FA;border-radius:6px;padding:2px 7px;width:fit-content;margin-inline-start:auto;white-space:nowrap}
+.txmini b{color:var(--muted);font-weight:600}
+
+/* אזהרה + אחוז מהמחזור */
+.warn-ic{display:inline-grid;place-items:center;margin-inline-end:6px;color:var(--neg);font-weight:800;font-size:10px;border:1.5px solid currentColor;border-radius:50%;width:15px;height:15px;vertical-align:-2px;position:relative;cursor:default}
+.warn-ic .tip{display:none;position:absolute;bottom:calc(100% + 7px);inset-inline-start:50%;transform:translateX(50%);background:#fff;color:var(--text);font-size:11.5px;font-weight:700;border-radius:10px;padding:6px 12px;box-shadow:0 8px 24px rgba(12,64,104,.18);white-space:nowrap;z-index:20;font-style:normal}
+.warn-ic:hover .tip{display:block}
+
+/* ---------- תובנות ---------- */
+.insights{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);padding:14px 16px;position:sticky;top:12px}
+.insights h3{margin:0 0 4px;font-size:13.5px;font-weight:700}
+.insights .isub{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+.ins{border-inline-start:3px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:9px 11px;font-size:12px;line-height:1.5;margin-bottom:9px}
+.ins b{font-weight:700}
+.ins.warn{border-color:#E48375;background:#FDF3F1}
+.ins.good{border-color:var(--pos);background:var(--pos-soft)}
+.ins .pin{float:inline-end;color:var(--soft);cursor:pointer}
+.ins .pin:hover{color:var(--accent)}
+
+/* טוסט פנימי */
+#toast{position:fixed;bottom:18px;inset-inline-start:50%;transform:translateX(50%);background:#0C4068;color:#fff;font-size:12.5px;font-weight:600;border-radius:999px;padding:9px 20px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}
+#toast.on{opacity:1}
+
+/* ---------- מוטמע במעטפת ---------- */
+body.is-embedded{background:transparent}
+body.is-embedded .app{max-width:none;padding:4px 2px 26px}
+body.is-embedded .page-head{display:none}
+</style>
+</head>
+<body>
+<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');</script>
+<div class="app">
+
+  <div class="page-head">
+    <div class="brand-dot">HK</div>
+    <div>
+      <h1>תזרים עבר · דו״ח תזרים חודשי</h1>
+      <div class="sub">תנועות בפועל לפי חודשים סגורים — יתרות בנק, הכנסות והוצאות בדריל־דאון לפי גורם</div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <select class="pill" id="fromSel"><option>אפריל 2026</option><option>מרץ 2026</option><option>פברואר 2026</option></select>
+    <span class="mut" style="font-size:12.5px;color:var(--muted)">עד</span>
+    <select class="pill" id="toSel"><option>יולי 2026</option><option>יוני 2026</option></select>
+    <select class="pill"><option>כל החשבונות</option><option>עו״ש לאומי 604</option><option>עו״ש פועלים 112</option></select>
+    <button class="pill" onclick="toast('הדוח יוצא לאקסל')">⇩ <span class="mut">ייצוא</span></button>
+    <span class="sp"></span>
+    <button class="btn-g" onclick="toast('הדוח נשלח ללקוח בוואטסאפ')">שליחה ללקוח</button>
+    <button class="btn-p" onclick="toast('הדוח הופק — נשמר בתיק הלקוח')">הפקה</button>
+  </div>
+
+  <div class="split">
+    <div id="report"></div>
+    <aside class="insights">
+      <h3>תובנות</h3>
+      <div class="isub">מחושב אוטומטית מנתוני הדוח</div>
+      <div class="ins warn"><span class="pin" title="הצמדה לדוח">📎</span><b>משיכות בעלים גבוהות:</b> 1.46 מ׳ ₪ בתקופה — פי 1.5 מההפרש התפעולי המצטבר.</div>
+      <div class="ins"><span class="pin" title="הצמדה לדוח">📎</span><b>אפריל חריג:</b> הפרש חודשי ‎-753 א׳ ₪, בעיקר משיכות בעלים (635 א׳) והעברות.</div>
+      <div class="ins good"><span class="pin" title="הצמדה לדוח">📎</span><b>מגמה תפעולית חיובית:</b> ההפרש התפעולי עלה מ-‎-173 א׳ באפריל ל-367 א׳ ביולי.</div>
+    </aside>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ================= דאטה — בפועל, 4 חודשים סגורים ================= */
+const MONTHS=['אפריל 2026','מאי 2026','יוני 2026','יולי 2026'];
+const OPEN0=1029625;               // יתרת פתיחה של החודש הראשון
+const nf=new Intl.NumberFormat('he-IL');
+
+/* קטגוריה: label, sign, v[4], גורמים (name, v[4], tx — תנועה לדוגמה לתא) */
+const SECTIONS=[
+ {label:'הכנסות', kind:'inc', cats:[
+   {label:'הכנסות ממכירות', v:[1887458,2927896,3492070,2858395], factors:[
+     {n:'הסתדרות מדיצינית הדסה (חלצ)', v:[15432,231480,null,null], tx:['10.04 · הסתדרות מדי…','10.05 · הסתדרות מ…',null,null]},
+     {n:'מטעי גבעון', v:[null,null,17700,null]},
+     {n:'מ.ס.מ סחר בעמ', v:[126439,null,null,null]},
+     {n:'רימון יצחק מוצרי אנרגיה', v:[737036,916458,1492569,1180000]},
+     {n:'יהב תפעול בעמ', v:[268052,156084,124634,131000]},
+     {n:'חברת האוטובוסים', v:[158614,123740,null,null]},
+     {n:'חברת אוטובוסים ירושלים', v:[573211,1431000,1614830,1499000]},
+     {n:'אדם חומרי בניין', v:[7414,null,null,48395]},
+   ]},
+   {label:'הכנסות משירותי ניהול ותחזוקה', v:[17700,44840,27140,null], factors:[
+     {n:'נכסי רובע העיר בעמ', v:[17700,26140,27140,null]},
+     {n:'מגדלי הרצליה ניהול', v:[null,18700,null,null]},
+   ]},
+   {label:'הכנסות משכירות נכס', v:[58754,51981,61480,39676], factors:[
+     {n:'שוכר — קומה 2 רח׳ המסגר', v:[38754,31981,41480,19676]},
+     {n:'שוכר — מחסן לוגיסטי', v:[20000,20000,20000,20000]},
+   ]},
+ ], total:'סה״כ הכנסות', totalCls:'pos'},
+ {label:'עלות המכר', kind:'cogs', cats:[
+   {label:'קניות מלאי', v:[-1989307,-2115537,-2485322,-2125204], factors:[
+     {n:'דלק — בז״ן', v:[-1450000,-1520000,-1810000,-1544204]},
+     {n:'פז חברת נפט', v:[-421307,-465537,-520322,-431000]},
+     {n:'ספקי משנה', v:[-118000,-130000,-155000,-150000]},
+   ]},
+ ], total:'סה״כ עלות המכר', totalCls:'neg', warn:true},
+ {calc:'רווח גולמי', from:['הכנסות','עלות המכר']},
+ {label:'הוצאות תפעוליות', kind:'opex', cats:[
+   {label:'שכר עבודה', v:[-98000,-560000,-262000,-255000], factors:[
+     {n:'משכורות צוות', v:[-84000,-478000,-224000,-218000]},
+     {n:'ביטוח לאומי ופנסיה', v:[-14000,-82000,-38000,-37000]},
+   ]},
+   {label:'שכירות ואחזקת מבנה', v:[-22000,-22000,-22000,-22000], factors:[
+     {n:'שכירות משרדים', v:[-18000,-18000,-18000,-18000]},
+     {n:'חשמל ומים', v:[-4000,-4000,-4000,-4000]},
+   ]},
+   {label:'הוצאות תפעול שוטפות', v:[-27269,-238036,-130057,-128440], factors:[
+     {n:'שיווק ופרסום', v:[-9000,-96000,-52000,-49000]},
+     {n:'רכב ודלק תפעולי', v:[-11269,-84036,-46057,-44440]},
+     {n:'הנהלה וכלליות', v:[-7000,-58000,-32000,-35000]},
+   ]},
+ ], total:'סה״כ הוצאות תפעוליות', totalCls:'neg'},
+ {calc:'הפרש תזרימי תפעולי', from:['הכנסות','עלות המכר','הוצאות תפעוליות'], strong:true},
+ {label:'מימון, השקעות ובעלים', kind:'fin', cats:[
+   {label:'עמלות וריביות בנק', v:[-790,-204,-326,-761], factors:[
+     {n:'עמלות עו״ש', v:[-390,-204,-326,-361]},
+     {n:'ריבית מסגרת', v:[-400,null,null,-400]},
+   ]},
+   {label:'העברה בין חברתית', v:[55188,600000,null,-400000], factors:[
+     {n:'אנרגי גולני בעמ', v:[55188,600000,null,-400000]},
+   ]},
+   {label:'הוצאות פרטיות', v:[null,null,-4076,-14570], factors:[
+     {n:'כרטיס אשראי פרטי', v:[null,null,-4076,-14570]},
+   ]},
+   {label:'משיכות והזרמות בעלים', v:[-635000,-598000,-44880,-179600], factors:[
+     {n:'משיכת בעלים — צחי', v:[-400000,-350000,-44880,-100000]},
+     {n:'משיכת בעלים — יוסי', v:[-235000,-248000,null,-79600]},
+   ]},
+   {label:'תרומות', v:[null,null,-5000,null], factors:[
+     {n:'עמותת יד ביד', v:[null,null,-5000,null]},
+   ]},
+ ], total:'סה״כ מימון, השקעות ובעלים', totalCls:''},
+ {calc:'הפרש תזרימי חודשי', from:['הכנסות','עלות המכר','הוצאות תפעוליות','מימון, השקעות ובעלים'], strong:true, grand:true},
+];
+
+/* ================= חישובים ================= */
+const open=new Set();   // מפתחות דריל פתוחים
+const val=x=>x==null?0:x;
+function secTotals(sec){ return [0,1,2,3].map(ci=>sec.cats.reduce((s,c)=>s+val(c.v[ci]),0)); }
+function calcTotals(names){
+  return [0,1,2,3].map(ci=>SECTIONS.filter(s=>s.label&&names.includes(s.label))
+    .reduce((s,sec)=>s+secTotals(sec)[ci],0));
+}
+function fmt(x,dash){ if(x==null) return '<span class="dashv">---</span>'; return nf.format(x); }
+function cellTd(x,{warn}={}){
+  if(x==null) return '<td class="dash">---</td>';
+  return `<td class="${x<0?'neg':''}">${warn?'<span class="warn-ic">!</span>':''}${nf.format(x)}</td>`;
+}
+
+function txOf(f,ci,x){
+  if(f.tx&&f.tx[ci]) return f.tx[ci];
+  const dd=['10.04','12.05','09.06','14.07'][ci];
+  const short=f.n.length>18?f.n.slice(0,18)+'…':f.n;
+  return dd+' · '+short;
+}
+const CELL=(x,extra='')=>x==null?'<div class="c dash">---</div>':`<div class="c ${x<0?'neg':''}">${extra}${nf.format(x)}</div>`;
+const ROW=(label,cells,cls='')=>`<div class="r ${cls}"><div class="c cat">${label}</div>${cells}</div>`;
+
+function render(){
+  const monthly=calcTotals(['הכנסות','עלות המכר','הוצאות תפעוליות','מימון, השקעות ובעלים']);
+  const incT=secTotals(SECTIONS[0]);
+  const opens=[OPEN0]; monthly.forEach((d,i)=>opens.push(opens[i]+d));
+
+  let h='';
+  /* סרגל חודשים דביק */
+  h+=`<div class="r mhead"><div class="c cat">קטגוריה</div>${MONTHS.map(mo=>`<div class="c">${mo}</div>`).join('')}<div class="c">סה״כ</div></div>`;
+
+  /* כרטיס יתרות */
+  h+='<div class="gcard">';
+  h+=ROW('<span class="caret-sp"></span>יתרת פתיחה בנק', monthly.map((_,i)=>CELL(opens[i])).join('')+CELL(opens[0]));
+  h+=ROW('<span class="caret-sp"></span>יתרת סגירה בנק', monthly.map((_,i)=>CELL(opens[i+1])).join('')+CELL(opens[4]));
+  h+=ROW('<span class="caret-sp"></span>הפרש', monthly.map(d=>CELL(d)).join('')+CELL(monthly.reduce((a,b)=>a+b,0)),'tr');
+  h+='</div>';
+
+  /* כרטיסי קבוצות + רצועות רווח */
+  SECTIONS.forEach((sec,si)=>{
+    if(sec.calc){
+      const t=calcTotals(sec.from), sum=t.reduce((a,b)=>a+b,0);
+      h+=`<div class="pr-strip ${sec.grand?'grand':''}">`+
+        ROW('<span class="caret-sp"></span>'+sec.calc, t.map(x=>CELL(x)).join('')+CELL(sum))+'</div>';
+      return;
+    }
+    h+=`<div class="gcard"><div class="gh"><span class="dot"></span>${sec.label}<span class="cnt">${sec.cats.length} קטגוריות</span></div>`;
+    sec.cats.forEach((cat,cix)=>{
+      const key=si+'/'+cix, isOpen=open.has(key);
+      const tot=cat.v.reduce((a,b)=>a+val(b),0);
+      h+=ROW(`<span class="caret ${isOpen?'open':''}" onclick="tg('${key}')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></span>${cat.label}`,
+        cat.v.map(x=>CELL(x)).join('')+CELL(tot));
+      if(isOpen&&cat.factors) cat.factors.forEach((f,fi)=>{
+        const fkey=key+'/'+fi, fOpen=open.has(fkey);
+        const ftot=f.v.reduce((a,b)=>a+val(b),0)||null;
+        h+=ROW(`<span class="caret ${fOpen?'open':''}" onclick="tg('${fkey}')">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></span>${f.n}`,
+          f.v.map((x,ci)=>{
+            if(x==null) return '<div class="c dash">---</div>';
+            const mini=fOpen?`<span class="txmini">${txOf(f,ci,x)} · <b>${nf.format(x)}</b></span>`:'';
+            return `<div class="c ${x<0?'neg':''}">${nf.format(x)}${mini}</div>`;
+          }).join('')+CELL(ftot),'factor');
+      });
+    });
+    const t=secTotals(sec), sum=t.reduce((a,b)=>a+b,0);
+    const cls='tr '+(sec.totalCls==='pos'?'inc':sec.totalCls==='neg'?'exp':'');
+    if(sec.warn){
+      const cells=t.map((x,ci)=>{
+        const pct=incT[ci]?Math.round(Math.abs(x)/incT[ci]*100):0;
+        return `<div class="c neg"><span class="warn-ic">!<i class="tip">${pct}% מהמחזור</i></span>${nf.format(x)}</div>`;
+      }).join('');
+      const pctAll=Math.round(Math.abs(sum)/incT.reduce((a,b)=>a+b,0)*100);
+      h+=ROW('<span class="caret-sp"></span>'+sec.total, cells+`<div class="c neg"><span class="warn-ic">!<i class="tip">${pctAll}% מהמחזור</i></span>${nf.format(sum)}</div>`, cls);
+    }else{
+      h+=ROW('<span class="caret-sp"></span>'+sec.total, t.map(x=>CELL(x)).join('')+CELL(sum), cls);
+    }
+    h+='</div>';
+  });
+
+  document.getElementById('report').innerHTML=h;
+}
+function tg(k){ open.has(k)?open.delete(k):open.add(k); render(); }
+function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(window._tt); window._tt=setTimeout(()=>el.classList.remove('on'),2200); }
+render();
+</script>
+</body>
+</html>
