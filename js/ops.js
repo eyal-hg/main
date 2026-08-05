@@ -816,16 +816,25 @@
           {date:'07.07.2026', ref:'', desc:'חניה ודלק', amount:'214'},
           {date:'15.07.2026', ref:'', desc:'כיבוד לפגישות', amount:'182'},
           {date:'22.07.2026', ref:'', desc:'שליחויות', amount:'96'}]}},
-      {type:'ai', op:'חיוב ויזה כ.א.ל · 4,110 ₪-', cur:'חיובים באשראי', rec:'הוצאות אשראי', reason:'חיוב אשראי חודשי.', src:'HISTORY', time:'לפני 52 דק׳'},
-      {type:'ai', op:'החזר הלוואה — לאומי · 6,500 ₪-', cur:'כללי', payType:'הלוואות', rec:'הלוואות', reason:'החזר חודשי קבוע.', src:'HISTORY', time:'לפני 51 דק׳'},
-      {type:'ai', op:'רכש חומרי גלם — "פלסט-גל" · 12,400 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק מוכר של חומרי גלם; כל העסקאות הקודמות ממנו קוטלגו כקניות מלאי.', src:'HISTORY', time:'לפני 50 דק׳'},
-      {type:'ai', op:'הזמנת אריזות — "קרטון פלוס" · 3,180 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'רכישת אריזות שוטפת לפי דפוס חודשי קבוע.', src:'HISTORY', time:'לפני 48 דק׳'},
-      {type:'ai', op:'יבוא רכיבים — "אלקטרו סחר" · 7,950 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק רכיבים ליבוא; זוהה לפי שם המוטב והיקף העסקה.', src:'HISTORY, SEARCH', time:'לפני 45 דק׳'},
+      {type:'ai', op:'חיוב ויזה כ.א.ל · 4,110 ₪-', cur:'חיובים באשראי', rec:'הוצאות אשראי', reason:'חיוב אשראי חודשי.', basis:'history',
+       hist:'12 חיובים חודשיים זהים מכ.א.ל — כולם בהוצאות אשראי', goog:'לא נדרש חיפוש', aiDec:'דפוס חודשי מובהק — הוצאות אשראי (ביטחון 98%)', src:'HISTORY', time:'לפני 52 דק׳'},
+      {type:'ai', op:'החזר הלוואה — לאומי · 6,500 ₪-', cur:'כללי', payType:'הלוואות', rec:'הלוואות', reason:'החזר חודשי קבוע.', basis:'history',
+       hist:'6 החזרים קודמים באותו סכום ב-10 לחודש — כולם בהלוואות', goog:'לא נדרש חיפוש', aiDec:'החזר חודשי קבוע ללאומי — הלוואות (ביטחון 97%)', src:'HISTORY', time:'לפני 51 דק׳'},
+      {type:'ai', op:'רכש חומרי גלם — "פלסט-גל" · 12,400 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק מוכר של חומרי גלם; כל העסקאות הקודמות ממנו קוטלגו כקניות מלאי.', basis:'history',
+       hist:'9 עסקאות קודמות מפלסט-גל — כולן קניות מלאי', goog:'פלסט-גל — יצרן אריזות וחומרי גלם פלסטיים', aiDec:'ספק חוזר עם היסטוריה חד-משמעית — קניות מלאי', src:'HISTORY', time:'לפני 50 דק׳'},
+      {type:'ai', op:'הזמנת אריזות — "קרטון פלוס" · 3,180 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'רכישת אריזות שוטפת לפי דפוס חודשי קבוע.', basis:'history',
+       hist:'הזמנה חודשית קבועה — 5 מופעים בקניות מלאי', goog:'לא נדרש חיפוש', aiDec:'דפוס רכש חודשי — קניות מלאי', src:'HISTORY', time:'לפני 48 דק׳'},
+      {type:'ai', op:'יבוא רכיבים — "אלקטרו סחר" · 7,950 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק רכיבים ליבוא; זוהה לפי שם המוטב והיקף העסקה.', basis:'google',
+       hist:'לא נמצאו פעולות קודמות מהמוטב', goog:'אלקטרו סחר בע״מ — יבואן רכיבים אלקטרוניים, ת״א', aiDec:'מוטב חדש; לפי החיפוש מדובר בספק רכיבים — קניות מלאי (ביטחון 88%)', src:'HISTORY, SEARCH', time:'לפני 45 דק׳'},
       {type:'ai', op:'השלמת מלאי חירום · 1,260 ₪-', cur:'בנקאיות', rec:'קניות מלאי', reason:'רכישה נקודתית מספק משני — תואמת דפוסי קניות מלאי.', src:'SEARCH', time:'לפני 44 דק׳'},
-      {type:'ai', op:'תקבול לקוח — "מרכז הבנייה" · 18,600 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'תקבול מלקוח קבוע כנגד חשבונית פתוחה.', src:'HISTORY', time:'לפני 40 דק׳'},
-      {type:'ai', op:'סליקת אשראי — יומית · 6,320 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'זיכוי סליקה יומי מקארדקום — דפוס קבוע.', src:'HISTORY', time:'לפני 38 דק׳'},
-      {type:'ai', op:'העברה ל"י. אבידן עבודות גמר" · 9,800 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'קבלן משנה מוכר; תשלום חודשי במועד קבוע.', src:'HISTORY', time:'לפני 35 דק׳'},
-      {type:'ai', op:'העברה ל"צוות חשמל א.מ" · 5,400 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'תשלום שני ברצף לאותו קבלן — תואם הסכם מסגרת.', src:'HISTORY', time:'לפני 33 דק׳'},
+      {type:'ai', op:'תקבול לקוח — "מרכז הבנייה" · 18,600 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'תקבול מלקוח קבוע כנגד חשבונית פתוחה.', basis:'history',
+       hist:'לקוח קבוע — 14 תקבולים קודמים בהכנסות ממכירות', goog:'לא נדרש חיפוש', aiDec:'תקבול מלקוח מוכר — הכנסות ממכירות', src:'HISTORY', time:'לפני 40 דק׳'},
+      {type:'ai', op:'סליקת אשראי — יומית · 6,320 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'זיכוי סליקה יומי מקארדקום — דפוס קבוע.', basis:'history',
+       hist:'זיכוי יומי קבוע מקארדקום — הכנסות ממכירות', goog:'לא נדרש חיפוש', aiDec:'סליקה יומית — הכנסות ממכירות', src:'HISTORY', time:'לפני 38 דק׳'},
+      {type:'ai', op:'העברה ל"י. אבידן עבודות גמר" · 9,800 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'קבלן משנה מוכר; תשלום חודשי במועד קבוע.', basis:'ai',
+       hist:'2 תשלומים קודמים — קוטלגו ידנית בקטגוריות שונות', goog:'י. אבידן — עבודות גמר ושיפוצים', aiDec:'ההיסטוריה לא עקבית; לפי אופי המוטב והסכום החודשי — שכר קבלני משנה (ביטחון 84%)', src:'HISTORY', time:'לפני 35 דק׳'},
+      {type:'ai', op:'העברה ל"צוות חשמל א.מ" · 5,400 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'תשלום שני ברצף לאותו קבלן — תואם הסכם מסגרת.', basis:'history',
+       hist:'תשלום קודם לאותו קבלן — שכר קבלני משנה', goog:'צוות חשמל א.מ — קבלן חשמל', aiDec:'רצף תשלומים לקבלן — שכר קבלני משנה', src:'HISTORY', time:'לפני 33 דק׳'},
       {type:'payee', chk:'0010814', bank:'הפועלים · סניף 736', amount:'216', date:'26.07.2026', ocrName:'ויקה רזניק', img:'check.jpeg', time:'לפני 25 דק׳'},
       {type:'payee', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
       {type:'payee', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
@@ -833,6 +842,7 @@
         related:[{d:'15.06.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'},
                  {d:'15.05.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'}]},
       {type:'carry', text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע, נגרר 6 ימים.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
+        match:{t:'חיוב ויזה כ.א.ל — אלקטרה מיזוג', amt:'3,660 ₪-', d:'28.07 · אשראי'},
         related:[{d:'22.06.2026',t:'העברה — אלקטרה מיזוג',amt:'3,660 ₪-',cat:'ספקים'}]},
       {type:'carry', text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה, נגררת 3 ימים.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
         related:[{d:'25.06.2026',t:'תקבול — מרכז הבנייה',amt:'18,600 ₪+',cat:'הכנסות ממכירות'},
@@ -845,7 +855,8 @@
       {type:'unexpected', text:'חיוב לא מזוהה "PAYPAL *TX9915" ע"ס 1,120 ₪ בכרטיס האשראי.', who:'PAYPAL *TX9915', amt:1120, time:'היום 09:05', related:[]},
       {type:'unexpected', text:'בחשבון מזרחי 295199 הופיעה פעולה "הראל חב׳ לביטוח בע״מ" ע"ס 2,049 ₪ שלא צפינו.', who:'הראל חב׳ לביטוח בע״מ', amt:2049, time:'היום 09:20', related:[]},
       {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ — חלקי" ע"ס 10,000 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ — חלקי', amt:10000, time:'היום 10:02', related:[]},
-      {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[]},
+      {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[],
+       match:{t:'הכנסה צפויה — מרכז הבנייה', amt:'8,600 ₪+', d:'12.08 · בתזרים'}},
       {type:'sheet', kind:'add', sheet:'הוצאות אוגוסט', who:'צחי עובד', time:'לפני 3 דק׳',
         rows:[{date:'02.08.2026', ref:'', desc:'ספק אריזות — הזמנה חדשה', amount:'5,200'},
               {date:'05.08.2026', ref:'', desc:'תשלום יועץ שיווק', amount:'3,000'}]},
@@ -894,7 +905,10 @@
     if(t.type==='msg') return (t.who?t.who+': ':'')+(t.thread?t.thread[t.thread.length-1]:'הודעה');
     if(t.type==='doc') return t.name;
     if(t.type==='payee') return 'שיק יוצא מס׳ '+t.chk+' · '+t.amount+' ₪ · '+t.bank+(t.ocrName?'':' · המוטב לא זוהה');
-    if(t.type==='ai') return 'קיטלוג: '+t.op;
+    if(t.type==='ai'){
+      const B={history:['היסטוריה','hist'],google:['גוגל','goog'],ai:['AI','aid']}[t.basis||'history'];
+      return 'קיטלוג: '+t.op+` <span class="ai-basis ${B[1]}">לפי ${B[0]}</span>`;
+    }
     return (t.text||'').replace(/\s+/g,' ').slice(0,70);
   }
   let OPS_OPEN=new Set();
@@ -963,6 +977,12 @@
   }
   /* ===== כללי קיטלוג אוטומטי — פעולות שעונות על כלל מקוטלגות בלי אישור ===== */
   const CAT_KIND={source:'קטגוריית מקור (Bizibox)', desc:'תיאור מכיל'};
+  let CR_MODE='contains';   // התאמת תיאור: מכיל / מדויק
+  function crModeSet(m){
+    CR_MODE=m;
+    document.querySelectorAll('#crModes .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.m===m));
+    document.getElementById('crMatch').placeholder=m==='exact'?'התיאור המלא — בדיוק כפי שמופיע':'למשל: ארנונה';
+  }
   const SOURCE_CATS=['כללי','בנקאיות','חיובים באשראי'];
   let CAT_RULES=[
     {kind:'source', match:'חיובים באשראי', to:'לא לקיטלוג',    scope:'all'},
@@ -1003,6 +1023,7 @@
     document.getElementById('catHint').textContent=CAT_HINT[k][0];
     const isSel=k==='source';
     document.getElementById('crMatch').style.display=isSel?'none':'';
+    const _mo=document.getElementById('crModes'); if(_mo)_mo.style.display=isSel?'none':'';
     document.getElementById('crMatchSel').style.display=isSel?'':'none';
     if(isSel) document.getElementById('crMatchSel').innerHTML='<option value="">'+CAT_HINT[k][1]+'</option>'+SOURCE_CATS.map(c=>`<option>${c}</option>`).join('');
     else document.getElementById('crMatch').placeholder=CAT_HINT[k][1];
@@ -1014,7 +1035,7 @@
     const rules=CAT_RULES.map((r,i)=>({r,i})).filter(x=>x.r.kind===CAT_TAB&&(x.r.scope==='all'||x.r.scope===CUR));
     document.getElementById('catRuleList').innerHTML=rules.map(({r,i})=>`
       <div class="cr-row">
-        <b>"${r.match}"</b><span class="cr-arrow">←</span><b class="cr-to">${r.to}</b>
+        <b>"${r.match}"</b>${r.kind==='desc'?`<span class="cr-mode ${r.mode==='exact'?'ex':''}">${r.mode==='exact'?'מדויק':'מכיל'}</span>`:''}<span class="cr-arrow">←</span><b class="cr-to">${r.to}</b>
         <span class="cr-scope">${r.scope==='all'?'כל החברות':CLIENTS[r.scope].name}</span>
         <button class="cr-del" onclick="CAT_RULES.splice(${i},1);renderCatRules();renderOps()" title="מחיקת הכלל">✕</button>
       </div>`).join('')||'<div class="qr-note" style="border:none">אין כללים מהסוג הזה עדיין</div>';
@@ -1023,7 +1044,7 @@
     const m=CAT_TAB==='source'?document.getElementById('crMatchSel').value:document.getElementById('crMatch').value.trim();
     const to=document.getElementById('crTo').value;
     if(!m||!to){toast('צריך גם ערך להתאמה וגם קטגוריית יעד');return;}
-    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:CUR});
+    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:CUR, mode:CAT_TAB==='desc'?CR_MODE:null});
     document.getElementById('crMatch').value='';document.getElementById('crMatchSel').value='';document.getElementById('crTo').value='';
     renderCatRules();renderOps();
     toast('הכלל נוסף ל"'+CLIENTS[CUR].name+'" — פעולות מתאימות יקוטלגו אוטומטית');
@@ -1045,13 +1066,44 @@
     document.getElementById('cpSearch').focus();
   }
   function cpClose(){document.getElementById('cpOv').classList.remove('show');_catPickIx=null;}
+  let _cpNew=false, _cpRoe='';
+  const CAT_ROE={};   // קטגוריה → כותרת רו״ה
   function renderCatPick(){
     const q=document.getElementById('cpSearch').value.trim();
     const t=curTasks()[_catPickIx]||{};
-    document.getElementById('cpList').innerHTML=COMPANY_CATS
+    if(_cpNew){
+      // טופס קטגוריה חדשה — בתוך המודל, בלי דיאלוגים של הדפדפן
+      const ROE=['הכנסות','עלות המכר','הוצאות','מימון, השקעות ובעלים'];
+      document.getElementById('cpList').innerHTML=`<div class="cp-new">
+        <input class="mx2-inp" id="cpNewName" placeholder="שם הקטגוריה החדשה" value="${q}" style="width:100%">
+        <div class="cp-new-lbl">כותרת רו״ה — לאן הקטגוריה שייכת בדוח</div>
+        <div class="cp-roe">${ROE.map((r,i)=>`
+          <span class="cp-roe-b ${_cpRoe===r?'on':''}" onclick="_cpRoe='${r}';renderCatPick()"><i>${i+1}</i>${r}</span>`).join('')}</div>
+        <div class="cp-new-foot">
+          <button class="ot-btn done" onclick="cpNewSave()">פתיחת הקטגוריה</button>
+          <button class="ot-btn ghost" onclick="_cpNew=false;_cpRoe='';renderCatPick()">ביטול</button>
+        </div>
+      </div>`;
+      const inp=document.getElementById('cpNewName');
+      setTimeout(()=>{inp.focus();},60);
+      return;
+    }
+    const chips=COMPANY_CATS
       .filter(c=>!q||c.includes(q))
-      .map(c=>`<span class="cp-chip ${c===t.rec?'rec':''}" onclick="cpPick('${c}')">${c}${c===t.rec?' · המלצת ה-AI':''}</span>`).join('')
-      ||'<div class="qr-note" style="border:none">אין קטגוריה כזו — אפשר להוסיף בהגדרות החברה</div>';
+      .map(c=>`<span class="cp-chip ${c===t.rec?'rec':''}" onclick="cpPick('${c}')">${c}${c===t.rec?' · המלצת ה-AI':''}</span>`).join('');
+    const add=`<span class="cp-chip newcat" onclick="_cpNew=true;_cpRoe='';renderCatPick()">+ קטגוריה חדשה${q&&!chips?` — "${q}"`:''}</span>`;
+    document.getElementById('cpList').innerHTML=chips+add;
+  }
+  function cpNewSave(){
+    const nm=(document.getElementById('cpNewName').value||'').trim();
+    if(!nm){toast('צריך שם לקטגוריה');return;}
+    if(!_cpRoe){toast('צריך לבחור כותרת רו״ה');return;}
+    if(!COMPANY_CATS.includes(nm)) COMPANY_CATS.push(nm);
+    CAT_ROE[nm]=_cpRoe;
+    _cpNew=false;
+    toast('"'+nm+'" נפתחה בתזרים תחת '+_cpRoe);
+    _cpRoe='';
+    cpPick(nm);
   }
   let _cpChosen=null,_cpMode='switch';
   function cpShowConfirm(title,sumHtml){
@@ -1188,11 +1240,50 @@
       </div>`).join('')}
     </div>`:'';
 
+    // הגדרות פר-עמודה — נפתחות בגלגל השיניים שבכותרת
+    window._cuSet=window._cuSet||{un:{on:true,min:1000},ca:{on:true,min:500,days:3,wait:4},open:null};
+    const CS=window._cuSet;
+    const gear=cls=>`<button class="cu-gear ${CS.open===cls?'on':''}" title="הגדרות" onclick="event.stopPropagation();window._cuSet.open=window._cuSet.open==='${cls}'?null:'${cls}';renderOps()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>`;
+    const setPanel=cls=>{
+      if(CS.open!==cls) return '';
+      const st=CS[cls];
+      if(cls==='un') return `<div class="cu-set">
+        <div class="cu-set-h">הגדרות ללקוח — ${CLIENTS[CUR].name}</div>
+        <label class="cu-set-row"><input type="checkbox" ${st.on?'checked':''} onchange="window._cuSet.un.on=this.checked">
+          <span>הודעות על פעולות לא צפויות בסכומים מעל</span>
+          <span class="cu-amt"><input type="number" value="${st.min}" onchange="window._cuSet.un.min=+this.value"> ₪</span></label>
+        <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
+      </div>`;
+      return `<div class="cu-set">
+        <div class="cu-set-h">הגדרות ללקוח — ${CLIENTS[CUR].name}</div>
+        <label class="cu-set-row"><input type="checkbox" ${st.on?'checked':''} onchange="window._cuSet.ca.on=this.checked">
+          <span>הודעות על פעולות נגררות בסכומים מעל</span>
+          <span class="cu-amt"><input type="number" value="${st.min}" onchange="window._cuSet.ca.min=+this.value"> ₪</span></label>
+        <div class="cu-set-row sub"><span>נחשבת נגררת אחרי</span>
+          <span class="cu-amt"><input type="number" value="${st.days}" onchange="window._cuSet.ca.days=+this.value"> ימים</span></div>
+        <div class="cu-set-row sub"><span>הודעה נוספת ללקוח על אותה פעולה — רק בחלוף</span>
+          <span class="cu-amt"><input type="number" value="${st.wait}" onchange="window._cuSet.ca.wait=+this.value"> ימים</span><span>מההודעה הקודמת</span></div>
+        <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
+      </div>`;
+    };
     const col=(title,items,cls)=>`<div class="cu-col ${cls}">
-      <div class="cu-h">${title} <span>${items.length}</span></div>
+      <div class="cu-h">${title} <span>${items.length}</span>${gear(cls)}</div>
+      ${setPanel(cls)}
       ${items.length?items.map(t=>opsRow(t,T.indexOf(t))).join(''):'<div class="ops-empty" style="padding:14px">נקי ✓</div>'}
     </div>`;
-    return banner+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
+    // פס התאמה ידנית — רבים מול רבים
+    window._muSel=window._muSel||new Set();
+    const selT=[...window._muSel].map(ix=>T[ix]).filter(Boolean);
+    const sUn=selT.filter(t=>t.type==='unexpected'), sCa=selT.filter(t=>t.type==='carry');
+    const fmtA=a=>a.reduce((s,t)=>s+(t.amt||0),0).toLocaleString('en-US');
+    const muBar=window._muOn
+      ?`<div class="mu-bar on"><span>התאמה ידנית: נבחרו <b>${sUn.length}</b> לא צפויות (${fmtA(sUn)} ₪) מול <b>${sCa.length}</b> נגררות (${fmtA(sCa)} ₪)</span>
+         <button class="ot-btn done" onclick="muApply()">ביצוע ההתאמה</button>
+         <button class="ot-btn ghost" onclick="muToggle()">ביטול</button></div>`
+      :`<div class="mu-bar"><button class="ot-btn ghost" onclick="muToggle()">⇄ התאמה ידנית בין הצדדים — רבים מול רבים</button></div>`;
+    return banner+muBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
   }
   function payeeSplit(rows,T){
     const openRows=rows.filter(t=>!t.done);
@@ -1214,10 +1305,15 @@
             <label class="chk-lbl">שם המוטב ${sel.ocrName?'<span class="ocr-tag">זוהה ב-OCR — לאישור</span>':'<span class="ocr-tag miss">לא זוהה — להזנה</span>'}</label>
             <input class="mx2-inp" id="chkName_${i}" value="${sel.ocrName||''}" placeholder="כפי שמופיע על השיק">
             <label class="chk-lbl">קטגוריה</label>
-            <select class="mx2-inp" id="chkCat_${i}"><option value="">בחירת קטגוריה…</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
+            <span style="position:relative;display:block">
+              <input class="mx2-inp" id="chkCat_${i}" placeholder="חיפוש קטגוריה…" autocomplete="off" style="width:100%;box-sizing:border-box"
+                oninput="chkCatFilter(${i})" onfocus="chkCatOpen(${i})"
+                onblur="setTimeout(()=>{const d=document.getElementById('chkCatDd_${i}');if(d)d.classList.remove('show');},180)">
+              <div class="ev-dd" id="chkCatDd_${i}"></div>
+            </span>
             <div class="chk-two">
-              <div><label class="chk-lbl">סכום <span class="ocr-tag">OCR</span></label><input class="mx2-inp" value="${sel.amount} ₪" disabled></div>
-              <div><label class="chk-lbl">תאריך פירעון <span class="ocr-tag">OCR</span></label><input class="mx2-inp" value="${sel.date}" disabled></div>
+              <div><label class="chk-lbl">סכום</label><input class="mx2-inp" value="${sel.amount} ₪" disabled></div>
+              <div><label class="chk-lbl">תאריך פירעון</label><input class="mx2-inp" value="${sel.date}" disabled></div>
             </div>
             <label class="cp-rule" style="margin-top:12px">
               <input type="checkbox" id="chkRule_${i}">
@@ -1406,6 +1502,19 @@
       if(nxt>=0) openDocEntry(nxt); else toast('כל המסמכים הוזנו ✓');
     }
   }
+  /* דרופדאון קטגוריות עם חיפוש — טופס השיק */
+  function chkCatOpen(i){document.getElementById('chkCatDd_'+i).classList.add('show');chkCatFilter(i);}
+  function chkCatFilter(i){
+    const q=(document.getElementById('chkCat_'+i).value||'').trim();
+    const list=COMPANY_CATS.filter(c=>!q||c.includes(q));
+    document.getElementById('chkCatDd_'+i).innerHTML=list.length
+      ?list.map(c=>`<div class="ev-dd-row" onmousedown="chkCatPick(${i},'${c}')"><div><b>${c}</b></div></div>`).join('')
+      :'<div class="ev-dd-empty">אין קטגוריה כזו</div>';
+  }
+  function chkCatPick(i,c){
+    document.getElementById('chkCat_'+i).value=c;
+    document.getElementById('chkCatDd_'+i).classList.remove('show');
+  }
   function chkSaveInline(i){
     const t=curTasks()[i]; if(!t) return;
     const nm=(document.getElementById('chkName_'+i).value||'').trim();
@@ -1508,26 +1617,45 @@
     const B=(cls,label,h)=>`<button class="ot-btn ${cls}" onclick="event.stopPropagation();${h}">${label}</button>`;
     if(t.type==='msg') return B('done','טופל',`otHandle(${i},'טופל · ✓ ללקוח',1)`);
     if(t.type==='doc') return B('ghost','לא רלוונטי',`openNR(${i})`)+B('done','הזנה למערכת',`openDocEntry(${i})`);
-    if(t.type==='ai') return B('ghost','⚙ כלל מתיאור',`catRuleFromRow(${i})`)+B('ghost','החלפת קטגוריה',`openCatPick(${i})`)+B('done','אישור ההמלצה',`openApproveOne(${i})`);
+    if(t.type==='ai') return B('ghost','החלפת קטגוריה',`openCatPick(${i})`)+B('done','אישור ההמלצה',`openApproveOne(${i})`);
 
     if(t.type==='unexpected'||t.type==='carry'){
       const nRel=(t.related||[]).length;
-      return (nRel?B('ghost','צפייה בפעולות קשורות ('+nRel+')',`opsToggleRow(${i})`)
-                  :`<span class="ot-none">אין פעולות קשורות</span>`)
-        +B('ghost','לא רלוונטי',`openNR(${i})`)+B('','שליחת הודעה',`openSM(${i})`);
+      const chk=window._muOn?`<label class="mu-chk" onclick="event.stopPropagation()"><input type="checkbox" ${window._muSel&&window._muSel.has(i)?'checked':''} onchange="muSel(${i},this.checked)"></label>`:'';
+      return chk
+        +(nRel?B('ghost','היסטוריה ('+nRel+')',`opsToggleRow(${i})`):`<span class="ot-none">אין היסטוריה</span>`)
+        +B('ghost','בדיקת התאמה',`matchCheck(${i})`)
+        +(t.type==='carry'
+          ?B('ghost','לא רלוונטי',`carrySnooze(${i})`)      // נגררת: מוסתרת להיום וחוזרת מחר
+          :B('ghost','לא רלוונטי',`openNR(${i})`))          // לא צפויה: נמחקת עם סיבה
+        +B('','שליחת הודעה',`openSM(${i})`);
     }
     return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
   }
   function taskBody(t,i){
     const rep=`<div class="ot-reply" style="display:flex"><input id="oti${i}" placeholder="הקלד תגובה ללקוח…" onkeydown="if(event.key==='Enter')otSend(${i})"><button onclick="otSend(${i})">שלח</button></div>`;
-    if(t.type==='unexpected'||t.type==='carry') return (t.related&&t.related.length)?`<div class="rel-wrap">
-      <div class="rel-h">פעולות קודמות של "${t.who}" <span>${t.related.length}</span></div>
+    if(t.type==='unexpected'||t.type==='carry'){
+      const isCa=t.type==='carry';
+      const how=isCa?'נבדקו חיובי כרטיסי האשראי 30 יום אחורה לפי תיאור — ייתכן ששולם באשראי ואינו נגרר'
+                    :'נבדקו תנועות הבנק 30 יום קדימה לפי תיאור וקטגוריה';
+      const mb=t._matchChk?(t.match
+        ?`<div class="mu-res found"><div><b>${isCa?'נמצא חיוב תואם באשראי':'נמצאה התאמה ב-Bizibox'}:</b> ${t.match.t} · <b>${t.match.amt}</b> · ${t.match.d}<span class="mu-how">${how}</span></div><button class="ot-btn done" onclick="otHandle(${i},'${isCa?'שולם באשראי — הותאם':'הותאם ב-Bizibox'}')">${isCa?'סימון כשולם באשראי':'ביצוע ההתאמה ב-Bizibox'}</button></div>`
+        :`<div class="mu-res none">${how} — לא נמצאה התאמה.</div>`):'';
+      const rel=(t.related&&t.related.length)?`<div class="rel-wrap">
+      <div class="rel-h">היסטוריה — "${t.who}" <span>${t.related.length}</span></div>
       ${t.related.map(r=>`<div class="rel-row"><span class="rel-d">${r.d}</span><span class="rel-t">${r.t}</span><span class="rel-cat">${r.cat}</span><b class="rel-amt">${r.amt}</b></div>`).join('')}
       <div class="rel-note">נראה כמו תשלום חוזר — אפשר לקטלג לפי ההיסטוריה או לשלוח שאלה ללקוח.</div>
-    </div>`:`<div class="rel-wrap"><div class="ops-empty" style="padding:14px">אין פעולות קודמות של "${t.who||'המוטב'}" — מופע ראשון.</div></div>`;
+    </div>`:`<div class="rel-wrap"><div class="ops-empty" style="padding:14px">אין היסטוריה ל"${t.who||'המוטב'}" — מופע ראשון.</div></div>`;
+      return mb+rel;
+    }
     if(t.type==='msg') return `<div class="ot-thread">${(t.thread||[]).map(m=>`<div class="ot-bub">${m}</div>`).join('')}</div>${rep}`;
     if(t.type==='doc') return `<div class="ot-doc"><div class="ot-docprev" onclick="toast('הגדלת מסמך')"><span class="ot-zoom">⤢ הגדלה</span><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>תצוגה מקדימה של המסמך</div></div>${rep}`;
-    if(t.type==='ai') return `<div class="ot-ai"><div class="ot-airow"><span class="ot-ailbl">פעולה</span><span>${t.op}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה נוכחית</span><span>${t.cur}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה מומלצת</span><span class="ot-rec">${t.rec}</span></div><div class="ot-reason"><b>סיבה:</b> ${t.reason}</div><div class="ot-src">מקורות: ${t.src}</div></div>`;
+    if(t.type==='ai') return `<div class="ot-ai"><div class="ot-airow"><span class="ot-ailbl">פעולה</span><span>${t.op}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה נוכחית</span><span>${t.cur}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה מומלצת</span><span class="ot-rec">${t.rec}</span></div><div class="ot-reason"><b>סיבה:</b> ${t.reason}</div>
+      <div class="ot-srcs">
+        <div class="ot-srcrow"><span class="src-b hist">היסטוריה</span><span>${t.hist||'לא נמצאו פעולות דומות בעבר'}</span></div>
+        <div class="ot-srcrow"><span class="src-b goog">גוגל</span><span>${t.goog||'לא נדרש חיפוש'}</span></div>
+        <div class="ot-srcrow"><span class="src-b aid">החלטת ה-AI</span><span>${t.aiDec||t.reason}</span></div>
+      </div></div>`;
     return `<div class="ot-text">${t.text}</div>`+(t.type==='unexpected'?`<div style="margin-top:10px"><button class="ot-btn ghost" onclick="toast('צפייה בתנועות קשורות')">צפייה בתנועות קשורות</button></div>`:'');
   }
   function opsRow(t,i){
@@ -1541,6 +1669,36 @@
       </div>
       ${op?`<div class="orow2-detail">${taskBody(t,i)}</div>`:''}
     </div>`;
+  }
+  /* נגררת לא רלוונטית — מוסתרת להיום בלבד, תוצג שוב מחר */
+  function carrySnooze(i){
+    const t=curTasks()[i]; if(!t) return;
+    t.done=true; t.result='נדחה — יוצג שוב מחר'; t.handledAt='עכשיו';
+    renderOps();
+    toast('הפעולה הוסתרה להיום — תוצג שוב מחר בבוקר');
+  }
+  /* בדיקת התאמה מול Bizibox — 30 יום קדימה, לפי תיאור וקטגוריה */
+  function matchCheck(i){
+    const t=curTasks()[i]; if(!t) return;
+    t._matchChk=true;
+    OPS_OPEN.add(i);
+    renderOps();
+  }
+  /* התאמה ידנית רבים-מול-רבים בין לא צפויות לנגררות */
+  function muToggle(){
+    window._muOn=!window._muOn;
+    window._muSel=new Set();
+    renderOps();
+  }
+  function muSel(i,on){ on?window._muSel.add(i):window._muSel.delete(i); renderOps(); }
+  function muApply(){
+    const T=curTasks();
+    const sel=[...window._muSel];
+    if(sel.length<2){toast('צריך לבחור פעולות משני הצדדים');return;}
+    sel.forEach(i=>{const t=T[i];if(t){t.done=true;t.result='הותאם ידנית — קבוצה';t.handledAt='עכשיו';OPS_DONE++;}});
+    toast('הותאמו '+sel.length+' פעולות — ההתאמה נרשמה ב-Bizibox');
+    window._muOn=false; window._muSel=new Set();
+    renderOps(); if(typeof renderOpsInfo==='function')renderOpsInfo();
   }
   function otHandle(i,result,toClient){const t=curTasks()[i];if(!t)return;
     t.done=true;t.result=result;t.handledAt='עכשיו';OPS_DONE++;

@@ -41,6 +41,27 @@ select.pill{appearance:none;padding-inline-end:26px;background-image:url("data:i
 .btn-g{background:#fff;border:1.5px solid #F3C2BE;color:#C2372A;font-weight:700;font-size:12.5px;border-radius:999px;padding:8px 18px}
 .btn-g:hover{background:#FBEFED}
 
+/* דרופדאון מעוצב */
+.dd{position:relative;display:inline-block}
+.dd .ddb{display:inline-flex;align-items:center;gap:8px}
+.ddm{position:absolute;top:calc(100% + 6px);inset-inline-start:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 30px rgba(12,64,104,.16);min-width:160px;z-index:30;display:none;overflow:hidden;padding:5px}
+.ddm.show{display:block}
+.ddo{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer;border-radius:8px;white-space:nowrap}
+.ddo:hover{background:var(--accent-soft)}
+.ddo.on{background:var(--accent-soft);color:var(--accent)}
+.ddo .ck{width:14px;flex:0 0 auto;text-align:center}
+
+/* קבוצות בקרה: טווח (בהפקה) מול חשבונות (מיידי) */
+.grp-ctl{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--border);border-radius:999px;padding:4px 6px;box-shadow:var(--shadow-sm)}
+.gc-lbl{font-size:10px;font-weight:700;color:var(--soft);padding:0 4px 0 8px;white-space:nowrap}
+.grp-ctl .pill{box-shadow:none;border-color:transparent;background:var(--surface-alt)}
+.grp-ctl .btn-p{padding:6px 14px}
+.btn-p.attn{animation:ppulse 1.4s ease-in-out infinite}
+@keyframes ppulse{0%,100%{box-shadow:0 0 0 0 rgba(228,131,117,.45)}50%{box-shadow:0 0 0 7px rgba(228,131,117,0)}}
+.dirty-bar{display:flex;align-items:center;gap:10px;background:#FDF4E3;border:1px solid #ECD9A8;color:#8a6d1f;border-radius:12px;padding:7px 14px;font-size:12px;font-weight:600;margin-bottom:10px}
+.dirty-bar b{font-weight:800}
+.dirty-bar button{margin-inline-start:auto;background:#E48375;border:0;color:#fff;font-weight:700;font-size:11.5px;border-radius:999px;padding:5px 14px}
+
 /* ---------- פריסה: דוח + תובנות ---------- */
 .split{display:grid;grid-template-columns:1fr 250px;gap:14px;align-items:start}
 @media(max-width:1000px){.split{grid-template-columns:1fr}}
@@ -126,14 +147,24 @@ body.is-embedded .page-head{display:none}
   </div>
 
   <div class="bar">
-    <select class="pill" id="fromSel"><option>אפריל 2026</option><option>מרץ 2026</option><option>פברואר 2026</option></select>
-    <span class="mut" style="font-size:12.5px;color:var(--muted)">עד</span>
-    <select class="pill" id="toSel"><option>יולי 2026</option><option>יוני 2026</option></select>
-    <select class="pill"><option>כל החשבונות</option><option>עו״ש לאומי 604</option><option>עו״ש פועלים 112</option></select>
+    <span class="grp-ctl">
+      <i class="gc-lbl">טווח הדוח · מתעדכן בהפקה</i>
+      <span class="dd" id="ddFrom"></span>
+      <span class="mut" style="font-size:12px;color:var(--muted)">עד</span>
+      <span class="dd" id="ddTo"></span>
+      <button class="btn-p" id="prodBtn" onclick="produce()">הפקה</button>
+    </span>
+    <span class="grp-ctl">
+      <i class="gc-lbl">חשבונות · מתעדכן מיד</i>
+      <span class="dd" id="ddAcct"></span>
+    </span>
     <button class="pill" onclick="toast('הדוח יוצא לאקסל')">⇩ <span class="mut">ייצוא</span></button>
     <span class="sp"></span>
     <button class="btn-g" onclick="toast('הדוח נשלח ללקוח בוואטסאפ')">שליחה ללקוח</button>
-    <button class="btn-p" onclick="toast('הדוח הופק — נשמר בתיק הלקוח')">הפקה</button>
+  </div>
+  <div class="dirty-bar" id="dirtyBar" style="display:none">
+    🗓 הטווח שונה — הדוח מציג עדיין את הטווח הקודם. <b id="dirtyTxt"></b>
+    <button onclick="produce()">הפקה עכשיו</button>
   </div>
 
   <div class="split">
@@ -249,7 +280,7 @@ const ROW=(label,cells,cls='')=>`<div class="r ${cls}"><div class="c cat">${labe
 function render(){
   const monthly=calcTotals(['הכנסות','עלות המכר','הוצאות תפעוליות','מימון, השקעות ובעלים']);
   const incT=secTotals(SECTIONS[0]);
-  const opens=[OPEN0]; monthly.forEach((d,i)=>opens.push(opens[i]+d));
+  const opens=[OPEN_CUR]; monthly.forEach((d,i)=>opens.push(opens[i]+d));
 
   let h='';
   /* סרגל חודשים דביק */
@@ -308,6 +339,61 @@ function render(){
 }
 function tg(k){ open.has(k)?open.delete(k):open.add(k); render(); }
 
+/* דרופדאונים מעוצבים — טווח וחשבונות */
+const DDS={
+  from:{opts:['אפריל 2026','מרץ 2026','פברואר 2026'],sel:0,pre:'מ־'},
+  to:{opts:['יולי 2026','יוני 2026'],sel:0,pre:''},
+  acct:{opts:['כל החשבונות','עו״ש לאומי 604','עו״ש פועלים 112'],sel:0,pre:''},
+};
+let DD_OPEN=null;
+function ddRender(){
+  Object.keys(DDS).forEach(k=>{
+    const d=DDS[k], el=document.getElementById('dd'+k.charAt(0).toUpperCase()+k.slice(1));
+    el.innerHTML=`<button class="pill ddb" onclick="ddTg('${k}')">${d.pre||''}${d.opts[d.sel]}
+        <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></button>
+      <div class="ddm ${DD_OPEN===k?'show':''}">${d.opts.map((o,i)=>`
+        <div class="ddo ${i===d.sel?'on':''}" onclick="ddPick('${k}',${i})"><span class="ck">${i===d.sel?'✓':''}</span>${o}</div>`).join('')}</div>`;
+  });
+}
+function ddTg(k){ DD_OPEN=DD_OPEN===k?null:k; ddRender(); }
+/* טווח: נכנס למצב ממתין-להפקה · חשבון: הדאטה מתחלפת מיד */
+let RANGE_DIRTY=false;
+const ORIG=JSON.parse(JSON.stringify(SECTIONS));
+let OPEN_CUR=OPEN0;
+function ddPick(k,i){
+  DDS[k].sel=i; DD_OPEN=null; ddRender();
+  if(k==='acct'){
+    const f=[1,0.62,0.38][i];
+    SECTIONS.forEach((sec,si)=>{ if(!sec.cats)return;
+      sec.cats.forEach((cat,ci)=>{
+        cat.v=ORIG[si].cats[ci].v.map(x=>x==null?null:Math.round(x*f));
+        (cat.factors||[]).forEach((fa,fi)=>{fa.v=ORIG[si].cats[ci].factors[fi].v.map(x=>x==null?null:Math.round(x*f));});
+      });
+    });
+    OPEN_CUR=Math.round(OPEN0*f);
+    render();
+    toast('הנתונים הוחלפו — '+DDS.acct.opts[i]);
+  }else{
+    RANGE_DIRTY=true;
+    document.getElementById('dirtyBar').style.display='';
+    document.getElementById('dirtyTxt').textContent=DDS.from.opts[DDS.from.sel]+' – '+DDS.to.opts[DDS.to.sel];
+    const b=document.getElementById('prodBtn'); b.classList.add('attn'); b.textContent='הפקה מחדש';
+  }
+}
+function produce(){
+  const HEB=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const fm=DDS.from.opts[DDS.from.sel].split(' ')[0], tm=DDS.to.opts[DDS.to.sel].split(' ')[0];
+  let a=HEB.indexOf(fm), b=HEB.indexOf(tm);
+  const list=[]; for(let i=a;i<=b;i++) list.push(HEB[i]+' 2026');
+  const four=list.slice(-4);
+  MONTHS.splice(0,4,...four);
+  RANGE_DIRTY=false;
+  document.getElementById('dirtyBar').style.display='none';
+  const btn=document.getElementById('prodBtn'); btn.classList.remove('attn'); btn.textContent='הפקה';
+  render();
+  toast('הדוח הופק לטווח '+DDS.from.opts[DDS.from.sel]+' – '+DDS.to.opts[DDS.to.sel]+' — נשמר בתיק הלקוח');
+}
+ddRender();
 function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(window._tt); window._tt=setTimeout(()=>el.classList.remove('on'),2200); }
 render();
 </script>
