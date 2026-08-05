@@ -1035,7 +1035,7 @@
     const isSel=k==='source';
     document.getElementById('crMatch').style.display=isSel?'none':'';
     const _mo=document.getElementById('crModes'); if(_mo)_mo.style.display=isSel?'none':'';
-    const _sc=document.getElementById('crScope'); if(_sc)_sc.style.display=isSel?'':'none';
+    const _sc=document.getElementById('crScope'); if(_sc)_sc.style.display='';   // תחולה — בשני סוגי הכללים
     document.getElementById('crMatchSel').style.display=isSel?'':'none';
     if(isSel) document.getElementById('crMatchSel').innerHTML='<option value="">'+CAT_HINT[k][1]+'</option>'+SOURCE_CATS.map(c=>`<option>${c}</option>`).join('');
     else document.getElementById('crMatch').placeholder=CAT_HINT[k][1];
@@ -1063,7 +1063,7 @@
     const m=CAT_TAB==='source'?document.getElementById('crMatchSel').value:document.getElementById('crMatch').value.trim();
     const to=document.getElementById('crTo').value;
     if(!m||!to){toast('צריך גם ערך להתאמה וגם קטגוריית יעד');return;}
-    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:(CAT_TAB==='source'&&CR_SCOPE==='all')?'all':CUR, mode:CAT_TAB==='desc'?CR_MODE:null});
+    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:CR_SCOPE==='all'?'all':CUR, mode:CAT_TAB==='desc'?CR_MODE:null});
     document.getElementById('crMatch').value='';document.getElementById('crMatchSel').value='';document.getElementById('crTo').value='';
     renderCatRules();renderOps();
     toast('הכלל נוסף ל"'+CLIENTS[CUR].name+'" — פעולות מתאימות יקוטלגו אוטומטית');
