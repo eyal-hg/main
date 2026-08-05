@@ -708,7 +708,8 @@
       <span class="cat-tab" data-k="source" onclick="catTab('source')">לפי קטגוריית מקור</span>
     </div>
     <div class="catm-hint" id="catHint"></div>
-    <div id="catRuleList"></div>
+    <input class="mx2-inp" id="crFilter" placeholder="חיפוש בכללים…" oninput="renderCatRules()" style="display:none;width:100%;margin-bottom:8px">
+    <div id="catRuleList" class="cr-list"></div>
     <div class="catm-add">
       <span class="cr-modes" id="crModes">
         <span class="mtk-chip on" data-m="contains" onclick="crModeSet('contains')">מכיל</span>
@@ -716,6 +717,10 @@
       </span>
       <input class="mx2-inp" id="crMatch" placeholder="">
       <select class="mx2-inp" id="crMatchSel" style="display:none"></select>
+      <span class="cr-modes" id="crScope" style="display:none">
+        <span class="mtk-chip on" data-s="cur" onclick="crScopeSet('cur')">חברה נוכחית</span>
+        <span class="mtk-chip" data-s="all" onclick="crScopeSet('all')">כל החברות</span>
+      </span>
       <span class="cr-arrow">←</span>
       <select class="mx2-inp" id="crTo"><option value="">בחירת קטגוריה…</option></select>
       <button class="mx2-btn primary" onclick="crAdd()">+ הוספה</button>

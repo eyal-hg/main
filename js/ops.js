@@ -978,6 +978,11 @@
   /* ===== כללי קיטלוג אוטומטי — פעולות שעונות על כלל מקוטלגות בלי אישור ===== */
   const CAT_KIND={source:'קטגוריית מקור (Bizibox)', desc:'תיאור מכיל'};
   let CR_MODE='contains';   // התאמת תיאור: מכיל / מדויק
+  let CR_SCOPE='cur';       // תחולת כלל מקור: חברה נוכחית / כל החברות
+  function crScopeSet(sc){
+    CR_SCOPE=sc;
+    document.querySelectorAll('#crScope .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.s===sc));
+  }
   function crModeSet(m){
     CR_MODE=m;
     document.querySelectorAll('#crModes .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.m===m));
@@ -986,7 +991,13 @@
   const SOURCE_CATS=['כללי','בנקאיות','חיובים באשראי'];
   let CAT_RULES=[
     {kind:'source', match:'חיובים באשראי', to:'לא לקיטלוג',    scope:'all'},
-    {kind:'desc',   match:'ארנונה',        to:'מיסים ואגרות',  scope:0},
+    {kind:'desc',   match:'ארנונה',        to:'מיסים ואגרות',  scope:0, mode:'contains'},
+    {kind:'desc',   match:'חשמל חברת החשמל', to:'שכירות ותפעול משרד', scope:0, mode:'exact'},
+    {kind:'desc',   match:'ביטוח לאומי',   to:'מיסים ואגרות',  scope:0, mode:'contains'},
+    {kind:'desc',   match:'דלק פז',        to:'רכב ודלק',      scope:0, mode:'contains'},
+    {kind:'desc',   match:'סלולר פלאפון',  to:'שכירות ותפעול משרד', scope:0, mode:'exact'},
+    {kind:'desc',   match:'הראל ביטוח',    to:'ביטוחים',       scope:0, mode:'contains'},
+    {kind:'desc',   match:'מקדמות מס הכנסה', to:'מיסים ואגרות', scope:0, mode:'exact'},
   ];
   function ruleMatches(r,t,ci){
     if(r.scope!=='all'&&r.scope!==ci) return false;
@@ -1024,6 +1035,7 @@
     const isSel=k==='source';
     document.getElementById('crMatch').style.display=isSel?'none':'';
     const _mo=document.getElementById('crModes'); if(_mo)_mo.style.display=isSel?'none':'';
+    const _sc=document.getElementById('crScope'); if(_sc)_sc.style.display=isSel?'':'none';
     document.getElementById('crMatchSel').style.display=isSel?'':'none';
     if(isSel) document.getElementById('crMatchSel').innerHTML='<option value="">'+CAT_HINT[k][1]+'</option>'+SOURCE_CATS.map(c=>`<option>${c}</option>`).join('');
     else document.getElementById('crMatch').placeholder=CAT_HINT[k][1];
@@ -1032,7 +1044,14 @@
   function catClose(){document.getElementById('catOv').classList.remove('show');}
   function renderCatRules(){
     // רק כללים גלובליים או של החברה הנוכחית — כללי חברות אחרות לא רלוונטיים כאן
-    const rules=CAT_RULES.map((r,i)=>({r,i})).filter(x=>x.r.kind===CAT_TAB&&(x.r.scope==='all'||x.r.scope===CUR));
+    let rules=CAT_RULES.map((r,i)=>({r,i})).filter(x=>x.r.kind===CAT_TAB&&(x.r.scope==='all'||x.r.scope===CUR));
+    // רשימה גדולה: חיפוש (מ-4 כללים) + חדשים למעלה + גלילה פנימית
+    const fEl=document.getElementById('crFilter');
+    if(fEl) fEl.style.display=rules.length>=4?'':'none';
+    const q=(fEl&&fEl.value||'').trim();
+    if(q) rules=rules.filter(x=>x.r.match.includes(q)||x.r.to.includes(q));
+    rules.reverse();
+    const cnt=document.getElementById('crCount'); if(cnt) cnt.textContent=rules.length;
     document.getElementById('catRuleList').innerHTML=rules.map(({r,i})=>`
       <div class="cr-row">
         <b>"${r.match}"</b>${r.kind==='desc'?`<span class="cr-mode ${r.mode==='exact'?'ex':''}">${r.mode==='exact'?'מדויק':'מכיל'}</span>`:''}<span class="cr-arrow">←</span><b class="cr-to">${r.to}</b>
@@ -1044,7 +1063,7 @@
     const m=CAT_TAB==='source'?document.getElementById('crMatchSel').value:document.getElementById('crMatch').value.trim();
     const to=document.getElementById('crTo').value;
     if(!m||!to){toast('צריך גם ערך להתאמה וגם קטגוריית יעד');return;}
-    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:CUR, mode:CAT_TAB==='desc'?CR_MODE:null});
+    CAT_RULES.push({kind:CAT_TAB, match:m, to, scope:(CAT_TAB==='source'&&CR_SCOPE==='all')?'all':CUR, mode:CAT_TAB==='desc'?CR_MODE:null});
     document.getElementById('crMatch').value='';document.getElementById('crMatchSel').value='';document.getElementById('crTo').value='';
     renderCatRules();renderOps();
     toast('הכלל נוסף ל"'+CLIENTS[CUR].name+'" — פעולות מתאימות יקוטלגו אוטומטית');
