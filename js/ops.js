@@ -1090,6 +1090,9 @@
   function renderCatPick(){
     const q=document.getElementById('cpSearch').value.trim();
     const t=curTasks()[_catPickIx]||{};
+    // בזמן יצירת קטגוריה חדשה החיפוש מיותר — מסתירים
+    const _srch=document.getElementById('cpSearch');
+    if(_srch) _srch.style.display=_cpNew?'none':'';
     if(_cpNew){
       // טופס קטגוריה חדשה — בתוך המודל, בלי דיאלוגים של הדפדפן
       const ROE=['הכנסות','עלות המכר','הוצאות','מימון, השקעות ובעלים'];
@@ -1297,11 +1300,12 @@
     const selT=[...window._muSel].map(ix=>T[ix]).filter(Boolean);
     const sUn=selT.filter(t=>t.type==='unexpected'), sCa=selT.filter(t=>t.type==='carry');
     const fmtA=a=>a.reduce((s,t)=>s+(t.amt||0),0).toLocaleString('en-US');
-    const muBar=window._muOn
+    // הצ'קבוקסים תמיד גלויים — הפס מופיע ברגע שמסמנים
+    const muBar=selT.length
       ?`<div class="mu-bar on"><span>התאמה ידנית: נבחרו <b>${sUn.length}</b> לא צפויות (${fmtA(sUn)} ₪) מול <b>${sCa.length}</b> נגררות (${fmtA(sCa)} ₪)</span>
          <button class="ot-btn done" onclick="muApply()">ביצוע ההתאמה</button>
-         <button class="ot-btn ghost" onclick="muToggle()">ביטול</button></div>`
-      :`<div class="mu-bar"><button class="ot-btn ghost" onclick="muToggle()">⇄ התאמה ידנית בין הצדדים — רבים מול רבים</button></div>`;
+         <button class="ot-btn ghost" onclick="muClear()">ניקוי בחירה</button></div>`
+      :'';
     return banner+muBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
   }
   function payeeSplit(rows,T){
@@ -1640,9 +1644,7 @@
 
     if(t.type==='unexpected'||t.type==='carry'){
       const nRel=(t.related||[]).length;
-      const chk=window._muOn?`<label class="mu-chk" onclick="event.stopPropagation()"><input type="checkbox" ${window._muSel&&window._muSel.has(i)?'checked':''} onchange="muSel(${i},this.checked)"></label>`:'';
-      return chk
-        +(nRel?B('ghost','היסטוריה ('+nRel+')',`opsToggleRow(${i})`):`<span class="ot-none">אין היסטוריה</span>`)
+      return (nRel?B('ghost','היסטוריה ('+nRel+')',`opsToggleRow(${i})`):`<span class="ot-none">אין היסטוריה</span>`)
         +B('ghost','בדיקת התאמה',`matchCheck(${i})`)
         +(t.type==='carry'
           ?B('ghost','לא רלוונטי',`carrySnooze(${i})`)      // נגררת: מוסתרת להיום וחוזרת מחר
@@ -1680,8 +1682,11 @@
   function opsRow(t,i){
     const tp=OPS_TYPES[t.type], op=OPS_OPEN.has(i);
     if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><div class="orow2-body"><div class="orow2-title">${taskTitle(t)}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
+    const muChk=(t.type==='unexpected'||t.type==='carry')
+      ?`<label class="mu-chk side" onclick="event.stopPropagation()"><input type="checkbox" ${window._muSel&&window._muSel.has(i)?'checked':''} onchange="muSel(${i},this.checked)" title="בחירה להתאמה ידנית"></label>`:'';
     return `<div class="orow2item ${t.type} ${op?'open':''}">
       <div class="orow2">
+        ${muChk}
         <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${taskTitle(t)}</div></div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
         <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
@@ -1704,19 +1709,15 @@
     renderOps();
   }
   /* התאמה ידנית רבים-מול-רבים בין לא צפויות לנגררות */
-  function muToggle(){
-    window._muOn=!window._muOn;
-    window._muSel=new Set();
-    renderOps();
-  }
-  function muSel(i,on){ on?window._muSel.add(i):window._muSel.delete(i); renderOps(); }
+  function muClear(){ window._muSel=new Set(); renderOps(); }
+  function muSel(i,on){ window._muSel=window._muSel||new Set(); on?window._muSel.add(i):window._muSel.delete(i); renderOps(); }
   function muApply(){
     const T=curTasks();
     const sel=[...window._muSel];
     if(sel.length<2){toast('צריך לבחור פעולות משני הצדדים');return;}
     sel.forEach(i=>{const t=T[i];if(t){t.done=true;t.result='הותאם ידנית — קבוצה';t.handledAt='עכשיו';OPS_DONE++;}});
     toast('הותאמו '+sel.length+' פעולות — ההתאמה נרשמה ב-Bizibox');
-    window._muOn=false; window._muSel=new Set();
+    window._muSel=new Set();
     renderOps(); if(typeof renderOpsInfo==='function')renderOpsInfo();
   }
   function otHandle(i,result,toClient){const t=curTasks()[i];if(!t)return;
