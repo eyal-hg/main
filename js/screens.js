@@ -330,11 +330,25 @@
     grid.innerHTML=list.map(({c,i})=>{
       const p=(typeof advPulse==='function')?advPulse(c):'green';
       const fig=(typeof BAL!=='undefined'&&BAL[c.name])?BAL[c.name]:'—';
-      return `<div class="clv-card" onclick="selectClient(${i})">
-        <div class="clv-top"><span class="advp-dot ${p}"></span><div class="clv-n">${c.name}</div>${c.product?prodLogo(c.product,'sm'):''}</div>
-        <div class="clv-meta">${c.hp} · ${c.mgr}</div>
-        <div class="clv-fig"><span>יתרה נוכחית</span><b dir="ltr">${fig} ₪</b></div>
-        <div class="clv-foot"><button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button></div>
+      const sp=c.spark||[]; const mx=Math.max(...sp,1);
+      const bars=sp.map(v=>`<i style="height:${Math.max(3,Math.round(v/mx*26))}px"></i>`).join('');
+      const trendUp=sp.length>1&&sp[sp.length-1]>=sp[sp.length-2];
+      const hl=c.hl?`<div class="clv-hl ${c.hl.sev}">${c.hl.t}</div>`:`<div class="clv-hl ok">✓ תקין — עומד ביעדים</div>`;
+      return `<div class="clv-card v2 pulse-${p}" onclick="selectClient(${i})">
+        <div class="clv-top2">
+          <span class="ap-av">${c.name.charAt(0)}</span>
+          <div class="clv-tt"><div class="clv-n">${c.name}</div><div class="clv-meta2">${c.hp} · ${c.mgr}</div></div>
+          ${c.product?prodLogo(c.product,'sm'):''}
+        </div>
+        <div class="clv-mid">
+          <div class="clv-balance"><span>יתרה נוכחית</span><b dir="ltr">${fig} ₪</b><i class="clv-trend ${trendUp?'up':'dn'}">${trendUp?'↑':'↓'} הכנסות</i></div>
+          <div class="clv-spark"><div class="clv-bars">${bars}</div><span>6 ח׳ אחרונים</span></div>
+        </div>
+        ${hl}
+        ${c.coopDays!=null&&c.coopDays>=14?`<div class="clv-coop bad">⚠ לא הביא חומר לתזרים ${c.coopDays} ימים · לאחרונה ${c.coopLast}</div>`
+          :c.coopLast?`<div class="clv-coop ok">חומר אחרון לתזרים · ${c.coopLast}</div>`
+          :`<div class="clv-coop no">טרם התקבל חומר לתזרים</div>`}
+        <div class="clv-foot"><button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button><button class="mt-btn" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button></div>
       </div>`;}).join('')||'<div class="ops-empty" style="padding:40px">לא נמצאו לקוחות</div>';
   }
 
@@ -429,11 +443,25 @@
     grid.innerHTML=list.map(({c,i})=>{
       const p=(typeof advPulse==='function')?advPulse(c):'green';
       const fig=(typeof BAL!=='undefined'&&BAL[c.name])?BAL[c.name]:'—';
-      return `<div class="clv-card" onclick="selectClient(${i})">
-        <div class="clv-top"><span class="advp-dot ${p}"></span><div class="clv-n">${c.name}</div>${c.product?prodLogo(c.product,'sm'):''}</div>
-        <div class="clv-meta">${c.hp} · ${c.mgr}</div>
-        <div class="clv-fig"><span>יתרה נוכחית</span><b dir="ltr">${fig} ₪</b></div>
-        <div class="clv-foot"><button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button></div>
+      const sp=c.spark||[]; const mx=Math.max(...sp,1);
+      const bars=sp.map(v=>`<i style="height:${Math.max(3,Math.round(v/mx*26))}px"></i>`).join('');
+      const trendUp=sp.length>1&&sp[sp.length-1]>=sp[sp.length-2];
+      const hl=c.hl?`<div class="clv-hl ${c.hl.sev}">${c.hl.t}</div>`:`<div class="clv-hl ok">✓ תקין — עומד ביעדים</div>`;
+      return `<div class="clv-card v2 pulse-${p}" onclick="selectClient(${i})">
+        <div class="clv-top2">
+          <span class="ap-av">${c.name.charAt(0)}</span>
+          <div class="clv-tt"><div class="clv-n">${c.name}</div><div class="clv-meta2">${c.hp} · ${c.mgr}</div></div>
+          ${c.product?prodLogo(c.product,'sm'):''}
+        </div>
+        <div class="clv-mid">
+          <div class="clv-balance"><span>יתרה נוכחית</span><b dir="ltr">${fig} ₪</b><i class="clv-trend ${trendUp?'up':'dn'}">${trendUp?'↑':'↓'} הכנסות</i></div>
+          <div class="clv-spark"><div class="clv-bars">${bars}</div><span>6 ח׳ אחרונים</span></div>
+        </div>
+        ${hl}
+        ${c.coopDays!=null&&c.coopDays>=14?`<div class="clv-coop bad">⚠ לא הביא חומר לתזרים ${c.coopDays} ימים · לאחרונה ${c.coopLast}</div>`
+          :c.coopLast?`<div class="clv-coop ok">חומר אחרון לתזרים · ${c.coopLast}</div>`
+          :`<div class="clv-coop no">טרם התקבל חומר לתזרים</div>`}
+        <div class="clv-foot"><button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button><button class="mt-btn" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button></div>
       </div>`;}).join('')||'<div class="ops-empty" style="padding:40px">לא נמצאו לקוחות</div>';
   }
 

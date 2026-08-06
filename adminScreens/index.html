@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – ניהול פגישות ודוחות חודשיים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --green:#9AC1A6;
+    --green-deep:#6fa181;
+    --red:#E48375;
+    --salmon:#c97b6e;
+    --salmon-h:#b8685c;
+    --divider:#E3E3E3;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+    --shadow-soft:0 2px 10px rgba(104,105,106,.06);
+    --r:14px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    font-weight:400;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:.95rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  /* Header */
+  .top{
+    background:var(--white);
+    padding:18px 40px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .top__brand{display:flex;align-items:center;gap:14px}
+  .top__logo{
+    width:40px;height:40px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;font-size:1rem;letter-spacing:-.5px;
+  }
+  .top__title{font-size:1.05rem;font-weight:500;color:var(--navy);letter-spacing:-.3px}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px;font-weight:400}
+  .top__user{display:flex;align-items:center;gap:12px;font-size:.9rem}
+  .top__avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);
+    color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:500;
+  }
+  .top__user-name{font-weight:500;color:var(--navy)}
+  .top__user-role{font-size:.78rem;color:var(--muted);margin-top:1px}
+
+  /* Layout */
+  .wrap{max-width:1400px;margin:0 auto;padding:32px 40px 60px}
+
+  /* Card */
+  .card{
+    background:var(--white);
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    padding:26px 40px 32px;
+  }
+  .card + .card{margin-top:20px}
+
+  /* Page heading (Figma h4 style) */
+  .page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:24px;flex-wrap:wrap;gap:16px;
+  }
+  .page-head__title{
+    font-size:1.85rem;font-weight:500;
+    color:var(--navy);letter-spacing:-.9px;
+    line-height:1.15;
+  }
+  .page-head__date{
+    font-size:1.2rem;font-weight:300;
+    color:var(--navy);letter-spacing:-.5px;
+    margin-top:4px;display:flex;align-items:center;gap:10px;
+  }
+  .page-head__icon{
+    width:24px;height:24px;color:var(--navy);
+    display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;border-radius:6px;transition:background .15s;
+  }
+  .page-head__icon:hover{background:var(--blue-soft)}
+  .page-head__meta{color:var(--muted);font-size:.9rem;margin-top:2px;font-weight:400}
+
+  /* Summary cards row */
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin-bottom:22px;
+  }
+  .scard{
+    background:var(--white);
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    padding:18px 22px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    cursor:pointer;
+    transition:transform .15s, box-shadow .15s;
+    text-align:right;
+  }
+  .scard:hover{transform:translateY(-2px)}
+  .scard.is-active{
+    border-top-width:4px;
+  }
+  .scard__left{flex:1;min-width:0}
+  .scard__label{font-size:.95rem;color:var(--muted);font-weight:400}
+  .scard__value{
+    font-size:2.2rem;font-weight:500;color:var(--navy);
+    line-height:1.1;margin-top:6px;letter-spacing:-1px;
+  }
+  .scard__sub{font-size:.82rem;color:var(--muted);margin-top:4px;font-weight:400}
+  .scard__cta{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:.85rem;font-weight:400;color:var(--blue);
+    white-space:nowrap;
+  }
+  .scard:hover .scard__cta{font-weight:500}
+  .scard.is-active .scard__cta{font-weight:500;color:var(--navy)}
+  .scard--done{cursor:default;border-top-color:var(--green)}
+  .scard--done:hover{transform:none}
+  .scard--done .scard__cta{display:none}
+  .scard--done .scard__indicator{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--green);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;
+  }
+
+  .quick-banner{
+    background:var(--blue-soft);
+    border:1px solid #c8e0ec;
+    border-radius:60px;
+    padding:8px 18px;margin-bottom:18px;
+    display:none;align-items:center;justify-content:space-between;gap:10px;
+    font-size:.92rem;color:var(--navy);
+  }
+  .quick-banner.is-on{display:flex}
+  .quick-banner__msg b{font-weight:500}
+  .quick-banner__clear{
+    background:#fff;color:var(--navy);
+    border:1px solid var(--divider);
+    padding:5px 12px;border-radius:60px;
+    font-size:.82rem;font-weight:400;cursor:pointer;
+  }
+  .quick-banner__clear:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+  /* Tabs */
+  .tabs{
+    display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;
+  }
+  .tab{
+    padding:9px 22px;border-radius:60px;font-weight:400;font-size:.95rem;
+    color:var(--muted);white-space:nowrap;transition:all .15s;
+    background:var(--white);
+    border:1px solid var(--divider);
+  }
+  .tab:hover{color:var(--navy);border-color:var(--blue)}
+  .tab.is-active{
+    background:var(--navy);color:#fff;border-color:var(--navy);
+    font-weight:500;
+  }
+  .tab.is-future{color:var(--muted-2);font-weight:300}
+
+  /* Toolbar */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    margin-bottom:18px;
+  }
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field--grow{flex:1;min-width:240px}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:400}
+  .field input,.field select{
+    padding:9px 14px;border:1px solid var(--divider);
+    border-radius:60px;background:#fff;outline:none;
+    font-size:.92rem;color:var(--navy);
+    transition:border-color .15s;
+  }
+  .field input:focus,.field select:focus{border-color:var(--blue)}
+  .toolbar__spacer{flex:1}
+
+  /* Column header pill */
+  .colhead{
+    background:var(--blue-soft);
+    border-radius:60px;
+    padding:11px 24px;
+    display:grid;
+    grid-template-columns: 2fr 1.1fr 1.2fr 1.3fr 1.2fr 1.2fr 1.2fr 1.3fr;
+    gap:18px;align-items:center;
+    font-size:.95rem;color:var(--navy);font-weight:400;
+    margin-bottom:6px;
+  }
+  .colhead > div{text-align:right}
+  .colhead > .col-action{text-align:left}
+
+  /* Rows */
+  .rowlist{}
+  .row{
+    display:grid;
+    grid-template-columns: 2fr 1.1fr 1.2fr 1.3fr 1.2fr 1.2fr 1.2fr 1.3fr;
+    gap:18px;align-items:center;
+    padding:14px 24px;
+    border-bottom:1px solid var(--divider);
+    color:var(--navy);font-size:.95rem;
+    transition:background .12s;
+  }
+  .row:last-child{border-bottom:none}
+  .row:hover{background:var(--off)}
+
+  .client{display:flex;align-items:center;gap:12px}
+  .client__avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:500;font-size:.85rem;flex-shrink:0;
+  }
+  .client__name{font-weight:500;color:var(--navy);line-height:1.2}
+  .client__phone{font-size:.78rem;color:var(--muted);font-weight:400;margin-top:2px}
+
+  .product-tag{
+    display:inline-block;
+    padding:4px 14px;border-radius:60px;
+    background:var(--off);
+    color:var(--muted);
+    font-size:.83rem;font-weight:400;
+    border:1px solid var(--divider);
+  }
+  .product-tag--meeting{background:#f3f4f6;color:#525c69}
+  .product-tag--money{background:#eaf6f0;color:var(--green-deep)}
+  .product-tag--moneyplus{background:var(--blue-soft);color:#1a6e9a}
+
+  /* Status with dot — Figma palette */
+  .status{display:inline-flex;align-items:center;gap:8px;font-size:.92rem}
+  .status__dot{
+    width:16px;height:16px;border-radius:50%;flex-shrink:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    color:#fff;font-size:.7rem;
+  }
+  .status__dot--green{background:var(--green)}
+  .status__dot--red{background:var(--red)}
+  .status__dot--blue{background:var(--blue)}
+  .status__dot--amber{background:#dca74a}
+  .status__dot--gray{background:#cdd3d9}
+  .status__txt{color:var(--navy);font-weight:400}
+  .status__txt--strong{font-weight:500}
+  .status__txt--muted{color:var(--muted-2)}
+
+  .date{font-size:.92rem;color:var(--navy);font-weight:300}
+  .date--muted{color:var(--muted-2)}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 18px;border-radius:60px;
+    font-weight:500;font-size:.88rem;
+    transition:all .15s;
+    border:1px solid transparent;
+    font-family:inherit;
+  }
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:var(--salmon-h)}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--sm{padding:6px 14px;font-size:.83rem}
+  .btn[disabled]{opacity:.4;pointer-events:none}
+
+  .col-action{text-align:left}
+
+  /* Empty */
+  .empty{padding:48px 20px;text-align:center;color:var(--muted)}
+  .empty__title{font-size:1rem;color:var(--navy);font-weight:500;margin-bottom:4px}
+  .empty__hint{font-size:.88rem}
+
+  /* Footer */
+  .table-foot{
+    padding:14px 8px 0;
+    display:flex;align-items:center;justify-content:space-between;
+    color:var(--muted);font-size:.88rem;font-weight:400;flex-wrap:wrap;gap:10px;
+  }
+  .pager{display:flex;gap:4px}
+  .pager button{
+    width:32px;height:32px;border-radius:50%;
+    color:var(--navy);font-weight:400;font-size:.85rem;
+    border:1px solid var(--divider);background:#fff;
+    transition:all .12s;
+  }
+  .pager button.is-active{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:500}
+  .pager button:hover:not(.is-active):not(:disabled){background:var(--blue-soft);border-color:var(--blue)}
+  .pager button:disabled{opacity:.4;cursor:not-allowed}
+
+  /* Modal */
+  .modal-back{
+    position:fixed;inset:0;background:rgba(12,64,104,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:1000;padding:20px;
+  }
+  .modal-back.is-open{display:flex}
+  .modal{
+    background:#fff;
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    width:100%;max-width:500px;overflow:hidden;
+    animation:pop .18s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{
+    padding:22px 28px 14px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .modal__head h3{
+    color:var(--navy);font-size:1.4rem;font-weight:500;letter-spacing:-.5px;
+  }
+  .modal__close{font-size:1.4rem;color:var(--navy);width:32px;height:32px;border-radius:6px}
+  .modal__close:hover{background:var(--blue-soft)}
+  .modal__body{padding:0 28px 22px}
+  .modal__client{
+    background:var(--blue-soft);
+    border-radius:60px;
+    padding:11px 18px;
+    margin-bottom:18px;
+  }
+  .modal__client-name{font-weight:500;color:var(--navy)}
+  .modal__client-meta{font-size:.85rem;color:var(--muted);margin-top:2px;font-weight:400}
+  .modal__row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .modal__body .field{margin-bottom:12px;width:100%}
+  .modal__foot{
+    padding:14px 28px 22px;
+    display:flex;justify-content:flex-end;gap:10px;
+  }
+
+  /* Responsive */
+  @media(max-width:1100px){
+    .colhead, .row{
+      grid-template-columns:repeat(2, 1fr);gap:12px;
+    }
+    .colhead{display:none}
+    .row{padding:14px 16px}
+    .row > *::before{
+      content:attr(data-label);display:block;
+      font-size:.72rem;color:var(--muted);margin-bottom:3px;
+    }
+  }
+  @media(max-width:768px){
+    .summary{grid-template-columns:1fr}
+    .top{padding:14px 18px}
+    .wrap{padding:18px}
+    .card{padding:20px 18px 24px}
+    .page-head__title{font-size:1.4rem}
+  }
+  /* Embedded inside admin shell — flush to sidebar */
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{
+    max-width:none;
+    margin:0;
+    padding:18px 0 28px 18px; /* RTL: right=0 → cards flush with right sidebar */
+  }
+</style>
+</head>
+<body>
+<script>
+  if (location.search.includes('embed=1')) {
+    document.body.classList.add('is-embedded');
+  }
+</script>
+
+<header class="top">
+  <div class="top__brand">
+    <div class="top__logo">HK</div>
+    <div>
+      <div class="top__title">ניהול פגישות ודוחות</div>
+      <div class="top__sub">HK Money</div>
+    </div>
+  </div>
+  <div class="top__user">
+    <div class="top__avatar">ר</div>
+    <div>
+      <div class="top__user-name">רונית כהן</div>
+      <div class="top__user-role">מתפעלת</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Summary cards -->
+  <section class="summary" aria-label="סיכומים">
+    <button class="scard" data-quick="needs-meeting" type="button">
+      <div class="scard__left">
+        <div class="scard__label">צריך לתאם פגישה</div>
+        <div class="scard__value" id="sumMeeting">0</div>
+        <div class="scard__sub" id="sumMeetingSub">—</div>
+      </div>
+      <span class="scard__cta">הצג רשימה ←</span>
+    </button>
+    <button class="scard" data-quick="needs-report" type="button">
+      <div class="scard__left">
+        <div class="scard__label">צריך לשלוח דוח</div>
+        <div class="scard__value" id="sumReport">0</div>
+        <div class="scard__sub" id="sumReportSub">—</div>
+      </div>
+      <span class="scard__cta">הצג רשימה ←</span>
+    </button>
+    <div class="scard scard--done" tabindex="-1">
+      <div class="scard__left">
+        <div class="scard__label">הושלם</div>
+        <div class="scard__value" id="sumDone">0</div>
+        <div class="scard__sub" id="sumDoneSub">—</div>
+      </div>
+      <div class="scard__indicator">✓</div>
+    </div>
+  </section>
+
+  <div class="quick-banner" id="quickBanner" aria-live="polite">
+    <div class="quick-banner__msg" id="quickBannerMsg"></div>
+    <button class="quick-banner__clear" id="quickClear">נקה סינון</button>
+  </div>
+
+  <!-- Main card -->
+  <section class="card">
+
+    <!-- Heading row (Figma style: title + date + icon) -->
+    <div class="page-head">
+      <div>
+        <div class="page-head__title">פגישות ודוחות חודשיים</div>
+        <div class="page-head__meta" id="periodMeta">חודש פעיל: אפריל 2026</div>
+      </div>
+      <div class="page-head__date">
+        <div class="page-head__icon" title="ייצוא">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <span id="dateLabel">29.04.2026</span>
+      </div>
+    </div>
+
+    <!-- Month tabs -->
+    <nav class="tabs" id="tabs" aria-label="חודשים"></nav>
+
+    <!-- Filters -->
+    <div class="toolbar">
+      <div class="field field--grow">
+        <label for="search">חיפוש</label>
+        <input id="search" type="search" placeholder="שם או טלפון…">
+      </div>
+      <div class="field">
+        <label for="filterProduct">מוצר</label>
+        <select id="filterProduct">
+          <option value="">הכל</option>
+          <option>meeting</option>
+          <option>money</option>
+          <option>money+</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filterOperator">מתפעלת</label>
+        <select id="filterOperator">
+          <option value="">הכל</option>
+          <option>רונית כהן</option>
+          <option>שרון לוי</option>
+          <option>מיכל ברק</option>
+        </select>
+      </div>
+      <div class="toolbar__spacer"></div>
+      <button class="btn btn--ghost btn--sm" id="resetBtn">איפוס</button>
+    </div>
+
+    <!-- Column headers pill -->
+    <div class="colhead">
+      <div>לקוח</div>
+      <div>מוצר</div>
+      <div>מתפעלת</div>
+      <div>פגישה</div>
+      <div>תאריך פגישה</div>
+      <div>דוח</div>
+      <div>נשלח בתאריך</div>
+      <div class="col-action">פעולה</div>
+    </div>
+
+    <!-- Rows list -->
+    <div class="rowlist" id="rows"></div>
+
+    <div class="empty" id="emptyState" hidden>
+      <div class="empty__title">לא נמצאו לקוחות</div>
+      <div class="empty__hint">נסי לשנות את הסינון או ללחוץ "איפוס"</div>
+    </div>
+
+    <div class="table-foot">
+      <div id="footMeta">—</div>
+      <div class="pager">
+        <button aria-label="הקודם" disabled>‹</button>
+        <button class="is-active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button aria-label="הבא">›</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Schedule Modal -->
+<div class="modal-back" id="modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3>תיאום פגישה</h3>
+      <button class="modal__close" data-close aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="modal__client">
+        <div class="modal__client-name" id="modalClient">—</div>
+        <div class="modal__client-meta" id="modalProduct">—</div>
+      </div>
+      <div class="modal__row">
+        <div class="field">
+          <label for="meetDate">תאריך</label>
+          <input id="meetDate" type="date">
+        </div>
+        <div class="field">
+          <label for="meetTime">שעה</label>
+          <input id="meetTime" type="time">
+        </div>
+      </div>
+      <div class="field">
+        <label for="meetNote">הערות</label>
+        <input id="meetNote" type="text" placeholder="אופציונלי">
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>ביטול</button>
+      <button class="btn btn--primary" id="confirmBtn">שמור תיאום</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ----- Constants -----
+  const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const CURRENT = {y:2026, m:3};
+  const CURRENT_KEY = `${CURRENT.y}-${String(CURRENT.m+1).padStart(2,'0')}`;
+  const TAB_OFFSETS = [-2, -1, 0, 1, 2];
+
+  const productRules = {
+    'meeting': {meeting:false, report:false, cls:'product-tag--meeting'},
+    'money':   {meeting:false, report:true,  cls:'product-tag--money'},
+    'money+':  {meeting:true,  report:true,  cls:'product-tag--moneyplus'},
+  };
+
+  const meetingMeta = {
+    wait:       {label:'מחכה לתיאום', dot:'amber',  icon:'',  strong:true},
+    scheduled:  {label:'נקבע פגישה',  dot:'blue',   icon:'',  strong:false},
+    reschedule: {label:'תיאום מחדש',  dot:'amber',  icon:'',  strong:true},
+    done:       {label:'התקיימה',     dot:'green',  icon:'✓', strong:false},
+    na:         {label:'לא רלוונטי',  dot:'gray',   icon:'',  strong:false},
+  };
+
+  // ----- Data -----
+  const clients = [
+    {id:1,  name:'דנה לוי',         phone:'052-1234567', product:'money+',  operator:'רונית כהן',
+      months:{
+        '2026-02':{m:'done',meetDate:'12/02/2026 10:00',r:'sent',rDate:'05/02/2026'},
+        '2026-03':{m:'done',meetDate:'14/03/2026 10:00',r:'sent',rDate:'04/03/2026'},
+        '2026-04':{m:'scheduled',meetDate:'15/04/2026 10:00',r:'sent',rDate:'02/04/2026'},
+      }},
+    {id:2,  name:'אבי כהן',         phone:'054-7654321', product:'money+',  operator:'רונית כהן',
+      months:{
+        '2026-02':{m:'done',meetDate:'08/02/2026',r:'sent',rDate:'03/02/2026'},
+        '2026-03':{m:'reschedule',meetDate:'05/03/2026',r:'sent',rDate:'02/03/2026'},
+        '2026-04':{m:'wait',r:'unsent'},
+      }},
+    {id:3,  name:'מיכאל אברהם',     phone:'050-9988776', product:'money',   operator:'שרון לוי',
+      months:{
+        '2026-02':{r:'sent',rDate:'02/02/2026'},
+        '2026-03':{r:'sent',rDate:'03/03/2026'},
+        '2026-04':{r:'sent',rDate:'05/04/2026'},
+      }},
+    {id:4,  name:'שרה רוזן',        phone:'053-1122334', product:'money+',  operator:'מיכל ברק',
+      months:{
+        '2026-02':{m:'done',meetDate:'10/02/2026',r:'sent',rDate:'04/02/2026'},
+        '2026-03':{m:'done',meetDate:'12/03/2026',r:'sent',rDate:'05/03/2026'},
+        '2026-04':{m:'done',meetDate:'08/04/2026 14:30',r:'sent',rDate:'10/04/2026'},
+      }},
+    {id:5,  name:'יוסי שפירא',      phone:'054-3344556', product:'money+',  operator:'שרון לוי',
+      months:{
+        '2026-02':{m:'done',meetDate:'06/02/2026',r:'sent',rDate:'01/02/2026'},
+        '2026-03':{m:'done',meetDate:'09/03/2026',r:'sent',rDate:'01/03/2026'},
+        '2026-04':{m:'reschedule',meetDate:'02/04/2026 11:00',r:'sent',rDate:'01/04/2026'},
+      }},
+    {id:6,  name:'רחל מזרחי',       phone:'052-7788990', product:'money',   operator:'רונית כהן',
+      months:{
+        '2026-02':{r:'sent',rDate:'04/02/2026'},
+        '2026-03':{r:'unsent'},
+        '2026-04':{r:'unsent'},
+      }},
+    {id:7,  name:'אמיר גולן',       phone:'050-5544332', product:'money+',  operator:'מיכל ברק',
+      months:{
+        '2026-02':{m:'done',meetDate:'18/02/2026',r:'sent',rDate:'06/02/2026'},
+        '2026-03':{m:'done',meetDate:'20/03/2026',r:'sent',rDate:'05/03/2026'},
+        '2026-04':{m:'scheduled',meetDate:'22/04/2026 09:00',r:'unsent'},
+      }},
+    {id:8,  name:'תמר ברקוביץ׳',    phone:'054-9911223', product:'money+',  operator:'מיכל ברק',
+      months:{
+        '2026-02':{m:'done',meetDate:'14/02/2026',r:'sent',rDate:'02/02/2026'},
+        '2026-03':{m:'done',meetDate:'17/03/2026',r:'sent',rDate:'03/03/2026'},
+        '2026-04':{m:'wait',r:'sent',rDate:'04/04/2026'},
+      }},
+    {id:9,  name:'נועם פרידמן',     phone:'050-2233445', product:'meeting', operator:'רונית כהן',
+      months:{'2026-02':{},'2026-03':{},'2026-04':{}}},
+    {id:10, name:'אורית בן דוד',    phone:'052-6677889', product:'money',   operator:'שרון לוי',
+      months:{
+        '2026-02':{r:'sent',rDate:'04/02/2026'},
+        '2026-03':{r:'unsent'},
+        '2026-04':{r:'unsent'},
+      }},
+  ];
+
+  // Apply product rules (force NA where the product doesn't apply)
+  clients.forEach(c => {
+    const rule = productRules[c.product] || {meeting:true, report:true};
+    Object.values(c.months).forEach(rec => {
+      if (!rule.meeting) { rec.m = 'na'; rec.meetDate = null; }
+      else if (!rec.m)   { rec.m = 'wait'; }
+      if (!rule.report)  { rec.r = 'na'; rec.rDate = null; }
+      else if (!rec.r)   { rec.r = 'unsent'; }
+    });
+  });
+
+  // ----- State -----
+  let activeMonthKey = CURRENT_KEY;
+  let quickFilter = null;
+
+  // ----- Helpers -----
+  function monthLabel(key){
+    const [y, m] = key.split('-');
+    return `${MONTHS[+m - 1]} ${y}`;
+  }
+  function avatar(name){
+    const init = name.trim().split(' ').slice(0,2).map(s=>s[0]).join('');
+    return `<div class="client__avatar">${init}</div>`;
+  }
+  function recordOf(c){
+    const rule = productRules[c.product] || {meeting:true, report:true};
+    return c.months[activeMonthKey] || {
+      m: rule.meeting ? 'wait' : 'na',
+      r: rule.report  ? 'unsent' : 'na',
+    };
+  }
+  function needsMeeting(c){
+    const r = recordOf(c);
+    return r.m === 'wait' || r.m === 'reschedule';
+  }
+  function needsReport(c){
+    const r = recordOf(c);
+    return r.r === 'unsent';
+  }
+  function isAllDone(c){
+    const r = recordOf(c);
+    const meetingOk = r.m === 'done' || r.m === 'na';
+    const reportOk  = r.r === 'sent' || r.r === 'na';
+    return meetingOk && reportOk;
+  }
+  function urgencyScore(c){
+    const r = recordOf(c);
+    const order = {wait:1, reschedule:2, scheduled:3, done:4, na:5}[r.m] || 5;
+    let s = order * 10;
+    if (r.r === 'unsent') s -= 5;
+    if (r.m === 'na' && r.r === 'na') s += 20;
+    return s;
+  }
+
+  // ----- Filters -----
+  function passesBaseFilter(c){
+    const q  = document.getElementById('search').value.trim().toLowerCase();
+    const p  = document.getElementById('filterProduct').value;
+    const op = document.getElementById('filterOperator').value;
+    if (q && !c.name.toLowerCase().includes(q) && !c.phone.includes(q)) return false;
+    if (p && c.product !== p) return false;
+    if (op && c.operator !== op) return false;
+    return true;
+  }
+  function passesFilter(c){
+    if (!passesBaseFilter(c)) return false;
+    if (quickFilter === 'needs-meeting' && !needsMeeting(c)) return false;
+    if (quickFilter === 'needs-report'  && !needsReport(c))  return false;
+    return true;
+  }
+
+  // ----- Render bits -----
+  function renderTabs(){
+    const html = TAB_OFFSETS.map(off => {
+      const date = new Date(CURRENT.y, CURRENT.m + off, 1);
+      const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+      const cls = [];
+      if (key === activeMonthKey) cls.push('is-active');
+      if (off > 0) cls.push('is-future');
+      return `<button class="tab ${cls.join(' ')}" data-month="${key}">${MONTHS[date.getMonth()]} ${date.getFullYear()}</button>`;
+    }).join('');
+    document.getElementById('tabs').innerHTML = html;
+  }
+
+  function meetingStatusHtml(rec){
+    if (rec.m === 'na') {
+      return `<span class="status"><span class="status__dot status__dot--gray"></span><span class="status__txt status__txt--muted">לא רלוונטי</span></span>`;
+    }
+    const meta = meetingMeta[rec.m];
+    return `<span class="status">
+      <span class="status__dot status__dot--${meta.dot}">${meta.icon}</span>
+      <span class="status__txt ${meta.strong?'status__txt--strong':''}">${meta.label}</span>
+    </span>`;
+  }
+  function reportStatusHtml(rec){
+    if (rec.r === 'na') {
+      return `<span class="status"><span class="status__dot status__dot--gray"></span><span class="status__txt status__txt--muted">לא רלוונטי</span></span>`;
+    }
+    if (rec.r === 'sent') {
+      return `<span class="status"><span class="status__dot status__dot--green">✓</span><span class="status__txt">נשלח</span></span>`;
+    }
+    return `<span class="status"><span class="status__dot status__dot--red"></span><span class="status__txt status__txt--strong">לא נשלח</span></span>`;
+  }
+  function primaryAction(rec){
+    if (rec.m === 'wait')        return {label:'תיאום פגישה', action:'schedule'};
+    if (rec.m === 'reschedule')  return {label:'תיאום מחדש', action:'schedule'};
+    if (rec.m === 'scheduled')   return {label:'התקיימה',    action:'done'};
+    if (rec.r === 'unsent')      return {label:'דוח נשלח',   action:'report'};
+    return null;
+  }
+  function productTag(p){
+    const cls = productRules[p]?.cls || '';
+    return `<span class="product-tag ${cls}">${p}</span>`;
+  }
+
+  // ----- Render rows -----
+  function renderRows(){
+    const list = clients
+      .filter(passesFilter)
+      .sort((a,b) => urgencyScore(a) - urgencyScore(b));
+
+    const rows = document.getElementById('rows');
+    const empty = document.getElementById('emptyState');
+
+    if (list.length === 0){
+      rows.innerHTML = '';
+      empty.hidden = false;
+    } else {
+      empty.hidden = true;
+      rows.innerHTML = list.map(c => {
+        const rec = recordOf(c);
+        const a = primaryAction(rec);
+        const actionHtml = a
+          ? `<button class="btn btn--primary btn--sm" data-action="${a.action}" data-id="${c.id}">${a.label}</button>`
+          : '';
+        return `
+          <div class="row">
+            <div data-label="לקוח">
+              <div class="client">
+                ${avatar(c.name)}
+                <div>
+                  <div class="client__name">${c.name}</div>
+                  <div class="client__phone">${c.phone}</div>
+                </div>
+              </div>
+            </div>
+            <div data-label="מוצר">${productTag(c.product)}</div>
+            <div data-label="מתפעלת">${c.operator}</div>
+            <div data-label="פגישה">${meetingStatusHtml(rec)}</div>
+            <div data-label="תאריך פגישה" class="date ${rec.meetDate?'':'date--muted'}">${rec.meetDate || '—'}</div>
+            <div data-label="דוח">${reportStatusHtml(rec)}</div>
+            <div data-label="נשלח בתאריך" class="date ${rec.rDate?'':'date--muted'}">${rec.rDate || '—'}</div>
+            <div class="col-action" data-label="פעולה">${actionHtml}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('footMeta').textContent =
+      `${list.length} לקוחות · ${monthLabel(activeMonthKey)}`;
+  }
+
+  // ----- Render summary -----
+  function renderSummary(){
+    const baseList = clients.filter(passesBaseFilter);
+    const meetingCount = baseList.filter(needsMeeting).length;
+    const reportCount  = baseList.filter(needsReport).length;
+    const doneCount    = baseList.filter(isAllDone).length;
+
+    document.getElementById('sumMeeting').textContent = meetingCount;
+    document.getElementById('sumReport').textContent  = reportCount;
+    document.getElementById('sumDone').textContent    = doneCount;
+
+    const op = document.getElementById('filterOperator').value;
+    const opLabel = op ? ` · ${op}` : '';
+    const ml = monthLabel(activeMonthKey);
+    document.getElementById('sumMeetingSub').textContent = ml + opLabel;
+    document.getElementById('sumReportSub').textContent  = ml + opLabel;
+    document.getElementById('sumDoneSub').textContent    = ml + opLabel;
+
+    document.querySelectorAll('.scard[data-quick]').forEach(card => {
+      card.classList.toggle('is-active', card.dataset.quick === quickFilter);
+    });
+
+    const banner = document.getElementById('quickBanner');
+    const msg = document.getElementById('quickBannerMsg');
+    if (quickFilter === 'needs-meeting'){
+      banner.classList.add('is-on');
+      msg.innerHTML = `מציג <b>${meetingCount} לקוחות</b> שצריך לתאם להם פגישה ב-${ml}`;
+    } else if (quickFilter === 'needs-report'){
+      banner.classList.add('is-on');
+      msg.innerHTML = `מציג <b>${reportCount} לקוחות</b> שצריך לשלוח להם דוח ב-${ml}`;
+    } else {
+      banner.classList.remove('is-on');
+    }
+  }
+
+  function renderMeta(){
+    const op = document.getElementById('filterOperator').value;
+    document.getElementById('periodMeta').textContent =
+      `חודש פעיל: ${monthLabel(activeMonthKey)}` + (op ? ` · ${op}` : '');
+    const today = new Date();
+    document.getElementById('dateLabel').textContent =
+      `${String(today.getDate()).padStart(2,'0')}.${String(today.getMonth()+1).padStart(2,'0')}.${today.getFullYear()}`;
+  }
+
+  function render(){
+    renderTabs();
+    renderMeta();
+    renderSummary();
+    renderRows();
+  }
+
+  // ----- Wire up -----
+  ['search','filterProduct','filterOperator']
+    .forEach(id => document.getElementById(id).addEventListener('input', render));
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    ['search','filterProduct','filterOperator'].forEach(id => document.getElementById(id).value = '');
+    quickFilter = null;
+    render();
+  });
+
+  document.getElementById('tabs').addEventListener('click', (e) => {
+    const t = e.target.closest('.tab');
+    if (!t) return;
+    activeMonthKey = t.dataset.month;
+    render();
+  });
+
+  document.querySelectorAll('.scard[data-quick]').forEach(card => {
+    card.addEventListener('click', () => {
+      const q = card.dataset.quick;
+      quickFilter = (quickFilter === q) ? null : q;
+      render();
+    });
+  });
+  document.getElementById('quickClear').addEventListener('click', () => {
+    quickFilter = null; render();
+  });
+
+  const modal = document.getElementById('modal');
+  document.getElementById('rows').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = +btn.dataset.id;
+    const action = btn.dataset.action;
+    const c = clients.find(x => x.id === id);
+
+    if (action === 'schedule'){
+      document.getElementById('modalClient').textContent = c.name;
+      document.getElementById('modalProduct').textContent = `${c.product} · ${c.phone}`;
+      modal.classList.add('is-open');
+      modal.dataset.id = id;
+    } else if (action === 'done'){
+      if (!c.months[activeMonthKey]) c.months[activeMonthKey] = {};
+      c.months[activeMonthKey].m = 'done';
+      render();
+    } else if (action === 'report'){
+      if (!c.months[activeMonthKey]) c.months[activeMonthKey] = {};
+      c.months[activeMonthKey].r = 'sent';
+      c.months[activeMonthKey].rDate = new Date().toLocaleDateString('he-IL');
+      render();
+    }
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.dataset.close !== undefined || e.target === modal){
+      modal.classList.remove('is-open');
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') modal.classList.remove('is-open');
+  });
+  document.getElementById('confirmBtn').addEventListener('click', () => {
+    const id = +modal.dataset.id;
+    const c = clients.find(x => x.id === id);
+    const d = document.getElementById('meetDate').value;
+    const t = document.getElementById('meetTime').value;
+    if (!d){ alert('נא לבחור תאריך'); return; }
+    const [yy,mm,dd] = d.split('-');
+    if (!c.months[activeMonthKey]) c.months[activeMonthKey] = {};
+    c.months[activeMonthKey].m = 'scheduled';
+    c.months[activeMonthKey].meetDate = `${dd}/${mm}/${yy}${t?' '+t:''}`;
+    modal.classList.remove('is-open');
+    render();
+  });
+
+  render();
+</script>
+
+</body>
+</html>

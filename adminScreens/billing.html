@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – ניהול גבייה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068; --blue:#39ABE2; --blue-soft:#E4F6FE;
+    --salmon:#c97b6e; --salmon-h:#b8685c;
+    --green:#1e8e5f; --green-bg:#dff3e9;
+    --amber:#b46e0e; --amber-bg:#fbecd0;
+    --red:#a8302a; --red-bg:#fbe1de;
+    --gray:#6b7c8d; --gray-bg:#eef2f6;
+    --divider:#E3E3E3; --line:#eaecef;
+    --muted:#7E7E7E; --muted-2:#a9a9a9;
+    --bg:#F4F7FA; --off:#F8FAFC;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--navy);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:.92rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  .top{background:#fff;padding:14px 32px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--divider)}
+  .top__logo{width:40px;height:40px;border-radius:10px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff}
+  .top__title{font-size:1.05rem;font-weight:500}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{max-width:none;margin:0;padding:18px}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 24px 60px}
+
+  /* Header bar */
+  .head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .head__title{font-size:1.5rem;font-weight:500;letter-spacing:-.4px}
+  .head__sync{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .head__sync::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green)}
+  .head__actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:11px;font-weight:500;font-size:.88rem;transition:all .15s;border:1px solid transparent;white-space:nowrap}
+  .btn--primary{background:var(--navy);color:#fff}
+  .btn--primary:hover{background:#0a3553}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--sm{padding:6px 12px;font-size:.82rem}
+  .btn--block{width:100%;justify-content:center}
+  .btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+  .btn.is-loading{position:relative;color:transparent}
+  .btn.is-loading::after{content:'';position:absolute;inset:0;margin:auto;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Month nav */
+  .month-nav{display:flex;align-items:center;gap:6px;margin:18px 0 14px}
+  .month-nav__btn{width:32px;height:32px;border-radius:10px;color:var(--navy);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .14s}
+  .month-nav__btn:hover:not(:disabled){background:var(--blue-soft);color:var(--blue)}
+  .month-nav__btn:disabled{opacity:.3;cursor:not-allowed}
+  .month-nav__label{font-size:1rem;font-weight:500;color:var(--navy);padding:0 8px;min-width:140px;text-align:center}
+
+  /* Hero — 3 big stat cards */
+  .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+  .hero__card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:var(--shadow-card);position:relative;overflow:hidden}
+  .hero__card::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:var(--gray)}
+  .hero__card--ok::before    {background:var(--green)}
+  .hero__card--pred::before  {background:var(--blue)}
+  .hero__card--alert::before {background:var(--red)}
+  .hero__card--alert{background:#fffafa}
+  .hero__label{font-size:.85rem;color:var(--muted);font-weight:500;margin-bottom:10px}
+  .hero__value{font-size:2.3rem;font-weight:500;color:var(--navy);letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+  .hero__sub{font-size:.78rem;color:var(--muted);margin-top:10px;line-height:1.4}
+  .hero__card--ok    .hero__value{color:var(--green)}
+  .hero__card--alert .hero__value{color:var(--red)}
+  .hero__card--alert{cursor:pointer;transition:transform .15s}
+  .hero__card--alert:hover{transform:translateY(-2px)}
+  .hero__card--ok-empty .hero__value{color:var(--green);font-size:1.6rem}
+
+  /* Errors section */
+  .errors{background:#fff;border:1px solid #f0c5be;border-radius:14px;margin-bottom:22px;overflow:hidden;box-shadow:var(--shadow-card)}
+  .errors__head{padding:14px 20px;background:linear-gradient(180deg,#fff5f3,#fff);display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .errors__head:hover{background:#fff5f3}
+  .errors__title{font-weight:500;color:var(--red);display:flex;align-items:center;gap:8px;font-size:.95rem}
+  .errors__title b{font-weight:500}
+  .errors__count{background:var(--red);color:#fff;border-radius:60px;padding:1px 10px;font-size:.75rem;font-weight:500}
+  .errors__toggle{font-size:.82rem;color:var(--muted)}
+  .errors__body{padding:6px 0}
+  .errors__body.is-collapsed{display:none}
+
+  .err-row{display:grid;grid-template-columns:38px 1fr 100px 90px 200px;gap:12px;align-items:center;padding:11px 20px;border-bottom:1px solid var(--line);font-size:.88rem}
+  .err-row:last-child{border-bottom:none}
+  .err-row:hover{background:#fffafa}
+  .err-row__avatar{width:34px;height:34px;border-radius:10px;background:#fdeee9;color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:.78rem;flex:none}
+  .err-row__main{min-width:0}
+  .err-row__name{font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .err-row__sub{font-size:.74rem;color:var(--muted);margin-top:2px}
+  .err-row__amount{font-weight:500;font-variant-numeric:tabular-nums;direction:ltr;text-align:right;font-size:.92rem}
+  .err-row__date{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+  .err-row__actions{display:flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
+
+  /* List header */
+  .list-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+  .list-head__title{font-size:.95rem;font-weight:500;color:var(--navy)}
+  .list-head__title b{color:var(--green);font-weight:500}
+  .search{flex:1;min-width:200px;padding:8px 14px;border-radius:10px;border:1px solid var(--divider);background:#fff;font-size:.86rem}
+  .search:focus{outline:none;border-color:var(--blue)}
+
+  /* Paid list — flat rows */
+  .paid-list{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .paid-row{display:grid;grid-template-columns:38px 1fr 110px 85px 130px 60px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);font-size:.88rem;transition:background .12s}
+  .paid-row:last-child{border-bottom:none}
+  .paid-row:hover{background:var(--off)}
+  .paid-row__avatar{width:34px;height:34px;border-radius:10px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:.78rem;flex:none}
+  .paid-row__name{font-weight:400;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .paid-row__amount{font-weight:500;font-variant-numeric:tabular-nums;direction:ltr;text-align:right;color:var(--navy)}
+  .paid-row__date{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+  .paid-row__method{font-size:.78rem;color:var(--gray);display:flex;align-items:center;gap:4px;direction:ltr;text-align:right;justify-content:flex-end}
+  .paid-row__actions{display:flex;justify-content:flex-end}
+  .icon-btn{width:30px;height:30px;border-radius:8px;color:var(--muted);font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .12s}
+  .icon-btn:hover{background:var(--blue-soft);color:var(--navy)}
+
+  /* Inline button */
+  .inline-act{padding:5px 12px;border-radius:60px;font-size:.78rem;font-weight:500;background:#fff;border:1px solid var(--divider);color:var(--navy);transition:all .14s}
+  .inline-act:hover{border-color:var(--blue);color:var(--blue)}
+  .inline-act--primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .inline-act--primary:hover{background:#0a3553;color:#fff}
+
+  /* Empty */
+  .empty{padding:50px 20px;text-align:center;color:var(--muted)}
+  .empty__icon{font-size:2.2rem;margin-bottom:8px;opacity:.5}
+  .empty__title{color:var(--navy);font-weight:500;font-size:.95rem;margin-bottom:4px}
+
+  /* Category headers inside errors section */
+  .cat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 8px;font-size:.82rem;font-weight:500;background:var(--off);border-bottom:1px solid var(--line);border-top:1px solid var(--line)}
+  .cat-head:first-child{border-top:none}
+  .cat-head__label{display:flex;align-items:center;gap:8px}
+  .cat-head__dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .cat-head__dot--red{background:var(--red)}
+  .cat-head__dot--amber{background:var(--amber)}
+  .cat-head__dot--gray{background:var(--gray)}
+  .cat-head__sub{color:var(--muted);font-weight:400}
+
+  /* Payment-type chip (clickable) */
+  .pt-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:60px;font-size:.74rem;font-weight:500;border:1px solid transparent;cursor:pointer;transition:all .12s;white-space:nowrap}
+  .pt-chip--cc{background:var(--blue-soft);color:#1a6e9a;border-color:#cce6f3}
+  .pt-chip--bt{background:#f1efe8;color:#7a5c1b;border-color:#e0d9c2}
+  .pt-chip:hover{filter:brightness(.96)}
+  .pt-chip__edit{margin-inline-start:1px;font-size:.62rem;opacity:.6}
+
+  /* Days overdue badge */
+  .overdue{color:var(--red);font-weight:500;font-size:.78rem;display:inline-flex;align-items:center;gap:3px}
+  .pending-days{color:var(--amber);font-size:.78rem}
+
+  /* Type editor popover */
+  .pt-pop{position:absolute;background:#fff;border:1px solid var(--divider);border-radius:12px;box-shadow:0 8px 24px rgba(12,64,104,.18);padding:14px;min-width:260px;z-index:60}
+  .pt-pop__title{font-size:.85rem;font-weight:500;color:var(--navy);margin-bottom:10px}
+  .pt-pop__row{display:flex;gap:6px;margin-bottom:10px}
+  .pt-pop__btn{flex:1;padding:9px 10px;border-radius:10px;border:1.5px solid var(--divider);background:#fff;font-size:.84rem;color:var(--navy);transition:all .14s;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .pt-pop__btn:hover{border-color:var(--blue)}
+  .pt-pop__btn.is-on{border-color:var(--blue);background:var(--blue-soft);color:var(--navy);font-weight:500}
+  .pt-pop__field{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:.82rem}
+  .pt-pop__field label{color:var(--muted);font-weight:500;flex:1}
+  .pt-pop__field input{width:60px;padding:6px 8px;border:1px solid var(--divider);border-radius:7px;font-size:.84rem;text-align:center}
+  .pt-pop__hint{font-size:.72rem;color:var(--muted);line-height:1.4;margin-top:6px}
+
+  /* Settings gear button in header */
+  .head__settings{width:36px;height:36px;border-radius:10px;background:#fff;border:1px solid var(--divider);color:var(--muted);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .14s}
+  .head__settings:hover{border-color:var(--blue);color:var(--blue)}
+
+  /* Toast */
+  .toast{position:fixed;bottom:24px;right:50%;transform:translateX(50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:60px;box-shadow:0 6px 18px rgba(12,64,104,.22);font-size:.88rem;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
+  .toast.is-on{opacity:1;transform:translateX(50%) translateY(-4px)}
+  .toast--success{background:var(--green)}
+  .toast--error{background:var(--red)}
+
+  /* Modal */
+  .modal-back{position:fixed;inset:0;background:rgba(12,64,104,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back.is-open{display:flex}
+  .modal{background:#fff;box-shadow:var(--shadow-card);width:100%;max-width:520px;overflow:hidden;border-radius:14px;animation:pop .18s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--divider)}
+  .modal__head h3{color:var(--navy);font-size:1.1rem;font-weight:500}
+  .modal__close{font-size:1.4rem;color:var(--muted);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .modal__close:hover{background:var(--off);color:var(--navy)}
+  .modal__body{padding:18px 22px;max-height:72vh;overflow-y:auto}
+  .modal__foot{padding:13px 22px;background:var(--off);display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--divider)}
+
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+  .form-row--1{grid-template-columns:1fr}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:.76rem;color:var(--muted);font-weight:500}
+  .field input,.field select{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--divider);background:#fff;font-size:.9rem}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+
+  .pt-pick{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+  .pt-pick label{padding:11px 13px;border:1.5px solid var(--divider);border-radius:11px;cursor:pointer;transition:all .15s;background:#fff;position:relative}
+  .pt-pick label:has(input:checked){border-color:var(--blue);background:var(--blue-soft)}
+  .pt-pick input{position:absolute;opacity:0;pointer-events:none}
+  .pt-pick__title{font-weight:500;font-size:.92rem;display:flex;align-items:center;gap:6px}
+  .pt-pick__sub{font-size:.72rem;color:var(--muted);margin-top:3px;line-height:1.4}
+
+  .info-box{background:var(--blue-soft);border-radius:10px;padding:11px 13px;font-size:.8rem;color:var(--navy);line-height:1.55;margin-top:8px}
+
+  @media(max-width:760px){
+    .wrap{padding:18px}
+    .hero{grid-template-columns:1fr;gap:10px}
+    .hero__value{font-size:1.8rem}
+    .err-row{grid-template-columns:34px 1fr 80px;gap:8px}
+    .err-row__date,.err-row__actions{display:none}
+    .paid-row{grid-template-columns:34px 1fr 90px 60px;gap:8px}
+    .paid-row__date,.paid-row__method{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top__logo">HK</div>
+  <div>
+    <div class="top__title">HK Money</div>
+    <div class="top__sub">ניהול גבייה — סנכרון Rivhit</div>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal: missing customer — handle (retry / send link / remind) -->
+<div class="modal-back" id="handleModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head"><h3 id="handleTitle">טיפול בלקוח</h3><button class="modal__close" data-close>×</button></div>
+    <div class="modal__body" id="handleBody"></div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: new account (kept for adding new payers) -->
+<div class="modal-back" id="newAccModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head"><h3>חשבון משלם חדש</h3><button class="modal__close" data-close>×</button></div>
+    <div class="modal__body">
+      <div class="form-row form-row--1">
+        <div class="field"><label>שם המשלם</label><input id="naName" type="text" placeholder='ישראל ישראלי / משרד רו"ח'></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>מייל</label><input id="naEmail" type="email" placeholder="name@example.com"></div>
+        <div class="field"><label>טלפון</label><input id="naPhone" type="tel" placeholder="052-1234567"></div>
+      </div>
+      <div class="pt-pick">
+        <label><input type="radio" name="naPayType" value="credit_card" checked>
+          <div class="pt-pick__title">💳 אשראי</div>
+          <div class="pt-pick__sub">הוראת קבע אוטומטית</div></label>
+        <label><input type="radio" name="naPayType" value="bank_transfer">
+          <div class="pt-pick__title">🏦 העברה בנקאית</div>
+          <div class="pt-pick__sub">חשבונית ידנית</div></label>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>סכום חודשי (₪)</label><input id="naAmount" type="number" min="1" placeholder="299"></div>
+        <div class="field"><label>יום חיוב</label><select id="naDay"></select></div>
+      </div>
+      <div class="info-box">החשבון יווצר ב-Rivhit (Customer.New) ויסונכרן בפעם הבאה שתלחץ "↻ סנכרן".</div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>ביטול</button>
+      <button class="btn btn--primary" id="naCreate">צור חשבון</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+if (location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+
+/* === REAL DATA from Rivhit, synced 2026-06-21 === */
+const RIVHIT_DATA = {
+  "syncedAt": "2026-06-21T08:19:04.207Z",
+  "month": "06/2026",
+  "collected": 90150,
+  "expectedExtra": 36875,
+  "paid": [
+    {
+      "customer_id": 92,
+      "name": "א.ש קראש אחזקות בע\"מ",
+      "amount": 1180,
+      "date": "03/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "8095",
+      "receipt_number": 371,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1020,
+      "name": "פרחי המושבה",
+      "amount": 1121,
+      "date": "05/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "5171",
+      "receipt_number": 374,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1014,
+      "name": "ירון וי אי פי",
+      "amount": 1180,
+      "date": "08/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "9328",
+      "receipt_number": 377,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1022,
+      "name": "יאיר לשלום השקעות בע\"מ 2023 51",
+      "amount": 1180,
+      "date": "08/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "4028",
+      "receipt_number": 378,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1073,
+      "name": "מכללת סרגיו",
+      "amount": 885,
+      "date": "09/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "260",
+      "receipt_number": 379,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1038,
+      "name": "רק פה זול בעמ",
+      "amount": 1593,
+      "date": "09/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "2845",
+      "receipt_number": 380,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1015,
+      "name": "בוטיק הפרח",
+      "amount": 767,
+      "date": "11/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "726",
+      "receipt_number": 383,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 78,
+      "name": "גבדור בעמ",
+      "amount": 2183,
+      "date": "11/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "4082",
+      "receipt_number": 384,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1074,
+      "name": "פאנל שיין - Sunwork",
+      "amount": 2950,
+      "date": "11/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "6070",
+      "receipt_number": 385,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 88,
+      "name": "בוטיכלב לחתול ולכלב",
+      "amount": 708,
+      "date": "13/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "9811",
+      "receipt_number": 387,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 71,
+      "name": "לגו יוצרים אירוע הפקה ותוכן חו",
+      "amount": 1770,
+      "date": "13/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "1612",
+      "receipt_number": 388,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1016,
+      "name": "מייד אין טי.אל.וי בעיימ",
+      "amount": 1121,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "3578",
+      "receipt_number": 394,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1034,
+      "name": "מכולת נור",
+      "amount": 1180,
+      "date": "16/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "4645",
+      "receipt_number": 397,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 81,
+      "name": "אליאב מוניות נתבג בע\"מ",
+      "amount": 4130,
+      "date": "16/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "5823",
+      "receipt_number": 399,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1054,
+      "name": "שילת פרויקטים חכמים",
+      "amount": 1475,
+      "date": "16/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "5426",
+      "receipt_number": 400,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1076,
+      "name": "י.נ.פתרונות תדלוק בע''מ",
+      "amount": 2183,
+      "date": "17/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "1029",
+      "receipt_number": 402,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 75,
+      "name": "מוטי ניסים מכונאות כללית",
+      "amount": 944,
+      "date": "19/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "8679",
+      "receipt_number": 406,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1039,
+      "name": "אלי הכריש בע\"מ",
+      "amount": 1121,
+      "date": "19/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "7079",
+      "receipt_number": 407,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 83,
+      "name": "אומניבייס בע\"מ",
+      "amount": 1180,
+      "date": "20/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 5,
+      "card_last4": "8270",
+      "receipt_number": 410,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1048,
+      "name": "מאמא מרכז הקייטרינג הישראלי",
+      "amount": 177,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 7,
+      "card_last4": "8851",
+      "receipt_number": 390,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1013,
+      "name": "הכל בקול הגברה ותאורה בע\"מ",
+      "amount": 1947,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 7,
+      "card_last4": "8156",
+      "receipt_number": 396,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1009,
+      "name": "שביט חב` לשיווק בע\"מ",
+      "amount": 1180,
+      "date": "20/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 7,
+      "card_last4": "5023",
+      "receipt_number": 409,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1053,
+      "name": "אביב מנעולים",
+      "amount": 1770,
+      "date": "04/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 8,
+      "card_last4": "4301",
+      "receipt_number": 373,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 76,
+      "name": "סופר סטוק כותר דניאל",
+      "amount": 1121,
+      "date": "10/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 8,
+      "card_last4": "9229",
+      "receipt_number": 381,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1025,
+      "name": "play and more בע״מ",
+      "amount": 1180,
+      "date": "14/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 8,
+      "card_last4": "5353",
+      "receipt_number": 389,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1050,
+      "name": "סלון גליה",
+      "amount": 1534,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 8,
+      "card_last4": "2396",
+      "receipt_number": 392,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1075,
+      "name": "יולי הסעדה בע״מ",
+      "amount": 1770,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 8,
+      "card_last4": "1100",
+      "receipt_number": 393,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1018,
+      "name": "המרכז הישראלי לקפוארה ארז מלכה",
+      "amount": 1121,
+      "date": "16/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 8,
+      "card_last4": "2606",
+      "receipt_number": 398,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1029,
+      "name": "נ.חמאוי יעוץ והשקעות בע״מ",
+      "amount": 3540,
+      "date": "11/06/2026",
+      "payment_type": "bank_transfer",
+      "payment_type_code": 9,
+      "card_last4": null,
+      "receipt_number": 1003,
+      "receipt_type": 1
+    },
+    {
+      "customer_id": 1024,
+      "name": "בועז שולביץ גרופ בע\"מ",
+      "amount": 2832,
+      "date": "03/06/2026",
+      "payment_type": "bank_transfer",
+      "payment_type_code": 9,
+      "card_last4": null,
+      "receipt_number": 372,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 0,
+      "name": "לוי שורק ושות'",
+      "amount": 23775,
+      "date": "11/06/2026",
+      "payment_type": "bank_transfer",
+      "payment_type_code": 9,
+      "card_last4": null,
+      "receipt_number": 386,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1055,
+      "name": "אבישי שינוע ולוגיסטיקה בע\"מ",
+      "amount": 590,
+      "date": "06/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "3328",
+      "receipt_number": 375,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 70,
+      "name": "תפנית הכל מתחיל בחינוך",
+      "amount": 885,
+      "date": "07/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "4936",
+      "receipt_number": 376,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 77,
+      "name": "אלעד הבגט",
+      "amount": 1121,
+      "date": "10/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "9774",
+      "receipt_number": 382,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1049,
+      "name": "קרמבו",
+      "amount": 1180,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "8997",
+      "receipt_number": 391,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 90,
+      "name": "פורטס שיווק בע\"מ",
+      "amount": 1475,
+      "date": "15/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "1120",
+      "receipt_number": 395,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 72,
+      "name": "סידיוס בע''מ",
+      "amount": 1121,
+      "date": "17/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "8665",
+      "receipt_number": 401,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1077,
+      "name": "אנ.אר.ג'י אנרג'י אינטרנשיונל ב",
+      "amount": 5900,
+      "date": "17/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "3417",
+      "receipt_number": 403,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1066,
+      "name": "סימפון סלולר בע״מ",
+      "amount": 1475,
+      "date": "18/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "3434",
+      "receipt_number": 404,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1070,
+      "name": "אצה מעלות",
+      "amount": 1475,
+      "date": "18/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "8163",
+      "receipt_number": 405,
+      "receipt_type": 2
+    },
+    {
+      "customer_id": 1005,
+      "name": "רז שרות - שוק הדגים",
+      "amount": 4130,
+      "date": "20/06/2026",
+      "payment_type": "credit_card",
+      "payment_type_code": 11,
+      "card_last4": "869",
+      "receipt_number": 408,
+      "receipt_type": 2
+    }
+  ],
+  "missing": [
+    {
+      "customer_id": 1030,
+      "name": "רקיע שרותי הסעדה בע\"מ",
+      "email": "rkia365@gmail.com",
+      "phone": "0543903902",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "03/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1046,
+      "name": "איתן ונתי אספרסו בר בע״מ",
+      "email": "natisa42@gmail.com",
+      "phone": "0502275414",
+      "payment_type": "credit_card",
+      "last_amount": 1770,
+      "last_paid": "15/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1051,
+      "name": "ספארקלינג פאנל",
+      "email": "sparklingpanel@gmail.com",
+      "phone": "0556688108",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "16/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1027,
+      "name": "בית ספר לנהיגה גדעון בע\"מ",
+      "email": "loayz1984@gmail.com",
+      "phone": "0544617614",
+      "payment_type": "credit_card",
+      "last_amount": 1475,
+      "last_paid": "22/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1040,
+      "name": "isup",
+      "email": "isupsurf@gmail.com",
+      "phone": "0545827082",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "24/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1035,
+      "name": "נועם קרון",
+      "email": "Noam@noamkron.co.il",
+      "phone": "0527497898",
+      "payment_type": "credit_card",
+      "last_amount": 885,
+      "last_paid": "24/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1036,
+      "name": "האגוזיה",
+      "email": "eladza9@gmail.com",
+      "phone": "0542802200",
+      "payment_type": "credit_card",
+      "last_amount": 885,
+      "last_paid": "25/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1037,
+      "name": "לוסיא גלס בע״מ",
+      "email": "aleenshouly@gmail.com",
+      "phone": "0508688941",
+      "payment_type": "credit_card",
+      "last_amount": 2065,
+      "last_paid": "25/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 85,
+      "name": "דיל הדילים",
+      "email": "dilhadilim@gmail.com",
+      "phone": "0505555020",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "25/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1068,
+      "name": "מרום מומחים לשירותי בריאות בע\"",
+      "email": "shay@maromedical.co.il",
+      "phone": "0542325211",
+      "payment_type": "credit_card",
+      "last_amount": 885,
+      "last_paid": "25/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1045,
+      "name": "איירון עבודות מתכת א.נ בע\"מ",
+      "email": "eyal0313@gmail.com",
+      "phone": "0523107788",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "26/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1071,
+      "name": "וואן פרודקט בע״מ",
+      "email": "ore@roadprotect.co.il",
+      "phone": "0544757841",
+      "payment_type": "credit_card",
+      "last_amount": 1770,
+      "last_paid": "30/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1067,
+      "name": "כלל מרקט",
+      "email": "eylon@hak.co.il",
+      "phone": "0506760761",
+      "payment_type": "credit_card",
+      "last_amount": 1770,
+      "last_paid": "25/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1069,
+      "name": "שפע סטוק 2022 בע\"מ",
+      "email": "is4193419@gmail.com",
+      "phone": "0543038205",
+      "payment_type": "credit_card",
+      "last_amount": 1416,
+      "last_paid": "26/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1032,
+      "name": "צהרון אדוה",
+      "email": "Advaalgaba10@gmail.com",
+      "phone": "0507568193",
+      "payment_type": "credit_card",
+      "last_amount": 885,
+      "last_paid": "11/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1033,
+      "name": "לימור בנדל - לחיות בתשוקה",
+      "email": "limorbandel4u@gmail.com",
+      "phone": "0544578993",
+      "payment_type": "credit_card",
+      "last_amount": 2950,
+      "last_paid": "16/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 84,
+      "name": "נבון (א.ר.י) בניה והנדסה בע\"מ",
+      "email": "office@navon-eng.co.il",
+      "phone": "0542239755",
+      "payment_type": "credit_card",
+      "last_amount": 1121,
+      "last_paid": "22/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1008,
+      "name": "שינקרייט תכשיטים",
+      "email": "shenkraitinfo@gmail.com",
+      "phone": "0532843934",
+      "payment_type": "credit_card",
+      "last_amount": 2065,
+      "last_paid": "25/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1052,
+      "name": "ים תעשיות ואביזרים לבניין בע\"מ",
+      "email": "info@yam-binyan.com",
+      "phone": "0546524735",
+      "payment_type": "credit_card",
+      "last_amount": 2183,
+      "last_paid": "30/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1026,
+      "name": "אלעד טויטו",
+      "email": "office@emhai.co.il",
+      "phone": "0543098302",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "15/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1047,
+      "name": "מציעס",
+      "email": "A052719211@gmail.com",
+      "phone": "0509455016",
+      "payment_type": "credit_card",
+      "last_amount": 1475,
+      "last_paid": "20/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1028,
+      "name": "תומר כהן",
+      "email": "tomercohenoffice@gmail.com",
+      "phone": "0522629038",
+      "payment_type": "credit_card",
+      "last_amount": 1121,
+      "last_paid": "22/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1019,
+      "name": "זווית ד.ש",
+      "email": "info@zavit-stairs.com",
+      "phone": "0505274717",
+      "payment_type": "credit_card",
+      "last_amount": 1180,
+      "last_paid": "23/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1042,
+      "name": "איקספר 26",
+      "email": "lyorchekroun@gmail.com",
+      "phone": "0585982626",
+      "payment_type": "credit_card",
+      "last_amount": 1475,
+      "last_paid": "26/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1044,
+      "name": "זינגר סיוון יעוץ השקעות בע\"מ",
+      "email": "msztz0@gmail.com",
+      "phone": "0502005253",
+      "payment_type": "credit_card",
+      "last_amount": 885,
+      "last_paid": "31/05/2026",
+      "has_cc_token": false
+    },
+    {
+      "customer_id": 1072,
+      "name": "סופר אמריקה",
+      "email": "G0545380525@gmail.com",
+      "phone": "0545380525",
+      "payment_type": "credit_card",
+      "last_amount": 1534,
+      "last_paid": "31/05/2026",
+      "has_cc_token": false
+    }
+  ]
+};
+
+const CONFIG = { USE_MOCK: true, API_BASE: '' };
+const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+
+/* === SETTINGS PER CUSTOMER (override Rivhit-derived defaults) ===
+   stored in localStorage: { [customer_id]: { paymentType, expectedDay } }
+   Pre-seed some customers as bank_transfer for demo. */
+const PRESET_BANK = [1029, 1024, 0, 1067, 1052, 1019, 1027, 1030];   // 3 שעברו ב-Rivhit (היו bank ביוני) + 5 מתוך החסרים
+const DEFAULT_SETTINGS = {};
+PRESET_BANK.forEach(id => DEFAULT_SETTINGS[id] = {paymentType: 'bank_transfer', expectedDay: 10});
+
+const state = {
+  data: RIVHIT_DATA,
+  cursor: {month: 5, year: 2026},
+  search: '',
+  errorsCollapsed: false,
+  customerSettings: (() => {
+    try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem('hk_cust_settings') || '{}')); }
+    catch(e){ return Object.assign({}, DEFAULT_SETTINGS); }
+  })(),
+  globalSettings: (() => {
+    try { return Object.assign({expectedDay: 10}, JSON.parse(localStorage.getItem('hk_global_settings') || '{}')); }
+    catch(e){ return {expectedDay: 10}; }
+  })(),
+};
+
+function saveCustomerSetting(custId, key, value){
+  if (!state.customerSettings[custId]) state.customerSettings[custId] = {};
+  state.customerSettings[custId][key] = value;
+  localStorage.setItem('hk_cust_settings', JSON.stringify(state.customerSettings));
+}
+function saveGlobalSetting(key, value){
+  state.globalSettings[key] = value;
+  localStorage.setItem('hk_global_settings', JSON.stringify(state.globalSettings));
+}
+function getPaymentType(item){
+  // item may be from paid or missing — both have customer_id and payment_type (Rivhit-derived)
+  return state.customerSettings[item.customer_id]?.paymentType || item.payment_type;
+}
+function getExpectedDay(custId){
+  return state.customerSettings[custId]?.expectedDay || state.globalSettings.expectedDay;
+}
+
+/* HELPERS */
+const $ = s => document.querySelector(s);
+const fmtMoney = n => '₪' + Math.round(n).toLocaleString('he-IL');
+const initials = n => (n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(p => p[0]).join('') || '?';
+const TODAY = new Date(2026, 5, 21, 11, 30);
+const daysAgo = iso => {
+  const d = new Date(iso);
+  const min = Math.floor((TODAY - d) / 60000);
+  if (min < 60) return min + ' דק׳';
+  if (min < 60*24) return Math.floor(min/60) + ' שעות';
+  return Math.floor(min/(60*24)) + ' ימים';
+};
+const dayMonth = d => d.slice(0,5);
+const isFutureMonth = () => state.cursor.year > 2026 || (state.cursor.year === 2026 && state.cursor.month > 5);
+
+/* CATEGORIZE missing customers: card_failed / bank_overdue / bank_pending */
+function categorizeMissing(missing){
+  const groups = {card_failed: [], bank_overdue: [], bank_pending: []};
+  missing.forEach(m => {
+    const pt = getPaymentType(m);
+    if (pt === 'credit_card'){
+      groups.card_failed.push(m);
+    } else {
+      const day = getExpectedDay(m.customer_id);
+      const expected = new Date(state.cursor.year, state.cursor.month, day);
+      if (TODAY > expected){
+        const daysOver = Math.floor((TODAY - expected) / 86400000);
+        groups.bank_overdue.push(Object.assign({}, m, {daysOverdue: daysOver, expectedDay: day}));
+      } else {
+        const daysUntil = Math.ceil((expected - TODAY) / 86400000);
+        groups.bank_pending.push(Object.assign({}, m, {daysUntil, expectedDay: day}));
+      }
+    }
+  });
+  // sort overdue by most-overdue first
+  groups.bank_overdue.sort((a,b) => b.daysOverdue - a.daysOverdue);
+  return groups;
+}
+
+/* TOAST */
+let toastTimer;
+function toast(msg, kind){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast is-on' + (kind ? ' toast--'+kind : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('is-on'), 2400);
+}
+
+/* RENDER */
+function render(){
+  const d = state.data;
+  const collected = d.collected;
+  const expected = d.collected + d.expectedExtra;
+  const errorsCount = d.missing.length;
+  const q = state.search.trim().toLowerCase();
+  const paidFiltered = q ? d.paid.filter(p => p.name.toLowerCase().includes(q)) : d.paid;
+
+  $('#app').innerHTML = `
+    <div class="head">
+      <div>
+        <div class="head__title">ניהול גבייה</div>
+        <div class="head__sync">סונכרן מ-Rivhit · לפני ${daysAgo(d.syncedAt)}</div>
+      </div>
+      <div class="head__actions">
+        <button class="head__settings" id="globalSettingsBtn" title="הגדרות גלובליות">⚙</button>
+        <button class="btn btn--ghost btn--sm" id="syncBtn">↻ סנכרן עכשיו</button>
+        <button class="btn btn--primary" id="newAccBtn">+ חשבון חדש</button>
+      </div>
+    </div>
+
+    <div class="month-nav">
+      <button class="month-nav__btn" id="prevMonth" title="חודש קודם">›</button>
+      <div class="month-nav__label">${MONTHS[state.cursor.month]} ${state.cursor.year}</div>
+      <button class="month-nav__btn" id="nextMonth" title="חודש הבא" ${isFutureMonth()?'disabled':''}>‹</button>
+    </div>
+
+    <div class="hero">
+      <div class="hero__card hero__card--ok">
+        <div class="hero__label">נגבה החודש</div>
+        <div class="hero__value">${fmtMoney(collected)}</div>
+        <div class="hero__sub">${d.paid.length} חיובים עברו · מתוך ${d.paid.length + errorsCount} צפויים</div>
+      </div>
+      <div class="hero__card hero__card--pred">
+        <div class="hero__label">צפי לסוף החודש</div>
+        <div class="hero__value">${fmtMoney(expected)}</div>
+        <div class="hero__sub">עוד צפויים ${fmtMoney(d.expectedExtra)} מ-${errorsCount} לקוחות</div>
+      </div>
+      ${(() => {
+        if (errorsCount === 0) return `<div class="hero__card hero__card--ok hero__card--ok-empty">
+            <div class="hero__label">דורש טיפול</div>
+            <div class="hero__value">✓ הכל תקין</div>
+            <div class="hero__sub">כל הלקוחות שילמו</div>
+          </div>`;
+        const g = categorizeMissing(d.missing);
+        const urgent = g.bank_overdue.length + g.card_failed.length;
+        const parts = [];
+        if (g.bank_overdue.length) parts.push(`${g.bank_overdue.length} העברה באיחור`);
+        if (g.card_failed.length)  parts.push(`${g.card_failed.length} אשראי לא בוצע`);
+        if (g.bank_pending.length) parts.push(`${g.bank_pending.length} ממתינים`);
+        return `<div class="hero__card hero__card--alert" id="errFocus">
+          <div class="hero__label">דורש טיפול</div>
+          <div class="hero__value">${urgent || errorsCount}</div>
+          <div class="hero__sub">${parts.join(' · ')}</div>
+        </div>`;
+      })()}
+    </div>
+
+    ${errorsCount > 0 ? errorsSection(d.missing) : ''}
+
+    <div class="list-head">
+      <div class="list-head__title"><b>${d.paid.length}</b> חיובים שעברו החודש · ${fmtMoney(collected)}</div>
+      <input class="search" id="search" type="search" placeholder="חיפוש לפי שם לקוח..." value="${state.search}">
+    </div>
+
+    <div class="paid-list" id="paidList">
+      ${paidFiltered.length === 0
+        ? '<div class="empty"><div class="empty__icon">🔍</div><div class="empty__title">לא נמצאו תוצאות</div></div>'
+        : paidFiltered.map(paidRow).join('')}
+    </div>
+  `;
+  wire();
+}
+
+function ptChip(item){
+  const pt = getPaymentType(item);
+  const cls = pt === 'bank_transfer' ? 'pt-chip--bt' : 'pt-chip--cc';
+  const label = pt === 'bank_transfer' ? '🏦 העברה' : '💳 אשראי';
+  return `<span class="pt-chip ${cls}" data-action="edit-type" data-cust-id="${item.customer_id}" title="לחץ לעריכה">${label}<span class="pt-chip__edit">▾</span></span>`;
+}
+
+function errorsSection(missing){
+  const groups = categorizeMissing(missing);
+  const totalAmount = missing.reduce((s,m) => s + m.last_amount, 0);
+  const overdueAmount = groups.bank_overdue.reduce((s,m) => s + m.last_amount, 0);
+  const failedAmount  = groups.card_failed.reduce((s,m) => s + m.last_amount, 0);
+  const pendingAmount = groups.bank_pending.reduce((s,m) => s + m.last_amount, 0);
+
+  // Sections — only show ones that have items. Order: overdue (most urgent) → card_failed → bank_pending
+  let body = '';
+  if (groups.bank_overdue.length){
+    body += `<div class="cat-head">
+      <span class="cat-head__label"><span class="cat-head__dot cat-head__dot--red"></span>🏦 העברה בנקאית באיחור (${groups.bank_overdue.length})</span>
+      <span class="cat-head__sub">${fmtMoney(overdueAmount)}</span>
+    </div>`;
+    body += groups.bank_overdue.map(m => errRow(m, 'overdue')).join('');
+  }
+  if (groups.card_failed.length){
+    body += `<div class="cat-head">
+      <span class="cat-head__label"><span class="cat-head__dot cat-head__dot--red"></span>💳 חיוב אשראי לא בוצע (${groups.card_failed.length})</span>
+      <span class="cat-head__sub">${fmtMoney(failedAmount)}</span>
+    </div>`;
+    body += groups.card_failed.map(m => errRow(m, 'card')).join('');
+  }
+  if (groups.bank_pending.length){
+    body += `<div class="cat-head">
+      <span class="cat-head__label"><span class="cat-head__dot cat-head__dot--gray"></span>🏦 העברה בנקאית — בהמתנה (${groups.bank_pending.length})</span>
+      <span class="cat-head__sub">${fmtMoney(pendingAmount)} · עוד לא חלף יום החיוב</span>
+    </div>`;
+    body += groups.bank_pending.map(m => errRow(m, 'pending')).join('');
+  }
+
+  return `<div class="errors" id="errSection">
+    <div class="errors__head" data-action="toggle-errors">
+      <div class="errors__title">
+        <span>⚠</span>
+        <b>${missing.length} לקוחות עם חיוב חסר</b>
+        <span class="errors__count">${fmtMoney(totalAmount)}</span>
+      </div>
+      <div class="errors__toggle">${state.errorsCollapsed ? 'הצג' : 'הסתר'}</div>
+    </div>
+    <div class="errors__body ${state.errorsCollapsed?'is-collapsed':''}">
+      ${body}
+    </div>
+  </div>`;
+}
+
+function errRow(m, kind){
+  const pt = getPaymentType(m);
+  let subText, primaryBtn;
+  if (kind === 'overdue'){
+    subText = `<span class="overdue">⚠ ${m.daysOverdue} ${m.daysOverdue===1?'יום':'ימים'} באיחור</span> · צפי לתשלום עד ${m.expectedDay} לחודש`;
+    primaryBtn = '<button class="inline-act inline-act--primary" data-action="remind">📱 שלח תזכורת</button>';
+  } else if (kind === 'pending'){
+    subText = `<span class="pending-days">עוד ${m.daysUntil} ${m.daysUntil===1?'יום':'ימים'} עד יום החיוב (${m.expectedDay} לחודש)</span>`;
+    primaryBtn = '<button class="inline-act" data-action="remind">📱 הודעה</button>';
+  } else { // card
+    subText = `שילם לאחרונה ${dayMonth(m.last_paid)}${m.has_cc_token ? ' · יש כרטיס שמור' : ' · אין כרטיס שמור'}`;
+    primaryBtn = m.has_cc_token
+      ? '<button class="inline-act inline-act--primary" data-action="retry">↻ חייב שוב</button>'
+      : '<button class="inline-act inline-act--primary" data-action="link">🔗 שלח לינק</button>';
+  }
+  return `<div class="err-row" data-customer-id="${m.customer_id}">
+    <div class="err-row__avatar">${initials(m.name)}</div>
+    <div class="err-row__main">
+      <div class="err-row__name">${m.name} ${ptChip(m)}</div>
+      <div class="err-row__sub">${subText}</div>
+    </div>
+    <div class="err-row__amount">${fmtMoney(m.last_amount)}</div>
+    <div class="err-row__date">${dayMonth(m.last_paid)}</div>
+    <div class="err-row__actions">
+      ${primaryBtn}
+      ${kind === 'card' ? '<button class="inline-act" data-action="remind">📱 תזכורת</button>' : ''}
+    </div>
+  </div>`;
+}
+
+function paidRow(p){
+  const pt = getPaymentType(p);
+  const method = pt === 'bank_transfer'
+    ? '🏦 העברה'
+    : `💳 ●${p.card_last4}`;
+  return `<div class="paid-row" data-receipt="${p.receipt_number}" data-customer-id="${p.customer_id}">
+    <div class="paid-row__avatar">${initials(p.name)}</div>
+    <div class="paid-row__name">${p.name} ${ptChip(p)}</div>
+    <div class="paid-row__amount">${fmtMoney(p.amount)}</div>
+    <div class="paid-row__date">${dayMonth(p.date)}</div>
+    <div class="paid-row__method">${method}</div>
+    <div class="paid-row__actions">
+      <button class="icon-btn" data-action="invoice" title="הורד חשבונית ${p.receipt_number}">📄</button>
+    </div>
+  </div>`;
+}
+
+/* PAYMENT TYPE EDITOR popover */
+function openTypeEditor(custId, anchor){
+  closeTypePop();
+  const item = state.data.missing.find(x => x.customer_id === custId) || state.data.paid.find(x => x.customer_id === custId);
+  if (!item) return;
+  const current = getPaymentType(item);
+  const day = getExpectedDay(custId);
+  const pop = document.createElement('div');
+  pop.className = 'pt-pop';
+  pop.innerHTML = `
+    <div class="pt-pop__title">אופן תשלום ל-${item.name}</div>
+    <div class="pt-pop__row">
+      <button class="pt-pop__btn ${current==='credit_card'?'is-on':''}" data-pt="credit_card">
+        <span style="font-size:1.1rem">💳</span>אשראי</button>
+      <button class="pt-pop__btn ${current==='bank_transfer'?'is-on':''}" data-pt="bank_transfer">
+        <span style="font-size:1.1rem">🏦</span>העברה בנקאית</button>
+    </div>
+    <div class="pt-pop__field" id="ptDayWrap" ${current!=='bank_transfer'?'hidden':''}>
+      <label>יום צפי לתשלום</label>
+      <input type="number" min="1" max="28" value="${day}" id="ptDay"> בכל חודש
+    </div>
+    <div class="pt-pop__hint">השמירה מקומית — תוחל מהסנכרון הבא. ה-Rivhit עצמו לא משתנה.</div>
+  `;
+  document.body.appendChild(pop);
+  const r = anchor.getBoundingClientRect();
+  pop.style.top = (r.bottom + 4 + window.scrollY) + 'px';
+  pop.style.right = (window.innerWidth - r.right) + 'px';
+  pop.style.left = 'auto';
+
+  pop.addEventListener('click', e => {
+    const b = e.target.closest('button[data-pt]');
+    if (b){
+      const pt = b.dataset.pt;
+      saveCustomerSetting(custId, 'paymentType', pt);
+      pop.querySelectorAll('button[data-pt]').forEach(x => x.classList.toggle('is-on', x.dataset.pt === pt));
+      $('#ptDayWrap').hidden = pt !== 'bank_transfer';
+      render();
+      // Re-open since render rebuilt DOM
+      setTimeout(() => {
+        const newAnchor = document.querySelector(`[data-cust-id="${custId}"]`);
+        if (newAnchor) openTypeEditor(custId, newAnchor);
+      }, 0);
+    }
+  });
+  pop.querySelector('#ptDay')?.addEventListener('change', e => {
+    const v = Math.max(1, Math.min(28, +e.target.value || 10));
+    saveCustomerSetting(custId, 'expectedDay', v);
+    render();
+    setTimeout(() => {
+      const newAnchor = document.querySelector(`[data-cust-id="${custId}"]`);
+      if (newAnchor) openTypeEditor(custId, newAnchor);
+    }, 0);
+  });
+  setTimeout(() => document.addEventListener('click', closeTypePopOnOutside, true), 0);
+}
+function closeTypePop(){ document.querySelectorAll('.pt-pop').forEach(p => p.remove()); document.removeEventListener('click', closeTypePopOnOutside, true); }
+function closeTypePopOnOutside(e){
+  if (e.target.closest('.pt-pop') || e.target.closest('.pt-chip')) return;
+  closeTypePop();
+}
+
+function wire(){
+  $('#syncBtn').addEventListener('click', doSync);
+  $('#newAccBtn').addEventListener('click', openNewAccount);
+  $('#globalSettingsBtn').addEventListener('click', openGlobalSettings);
+  // Payment-type chip click — works on both error and paid rows
+  document.querySelectorAll('.pt-chip[data-action="edit-type"]').forEach(chip => {
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = +chip.dataset.custId;
+      openTypeEditor(id, chip);
+    });
+  });
+  $('#prevMonth').addEventListener('click', () => {
+    state.cursor.month--; if (state.cursor.month < 0){ state.cursor.month = 11; state.cursor.year--; }
+    toast('בדמו רק יוני 2026 זמין — לחץ "↻ סנכרן" כדי למשוך', '');
+  });
+  $('#nextMonth').addEventListener('click', () => {
+    if (isFutureMonth()) return;
+    state.cursor.month++; if (state.cursor.month > 11){ state.cursor.month = 0; state.cursor.year++; }
+    toast('בדמו רק יוני 2026 זמין — לחץ "↻ סנכרן" כדי למשוך', '');
+  });
+  const errF = $('#errFocus');
+  if (errF) errF.addEventListener('click', () => {
+    state.errorsCollapsed = false;
+    $('#errSection')?.scrollIntoView({behavior:'smooth', block:'start'});
+    render();
+  });
+
+  document.addEventListener('click', e => {
+    const search = e.target.closest('#search');
+    if (search) return;
+  });
+
+  $('#search')?.addEventListener('input', e => { state.search = e.target.value; render(); });
+
+  const errSec = $('#errSection');
+  if (errSec){
+    errSec.addEventListener('click', e => {
+      // Don't toggle when clicking the chip
+      if (e.target.closest('.pt-chip')) return;
+      const head = e.target.closest('[data-action="toggle-errors"]');
+      if (head){ state.errorsCollapsed = !state.errorsCollapsed; render(); return; }
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const row = e.target.closest('.err-row');
+      if (!row) return;
+      const id = +row.dataset.customerId;
+      const m = state.data.missing.find(x => x.customer_id === id);
+      const action = btn.dataset.action;
+      if (action === 'retry') openHandle(m, 'retry');
+      else if (action === 'link') openHandle(m, 'link');
+      else if (action === 'remind') openHandle(m, 'remind');
+    });
+  }
+
+  $('#paidList').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-action="invoice"]');
+    if (!btn) return;
+    const num = e.target.closest('.paid-row').dataset.receipt;
+    toast(`מוריד חשבונית #${num}...`, '');
+  });
+}
+
+/* GLOBAL SETTINGS — default expected day for bank transfers */
+function openGlobalSettings(){
+  closeTypePop();
+  const pop = document.createElement('div');
+  pop.className = 'pt-pop';
+  pop.innerHTML = `
+    <div class="pt-pop__title">הגדרות גלובליות</div>
+    <div class="pt-pop__field">
+      <label>יום צפי לתשלום (ברירת מחדל להעברה בנקאית)</label>
+      <input type="number" min="1" max="28" value="${state.globalSettings.expectedDay}" id="gsDay"> בכל חודש
+    </div>
+    <div class="pt-pop__hint">משתמש בכל לקוח שלא הוגדר לו יום ספציפי. שינוי כאן יעדכן את כל חישוב ה"באיחור".</div>
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <button class="btn btn--ghost btn--sm" id="gsReset" style="flex:1">איפוס הגדרות לקוחות</button>
+      <button class="btn btn--primary btn--sm" id="gsClose" style="flex:1">סגור</button>
+    </div>
+  `;
+  document.body.appendChild(pop);
+  const btn = $('#globalSettingsBtn').getBoundingClientRect();
+  pop.style.top = (btn.bottom + 6 + window.scrollY) + 'px';
+  pop.style.right = (window.innerWidth - btn.right) + 'px';
+  pop.style.left = 'auto';
+  pop.style.minWidth = '320px';
+  pop.querySelector('#gsDay').addEventListener('change', e => {
+    const v = Math.max(1, Math.min(28, +e.target.value || 10));
+    saveGlobalSetting('expectedDay', v); render();
+  });
+  pop.querySelector('#gsClose').addEventListener('click', closeTypePop);
+  pop.querySelector('#gsReset').addEventListener('click', () => {
+    if (!confirm('לאפס את כל הגדרות הלקוחות (אופן תשלום + יום צפי)?')) return;
+    state.customerSettings = Object.assign({}, DEFAULT_SETTINGS);
+    localStorage.removeItem('hk_cust_settings');
+    closeTypePop(); render();
+    toast('הגדרות אופסו', 'success');
+  });
+  setTimeout(() => document.addEventListener('click', closeTypePopOnOutside, true), 0);
+}
+
+/* SYNC */
+async function doSync(){
+  const btn = $('#syncBtn');
+  btn.disabled = true;
+  const oldText = btn.textContent;
+  btn.textContent = '↻ מסנכרן...';
+  await new Promise(r => setTimeout(r, 900));
+  state.data.syncedAt = new Date().toISOString();
+  btn.disabled = false;
+  btn.textContent = oldText;
+  toast(`✓ עודכן · ${state.data.paid.length} תשלומים · ${state.data.missing.length} לקוחות חסרים`, 'success');
+  render();
+}
+
+/* HANDLE MISSING — open contact modal */
+function openHandle(m, action){
+  const actionTitles = {retry:'חיוב חוזר', link:'שליחת לינק לתשלום', remind:'שליחת תזכורת'};
+  $('#handleTitle').textContent = actionTitles[action] + ' — ' + m.name;
+  const url = action === 'link' ? `https://icredit.rivhit.co.il/payment/recurring/new` : null;
+  const waMsg = action === 'remind'
+    ? `היי ${m.name}, רצינו לוודא שהחיוב החודשי של HK Money (${fmtMoney(m.last_amount)}) עבר. אם יש בעיה תיצרו קשר.`
+    : action === 'link'
+    ? `היי ${m.name}, נא להזין כרטיס בלינק:\n${url}`
+    : `היי ${m.name}, אנחנו ננסה לחייב שוב את הכרטיס שלך בסכום ${fmtMoney(m.last_amount)}.`;
+  $('#handleBody').innerHTML = `
+    <div style="font-size:.86rem;line-height:1.6;margin-bottom:14px">
+      <div><b>טלפון:</b> <span style="direction:ltr">${m.phone || '—'}</span></div>
+      <div><b>מייל:</b> <span style="direction:ltr">${m.email || '—'}</span></div>
+      <div><b>סכום אחרון:</b> ${fmtMoney(m.last_amount)} (${dayMonth(m.last_paid)})</div>
+    </div>
+    ${action === 'retry' ? `
+      <div class="info-box" style="background:#fbf5e7">
+        ${m.has_cc_token
+          ? 'יש כרטיס שמור — חיוב חוזר יבוצע ישירות דרך Rivhit (CreateSale עם RecurringSaleId).'
+          : '⚠ אין כרטיס שמור ב-Rivhit. צריך לשלוח לינק תשלום במקום.'}
+      </div>
+      <button class="btn btn--primary btn--block" style="margin-top:14px" id="hbAction">${m.has_cc_token ? '↻ חייב עכשיו' : '🔗 שלח לינק במקום'}</button>
+    ` : `
+      <textarea readonly style="width:100%;min-height:90px;padding:10px;border:1px solid var(--divider);border-radius:10px;font-family:inherit;font-size:.86rem;line-height:1.5;resize:vertical">${waMsg}</textarea>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn btn--ghost btn--sm" id="hbWa" style="flex:1">📱 שלח בוואטסאפ</button>
+        <button class="btn btn--ghost btn--sm" id="hbEmail" style="flex:1">✉ שלח במייל</button>
+        ${url ? `<button class="btn btn--ghost btn--sm" id="hbCopy" style="flex:1">📋 העתק לינק</button>` : ''}
+      </div>
+    `}
+  `;
+  $('#handleModal').classList.add('is-open');
+  const hbAction = $('#hbAction');
+  if (hbAction) hbAction.addEventListener('click', async () => {
+    hbAction.classList.add('is-loading');
+    await new Promise(r => setTimeout(r, 800));
+    hbAction.classList.remove('is-loading');
+    $('#handleModal').classList.remove('is-open');
+    toast('✓ נשלחה בקשה ל-Rivhit', 'success');
+  });
+  const hbWa = $('#hbWa');
+  if (hbWa) hbWa.addEventListener('click', () => window.open('https://wa.me/' + (m.phone||'').replace(/\D/g,'').replace(/^0/, '972') + '?text=' + encodeURIComponent(waMsg), '_blank'));
+  const hbEmail = $('#hbEmail');
+  if (hbEmail) hbEmail.addEventListener('click', () => location.href = `mailto:${m.email}?subject=${encodeURIComponent('HK Money — חיוב חודשי')}&body=${encodeURIComponent(waMsg)}`);
+  const hbCopy = $('#hbCopy');
+  if (hbCopy) hbCopy.addEventListener('click', () => {
+    navigator.clipboard?.writeText(url);
+    hbCopy.textContent = '✓ הועתק';
+    setTimeout(() => hbCopy.textContent = '📋 העתק לינק', 1500);
+  });
+}
+
+/* NEW ACCOUNT MODAL */
+function openNewAccount(){
+  ['naName','naEmail','naPhone','naAmount'].forEach(id => $('#'+id).value = '');
+  $('#naDay').innerHTML = Array.from({length:28},(_,i)=>`<option value="${i+1}" ${i+1===1?'selected':''}>${i+1}</option>`).join('');
+  document.querySelector('input[name="naPayType"][value="credit_card"]').checked = true;
+  $('#newAccModal').classList.add('is-open');
+}
+$('#naCreate').addEventListener('click', async () => {
+  const name = $('#naName').value.trim();
+  const email = $('#naEmail').value.trim();
+  const amount = +$('#naAmount').value;
+  if (!name || !email || !amount){ alert('שם, מייל וסכום חובה'); return; }
+  const btn = $('#naCreate');
+  btn.classList.add('is-loading'); btn.disabled = true;
+  await new Promise(r => setTimeout(r, 700));
+  btn.classList.remove('is-loading'); btn.disabled = false;
+  $('#newAccModal').classList.remove('is-open');
+  toast('✓ נוצר ב-Rivhit · יסונכרן בסנכרון הבא', 'success');
+});
+
+document.addEventListener('click', e => {
+  if (e.target.dataset && e.target.dataset.close !== undefined) e.target.closest('.modal-back').classList.remove('is-open');
+  else if (e.target.classList && e.target.classList.contains('modal-back')) e.target.classList.remove('is-open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-back.is-open').forEach(m => m.classList.remove('is-open'));
+});
+
+render();
+
+})();
+</script>
+</body>
+</html>

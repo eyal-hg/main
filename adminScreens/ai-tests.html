@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – בדיקות AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --salmon-h:#b8685c;
+    --green:#1e8e5f;
+    --green-bg:#dff3e9;
+    --amber:#b46e0e;
+    --amber-bg:#fbecd0;
+    --red:#a8302a;
+    --red-bg:#fbe1de;
+    --gray:#6b7c8d;
+    --gray-bg:#eef2f6;
+    --divider:#E3E3E3;
+    --line:#eaecef;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--navy);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:.92rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  .top{background:#fff;padding:14px 32px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--divider)}
+  .top__logo{width:40px;height:40px;border-radius:10px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff}
+  .top__title{font-size:1.05rem;font-weight:500}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{max-width:none;margin:0;padding:18px}
+  .wrap{max-width:1500px;margin:0 auto;padding:32px 40px 60px}
+
+  .card{background:#fff;border-top:2px solid var(--blue);box-shadow:var(--shadow-card);padding:24px 32px 28px}
+
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:14px}
+  .page-head__title{font-size:1.7rem;font-weight:500;letter-spacing:-.7px}
+  .page-head__meta{color:var(--muted);font-size:.88rem;margin-top:4px}
+  .page-head__actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:60px;font-weight:500;font-size:.88rem;transition:all .15s;border:1px solid transparent}
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:var(--salmon-h)}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--navy{background:var(--navy);color:#fff}
+  .btn--navy:hover{background:#0a3553}
+  .btn--green{background:var(--green);color:#fff}
+  .btn--green:hover{background:#157048}
+  .btn--sm{padding:6px 14px;font-size:.83rem}
+  .btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+
+  /* Parallel-runs input */
+  .par-input{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#fff;border:1px solid var(--divider);border-radius:60px;
+    padding:4px 6px 4px 14px;font-size:.82rem;color:var(--navy);font-weight:500;
+  }
+  .par-input input{
+    width:46px;padding:4px 8px;border-radius:60px;
+    border:1px solid var(--divider);background:var(--off);
+    font-family:inherit;font-size:.84rem;text-align:center;font-weight:600;
+    color:var(--navy);font-variant-numeric:tabular-nums;direction:ltr;
+  }
+  .par-input input:focus{outline:none;border-color:var(--blue);background:#fff}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:14px}
+  .stats--3{grid-template-columns:repeat(3,1fr)}
+  .stat{background:#fff;border-top:2px solid var(--blue);box-shadow:var(--shadow-card);padding:14px 18px;cursor:pointer;transition:transform .14s}
+  .stat:hover{transform:translateY(-2px)}
+  .stat.is-active{border-top-color:var(--navy);background:var(--blue-soft)}
+  .stat__label{font-size:.78rem;color:var(--muted);font-weight:500;margin-bottom:4px}
+  .stat__value{font-size:1.55rem;font-weight:500;color:var(--navy);letter-spacing:-.4px;line-height:1.1}
+  .stat__sub{font-size:.72rem;color:var(--muted);margin-top:2px}
+  .stat--pass .stat__value{color:var(--green)}
+  .stat--fail .stat__value{color:var(--red)}
+  .stat--run  .stat__value{color:var(--amber)}
+
+  /* Progress bar */
+  .progress{height:6px;background:var(--off);border-radius:60px;overflow:hidden;margin-bottom:14px;display:none}
+  .progress.is-on{display:block}
+  .progress__bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--navy));border-radius:60px;width:0;transition:width .3s}
+
+  /* Toolbar */
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .search{flex:1;min-width:240px;padding:8px 14px;border-radius:60px;border:1px solid var(--divider);background:#fff;font-size:.88rem}
+  .search:focus{outline:none;border-color:var(--blue)}
+  .sort-select{
+    padding:8px 14px;border-radius:60px;
+    border:1px solid var(--divider);background:#fff;
+    font-size:.84rem;font-weight:500;color:var(--navy);
+    cursor:pointer;flex:none;font-family:inherit;
+  }
+  .sort-select:hover{border-color:var(--blue)}
+  .sort-select:focus{outline:none;border-color:var(--blue)}
+  .filter-pills{display:flex;gap:6px;flex-wrap:wrap}
+  .filter-pill{padding:6px 14px;border-radius:60px;font-size:.82rem;font-weight:500;background:#fff;border:1px solid var(--divider);color:var(--navy);transition:all .14s;cursor:pointer;font-family:inherit}
+  .filter-pill:hover{border-color:var(--blue);color:var(--blue)}
+  .filter-pill.is-active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .pill-count{
+    display:inline-block;margin-inline-start:5px;
+    padding:1px 7px;border-radius:60px;
+    background:var(--off);color:var(--muted);font-size:.74rem;font-weight:600;
+    min-width:18px;text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  .filter-pill.is-active .pill-count{background:rgba(255,255,255,.18);color:#fff}
+  .filter-pill:hover:not(.is-active) .pill-count{background:var(--blue-soft);color:var(--blue)}
+
+  /* Filter row with labels (above the table) */
+  .filter-row{
+    display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+    margin-bottom:14px;padding:11px 14px;
+    background:var(--off);border:1px solid var(--line);border-radius:14px;
+  }
+  .filter-row__label{font-size:.78rem;color:var(--muted);font-weight:500;margin-inline-end:3px}
+  .filter-row__sep{
+    width:1px;height:24px;background:var(--divider);
+    margin-inline:8px;flex:none;
+  }
+
+  /* Table */
+  .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+  .colhead, .row{display:grid;grid-template-columns:55px 160px 1.2fr 1.2fr 1.2fr 130px 140px 200px;min-width:1320px;border-bottom:1px solid var(--line)}
+  .colhead{background:var(--off);padding:9px 16px;font-size:.78rem;color:var(--muted);font-weight:500}
+  .row{padding:12px 16px;background:#fff;align-items:flex-start;font-size:.88rem;transition:background .12s;cursor:pointer}
+  .row:hover{background:var(--off)}
+  .row:last-child{border-bottom:none}
+  .row.is-running{background:rgba(255,212,128,.18)}
+  .row > div, .colhead > div{padding:0 6px;overflow:hidden}
+
+  /* Status badge */
+  .st{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:.86rem;font-weight:700;flex:none}
+  .st--idle{background:var(--gray-bg);color:var(--gray)}
+  .st--queued{background:var(--blue-soft);color:#1a6e9a}
+  .st--running{background:var(--amber-bg);color:var(--amber);animation:spin 1.2s linear infinite}
+  .st--pass{background:var(--green-bg);color:var(--green)}
+  .st--fail{background:var(--red-bg);color:var(--red)}
+  .st--draft{background:#fef3c7;color:#b88207;font-size:.92rem}
+  .st--review{background:#e0e7ff;color:#3730a3;font-size:.92rem}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  /* Per-question spec link (📖 inline next to question) */
+  .qa__spec{
+    text-decoration:none;color:var(--blue);
+    display:inline-block;margin-inline-end:3px;
+    transition:transform .12s;
+    cursor:pointer;
+  }
+  .qa__spec:hover{transform:scale(1.25)}
+
+  /* Dev status pill (inline select) */
+  .dev-select{
+    appearance:none;-webkit-appearance:none;
+    display:inline-flex;align-items:center;
+    padding:5px 12px 5px 22px;border-radius:60px;
+    font-size:.8rem;font-weight:500;line-height:1.4;
+    border:none;outline:none;cursor:pointer;
+    font-family:inherit;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2.5 4l2.5 2.5 2.5-2.5' stroke='currentColor' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:left 8px center;background-size:9px;
+    transition:filter .15s, box-shadow .15s;
+  }
+  .dev-select:hover{filter:brightness(.96);box-shadow:0 0 0 2px rgba(57,171,226,.15)}
+  .dv--backlog   {background:var(--gray-bg);    color:var(--gray)}
+  .dv--inprogress{background:var(--amber-bg);   color:var(--amber)}
+  .dv--ready     {background:var(--green-bg);   color:var(--green)}
+  .dv--regression{background:var(--blue-soft);  color:#1a6e9a}
+
+  /* Inline created date under the question */
+  .qa__date{
+    margin-top:4px;font-size:.7rem;color:var(--muted-2);
+    font-weight:400;
+  }
+
+  /* Actual cell meta (duration + session link, inline) */
+  .actual-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:5px}
+  .session-link{
+    display:inline-flex;align-items:center;gap:3px;
+    font-size:.7rem;color:var(--blue);font-weight:500;
+    background:var(--blue-soft);padding:2px 9px;border-radius:60px;
+    text-decoration:none;border:1px solid #c8e0ec;
+    transition:all .14s;
+  }
+  .session-link:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+  /* Judge verdict column */
+  .vd{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 12px;border-radius:60px;
+    font-size:.84rem;font-weight:500;
+    white-space:nowrap;
+  }
+  .vd--good   {background:var(--green-bg); color:var(--green)}
+  .vd--bad    {background:var(--red-bg);   color:var(--red)}
+  .vd--review {background:#e0e7ff;         color:#3730a3}
+  .vd--pending{background:var(--amber-bg); color:var(--amber)}
+  .vd--queued {background:var(--blue-soft); color:#1a6e9a}
+  .vd--empty  {background:transparent;     color:var(--muted-2); padding-inline:4px}
+  .vd__reason{
+    font-size:.72rem;color:var(--muted);margin-top:5px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;line-height:1.4;
+  }
+
+  /* Run duration (⏱ X.Xs) */
+  .duration{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:.7rem;color:var(--muted);font-weight:500;
+    font-variant-numeric:tabular-nums;direction:ltr;
+    margin-top:5px;
+    background:var(--off);padding:2px 8px;border-radius:60px;
+  }
+
+  /* Company */
+  .company{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--navy)}
+  .company__name{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy)}
+  .company__name--link{text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+  .company__name--link:hover{color:var(--blue)}
+  .company__ext{font-size:.7rem;color:var(--muted-2);transition:transform .12s, color .12s}
+  .company__name--link:hover .company__ext{color:var(--blue);transform:translate(-1px, -1px)}
+  .company__sub{font-size:.7rem;color:var(--muted)}
+
+  /* Q/A text cells */
+  .qa{
+    font-size:.84rem;line-height:1.5;color:var(--navy);
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .qa--q{color:var(--navy);font-weight:400}
+  .qa--exp{color:var(--gray)}
+  .qa--act{color:var(--navy)}
+  .qa--act.is-fail{color:var(--red)}
+  .qa--empty{color:var(--muted-2);font-style:italic;font-size:.8rem}
+  .qa--diff{
+    background:linear-gradient(transparent 60%, rgba(168,48,42,.18) 0);
+    padding:0 2px;
+  }
+
+  /* Actions */
+  .actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+  .act-btn{padding:5px 11px;border-radius:60px;font-size:.78rem;font-weight:500;background:#fff;border:1px solid var(--divider);color:var(--navy);transition:all .14s}
+  .act-btn:hover{border-color:var(--blue);color:var(--blue)}
+  .act-btn--primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .act-btn--primary:hover{background:#0a3553;color:#fff}
+  .act-btn--green{background:var(--green);color:#fff;border-color:var(--green)}
+  .act-btn--green:hover{background:#157048}
+  .act-btn--danger{color:var(--red)}
+  .act-btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Empty */
+  .empty{padding:48px 20px;text-align:center;color:var(--muted)}
+  .empty__title{color:var(--navy);font-weight:500;font-size:1rem;margin-bottom:4px}
+
+  /* Toast */
+  .toast{position:fixed;bottom:24px;right:50%;transform:translateX(50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:60px;box-shadow:0 6px 18px rgba(12,64,104,.22);font-size:.88rem;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s}
+  .toast.is-on{opacity:1;transform:translateX(50%) translateY(-4px)}
+  .toast--success{background:var(--green)}
+  .toast--error{background:var(--red)}
+
+  /* Modal */
+  .modal-back{position:fixed;inset:0;background:rgba(12,64,104,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal-back--confirm{z-index:200;background:rgba(12,64,104,.35)}
+  .modal--confirm{
+    max-width:440px;border-top:3px solid var(--blue);
+    padding:28px 26px 22px;text-align:center;
+  }
+  .modal--confirm.is-danger{border-top-color:var(--red)}
+  .confirm__icon{
+    width:54px;height:54px;margin:0 auto 14px;border-radius:50%;
+    background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+  }
+  .modal--confirm.is-danger .confirm__icon{background:var(--red-bg);color:var(--red)}
+  .confirm__title{color:var(--navy);font-size:1.2rem;font-weight:500;margin-bottom:8px;text-align:center}
+  .confirm__text{color:var(--muted);font-size:.92rem;line-height:1.6;margin-bottom:22px;white-space:pre-wrap;text-align:center}
+  .confirm__text b{color:var(--navy);font-weight:500}
+  .confirm__foot{display:flex;gap:10px;justify-content:center}
+  .confirm__foot .btn{min-width:110px;justify-content:center}
+  .btn--danger{background:var(--red);color:#fff}
+  .btn--danger:hover{background:#8f2823}
+  .modal-back.is-open{display:flex}
+  .modal{background:#fff;border-top:2px solid var(--blue);box-shadow:var(--shadow-card);width:100%;max-width:880px;overflow:hidden;border-radius:14px;animation:pop .18s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--divider);gap:10px}
+  .modal__head h3{color:var(--navy);font-size:1.18rem;font-weight:500;display:flex;align-items:center;gap:9px}
+  .modal__close{font-size:1.4rem;color:var(--muted);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .modal__close:hover{background:var(--blue-soft);color:var(--navy)}
+  .modal__body{padding:20px 24px;max-height:74vh;overflow-y:auto}
+  .modal__foot{padding:13px 24px;background:var(--off);display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--divider)}
+  .modal__foot--right{justify-content:flex-end}
+
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .field input,.field select,.field textarea{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--divider);background:#fff;font-size:.9rem;font-family:inherit}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue)}
+  .field textarea{min-height:80px;resize:vertical;line-height:1.5}
+  /* Tag field — select + optional new-tag input */
+  .tag-field{display:flex;flex-direction:column;gap:6px}
+  .tag-field input[hidden]{display:none}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .form-row--1{grid-template-columns:1fr}
+
+  /* Detail modal layout */
+  .detail-q{
+    background:var(--blue-soft);border:1px solid #c8e0ec;border-radius:12px;
+    padding:14px 16px;margin-bottom:14px;
+    display:flex;gap:11px;align-items:flex-start;
+  }
+  .detail-q__icon{font-size:1.1rem;flex:none}
+  .detail-q__body{flex:1}
+  .detail-q__company{font-size:.78rem;color:var(--muted);margin-bottom:3px}
+  .detail-q__text{font-size:1.02rem;color:var(--navy);font-weight:500;line-height:1.5}
+
+  .ans-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .ans-card{
+    border-radius:12px;padding:13px 14px;
+    border:1px solid var(--divider);background:#fff;
+    display:flex;flex-direction:column;gap:7px;
+  }
+  .ans-card--exp{border-color:#c2e3d3;background:#f5fbf7}
+  .ans-card--act{border-color:#c8e0ec;background:#f4fafd}
+  .ans-card--act.is-fail{border-color:#f0c5be;background:#fff5f3}
+  .ans-card__title{
+    font-size:.74rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.4px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .ans-card__dot{width:8px;height:8px;border-radius:50%}
+  .ans-card--exp .ans-card__dot{background:var(--green)}
+  .ans-card--act .ans-card__dot{background:var(--blue)}
+  .ans-card--act.is-fail .ans-card__dot{background:var(--red)}
+  .ans-card__text{
+    font-size:.92rem;color:var(--navy);line-height:1.6;
+    white-space:pre-wrap;
+  }
+  .ans-card--empty .ans-card__text{color:var(--muted-2);font-style:italic}
+
+  /* Judge verdict box */
+  .verdict{
+    border-radius:12px;padding:14px 16px;margin-bottom:14px;
+    display:flex;gap:11px;align-items:flex-start;
+  }
+  .verdict--pass{background:var(--green-bg);border:1px solid #c2e3d3}
+  .verdict--fail{background:var(--red-bg);border:1px solid #f0c5be}
+  .verdict--pending{background:var(--off);border:1px solid var(--divider)}
+  .verdict__icon{
+    width:34px;height:34px;border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.15rem;font-weight:700;
+  }
+  .verdict--pass .verdict__icon{background:var(--green);color:#fff}
+  .verdict--fail .verdict__icon{background:var(--red);color:#fff}
+  .verdict__body{flex:1}
+  .verdict__title{font-weight:500;color:var(--navy);font-size:.95rem;margin-bottom:4px}
+  .verdict__title small{font-weight:400;color:var(--muted);font-size:.78rem;margin-inline-start:6px}
+  .verdict__text{font-size:.86rem;color:var(--navy);line-height:1.55}
+
+  /* Meta row */
+  .meta-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-bottom:6px}
+  .meta-row b{color:var(--navy);font-weight:500}
+
+  @media(max-width:1000px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .ans-pair{grid-template-columns:1fr}
+    .form-row{grid-template-columns:1fr}
+    .wrap{padding:18px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top__logo">HK</div>
+  <div>
+    <div class="top__title">HK Money</div>
+    <div class="top__sub">בדיקות AI — שאלות וואטסאפ</div>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Styled confirm popup (replaces native confirm/alert) -->
+<div class="modal-back modal-back--confirm" id="confirmModal" role="dialog" aria-modal="true">
+  <div class="modal modal--confirm">
+    <div class="confirm__icon" id="confirmIcon">⚠</div>
+    <h3 class="confirm__title" id="confirmTitle">אישור</h3>
+    <p class="confirm__text" id="confirmText"></p>
+    <div class="confirm__foot">
+      <button class="btn btn--ghost" id="confirmCancel">ביטול</button>
+      <button class="btn btn--primary" id="confirmOk">אישור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Test details modal -->
+<div class="modal-back" id="detailModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="detailTitle">פרטי בדיקה</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body" id="detailBody"></div>
+    <div class="modal__foot" id="detailFoot"></div>
+  </div>
+</div>
+
+<!-- Edit / Add test modal -->
+<div class="modal-back" id="editModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="editTitle">בדיקה חדשה</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-row">
+        <div class="field">
+          <label>חברה</label>
+          <select id="edCompany"></select>
+        </div>
+        <div class="field">
+          <label>תגית (אופציונלי)</label>
+          <div class="tag-field">
+            <select id="edTag"></select>
+            <input id="edTagNew" type="text" placeholder="שם תגית חדשה" hidden>
+          </div>
+        </div>
+      </div>
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>השאלה (כפי שמופיעה בוואטסאפ)</label>
+          <textarea id="edQuestion" placeholder="לדוגמה: מה מצב התזרים החודש?"></textarea>
+        </div>
+      </div>
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>תשובה רצויה <span style="color:var(--muted);font-weight:400">(אופציונלי)</span></label>
+          <textarea id="edExpected" placeholder="התשובה המדויקת שאמורה לחזור — כולל מספרים, פירוט וכו׳"></textarea>
+          <div class="field__hint">💡 לא חובה למלא עכשיו. אפשר להריץ את השאלה קודם — תקבל את תשובת הסוכן, ותוכל לאמץ אותה כתשובה הרצויה (כפתור "↻ אמץ תשובה" בשורה).</div>
+        </div>
+      </div>
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>📖 לינק לאפיון השאלה (אופציונלי)</label>
+          <input id="edSpecUrl" type="url" placeholder="https://docs.google.com/document/...">
+          <div class="field__hint">דף מסמך שמתאר את ההגדרות של השאלה הזו — מה התשובה אמורה לכלול, מקרי קצה וכו׳</div>
+        </div>
+      </div>
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>🛠 סטטוס פיתוח</label>
+          <select id="edDevStatus">
+            ${DEV_STATUSES.map(d => `<option value="${d.key}">${d.icon} ${d.label}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost btn--sm act-btn--danger" id="edDelete" style="display:none">מחק בדיקה</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="btn btn--ghost btn--sm" id="edDuplicate" style="display:none" title="צור עותק של הבדיקה לעריכה">⎘ שכפל</button>
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="edSave">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+if (location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+
+/* =====================================================
+   CONFIG — In production: backend wraps the agent flow.
+     POST /api/ai-tests/run        body:{testId} → קוראים לסוכן עם השאלה+context החברה
+     POST /api/ai-tests/judge      body:{question, expected, actual} → LLM-as-judge מחזיר {ok, reason}
+     PUT  /api/ai-tests/{id}       body:{expected} → עדכון ה-ground truth
+   ===================================================== */
+const CONFIG = {
+  USE_MOCK: true,
+  API_BASE: '',
+  // לינק לכרטיס החברה ב-Bizibox (יוצמד למזהה החברה)
+  BIZIBOX_URL: 'https://app.bizibox.biz/companies/',
+};
+
+function fmtDuration(ms){
+  if (ms == null) return '';
+  if (ms < 1000) return ms + 'ms';
+  return (ms/1000).toFixed(ms < 10000 ? 1 : 0) + 's';
+}
+function fmtRelative(ts){
+  if (!ts) return '—';
+  const diff = Date.now() - ts;
+  const day = 86400000;
+  if (diff < day)      return 'היום';
+  if (diff < 2*day)    return 'אתמול';
+  if (diff < 7*day)    return 'לפני ' + Math.floor(diff/day) + ' ימים';
+  if (diff < 30*day)   return 'לפני ' + Math.floor(diff/(7*day)) + ' שב׳';
+  if (diff < 365*day)  return 'לפני ' + Math.floor(diff/(30*day)) + ' חוד׳';
+  return 'לפני ' + Math.floor(diff/(365*day)) + ' שנים';
+}
+function fmtAbsDate(ts){
+  if (!ts) return '';
+  const d = new Date(ts);
+  return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getFullYear()).slice(-2);
+}
+
+/* =====================================================
+   DATA
+   ===================================================== */
+const COMPANIES = [
+  {id:70,  name:'כאמלה הסעדה',          industry:'הסעדה'},
+  {id:142, name:'מסעדת הים התיכון',     industry:'מסעדנות'},
+  {id:88,  name:'אבי ובניו ייעוץ',       industry:'ייעוץ עסקי'},
+  {id:215, name:'בריאות הכלל מרפאות',   industry:'רפואה'},
+  {id:305, name:'בית קפה דרור',         industry:'הסעדה'},
+  {id:412, name:'הסטודיו של נירית',     industry:'אמנות'},
+];
+
+let tests = [
+  {id:'t1',  companyId:70,  tag:'תזרים',  question:'מה היה התזרים במאי 2026?',
+   expected:'תזרים מאי 2026: חיובי בסך ₪52,340. הכנסות: ₪187,200, הוצאות: ₪134,860.', actual:null, status:'idle', judge:null,
+   devStatus:'regression', specUrl:'https://docs.google.com/document/d/spec-monthly-cashflow'},
+  {id:'t2',  companyId:70,  tag:'שכר',    question:'כמה היו הוצאות השכר במאי 2026?',
+   expected:'הוצאות שכר מאי 2026: ₪48,200 (כולל ביטוח לאומי וקרן השתלמות).', actual:null, status:'idle', judge:null,
+   devStatus:'regression', specUrl:'https://docs.google.com/document/d/spec-payroll-summary'},
+  {id:'t3',  companyId:70,  tag:'ספקים',  question:'מי היה הספק הגדול ביותר ברבעון 2 של 2026?',
+   expected:'הספק הגדול ביותר Q2 2026: א.ב. בשרים — סה"כ ₪62,400, פרוס על 8 חשבוניות.', actual:null, status:'idle', judge:null,
+   devStatus:'regression', specUrl:'https://docs.google.com/document/d/spec-suppliers-ranking'},
+  {id:'t4',  companyId:70,  tag:'גבייה',  question:'יש לקוחות עם חוב פתוח?',
+   expected:'יש 3 לקוחות עם חוב פתוח: מלון השרון ₪8,400, רואי חשבון לוי ₪3,200, גן הילדים פעמון ₪1,800.', actual:null, status:'idle', judge:null,
+   devStatus:'inprogress'},
+  {id:'t5',  companyId:142, tag:'תזרים',  question:'מה הצפי לחודש הבא?',
+   expected:'הצפי לחודש הבא: רווח של ₪22,500. בהתבסס על הזמנות קיימות והוצאות צפויות.', actual:null, status:'idle', judge:null,
+   devStatus:'inprogress', specUrl:'https://docs.google.com/document/d/spec-forecast-next-month'},
+  {id:'t6',  companyId:142, tag:'מע״מ',   question:'כמה מע״מ עליי לשלם לתקופת מאי-יוני 2026?',
+   expected:'תשלום מע״מ למאי-יוני 2026: ₪14,820. תאריך אחרון לתשלום: 15 ביולי 2026.', actual:null, status:'idle', judge:null,
+   devStatus:'regression'},
+  {id:'t7',  companyId:88,  tag:'הוצאות', question:'מה ההוצאה הגדולה ביותר בחודש?',
+   expected:'ההוצאה הגדולה ביותר: שכר דירה למשרד — ₪9,500.', actual:null, status:'idle', judge:null,
+   devStatus:'ready'},
+  {id:'t8',  companyId:88,  tag:'גבייה',  question:'אילו חשבוניות לא שולמו?',
+   expected:'2 חשבוניות לא שולמו: INV-2231 ע״ס ₪5,400 ללקוח שטרן (פיגור 12 ימים), INV-2245 ע״ס ₪3,200 ללקוח כהן (פיגור 4 ימים).', actual:null, status:'idle', judge:null,
+   devStatus:'ready'},
+  {id:'t9',  companyId:215, tag:'תזרים',  question:'איך התזרים שלי השנה לעומת שנה שעברה?',
+   expected:'התזרים השנה גבוה ב-12% לעומת שנה שעברה. סה״כ השנה עד כה: ₪742,000 לעומת ₪662,500.', actual:null, status:'idle', judge:null,
+   devStatus:'ready', specUrl:'https://docs.google.com/document/d/spec-yearly-comparison'},
+  {id:'t10', companyId:215, tag:'הוצאות', question:'הוצאות שיווק החודש?',
+   expected:'הוצאות שיווק החודש: ₪6,300. בעיקר פרסום בפייסבוק (₪4,500) וגוגל (₪1,800).', actual:null, status:'idle', judge:null,
+   devStatus:'backlog'},
+  {id:'t11', companyId:305, tag:'מלאי',   question:'איזה ספקים אני שילם להם מעל ₪5,000?',
+   expected:'4 ספקים מעל ₪5,000 החודש: קפה אורבני (₪7,200), בייקרי גורמה (₪6,800), משקאות שלמה (₪5,900), חלב ברוך (₪5,100).', actual:null, status:'idle', judge:null,
+   devStatus:'backlog'},
+  {id:'t12', companyId:305, tag:'תזרים',  question:'מה היה היום הכי טוב מבחינת הכנסות?',
+   expected:'היום הכי טוב החודש: שישי 14/06 עם הכנסות של ₪4,820 (124 לקוחות).', actual:null, status:'idle', judge:null,
+   devStatus:'ready'},
+  {id:'t13', companyId:412, tag:'גבייה',  question:'יש לי לקוחות חוזרים?',
+   expected:'12 לקוחות חוזרים השנה (קנו 2+ פעמים). הגדול: מירב כהן עם 6 רכישות בסכום כולל של ₪4,200.', actual:null, status:'idle', judge:null,
+   devStatus:'inprogress'},
+  {id:'t14', companyId:412, tag:'מע״מ',   question:'מתי תאריך הדיווח למע״מ עבור רבעון 2 של 2026?',
+   expected:'דיווח מע״מ Q2 2026: 15 ביולי 2026. סכום משוער לתשלום: ₪3,180.', actual:null, status:'idle', judge:null,
+   devStatus:'regression'},
+  {id:'t15', companyId:70,  tag:'הוצאות', question:'אילו תשלומים גמרו לי החודש?',
+   expected:'5 תשלומים סיימו החודש: שכ״ד מאי, ארנונה Q2, ביטוח רכב, מנוי תוכנה, ושכר עובדים.', actual:null, status:'idle', judge:null,
+   devStatus:'ready'},
+];
+// תאריכי הוספה — מפוזרים בכוונה לאורך הזמן כדי שהמיון יהיה מעניין
+(function seedCreatedAt(){
+  const base = Date.now();
+  const daysAgo = [0, 1, 2, 4, 5, 7, 10, 14, 18, 21, 25, 30, 40, 55, 70];
+  tests.forEach((t, i) => { t.createdAt = base - (daysAgo[i % daysAgo.length] * 86400000); });
+})();
+
+const state = {
+  search: '',
+  statusFilter: 'all',     // all / pass / fail / draft / idle / running  (מסונן ע"י כרטיסי הסטטיסטיקה)
+  devFilter: 'all',        // all / backlog / inprogress / ready / regression       (מסונן ע"י סרגל הפילטר)
+  tagFilter: 'all',        // all / __none__ / שם תגית                              (מסונן ע"י ה-dropdown ב-toolbar)
+  sortBy: 'createdAt',     // createdAt / lastDuration / company / verdict / devStatus
+  sortDir: 'desc',         // asc / desc
+  parallel: 5,             // כמה בדיקות לרוץ במקביל
+  isRunning: false,
+  abortRequested: false,
+  runStartedAt: null,
+  editingId: null,
+};
+
+/* =====================================================
+   HELPERS
+   ===================================================== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+function getCompany(id){ return COMPANIES.find(c => c.id === id); }
+function getTest(id){ return tests.find(t => t.id === id); }
+function esc(s){ return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function statusMeta(s){
+  return {
+    idle:    {icon:'·',  cls:'st--idle',    label:'לא הורץ / ללא בדיקה'},
+    queued:  {icon:'⏳', cls:'st--queued',  label:'בתור'},
+    running: {icon:'◐',  cls:'st--running', label:'רץ'},
+    pass:    {icon:'✓',  cls:'st--pass',    label:'עבר'},
+    fail:    {icon:'✗',  cls:'st--fail',    label:'נכשל'},
+    draft:   {icon:'📝', cls:'st--draft',   label:'טיוטה — אין תשובה רצויה'},
+  }[s];
+}
+
+/* סטטוס פיתוח (devStatus) — לתעדף עבודה של המתכנת.
+   "regression" = שאלה יציבה שראויה לרגרסיה אוטומטית (התשובה לא משתנה ממונת לחודש).
+   רק שאלות במצב הזה מורצות ב"הרץ הכל". "מוכן" = פיתוח הסתיים אבל התשובה עשויה להשתנות. */
+const DEV_STATUSES = [
+  {key:'backlog',    label:'לפיתוח',         icon:'📋', cls:'dv--backlog'},
+  {key:'inprogress', label:'בעבודה',         icon:'⚙',  cls:'dv--inprogress'},
+  {key:'ready',      label:'מוכן',           icon:'✓',  cls:'dv--ready'},
+  {key:'regression', label:'מוכן לרגרסיה',   icon:'🧪', cls:'dv--regression'},
+];
+function devMeta(k){ return DEV_STATUSES.find(d => d.key === k) || DEV_STATUSES[0]; }
+function inRegression(t){ return t.devStatus === 'regression'; }
+
+/* =====================================================
+   STATS
+   ===================================================== */
+function computeStats(){
+  return {
+    total: tests.length,
+    pass:  tests.filter(t => t.status === 'pass').length,
+    fail:  tests.filter(t => t.status === 'fail').length,
+    idle:  tests.filter(t => t.status === 'idle').length,
+    draft: tests.filter(t => t.status === 'draft').length,
+  };
+}
+
+/* =====================================================
+   API MOCKS — In production: backend calls actual AI agent + judge LLM
+   ===================================================== */
+// Generates a plausible "actual" answer, with controlled discrepancies
+function mockGenerateActual(t){
+  // 70% identical, 20% slight discrepancy (number off), 10% wrong/missing detail
+  const r = Math.random();
+  if (r < 0.7){
+    return t.expected;
+  }
+  if (r < 0.9){
+    // tweak a number
+    return t.expected.replace(/(\d{1,3}(?:,\d{3})*|\d+)/g, (m, num, idx, full) => {
+      if (Math.random() < 0.3){
+        // shift by 5-15%
+        const n = +(m.replace(/,/g,''));
+        if (isNaN(n)) return m;
+        const shifted = Math.round(n * (1 + (Math.random()*0.2-0.1)));
+        return shifted.toLocaleString('he-IL');
+      }
+      return m;
+    });
+  }
+  // omit a meaningful clause
+  const sentences = t.expected.split(/(?<=[.!?])\s+/);
+  if (sentences.length > 1) return sentences[0];
+  return t.expected.replace(/\([^)]*\)/g, '').trim() + ' [פרטים נוספים לא ידועים]';
+}
+
+function mockJudge(t, actual){
+  // simple normalized compare; in production: LLM-as-judge
+  const norm = s => s.replace(/[\s,.;:()"״׳']/g,'').toLowerCase();
+  const exp = norm(t.expected), act = norm(actual);
+  if (exp === act){
+    return {ok:true, reason:'התשובות זהות לחלוטין.'};
+  }
+  // Find numbers and compare
+  const numsExp = (t.expected.match(/\d[\d,]*/g) || []).map(s => +s.replace(/,/g,''));
+  const numsAct = (actual.match(/\d[\d,]*/g) || []).map(s => +s.replace(/,/g,''));
+  if (numsExp.length && numsAct.length && JSON.stringify(numsExp) !== JSON.stringify(numsAct)){
+    const diff = numsExp.map((n, i) => numsAct[i] != null && n !== numsAct[i] ? `${n.toLocaleString('he-IL')} → ${numsAct[i].toLocaleString('he-IL')}` : null).filter(Boolean);
+    return {ok:false, reason:`המספרים לא תואמים: ${diff.join(', ')}`};
+  }
+  // Length-based heuristic: significantly shorter = missing detail
+  if (actual.length < t.expected.length * 0.6){
+    return {ok:false, reason:'התשובה שהתקבלה קצרה משמעותית מהרצויה — חסרים פרטים.'};
+  }
+  // Otherwise consider it close-enough
+  return {ok:true, reason:'התשובות שונות בניסוח אך התוכן זהה.'};
+}
+
+async function apiRunTest(testId){
+  if (CONFIG.USE_MOCK){
+    const t = getTest(testId);
+    await new Promise(r => setTimeout(r, 800 + Math.random()*1800));
+    // מזהה סשן (mock) — ב-production: ה-backend יחזיר session_id אמיתי שמצביע על log/trace של ההרצה
+    const sid = Math.random().toString(36).slice(2,10);
+    return {
+      actual: mockGenerateActual(t),
+      sessionUrl: 'https://hk-agents.app/session/' + sid,
+    };
+  }
+  return (await fetch(`${CONFIG.API_BASE}/api/ai-tests/run`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({testId})})).json();
+}
+async function apiJudge(testId, actual){
+  if (CONFIG.USE_MOCK){
+    const t = getTest(testId);
+    await new Promise(r => setTimeout(r, 250 + Math.random()*400));
+    return mockJudge(t, actual);
+  }
+  const t = getTest(testId);
+  return (await fetch(`${CONFIG.API_BASE}/api/ai-tests/judge`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({question:t.question, expected:t.expected, actual})})).json();
+}
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+/* =====================================================
+   STYLED POPUPS — confirm + alert (במקום native confirm/alert של הדפדפן)
+   ===================================================== */
+let confirmCb = null;
+function askConfirm({title, text, okLabel, cancelLabel, danger, icon, onOk}){
+  const modal = $('#confirmModal');
+  $('#confirmTitle').textContent = title || 'אישור';
+  $('#confirmText').innerHTML = text || '';
+  $('#confirmIcon').textContent = icon || (danger ? '⚠' : '?');
+  $('#confirmOk').textContent = okLabel || 'אישור';
+  $('#confirmOk').className = 'btn ' + (danger ? 'btn--danger' : 'btn--primary');
+  modal.querySelector('.modal').classList.toggle('is-danger', !!danger);
+  // אם cancelLabel === '' → מצב single-button (alert), אחרת מציגים ביטול
+  if (cancelLabel === ''){ $('#confirmCancel').style.display = 'none'; }
+  else { $('#confirmCancel').style.display = ''; $('#confirmCancel').textContent = cancelLabel || 'ביטול'; }
+  confirmCb = onOk || null;
+  modal.classList.add('is-open');
+}
+function closeConfirm(){
+  confirmCb = null;
+  $('#confirmModal').classList.remove('is-open');
+}
+$('#confirmCancel').addEventListener('click', closeConfirm);
+$('#confirmModal').addEventListener('click', e => { if (e.target.id === 'confirmModal') closeConfirm(); });
+$('#confirmOk').addEventListener('click', () => {
+  const cb = confirmCb;
+  closeConfirm();
+  if (cb) cb();
+});
+// alertModal — תחליף ל-alert(): פופאפ עם כפתור "הבנתי" בלבד
+function alertModal(msg, opts){
+  askConfirm({
+    title: (opts && opts.title) || 'שים לב',
+    text: msg,
+    okLabel: 'הבנתי',
+    cancelLabel: '',
+    icon: (opts && opts.icon) || 'ⓘ',
+    danger: !!(opts && opts.danger),
+  });
+}
+
+let toastTimer;
+function toast(msg, kind){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast is-on' + (kind ? ' toast--'+kind : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('is-on'), 2400);
+}
+
+/* =====================================================
+   RUN ORCHESTRATOR — 5 in parallel
+   ===================================================== */
+async function runOne(testId){
+  const t = getTest(testId);
+  if (!t) return;
+  const wasDraft = !t.expected || !t.expected.trim();
+  const isReg = inRegression(t);
+  t.status = 'running';
+  t.actual = null;
+  t.judge = null;
+  t.lastDuration = null;
+  t.lastRunAt = null;
+  t.sessionUrl = null;
+  updateRow(t.id);
+  updateStats();
+  const t0 = Date.now();
+  try {
+    const r = await apiRunTest(testId);
+    if (state.abortRequested){ t.status = wasDraft ? 'draft' : 'idle'; updateRow(t.id); updateStats(); return; }
+    t.actual = r.actual;
+    t.sessionUrl = r.sessionUrl;   // לינק לסשן של הסוכן — לצפייה בפלואו המלא
+    // ה-judge רץ אך ורק על שאלות במצב "מוכן לרגרסיה" (תשובה יציבה).
+    // שאר השאלות מקבלות תשובה — אבל ללא פסיקה אוטומטית.
+    if (wasDraft){
+      t.status = 'draft';  // נשאר טיוטה (אין expected) — אפשר "↻ אמץ תשובה" כדי לקבע
+    } else if (!isReg){
+      t.status = 'idle';   // יש expected אבל לא ברגרסיה — אין verdict, אפשר לקרוא ידנית
+    } else {
+      const j = await apiJudge(testId, t.actual);
+      if (state.abortRequested){ t.status = 'idle'; updateRow(t.id); updateStats(); return; }
+      t.judge = j;
+      t.status = j.ok ? 'pass' : 'fail';
+    }
+  } catch(e){
+    t.status = 'fail';
+    t.judge = {ok:false, reason:'שגיאה: ' + (e.message || e)};
+  }
+  t.lastDuration = Date.now() - t0;
+  t.lastRunAt = Date.now();
+  updateRow(t.id);
+  updateStats();
+}
+
+async function runAll(targetTests){
+  if (state.isRunning) return;
+  // "הרץ הכל" מריץ אך ורק שאלות בסטטוס "מוכן לרגרסיה" — שאלות עם תשובה רצויה יציבה.
+  // (הרצה ידנית של שאלה ספציפית עדיין אפשרית דרך ▶ הרץ בכל שורה.)
+  const source = targetTests || tests.filter(inRegression);
+  if (!source.length){
+    toast('אין שאלות בסטטוס "מוכן לרגרסיה" — סמן שאלות במצב 🧪 לפני הרצה.', 'error');
+    return;
+  }
+  state.isRunning = true;
+  state.abortRequested = false;
+  state.runStartedAt = Date.now();
+  const queue = [...source];
+  queue.forEach(t => {
+    if (['idle','fail','pass','draft'].includes(t.status)) t.status = 'queued';
+  });
+  const totalToRun = queue.length;
+  let completed = 0;
+  $('#progress').classList.add('is-on');
+  $('#runBtn').textContent = '⏸ עצור';
+  $('#runBtn').classList.remove('btn--primary'); $('#runBtn').classList.add('btn--ghost');
+  renderTab();
+
+  async function worker(){
+    while (true){
+      if (state.abortRequested) break;
+      const next = queue.find(t => t.status === 'queued');
+      if (!next) break;
+      next.status = 'running';
+      updateRow(next.id);
+      await runOne(next.id);
+      completed++;
+      $('#progress .progress__bar').style.width = (completed/totalToRun*100) + '%';
+    }
+  }
+  const workers = [];
+  for (let i = 0; i < state.parallel; i++) workers.push(worker());
+  await Promise.all(workers);
+
+  state.isRunning = false;
+  state.abortRequested = false;
+  $('#progress').classList.remove('is-on');
+  $('#progress .progress__bar').style.width = '0';
+  $('#runBtn').textContent = `▶ הרץ רגרסיה (${tests.filter(inRegression).length})`;
+  $('#runBtn').classList.add('btn--primary'); $('#runBtn').classList.remove('btn--ghost');
+  const s = computeStats();
+  toast(`הסתיים: ${s.pass} עברו, ${s.fail} נכשלו`, s.fail ? 'error' : 'success');
+}
+
+function stopAll(){
+  state.abortRequested = true;
+  tests.forEach(t => {
+    if (t.status === 'queued') t.status = (t.expected && t.expected.trim()) ? 'idle' : 'draft';
+  });
+  renderTab();
+}
+
+/* =====================================================
+   RENDER
+   ===================================================== */
+function renderApp(){
+  const s = computeStats();
+  $('#app').innerHTML = `
+    <section class="card">
+      <div class="page-head">
+        <div>
+          <div class="page-head__title">בדיקות AI</div>
+          <div class="page-head__meta">שאלות וואטסאפ מול הסוכן · "הרץ רגרסיה" מריץ רק שאלות במצב 🧪 (יציבות לאורך זמן) · ניתן עדיין להריץ ידנית כל שאלה</div>
+        </div>
+        <div class="page-head__actions">
+          <button class="btn btn--ghost btn--sm" id="newTestBtn">+ בדיקה חדשה</button>
+          <label class="par-input" title="מספר בדיקות שירוצו במקביל">
+            <span>במקביל</span>
+            <input id="parallelInput" type="number" min="1" max="20" value="${state.parallel}">
+          </label>
+          <button class="btn btn--primary" id="runBtn" title="מריץ רק שאלות בסטטוס 🧪 מוכן לרגרסיה — שאלות עם תשובה יציבה">▶ הרץ רגרסיה (${tests.filter(inRegression).length})</button>
+        </div>
+      </div>
+
+      <div class="progress" id="progress"><div class="progress__bar"></div></div>
+
+      <div id="tabContent"></div>
+    </section>
+  `;
+  renderTab();
+  $('#newTestBtn').addEventListener('click', openNewTest);
+  $('#parallelInput').addEventListener('change', e => {
+    const n = Math.max(1, Math.min(20, +e.target.value || 5));
+    state.parallel = n;
+    e.target.value = n;
+    toast(`הרצה במקביל: ${n}`, 'success');
+    // עדכון ה"רץ N/X" בכרטיס הסטטיסטיקה
+    updateStats();
+  });
+  $('#runBtn').addEventListener('click', () => {
+    if (state.isRunning) stopAll();
+    else runAll();
+  });
+}
+
+function renderTab(){
+  const s = computeStats();
+  const filtered = tests.filter(t => {
+    if (state.statusFilter !== 'all'){
+      if (state.statusFilter === 'running' && t.status !== 'running' && t.status !== 'queued') return false;
+      else if (state.statusFilter !== 'running' && t.status !== state.statusFilter) return false;
+    }
+    if (state.devFilter !== 'all' && (t.devStatus || 'backlog') !== state.devFilter) return false;
+    if (state.tagFilter !== 'all'){
+      if (state.tagFilter === '__none__') { if (t.tag && t.tag.trim()) return false; }
+      else if ((t.tag || '') !== state.tagFilter) return false;
+    }
+    const q = state.search.trim().toLowerCase();
+    if (q && !t.question.toLowerCase().includes(q) && !(t.expected||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  // מיון
+  if (state.sortBy === 'createdAt'){
+    filtered.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    if (state.sortDir === 'desc') filtered.reverse();
+  } else if (state.sortBy === 'tag'){
+    filtered.sort((a, b) => (a.tag || '').localeCompare(b.tag || '', 'he'));
+    if (state.sortDir === 'desc') filtered.reverse();
+  }
+
+  $('#tabContent').innerHTML = `
+    <div class="stats stats--3">
+      <div class="stat ${state.statusFilter==='all'?'is-active':''}" data-filter="all">
+        <div class="stat__label">סך הכל בדיקות</div>
+        <div class="stat__value">${s.total}</div>
+        <div class="stat__sub">${tests.filter(inRegression).length} ברגרסיה</div>
+      </div>
+      <div class="stat stat--pass ${state.statusFilter==='pass'?'is-active':''}" data-filter="pass">
+        <div class="stat__label">עברו ✓</div>
+        <div class="stat__value">${s.pass}</div>
+        <div class="stat__sub">${s.total?Math.round(s.pass/s.total*100):0}%</div>
+      </div>
+      <div class="stat stat--fail ${state.statusFilter==='fail'?'is-active':''}" data-filter="fail">
+        <div class="stat__label">נכשלו ✗</div>
+        <div class="stat__value">${s.fail}</div>
+        <div class="stat__sub">דורש טיפול</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search" id="search" type="search" placeholder="חיפוש בשאלה או בתשובה..." value="${esc(state.search)}">
+      <select class="sort-select" id="sortSelect" title="מיון">
+        <option value="createdAt-desc" ${state.sortBy==='createdAt'&&state.sortDir==='desc'?'selected':''}>⏱ חדשות ראשונות</option>
+        <option value="createdAt-asc"  ${state.sortBy==='createdAt'&&state.sortDir==='asc'?'selected':''}>⏱ ישנות ראשונות</option>
+        <option value="tag-asc"  ${state.sortBy==='tag'&&state.sortDir==='asc'?'selected':''}>🏷 תגית א—ת</option>
+        <option value="tag-desc" ${state.sortBy==='tag'&&state.sortDir==='desc'?'selected':''}>🏷 תגית ת—א</option>
+      </select>
+      <select class="sort-select" id="tagFilter" title="סינון לפי תגית">
+        <option value="all" ${state.tagFilter==='all'?'selected':''}>🏷 כל התגיות</option>
+        ${uniqueTags().map(t => `<option value="${esc(t)}" ${state.tagFilter===t?'selected':''}>🏷 ${esc(t)}</option>`).join('')}
+        <option value="__none__" ${state.tagFilter==='__none__'?'selected':''}>— ללא תגית</option>
+      </select>
+    </div>
+
+    <div class="filter-row" id="filterRow">
+      <button class="filter-pill ${state.devFilter==='all'?'is-active':''}" data-df="all">הכל <span class="pill-count">${tests.length}</span></button>
+      ${DEV_STATUSES.map(d => {
+        const n = tests.filter(t => (t.devStatus || 'backlog') === d.key).length;
+        return `<button class="filter-pill ${state.devFilter===d.key?'is-active':''}" data-df="${d.key}">${d.icon} ${d.label} <span class="pill-count">${n}</span></button>`;
+      }).join('')}
+    </div>
+
+    <div class="table-scroll">
+      <div class="colhead">
+        <div></div>
+        <div>חברה</div>
+        <div>שאלה</div>
+        <div>תשובה רצויה</div>
+        <div>תשובה שהתקבלה</div>
+        <div>טוב / לא טוב?</div>
+        <div>סטטוס פיתוח</div>
+        <div style="text-align:end">פעולות</div>
+      </div>
+      <div id="rows">
+        ${filtered.length === 0
+          ? `<div class="empty"><div class="empty__title">לא נמצאו בדיקות</div></div>`
+          : filtered.map(rowHtml).join('')}
+      </div>
+    </div>
+  `;
+  wireTab();
+}
+
+function devSelectHtml(t){
+  const cur = t.devStatus || 'backlog';
+  return `<select class="dev-select ${devMeta(cur).cls}" data-id="${t.id}" data-dev>
+    ${DEV_STATUSES.map(d => `<option value="${d.key}" ${d.key===cur?'selected':''}>${d.icon} ${d.label}</option>`).join('')}
+  </select>`;
+}
+
+function verdictOf(t){
+  if (t.status === 'pass')    return {cls:'vd vd--good',   text:'✓ טוב'};
+  if (t.status === 'fail')    return {cls:'vd vd--bad',    text:'✗ לא טוב'};
+  if (t.status === 'queued')  return {cls:'vd vd--queued', text:'בתור'};
+  if (t.status === 'running'){
+    return inRegression(t)
+      ? {cls:'vd vd--pending', text:'⏳ הסוכן בודק...'}
+      : {cls:'vd vd--pending', text:'⏳ מריץ...'};
+  }
+  // idle / draft / no judge — תשובה שהתקבלה ללא בדיקה אוטומטית
+  if (t.actual) return {cls:'vd vd--empty', text:'— ללא בדיקה'};
+  return {cls:'vd vd--empty', text:'—'};
+}
+
+function rowHtml(t){
+  const c = getCompany(t.companyId);
+  const meta = statusMeta(t.status);
+  const v = verdictOf(t);
+  const isFail = t.status === 'fail';
+  const hasExpected = t.expected && t.expected.trim();
+  return `<div class="row ${t.status==='running'?'is-running':''}" data-id="${t.id}">
+    <div><span class="st ${meta.cls}" title="${meta.label}">${meta.icon}</span></div>
+    <div>
+      <div class="company">
+        <div style="min-width:0">
+          <a class="company__name company__name--link" href="${esc(CONFIG.BIZIBOX_URL)}${c.id}" target="_blank" rel="noopener" title="פתח את ${esc(c.name)} ב-Bizibox">${esc(c.name)} <span class="company__ext">↗</span></a>
+          <div class="company__sub">${t.tag ? esc(t.tag) : esc(c.industry)}</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="qa qa--q">${t.specUrl ? `<a class="qa__spec" href="${esc(t.specUrl)}" target="_blank" rel="noopener" title="פתח אפיון לשאלה זו">📖</a> ` : ''}${esc(t.question)}</div>
+      <div class="qa__date" title="${esc(fmtAbsDate(t.createdAt))}">נוסף ${esc(fmtRelative(t.createdAt))}</div>
+    </div>
+    <div>${hasExpected
+      ? `<div class="qa qa--exp">${esc(t.expected)}</div>`
+      : `<div class="qa qa--empty">— שאלה חדשה (טיוטה)</div>`}</div>
+    <div>${t.actual
+      ? `<div class="qa qa--act ${isFail?'is-fail':''}">${esc(t.actual)}</div>
+         <div class="actual-meta">
+           ${t.lastDuration ? `<span class="duration" title="זמן ריצה">⏱ ${fmtDuration(t.lastDuration)}</span>` : ''}
+           ${t.sessionUrl ? `<a class="session-link" href="${esc(t.sessionUrl)}" target="_blank" rel="noopener" title="פתח סשן של הסוכן (trace מלא של ההרצה)">🔗 סשן</a>` : ''}
+         </div>`
+      : `<div class="qa qa--empty">${t.status==='running'||t.status==='queued'?'ממתין/רץ...':'לא הורץ עדיין'}</div>`
+    }</div>
+    <div>
+      <span class="${v.cls}">${v.text}</span>
+      ${t.judge && t.judge.reason ? `<div class="vd__reason" title="${esc(t.judge.reason)}">⚖ ${esc(t.judge.reason)}</div>` : ''}
+    </div>
+    <div>${devSelectHtml(t)}</div>
+    <div class="actions">${actionsFor(t)}</div>
+  </div>`;
+}
+
+function actionsFor(t){
+  const parts = [];
+  if (t.status === 'running' || t.status === 'queued'){
+    parts.push(`<button class="act-btn" disabled>${t.status==='queued'?'בתור':'רץ...'}</button>`);
+  } else {
+    parts.push(`<button class="act-btn act-btn--primary" data-act="run-one">▶ הרץ</button>`);
+  }
+  if (t.actual){
+    parts.push(`<button class="act-btn" data-act="details">⚖ פרטים</button>`);
+    // "אמץ תשובה" — קובע את התשובה שהתקבלה כתשובה הרצויה החדשה.
+    // מוצג בכל מצב שבו יש actual ועוד לא עברה בהצלחה.
+    if (t.status !== 'pass'){
+      parts.push(`<button class="act-btn act-btn--green" data-act="adopt" title="קבע את התשובה שהתקבלה כתשובה הרצויה לעתיד">↻ אמץ תשובה</button>`);
+    }
+  }
+  parts.push(`<button class="act-btn" data-act="edit" title="עריכה">✎</button>`);
+  return parts.join('');
+}
+
+function duplicateTest(id){
+  const t = getTest(id);
+  if (!t) return null;
+  const newId = 't_' + Date.now() + '_' + Math.random().toString(36).slice(2,5);
+  tests.unshift({
+    ...t,
+    id: newId,
+    question: t.question + ' (עותק)',
+    actual: null, judge: null, lastDuration: null, lastRunAt: null, sessionUrl: null,
+    status: (t.expected && t.expected.trim()) ? 'idle' : 'draft',
+    createdAt: Date.now(),
+  });
+  renderTab();
+  toast('הבדיקה שוכפלה ✓', 'success');
+  return newId;
+}
+
+function updateRow(id){
+  const t = getTest(id);
+  if (!t) return;
+  const old = document.querySelector(`.row[data-id="${id}"]`);
+  if (!old) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = rowHtml(t);
+  old.replaceWith(tmp.firstElementChild);
+}
+
+function updateStats(){
+  // re-render only the 3 stat cards
+  const s = computeStats();
+  document.querySelectorAll('.stat .stat__value').forEach((el, i) => {
+    if (i === 0) el.textContent = s.total;
+    else if (i === 1) el.textContent = s.pass;
+    else if (i === 2) el.textContent = s.fail;
+  });
+  document.querySelectorAll('.stat .stat__sub').forEach((el, i) => {
+    if (i === 0) el.textContent = `${tests.filter(inRegression).length} ברגרסיה`;
+    else if (i === 1) el.textContent = (s.total ? Math.round(s.pass/s.total*100) : 0) + '%';
+  });
+}
+
+function wireTab(){
+  $('#search').addEventListener('input', e => { state.search = e.target.value; renderTab(); });
+  $('#sortSelect').addEventListener('change', e => {
+    const [by, dir] = e.target.value.split('-');
+    state.sortBy = by; state.sortDir = dir;
+    renderTab();
+  });
+  $('#tagFilter').addEventListener('change', e => {
+    state.tagFilter = e.target.value;
+    renderTab();
+  });
+  document.querySelectorAll('.stat[data-filter]').forEach(s => {
+    s.addEventListener('click', () => {
+      const f = s.dataset.filter; if (!f) return;
+      state.statusFilter = (state.statusFilter === f) ? 'all' : f;
+      renderTab();
+    });
+  });
+  // סרגל הפילטר — סטטוס פיתוח. (פילטר התוצאות עדיין נגיש דרך כרטיסי הסטטיסטיקה למעלה.)
+  const fr = $('#filterRow');
+  if (fr) fr.addEventListener('click', e => {
+    const b = e.target.closest('.filter-pill');
+    if (!b) return;
+    if (b.dataset.df !== undefined){ state.devFilter = b.dataset.df; renderTab(); }
+  });
+  $('#rows').addEventListener('change', e => {
+    // שינוי סטטוס פיתוח
+    const sel = e.target.closest('[data-dev]');
+    if (!sel) return;
+    const t = getTest(sel.dataset.id);
+    if (!t) return;
+    t.devStatus = sel.value;
+    sel.className = 'dev-select ' + devMeta(t.devStatus).cls;
+    updateRow(t.id);
+    // עדכון ספירת הרגרסיה בכפתור "הרץ הכל"
+    const rb = $('#runBtn');
+    if (rb && !state.isRunning) rb.textContent = `▶ הרץ רגרסיה (${tests.filter(inRegression).length})`;
+    toast(`סטטוס פיתוח: ${devMeta(t.devStatus).label}`, 'success');
+  });
+  $('#rows').addEventListener('click', e => {
+    // לינק לאפיון השאלה — מטופל לבד ע"י <a target="_blank">
+    if (e.target.closest('a')) return;
+    // select של סטטוס פיתוח — לא לפתוח details
+    if (e.target.closest('select')) return;
+    const btn = e.target.closest('button[data-act]');
+    const row = e.target.closest('.row');
+    if (!row) return;
+    const id = row.dataset.id;
+    if (btn){
+      e.stopPropagation();
+      const act = btn.dataset.act;
+      if (act === 'run-one')      runOne(id);
+      else if (act === 'details') openDetails(id);
+      else if (act === 'edit')    openEdit(id);
+      else if (act === 'adopt')   adoptActual(id);
+      return;
+    }
+    // Click on the row body → open details (if there's an actual to inspect)
+    const t = getTest(id);
+    if (t.actual) openDetails(id);
+  });
+}
+
+/* =====================================================
+   ACTIONS
+   ===================================================== */
+function adoptActual(id){
+  const t = getTest(id);
+  if (!t || !t.actual) return;
+  askConfirm({
+    title: 'עדכון התשובה הרצויה',
+    text: `לקבוע את התשובה שהתקבלה כתשובה הרצויה?\n\n<b>חדש:</b>\n${esc(t.actual)}`,
+    okLabel: 'אמץ תשובה',
+    icon: '↻',
+    onOk: () => {
+      t.expected = t.actual;
+      t.status = 'pass';
+      t.judge = {ok:true, reason:'עודכנה תשובה רצויה לפי התשובה שהתקבלה.'};
+      updateRow(id);
+      updateStats();
+      toast('התשובה הרצויה עודכנה ✓', 'success');
+    }
+  });
+}
+
+
+/* =====================================================
+   DETAILS MODAL
+   ===================================================== */
+function openDetails(id){
+  const t = getTest(id);
+  if (!t) return;
+  const c = getCompany(t.companyId);
+  const isFail = t.status === 'fail';
+  const verdictCls = isFail ? 'verdict--fail' : (t.judge ? 'verdict--pass' : 'verdict--pending');
+  const meta = statusMeta(t.status);
+  $('#detailTitle').innerHTML = `<span class="st ${meta.cls}">${meta.icon}</span> פרטי בדיקה`;
+  $('#detailBody').innerHTML = `
+    <div class="meta-row">
+      <span>חברה: <b>#${c.id} ${esc(c.name)}</b></span>
+      ${t.tag ? `<span>תגית: <b>${esc(t.tag)}</b></span>` : ''}
+      <span>מזהה: <b>${t.id}</b></span>
+      ${t.lastDuration ? `<span>⏱ זמן ריצה אחרון: <b>${fmtDuration(t.lastDuration)}</b></span>` : ''}
+      ${t.sessionUrl ? `<span>🔗 <a href="${esc(t.sessionUrl)}" target="_blank" style="color:var(--blue);font-weight:500">פתח סשן של הסוכן</a></span>` : ''}
+      ${t.specUrl
+        ? `<span>📖 <a href="${esc(t.specUrl)}" target="_blank" style="color:var(--blue);font-weight:500">פתח אפיון שאלה</a></span>`
+        : `<span><a href="#" id="addSpecInline" style="color:var(--blue);font-weight:500">+ הוסף לינק לאפיון</a></span>`}
+    </div>
+
+    <div class="detail-q">
+      <div class="detail-q__icon">💬</div>
+      <div class="detail-q__body">
+        <div class="detail-q__company">שאלה שהוקלדה בוואטסאפ:</div>
+        <div class="detail-q__text">${esc(t.question)}</div>
+      </div>
+    </div>
+
+    <div class="ans-pair">
+      <div class="ans-card ans-card--exp">
+        <div class="ans-card__title"><span class="ans-card__dot"></span>תשובה רצויה (ground truth)</div>
+        <div class="ans-card__text">${esc(t.expected)}</div>
+      </div>
+      <div class="ans-card ans-card--act ${isFail?'is-fail':''} ${!t.actual?'ans-card--empty':''}">
+        <div class="ans-card__title"><span class="ans-card__dot"></span>תשובה שהתקבלה מהסוכן</div>
+        <div class="ans-card__text">${t.actual ? esc(t.actual) : 'הבדיקה עוד לא הורצה'}</div>
+      </div>
+    </div>
+
+    <div class="verdict ${verdictCls}">
+      <div class="verdict__icon">${t.judge ? (t.judge.ok ? '✓' : '✗') : '?'}</div>
+      <div class="verdict__body">
+        <div class="verdict__title">${t.judge ? (t.judge.ok ? 'התשובה זהה / תקינה' : 'התשובה לא תואמת') : 'ממתין לבדיקה'} <small>· סוכן Judge</small></div>
+        <div class="verdict__text">${t.judge ? esc(t.judge.reason) : 'הרץ את הבדיקה כדי לקבל פסיקה מהסוכן.'}</div>
+      </div>
+    </div>
+
+  `;
+  $('#detailFoot').innerHTML = `
+    <button class="btn btn--ghost btn--sm" data-close>סגירה</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn--ghost btn--sm" id="detEdit">✎ ערוך תשובה רצויה</button>
+      ${t.actual && t.status === 'fail' ? `<button class="btn btn--green btn--sm" id="detAdopt">↻ עדכן: קבל את התשובה שהתקבלה</button>` : ''}
+      ${!state.isRunning ? `<button class="btn btn--primary btn--sm" id="detRun">▶ הרץ שוב</button>` : ''}
+    </div>
+  `;
+  $('#detailModal').classList.add('is-open');
+  const fr = $('#detRun');   if (fr) fr.addEventListener('click', () => { $('#detailModal').classList.remove('is-open'); runOne(id); });
+  const fe = $('#detEdit');  if (fe) fe.addEventListener('click', () => { $('#detailModal').classList.remove('is-open'); openEdit(id); });
+  const fa = $('#detAdopt'); if (fa) fa.addEventListener('click', () => { $('#detailModal').classList.remove('is-open'); adoptActual(id); });
+  const fs = $('#addSpecInline'); if (fs) fs.addEventListener('click', (e) => {
+    e.preventDefault();
+    const url = prompt('לינק לאפיון השאלה (Google Doc / Notion / וכו׳):', '');
+    if (!url) return;
+    const trimmed = url.trim();
+    if (!/^https?:\/\//.test(trimmed)){ alertModal('הלינק חייב להתחיל ב-http:// או https://', {danger:true}); return; }
+    t.specUrl = trimmed;
+    toast('הלינק נשמר ✓', 'success');
+    openDetails(id);  // re-render the modal
+    updateRow(id);
+  });
+}
+
+/* =====================================================
+   EDIT / NEW TEST MODAL
+   ===================================================== */
+function openEdit(id){
+  state.editingId = id;
+  const t = getTest(id);
+  if (!t) return;
+  $('#editTitle').textContent = 'עריכת בדיקה';
+  $('#edDelete').style.display = '';
+  $('#edDuplicate').style.display = '';
+  populateCompanies(t.companyId);
+  populateTags(t.tag || '');
+  $('#edQuestion').value = t.question;
+  $('#edExpected').value = t.expected;
+  $('#edSpecUrl').value = t.specUrl || '';
+  $('#edDevStatus').value = t.devStatus || 'backlog';
+  $('#editModal').classList.add('is-open');
+}
+function openNewTest(){
+  state.editingId = null;
+  $('#editTitle').textContent = 'בדיקה חדשה';
+  $('#edDelete').style.display = 'none';
+  $('#edDuplicate').style.display = 'none';
+  populateCompanies(COMPANIES[0].id);
+  populateTags('');
+  $('#edQuestion').value = '';
+  $('#edExpected').value = '';
+  $('#edSpecUrl').value = '';
+  $('#edDevStatus').value = 'backlog';
+  $('#editModal').classList.add('is-open');
+}
+function populateCompanies(sel){
+  $('#edCompany').innerHTML = COMPANIES.map(c => `<option value="${c.id}" ${c.id==sel?'selected':''}>${esc(c.name)}</option>`).join('');
+}
+function uniqueTags(){
+  return [...new Set(tests.map(t => (t.tag || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'he'));
+}
+function populateTags(currentTag){
+  const tags = uniqueTags();
+  const isExisting = currentTag && tags.includes(currentTag);
+  const sel = $('#edTag');
+  sel.innerHTML =
+    `<option value="">— ללא תגית —</option>` +
+    tags.map(t => `<option value="${esc(t)}" ${t===currentTag?'selected':''}>${esc(t)}</option>`).join('') +
+    `<option value="__new__">+ תגית חדשה...</option>`;
+  // אם התגית הנוכחית לא ברשימה (תגית חופשית ישנה) — נטען את ה-input החדש איתה
+  const inp = $('#edTagNew');
+  if (currentTag && !isExisting){
+    sel.value = '__new__';
+    inp.value = currentTag;
+    inp.hidden = false;
+  } else {
+    inp.value = '';
+    inp.hidden = true;
+  }
+}
+// מעבר ל-input החדש ברגע שבוחרים "+ תגית חדשה"
+document.addEventListener('change', e => {
+  if (e.target.id !== 'edTag') return;
+  const inp = $('#edTagNew');
+  if (e.target.value === '__new__'){ inp.hidden = false; inp.focus(); }
+  else { inp.hidden = true; inp.value = ''; }
+});
+$('#edSave').addEventListener('click', () => {
+  const cid = +$('#edCompany').value;
+  const q   = $('#edQuestion').value.trim();
+  const e   = $('#edExpected').value.trim();
+  // תגית — אם נבחר "תגית חדשה", נשתמש בערך מהאינפוט
+  const tagSelVal = $('#edTag').value;
+  const tag = (tagSelVal === '__new__') ? $('#edTagNew').value.trim() : tagSelVal.trim();
+  const spec = $('#edSpecUrl').value.trim();
+  if (!q){ alertModal('יש למלא שאלה', {danger:true}); return; }
+  if (spec && !/^https?:\/\//.test(spec)){ alertModal('לינק האפיון חייב להתחיל ב-http:// או https://', {danger:true}); return; }
+  const devStatus = $('#edDevStatus').value;
+  if (state.editingId){
+    const t = getTest(state.editingId);
+    t.companyId = cid; t.question = q; t.expected = e; t.tag = tag; t.specUrl = spec || null;
+    t.devStatus = devStatus;
+    // reset run state — answer no longer fresh (only if test had run before)
+    if (t.actual){ t.actual = null; t.judge = null; t.lastDuration = null; t.sessionUrl = null; }
+    t.status = e ? 'idle' : 'draft';
+    toast('הבדיקה עודכנה', 'success');
+  } else {
+    const id = 't_' + Date.now();
+    tests.unshift({id, companyId:cid, tag, question:q, expected:e, actual:null,
+      status: e ? 'idle' : 'draft', judge:null, specUrl: spec || null, devStatus,
+      createdAt: Date.now()});
+    toast('בדיקה חדשה נוספה', 'success');
+  }
+  $('#editModal').classList.remove('is-open');
+  renderTab();
+});
+$('#edDuplicate').addEventListener('click', () => {
+  if (!state.editingId) return;
+  const newId = duplicateTest(state.editingId);
+  if (newId) openEdit(newId);   // העריכה ממשיכה על העותק החדש
+});
+$('#edDelete').addEventListener('click', () => {
+  if (!state.editingId) return;
+  const t = getTest(state.editingId);
+  askConfirm({
+    title: 'מחיקת בדיקה',
+    text: `פעולה זו תמחק לצמיתות את הבדיקה <b>${esc((t && t.question) || '')}</b>.\nלא ניתן לבטל את הפעולה.`,
+    okLabel: 'מחק לצמיתות',
+    danger: true,
+    onOk: () => {
+      tests = tests.filter(t => t.id !== state.editingId);
+      $('#editModal').classList.remove('is-open');
+      renderTab();
+      toast('הבדיקה נמחקה', 'success');
+    }
+  });
+});
+
+/* Modal backdrop close + Escape */
+document.addEventListener('click', e => {
+  if (e.target.dataset && e.target.dataset.close !== undefined){
+    e.target.closest('.modal-back').classList.remove('is-open');
+  } else if (e.target.classList && e.target.classList.contains('modal-back')){
+    e.target.classList.remove('is-open');
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-back.is-open').forEach(m => m.classList.remove('is-open'));
+});
+
+/* INIT */
+renderApp();
+
+})();
+</script>
+</body>
+</html>

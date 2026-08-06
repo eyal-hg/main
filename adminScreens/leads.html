@@ -1,0 +1,3662 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – ניהול לידים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --salmon-h:#b8685c;
+    --green:#1e8e5f;
+    --green-bg:#dff3e9;
+    --amber:#b46e0e;
+    --amber-bg:#fbecd0;
+    --red:#a8302a;
+    --red-bg:#fbe1de;
+    --purple:#7a4ea0;
+    --purple-bg:#ece1f5;
+    --divider:#E3E3E3;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:.92rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  /* Top bar */
+  .top{
+    background:var(--white);
+    padding:14px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .top__brand{display:flex;align-items:center;gap:14px}
+  .top__logo{
+    width:40px;height:40px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;font-size:1rem;
+  }
+  .top__title{font-size:1.05rem;font-weight:500;color:var(--navy)}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .top__user{display:flex;align-items:center;gap:12px;font-size:.9rem}
+  .top__avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:500;
+  }
+  .top__user-name{font-weight:500;color:var(--navy)}
+  .top__user-role{font-size:.78rem;color:var(--muted);margin-top:1px}
+
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{
+    max-width:none;margin:0;
+    padding:18px 0 28px 18px;
+  }
+
+  .wrap{max-width:1500px;margin:0 auto;padding:32px 40px 60px}
+
+  .card{
+    background:var(--white);
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    padding:24px 32px 30px;
+  }
+
+  .page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:20px;flex-wrap:wrap;gap:14px;
+  }
+  .page-head__title{font-size:1.7rem;font-weight:500;color:var(--navy);letter-spacing:-.7px}
+  .page-head__meta{color:var(--muted);font-size:.88rem;margin-top:4px}
+
+  /* Stats */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(6, 1fr);
+    gap:10px;margin-bottom:18px;
+  }
+  .stat{
+    background:var(--off);
+    border-radius:14px;
+    padding:12px 14px;
+    border:1px solid var(--divider);
+    cursor:pointer;
+    transition:all .15s;
+  }
+  .stat:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .stat.is-active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .stat--stage{
+    border-top:3px solid var(--stage-color, var(--divider));
+    position:relative;
+  }
+  .stat--stage.is-active{border-top-color:var(--stage-color, var(--navy))}
+  .stat.is-active .stat__label{color:rgba(255,255,255,.78)}
+  .stat__label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .stat__value{font-size:1.45rem;font-weight:500;color:var(--navy);line-height:1.1;margin-top:2px}
+  .stat.is-active .stat__value{color:#fff}
+
+  /* Toolbar */
+  .toolbar{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:16px;flex-wrap:wrap;
+  }
+  .search{
+    flex:1;min-width:240px;
+    padding:9px 16px;
+    border:1px solid var(--divider);border-radius:60px;
+    background:#fff;outline:none;transition:border-color .15s;
+  }
+  .search:focus{border-color:var(--blue)}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 18px;border-radius:60px;
+    font-weight:500;font-size:.88rem;transition:all .15s;
+    border:1px solid transparent;
+  }
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:var(--salmon-h)}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--danger{background:#fff;color:var(--red);border-color:var(--divider)}
+  .btn--danger:hover{background:var(--red-bg);border-color:var(--red)}
+  .btn--sm{padding:6px 14px;font-size:.83rem}
+
+  /* Table */
+  .table-scroll{overflow-x:auto;margin:0 -32px;padding:0 32px}
+  body.is-embedded .table-scroll{margin:0 0 0 -18px;padding:0 0 0 18px}
+
+  .colhead, .row{
+    display:grid;
+    gap:14px;align-items:center;
+    grid-template-columns: 1.6fr 1.2fr 130px 140px 1.2fr 220px;
+    min-width:1240px;
+  }
+  .colhead{
+    background:var(--blue-soft);
+    border-radius:12px;
+    padding:11px 22px;
+    font-size:.88rem;color:var(--navy);font-weight:400;
+    margin-bottom:6px;
+  }
+  .colhead > div{text-align:right}
+  .colhead .col-action{text-align:left}
+  .row{
+    padding:13px 22px;
+    border-bottom:1px solid var(--divider);
+    color:var(--navy);font-size:.91rem;
+    transition:background .12s;
+  }
+  .row:last-child{border-bottom:none}
+  .row:hover{background:var(--off)}
+
+  /* Client cell */
+  .client{display:flex;align-items:center;gap:10px;min-width:0}
+  .client__avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:500;font-size:.84rem;flex-shrink:0;
+  }
+  .client__name{font-weight:500;color:var(--navy);line-height:1.2;font-size:.95rem}
+  .client__meta{
+    font-size:.74rem;color:var(--muted);margin-top:3px;
+    display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+  }
+  .client__sep{color:var(--muted-2)}
+  .source-inline{
+    background:none;border:none;cursor:pointer;font-family:inherit;
+    color:#1a6e9a;font-size:.74rem;font-weight:500;padding:0;
+  }
+  .source-inline:hover{text-decoration:underline}
+
+  .contact{font-size:.86rem;color:var(--navy);font-weight:300;direction:ltr;text-align:right}
+  .contact__sub{font-size:.76rem;color:var(--muted);margin-top:2px;direction:ltr;text-align:right}
+
+  /* Source tag */
+  .source-tag{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 11px;border-radius:60px;
+    background:var(--off);color:var(--muted);
+    font-size:.82rem;font-weight:400;
+    border:1px solid var(--divider);
+    font-family:inherit;
+  }
+  .source-tag--clickable{
+    cursor:pointer;
+    background:var(--blue-soft);color:#1a6e9a;
+    border-color:#c8e0ec;
+  }
+  .source-tag--clickable:hover{filter:brightness(.96);box-shadow:0 0 0 2px rgba(57,171,226,.16)}
+  .source-tag__caret{font-size:.7em;opacity:.6}
+
+  /* Source popover */
+  .source-popover{
+    position:absolute;
+    background:#fff;
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    border-radius:10px;
+    padding:14px 16px;
+    min-width:260px;max-width:320px;
+    z-index:200;
+    font-size:.88rem;
+  }
+  .source-popover__title{
+    font-size:.72rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px;font-weight:500;
+    margin-bottom:8px;
+  }
+  .source-popover__row{
+    display:flex;justify-content:space-between;gap:14px;
+    padding:6px 0;border-bottom:1px solid var(--divider);
+  }
+  .source-popover__row:last-child{border-bottom:none}
+  .source-popover__lbl{color:var(--muted);font-size:.82rem}
+  .source-popover__val{color:var(--navy);font-weight:500;text-align:left;font-size:.86rem}
+  .source-popover__close{
+    position:absolute;top:8px;left:8px;
+    width:24px;height:24px;border-radius:6px;
+    font-size:1.1rem;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .source-popover__close:hover{background:var(--off);color:var(--navy)}
+
+  /* Stage dropdown (styled like a colored pill) */
+  .stage-select{
+    appearance:none;-webkit-appearance:none;
+    display:inline-flex;align-items:center;
+    padding:4px 12px 4px 22px;
+    border-radius:60px;
+    font-size:.82rem;font-weight:500;
+    line-height:1.4;border:none;outline:none;cursor:pointer;
+    font-family:inherit;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2.5 4l2.5 2.5 2.5-2.5' stroke='currentColor' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:left 8px center;
+    background-size:9px;
+    transition:filter .15s,box-shadow .15s;
+  }
+  .stage-select:hover{filter:brightness(.96);box-shadow:0 0 0 2px rgba(57,171,226,.16)}
+  .stage-select[data-c="blue"]{background-color:var(--blue-soft);color:#1a6e9a}
+  .stage-select[data-c="amber"]{background-color:var(--amber-bg);color:var(--amber)}
+  .stage-select[data-c="purple"]{background-color:var(--purple-bg);color:var(--purple)}
+  .stage-select[data-c="salmon"]{background-color:#fbeae7;color:var(--salmon-h)}
+  .stage-select[data-c="green"]{background-color:var(--green-bg);color:var(--green)}
+  .stage-select[data-c="red"]{background-color:var(--red-bg);color:var(--red)}
+  .stage-select[data-c="gray"]{background-color:var(--off);color:var(--muted)}
+
+  /* Temperature badge */
+  .temp{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:3px 10px;border-radius:60px;
+    font-size:.78rem;font-weight:500;
+  }
+  .temp::before{
+    content:'';width:7px;height:7px;border-radius:50%;background:currentColor;
+  }
+  .temp--hot{background:var(--red-bg);color:var(--red)}
+  .temp--warm{background:var(--amber-bg);color:var(--amber)}
+  .temp--cold{background:var(--blue-soft);color:#1a6e9a}
+
+  /* Notes */
+  .notes{
+    color:var(--muted);font-size:.84rem;font-weight:300;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:220px;display:block;
+  }
+  .notes--empty{color:var(--muted-2)}
+
+  .date{
+    color:var(--navy);font-weight:300;font-size:.88rem;
+    direction:ltr;text-align:right;
+  }
+  .date__sub{font-size:.72rem;color:var(--muted);margin-top:2px;direction:ltr;text-align:right}
+  .meet-with{
+    font-size:.74rem;color:var(--muted);
+    margin-top:2px;
+  }
+  .meet-fmt{font-size:.58rem;cursor:help;opacity:.85}
+
+  /* Action */
+  .actions{display:flex;gap:4px}
+  .icon-btn{
+    width:32px;height:32px;border-radius:50%;
+    color:var(--muted);
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:all .12s;font-size:.95rem;
+    position:relative;
+  }
+  .icon-btn:hover{background:var(--blue-soft);color:var(--navy)}
+  .icon-btn--danger:hover{background:var(--red-bg);color:var(--red)}
+  .icon-btn--success:hover{background:var(--green-bg);color:var(--green)}
+  .icon-btn--chat:hover{background:#d6f5e1;color:#1e8e5f}
+  .icon-btn--has-meeting{background:var(--green-bg);color:var(--green)}
+  .icon-btn--has-meeting:hover{background:#cce8d8;color:var(--green)}
+  .icon-btn--has-quote{background:#fbecd0;color:var(--amber)}
+  .icon-btn--has-quote:hover{background:#f6dfb0;color:var(--amber)}
+
+  /* Quote modal */
+  .quote-items{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+  .quote-item{
+    padding:12px 16px;border-radius:12px;
+    border:1px solid var(--divider);background:var(--off);
+    transition:all .12s;
+  }
+  .quote-item.is-included{border-color:var(--green);background:var(--green-bg)}
+  .quote-item__head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .quote-item__check{
+    display:flex;align-items:center;gap:10px;cursor:pointer;
+    font-weight:500;color:var(--navy);font-size:1rem;
+  }
+  .quote-item__check input{width:18px;height:18px;cursor:pointer}
+  .quote-item__price{display:flex;align-items:center;gap:6px}
+  .quote-item__price input{
+    width:90px;padding:7px 12px;text-align:left;
+    border:1px solid var(--divider);border-radius:8px;
+    font-size:.95rem;outline:none;font-family:inherit;
+  }
+  .quote-item__price input:focus{border-color:var(--blue)}
+  .quote-item__price span{color:var(--muted);font-weight:500}
+  .quote-item__toggle{
+    margin-top:8px;background:none;border:none;cursor:pointer;
+    font-family:inherit;font-size:.82rem;color:var(--blue);font-weight:500;
+    display:inline-flex;align-items:center;gap:5px;padding:0;
+  }
+  .quote-item__toggle:hover{text-decoration:underline}
+  .quote-item__caret{display:inline-block;transition:transform .15s}
+  .quote-item__toggle.is-open .quote-item__caret{transform:rotate(180deg)}
+  .quote-item__content{margin-top:8px}
+  .quote-item__content[hidden]{display:none}
+  .quote-item__content textarea{
+    width:100%;padding:8px 12px;
+    border:1px solid var(--divider);border-radius:8px;
+    font-size:.88rem;outline:none;font-family:inherit;resize:vertical;
+    line-height:1.5;background:#fff;
+  }
+  .quote-item__content textarea:focus{border-color:var(--blue)}
+  .quote-total{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-radius:12px;
+    background:var(--blue-soft);color:var(--navy);font-size:.95rem;
+  }
+  .quote-total b{font-size:1.3rem;font-weight:500}
+  .icon-btn__badge{
+    position:absolute;top:-2px;left:-2px;
+    min-width:16px;height:16px;padding:0 4px;
+    background:var(--red);color:#fff;
+    border-radius:60px;
+    font-size:.68rem;font-weight:600;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #fff;
+  }
+  .icon-btn__badge--info{background:var(--navy)}
+
+  /* Chat modal */
+  .modal--chat{max-width:560px;display:flex;flex-direction:column}
+  .modal__chat-meta{
+    padding:8px 24px 12px;
+    font-size:.78rem;color:var(--muted);
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--divider);
+  }
+  .chat-channel{
+    display:inline-flex;align-items:center;gap:6px;
+    color:var(--green);font-weight:500;
+  }
+  .chat-channel::before{
+    content:'';width:8px;height:8px;border-radius:50%;background:var(--green);
+  }
+  .chat-messages{
+    height:380px;overflow-y:auto;
+    padding:18px;background:#eef3f8;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .chat-msg{display:flex}
+  .chat-msg--us{justify-content:flex-end}
+  .chat-msg--them{justify-content:flex-start}
+  .chat-msg__bubble{
+    max-width:75%;padding:7px 12px;
+    border-radius:14px;
+    font-size:.92rem;color:var(--navy);line-height:1.45;
+    word-break:break-word;white-space:pre-wrap;
+  }
+  .chat-msg--us .chat-msg__bubble{
+    background:#dcf8c6;border-bottom-left-radius:4px;
+  }
+  .chat-msg--them .chat-msg__bubble{
+    background:#fff;border-bottom-right-radius:4px;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+  }
+  .chat-msg__time{
+    font-size:.66rem;color:var(--muted);
+    margin-top:3px;direction:ltr;
+    text-align:right;
+  }
+  .chat-msg--us .chat-msg__time{text-align:left}
+  .chat-empty{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    color:var(--muted-2);font-size:.92rem;
+  }
+  .chat-input{
+    display:flex;gap:8px;padding:12px 14px;
+    background:#fff;border-top:1px solid var(--divider);
+    align-items:center;
+  }
+  .chat-input input{
+    flex:1;padding:10px 16px;
+    border:1px solid var(--divider);border-radius:60px;
+    outline:none;font-size:.92rem;
+    transition:border-color .15s;
+  }
+  .chat-input input:focus{border-color:var(--blue)}
+  .chat-send{
+    width:40px;height:40px;border-radius:50%;
+    background:#25d366;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;font-weight:600;cursor:pointer;border:none;
+    transition:filter .12s;
+  }
+  .chat-send:hover{filter:brightness(.95)}
+  .chat-send:disabled{opacity:.4;cursor:not-allowed}
+
+  .chat-templates-btn{
+    width:40px;height:40px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;cursor:pointer;border:none;flex-shrink:0;
+    transition:filter .12s;
+  }
+  .chat-templates-btn:hover{filter:brightness(.95)}
+
+  /* Templates panel (inline in chat modal) */
+  .tpl-panel{
+    border-top:1px solid var(--divider);
+    background:#fff;
+    max-height:300px;overflow-y:auto;
+    display:none;
+  }
+  .tpl-panel.is-open{display:block}
+  .tpl-panel__head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 16px;border-bottom:1px solid var(--divider);
+    background:var(--off);
+  }
+  .tpl-panel__title{font-size:.9rem;font-weight:500;color:var(--navy)}
+  .tpl-panel__actions{display:flex;gap:6px;align-items:center}
+  .tpl-list{padding:8px}
+  .tpl-card{
+    padding:10px 12px;border-radius:10px;
+    border:1px solid var(--divider);
+    margin-bottom:6px;
+    transition:background .12s;
+  }
+  .tpl-card:hover{background:var(--off)}
+  .tpl-card__name{
+    font-weight:500;color:var(--navy);font-size:.92rem;margin-bottom:4px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .tpl-card__name-actions{display:flex;gap:2px}
+  .tpl-card__body{
+    color:var(--muted);font-size:.84rem;line-height:1.4;
+    margin-bottom:8px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .tpl-card__use{
+    background:var(--blue);color:#fff;
+    padding:5px 14px;border-radius:60px;
+    font-size:.82rem;font-weight:500;cursor:pointer;border:none;
+  }
+  .tpl-card__use:hover{filter:brightness(.95)}
+  .tpl-icon-btn{
+    width:26px;height:26px;border-radius:50%;
+    color:var(--muted);font-size:.85rem;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:all .12s;
+  }
+  .tpl-icon-btn:hover{background:var(--blue-soft);color:var(--navy)}
+  .tpl-icon-btn--danger:hover{background:var(--red-bg);color:var(--red)}
+
+  .placeholder-chip{
+    display:inline-block;
+    padding:0 7px;border-radius:60px;
+    background:var(--blue-soft);color:#1a6e9a;
+    font-size:.78rem;font-weight:500;
+  }
+
+  /* Template editor (inside modal) */
+  .tpl-edit-vars{
+    display:flex;flex-wrap:wrap;gap:6px;
+    margin-top:8px;
+  }
+  .tpl-edit-vars__title{
+    font-size:.78rem;color:var(--muted);
+    width:100%;margin-bottom:6px;
+  }
+  .tpl-var-btn{
+    padding:3px 11px;border-radius:60px;
+    background:var(--blue-soft);color:#1a6e9a;
+    font-size:.8rem;font-weight:500;
+    border:1px dashed #c8e0ec;cursor:pointer;
+    transition:filter .12s;
+  }
+  .tpl-var-btn:hover{filter:brightness(.96)}
+
+  /* Unread pill in page head */
+  .unread-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 12px;border-radius:60px;
+    background:var(--red-bg);color:var(--red);
+    font-size:.82rem;font-weight:500;
+    margin-top:6px;cursor:pointer;
+    transition:filter .12s;
+  }
+  .unread-pill:hover{filter:brightness(.97)}
+  .unread-pill::before{
+    content:'';width:8px;height:8px;border-radius:50%;background:var(--red);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.5;transform:scale(.85)}
+  }
+
+  /* Stage settings modal */
+  .stage-row{
+    display:flex;flex-direction:column;gap:8px;
+    padding:12px 4px;border-bottom:1px solid var(--divider);
+  }
+  .stage-row:last-child{border-bottom:none}
+  .stage-row__top{display:flex;align-items:center;gap:10px}
+  .stage-row__label{
+    flex:1;padding:7px 12px;
+    border:1px solid var(--divider);
+    border-radius:8px;
+    font-size:.92rem;outline:none;
+    transition:border-color .15s;
+  }
+  .stage-row__label:focus{border-color:var(--blue)}
+  .stage-row__toggle{
+    display:flex;align-items:center;gap:7px;
+    font-size:.86rem;color:var(--navy);font-weight:400;
+    cursor:pointer;flex-shrink:0;user-select:none;
+  }
+  .stage-row__toggle input{width:18px;height:18px;cursor:pointer}
+  .color-trigger{
+    width:24px;height:24px;border-radius:50%;
+    border:2px solid #fff;cursor:pointer;flex-shrink:0;
+    box-shadow:0 0 0 1px var(--divider);
+    transition:transform .1s;padding:0;
+  }
+  .color-trigger:hover{transform:scale(1.1)}
+  .stage-row__palette{
+    display:flex;gap:6px;flex-wrap:wrap;
+    padding:10px;background:var(--off);border-radius:10px;
+    border:1px solid var(--divider);
+    animation:paletteIn .12s ease-out;
+  }
+  .stage-row__palette[hidden]{display:none}
+  @keyframes paletteIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .color-swatch{
+    width:24px;height:24px;border-radius:50%;
+    border:2px solid transparent;cursor:pointer;
+    transition:transform .1s, box-shadow .12s;
+    padding:0;
+  }
+  .color-swatch:hover{transform:scale(1.12)}
+  .color-swatch.is-selected{
+    border-color:#fff;
+    box-shadow:0 0 0 2px var(--navy);
+  }
+
+  .stage-row__hint{
+    padding:10px 14px;background:var(--off);
+    border-radius:10px;
+    font-size:.84rem;color:var(--muted);
+    margin-bottom:14px;line-height:1.5;
+  }
+
+  /* Timeline modal */
+  .modal--timeline{max-width:600px;display:flex;flex-direction:column}
+  .modal__chat-meta + .timeline-add{border-top:none}
+  .timeline-add{
+    padding:14px 20px;
+    border-bottom:1px solid var(--divider);
+    display:flex;gap:10px;align-items:flex-end;
+  }
+  .timeline-add textarea{
+    flex:1;padding:10px 14px;
+    border:1px solid var(--divider);border-radius:10px;
+    outline:none;resize:none;font-family:inherit;font-size:.92rem;
+    transition:border-color .15s;min-height:44px;max-height:120px;
+  }
+  .timeline-add textarea:focus{border-color:var(--blue)}
+  .timeline-add__btn{flex-shrink:0}
+
+  .timeline-list{
+    padding:14px 20px 20px;
+    max-height:440px;overflow-y:auto;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .timeline-empty{
+    color:var(--muted-2);text-align:center;
+    padding:30px 20px;font-size:.9rem;
+  }
+
+  .tl-item{display:flex;gap:12px;align-items:flex-start}
+  .tl-item__icon{
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;font-size:.88rem;font-weight:500;
+  }
+  .tl-item__icon--note{background:#fde9b3;color:#8c6500}
+  .tl-item__icon--status{background:var(--off);color:var(--muted)}
+  .tl-item__icon--meeting{background:var(--off);color:var(--muted)}
+  .tl-item__icon--message{background:var(--off);color:var(--muted)}
+  .tl-item__icon--call{background:#dff3e9;color:var(--green)}
+  .tl-item__body{flex:1;min-width:0}
+  .tl-item__text{
+    color:var(--navy);font-size:.92rem;line-height:1.5;
+    word-break:break-word;
+  }
+
+  /* Auto events: clean, low visual weight (gray icon + standard meta) */
+  /* Manual notes: prominent yellow bubble with right border accent */
+  .tl-item--manual .tl-item__body{
+    background:#fffae8;
+    padding:10px 14px;
+    border-radius:10px;
+    border:1px solid #f0e0a0;
+    border-right:3px solid #d4af37;
+  }
+  .tl-item--manual .tl-item__text{
+    color:var(--navy);font-weight:400;
+  }
+
+  .tl-tag{
+    display:inline-flex;align-items:center;
+    padding:0 8px;height:18px;border-radius:60px;
+    font-size:.68rem;font-weight:500;letter-spacing:.3px;
+  }
+  .tl-tag--auto{background:var(--off);color:var(--muted);border:1px solid var(--divider)}
+  .tl-tag--manual{background:#fde9b3;color:#8c6500}
+  .tl-item__status{
+    display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;
+    color:var(--navy);font-size:.9rem;
+  }
+  .tl-item__status .from, .tl-item__status .to{
+    padding:2px 9px;border-radius:60px;
+    font-size:.78rem;font-weight:500;
+    background:var(--off);color:var(--muted);
+    border:1px solid var(--divider);
+  }
+  .tl-item__status .to{background:var(--blue-soft);color:#1a6e9a;border-color:#c8e0ec}
+  .tl-item__status .arrow{color:var(--muted-2)}
+  .tl-item__meta{
+    font-size:.74rem;color:var(--muted);margin-top:4px;
+    display:flex;gap:10px;
+  }
+  .tl-item__meta b{color:var(--text-soft);font-weight:500}
+
+  /* Phone dialer (floating window) */
+  .dialer{
+    position:fixed;bottom:20px;left:20px;
+    width:320px;background:#fff;
+    border-top:3px solid #25d366;
+    box-shadow:0 10px 32px rgba(12,64,104,.22);
+    border-radius:14px;z-index:900;
+    display:none;overflow:hidden;
+    animation:dialerIn .2s ease-out;
+  }
+  .dialer.is-active{display:block}
+  @keyframes dialerIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .dialer__head{
+    padding:12px 14px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+    background:var(--off);
+  }
+  .dialer__client{display:flex;align-items:center;gap:10px;min-width:0}
+  .dialer__avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:500;font-size:.82rem;flex-shrink:0;
+  }
+  .dialer__name{font-weight:500;color:var(--navy);font-size:.92rem;line-height:1.2}
+  .dialer__phone{font-size:.74rem;color:var(--muted);direction:ltr;text-align:right}
+  .dialer__min{
+    width:26px;height:26px;border-radius:6px;color:var(--muted);font-size:1.1rem;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .dialer__min:hover{background:#e5ecf3}
+  .dialer__body{padding:18px 16px 4px;text-align:center}
+  .dialer__status{
+    font-size:.84rem;color:var(--muted);font-weight:500;
+    margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .dialer__status::before{
+    content:'';width:8px;height:8px;border-radius:50%;background:currentColor;
+  }
+  .dialer__status--ringing{color:var(--amber);animation:pulse 1.4s infinite}
+  .dialer__status--connected{color:var(--green)}
+  .dialer__timer{
+    font-size:1.9rem;font-weight:500;color:var(--navy);
+    letter-spacing:-.5px;font-variant-numeric:tabular-nums;
+  }
+  .dialer__actions{
+    display:flex;justify-content:center;gap:14px;
+    padding:14px 16px;background:var(--off);
+  }
+  .dialer__btn{
+    width:48px;height:48px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;cursor:pointer;border:none;
+    transition:filter .12s,transform .12s;
+  }
+  .dialer__btn:hover{filter:brightness(.95)}
+  .dialer__btn:active{transform:scale(.95)}
+  .dialer__btn--mute{background:#fff;color:var(--navy);border:1px solid var(--divider)}
+  .dialer__btn--mute.is-on{background:var(--amber-bg);color:var(--amber);border-color:#e4c990}
+  .dialer__btn--hangup{background:var(--red);color:#fff;font-size:1.2rem}
+  .dialer.is-minimized .dialer__body,
+  .dialer.is-minimized .dialer__actions{display:none}
+
+  /* Disposition modal */
+  .disp-options{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;
+  }
+  .disp-opt{
+    padding:14px 16px;border-radius:12px;
+    background:var(--off);border:2px solid transparent;
+    cursor:pointer;text-align:right;
+    transition:all .12s;
+    display:flex;align-items:center;gap:10px;
+    font-size:.92rem;font-weight:500;color:var(--navy);
+  }
+  .disp-opt:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .disp-opt.is-selected{
+    border-color:var(--blue);
+    background:var(--blue-soft);
+    box-shadow:0 0 0 3px rgba(57,171,226,.15);
+  }
+  .disp-opt__icon{
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;flex-shrink:0;
+  }
+  .disp-opt[data-disp="talked"] .disp-opt__icon{background:#dff3e9;color:var(--green)}
+  .disp-opt[data-disp="no_answer"] .disp-opt__icon{background:var(--amber-bg);color:var(--amber)}
+  .disp-opt[data-disp="wrong"] .disp-opt__icon{background:var(--red-bg);color:var(--red)}
+  .disp-opt[data-disp="callback"] .disp-opt__icon{background:var(--purple-bg);color:var(--purple)}
+
+  .disp-summary{
+    background:var(--off);padding:10px 14px;border-radius:10px;
+    margin-bottom:14px;font-size:.88rem;color:var(--navy);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .disp-summary__dur{font-weight:500;font-variant-numeric:tabular-nums}
+
+  /* Advisor scheduling modal */
+  .modal--scheduler{max-width:780px}
+
+  /* Meeting type toggle */
+  .meet-type{
+    display:inline-flex;background:var(--off);
+    border:1px solid var(--divider);border-radius:60px;
+    padding:3px;margin-bottom:14px;
+  }
+  .meet-type__btn{
+    padding:7px 18px;border-radius:60px;
+    font-size:.88rem;color:var(--muted);font-weight:500;
+    transition:all .12s;border:none;background:none;cursor:pointer;
+    font-family:inherit;
+  }
+  .meet-type__btn.is-active{background:var(--navy);color:#fff}
+
+  /* Meeting format selector */
+  .meet-format{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+    margin-bottom:14px;
+  }
+  .meet-format__btn{
+    padding:11px 8px;border-radius:10px;
+    background:var(--off);border:2px solid transparent;
+    cursor:pointer;text-align:center;
+    transition:all .12s;font-family:inherit;
+    font-size:.88rem;font-weight:500;color:var(--navy);
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+  }
+  .meet-format__btn:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .meet-format__btn.is-active{
+    border-color:var(--blue);background:var(--blue-soft);
+    box-shadow:0 0 0 3px rgba(57,171,226,.12);
+  }
+  .meet-format__icon{font-size:1.4rem;display:inline-flex;align-items:center;height:28px}
+  .meet-format__icon svg{display:block}
+
+  /* Needs-documentation banner */
+  .docs-banner{
+    background:#fef0d6;color:#8c6500;
+    border:1px solid #f0d791;
+    border-radius:60px;
+    padding:6px 16px;margin-bottom:14px;
+    display:none;align-items:center;gap:10px;
+    font-size:.9rem;font-weight:500;cursor:pointer;
+    transition:filter .12s;
+  }
+  .docs-banner.is-on{display:inline-flex}
+  .docs-banner:hover{filter:brightness(.96)}
+  .docs-banner::before{
+    content:'⚠';font-size:1rem;
+  }
+  .docs-banner b{font-weight:600}
+
+  /* Doc badge inline in row */
+  .doc-needed{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:1px 8px;border-radius:60px;
+    background:var(--red-bg);color:var(--red);
+    font-size:.7rem;font-weight:500;
+    border:1px solid #f0c8c3;
+    cursor:pointer;line-height:1.4;
+    transition:filter .12s;
+    margin-top:4px;
+  }
+  .doc-needed:hover{filter:brightness(.96)}
+  .doc-needed::before{content:'⚠';font-size:.74rem}
+
+  /* Doc modal — outcome selector */
+  .doc-outcome{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;
+  }
+  .doc-outcome__btn{
+    padding:14px 16px;border-radius:12px;
+    background:var(--off);border:2px solid transparent;
+    cursor:pointer;text-align:right;
+    transition:all .12s;font-family:inherit;
+    display:flex;align-items:center;gap:10px;
+    font-size:.92rem;font-weight:500;color:var(--navy);
+  }
+  .doc-outcome__btn:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .doc-outcome__btn.is-selected{
+    border-color:var(--blue);background:var(--blue-soft);
+    box-shadow:0 0 0 3px rgba(57,171,226,.15);
+  }
+  .doc-outcome__icon{
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;flex-shrink:0;
+  }
+  .doc-outcome__btn[data-outcome="happened"] .doc-outcome__icon{background:var(--green-bg);color:var(--green)}
+  .doc-outcome__btn[data-outcome="not_happened"] .doc-outcome__icon{background:var(--red-bg);color:var(--red)}
+
+  .invite-toggle{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;border-radius:10px;
+    background:var(--off);border:1px solid var(--divider);
+    margin-bottom:14px;font-size:.9rem;color:var(--navy);
+    cursor:pointer;user-select:none;
+  }
+  .invite-toggle input{width:18px;height:18px;cursor:pointer}
+  .invite-toggle__hint{
+    display:block;font-size:.78rem;color:var(--muted);
+    margin-top:2px;font-weight:400;
+  }
+  .invite-toggle b{font-weight:500}
+
+  .sched-controls{
+    display:flex;gap:14px;align-items:center;
+    margin-bottom:14px;flex-wrap:wrap;
+  }
+  .sched-controls .field{flex:1;min-width:200px}
+  .sched-week-nav{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--off);border:1px solid var(--divider);
+    border-radius:60px;padding:4px;
+  }
+  .sched-week-nav button{
+    width:28px;height:28px;border-radius:50%;
+    color:var(--navy);font-size:1rem;font-weight:600;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    background:none;border:none;
+  }
+  .sched-week-nav button:hover{background:#fff}
+  .sched-week-nav__label{font-size:.88rem;font-weight:500;color:var(--navy);min-width:160px;text-align:center}
+
+  .slot-grid{
+    display:grid;grid-template-columns:repeat(6, 1fr);
+    gap:8px;padding:6px 0;
+  }
+  .day-col{
+    background:var(--off);border-radius:10px;
+    padding:10px 8px;
+  }
+  .day-col__head{
+    text-align:center;font-size:.82rem;color:var(--muted);
+    font-weight:500;margin-bottom:8px;
+  }
+  .day-col__head b{display:block;color:var(--navy);font-size:1rem;margin-top:1px}
+  .day-col__head.is-today b{color:var(--blue)}
+
+  .slot{
+    display:block;width:100%;
+    padding:4px 6px;margin-bottom:3px;
+    background:#fff;border:1px solid var(--divider);
+    border-radius:6px;color:var(--navy);
+    font-size:.78rem;font-weight:500;cursor:pointer;
+    font-variant-numeric:tabular-nums;font-family:inherit;
+    transition:all .12s;
+  }
+  .slot:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .slot.is-busy{
+    color:var(--muted-2);cursor:not-allowed;background:transparent;
+    text-decoration:line-through;border-style:dashed;
+  }
+  .slot.is-busy:hover{border-color:var(--divider);background:transparent}
+  .slot.is-selected{
+    background:var(--navy);color:#fff;border-color:var(--navy);
+    box-shadow:0 0 0 3px rgba(12,64,104,.2);
+  }
+
+  .sched-info{
+    background:var(--blue-soft);border:1px solid #c8e0ec;
+    border-radius:10px;padding:10px 14px;margin-top:8px;
+    font-size:.88rem;color:var(--navy);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+  }
+  .sched-info--empty{
+    background:var(--off);border-color:var(--divider);color:var(--muted);
+  }
+  .sched-info b{font-weight:500}
+
+  /* Meeting view modal */
+  .meet-card{
+    background:var(--green-bg);
+    border:1px solid #b8dfc9;
+    border-radius:14px;
+    padding:18px 20px;
+  }
+  .meet-card__date{
+    font-size:1.4rem;font-weight:500;color:var(--navy);
+    letter-spacing:-.3px;
+  }
+  .meet-card__time{
+    font-size:.95rem;color:var(--muted);margin-top:2px;
+  }
+  .meet-card__rows{
+    margin-top:14px;padding-top:14px;
+    border-top:1px solid #c5e6d3;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .meet-card__row{
+    display:flex;align-items:flex-start;gap:8px;
+    font-size:.9rem;color:var(--navy);
+  }
+  .meet-card__row b{
+    font-weight:400;color:var(--muted);min-width:80px;flex-shrink:0;
+  }
+
+  /* Row highlight when has unread */
+  .row.has-unread{background:#fffaf0}
+  .row.has-unread:hover{background:#fff5e1}
+  .icon-btn--chat.has-unread{animation:chatPulse 1.6s infinite}
+  @keyframes chatPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.45)}
+    50%{box-shadow:0 0 0 6px rgba(37,211,102,0)}
+  }
+
+  /* WhatsApp / Meta connect button */
+  .btn--wa, .btn--meta{
+    background:#fff;color:var(--navy);
+    border-color:var(--divider);
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn--wa:hover{border-color:#25d366;color:#1e8e5f}
+  .btn--meta:hover{border-color:#1877F2;color:#1565c0}
+  .wa-dot{
+    width:8px;height:8px;border-radius:50%;
+    display:inline-block;background:var(--muted-2);
+    flex-shrink:0;
+  }
+  .wa-dot--connected{background:#25d366;box-shadow:0 0 0 3px rgba(37,211,102,.18)}
+  .wa-dot--disconnected{background:var(--amber)}
+  .meta-dot{
+    width:8px;height:8px;border-radius:50%;
+    display:inline-block;background:var(--muted-2);
+    flex-shrink:0;
+  }
+  .meta-dot--connected{background:#1877F2;box-shadow:0 0 0 3px rgba(24,119,242,.2)}
+  .meta-dot--disconnected{background:var(--amber)}
+
+  /* Meta modal */
+  .modal--meta{max-width:480px}
+  .meta-hero{
+    text-align:center;padding:18px 14px 6px;
+  }
+  .meta-hero__icon{
+    width:64px;height:64px;border-radius:16px;
+    background:linear-gradient(135deg,#1877F2,#0c5cb8);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:1.6rem;font-weight:700;margin:0 auto 12px;
+    letter-spacing:-1px;
+  }
+  .meta-hero__title{font-size:1.1rem;font-weight:500;color:var(--navy);margin-bottom:4px}
+  .meta-hero__desc{color:var(--muted);font-size:.88rem;line-height:1.5}
+
+  .meta-connect-btn{
+    width:100%;
+    background:#1877F2;color:#fff;
+    padding:11px 18px;border-radius:10px;
+    font-weight:500;font-size:.95rem;cursor:pointer;border:none;
+    margin-top:14px;
+    transition:filter .15s;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .meta-connect-btn:hover{filter:brightness(.94)}
+  .meta-connect-btn:disabled{opacity:.6;cursor:not-allowed}
+
+  .meta-perms{
+    margin-top:18px;padding:14px;
+    background:var(--off);border-radius:10px;
+    font-size:.84rem;color:var(--muted);line-height:1.6;
+  }
+  .meta-perms b{color:var(--navy);font-weight:500;display:block;margin-bottom:6px}
+  .meta-perms ul{margin:0;padding-right:18px}
+
+  /* Connected state */
+  .meta-info{
+    border:1px solid var(--divider);
+    border-radius:12px;
+    padding:14px;margin-bottom:14px;
+  }
+  .meta-info__row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:7px 0;border-bottom:1px solid var(--divider);
+    font-size:.9rem;
+  }
+  .meta-info__row:last-child{border-bottom:none}
+  .meta-info__lbl{color:var(--muted)}
+  .meta-info__val{color:var(--navy);font-weight:500;direction:ltr;text-align:left}
+
+  .meta-forms__title{
+    font-size:.78rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px;
+    font-weight:500;margin-bottom:8px;
+  }
+  .meta-form{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px;border-radius:8px;
+    background:var(--off);margin-bottom:6px;font-size:.88rem;
+  }
+  .meta-form__name{color:var(--navy);font-weight:500}
+  .meta-form__leads{color:var(--muted);font-size:.78rem}
+  .meta-form__active{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:.76rem;color:var(--green);font-weight:500;
+  }
+  .meta-form__active::before{
+    content:'';width:6px;height:6px;border-radius:50%;background:var(--green);
+  }
+
+  /* WA QR modal */
+  .modal--wa{max-width:420px}
+  .wa-status{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;border-radius:10px;
+    background:var(--off);margin-bottom:18px;
+    font-size:.92rem;font-weight:500;color:var(--navy);
+  }
+  .wa-status__phone{margin-right:auto;font-weight:300;color:var(--muted);font-size:.84rem;direction:ltr}
+  .wa-qr-wrap{
+    display:flex;justify-content:center;
+    padding:18px;
+    background:#fff;border-radius:14px;
+    border:2px dashed var(--divider);
+    margin-bottom:18px;
+  }
+  .wa-qr-wrap svg{display:block;border-radius:6px}
+  .wa-qr-connected{
+    text-align:center;color:var(--green);
+    font-size:.92rem;font-weight:500;
+    padding:48px 20px;
+  }
+  .wa-qr-connected__icon{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--green-bg);color:var(--green);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;margin:0 auto 12px;
+  }
+  .wa-steps{
+    display:flex;flex-direction:column;gap:10px;
+    margin-bottom:14px;
+  }
+  .wa-step{
+    display:flex;align-items:flex-start;gap:10px;
+    font-size:.9rem;color:var(--navy);line-height:1.4;
+  }
+  .wa-step__num{
+    width:24px;height:24px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:500;font-size:.8rem;flex-shrink:0;
+  }
+
+  .col-action{display:flex;align-items:center;justify-content:flex-end}
+
+  .empty{padding:48px 20px;text-align:center;color:var(--muted)}
+  .empty__title{font-size:1rem;color:var(--navy);font-weight:500;margin-bottom:4px}
+
+  /* Modal */
+  .modal-back{
+    position:fixed;inset:0;background:rgba(12,64,104,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:1000;padding:20px;
+  }
+  .modal-back.is-open{display:flex}
+  .modal{
+    background:#fff;
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    width:100%;max-width:540px;overflow:hidden;
+    animation:pop .18s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{
+    padding:18px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .modal__head h3{color:var(--navy);font-size:1.2rem;font-weight:500;letter-spacing:-.3px}
+  .modal__close{font-size:1.4rem;color:var(--muted);width:32px;height:32px;border-radius:6px}
+  .modal__close:hover{background:var(--blue-soft);color:var(--navy)}
+  .modal__body{padding:20px 24px;max-height:70vh;overflow-y:auto}
+  .modal__foot{
+    padding:14px 24px;background:var(--off);
+    display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--divider);
+  }
+  .modal__foot-right{display:flex;gap:8px;margin-right:auto}
+
+  .form-section{margin-bottom:20px}
+  .form-section__title{
+    font-size:.84rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:1px;
+    font-weight:500;margin-bottom:12px;padding-right:4px;
+  }
+  .form-section__title::before{
+    content:'';display:inline-block;
+    width:4px;height:12px;border-radius:2px;
+    background:var(--blue);vertical-align:middle;
+    margin-left:8px;
+  }
+  .form-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:14px}
+  .form-grid--full > .field{grid-column:1/-1}
+  .field{display:flex;flex-direction:column;gap:5px;width:100%}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .field input,.field select,.field textarea{
+    padding:9px 14px;border:1px solid var(--divider);
+    border-radius:10px;background:#fff;outline:none;
+    transition:border-color .15s;font-size:.92rem;
+  }
+  .field textarea{min-height:90px;resize:vertical;line-height:1.5}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+
+  @media(max-width:900px){
+    .stats{grid-template-columns:repeat(3,1fr)}
+    .form-grid{grid-template-columns:1fr}
+    .top{padding:12px 16px}
+    .wrap{padding:18px}
+    .card{padding:20px 14px 24px}
+    .table-scroll{margin:0 -14px;padding:0 14px}
+  }
+</style>
+</head>
+<body>
+<script>
+  if (location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+</script>
+
+<header class="top">
+  <div class="top__brand">
+    <div class="top__logo">HK</div>
+    <div>
+      <div class="top__title">ניהול לידים</div>
+      <div class="top__sub">HK Money</div>
+    </div>
+  </div>
+  <div class="top__user">
+    <div class="top__avatar">א</div>
+    <div>
+      <div class="top__user-name">אייל חזות</div>
+      <div class="top__user-role">מנהל מערכת</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="page-head">
+      <div>
+        <div class="page-head__title">ניהול לידים</div>
+        <div class="page-head__meta">לידים נכנסים מהסרביס ועוברים בצינור המכירה</div>
+        <div class="unread-pill" id="unreadPill" hidden>
+          <span id="unreadCount">0</span> הודעות חדשות מלידים
+        </div>
+        <button class="docs-banner" id="docsBanner">
+          <span><b id="docsCount">0</b> פגישות ממתינות לתיעוד</span>
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn--ghost btn--sm" id="settingsBtn" title="הגדרות שלבים">⚙ שלבים</button>
+        <button class="btn btn--meta" id="metaBtn">
+          <span class="meta-dot meta-dot--disconnected" id="metaDot"></span>
+          <span id="metaBtnLabel">חבר Meta</span>
+        </button>
+        <button class="btn btn--wa" id="waBtn">
+          <span class="wa-dot wa-dot--disconnected" id="waDot"></span>
+          <span id="waBtnLabel">חבר WhatsApp</span>
+        </button>
+        <button class="btn btn--primary" id="newBtn"><span>+</span> ליד חדש</button>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="toolbar">
+      <input class="search" id="search" type="search" placeholder="חיפוש לפי שם / טלפון / מייל...">
+      <select class="search" id="advisorFilter" style="flex:0 0 auto;min-width:180px">
+        <option value="">כל היועצים</option>
+        <option value="self">תזכורת אישית</option>
+      </select>
+    </div>
+
+    <div class="table-scroll">
+      <div class="colhead">
+        <div>ליד</div>
+        <div>צור קשר</div>
+        <div>שלב</div>
+        <div>פגישה</div>
+        <div>הערות</div>
+        <div class="col-action">פעולות</div>
+      </div>
+      <div id="rows"></div>
+    </div>
+
+    <div class="empty" id="empty" hidden>
+      <div class="empty__title">לא נמצאו לידים</div>
+    </div>
+  </section>
+</main>
+
+<!-- Meta connect modal -->
+<div class="modal-back" id="metaModal" role="dialog" aria-modal="true">
+  <div class="modal modal--meta">
+    <div class="modal__head">
+      <h3>חיבור Meta Lead Ads</h3>
+      <button class="modal__close" data-close-meta aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body" id="metaBody"></div>
+    <div class="modal__foot">
+      <button class="btn btn--danger btn--sm" id="metaDisconnectBtn" style="display:none">נתק</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost btn--sm" data-close-meta>סגור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phone dialer (floating) -->
+<div class="dialer" id="dialer">
+  <div class="dialer__head">
+    <div class="dialer__client">
+      <div class="dialer__avatar" id="dialerAvatar">—</div>
+      <div>
+        <div class="dialer__name" id="dialerName">—</div>
+        <div class="dialer__phone" id="dialerPhone">—</div>
+      </div>
+    </div>
+    <button class="dialer__min" id="dialerMin" title="הקטן">−</button>
+  </div>
+  <div class="dialer__body">
+    <div class="dialer__status dialer__status--ringing" id="dialerStatus">מחייג...</div>
+    <div class="dialer__timer" id="dialerTimer">00:00</div>
+  </div>
+  <div class="dialer__actions">
+    <button class="dialer__btn dialer__btn--mute" id="dialerMute" title="השתק">🎤</button>
+    <button class="dialer__btn dialer__btn--hangup" id="dialerHangup" title="נתק">📞</button>
+  </div>
+</div>
+
+<!-- Meeting documentation modal -->
+<div class="modal-back" id="docModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3>תיעוד פגישה</h3>
+      <button class="modal__close" data-close-doc aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="disp-summary">
+        <span id="docLeadName">—</span>
+        <span id="docMeetInfo" style="color:var(--muted);font-size:.82rem">—</span>
+      </div>
+
+      <div class="doc-outcome" id="docOutcome">
+        <button class="doc-outcome__btn" data-outcome="happened">
+          <span class="doc-outcome__icon">✓</span>הפגישה התקיימה
+        </button>
+        <button class="doc-outcome__btn" data-outcome="not_happened">
+          <span class="doc-outcome__icon">✕</span>לא התקיימה
+        </button>
+      </div>
+
+      <!-- Happened: notes + stage update -->
+      <div id="docHappened" style="display:none">
+        <div class="field" style="margin-bottom:10px">
+          <label>סיכום הפגישה</label>
+          <textarea id="docSummary" rows="3" placeholder="מה עלה בפגישה? מה הוסכם?"></textarea>
+        </div>
+        <div class="field">
+          <label>עדכון סטטוס הליד (אופציונלי)</label>
+          <select id="docNewStage">
+            <option value="">— ללא שינוי —</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Not happened: reason + reschedule -->
+      <div id="docNotHappened" style="display:none">
+        <div class="field" style="margin-bottom:10px">
+          <label>סיבה</label>
+          <select id="docReason">
+            <option value="no_show">הלקוח לא הופיע</option>
+            <option value="cancelled">הלקוח ביטל</option>
+            <option value="rep_cancelled">בוטלה על ידינו</option>
+            <option value="reschedule_requested">ביקש לדחות</option>
+            <option value="other">אחר</option>
+          </select>
+        </div>
+        <label class="invite-toggle">
+          <input type="checkbox" id="docReschedule">
+          <span><b>קבע פגישה חדשה</b><span class="invite-toggle__hint">פותח את לוח הזמנים אחרי שמירה</span></span>
+        </label>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost btn--sm" data-close-doc>ביטול</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--primary" id="docSaveBtn" disabled>שמור תיעוד</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Price quote modal -->
+<div class="modal-back" id="quoteModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3>הצעת מחיר</h3>
+      <button class="modal__close" data-close-quote aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="disp-summary">
+        <span id="quoteLeadName">—</span>
+        <span style="color:var(--muted);font-size:.82rem">סמן מוצרים והזן מחיר</span>
+      </div>
+      <div class="quote-items" id="quoteItems"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost btn--sm" data-close-quote>סגור</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--primary" id="quoteSendBtn">שלח הצעה ללקוח</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Meeting view modal (shown when meeting already exists) -->
+<div class="modal-back" id="meetViewModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3>פרטי פגישה תואמה</h3>
+      <button class="modal__close" data-close-mv aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="meet-card">
+        <div class="meet-card__date" id="mvDate">—</div>
+        <div class="meet-card__time" id="mvTime">—</div>
+        <div class="meet-card__rows" id="mvRows"></div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger btn--sm" id="mvCancelBtn">בטל פגישה</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost" data-close-mv>סגור</button>
+        <button class="btn btn--primary" id="mvEditBtn">ערוך פגישה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Advisor scheduling modal -->
+<div class="modal-back" id="schedModal" role="dialog" aria-modal="true">
+  <div class="modal modal--scheduler">
+    <div class="modal__head">
+      <h3 id="schedTitle">תאם פגישה עם יועץ</h3>
+      <button class="modal__close" data-close-sched aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="disp-summary">
+        <span id="schedLeadName">—</span>
+        <span id="schedHostHint" style="color:var(--muted);font-size:.82rem">הפגישה תופיע ביומן שלך</span>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>שם הפגישה (כותרת ביומן)</label>
+        <input id="schedTitleInput" type="text" placeholder="לדוגמה: פגישת ייעוץ">
+      </div>
+
+      <div class="meet-type" id="meetType">
+        <button class="meet-type__btn is-active" data-type="self">תזכורת אישית</button>
+        <button class="meet-type__btn" data-type="with_advisor">פגישה עם יועץ</button>
+      </div>
+
+      <div class="meet-format" id="meetFormat">
+        <button class="meet-format__btn is-active" data-format="meet">
+          <span class="meet-format__icon">
+            <svg width="28" height="28" viewBox="0 0 87.5 72" aria-hidden="true">
+              <path fill="#00832d" d="M49.5 36l8.53 9.75 11.47 7.33 2-17.02-2-16.64-11.69 6.44z"/>
+              <path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54-10-3z"/>
+              <path fill="#e94235" d="M20.5 0L0 20.5l10 3 10.5-3 3-9.41z"/>
+              <path fill="#2684fc" d="M20.5 20.5H0v31h20.5z"/>
+              <path fill="#00ac47" d="M82.6 8.68L69.5 19.5v25.91L82.65 56.27c1.97 1.54 4.85.13 4.85-2.37V11.02c0-2.53-2.92-3.93-4.9-2.34zM49.5 36v15.5h-29V72h43.5c3.315 0 6-2.685 6-6v-7.18z"/>
+              <path fill="#ffba00" d="M63.5 0h-43V20.5h29V36l20-15.79V6c0-3.315-2.685-6-6-6z"/>
+            </svg>
+          </span>
+          <span>Google Meet</span>
+        </button>
+        <button class="meet-format__btn" data-format="in_person">
+          <span class="meet-format__icon">📍</span>
+          <span>פרונטלית</span>
+        </button>
+        <button class="meet-format__btn" data-format="reminder">
+          <span class="meet-format__icon">🔔</span>
+          <span>רק תזכורת</span>
+        </button>
+      </div>
+
+      <div class="field" id="locationField" style="display:none;margin-bottom:14px">
+        <label>כתובת הפגישה</label>
+        <input id="schedLocation" type="text" placeholder="כתובת הפגישה">
+      </div>
+
+      <div class="sched-controls">
+        <div class="field" id="advisorField" style="display:none">
+          <label>יועץ לזמן</label>
+          <select id="schedAdvisor"></select>
+        </div>
+        <div class="sched-week-nav">
+          <button id="schedPrev" title="שבוע קודם">›</button>
+          <span class="sched-week-nav__label" id="schedWeekLabel">—</span>
+          <button id="schedNext" title="שבוע הבא">‹</button>
+        </div>
+      </div>
+
+      <label class="invite-toggle">
+        <input type="checkbox" id="schedInviteLead">
+        <span>
+          <b>הזמן את הלקוח לפגישה</b>
+          <span class="invite-toggle__hint" id="schedInviteHint">תישלח הזמנת יומן ללקוח עם פרטי הפגישה</span>
+        </span>
+      </label>
+
+      <div class="slot-grid" id="slotGrid"></div>
+      <div class="sched-info sched-info--empty" id="schedInfo">בחר זמן פנוי מהלוח</div>
+    </div>
+    <div class="modal__foot">
+      <div></div>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost" data-close-sched>ביטול</button>
+        <button class="btn btn--primary" id="schedConfirm" disabled>קבע פגישה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Call disposition modal -->
+<div class="modal-back" id="dispModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3>איך הייתה השיחה?</h3>
+      <button class="modal__close" data-close-disp aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="disp-summary">
+        <span id="dispLeadName">—</span>
+        <span class="disp-summary__dur" id="dispDuration">00:00</span>
+      </div>
+      <div class="disp-options" id="dispOptions">
+        <button class="disp-opt" data-disp="talked">
+          <span class="disp-opt__icon">✓</span>דיברנו
+        </button>
+        <button class="disp-opt" data-disp="no_answer">
+          <span class="disp-opt__icon">✕</span>לא ענה
+        </button>
+        <button class="disp-opt" data-disp="wrong">
+          <span class="disp-opt__icon">!</span>מספר שגוי
+        </button>
+        <button class="disp-opt" data-disp="callback">
+          <span class="disp-opt__icon">⏰</span>חוזר אליי
+        </button>
+      </div>
+
+      <div id="dispExtraTalked" style="display:none">
+        <div class="field">
+          <label>הערות מהשיחה (אופציונלי)</label>
+          <textarea id="dispNotes" rows="3" placeholder="מה עלה בשיחה?"></textarea>
+        </div>
+      </div>
+
+      <div id="dispExtraCallback" style="display:none">
+        <div class="field" style="margin-bottom:10px">
+          <label>תאריך לחזרה</label>
+          <input id="dispCbDate" type="date">
+        </div>
+        <div class="field">
+          <label>שעה</label>
+          <input id="dispCbTime" type="time">
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost btn--sm" data-close-disp>סגור בלי לשמור</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--primary" id="dispSaveBtn" disabled>שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Timeline modal -->
+<div class="modal-back" id="timelineModal" role="dialog" aria-modal="true">
+  <div class="modal modal--timeline">
+    <div class="modal__head">
+      <h3 id="timelineTitle">תיעוד</h3>
+      <button class="modal__close" data-close-timeline aria-label="סגירה">×</button>
+    </div>
+    <div class="timeline-add">
+      <textarea id="timelineNoteInput" placeholder="הוסף הערה / תיעוד שיחה..." rows="2"></textarea>
+      <button class="btn btn--primary btn--sm timeline-add__btn" id="timelineAddBtn">הוסף</button>
+    </div>
+    <div class="timeline-list" id="timelineList"></div>
+  </div>
+</div>
+
+<!-- Stage settings modal -->
+<div class="modal-back" id="settingsModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3>הגדרות שלבי לידים</h3>
+      <button class="modal__close" data-close-settings aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="stage-row__hint">
+        ערוך את שמות השלבים והגדר אילו יוצגו <b>ככרטיסי סיכום</b> בראש הדף.
+      </div>
+      <div id="stageList"></div>
+      <button class="btn btn--ghost btn--sm" id="addStageBtn" style="margin-top:14px">+ הוסף שלב</button>
+    </div>
+    <div class="modal__foot">
+      <div></div>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost" data-close-settings>ביטול</button>
+        <button class="btn btn--primary" id="saveSettingsBtn">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WhatsApp QR modal -->
+<div class="modal-back" id="waModal" role="dialog" aria-modal="true">
+  <div class="modal modal--wa">
+    <div class="modal__head">
+      <h3>חיבור WhatsApp Business</h3>
+      <button class="modal__close" data-close-wa aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="wa-status" id="waStatus">
+        <span class="wa-dot wa-dot--disconnected"></span>
+        <span id="waStatusText">לא מחובר</span>
+        <span class="wa-status__phone" id="waStatusPhone"></span>
+      </div>
+      <div id="waContent"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger btn--sm" id="waDisconnectBtn" style="display:none">נתק</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost btn--sm" id="waRefreshBtn">רענן ברקוד</button>
+        <button class="btn btn--primary btn--sm" id="waCloseBtn" data-close-wa>סגור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chat modal -->
+<div class="modal-back" id="chatModal" role="dialog" aria-modal="true">
+  <div class="modal modal--chat">
+    <div class="modal__head">
+      <div>
+        <h3 id="chatTitle">צ'אט</h3>
+      </div>
+      <button class="modal__close" data-close-chat aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__chat-meta">
+      <span id="chatPhone" style="direction:ltr">—</span>
+      <span class="chat-channel">דרך WhatsApp</span>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="tpl-panel" id="tplPanel">
+      <div class="tpl-panel__head">
+        <div class="tpl-panel__title">תבניות הודעה</div>
+        <div class="tpl-panel__actions">
+          <button class="btn btn--ghost btn--sm" id="tplManageBtn">לניהול תבניות »</button>
+          <button class="tpl-icon-btn" id="tplCloseBtn" title="סגירה">✕</button>
+        </div>
+      </div>
+      <div class="tpl-list" id="tplList"></div>
+    </div>
+    <div class="chat-input">
+      <button class="chat-templates-btn" id="chatTplBtn" aria-label="תבניות" title="תבניות הודעה">📋</button>
+      <input id="chatInput" type="text" placeholder="כתוב הודעה...">
+      <button class="chat-send" id="chatSend" aria-label="שלח">‹</button>
+    </div>
+  </div>
+</div>
+
+<!-- Source popover -->
+<div class="source-popover" id="sourcePopover" hidden>
+  <button class="source-popover__close" id="sourcePopoverClose" aria-label="סגירה">×</button>
+  <div class="source-popover__title">פרטי קמפיין</div>
+  <div id="sourcePopoverBody"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-back" id="modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="modalTitle">ליד חדש</h3>
+      <button class="modal__close" data-close aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-section">
+        <div class="form-section__title">פרטי קשר</div>
+        <div class="form-grid">
+          <div class="field"><label>שם</label><input id="fName" type="text"></div>
+          <div class="field"><label>מקור</label>
+            <select id="fSource">
+              <option value="">—</option>
+              <option>פייסבוק</option>
+              <option>גוגל</option>
+              <option>אתר</option>
+              <option>חבר ממליץ</option>
+              <option>שותף עסקי</option>
+              <option>אחר</option>
+            </select>
+          </div>
+          <div class="field"><label>טלפון</label><input id="fPhone" type="tel"></div>
+          <div class="field"><label>מייל</label><input id="fEmail" type="email"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section__title">שלב ופגישה</div>
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1"><label>שלב</label>
+            <select id="fStage"></select>
+          </div>
+          <div class="field"><label>תאריך פגישה</label><input id="fMeetDate" type="date"></div>
+          <div class="field"><label>שעת פגישה</label><input id="fMeetTime" type="time"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section__title">הערות</div>
+        <div class="form-grid form-grid--full">
+          <div class="field"><textarea id="fNotes" placeholder="הערות פנימיות, מה שנאמר בשיחה, מה צריך לעקוב..."></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger btn--sm" id="deleteBtn">מחק ליד</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="saveBtn">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Each stage: editable label + color + whether to appear as stat card
+  // Color palette — name → {bg, text, solid}
+  const STAGE_COLORS = {
+    blue:   {bg:'#E4F6FE', text:'#1a6e9a', solid:'#39ABE2'},
+    sky:    {bg:'#e0f2fe', text:'#0369a1', solid:'#0ea5e9'},
+    teal:   {bg:'#d6f0ec', text:'#0f766e', solid:'#14b8a6'},
+    green:  {bg:'#dff3e9', text:'#1e8e5f', solid:'#1e8e5f'},
+    lime:   {bg:'#eaf7d0', text:'#5a7d1a', solid:'#84cc16'},
+    amber:  {bg:'#fbecd0', text:'#b46e0e', solid:'#dca74a'},
+    orange: {bg:'#ffe8d4', text:'#c2410c', solid:'#f97316'},
+    salmon: {bg:'#fbeae7', text:'#b8685c', solid:'#c97b6e'},
+    red:    {bg:'#fbe1de', text:'#a8302a', solid:'#d8534e'},
+    pink:   {bg:'#fce7f3', text:'#be185d', solid:'#ec4899'},
+    purple: {bg:'#ece1f5', text:'#7a4ea0', solid:'#7a4ea0'},
+    indigo: {bg:'#e2e6fb', text:'#4338ca', solid:'#6366f1'},
+    gray:   {bg:'#eef2f6', text:'#6b7c8d', solid:'#9aa6b4'},
+  };
+  function colorBg(c){ return (STAGE_COLORS[c]||STAGE_COLORS.gray).bg; }
+  function colorText(c){ return (STAGE_COLORS[c]||STAGE_COLORS.gray).text; }
+  function colorSolid(c){ return (STAGE_COLORS[c]||STAGE_COLORS.gray).solid; }
+
+  let stages = [
+    {key:'new',       label:'חדש',          color:'blue',   showAsCard:true},
+    {key:'contacted', label:'נוצר קשר',     color:'amber',  showAsCard:true},
+    {key:'qualified', label:'בשיחה',         color:'purple', showAsCard:true},
+    {key:'proposal',  label:'הצעה',          color:'salmon', showAsCard:true},
+    {key:'won',       label:'נסגר — זכייה',  color:'green',  showAsCard:true},
+    {key:'lost',      label:'נסגר — אבוד',   color:'red',    showAsCard:false},
+  ];
+  function stageByKey(k){ return stages.find(s => s.key === k); }
+  function stageLabel(k){ return (stageByKey(k) || {}).label || k; }
+  function stageColor(k){ return (stageByKey(k) || {}).color || 'gray'; }
+
+  // Advisors (in production: loaded from the advisors module / Google Workspace domain)
+  const ADVISORS = [
+    {id:1, name:'דנה לוי',     email:'dana@hak.co.il'},
+    {id:2, name:'יוסי שמיר',   email:'yossi@hak.co.il'},
+    {id:3, name:'מיכל ברק',    email:'michal@hak.co.il'},
+    {id:4, name:'אופיר כהן',   email:'ofir@hak.co.il'},
+  ];
+  function advisorName(id){
+    const a = ADVISORS.find(x => x.id === id);
+    return a ? a.name : null;
+  }
+
+  const leads = [
+    {id:1, name:'אבי כהן',     phone:'052-1234567', email:'avi@example.com',     source:{channel:'פייסבוק',  campaign:'קמפיין הקמה Q2', ad:'מודעת וידאו #1',  form:'טופס הקמה'},      stage:'new',       notes:'מתעניין בחבילה הבסיסית, להתקשר היום',           meetDate:null,         meetTime:null,   created:'29.04.2026, 10:15',
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מ-Facebook (קמפיין הקמה Q2 · מודעת וידאו #1)', author:'מערכת', at:'29/04/2026 10:15'},
+      ]},
+    {id:2, name:'נטע לוי',     phone:'054-9876543', email:'neta@example.com',    source:{channel:'גוגל',      campaign:'Search – מילים כלליות', ad:'הצעת מחיר',  form:'Lead Form'}, stage:'contacted', notes:'דיברנו אתמול — מעוניינת בהמשך שיחה בשבוע הבא', meetDate:'02/05/2026', meetTime:'10:00', created:'28.04.2026, 14:30',
+      messages:[
+        {from:'them', text:'שלום, ראיתי את המודעה ואני רוצה לשמוע פרטים', time:'14:30'},
+        {from:'us',   text:'שלום נטע! נשמח לעזור. עם איזה מודל את עובדת היום?', time:'14:42'},
+        {from:'them', text:'אני יועצת עצמאית, יש לי כ-15 לקוחות פעילים', time:'15:10'},
+        {from:'us',   text:'מצוין. אשלח לך כעת קישור לתיאום פגישת היכרות', time:'15:11'},
+      ], unread:0,
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מ-Google Ads (Search – מילים כלליות)',           author:'מערכת',           at:'28/04/2026 14:30'},
+        {kind:'status',  from:'new', to:'contacted',                                              author:'לירון בר כליפא',  at:'28/04/2026 14:42'},
+        {kind:'meeting', text:'תואמה פגישה ל-02/05/2026 בשעה 10:00',                              author:'לירון בר כליפא',  at:'28/04/2026 15:11'},
+        {kind:'meeting', text:'הוזזה פגישה מ-02/05/2026 בשעה 10:00 ל-04/05/2026 בשעה 14:00',     author:'לירון בר כליפא',  at:'29/04/2026 10:00'},
+        {kind:'note',    text:'התקשרתי שוב לפני הפגישה, אישרה שתגיע. נשמעת ממש מעוניינת.',         author:'לירון בר כליפא',  at:'29/04/2026 10:30'},
+      ]},
+    {id:3, name:'רן שפירא',    phone:'050-5544332', email:'ran@shapira.co.il',   source:{channel:'חבר ממליץ'},                                                                       stage:'qualified', notes:'יש לו 30 לקוחות פעילים, מעוניין במודל פר לקוח',  meetDate:'03/05/2026', meetTime:'14:00', created:'25.04.2026, 09:00',
+      messages:[
+        {from:'them', text:'שלום, אבי המליץ עליכם', time:'09:00'},
+        {from:'us',   text:'שלום רן! תודה רבה. כמה לקוחות פעילים יש לך?', time:'09:15'},
+        {from:'them', text:'30, רובם בהשקעות', time:'09:18'},
+        {from:'us',   text:'מעולה. במודל פר לקוח שלנו זה יוצא ₪450 לחודש. נדבר ביום שלישי בשעה 14:00?', time:'09:22'},
+        {from:'them', text:'מאשר 👍', time:'09:25'},
+      ], unread:2,
+      timeline:[
+        {kind:'created', text:'הליד נוסף ידנית (הפניה מאבי כהן)', author:'אייל חזות', at:'25/04/2026 08:55'},
+        {kind:'note',    text:'אבי כהן (לקוח קיים) המליץ — חבר טוב, מצפה לשירות אדיב', author:'אייל חזות', at:'25/04/2026 08:55'},
+        {kind:'status',  from:'new', to:'contacted',                                  author:'לירון בר כליפא', at:'25/04/2026 09:30'},
+        {kind:'note',    text:'התקשרתי, ענה מיד. עובד בתחום השקעות, יש לו 30 לקוחות פעילים. מעוניין במודל פר לקוח.', author:'לירון בר כליפא', at:'25/04/2026 09:32'},
+        {kind:'status',  from:'contacted', to:'qualified',                            author:'לירון בר כליפא', at:'26/04/2026 14:10'},
+        {kind:'meeting', text:'תואמה פגישה ל-03/05/2026 בשעה 14:00',                  author:'לירון בר כליפא', at:'26/04/2026 14:11'},
+        {kind:'note',    text:'הוא ביקש לקבל מראש את ההצעה במייל לפני הפגישה', author:'לירון בר כליפא', at:'26/04/2026 14:12'},
+      ]},
+    {id:4, name:'דנה כספיר',   phone:'053-1122334', email:'dana@example.com',    source:{channel:'אתר',       form:'טופס צור קשר'},                                                  stage:'proposal',  notes:'נשלחה הצעה ב-22.4, ממתינה לאישור',             meetDate:'05/05/2026', meetTime:'11:30', created:'20.04.2026, 16:45',
+      messages:[
+        {from:'them', text:'מילאתי את הטופס באתר, אשמח לפרטים', time:'16:45'},
+        {from:'us',   text:'שלום דנה, נשלחה לך הצעה במייל. אשמח לסקור איתך בפגישה ביום שני', time:'10:30'},
+      ], unread:1,
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מטופס באתר', author:'מערכת', at:'20/04/2026 16:45'},
+        {kind:'message', text:'הודעת WhatsApp נכנסה: "מילאתי את הטופס באתר..."', author:'WhatsApp', at:'20/04/2026 16:45'},
+        {kind:'status',  from:'new', to:'contacted',                  author:'יעל אברהם',   at:'21/04/2026 10:00'},
+        {kind:'note',    text:'דיברנו בטלפון 15 דק. מנהלת קליניקה פרטית, מחפשת פתרון לדוחות חודשיים.', author:'יעל אברהם', at:'21/04/2026 10:18'},
+        {kind:'status',  from:'contacted', to:'qualified',            author:'יעל אברהם',   at:'22/04/2026 09:00'},
+        {kind:'note',    text:'שלחתי הצעה במייל. סכום: ₪450/חודש. ממתינה לתשובה.', author:'אייל חזות', at:'22/04/2026 09:15'},
+        {kind:'status',  from:'qualified', to:'proposal',             author:'אייל חזות',   at:'22/04/2026 09:15'},
+        {kind:'meeting', text:'תואמה פגישה ל-05/05/2026 בשעה 11:30',  author:'אייל חזות',   at:'22/04/2026 09:20'},
+      ]},
+    {id:5, name:'יוסי דהן',    phone:'054-3344556', email:'yossi@dahan.co.il',   source:{channel:'פייסבוק',  campaign:'Retargeting',         ad:'מודעת תמונה #3', form:'טופס מהיר'}, stage:'won',       notes:'הומר ליועץ פעיל ב-15.4',                       meetDate:'12/04/2026', meetTime:'10:00', created:'10.04.2026, 11:20',
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מ-Facebook (Retargeting · מודעת תמונה #3)', author:'מערכת', at:'10/04/2026 11:20'},
+        {kind:'status',  from:'new', to:'contacted',                            author:'לירון בר כליפא', at:'10/04/2026 14:30'},
+        {kind:'note',    text:'התקשרתי, ענה מיד. מעוניין מאוד, מבקש דמו.',     author:'לירון בר כליפא', at:'10/04/2026 14:45'},
+        {kind:'meeting', text:'תואמה פגישת דמו ל-12/04/2026 בשעה 10:00',       author:'לירון בר כליפא', at:'11/04/2026 09:00'},
+        {kind:'status',  from:'contacted', to:'qualified',                       author:'אייל חזות',      at:'12/04/2026 11:30'},
+        {kind:'note',    text:'הדמו עבר טוב. אישר התקדמות. שולח הצעה היום.',   author:'אייל חזות',      at:'12/04/2026 11:32'},
+        {kind:'status',  from:'qualified', to:'proposal',                        author:'אייל חזות',      at:'12/04/2026 14:00'},
+        {kind:'status',  from:'proposal', to:'won',                              author:'אייל חזות',      at:'15/04/2026 11:30'},
+        {kind:'note',    text:'הומר ליועץ פעיל ב-15.4. נפתח כרטיס יועץ.',       author:'אייל חזות',      at:'15/04/2026 11:35'},
+      ]},
+    {id:6, name:'שירה כהן',    phone:'052-7788990', email:'shira@example.com',   source:{channel:'אתר',       form:'טופס הצטרפות'},                                                  stage:'lost',      notes:'אמרה שהמחיר גבוה מדי, להציע מחדש ברבעון הבא',  meetDate:null,         meetTime:null,   created:'05.04.2026, 13:00',
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מהאתר (טופס הצטרפות)', author:'מערכת', at:'05/04/2026 13:00'},
+        {kind:'status',  from:'new', to:'contacted',                  author:'יעל אברהם', at:'06/04/2026 09:15'},
+        {kind:'note',    text:'דיברנו בטלפון. עניין כללי בלבד.',       author:'יעל אברהם', at:'06/04/2026 09:30'},
+        {kind:'status',  from:'contacted', to:'lost',                  author:'יעל אברהם', at:'07/04/2026 11:00'},
+        {kind:'note',    text:'אמרה שהמחיר גבוה מדי. להציע מחדש ברבעון הבא.', author:'יעל אברהם', at:'07/04/2026 11:01'},
+      ]},
+    {id:7, name:'מאור גולן',   phone:'050-2233445', email:'maor@example.com',    source:{channel:'גוגל',      campaign:'Display – B2B',       ad:'באנר #2',         form:'Lead Form'}, stage:'new',       notes:'',                                              meetDate:null,         meetTime:null,   created:'29.04.2026, 08:30',
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מ-Google Ads (Display – B2B · באנר #2)', author:'מערכת', at:'29/04/2026 08:30'},
+      ]},
+    {id:8, name:'תמר אברהם',   phone:'052-6677889', email:'tamar@avraham.co.il', source:{channel:'חבר ממליץ'},                                                                       stage:'contacted', notes:'יזם, פתוח לסגירה מהירה',                      meetDate:'30/04/2026', meetTime:'16:00', created:'27.04.2026, 17:00',
+      timeline:[
+        {kind:'created', text:'הליד נוסף ידנית (הפניה מדודי בן עזרא)', author:'אייל חזות', at:'27/04/2026 17:00'},
+        {kind:'note',    text:'יזם, חבר של דודי. פתוח לסגירה מהירה.', author:'אייל חזות', at:'27/04/2026 17:20'},
+        {kind:'status',  from:'new', to:'contacted',                  author:'אייל חזות', at:'27/04/2026 17:21'},
+        {kind:'meeting', text:'תואמה פגישה ל-30/04/2026 בשעה 16:00',  author:'אייל חזות', at:'28/04/2026 09:00'},
+      ]},
+    {id:9, name:'אורי בן דוד', phone:'054-9911223', email:'uri@example.com',     source:{channel:'גוגל',      campaign:'Search – ייעוץ פיננסי', ad:'הצעת ערך',    form:'Lead Form'}, stage:'qualified', notes:'הראיתי לו דמו, מתלבט בין מודלים',             meetDate:'01/05/2026', meetTime:'13:00', created:'24.04.2026, 12:15',
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מ-Google Ads (Search – ייעוץ פיננסי)', author:'מערכת', at:'24/04/2026 12:15'},
+        {kind:'status',  from:'new', to:'contacted',                  author:'לירון בר כליפא', at:'24/04/2026 13:00'},
+        {kind:'note',    text:'התקשרתי. עובד עצמאי, 12 לקוחות. מתלבט בין מודלים.', author:'לירון בר כליפא', at:'24/04/2026 13:20'},
+        {kind:'status',  from:'contacted', to:'qualified',            author:'אייל חזות', at:'25/04/2026 10:00'},
+        {kind:'meeting', text:'תואמה פגישת דמו ל-01/05/2026 בשעה 13:00', author:'אייל חזות', at:'25/04/2026 10:05'},
+        {kind:'note',    text:'הראיתי לו דמו של המערכת. מתלבט בין פר-לקוח לקבוע.', author:'אייל חזות', at:'25/04/2026 14:00'},
+      ]},
+    {id:10,name:'מיכל פינקל',  phone:'052-3344778', email:'michal@example.com',  source:{channel:'אתר',       form:'טופס יצירת קשר'},                                                stage:'new',       notes:'',                                              meetDate:null,         meetTime:null,   created:'29.04.2026, 16:00',
+      timeline:[
+        {kind:'created', text:'הליד נכנס אוטומטית מהאתר (טופס יצירת קשר)', author:'מערכת', at:'29/04/2026 16:00'},
+      ]},
+  ];
+
+  let stageFilter = '';
+  let editingId = null;
+
+  function avatarInit(name){
+    return name.trim().split(' ').slice(0,2).map(s=>s[0]).join('');
+  }
+  function findLead(id){ return leads.find(l => l.id === id); }
+
+  function parseMeetingDateTime(lead){
+    if (!lead.meetDate) return null;
+    const [d, m, y] = lead.meetDate.split('/');
+    const [h, mn] = (lead.meetTime || '09:00').split(':');
+    return new Date(+y, +m - 1, +d, +h, +mn, 0);
+  }
+  function needsDocumentation(lead){
+    if (!lead.meetDate) return false;
+    if (lead.meetingDocumented) return false;
+    const dt = parseMeetingDateTime(lead);
+    if (!dt) return false;
+    return dt < new Date();
+  }
+  function undocumentedLeads(){
+    return leads.filter(needsDocumentation);
+  }
+
+  // Write upcoming meetings to localStorage so the admin shell can alert 5 min before
+  function syncMeetingsToStorage(){
+    const fmtLabels = {meet:'פגישת Google Meet', in_person:'פגישה פרונטלית', reminder:'תזכורת'};
+    const upcoming = leads
+      .filter(l => l.meetDate && !l.meetingDocumented)
+      .map(l => {
+        const dt = parseMeetingDateTime(l);
+        if (!dt) return null;
+        return {
+          leadId: l.id,
+          leadName: l.name,
+          datetime: dt.toISOString(),
+          time: l.meetTime || '',
+          format: fmtLabels[l.meetingFormat] || 'פגישה',
+          advisor: l.advisorId ? advisorName(l.advisorId) : 'תזכורת אישית',
+        };
+      })
+      .filter(Boolean);
+    try { localStorage.setItem('hk_upcoming_meetings', JSON.stringify(upcoming)); } catch(e) {}
+  }
+
+  // In production: replace with the actually logged-in user
+  const CURRENT_USER = 'אייל חזות';
+
+  function nowStamp(){
+    const t = new Date();
+    return `${String(t.getDate()).padStart(2,'0')}/${String(t.getMonth()+1).padStart(2,'0')}/${t.getFullYear()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+  }
+  function addTimelineEvent(lead, ev){
+    if (!lead.timeline) lead.timeline = [];
+    lead.timeline.push({...ev, at: nowStamp(), author: ev.author || CURRENT_USER});
+  }
+
+  function renderStats(){
+    const stats = document.getElementById('stats');
+    const visible = stages.filter(s => s.showAsCard);
+    const cards = [
+      `<div class="stat ${stageFilter===''?'is-active':''}" data-stage="">
+         <div class="stat__label">סך הכל</div>
+         <div class="stat__value">${leads.length}</div>
+       </div>`,
+      ...visible.map(s => `
+        <div class="stat stat--stage ${stageFilter===s.key?'is-active':''}" data-stage="${s.key}" style="--stage-color:${colorSolid(s.color)}">
+          <div class="stat__label">${s.label}</div>
+          <div class="stat__value">${leads.filter(l => l.stage === s.key).length}</div>
+        </div>
+      `),
+    ];
+    stats.innerHTML = cards.join('');
+    // Adjust grid columns based on count
+    stats.style.gridTemplateColumns = `repeat(${Math.min(cards.length, 6)}, 1fr)`;
+  }
+
+  function render(){
+    renderStats();
+    syncMeetingsToStorage();
+
+    // Documentation banner
+    const undoc = undocumentedLeads();
+    const banner = document.getElementById('docsBanner');
+    const dcount = document.getElementById('docsCount');
+    if (banner && dcount){
+      dcount.textContent = undoc.length;
+      banner.classList.toggle('is-on', undoc.length > 0);
+    }
+
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    const advFilter = document.getElementById('advisorFilter').value;
+    const list = leads.filter(l => {
+      if (q &&
+        !l.name.toLowerCase().includes(q) &&
+        !l.phone.includes(q) &&
+        !l.email.toLowerCase().includes(q)) return false;
+      if (stageFilter && l.stage !== stageFilter) return false;
+      if (advFilter === 'self'){
+        if (!(l.meetDate && !l.advisorId)) return false; // personal reminders only
+      } else if (advFilter){
+        if (String(l.advisorId) !== advFilter) return false;
+      }
+      return true;
+    });
+
+    const rowsEl = document.getElementById('rows');
+    const emptyEl = document.getElementById('empty');
+    if (list.length === 0){
+      rowsEl.innerHTML = '';
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+    rowsEl.innerHTML = list.map(l => {
+      const src = l.source || {};
+      const hasCampaign = src.campaign || src.ad || src.form;
+      const sourceCell = hasCampaign
+        ? `<button class="source-tag source-tag--clickable" data-source-id="${l.id}">${src.channel||'—'}<span class="source-tag__caret">▾</span></button>`
+        : `<span class="source-tag">${src.channel||'—'}</span>`;
+      let meetingCell;
+      if (l.meetDate){
+        const docNeeded = needsDocumentation(l);
+        const docBtn = docNeeded ? `<button class="doc-needed" data-action="document" data-id="${l.id}">תיעוד</button>` : '';
+        const advName = l.advisorId ? advisorName(l.advisorId) : 'תזכורת אישית';
+        const fmtMeta = {
+          meet:      {icon:'🎥', label:'Google Meet'},
+          in_person: {icon:'📍', label:'פגישה פרונטלית'},
+          reminder:  {icon:'🔔', label:'תזכורת'},
+        };
+        const fmt = fmtMeta[l.meetingFormat] || fmtMeta.meet;
+        meetingCell = `<div>
+          <div class="date">${l.meetDate}${l.meetTime ? ' · ' + l.meetTime : ''}</div>
+          <div class="meet-with"><span class="meet-fmt" title="${fmt.label}">${fmt.icon}</span> ${advName}</div>
+          ${docBtn}
+        </div>`;
+      } else {
+        meetingCell = `<span class="notes notes--empty">טרם תואם</span>`;
+      }
+      const sourceInline = hasCampaign
+        ? `<button class="source-inline" data-source-id="${l.id}">${src.channel||'—'} ▾</button>`
+        : `<span>${src.channel||'—'}</span>`;
+      return `
+      <div class="row ${l.unread?'has-unread':''}" data-id="${l.id}">
+        <div data-label="ליד">
+          <div class="client__name">${l.name}</div>
+          <div class="client__meta">
+            ${sourceInline}<span class="client__sep">·</span><span>${l.created}</span>
+          </div>
+        </div>
+        <div data-label="צור קשר">
+          <div class="contact">${l.phone}</div>
+          <div class="contact__sub">${l.email}</div>
+        </div>
+        <div data-label="שלב">
+          <select class="stage-select" style="background-color:${colorBg(stageColor(l.stage))};color:${colorText(stageColor(l.stage))}" data-stage="${l.stage}" data-id="${l.id}" title="שנה שלב">
+            ${stages.map(s => `<option value="${s.key}" ${s.key===l.stage?'selected':''}>${s.label}</option>`).join('')}
+          </select>
+        </div>
+        <div data-label="פגישה">${meetingCell}</div>
+        <div data-label="הערות">
+          ${l.notes
+            ? `<span class="notes" title="${l.notes.replace(/"/g,'&quot;')}">${l.notes}</span>`
+            : `<span class="notes notes--empty">—</span>`}
+        </div>
+        <div class="col-action" data-label="פעולות">
+          <div class="actions">
+            <button class="icon-btn icon-btn--success" data-action="dial" data-id="${l.id}" title="חיוג">📞</button>
+            <button class="icon-btn icon-btn--chat ${l.unread?'has-unread':''}" data-action="chat" data-id="${l.id}" title="צ'אט WhatsApp">
+              💬${l.unread ? `<span class="icon-btn__badge">${l.unread}</span>` : ''}
+            </button>
+            <button class="icon-btn ${l.meetDate?'icon-btn--has-meeting':''}" data-action="schedule" data-id="${l.id}" title="${l.meetDate?'צפייה / עריכת פגישה':'תאם פגישה'}">📅</button>
+            <button class="icon-btn ${l.quote && (l.quote.hkmoney?.include || l.quote.hkmoneyplus?.include) ? 'icon-btn--has-quote':''}" data-action="quote" data-id="${l.id}" title="הצעת מחיר">💰</button>
+            <button class="icon-btn" data-action="timeline" data-id="${l.id}" title="תיעוד / היסטוריה">
+              📋${l.timeline && l.timeline.length ? `<span class="icon-btn__badge icon-btn__badge--info">${l.timeline.length}</span>` : ''}
+            </button>
+            <button class="icon-btn" data-action="edit" data-id="${l.id}" title="עריכה ומחיקה">✎</button>
+          </div>
+        </div>
+      </div>
+    `;}).join('');
+  }
+
+  // ----- Wire up -----
+  document.getElementById('search').addEventListener('input', render);
+  // Populate advisor filter dropdown + wire it up
+  (function initAdvisorFilter(){
+    const sel = document.getElementById('advisorFilter');
+    ADVISORS.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id;
+      opt.textContent = a.name;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', render);
+  })();
+  document.getElementById('stats').addEventListener('click', (e) => {
+    const s = e.target.closest('.stat');
+    if (!s) return;
+    stageFilter = (stageFilter === s.dataset.stage) ? '' : s.dataset.stage;
+    render();
+  });
+  document.getElementById('newBtn').addEventListener('click', () => openModal(null));
+
+  document.getElementById('rows').addEventListener('click', (e) => {
+    if (e.target.closest('.stage-select')) return;
+    const srcBtn = e.target.closest('[data-source-id]');
+    if (srcBtn){
+      showSourcePopover(srcBtn, findLead(+srcBtn.dataset.sourceId));
+      return;
+    }
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = +btn.dataset.id;
+    const l = findLead(id);
+    if (btn.dataset.action === 'edit') openModal(l);
+    else if (btn.dataset.action === 'chat') openChat(l);
+    else if (btn.dataset.action === 'timeline') openTimeline(l);
+    else if (btn.dataset.action === 'dial') startCall(l);
+    else if (btn.dataset.action === 'schedule') {
+      // If there's already a meeting → open the view modal. Otherwise → open scheduler.
+      if (l.meetDate) openMeetingView(l);
+      else openScheduler(l);
+    }
+    else if (btn.dataset.action === 'quote') openQuoteModal(l);
+    else if (btn.dataset.action === 'document') openDocModal(l);
+    else if (btn.dataset.action === 'delete'){
+      if (!confirm(`למחוק את הליד "${l.name}"?`)) return;
+      const idx = leads.findIndex(x => x.id === id);
+      leads.splice(idx,1);
+      render();
+    }
+  });
+
+  // ----- Chat -----
+  const chatModal = document.getElementById('chatModal');
+  let chatLeadId = null;
+
+  function openChat(l){
+    chatLeadId = l.id;
+    if (!l.messages) l.messages = [];
+    l.unread = 0; // mark as read when opened
+    document.getElementById('chatTitle').textContent = `צ'אט עם ${l.name}`;
+    document.getElementById('chatPhone').textContent = l.phone;
+    renderChatMessages(l);
+    chatModal.classList.add('is-open');
+    setTimeout(() => document.getElementById('chatInput').focus(), 50);
+    render(); // update badge count in list
+  }
+
+  function renderChatMessages(l){
+    const el = document.getElementById('chatMessages');
+    if (!l.messages || l.messages.length === 0){
+      el.innerHTML = `<div class="chat-empty">אין עדיין הודעות. כתוב הודעה ראשונה למטה ↓</div>`;
+      return;
+    }
+    el.innerHTML = l.messages.map(m => `
+      <div class="chat-msg chat-msg--${m.from}">
+        <div>
+          <div class="chat-msg__bubble">${m.text}</div>
+          <div class="chat-msg__time">${m.time}</div>
+        </div>
+      </div>
+    `).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function sendChatMessage(){
+    const inp = document.getElementById('chatInput');
+    const text = inp.value.trim();
+    if (!text || !chatLeadId) return;
+    const l = findLead(chatLeadId);
+    if (!l.messages) l.messages = [];
+    const t = new Date();
+    const time = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+    l.messages.push({from:'us', text, time});
+    inp.value = '';
+    renderChatMessages(l);
+  }
+
+  document.getElementById('chatSend').addEventListener('click', sendChatMessage);
+  document.getElementById('chatInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); sendChatMessage(); }
+  });
+  chatModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeChat !== undefined || e.target === chatModal){
+      chatModal.classList.remove('is-open');
+      document.getElementById('tplPanel').classList.remove('is-open');
+    }
+  });
+
+  // ============================================
+  // MESSAGE TEMPLATES (read-only from localStorage; managed in messages.html)
+  // ============================================
+  const TPL_STORAGE_KEY = 'hk_message_templates';
+  const TPL_DEFAULTS = [
+    {id:1, name:'תזכורת לפגישה',       body:'שלום {שם_פרטי}, רק מזכיר שיש לנו פגישה ב-{תאריך_פגישה} בשעה {שעת_פגישה}. נתראה!'},
+    {id:2, name:'תודה על הפנייה',      body:'שלום {שם_פרטי}, תודה על הפנייה מ-{מקור}. אחזור אליך תוך 24 שעות עם פרטים.'},
+    {id:3, name:'אחרי פגישה',          body:'תודה רבה על הפגישה {שם_פרטי}! היה נעים להכיר. אשלח לך הצעה במייל עד מחר.'},
+    {id:4, name:'מעקב על הצעה',        body:'שלום {שם_פרטי}, רוצה לוודא שקיבלת את ההצעה. אשמח לדבר אם יש שאלות.'},
+    {id:5, name:'בקשת ייעוד פגישה',    body:'שלום {שם_פרטי}, מתי נוח לך לפגישת היכרות? אני זמין השבוע בימים ב׳-ה׳ אחה״צ.'},
+  ];
+  function loadTemplates(){
+    try {
+      const stored = localStorage.getItem(TPL_STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return [...TPL_DEFAULTS];
+  }
+  let templates = loadTemplates();
+
+  // Live sync if templates change in messages.html
+  window.addEventListener('storage', (e) => {
+    if (e.key === TPL_STORAGE_KEY){
+      templates = e.newValue ? JSON.parse(e.newValue) : [...TPL_DEFAULTS];
+      if (document.getElementById('tplPanel').classList.contains('is-open')){
+        renderTemplatesPanel();
+      }
+    }
+  });
+
+  function fillTemplate(body, lead){
+    if (!lead) return body;
+    const firstName = (lead.name || '').split(' ')[0];
+    return body
+      .replace(/\{שם_פרטי\}/g,    firstName)
+      .replace(/\{שם_מלא\}/g,     lead.name || '')
+      .replace(/\{תאריך_פגישה\}/g, lead.meetDate || '[תאריך פגישה לא הוגדר]')
+      .replace(/\{שעת_פגישה\}/g,  lead.meetTime || '[שעה לא הוגדרה]')
+      .replace(/\{מקור\}/g,       lead.source?.channel || '')
+      .replace(/\{טלפון\}/g,      lead.phone || '')
+      .replace(/\{מייל\}/g,        lead.email || '');
+  }
+
+  function highlightPlaceholders(text){
+    return text.replace(/\{([^}]+)\}/g, '<span class="placeholder-chip">{$1}</span>');
+  }
+
+  function renderTemplatesPanel(){
+    const list = document.getElementById('tplList');
+    if (templates.length === 0){
+      list.innerHTML = `<div class="empty" style="padding:24px"><div class="empty__title">אין עדיין תבניות</div>
+        <div style="font-size:.84rem">צור תבנית במסך "ניהול הודעות"</div></div>`;
+      return;
+    }
+    list.innerHTML = templates.map(t => `
+      <div class="tpl-card">
+        <div class="tpl-card__name">${t.name}</div>
+        <div class="tpl-card__body">${highlightPlaceholders(t.body)}</div>
+        <button class="tpl-card__use" data-tpl-action="use" data-id="${t.id}">השתמש בתבנית ←</button>
+      </div>
+    `).join('');
+  }
+
+  // Wire up: open/close templates panel
+  document.getElementById('chatTplBtn').addEventListener('click', () => {
+    const panel = document.getElementById('tplPanel');
+    if (panel.classList.contains('is-open')){
+      panel.classList.remove('is-open');
+    } else {
+      renderTemplatesPanel();
+      panel.classList.add('is-open');
+    }
+  });
+  document.getElementById('tplCloseBtn').addEventListener('click', () => {
+    document.getElementById('tplPanel').classList.remove('is-open');
+  });
+
+  // Use template → fill the chat input
+  document.getElementById('tplList').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-tpl-action="use"]');
+    if (!btn) return;
+    const tpl = templates.find(t => t.id === +btn.dataset.id);
+    const lead = findLead(chatLeadId);
+    const filled = fillTemplate(tpl.body, lead);
+    const input = document.getElementById('chatInput');
+    input.value = filled;
+    input.focus();
+    document.getElementById('tplPanel').classList.remove('is-open');
+  });
+
+  // Navigate to messages.html (template management) via admin shell
+  document.getElementById('tplManageBtn').addEventListener('click', () => {
+    try {
+      window.parent.postMessage({type:'admin:navigate', tool:'templates'}, '*');
+    } catch(e) {
+      window.open('messages.html', '_blank');
+    }
+  });
+
+  // ----- WhatsApp QR connection -----
+  let waConnected = false;
+  let waPhone = '';
+
+  function fakeQrSvg(){
+    const cells = 25, sz = 200, c = sz / cells;
+    const r = (x, y, w, h, f) => `<rect x="${x*c}" y="${y*c}" width="${w*c}" height="${h*c}" fill="${f}"/>`;
+    const finder = (fx, fy) => r(fx,fy,7,7,'#000') + r(fx+1,fy+1,5,5,'#fff') + r(fx+2,fy+2,3,3,'#000');
+    let cellsHtml = '';
+    for (let row = 0; row < cells; row++){
+      for (let col = 0; col < cells; col++){
+        if ((row < 8 && col < 8) || (row < 8 && col > cells-9) || (row > cells-9 && col < 8)) continue;
+        if (Math.random() > 0.52) cellsHtml += r(col,row,1,1,'#000');
+      }
+    }
+    // Center logo placeholder
+    const cx = sz/2 - 18, cy = sz/2 - 18;
+    return `<svg viewBox="0 0 ${sz} ${sz}" width="200" height="200">
+      <rect width="${sz}" height="${sz}" fill="#fff"/>
+      ${cellsHtml}${finder(0,0)}${finder(cells-7,0)}${finder(0,cells-7)}
+      <rect x="${cx}" y="${cy}" width="36" height="36" rx="6" fill="#25d366"/>
+      <text x="${sz/2}" y="${sz/2+5}" text-anchor="middle" font-size="20" fill="#fff" font-weight="bold">W</text>
+    </svg>`;
+  }
+
+  function renderWaModal(){
+    const dot = document.querySelector('#waStatus .wa-dot');
+    const txt = document.getElementById('waStatusText');
+    const phone = document.getElementById('waStatusPhone');
+    const content = document.getElementById('waContent');
+    const refreshBtn = document.getElementById('waRefreshBtn');
+    const disconnectBtn = document.getElementById('waDisconnectBtn');
+
+    if (waConnected){
+      dot.className = 'wa-dot wa-dot--connected';
+      txt.textContent = 'מחובר';
+      phone.textContent = waPhone;
+      content.innerHTML = `
+        <div class="wa-qr-connected">
+          <div class="wa-qr-connected__icon">✓</div>
+          <div>WhatsApp Business מחובר בהצלחה</div>
+          <div style="color:var(--muted);font-weight:400;font-size:.82rem;margin-top:6px;">
+            הודעות מהלידים יגיעו לצ׳אט אוטומטית
+          </div>
+        </div>`;
+      refreshBtn.style.display = 'none';
+      disconnectBtn.style.display = '';
+    } else {
+      dot.className = 'wa-dot wa-dot--disconnected';
+      txt.textContent = 'לא מחובר';
+      phone.textContent = '';
+      content.innerHTML = `
+        <div class="wa-qr-wrap">${fakeQrSvg()}</div>
+        <div class="wa-steps">
+          <div class="wa-step"><span class="wa-step__num">1</span><span>פתח את WhatsApp בטלפון</span></div>
+          <div class="wa-step"><span class="wa-step__num">2</span><span>הקש על ⋮ ← <b>מכשירים מקושרים</b></span></div>
+          <div class="wa-step"><span class="wa-step__num">3</span><span>הקש "קישור מכשיר" וסרוק את הברקוד</span></div>
+        </div>
+      `;
+      refreshBtn.style.display = '';
+      disconnectBtn.style.display = 'none';
+    }
+  }
+
+  function updateWaBtn(){
+    const dot = document.getElementById('waDot');
+    const label = document.getElementById('waBtnLabel');
+    if (waConnected){
+      dot.className = 'wa-dot wa-dot--connected';
+      label.textContent = 'WhatsApp מחובר';
+    } else {
+      dot.className = 'wa-dot wa-dot--disconnected';
+      label.textContent = 'חבר WhatsApp';
+    }
+  }
+
+  const waModal = document.getElementById('waModal');
+  document.getElementById('waBtn').addEventListener('click', () => {
+    renderWaModal();
+    waModal.classList.add('is-open');
+  });
+  waModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeWa !== undefined || e.target === waModal){
+      waModal.classList.remove('is-open');
+    }
+  });
+  document.getElementById('waRefreshBtn').addEventListener('click', () => {
+    // Re-render new fake QR; also simulate a successful scan after 2.5s
+    renderWaModal();
+    setTimeout(() => {
+      if (!waConnected && waModal.classList.contains('is-open')){
+        waConnected = true;
+        waPhone = '+972-52-555-1234';
+        renderWaModal();
+        updateWaBtn();
+      }
+    }, 2500);
+  });
+  document.getElementById('waDisconnectBtn').addEventListener('click', () => {
+    if (!confirm('לנתק את חיבור ה-WhatsApp Business?')) return;
+    waConnected = false;
+    waPhone = '';
+    renderWaModal();
+    updateWaBtn();
+  });
+  // Initial state
+  updateWaBtn();
+
+  // ============================================
+  // META LEAD ADS CONNECTION
+  // ============================================
+  let metaConnected = false;
+  let metaConnecting = false;
+  let metaAccount = null; // {pageName, pageId, businessName, forms:[]}
+
+  function updateMetaBtn(){
+    const dot = document.getElementById('metaDot');
+    const label = document.getElementById('metaBtnLabel');
+    if (metaConnected){
+      dot.className = 'meta-dot meta-dot--connected';
+      label.textContent = 'Meta מחובר';
+    } else {
+      dot.className = 'meta-dot meta-dot--disconnected';
+      label.textContent = 'חבר Meta';
+    }
+  }
+
+  function renderMetaModal(){
+    const body = document.getElementById('metaBody');
+    const disconnectBtn = document.getElementById('metaDisconnectBtn');
+
+    if (metaConnected && metaAccount){
+      disconnectBtn.style.display = '';
+      body.innerHTML = `
+        <div class="meta-info">
+          <div class="meta-info__row">
+            <span class="meta-info__lbl">סטטוס</span>
+            <span class="meta-info__val" style="color:var(--green)">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:6px;vertical-align:middle"></span>
+              מחובר ופעיל
+            </span>
+          </div>
+          <div class="meta-info__row">
+            <span class="meta-info__lbl">עסק</span>
+            <span class="meta-info__val">${metaAccount.businessName}</span>
+          </div>
+          <div class="meta-info__row">
+            <span class="meta-info__lbl">עמוד</span>
+            <span class="meta-info__val">${metaAccount.pageName}</span>
+          </div>
+          <div class="meta-info__row">
+            <span class="meta-info__lbl">Page ID</span>
+            <span class="meta-info__val">${metaAccount.pageId}</span>
+          </div>
+          <div class="meta-info__row">
+            <span class="meta-info__lbl">Webhook</span>
+            <span class="meta-info__val" style="color:var(--green)">פעיל</span>
+          </div>
+          <div class="meta-info__row">
+            <span class="meta-info__lbl">ליד אחרון</span>
+            <span class="meta-info__val" style="font-weight:400;color:var(--muted)">לפני 12 דקות</span>
+          </div>
+        </div>
+
+        <div class="meta-forms">
+          <div class="meta-forms__title">טפסים פעילים (${metaAccount.forms.length})</div>
+          ${metaAccount.forms.map(f => `
+            <div class="meta-form">
+              <div>
+                <div class="meta-form__name">${f.name}</div>
+                <div class="meta-form__leads">${f.leads} לידים החודש · ${f.platform}</div>
+              </div>
+              <span class="meta-form__active">פעיל</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else {
+      disconnectBtn.style.display = 'none';
+      body.innerHTML = `
+        <div class="meta-hero">
+          <div class="meta-hero__icon">f</div>
+          <div class="meta-hero__title">חבר את חשבון ה-Meta שלך</div>
+          <div class="meta-hero__desc">לאחר ההתחברות, לידים חדשים מ-Facebook ו-Instagram Lead Ads יכנסו אוטומטית למסך הזה.</div>
+          <button class="meta-connect-btn" id="metaOauthBtn" ${metaConnecting?'disabled':''}>
+            ${metaConnecting ? '⟳ מתחבר ל-Facebook...' : '🔗 התחבר עם Facebook'}
+          </button>
+        </div>
+        <div class="meta-perms">
+          <b>ההרשאות שיתבקשו:</b>
+          <ul>
+            <li>גישה לעמודים שאתה מנהל</li>
+            <li>קריאת טפסי Lead Ads (leads_retrieval)</li>
+            <li>קבלת התראות על לידים חדשים (Webhooks)</li>
+          </ul>
+        </div>
+      `;
+      const oauthBtn = document.getElementById('metaOauthBtn');
+      if (oauthBtn && !metaConnecting){
+        oauthBtn.addEventListener('click', startMetaOauth);
+      }
+    }
+  }
+
+  function startMetaOauth(){
+    metaConnecting = true;
+    renderMetaModal();
+    // Simulate the OAuth round-trip (in real life: window.open(Facebook OAuth URL),
+    // user approves, redirected back with code, backend exchanges for token)
+    setTimeout(() => {
+      metaConnecting = false;
+      metaConnected = true;
+      metaAccount = {
+        businessName: 'חזות קריספין HK',
+        pageName: 'HK Money',
+        pageId: '102837465019283',
+        forms: [
+          {name:'קמפיין הקמה Q2', platform:'Facebook',  leads:34, active:true},
+          {name:'Search – מילים כלליות', platform:'Instagram', leads:18, active:true},
+          {name:'Retargeting', platform:'Facebook',  leads:12, active:true},
+          {name:'Display – B2B', platform:'Facebook',  leads:7,  active:true},
+        ],
+      };
+      renderMetaModal();
+      updateMetaBtn();
+    }, 1800);
+  }
+
+  const metaModal = document.getElementById('metaModal');
+  document.getElementById('metaBtn').addEventListener('click', () => {
+    renderMetaModal();
+    metaModal.classList.add('is-open');
+  });
+  metaModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeMeta !== undefined || e.target === metaModal){
+      metaModal.classList.remove('is-open');
+    }
+  });
+  document.getElementById('metaDisconnectBtn').addEventListener('click', () => {
+    if (!confirm('לנתק את חיבור ה-Meta? לידים חדשים יפסיקו להגיע עד חיבור מחדש.')) return;
+    metaConnected = false;
+    metaAccount = null;
+    renderMetaModal();
+    updateMetaBtn();
+  });
+  updateMetaBtn();
+
+  // ============================================
+  // NEW MESSAGE NOTIFICATIONS
+  // ============================================
+
+  function totalUnread(){
+    return leads.reduce((sum, l) => sum + (l.unread || 0), 0);
+  }
+
+  function updateUnreadPill(){
+    const t = totalUnread();
+    const pill = document.getElementById('unreadPill');
+    document.getElementById('unreadCount').textContent = t;
+    pill.hidden = t === 0;
+    // Notify admin shell (parent iframe) about unread count
+    try {
+      window.parent.postMessage({type:'leads:unread', count:t}, '*');
+    } catch(e) {}
+  }
+
+  // Click pill → open chat with the lead that has unread (most recent)
+  document.getElementById('unreadPill').addEventListener('click', () => {
+    const lead = leads.find(l => l.unread > 0);
+    if (lead) openChat(lead);
+  });
+
+  // Simulated incoming messages (demo)
+  const incomingTexts = [
+    'שלום, רציתי לוודא לגבי המחיר',
+    'מתי תוכלו להתפנות לפגישה?',
+    'אתם זמינים גם בערב?',
+    'תוכל לשלוח לי הצעת מחיר?',
+    'אני מעוניין להתקדם',
+    'יש לי עוד שאלה אחת',
+    'תודה, אחזור אליכם',
+    'אפשר לדבר עכשיו?',
+  ];
+  let simulatedCount = 0;
+  const MAX_SIMULATED = 5;
+
+  function simulateIncoming(){
+    if (simulatedCount >= MAX_SIMULATED) return;
+    // Pick a random lead (preferably one with existing chat or active stage)
+    const candidates = leads.filter(l => ['new','contacted','qualified','proposal'].includes(l.stage));
+    if (candidates.length === 0) return;
+    const l = candidates[Math.floor(Math.random() * candidates.length)];
+    if (!l.messages) l.messages = [];
+    const text = incomingTexts[Math.floor(Math.random() * incomingTexts.length)];
+    const t = new Date();
+    const time = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+    l.messages.push({from:'them', text, time});
+    l.unread = (l.unread || 0) + 1;
+    simulatedCount++;
+
+    updateUnreadPill();
+    render();
+    // If the chat for this lead is currently open, refresh messages and mark read
+    if (chatLeadId === l.id && document.getElementById('chatModal').classList.contains('is-open')){
+      l.unread = 0;
+      renderChatMessages(l);
+      updateUnreadPill();
+      render();
+    }
+
+    // Schedule next
+    if (simulatedCount < MAX_SIMULATED){
+      setTimeout(simulateIncoming, 15000 + Math.random() * 15000);
+    }
+  }
+
+  // Hook into chat open — mark as read updates the pill
+  const _origOpenChat = openChat;
+  openChat = function(l){
+    _origOpenChat(l);
+    updateUnreadPill();
+  };
+
+  // Kick off
+  updateUnreadPill();
+  setTimeout(simulateIncoming, 8000);
+
+  // Demo: ensure at least 2 leads have past undocumented meetings (so the banner shows)
+  (function initDemoDocumentation(){
+    const today = new Date();
+    const fmt = (d) => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    const d2 = new Date(today); d2.setDate(today.getDate() - 2);
+    const d5 = new Date(today); d5.setDate(today.getDate() - 5);
+    const a = leads.find(l => l.id === 3);
+    if (a){ a.meetDate = fmt(d2); a.meetTime = '14:00'; a.meetingFormat='in_person'; a.meetingLocation='מגדל השחר, אריאל שרון 4, גבעתיים'; a.advisorId=2; a.meetingDocumented = false; }
+    const b = leads.find(l => l.id === 4);
+    if (b){ b.meetDate = fmt(d5); b.meetTime = '11:30'; b.meetingFormat='meet'; b.advisorId=1; b.meetingDocumented = false; }
+    // Lead 9 (אורי בן דוד) has future meeting
+    const c = leads.find(l => l.id === 9);
+    if (c){ c.meetingFormat='meet'; c.advisorId=3; c.meetingDocumented = false; }
+    // Future meetings with advisors (so the filter has variety)
+    const d = leads.find(l => l.id === 2);  // נטע לוי
+    if (d){ d.meetingFormat='meet'; d.advisorId=1; }
+    const e = leads.find(l => l.id === 8);  // תמר אברהם
+    if (e){ e.meetingFormat='in_person'; e.meetingLocation='מגדל השחר, אריאל שרון 4, גבעתיים'; e.advisorId=4; }
+    // Demo: a meeting ~4 minutes from now so the 5-min toast fires shortly after load
+    const soon = new Date(Date.now() + 4*60000);
+    const pad = (n) => String(n).padStart(2,'0');
+    const f = leads.find(l => l.id === 7);  // מאור גולן
+    if (f){
+      f.meetDate = `${pad(soon.getDate())}/${pad(soon.getMonth()+1)}/${soon.getFullYear()}`;
+      f.meetTime = `${pad(soon.getHours())}:${pad(soon.getMinutes())}`;
+      f.meetingFormat = 'meet';
+      f.advisorId = 2;
+      f.meetingDocumented = false;
+    }
+    render();
+  })();
+
+  // ============================================
+  // STAGE SETTINGS
+  // ============================================
+  const COLORS = Object.keys(STAGE_COLORS);
+  const settingsModal = document.getElementById('settingsModal');
+  let draftStages = []; // working copy while modal open
+
+  function renderStageList(){
+    const el = document.getElementById('stageList');
+    el.innerHTML = draftStages.map((s, idx) => `
+      <div class="stage-row" data-idx="${idx}">
+        <div class="stage-row__top">
+          <button class="color-trigger" style="background-color:${colorSolid(s.color)}"
+            data-action="toggle-palette" data-idx="${idx}" title="שנה צבע"></button>
+          <input class="stage-row__label" type="text" value="${s.label}">
+          <label class="stage-row__toggle">
+            <input type="checkbox" ${s.showAsCard?'checked':''}>
+            <span>הצג ככרטיס</span>
+          </label>
+        </div>
+        <div class="stage-row__palette" id="palette-${idx}" hidden>
+          ${COLORS.map(c => `
+            <button class="color-swatch ${s.color===c?'is-selected':''}"
+              style="background-color:${colorSolid(c)}"
+              data-action="pick-color" data-c="${c}" data-idx="${idx}"
+              title="${c}"></button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('settingsBtn').addEventListener('click', () => {
+    draftStages = stages.map(s => ({...s}));
+    renderStageList();
+    settingsModal.classList.add('is-open');
+  });
+
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeSettings !== undefined || e.target === settingsModal){
+      settingsModal.classList.remove('is-open');
+      return;
+    }
+    // Toggle palette open/closed for a row
+    const trigger = e.target.closest('[data-action="toggle-palette"]');
+    if (trigger){
+      const idx = trigger.dataset.idx;
+      const palette = document.getElementById(`palette-${idx}`);
+      const willOpen = palette.hidden;
+      // Close all palettes first
+      document.querySelectorAll('.stage-row__palette').forEach(p => p.hidden = true);
+      palette.hidden = !willOpen;
+      return;
+    }
+    // Pick a color from the palette
+    const swatch = e.target.closest('[data-action="pick-color"]');
+    if (swatch){
+      const idx = +swatch.dataset.idx;
+      draftStages[idx].color = swatch.dataset.c;
+      // Update the trigger color + selected state, then close the palette
+      const row = swatch.closest('.stage-row');
+      row.querySelector('.color-trigger').style.backgroundColor = colorSolid(swatch.dataset.c);
+      row.querySelectorAll('.color-swatch').forEach(b => b.classList.toggle('is-selected', b === swatch));
+      document.getElementById(`palette-${idx}`).hidden = true;
+      return;
+    }
+    // Click elsewhere in the modal → close any open palette
+    if (!e.target.closest('.stage-row__palette')){
+      document.querySelectorAll('.stage-row__palette').forEach(p => p.hidden = true);
+    }
+  });
+
+  // Track label/toggle changes into draft
+  document.getElementById('stageList').addEventListener('input', (e) => {
+    const row = e.target.closest('.stage-row');
+    if (!row) return;
+    const idx = +row.dataset.idx;
+    if (e.target.classList.contains('stage-row__label')){
+      draftStages[idx].label = e.target.value;
+    } else if (e.target.type === 'checkbox'){
+      draftStages[idx].showAsCard = e.target.checked;
+    }
+  });
+
+  document.getElementById('addStageBtn').addEventListener('click', () => {
+    const key = 'stage_' + Date.now();
+    draftStages.push({key, label:'שלב חדש', color:'gray', showAsCard:true});
+    renderStageList();
+  });
+
+  document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+    if (draftStages.some(s => !s.label.trim())){
+      alert('יש שלב ללא שם');
+      return;
+    }
+    stages = draftStages.map(s => ({...s, label:s.label.trim()}));
+    settingsModal.classList.remove('is-open');
+    render();
+  });
+
+  // ============================================
+  // PHONE DIALER (WebRTC mock — in production: Twilio Voice JS SDK)
+  // ============================================
+  const dialer = document.getElementById('dialer');
+  let call = null; // {leadId, startedAt, connectedAt, durationSec, status, muted, ringTimer, tickTimer}
+
+  function fmtDuration(sec){
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function startCall(lead){
+    if (call) return; // already in a call
+    call = {
+      leadId: lead.id,
+      startedAt: Date.now(),
+      connectedAt: null,
+      durationSec: 0,
+      status: 'ringing',
+      muted: false,
+    };
+    // Populate dialer header
+    document.getElementById('dialerAvatar').textContent = avatarInit(lead.name);
+    document.getElementById('dialerName').textContent   = lead.name;
+    document.getElementById('dialerPhone').textContent  = lead.phone;
+    document.getElementById('dialerTimer').textContent  = '00:00';
+    const statusEl = document.getElementById('dialerStatus');
+    statusEl.className = 'dialer__status dialer__status--ringing';
+    statusEl.textContent = 'מחייג...';
+    document.getElementById('dialerMute').classList.remove('is-on');
+    dialer.classList.add('is-active');
+    dialer.classList.remove('is-minimized');
+
+    // Simulate connection after 1.8 sec
+    call.ringTimer = setTimeout(() => {
+      if (!call || call.status !== 'ringing') return;
+      call.status = 'connected';
+      call.connectedAt = Date.now();
+      statusEl.className = 'dialer__status dialer__status--connected';
+      statusEl.textContent = 'בשיחה';
+      // Start timer
+      call.tickTimer = setInterval(() => {
+        call.durationSec = Math.floor((Date.now() - call.connectedAt) / 1000);
+        document.getElementById('dialerTimer').textContent = fmtDuration(call.durationSec);
+      }, 1000);
+    }, 1800);
+  }
+
+  function hangupCall(){
+    if (!call) return;
+    clearTimeout(call.ringTimer);
+    clearInterval(call.tickTimer);
+    const wasConnected = call.status === 'connected';
+    const duration = call.durationSec;
+    const leadId = call.leadId;
+    const lead = findLead(leadId);
+    call = null;
+    dialer.classList.remove('is-active', 'is-minimized');
+
+    // Open disposition modal
+    openDisposition(lead, duration, wasConnected);
+  }
+
+  document.getElementById('dialerHangup').addEventListener('click', hangupCall);
+  document.getElementById('dialerMute').addEventListener('click', () => {
+    if (!call) return;
+    call.muted = !call.muted;
+    document.getElementById('dialerMute').classList.toggle('is-on', call.muted);
+  });
+  document.getElementById('dialerMin').addEventListener('click', () => {
+    dialer.classList.toggle('is-minimized');
+  });
+
+  // ----- Disposition -----
+  const dispModal = document.getElementById('dispModal');
+  let dispState = null; // {leadId, duration, wasConnected, choice}
+
+  function openDisposition(lead, duration, wasConnected){
+    dispState = {leadId: lead.id, duration, wasConnected, choice: null};
+    document.getElementById('dispLeadName').textContent = lead.name;
+    document.getElementById('dispDuration').textContent = fmtDuration(duration);
+    // Reset selection
+    document.querySelectorAll('.disp-opt').forEach(o => o.classList.remove('is-selected'));
+    document.getElementById('dispExtraTalked').style.display = 'none';
+    document.getElementById('dispExtraCallback').style.display = 'none';
+    document.getElementById('dispNotes').value = '';
+    // Default callback time = tomorrow 9:00
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    document.getElementById('dispCbDate').value = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+    document.getElementById('dispCbTime').value = '09:00';
+    document.getElementById('dispSaveBtn').disabled = true;
+    // If call didn't connect (rare in mock), pre-select "no_answer"
+    if (!wasConnected){
+      const noAnswerBtn = document.querySelector('.disp-opt[data-disp="no_answer"]');
+      noAnswerBtn.classList.add('is-selected');
+      dispState.choice = 'no_answer';
+      document.getElementById('dispSaveBtn').disabled = false;
+    }
+    dispModal.classList.add('is-open');
+  }
+
+  document.getElementById('dispOptions').addEventListener('click', (e) => {
+    const btn = e.target.closest('.disp-opt');
+    if (!btn) return;
+    document.querySelectorAll('.disp-opt').forEach(o => o.classList.remove('is-selected'));
+    btn.classList.add('is-selected');
+    dispState.choice = btn.dataset.disp;
+    document.getElementById('dispSaveBtn').disabled = false;
+    document.getElementById('dispExtraTalked').style.display   = dispState.choice === 'talked' ? '' : 'none';
+    document.getElementById('dispExtraCallback').style.display = dispState.choice === 'callback' ? '' : 'none';
+  });
+
+  dispModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeDisp !== undefined || e.target === dispModal){
+      dispModal.classList.remove('is-open');
+    }
+  });
+
+  document.getElementById('dispSaveBtn').addEventListener('click', () => {
+    if (!dispState || !dispState.choice) return;
+    const lead = findLead(dispState.leadId);
+    const dur = dispState.duration;
+    const durLabel = dur > 0 ? `${fmtDuration(dur)} דקות` : 'ניסיון חיוג';
+
+    let text;
+    switch (dispState.choice){
+      case 'talked': {
+        const notes = document.getElementById('dispNotes').value.trim();
+        text = `שיחה יצאה — ${durLabel} — דיברנו` + (notes ? ` · ${notes}` : '');
+        break;
+      }
+      case 'no_answer': text = `שיחה יצאה — ${durLabel} — לא ענה`; break;
+      case 'wrong':    text = `שיחה יצאה — ${durLabel} — מספר שגוי`; break;
+      case 'callback': {
+        const d = document.getElementById('dispCbDate').value;
+        const tm = document.getElementById('dispCbTime').value;
+        const dt = d ? d.split('-').reverse().join('/') : '';
+        text = `שיחה יצאה — ${durLabel} — חוזר אליי${dt ? ` ב-${dt}${tm ? ' ' + tm : ''}` : ''}`;
+        // Update lead's meeting fields (using the existing meeting infra)
+        if (d){
+          const oldMeet = lead.meetDate;
+          lead.meetDate = dt;
+          lead.meetTime = tm || null;
+          if (!oldMeet){
+            addTimelineEvent(lead, {kind:'meeting', text:`תואמה תזכורת חוזרת ל-${dt}${tm ? ' בשעה ' + tm : ''}`});
+          } else {
+            addTimelineEvent(lead, {kind:'meeting', text:`הוזזה פגישה מ-${oldMeet} ל-${dt}${tm ? ' בשעה ' + tm : ''}`});
+          }
+        }
+        break;
+      }
+    }
+    addTimelineEvent(lead, {kind:'call', text});
+    dispModal.classList.remove('is-open');
+    dispState = null;
+    render();
+  });
+
+  // ============================================
+  // TIMELINE / NOTES
+  // ============================================
+  const timelineModal = document.getElementById('timelineModal');
+  let timelineLeadId = null;
+
+  function openTimeline(l){
+    timelineLeadId = l.id;
+    document.getElementById('timelineTitle').textContent = `תיעוד — ${l.name}`;
+    document.getElementById('timelineNoteInput').value = '';
+    renderTimeline(l);
+    timelineModal.classList.add('is-open');
+    setTimeout(() => document.getElementById('timelineNoteInput').focus(), 50);
+  }
+
+  function renderTimeline(l){
+    const el = document.getElementById('timelineList');
+    const events = (l.timeline || []).slice().reverse(); // newest first
+    if (events.length === 0){
+      el.innerHTML = `<div class="timeline-empty">אין עדיין רשומות. הוסף הערה ראשונה למעלה.</div>`;
+      return;
+    }
+    el.innerHTML = events.map(ev => {
+      const isManual = ev.kind === 'note';
+      const wrapCls = isManual ? 'tl-item tl-item--manual' : 'tl-item tl-item--auto';
+      const tagHtml = isManual
+        ? '<span class="tl-tag tl-tag--manual">הערה ידנית</span>'
+        : '<span class="tl-tag tl-tag--auto">אוטומטי</span>';
+
+      let iconHtml = '', bodyHtml = '';
+      if (ev.kind === 'created'){
+        iconHtml = '<div class="tl-item__icon tl-item__icon--status">+</div>';
+        bodyHtml = `<div class="tl-item__text">${ev.text || 'הליד נוצר'}</div>`;
+      } else if (ev.kind === 'status'){
+        const fromLabel = ev.from ? stageLabel(ev.from) : 'יצירה';
+        const toLabel = stageLabel(ev.to);
+        iconHtml = '<div class="tl-item__icon tl-item__icon--status">⇄</div>';
+        bodyHtml = `
+          <div class="tl-item__status">
+            <span>שינוי סטטוס:</span>
+            <span class="from">${fromLabel}</span>
+            <span class="arrow">←</span>
+            <span class="to">${toLabel}</span>
+          </div>`;
+      } else if (ev.kind === 'meeting'){
+        iconHtml = '<div class="tl-item__icon tl-item__icon--meeting">📅</div>';
+        bodyHtml = `<div class="tl-item__text">${ev.text}</div>`;
+      } else if (ev.kind === 'message'){
+        iconHtml = '<div class="tl-item__icon tl-item__icon--message">💬</div>';
+        bodyHtml = `<div class="tl-item__text">${ev.text}</div>`;
+      } else if (ev.kind === 'call'){
+        iconHtml = '<div class="tl-item__icon tl-item__icon--call">📞</div>';
+        bodyHtml = `<div class="tl-item__text">${ev.text}</div>`;
+      } else {
+        // manual note
+        iconHtml = '<div class="tl-item__icon tl-item__icon--note">✎</div>';
+        bodyHtml = `<div class="tl-item__text">${ev.text || ''}</div>`;
+      }
+
+      return `
+        <div class="${wrapCls}">
+          ${iconHtml}
+          <div class="tl-item__body">
+            ${bodyHtml}
+            <div class="tl-item__meta">
+              ${tagHtml}
+              <b>${ev.author}</b>
+              <span>${ev.at}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function addNote(){
+    const inp = document.getElementById('timelineNoteInput');
+    const text = inp.value.trim();
+    if (!text || !timelineLeadId) return;
+    const l = findLead(timelineLeadId);
+    addTimelineEvent(l, {kind:'note', text});
+    inp.value = '';
+    renderTimeline(l);
+  }
+
+  document.getElementById('timelineAddBtn').addEventListener('click', addNote);
+  document.getElementById('timelineNoteInput').addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + Enter → submit
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){
+      e.preventDefault();
+      addNote();
+    }
+  });
+  timelineModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeTimeline !== undefined || e.target === timelineModal){
+      timelineModal.classList.remove('is-open');
+    }
+  });
+
+  // ----- Source popover -----
+  const sourcePopover = document.getElementById('sourcePopover');
+  function showSourcePopover(triggerEl, lead){
+    const s = lead.source || {};
+    const rows = [
+      ['ערוץ',        s.channel],
+      ['קמפיין',      s.campaign],
+      ['מודעה',       s.ad],
+      ['שם הטופס',    s.form],
+      ['שם הליד',     lead.name],
+      ['נכנס בתאריך', lead.created],
+    ].filter(([_, v]) => v);
+    document.getElementById('sourcePopoverBody').innerHTML = rows.map(([lbl, val]) =>
+      `<div class="source-popover__row"><span class="source-popover__lbl">${lbl}</span><span class="source-popover__val">${val}</span></div>`
+    ).join('');
+    // Position below the trigger
+    const r = triggerEl.getBoundingClientRect();
+    sourcePopover.hidden = false;
+    // Force reflow to get popover dimensions
+    const pop = sourcePopover.getBoundingClientRect();
+    let top = r.bottom + window.scrollY + 6;
+    let left = r.left + window.scrollX + (r.width / 2) - (pop.width / 2);
+    if (left < 10) left = 10;
+    if (left + pop.width > window.innerWidth - 10) left = window.innerWidth - pop.width - 10;
+    sourcePopover.style.top = top + 'px';
+    sourcePopover.style.left = left + 'px';
+  }
+  document.getElementById('sourcePopoverClose').addEventListener('click', () => {
+    sourcePopover.hidden = true;
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.source-popover') && !e.target.closest('[data-source-id]')) {
+      sourcePopover.hidden = true;
+    }
+  });
+  document.getElementById('rows').addEventListener('change', (e) => {
+    const sel = e.target.closest('.stage-select');
+    if (!sel) return;
+    const l = findLead(+sel.dataset.id);
+    const oldStage = l.stage;
+    l.stage = sel.value;
+    if (oldStage !== sel.value){
+      addTimelineEvent(l, {kind:'status', from:oldStage, to:sel.value});
+    }
+    render();
+  });
+
+  // Modal
+  const modal = document.getElementById('modal');
+  function ddmmyyToIso(s){ if (!s) return ''; const [d,m,y] = s.split('/'); return `${y}-${m}-${d}`; }
+  function isoToDdmmy(s){ if (!s) return null; const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; }
+
+  function openModal(l){
+    editingId = l ? l.id : null;
+    document.getElementById('modalTitle').textContent = l ? `עריכת ליד — ${l.name}` : 'ליד חדש';
+    // Populate stage dropdown dynamically from stages
+    document.getElementById('fStage').innerHTML =
+      stages.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+    document.getElementById('fName').value   = l?.name || '';
+    document.getElementById('fSource').value = l?.source?.channel || '';
+    document.getElementById('fPhone').value  = l?.phone || '';
+    document.getElementById('fEmail').value  = l?.email || '';
+    document.getElementById('fStage').value  = l?.stage || stages[0].key;
+    document.getElementById('fMeetDate').value = ddmmyyToIso(l?.meetDate);
+    document.getElementById('fMeetTime').value = l?.meetTime || '';
+    document.getElementById('fNotes').value  = l?.notes || '';
+    document.getElementById('deleteBtn').style.display = l ? '' : 'none';
+    modal.classList.add('is-open');
+  }
+  modal.addEventListener('click', (e) => {
+    if (e.target.dataset.close !== undefined || e.target === modal) modal.classList.remove('is-open');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') modal.classList.remove('is-open');
+  });
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const prior = editingId ? findLead(editingId) : null;
+    const data = {
+      name:     document.getElementById('fName').value.trim(),
+      phone:    document.getElementById('fPhone').value.trim(),
+      email:    document.getElementById('fEmail').value.trim(),
+      stage:    document.getElementById('fStage').value,
+      meetDate: isoToDdmmy(document.getElementById('fMeetDate').value),
+      meetTime: document.getElementById('fMeetTime').value || null,
+      notes:    document.getElementById('fNotes').value.trim(),
+      // Source: preserve campaign/ad/form info, only update channel
+      source:   {...(prior?.source || {}), channel: document.getElementById('fSource').value},
+    };
+    if (!data.name){ alert('שם חובה'); return; }
+    if (editingId){
+      const oldStage = prior.stage;
+      const oldMeetDate = prior.meetDate, oldMeetTime = prior.meetTime;
+      Object.assign(prior, data);
+      if (oldStage !== data.stage){
+        addTimelineEvent(prior, {kind:'status', from:oldStage, to:data.stage});
+      }
+      if (data.meetDate && (oldMeetDate !== data.meetDate || oldMeetTime !== data.meetTime)){
+        if (oldMeetDate){
+          // Rescheduled
+          const oldStr = `${oldMeetDate}${oldMeetTime ? ' בשעה ' + oldMeetTime : ''}`;
+          const newStr = `${data.meetDate}${data.meetTime ? ' בשעה ' + data.meetTime : ''}`;
+          addTimelineEvent(prior, {kind:'meeting', text:`הוזזה פגישה מ-${oldStr} ל-${newStr}`});
+        } else {
+          // Newly scheduled
+          addTimelineEvent(prior, {kind:'meeting', text:`תואמה פגישה ל-${data.meetDate}${data.meetTime ? ' בשעה ' + data.meetTime : ''}`});
+        }
+      } else if (!data.meetDate && oldMeetDate){
+        // Cancelled
+        addTimelineEvent(prior, {kind:'meeting', text:`בוטלה הפגישה שתואמה ל-${oldMeetDate}${oldMeetTime ? ' בשעה ' + oldMeetTime : ''}`});
+      }
+    } else {
+      const newId = Math.max(...leads.map(l => l.id)) + 1;
+      const t = new Date();
+      const created = `${String(t.getDate()).padStart(2,'0')}.${String(t.getMonth()+1).padStart(2,'0')}.${t.getFullYear()}, ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+      const newLead = {id:newId, created, timeline:[], ...data};
+      addTimelineEvent(newLead, {kind:'created', text:'הליד נוסף ידנית מהמערכת'});
+      if (data.meetDate){
+        addTimelineEvent(newLead, {kind:'meeting', text:`תואמה פגישה ל-${data.meetDate}${data.meetTime ? ' בשעה ' + data.meetTime : ''}`});
+      }
+      leads.unshift(newLead);
+    }
+    modal.classList.remove('is-open');
+    render();
+  });
+  document.getElementById('deleteBtn').addEventListener('click', () => {
+    if (!editingId) return;
+    const l = findLead(editingId);
+    if (!confirm(`למחוק את הליד "${l.name}"?`)) return;
+    const idx = leads.findIndex(x => x.id === editingId);
+    leads.splice(idx,1);
+    modal.classList.remove('is-open');
+    render();
+  });
+
+  render();
+
+  // ============================================
+  // PRICE QUOTE (hkmoney / hkmoney+)
+  // ============================================
+  const PRODUCTS = [
+    {key:'hkmoney',     label:'hkmoney',  content:'מעקב תזרים יומי, התראות חכמות ודוחות חודשיים'},
+    {key:'hkmoneyplus', label:'hkmoney+', content:'כל מה שכלול ב-hkmoney + ליווי אישי, פגישות חודשיות וניהול תזרים צמוד'},
+  ];
+
+  // Build the quote message from the "price_quote" template, expanding the {{מוצר}} block per selected product
+  function buildQuoteMessage(lead, selected){
+    // The price-quote template is identified by the {{מוצר}} product loop in its body
+    const tpl = templates.find(t => t.body && t.body.includes('{{מוצר}}'));
+    const body = tpl ? tpl.body : 'היי {שם_פרטי}, הצעת המחיר שלנו:\n{{מוצר}}\n{סוג_מוצר}: {מחיר_מוצר}\n{{/מוצר}}';
+    let msg = body;
+    // Expand the {{מוצר}} ... {{/מוצר}} loop
+    const loopRe = /\{\{מוצר\}\}([\s\S]*?)\{\{\/מוצר\}\}/;
+    const match = msg.match(loopRe);
+    if (match){
+      const block = match[1];
+      const expanded = selected.map(p =>
+        block
+          .replace(/\{סוג_מוצר\}/g, p.label)
+          .replace(/\{תוכן_מוצר\}/g, p.content)
+          .replace(/\{מחיר_מוצר\}/g, `₪${p.price.toLocaleString('he-IL')} לחודש`)
+      ).join('');
+      msg = msg.replace(loopRe, expanded);
+    }
+    // Fill lead-level variables
+    const firstName = (lead.name || '').split(' ')[0];
+    msg = msg.replace(/\{שם_פרטי\}/g, firstName).replace(/\{שם_מלא\}/g, lead.name || '');
+    return msg.trim();
+  }
+  const quoteModal = document.getElementById('quoteModal');
+
+  function openQuoteModal(lead){
+    quoteModal.dataset.leadId = lead.id;
+    document.getElementById('quoteLeadName').textContent = `${lead.name} · ${lead.phone}`;
+    const q = lead.quote || {};
+    document.getElementById('quoteItems').innerHTML = PRODUCTS.map(p => {
+      const item = q[p.key] || {};
+      const checked = item.include ? 'checked' : '';
+      const price = item.price || '';
+      const content = (item.content != null ? item.content : p.content);
+      return `
+        <div class="quote-item ${item.include?'is-included':''}" data-row="${p.key}">
+          <div class="quote-item__head">
+            <label class="quote-item__check">
+              <input type="checkbox" data-product="${p.key}" ${checked}>
+              <span>${p.label}</span>
+            </label>
+            <div class="quote-item__price">
+              <input type="number" min="0" data-price="${p.key}" placeholder="0" value="${price}">
+              <span>₪</span>
+            </div>
+          </div>
+          <button class="quote-item__toggle" type="button" data-collapse="${p.key}">
+            <span class="quote-item__caret">▾</span> תוכן המסלול
+          </button>
+          <div class="quote-item__content" data-content-row="${p.key}" hidden>
+            <textarea data-content="${p.key}" rows="2">${content}</textarea>
+          </div>
+        </div>
+      `;
+    }).join('');
+    quoteModal.classList.add('is-open');
+  }
+
+  function updateQuoteRows(){
+    PRODUCTS.forEach(p => {
+      const check = quoteModal.querySelector(`[data-product="${p.key}"]`);
+      if (check) quoteModal.querySelector(`[data-row="${p.key}"]`).classList.toggle('is-included', check.checked);
+    });
+  }
+
+  quoteModal.addEventListener('input', updateQuoteRows);
+  quoteModal.addEventListener('change', updateQuoteRows);
+  quoteModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeQuote !== undefined || e.target === quoteModal){
+      quoteModal.classList.remove('is-open');
+      return;
+    }
+    // Toggle product content collapse
+    const toggle = e.target.closest('[data-collapse]');
+    if (toggle){
+      const key = toggle.dataset.collapse;
+      const content = quoteModal.querySelector(`[data-content-row="${key}"]`);
+      content.hidden = !content.hidden;
+      toggle.classList.toggle('is-open', !content.hidden);
+    }
+  });
+
+  document.getElementById('quoteSendBtn').addEventListener('click', () => {
+    const lead = findLead(+quoteModal.dataset.leadId);
+    const quote = {};
+    const selected = [];
+    PRODUCTS.forEach(p => {
+      const include = quoteModal.querySelector(`[data-product="${p.key}"]`).checked;
+      const price = +quoteModal.querySelector(`[data-price="${p.key}"]`).value || 0;
+      const content = (quoteModal.querySelector(`[data-content="${p.key}"]`).value || '').trim() || p.content;
+      quote[p.key] = {include, price, content};
+      if (include) selected.push({...p, price, content});
+    });
+    if (selected.length === 0){ alert('סמן לפחות מוצר אחד'); return; }
+    lead.quote = quote;
+
+    // Build the full message from the price-quote template (expanding per product)
+    const message = buildQuoteMessage(lead, selected);
+    // "Send" it — add to the WhatsApp chat as an outgoing message
+    if (!lead.messages) lead.messages = [];
+    const t = new Date();
+    const time = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+    lead.messages.push({from:'us', text: message, time});
+
+    const summary = selected.map(p => `${p.label} ₪${p.price.toLocaleString('he-IL')}`).join(' / ');
+    addTimelineEvent(lead, {kind:'note', text:`נשלחה הצעת מחיר ב-WhatsApp: ${summary}`});
+
+    quoteModal.classList.remove('is-open');
+    render();
+    // Open the chat so the rep sees the sent quote
+    openChat(lead);
+  });
+
+  // ============================================
+  // MEETING VIEW (when clicking 📅 on a lead with existing meeting)
+  // ============================================
+  const meetViewModal = document.getElementById('meetViewModal');
+
+  function openMeetingView(lead){
+    document.getElementById('mvDate').textContent = lead.meetDate;
+    document.getElementById('mvTime').textContent = lead.meetTime ? `בשעה ${lead.meetTime}` : '';
+
+    let formatLabel = '🔔 תזכורת';
+    if (lead.meetingFormat === 'meet') formatLabel = '🎥 Google Meet';
+    else if (lead.meetingFormat === 'in_person') formatLabel = `📍 פרונטלית${lead.meetingLocation ? ' · ' + lead.meetingLocation : ''}`;
+
+    let advisorLabel = 'תזכורת אישית';
+    if (lead.advisorId){
+      const adv = (typeof ADVISORS !== 'undefined') ? ADVISORS.find(a => a.id === lead.advisorId) : null;
+      if (adv) advisorLabel = `עם היועץ ${adv.name}`;
+    }
+
+    const rows = [
+      ['שם הפגישה', lead.meetingTitle || `פגישת ייעוץ עם ${lead.name}`],
+      ['פורמט', formatLabel],
+      ['משתתפים', advisorLabel],
+      ['ליד', `${lead.name} · ${lead.phone}`],
+    ];
+    if (lead.meetingDocumented){
+      rows.push(['סטטוס', '✓ הפגישה תועדה']);
+    } else {
+      const dt = parseMeetingDateTime(lead);
+      if (dt && dt < new Date()){
+        rows.push(['סטטוס', '⚠ ממתינה לתיעוד']);
+      } else {
+        rows.push(['סטטוס', '📅 מתוכננת']);
+      }
+    }
+
+    document.getElementById('mvRows').innerHTML = rows.map(([lbl,val]) => `
+      <div class="meet-card__row"><b>${lbl}:</b><span>${val}</span></div>
+    `).join('');
+
+    meetViewModal.dataset.leadId = lead.id;
+    meetViewModal.classList.add('is-open');
+  }
+
+  meetViewModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeMv !== undefined || e.target === meetViewModal){
+      meetViewModal.classList.remove('is-open');
+    }
+  });
+
+  document.getElementById('mvCancelBtn').addEventListener('click', () => {
+    const leadId = +meetViewModal.dataset.leadId;
+    const lead = findLead(leadId);
+    if (!confirm(`לבטל את הפגישה עם ${lead.name}?`)) return;
+    const oldDate = lead.meetDate;
+    const oldTime = lead.meetTime;
+    lead.meetDate = null;
+    lead.meetTime = null;
+    lead.meetingFormat = null;
+    lead.meetingLocation = null;
+    lead.advisorId = null;
+    lead.meetingDocumented = false;
+    addTimelineEvent(lead, {kind:'meeting',
+      text:`בוטלה הפגישה שתואמה ל-${oldDate}${oldTime ? ' בשעה ' + oldTime : ''}`});
+    meetViewModal.classList.remove('is-open');
+    render();
+  });
+
+  document.getElementById('mvEditBtn').addEventListener('click', () => {
+    const leadId = +meetViewModal.dataset.leadId;
+    const lead = findLead(leadId);
+    meetViewModal.classList.remove('is-open');
+    openScheduler(lead);
+  });
+
+  // ============================================
+  // ADVISOR SCHEDULING (Google Calendar slot picker)
+  // ============================================
+  const DEFAULT_OFFICE_LOCATION = 'מגדל השחר, אריאל שרון 4, גבעתיים, קומה 12';
+
+  const HEB_DAYS = ['ראשון','שני','שלישי','רביעי','חמישי','שישי'];
+  const HEB_MONTHS_SHORT = ['ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳'];
+
+  const schedModal = document.getElementById('schedModal');
+  let schedState = null; // {leadId, type:'self'|'with_advisor', weekOffset, advisorId, selectedSlot, inviteLead}
+
+  // Deterministic pseudo-random for consistent mock free/busy across renders
+  function mockSeed(advisorId, dateKey, h, m){
+    const x = (advisorId * 13.37) + (parseInt(dateKey.replace(/-/g,''), 10) * 0.0001) + (h * 7) + (m * 0.1);
+    return Math.abs(Math.sin(x)) * 100 % 1;
+  }
+
+  function weekStart(offset){
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    // Sunday = 0 in JS. Move back to Sunday of current week.
+    d.setDate(d.getDate() - d.getDay() + (offset * 7));
+    return d;
+  }
+
+  function fmtWeekLabel(start){
+    const end = new Date(start); end.setDate(start.getDate() + 5);
+    if (start.getMonth() === end.getMonth()){
+      return `${start.getDate()}–${end.getDate()} ${HEB_MONTHS_SHORT[start.getMonth()]} ${start.getFullYear()}`;
+    }
+    return `${start.getDate()} ${HEB_MONTHS_SHORT[start.getMonth()]} – ${end.getDate()} ${HEB_MONTHS_SHORT[end.getMonth()]}`;
+  }
+
+  function isPast(date, h, m){
+    const slotTime = new Date(date);
+    slotTime.setHours(h, m, 0, 0);
+    return slotTime < new Date();
+  }
+
+  function isSameDay(a, b){
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  function openScheduler(lead){
+    const isEdit = !!lead.meetDate;
+    schedState = {
+      leadId: lead.id,
+      type: lead.advisorId ? 'with_advisor' : 'self',
+      format: lead.meetingFormat || 'meet',
+      location: lead.meetingLocation || '',
+      weekOffset: 0,
+      advisorId: lead.advisorId || ADVISORS[0].id,
+      selectedSlot: null,
+      inviteLead: isEdit,            // when editing, keep invite checked
+    };
+    // Format selector UI
+    document.querySelectorAll('.meet-format__btn').forEach(b => b.classList.toggle('is-active', b.dataset.format === schedState.format));
+    document.getElementById('locationField').style.display = schedState.format === 'in_person' ? '' : 'none';
+    document.getElementById('schedLocation').value = schedState.location;
+    // Modal title
+    document.getElementById('schedTitle').textContent = isEdit ? 'עריכת פגישה' : 'תאם פגישה';
+    document.getElementById('schedTitle').textContent = 'תאם פגישה';
+    document.getElementById('schedLeadName').textContent = `${lead.name} · ${lead.phone}`;
+    // Meeting title — use existing or sensible default
+    document.getElementById('schedTitleInput').value =
+      lead.meetingTitle || `פגישת ייעוץ עם ${lead.name}`;
+    document.getElementById('schedAdvisor').innerHTML =
+      ADVISORS.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+    document.getElementById('schedAdvisor').value = schedState.advisorId;
+    document.getElementById('schedInviteLead').checked = false;
+    document.getElementById('schedConfirm').disabled = true;
+    updateMeetTypeUi();
+    renderSlots();
+    schedModal.classList.add('is-open');
+  }
+
+  function updateMeetTypeUi(){
+    const t = schedState.type;
+    document.querySelectorAll('.meet-type__btn').forEach(b => {
+      b.classList.toggle('is-active', b.dataset.type === t);
+    });
+    document.getElementById('advisorField').style.display = t === 'with_advisor' ? '' : 'none';
+
+    // Host hint + default invite-lead
+    const hostHint = document.getElementById('schedHostHint');
+    const inviteHint = document.getElementById('schedInviteHint');
+    if (t === 'self'){
+      hostHint.textContent = 'תזכורת ביומן שלך — לא נשלחת הזמנה אלא אם תבחר';
+      inviteHint.textContent = 'תישלח הזמנת יומן ללקוח (אם לא — זה רק תזכורת אישית בשבילך)';
+    } else {
+      hostHint.textContent = 'הפגישה תופיע ביומן שלך + ביומן היועץ';
+      inviteHint.textContent = 'הליד יקבל הזמנת יומן עם פרטי הפגישה ולינק Google Meet';
+    }
+  }
+
+  document.getElementById('meetType').addEventListener('click', (e) => {
+    const btn = e.target.closest('.meet-type__btn');
+    if (!btn || !schedState) return;
+    schedState.type = btn.dataset.type;
+    // Auto: invite-lead default = true when scheduling with advisor
+    if (schedState.type === 'with_advisor'){
+      schedState.inviteLead = true;
+      document.getElementById('schedInviteLead').checked = true;
+    } else {
+      schedState.inviteLead = false;
+      document.getElementById('schedInviteLead').checked = false;
+    }
+    schedState.selectedSlot = null;
+    updateMeetTypeUi();
+    renderSlots();
+  });
+
+  document.getElementById('schedInviteLead').addEventListener('change', (e) => {
+    if (schedState) schedState.inviteLead = e.target.checked;
+  });
+
+  document.getElementById('meetFormat').addEventListener('click', (e) => {
+    const btn = e.target.closest('.meet-format__btn');
+    if (!btn || !schedState) return;
+    schedState.format = btn.dataset.format;
+    document.querySelectorAll('.meet-format__btn').forEach(b => b.classList.toggle('is-active', b === btn));
+    document.getElementById('locationField').style.display = schedState.format === 'in_person' ? '' : 'none';
+    // Default office address when switching to in-person
+    if (schedState.format === 'in_person'){
+      const locInput = document.getElementById('schedLocation');
+      if (!locInput.value.trim()){
+        locInput.value = DEFAULT_OFFICE_LOCATION;
+        schedState.location = DEFAULT_OFFICE_LOCATION;
+      }
+    }
+    // If format is "reminder", uncheck invite-lead by default (it's just a reminder for self)
+    if (schedState.format === 'reminder'){
+      schedState.inviteLead = false;
+      document.getElementById('schedInviteLead').checked = false;
+    }
+  });
+  document.getElementById('schedLocation').addEventListener('input', (e) => {
+    if (schedState) schedState.location = e.target.value;
+  });
+
+  function renderSlots(){
+    const start = weekStart(schedState.weekOffset);
+    document.getElementById('schedWeekLabel').textContent = fmtWeekLabel(start);
+
+    const grid = document.getElementById('slotGrid');
+    const today = new Date();
+    let html = '';
+    for (let d = 0; d < 6; d++){
+      const date = new Date(start);
+      date.setDate(start.getDate() + d);
+      const dateKey = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      const isToday = isSameDay(date, today);
+      let dayHtml = `<div class="day-col">
+        <div class="day-col__head ${isToday?'is-today':''}">
+          ${HEB_DAYS[d]}<b>${date.getDate()}/${date.getMonth()+1}</b>
+        </div>`;
+      for (let h = 8; h < 20; h++){
+        for (let m of [0, 30]){
+          const time = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+          const past = isPast(date, h, m);
+          // 65% chance of being available (deterministic)
+          // Self mode: rep's calendar (use ID 99); With-advisor mode: intersection — busy if either is busy
+          const calcBusy = (id) => mockSeed(id, dateKey, h, m) < 0.35;
+          let busy_;
+          if (schedState.type === 'with_advisor'){
+            busy_ = calcBusy(99) || calcBusy(schedState.advisorId); // either rep or advisor busy
+          } else {
+            busy_ = calcBusy(99); // only rep
+          }
+          const r = busy_ ? 0 : 1;
+          const busy = past || r < 0.35;
+          const selected = schedState.selectedSlot && schedState.selectedSlot.dateKey === dateKey && schedState.selectedSlot.time === time;
+          dayHtml += `<button class="slot ${busy?'is-busy':''} ${selected?'is-selected':''}"
+                       ${busy?'disabled':''} data-date="${dateKey}" data-time="${time}">${time}</button>`;
+        }
+      }
+      dayHtml += '</div>';
+      html += dayHtml;
+    }
+    grid.innerHTML = html;
+
+    const info = document.getElementById('schedInfo');
+    if (schedState.selectedSlot){
+      const [y,m,d] = schedState.selectedSlot.dateKey.split('-');
+      let with_ = '';
+      if (schedState.type === 'with_advisor'){
+        const adv = ADVISORS.find(a => a.id === +schedState.advisorId);
+        with_ = `עם <b>${adv.name}</b>`;
+      } else {
+        with_ = '<b>(תזכורת אישית)</b>';
+      }
+      info.className = 'sched-info';
+      info.innerHTML = `נבחר: <b>${d}/${m}/${y} בשעה ${schedState.selectedSlot.time}</b> ${with_}`;
+      document.getElementById('schedConfirm').disabled = false;
+    } else {
+      info.className = 'sched-info sched-info--empty';
+      info.textContent = schedState.type === 'with_advisor' ? 'בחר זמן פנוי מלוח היועץ' : 'בחר זמן פנוי ביומן שלך';
+      document.getElementById('schedConfirm').disabled = true;
+    }
+  }
+
+  document.getElementById('schedAdvisor').addEventListener('change', (e) => {
+    schedState.advisorId = +e.target.value;
+    schedState.selectedSlot = null;
+    renderSlots();
+  });
+  document.getElementById('schedPrev').addEventListener('click', () => {
+    schedState.weekOffset -= 1;
+    schedState.selectedSlot = null;
+    renderSlots();
+  });
+  document.getElementById('schedNext').addEventListener('click', () => {
+    schedState.weekOffset += 1;
+    schedState.selectedSlot = null;
+    renderSlots();
+  });
+  document.getElementById('slotGrid').addEventListener('click', (e) => {
+    const slot = e.target.closest('.slot');
+    if (!slot || slot.disabled) return;
+    schedState.selectedSlot = {dateKey: slot.dataset.date, time: slot.dataset.time};
+    renderSlots();
+  });
+  schedModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeSched !== undefined || e.target === schedModal){
+      schedModal.classList.remove('is-open');
+    }
+  });
+  // ============================================
+  // MEETING DOCUMENTATION
+  // ============================================
+  const docModal = document.getElementById('docModal');
+  let docState = null; // {leadId, outcome: 'happened'|'not_happened'}
+
+  function openDocModal(lead){
+    docState = {leadId: lead.id, outcome: null};
+    document.getElementById('docLeadName').textContent = lead.name;
+    const fmt = lead.meetingFormat === 'meet' ? 'Google Meet'
+              : lead.meetingFormat === 'in_person' ? `פרונטלית${lead.meetingLocation?` · ${lead.meetingLocation}`:''}`
+              : 'תזכורת';
+    document.getElementById('docMeetInfo').textContent =
+      `${lead.meetDate}${lead.meetTime ? ' ' + lead.meetTime : ''} · ${fmt}`;
+
+    // Populate stage dropdown
+    const stageSel = document.getElementById('docNewStage');
+    stageSel.innerHTML = '<option value="">— ללא שינוי —</option>' +
+      stages.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+
+    // Reset
+    document.querySelectorAll('.doc-outcome__btn').forEach(b => b.classList.remove('is-selected'));
+    document.getElementById('docHappened').style.display = 'none';
+    document.getElementById('docNotHappened').style.display = 'none';
+    document.getElementById('docSummary').value = '';
+    document.getElementById('docReschedule').checked = false;
+    document.getElementById('docSaveBtn').disabled = true;
+    docModal.classList.add('is-open');
+  }
+
+  document.getElementById('docOutcome').addEventListener('click', (e) => {
+    const btn = e.target.closest('.doc-outcome__btn');
+    if (!btn || !docState) return;
+    docState.outcome = btn.dataset.outcome;
+    document.querySelectorAll('.doc-outcome__btn').forEach(b => b.classList.toggle('is-selected', b === btn));
+    document.getElementById('docHappened').style.display    = docState.outcome === 'happened' ? '' : 'none';
+    document.getElementById('docNotHappened').style.display = docState.outcome === 'not_happened' ? '' : 'none';
+    document.getElementById('docSaveBtn').disabled = false;
+  });
+
+  docModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeDoc !== undefined || e.target === docModal){
+      docModal.classList.remove('is-open');
+    }
+  });
+
+  document.getElementById('docSaveBtn').addEventListener('click', () => {
+    if (!docState || !docState.outcome) return;
+    const lead = findLead(docState.leadId);
+    if (docState.outcome === 'happened'){
+      const summary = document.getElementById('docSummary').value.trim();
+      const newStage = document.getElementById('docNewStage').value;
+      lead.meetingDocumented = true;
+      addTimelineEvent(lead, {kind:'note',
+        text: `הפגישה התקיימה${summary ? ' — ' + summary : ''}`});
+      if (newStage && newStage !== lead.stage){
+        const oldStage = lead.stage;
+        lead.stage = newStage;
+        addTimelineEvent(lead, {kind:'status', from:oldStage, to:newStage});
+      }
+    } else {
+      const reasonKey = document.getElementById('docReason').value;
+      const reasonText = {
+        no_show:'הלקוח לא הופיע',
+        cancelled:'הלקוח ביטל',
+        rep_cancelled:'בוטלה על ידינו',
+        reschedule_requested:'ביקש לדחות',
+        other:'אחר',
+      }[reasonKey] || reasonKey;
+      lead.meetingDocumented = true;
+      addTimelineEvent(lead, {kind:'note', text:`הפגישה לא התקיימה — ${reasonText}`});
+      const reschedule = document.getElementById('docReschedule').checked;
+      if (reschedule){
+        docModal.classList.remove('is-open');
+        openScheduler(lead);
+        return;
+      }
+    }
+    docModal.classList.remove('is-open');
+    render();
+  });
+
+  // Click on the banner → filter view (could open a list, here we just scroll into view)
+  document.getElementById('docsBanner').addEventListener('click', () => {
+    const first = document.querySelector('.doc-needed');
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  document.getElementById('schedConfirm').addEventListener('click', () => {
+    const lead = findLead(schedState.leadId);
+    const [y,m,d] = schedState.selectedSlot.dateKey.split('-');
+    const dateStr = `${d}/${m}/${y}`;
+    const timeStr = schedState.selectedSlot.time;
+    const oldMeet = lead.meetDate;
+    lead.meetDate = dateStr;
+    lead.meetTime = timeStr;
+    lead.meetingFormat = schedState.format;
+    lead.meetingLocation = schedState.location || null;
+    lead.meetingTitle = document.getElementById('schedTitleInput').value.trim() || `פגישת ייעוץ עם ${lead.name}`;
+    lead.meetingDocumented = false; // new/changed meeting → needs documentation later
+
+    // Build attendees list & description for timeline
+    const attendees = [];
+    let participantsLabel = '';
+    if (schedState.type === 'with_advisor'){
+      const adv = ADVISORS.find(a => a.id === +schedState.advisorId);
+      lead.advisorId = adv.id;
+      attendees.push(`היועץ ${adv.name}`);
+      participantsLabel = `עם ${adv.name}`;
+    } else {
+      participantsLabel = 'תזכורת אישית';
+    }
+    if (schedState.inviteLead){
+      attendees.push(`הליד ${lead.name}`);
+    }
+    const formatLabel = schedState.format === 'meet' ? 'Google Meet'
+                     : schedState.format === 'in_person' ? (`פרונטלית${schedState.location?` · ${schedState.location}`:''}`)
+                     : 'תזכורת בלבד';
+    const attendeesText = attendees.length ? ` · הזמנות נשלחו: ${attendees.join(', ')}` : '';
+
+    const verb = oldMeet ? 'הוזזה פגישה ל' : 'תואמה פגישה ל';
+    addTimelineEvent(lead, {
+      kind: 'meeting',
+      text: `${verb}-${dateStr} בשעה ${timeStr} · "${lead.meetingTitle}" (${participantsLabel} · ${formatLabel})${attendeesText}`,
+    });
+
+    schedModal.classList.remove('is-open');
+    render();
+  });
+</script>
+
+</body>
+</html>

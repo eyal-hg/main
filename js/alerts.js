@@ -284,6 +284,85 @@
   function advTgl(ix){ADV_AGENDA[ix].done=!ADV_AGENDA[ix].done;renderAlerts();if(ADV_AGENDA[ix].done)toast('סומן כבוצע');}
   function advTodoDone(ix){ADV_TODO[ix].done=!ADV_TODO[ix].done;renderAlerts();}
 
+  /* ===== מבט-על ליועץ: שלוש קוביות עליונות ===== */
+  const ADV_RISK=[
+    {c:'אנרגי אינטרנשיונל', days:6, amt:161198, bank:'עו״ש לאומי 604', fix:'העברה מעו״ש פועלים 112 — יתרה חיובית 312,400 ₪'},
+    {c:'מטעי גבעון', days:3, amt:42300, bank:'עו״ש מזרחי 295199', fix:null},
+  ];
+  let ADV_MGR_TASKS=[
+    {d:'28.07', mgr:'לירון בן כליפא', client:'מטעי גבעון', t:'עדכון שורה תקציבית — קניות מלאי', detail:'היעד החודשי חצה 114% — לעדכן את השורה מול הלקוח ולצבוע מחדש בתזרים.', open:true},
+    {d:'30.07', mgr:'שמרית טובול', client:'רימון יצחק', t:'חיבור חשבון סליקה', detail:'חשבון הסליקה לא מחובר — נדרשת הרשאה מהלקוח מול קארדקום.', open:true},
+    {d:'01.08', mgr:'לירון בן כליפא', client:'אנרגי אינטרנשיונל', t:'צביעת יתרת קניות מלאי בתזרים', detail:'נותרו 25,000 ₪ שלא נצבעו — להזין לתזרים קדימה.', open:true},
+    {d:'25.07', mgr:'שמרית טובול', client:'משה עובד', t:'השלמת הקמה — הרשאות בנק', detail:'הועברו ההרשאות, ההקמה הושלמה.', open:false},
+  ];
+  function advTopCards(){
+    const list=CLIENTS.filter(c=>firmOk(c));
+    const nAct=list.filter(c=>c.advStatus!=='בהקמה').length, nSetup=list.length-nAct;
+    const openT=ADV_MGR_TASKS.filter(t=>t.open).length;
+    const bars=list.map((c,ix)=>`<i class="ar-bar ${ix<ADV_RISK.length?'bad':''}"></i>`).join('');
+    return `<div class="advtop">
+      <div class="advt-card" onclick="advPop('status')">
+        <div class="advt-k">סטטוס לקוחות</div>
+        <div class="advt-v">${list.length}<span>לקוחות</span></div>
+        <div class="advt-s">${nAct} פעילים · ${nSetup} בהקמה</div>
+      </div>
+      <div class="advt-card risk" onclick="advPop('risk')">
+        <div class="advt-k"><span class="advt-warn">⚠</span> חברות בסיכון תזרימי</div>
+        <div class="advt-v">${ADV_RISK.length}<span>מתוך ${list.length}</span></div>
+        <div class="ar-bars">${bars}</div>
+        <div class="advt-s">בחריגה בפועל בתזרים — כל החשבונות</div>
+      </div>
+      <div class="advt-card" onclick="advPop('tasks')">
+        <div class="advt-k">משימות פתוחות למנהל תזרים</div>
+        <div class="advt-v">${openT}<span>פתוחות</span></div>
+        <div class="advt-s">מעקב אחרי מה שביקשת מהתפעול</div>
+      </div>
+    </div>`;
+  }
+  window._advTaskOpen=null;
+  function advPop(kind){
+    const ov=document.getElementById('advPopOv'); if(!ov) return;
+    const list=CLIENTS.filter(c=>firmOk(c));
+    let title='', body='';
+    if(kind==='status'){
+      title='סטטוס לקוחות';
+      const rows=list.map(c=>`<div class="ap-row st">
+        <div class="ap-cli"><span class="ap-av">${c.name.charAt(0)}</span><div><b>${c.name}</b><i>${c.hp}</i></div></div>
+        <span class="ap-prod">${c.product?prodLogo(c.product,'sm'):'—'}</span>
+        <span class="ap-st ${c.advStatus==='בהקמה'?'setup':'ok'}">${c.advStatus||'פעיל'}</span>
+        <span class="ap-mgr">${c.mgr}</span>
+        <span class="ap-num">${(c.price||0).toLocaleString('en-US')} ₪</span>
+        <span class="ap-last">${c.lastOps&&c.lastOps!=='—'?`<i class="ap-dot ${c.lastOps==='02.07'?'ok':'mid'}"></i>${c.lastOps}`:'<i class="ap-dot no"></i>טרם'}</span>
+      </div>`).join('');
+      const tot=list.reduce((s,c)=>s+(c.price||0),0);
+      body=`<div class="ap-row st head"><span>לקוח</span><span>מוצר</span><span>סטטוס</span><span>מנהל תזרים</span><span>מחיר · חודשי</span><span>תפעול אחרון</span></div>
+        ${rows}
+        <div class="ap-row st total"><span>סה״כ · ${list.length} לקוחות</span><span></span><span></span><span></span><span class="ap-num big">${tot.toLocaleString('en-US')} ₪</span><span></span></div>`;
+    }else if(kind==='risk'){
+      title='לקוחות בחריגה בפועל בתזרים — כל החשבונות';
+      body=`<div class="ap-row rk head"><b>לקוח</b><span>ימי חריגה</span><span>סכום בפועל</span><span>חשבון</span><span>פתרון</span></div>`+
+        ADV_RISK.map(r=>`<div class="ap-row rk">
+          <b>${r.c}</b><span>${r.days} ימים</span><span class="ap-num neg">-${r.amt.toLocaleString('en-US')} ₪</span><span>${r.bank}</span>
+          ${r.fix?`<span class="ap-fix ok">✓ ${r.fix}</span>`:'<span class="ap-fix no">אין פתרון בין חשבונות — נדרש טיפול</span>'}
+        </div>`).join('');
+    }else{
+      title='משימות פתוחות למנהל תזרים';
+      body=`<div class="ap-row tk head"><b>נפתחה</b><span>מנהל תזרים</span><span>לקוח</span><span>המשימה</span><span></span><span></span></div>`+
+        ADV_MGR_TASKS.map((t,i)=>`<div class="ap-row tk ${t.open?'':'closed'}">
+          <b>${t.d}</b><span>${t.mgr}</span><span>${t.client}</span>
+          <span class="ap-task" onclick="window._advTaskOpen=window._advTaskOpen===${i}?null:${i};advPop('tasks')">${t.t}</span>
+          <span class="ap-st ${t.open?'setup':'ok'}">${t.open?'פתוח':'סגור'}</span>
+          <button class="ap-del" title="מחיקת המשימה" onclick="ADV_MGR_TASKS.splice(${i},1);advPop('tasks');toast('המשימה נמחקה')">✕</button>
+        </div>`+(window._advTaskOpen===i?`<div class="ap-detail">${t.detail}</div>`:'')).join('');
+    }
+    document.getElementById('advPopTitle').textContent=title;
+    document.getElementById('advPopBody').innerHTML=body;
+    ov.classList.add('show');
+  }
+  function advPopClose(){document.getElementById('advPopOv').classList.remove('show');window._advTaskOpen=null;}
+  function advSchedCall(i){
+    toast('נפתח תיאום שיחה עם '+CLIENTS[i].name+' — הוצעו 3 חלונות ביומן');
+  }
   function renderAdvisorHome(){
     const board=document.getElementById('alBoard');
     board.classList.add('advh');
@@ -333,27 +412,49 @@
     </div>`;
     /* --- התראות: חריגות צפויות (הכי חשוב), מדדים, ומה השתפר --- */
     const ovd=alerts.filter(a=>a.mkey==='overdraft');
-    const ovdCard=`<div class="advl advov">
-      <div class="advl-head"><span class="advl-title">חריגות צפויות</span><span class="advl-sub">תחזית עו״ש מול מסגרת האשראי</span></div>
-      ${ovd.length?ovd.map(a=>`
-        <div class="advl-row high">
-          <span class="af-val high big"><b>${a.vTxt}</b><i>${a.vSub}</i></span>
-          <div class="advl-b"><div class="advl-t">${a.t}</div><div class="advl-s">${a.meta||''}</div></div>
-          <button class="mt-btn" onclick="selectClient(${a.i})">פתיחת החברה</button>
-        </div>`).join(''):'<div class="advh-ok" style="padding:16px">✓ אין חריגות צפויות בעו״ש</div>'}
+    /* "דורש את תשומת הלב שלך" — פריטים מנוסחים כפעולה, ממוינים לפי דחיפות */
+    const ATT=[
+      {sev:'high', i:0, c:'אנרגי אינטרנשיונל', what:'חריגה צפויה בעו״ש בעוד 9 ימים', act:'לתאם שיחה על הזרמה או דחיית תשלומים — יש יתרה חיובית בפועלים 112',
+       btn:'תיאום שיחה', go:`advSchedCall(0)`},
+      {sev:'high', i:2, c:'מטעי גבעון', what:'חריגת תקציב — 114% מהיעד', act:'מומלץ שיחת מעקב על קניות המלאי לפני חריגת המסגרת',
+       btn:'תיאום שיחה', go:`advSchedCall(2)`},
+      {sev:'mid', i:1, c:'אנרגי גולני', what:'חוב פתוח לגבייה — 1,200 ₪ בפיגור', act:'לשלוח תזכורת גבייה בוואטסאפ',
+       btn:'תזכורת בוואטסאפ', go:`toast('תזכורת גבייה נשלחה לאנרגי גולני בוואטסאפ')`},
+      {sev:'mid', i:3, c:'משה עובד', what:'חוב פתוח לגבייה — 480 ₪ בפיגור', act:'לשלוח תזכורת גבייה בוואטסאפ',
+       btn:'תזכורת בוואטסאפ', go:`toast('תזכורת גבייה נשלחה למשה עובד בוואטסאפ')`},
+    ];
+    const attCard=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">דורש את תשומת הלב שלך</span><span class="advl-sub">מנוסח כפעולה · ממוין לפי דחיפות</span></div>
+      ${ATT.map(x=>`
+        <div class="att-row ${x.sev}">
+          <div class="att-b">
+            <div class="att-t"><b>${x.c}</b> — ${x.what}</div>
+            <div class="att-a">${x.act}</div>
+          </div>
+          <div class="att-btns">
+            <button class="mt-btn" onclick="${x.go}">${x.btn}</button>
+            <button class="mt-btn view" onclick="selectClient(${x.i})">פתיחת החברה</button>
+          </div>
+        </div>`).join('')}
     </div>`;
-    const ORD={budget:0,revenue:1,salesclr:1,liters:2,cfprofit:2,debt:3};
-    const fin=alerts.filter(a=>a.mkey in ORD)
-      .sort((a,b)=>(a.sev==='high'?0:1)-(b.sev==='high'?0:1)||ORD[a.mkey]-ORD[b.mkey]);
-    const finCard=`<div class="advl">
-      <div class="advl-head"><span class="advl-title">התראות מדדים</span><span class="advl-sub">תקציב · קצב הכנסות · מדדים אישיים · גבייה</span></div>
-      ${fin.map((a,ix)=>`
-        <div class="advl-row ${a.sev}">
-          <span class="advl-rank">${ix+1}</span>
-          <div class="advl-b"><div class="advl-t">${a.t}</div><div class="advl-s">${a.meta||''} · ${a.metric}</div></div>
-          <span class="af-val ${a.sev}"><b>${a.vTxt}</b><i>${a.vSub}</i></span>
-          <button class="mt-btn ${a.sev==='high'?'':'view'}" onclick="${a.click||('selectClient('+a.i+')')}">${a.btn||'פתיחת החברה'}</button>
-        </div>`).join('')||'<div class="advh-ok" style="padding:16px">✓ כל המדדים בתוך היעד</div>'}
+    /* הכנה לפגישות היום — שלוש נקודות AI לכל פגישה */
+    const PREPS=[
+      {time:'09:00', c:'אנרגי אינטרנשיונל', pts:[
+        'ההכנסות +12% מהחודש הקודם — כדאי לפתוח בזה',
+        'חריגה צפויה בעו״ש בעוד 9 ימים — להציע העברה מפועלים 112',
+        '25,000 ₪ קניות מלאי עוד לא נצבעו בתזרים']},
+      {time:'16:00', c:'משה עובד', pts:[
+        'ההקמה כמעט הושלמה — נשארו הרשאות בנק',
+        'אין עדיין נתוני תפעול — לתאם ציפיות לחודש הראשון',
+        'להציג את דוח התזרים הראשון בפגישה']},
+    ];
+    const prepCard=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">הכנה לפגישות היום</span><span class="advl-sub">שלוש נקודות מוכנות מה-AI לכל פגישה</span></div>
+      ${PREPS.map(p=>`
+        <div class="prep-blk">
+          <div class="prep-h"><b dir="ltr">${p.time}</b><span>${p.c}</span><button class="mt-btn view sm" onclick="goPrep(0)">להכנה המלאה</button></div>
+          ${p.pts.map(pt=>`<div class="prep-pt">${pt}</div>`).join('')}
+        </div>`).join('')}
     </div>`;
     const wins=[
       ['אנרגי אינטרנשיונל','הכנסות יוני +12% מהחודש הקודם'],
@@ -361,8 +462,8 @@
       ['אנרגי גולני','סך הליטרים חצה את היעד החודשי'],
     ].map(w=>`<div class="advw-row"><span class="advw-ic">↑</span><b>${w[0]}</b><span>${w[1]}</span></div>`).join('');
     const winsCard=`<div class="advl"><div class="advl-head"><span class="advl-title">מה השתפר השבוע</span></div>${wins}</div>`;
-    board.innerHTML=`<div class="advh2">
+    board.innerHTML=advTopCards()+`<div class="advh2">
       <div class="advcal-col">${calCard}</div>
-      <div class="advh-side">${ovdCard}${finCard}${winsCard}</div>
+      <div class="advh-side">${attCard}${prepCard}${winsCard}</div>
     </div>`;
   }

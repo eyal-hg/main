@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – ניהול תבניות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --salmon-h:#b8685c;
+    --red:#a8302a;
+    --red-bg:#fbe1de;
+    --divider:#E3E3E3;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:.92rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  .top{
+    background:var(--white);
+    padding:14px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .top__brand{display:flex;align-items:center;gap:14px}
+  .top__logo{
+    width:40px;height:40px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;font-size:1rem;
+  }
+  .top__title{font-size:1.05rem;font-weight:500;color:var(--navy)}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .top__user{display:flex;align-items:center;gap:12px;font-size:.9rem}
+  .top__avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:500;
+  }
+  .top__user-name{font-weight:500;color:var(--navy)}
+  .top__user-role{font-size:.78rem;color:var(--muted);margin-top:1px}
+
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{max-width:none;margin:0;padding:18px 0 28px 18px}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:32px 40px 60px}
+
+  .card{
+    background:var(--white);
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    padding:24px 32px 30px;
+  }
+
+  .page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:20px;flex-wrap:wrap;gap:14px;
+  }
+  .page-head__title{font-size:1.7rem;font-weight:500;color:var(--navy);letter-spacing:-.7px}
+  .page-head__meta{color:var(--muted);font-size:.88rem;margin-top:4px}
+
+  .toolbar{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:16px;flex-wrap:wrap;
+  }
+  .search{
+    flex:1;min-width:240px;
+    padding:9px 16px;
+    border:1px solid var(--divider);border-radius:60px;
+    background:#fff;outline:none;transition:border-color .15s;
+  }
+  .search:focus{border-color:var(--blue)}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 18px;border-radius:60px;
+    font-weight:500;font-size:.88rem;transition:all .15s;
+    border:1px solid transparent;
+  }
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:var(--salmon-h)}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--danger{background:#fff;color:var(--red);border-color:var(--divider)}
+  .btn--danger:hover{background:var(--red-bg);border-color:var(--red)}
+  .btn--sm{padding:6px 14px;font-size:.83rem}
+
+  /* Templates grid */
+  .tpl-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:14px;
+  }
+  .tpl{
+    background:var(--off);
+    border:1px solid var(--divider);
+    border-radius:14px;
+    padding:16px;
+    display:flex;flex-direction:column;gap:10px;
+    transition:border-color .12s, box-shadow .12s;
+  }
+  .tpl:hover{border-color:var(--blue);box-shadow:0 2px 10px rgba(57,171,226,.08)}
+  .tpl__head{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
+  }
+  .tpl__name{font-weight:500;color:var(--navy);font-size:1rem;line-height:1.3}
+  .tpl__actions{display:flex;gap:4px;flex-shrink:0}
+  .tpl__body{
+    color:var(--muted);font-size:.88rem;line-height:1.55;
+    flex:1;
+  }
+  .icon-btn{
+    width:30px;height:30px;border-radius:50%;
+    color:var(--muted);font-size:.92rem;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:all .12s;
+  }
+  .icon-btn:hover{background:var(--blue-soft);color:var(--navy)}
+  .icon-btn--danger:hover{background:var(--red-bg);color:var(--red)}
+
+  .placeholder-chip{
+    display:inline-block;
+    padding:0 8px;border-radius:60px;
+    background:var(--blue-soft);color:#1a6e9a;
+    font-size:.78rem;font-weight:500;
+  }
+
+  /* Trigger badge */
+  .tpl-trigger{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 11px;border-radius:60px;
+    background:#fef0d6;color:#a87a00;
+    font-size:.78rem;font-weight:500;
+  }
+  .tpl-trigger::before{
+    content:'⚡';font-size:.82rem;
+  }
+  .tpl-trigger--manual{
+    background:var(--off);color:var(--muted);
+    border:1px solid var(--divider);
+  }
+  .tpl-trigger--manual::before{content:'✋'}
+
+  .auto-hint{
+    background:#fff8e6;border:1px solid #f0e0a0;
+    border-radius:10px;padding:10px 14px;
+    color:#a87a00;font-size:.84rem;line-height:1.5;
+    margin-top:8px;
+  }
+
+  /* Section header inside the same card */
+  .section{margin-top:32px;padding-top:24px;border-top:1px solid var(--divider)}
+  .section:first-child{margin-top:0;padding-top:0;border-top:none}
+  .section__head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:16px;flex-wrap:wrap;gap:12px;
+  }
+  .section__title{font-size:1.2rem;font-weight:500;color:var(--navy);letter-spacing:-.3px}
+  .section__meta{color:var(--muted);font-size:.86rem;margin-top:3px}
+
+  /* Group notification card */
+  .grp-card-meta{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:3px 11px;border-radius:60px;
+    background:#dff3e9;color:var(--green);
+    font-size:.78rem;font-weight:500;
+  }
+  .grp-card-meta::before{content:'👥'}
+
+  .empty{padding:48px 20px;text-align:center;color:var(--muted)}
+  .empty__title{font-size:1rem;color:var(--navy);font-weight:500;margin-bottom:4px}
+
+  /* Modal */
+  .modal-back{
+    position:fixed;inset:0;background:rgba(12,64,104,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:1000;padding:20px;
+  }
+  .modal-back.is-open{display:flex}
+  .modal{
+    background:#fff;
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    width:100%;max-width:560px;overflow:hidden;
+    animation:pop .18s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{
+    padding:18px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .modal__head h3{color:var(--navy);font-size:1.2rem;font-weight:500;letter-spacing:-.3px}
+  .modal__close{font-size:1.4rem;color:var(--muted);width:32px;height:32px;border-radius:6px}
+  .modal__close:hover{background:var(--blue-soft);color:var(--navy)}
+  .modal__body{padding:20px 24px;max-height:70vh;overflow-y:auto}
+  .modal__foot{
+    padding:14px 24px;background:var(--off);
+    display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--divider);
+  }
+  .modal__foot-right{display:flex;gap:8px;margin-right:auto}
+
+  .form-grid{display:grid;grid-template-columns:1fr;gap:14px}
+  .field{display:flex;flex-direction:column;gap:5px;width:100%}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .field input,.field textarea{
+    padding:9px 14px;border:1px solid var(--divider);
+    border-radius:10px;background:#fff;outline:none;
+    transition:border-color .15s;font-size:.92rem;
+  }
+  .field textarea{min-height:120px;resize:vertical;line-height:1.5;font-family:inherit}
+  .field input:focus,.field textarea:focus{border-color:var(--blue)}
+
+  .vars{
+    display:flex;flex-wrap:wrap;gap:6px;
+    margin-top:8px;
+  }
+  .vars__title{font-size:.78rem;color:var(--muted);width:100%;margin-bottom:6px}
+  .var-btn{
+    padding:3px 11px;border-radius:60px;
+    background:var(--blue-soft);color:#1a6e9a;
+    font-size:.8rem;font-weight:500;
+    border:1px dashed #c8e0ec;cursor:pointer;
+    transition:filter .12s;
+  }
+  .var-btn:hover{filter:brightness(.96)}
+
+  @media(max-width:600px){
+    .top{padding:12px 16px}
+    .wrap{padding:18px}
+    .card{padding:20px 14px 24px}
+  }
+</style>
+</head>
+<body>
+<script>
+  if (location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+</script>
+
+<header class="top">
+  <div class="top__brand">
+    <div class="top__logo">HK</div>
+    <div>
+      <div class="top__title">ניהול תבניות</div>
+      <div class="top__sub">HK Money</div>
+    </div>
+  </div>
+  <div class="top__user">
+    <div class="top__avatar">א</div>
+    <div>
+      <div class="top__user-name">אייל חזות</div>
+      <div class="top__user-role">מנהל מערכת</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+
+    <div class="page-head" style="margin-bottom:8px">
+      <div>
+        <div class="page-head__title">ניהול תבניות</div>
+        <div class="page-head__meta">תבניות הודעה ללקוחות והתראות פנימיות לצוות.</div>
+      </div>
+    </div>
+
+    <!-- Section 1: Templates to leads -->
+    <div class="section">
+      <div class="section__head">
+        <div>
+          <div class="section__title">תבניות הודעה ללקוחות</div>
+          <div class="section__meta">הודעות שנשלחות למספר ה-WhatsApp של הליד. פרמטרים מתמלאים אוטומטית.</div>
+        </div>
+        <button class="btn btn--primary btn--sm" id="newBtn"><span>+</span> תבנית חדשה</button>
+      </div>
+
+      <div class="toolbar">
+        <input class="search" id="search" type="search" placeholder="חיפוש לפי שם או תוכן...">
+        <div style="color:var(--muted);font-size:.88rem">סך הכל: <b style="color:var(--navy);font-weight:500" id="count">0</b></div>
+      </div>
+
+      <div class="tpl-grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>
+        <div class="empty__title">אין עדיין תבניות</div>
+        <div style="font-size:.88rem">לחץ "+ תבנית חדשה" כדי ליצור את הראשונה.</div>
+      </div>
+    </div>
+
+    <!-- Section 2: Group notifications -->
+    <div class="section">
+      <div class="section__head">
+        <div>
+          <div class="section__title">התראות פנימיות לקבוצות WhatsApp</div>
+          <div class="section__meta">התראות שנשלחות לקבוצת WhatsApp של הצוות (לא ללקוח). שימושי לאירועים כמו ליד חדש שנכנס.</div>
+        </div>
+        <button class="btn btn--primary btn--sm" id="newGrpBtn"><span>+</span> התראה חדשה</button>
+      </div>
+
+      <div class="tpl-grid" id="grpGrid"></div>
+      <div class="empty" id="grpEmpty" hidden>
+        <div class="empty__title">אין עדיין התראות לקבוצות</div>
+        <div style="font-size:.88rem">לחץ "+ התראה חדשה" להגדרת התראה לצוות.</div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- Editor modal -->
+<div class="modal-back" id="editModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="editTitle">תבנית חדשה</h3>
+      <button class="modal__close" data-close aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-grid">
+        <div class="field">
+          <label>שם התבנית</label>
+          <input id="fName" type="text" placeholder="לדוגמה: תזכורת לפגישה">
+        </div>
+        <div class="field">
+          <label>תוכן ההודעה</label>
+          <textarea id="fBody" placeholder="שלום {שם_פרטי}, ..."></textarea>
+          <div class="vars">
+            <div class="vars__title">פרמטרים זמינים — קליק להוספה:</div>
+            <button class="var-btn" data-var="שם_פרטי">{שם_פרטי}</button>
+            <button class="var-btn" data-var="שם_מלא">{שם_מלא}</button>
+            <button class="var-btn" data-var="תאריך_פגישה">{תאריך_פגישה}</button>
+            <button class="var-btn" data-var="שעת_פגישה">{שעת_פגישה}</button>
+            <button class="var-btn" data-var="מקור">{מקור}</button>
+            <button class="var-btn" data-var="טלפון">{טלפון}</button>
+            <button class="var-btn" data-var="מייל">{מייל}</button>
+          </div>
+          <div class="vars" id="quoteVars">
+            <div class="vars__title" style="color:#a87a00">להצעת מחיר — עטוף את חלק המוצר ב-<code>{{מוצר}}</code> ... <code>{{/מוצר}}</code> והוא יחזור על עצמו לכל מוצר מסומן:</div>
+            <button class="var-btn" data-var="מוצר" data-loop="open">{{מוצר}}</button>
+            <button class="var-btn" data-var="/מוצר" data-loop="close">{{/מוצר}}</button>
+            <button class="var-btn" data-var="סוג_מוצר">{סוג_מוצר}</button>
+            <button class="var-btn" data-var="תוכן_מוצר">{תוכן_מוצר}</button>
+            <button class="var-btn" data-var="מחיר_מוצר">{מחיר_מוצר}</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>שליחה אוטומטית — מתי לשלוח?</label>
+          <select id="fTriggerType">
+            <option value="manual">שליחה ידנית בלבד</option>
+            <option value="new_lead">בעת כניסת ליד חדש</option>
+            <option value="status_changed">בעת שינוי סטטוס לסטטוס מסוים</option>
+            <option value="meeting_scheduled">בעת קביעת פגישה</option>
+            <option value="meeting_reminder">תזכורת לפני פגישה</option>
+          </select>
+        </div>
+
+        <div class="field" id="triggerSourceField" style="display:none">
+          <label>סנן לפי מקור (אופציונלי)</label>
+          <select id="fTriggerSource">
+            <option value="">כל מקור</option>
+            <option>פייסבוק</option>
+            <option>אינסטגרם</option>
+            <option>גוגל</option>
+            <option>אתר</option>
+            <option>חבר ממליץ</option>
+            <option>שותף עסקי</option>
+          </select>
+        </div>
+
+        <div class="field" id="triggerStageField" style="display:none">
+          <label>סטטוס יעד</label>
+          <select id="fTriggerStage">
+            <option value="contacted">נוצר קשר</option>
+            <option value="qualified">בשיחה</option>
+            <option value="proposal">הצעה</option>
+            <option value="won">נסגר — זכייה</option>
+            <option value="lost">נסגר — אבוד</option>
+          </select>
+        </div>
+
+        <div class="field" id="triggerReminderField" style="display:none">
+          <label>כמה זמן לפני הפגישה?</label>
+          <select id="fTriggerReminder">
+            <option value="15">15 דקות לפני</option>
+            <option value="30" selected>חצי שעה לפני</option>
+            <option value="60">שעה לפני</option>
+            <option value="120">שעתיים לפני</option>
+            <option value="1440">יום לפני</option>
+          </select>
+        </div>
+
+        <div class="field" id="triggerMeetTypeField" style="display:none">
+          <label>סוג פגישה</label>
+          <select id="fTriggerMeetType">
+            <option value="">כל סוגי הפגישות</option>
+            <option value="meet">Google Meet בלבד</option>
+            <option value="in_person">פרונטלית בלבד</option>
+          </select>
+        </div>
+
+        <div class="auto-hint" id="autoHint" style="display:none">
+          <b>⚡ אוטומציה פעילה:</b> <span id="autoHintText"></span>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger btn--sm" id="deleteBtn" style="display:none">מחק תבנית</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="saveBtn">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Group notification editor modal -->
+<div class="modal-back" id="grpModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="grpTitle">התראה חדשה</h3>
+      <button class="modal__close" data-close-grp aria-label="סגירה">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-grid">
+        <div class="field">
+          <label>שם ההתראה (לזיהוי פנימי)</label>
+          <input id="gName" type="text" placeholder="לדוגמה: ליד חדש מפייסבוק">
+        </div>
+
+        <div class="field">
+          <label>קבוצת WhatsApp לשליחה</label>
+          <select id="gGroup"></select>
+        </div>
+
+        <div class="field">
+          <label>מתי לשלוח?</label>
+          <select id="gTriggerType">
+            <option value="new_lead">בעת כניסת ליד חדש</option>
+            <option value="status_changed">בעת שינוי סטטוס לסטטוס מסוים</option>
+            <option value="meeting_scheduled">בעת קביעת פגישה</option>
+            <option value="meeting_reminder">תזכורת לפני פגישה</option>
+          </select>
+        </div>
+
+        <div class="field" id="gSourceField">
+          <label>סנן לפי מקור (אופציונלי)</label>
+          <select id="gSource">
+            <option value="">כל מקור</option>
+            <option>פייסבוק</option>
+            <option>אינסטגרם</option>
+            <option>גוגל</option>
+            <option>אתר</option>
+            <option>חבר ממליץ</option>
+            <option>שותף עסקי</option>
+          </select>
+        </div>
+
+        <div class="field" id="gStageField" style="display:none">
+          <label>סטטוס יעד</label>
+          <select id="gStage">
+            <option value="contacted">נוצר קשר</option>
+            <option value="qualified">בשיחה</option>
+            <option value="proposal">הצעה</option>
+            <option value="won">נסגר — זכייה</option>
+            <option value="lost">נסגר — אבוד</option>
+          </select>
+        </div>
+
+        <div class="field" id="gReminderField" style="display:none">
+          <label>כמה זמן לפני הפגישה?</label>
+          <select id="gReminder">
+            <option value="15">15 דקות לפני</option>
+            <option value="30" selected>חצי שעה לפני</option>
+            <option value="60">שעה לפני</option>
+            <option value="120">שעתיים לפני</option>
+            <option value="1440">יום לפני</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>תוכן ההתראה</label>
+          <textarea id="gBody" placeholder="🔔 ליד חדש: {שם_הליד}..."></textarea>
+          <div class="vars">
+            <div class="vars__title">פרמטרים זמינים — קליק להוספה:</div>
+            <button class="var-btn" data-gvar="שם_הליד">{שם_הליד}</button>
+            <button class="var-btn" data-gvar="שם_פרטי">{שם_פרטי}</button>
+            <button class="var-btn" data-gvar="טלפון_הליד">{טלפון_הליד}</button>
+            <button class="var-btn" data-gvar="מייל_הליד">{מייל_הליד}</button>
+            <button class="var-btn" data-gvar="מקור_הליד">{מקור_הליד}</button>
+            <button class="var-btn" data-gvar="זמן_כניסה">{זמן_כניסה}</button>
+            <button class="var-btn" data-gvar="תאריך_פגישה">{תאריך_פגישה}</button>
+            <button class="var-btn" data-gvar="שעת_פגישה">{שעת_פגישה}</button>
+            <button class="var-btn" data-gvar="שלב_הליד">{שלב_הליד}</button>
+            <button class="var-btn" data-gvar="נציג_מטפל">{נציג_מטפל}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--danger btn--sm" id="gDeleteBtn" style="display:none">מחק התראה</button>
+      <div class="modal__foot-right">
+        <button class="btn btn--ghost" data-close-grp>ביטול</button>
+        <button class="btn btn--primary" id="gSaveBtn">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'hk_message_templates';
+  const GRP_STORAGE_KEY = 'hk_group_notifications';
+
+  // Available WhatsApp groups (in production: from backend/Meta API)
+  const WA_GROUPS = [
+    {id:'team_sales',      name:'צוות מכירות'},
+    {id:'team_management', name:'הנהלה'},
+    {id:'shift_today',     name:'משמרת היום'},
+    {id:'partners',        name:'שותפים עסקיים'},
+  ];
+  const STAGE_LABELS = {
+    new:'חדש', contacted:'נוצר קשר', qualified:'בשיחה',
+    proposal:'הצעה', won:'נסגר — זכייה', lost:'נסגר — אבוד',
+  };
+  const DEFAULTS = [
+    {id:1, name:'תזכורת לפגישה',
+      body:'שלום {שם_פרטי}, רק מזכיר שיש לנו פגישה בעוד חצי שעה (ב-{שעת_פגישה}). נתראה!',
+      trigger:{type:'meeting_reminder', reminderMinutes:30}},
+    {id:6, name:'אישור פגישה',
+      body:'שלום {שם_פרטי}, אישור: נקבעה פגישה ל-{תאריך_פגישה} בשעה {שעת_פגישה}. אם זה לא נוח — תעדכן/י.',
+      trigger:{type:'meeting_scheduled'}},
+    {id:2, name:'תודה על הפנייה',
+      body:'שלום {שם_פרטי}, תודה על הפנייה מ-{מקור}. אחזור אליך תוך 24 שעות עם פרטים.',
+      trigger:{type:'new_lead'}},
+    {id:3, name:'אחרי פגישה',
+      body:'תודה רבה על הפגישה {שם_פרטי}! היה נעים להכיר. אשלח לך הצעה במייל עד מחר.',
+      trigger:{type:'manual'}},
+    {id:4, name:'מעקב על הצעה',
+      body:'שלום {שם_פרטי}, רוצה לוודא שקיבלת את ההצעה. אשמח לדבר אם יש שאלות.',
+      trigger:{type:'status_changed', targetStage:'proposal'}},
+    {id:5, name:'בקשת ייעוד פגישה',
+      body:'שלום {שם_פרטי}, מתי נוח לך לפגישת היכרות? אני זמין השבוע בימים ב׳-ה׳ אחה״צ.',
+      trigger:{type:'manual'}},
+    {id:7, name:'הצעת מחיר',
+      body:`היי {שם_פרטי}, בהמשך לשיחה שלנו — מסכם לך בקצרה את מה שדיברנו עליו 👋
+
+{{מוצר}}
+המסלול שהצענו לך: {סוג_מוצר}
+מה כלול במסלול: {תוכן_מוצר}
+עלות חודשית: {מחיר_מוצר}
+{{/מוצר}}
+המטרה של HK היא לא רק להראות לך נתונים, אלא לנהל איתך את התזרים בפועל ברמה יומיומית — כדי שתדע מה נכנס, מה יוצא, מה צפוי קדימה, ואיפה צריך לקבל החלטה לפני שנוצרת בעיה.
+
+אם זה מרגיש לך נכון, תרשום לי כאן בחוזר ונתקדם.
+תודה על שיתוף הפעולה.`,
+      trigger:{type:'manual'}},
+  ];
+
+  function reminderText(min){
+    const m = +min;
+    if (m === 15) return '15 דקות';
+    if (m === 30) return 'חצי שעה';
+    if (m === 60) return 'שעה';
+    if (m === 120) return 'שעתיים';
+    if (m === 1440) return 'יום';
+    return m + ' דקות';
+  }
+  const MEET_TYPE_LABELS = {meet:'Google Meet', in_person:'פרונטלית'};
+  function triggerLabel(trigger){
+    if (!trigger || trigger.type === 'manual') return null;
+    if (trigger.type === 'new_lead'){
+      return trigger.sourceChannel ? `ליד חדש מ-${trigger.sourceChannel}` : 'כל ליד חדש';
+    }
+    if (trigger.type === 'status_changed'){
+      return `סטטוס משתנה ל-${STAGE_LABELS[trigger.targetStage] || trigger.targetStage}`;
+    }
+    const mtSuffix = trigger.meetType ? ` · ${MEET_TYPE_LABELS[trigger.meetType] || trigger.meetType}` : '';
+    if (trigger.type === 'meeting_scheduled') return `בעת קביעת פגישה${mtSuffix}`;
+    if (trigger.type === 'meeting_reminder') return `${reminderText(trigger.reminderMinutes||30)} לפני פגישה${mtSuffix}`;
+    return null;
+  }
+
+  function loadTemplates(){
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch(e) {}
+    return [...DEFAULTS];
+  }
+  function saveTemplates(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(templates)); } catch(e) {}
+  }
+
+  let templates = loadTemplates();
+  let editingId = null;
+
+  function highlightPlaceholders(text){
+    return text.replace(/\{([^}]+)\}/g, '<span class="placeholder-chip">{$1}</span>');
+  }
+
+  function render(){
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    const list = templates.filter(t =>
+      !q || t.name.toLowerCase().includes(q) || t.body.toLowerCase().includes(q)
+    );
+    document.getElementById('count').textContent = templates.length;
+
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    if (list.length === 0){
+      grid.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    grid.innerHTML = list.map(t => {
+      const trLabel = triggerLabel(t.trigger);
+      const trChip = trLabel
+        ? `<span class="tpl-trigger">${trLabel}</span>`
+        : `<span class="tpl-trigger tpl-trigger--manual">ידנית</span>`;
+      return `
+        <div class="tpl">
+          <div class="tpl__head">
+            <div class="tpl__name">${t.name}</div>
+            <div class="tpl__actions">
+              <button class="icon-btn" data-action="edit" data-id="${t.id}" title="עריכה">✎</button>
+              <button class="icon-btn icon-btn--danger" data-action="delete" data-id="${t.id}" title="מחיקה">🗑</button>
+            </div>
+          </div>
+          <div>${trChip}</div>
+          <div class="tpl__body">${highlightPlaceholders(t.body)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('search').addEventListener('input', render);
+  document.getElementById('grid').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = +btn.dataset.id;
+    const t = templates.find(x => x.id === id);
+    if (btn.dataset.action === 'edit') openEditor(t);
+    else if (btn.dataset.action === 'delete'){
+      if (!confirm(`למחוק את התבנית "${t.name}"?`)) return;
+      templates = templates.filter(x => x.id !== id);
+      saveTemplates();
+      render();
+    }
+  });
+  document.getElementById('newBtn').addEventListener('click', () => openEditor(null));
+
+  const modal = document.getElementById('editModal');
+  function openEditor(t){
+    editingId = t ? t.id : null;
+    document.getElementById('editTitle').textContent = t ? `עריכת תבנית — ${t.name}` : 'תבנית חדשה';
+    document.getElementById('fName').value = t?.name || '';
+    document.getElementById('fBody').value = t?.body || '';
+    const tr = t?.trigger || {type:'manual'};
+    document.getElementById('fTriggerType').value     = tr.type || 'manual';
+    document.getElementById('fTriggerSource').value   = tr.sourceChannel || '';
+    document.getElementById('fTriggerStage').value    = tr.targetStage || 'contacted';
+    document.getElementById('fTriggerReminder').value = tr.reminderMinutes || 30;
+    document.getElementById('fTriggerMeetType').value = tr.meetType || '';
+    updateTriggerFields();
+    document.getElementById('deleteBtn').style.display = t ? '' : 'none';
+    modal.classList.add('is-open');
+    setTimeout(() => document.getElementById('fName').focus(), 50);
+  }
+
+  function updateTriggerFields(){
+    const type = document.getElementById('fTriggerType').value;
+    const isMeeting = (type === 'meeting_reminder' || type === 'meeting_scheduled');
+    document.getElementById('triggerSourceField').style.display   = type === 'new_lead' ? '' : 'none';
+    document.getElementById('triggerStageField').style.display    = type === 'status_changed' ? '' : 'none';
+    document.getElementById('triggerReminderField').style.display = type === 'meeting_reminder' ? '' : 'none';
+    document.getElementById('triggerMeetTypeField').style.display = isMeeting ? '' : 'none';
+
+    const hint = document.getElementById('autoHint');
+    const hintText = document.getElementById('autoHintText');
+    if (type === 'manual'){
+      hint.style.display = 'none';
+    } else {
+      hint.style.display = '';
+      const draftTrigger = {
+        type,
+        sourceChannel:   document.getElementById('fTriggerSource').value || undefined,
+        targetStage:     document.getElementById('fTriggerStage').value || undefined,
+        reminderMinutes: +document.getElementById('fTriggerReminder').value || undefined,
+        meetType:        isMeeting ? (document.getElementById('fTriggerMeetType').value || undefined) : undefined,
+      };
+      hintText.textContent = `ההודעה תישלח אוטומטית בעת — ${triggerLabel(draftTrigger)}.`;
+    }
+  }
+  document.getElementById('fTriggerType').addEventListener('change', updateTriggerFields);
+  document.getElementById('fTriggerSource').addEventListener('change', updateTriggerFields);
+  document.getElementById('fTriggerStage').addEventListener('change', updateTriggerFields);
+  document.getElementById('fTriggerReminder').addEventListener('change', updateTriggerFields);
+  document.getElementById('fTriggerMeetType').addEventListener('change', updateTriggerFields);
+  modal.addEventListener('click', (e) => {
+    if (e.target.dataset.close !== undefined || e.target === modal) modal.classList.remove('is-open');
+  });
+  // Insert variable on click (delegated — covers both regular vars and quote vars)
+  document.querySelector('#editModal .modal__body').addEventListener('click', (e) => {
+    const btn = e.target.closest('.var-btn');
+    if (!btn) return;
+    const ta = document.getElementById('fBody');
+    // Loop markers use double braces; regular variables use single
+    const placeholder = btn.dataset.loop ? `{{${btn.dataset.var}}}` : `{${btn.dataset.var}}`;
+    const start = ta.selectionStart || 0;
+    const end = ta.selectionEnd || 0;
+    ta.value = ta.value.slice(0, start) + placeholder + ta.value.slice(end);
+    ta.focus();
+    ta.selectionStart = ta.selectionEnd = start + placeholder.length;
+  });
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const name = document.getElementById('fName').value.trim();
+    const body = document.getElementById('fBody').value.trim();
+    if (!name){ alert('שם חובה'); return; }
+    if (!body){ alert('תוכן חובה'); return; }
+    const type = document.getElementById('fTriggerType').value;
+    const trigger = {type};
+    if (type === 'new_lead'){
+      const src = document.getElementById('fTriggerSource').value;
+      if (src) trigger.sourceChannel = src;
+    } else if (type === 'status_changed'){
+      trigger.targetStage = document.getElementById('fTriggerStage').value;
+    } else if (type === 'meeting_reminder'){
+      trigger.reminderMinutes = +document.getElementById('fTriggerReminder').value || 30;
+    }
+    // Meeting type filter (for meeting triggers)
+    if (type === 'meeting_reminder' || type === 'meeting_scheduled'){
+      const mt = document.getElementById('fTriggerMeetType').value;
+      if (mt) trigger.meetType = mt;
+    }
+    if (editingId){
+      Object.assign(templates.find(t => t.id === editingId), {name, body, trigger});
+    } else {
+      const newId = templates.length ? Math.max(...templates.map(t => t.id)) + 1 : 1;
+      templates.push({id:newId, name, body, trigger});
+    }
+    saveTemplates();
+    modal.classList.remove('is-open');
+    render();
+  });
+  document.getElementById('deleteBtn').addEventListener('click', () => {
+    if (!editingId) return;
+    const t = templates.find(x => x.id === editingId);
+    if (!confirm(`למחוק את התבנית "${t.name}"?`)) return;
+    templates = templates.filter(x => x.id !== editingId);
+    saveTemplates();
+    modal.classList.remove('is-open');
+    render();
+  });
+
+  // Sync with other tabs/iframes
+  window.addEventListener('storage', (e) => {
+    if (e.key === STORAGE_KEY){
+      templates = e.newValue ? JSON.parse(e.newValue) : [...DEFAULTS];
+      render();
+    }
+    if (e.key === GRP_STORAGE_KEY){
+      groupNotifications = e.newValue ? JSON.parse(e.newValue) : [...GRP_DEFAULTS];
+      renderGroupNotifications();
+    }
+  });
+
+  render();
+
+  // ============================================
+  // GROUP NOTIFICATIONS (alerts sent to WhatsApp groups, NOT to the lead)
+  // ============================================
+  const GRP_DEFAULTS = [
+    {id:1, name:'ליד חדש נכנס',
+      groupId:'team_sales',
+      trigger:{type:'new_lead'},
+      body:'🔔 ליד חדש: {שם_הליד}\n📞 {טלפון_הליד}\n📍 מקור: {מקור_הליד}\n🕐 נכנס ב-{זמן_כניסה}'},
+    {id:2, name:'נסגרה עסקה',
+      groupId:'team_management',
+      trigger:{type:'status_changed', targetStage:'won'},
+      body:'🎉 ליד נסגר!\n{שם_הליד} ({טלפון_הליד})\nנציג מטפל: {נציג_מטפל}'},
+  ];
+
+  function loadGroupNotifications(){
+    try {
+      const s = localStorage.getItem(GRP_STORAGE_KEY);
+      if (s) return JSON.parse(s);
+    } catch(e) {}
+    return [...GRP_DEFAULTS];
+  }
+  function saveGroupNotifications(){
+    try { localStorage.setItem(GRP_STORAGE_KEY, JSON.stringify(groupNotifications)); } catch(e) {}
+  }
+
+  let groupNotifications = loadGroupNotifications();
+  let editingGrpId = null;
+
+  function groupName(id){
+    return (WA_GROUPS.find(g => g.id === id) || {}).name || id;
+  }
+
+  function renderGroupNotifications(){
+    const grid = document.getElementById('grpGrid');
+    const empty = document.getElementById('grpEmpty');
+    if (groupNotifications.length === 0){
+      grid.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    grid.innerHTML = groupNotifications.map(g => {
+      const trLabel = triggerLabel(g.trigger) || 'ידנית';
+      return `
+        <div class="tpl">
+          <div class="tpl__head">
+            <div class="tpl__name">${g.name}</div>
+            <div class="tpl__actions">
+              <button class="icon-btn" data-grp-action="edit" data-id="${g.id}" title="עריכה">✎</button>
+              <button class="icon-btn icon-btn--danger" data-grp-action="delete" data-id="${g.id}" title="מחיקה">🗑</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="grp-card-meta">${groupName(g.groupId)}</span>
+            <span class="tpl-trigger">${trLabel}</span>
+          </div>
+          <div class="tpl__body">${highlightPlaceholders(g.body)}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('grpGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-grp-action]');
+    if (!btn) return;
+    const id = +btn.dataset.id;
+    const g = groupNotifications.find(x => x.id === id);
+    if (btn.dataset.grpAction === 'edit') openGrpEditor(g);
+    else if (btn.dataset.grpAction === 'delete'){
+      if (!confirm(`למחוק את ההתראה "${g.name}"?`)) return;
+      groupNotifications = groupNotifications.filter(x => x.id !== id);
+      saveGroupNotifications();
+      renderGroupNotifications();
+    }
+  });
+  document.getElementById('newGrpBtn').addEventListener('click', () => openGrpEditor(null));
+
+  const grpModal = document.getElementById('grpModal');
+
+  function populateGroupsDropdown(){
+    const sel = document.getElementById('gGroup');
+    sel.innerHTML = WA_GROUPS.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+  }
+  populateGroupsDropdown();
+
+  function updateGrpTriggerFields(){
+    const t = document.getElementById('gTriggerType').value;
+    document.getElementById('gSourceField').style.display   = t === 'new_lead' ? '' : 'none';
+    document.getElementById('gStageField').style.display    = t === 'status_changed' ? '' : 'none';
+    document.getElementById('gReminderField').style.display = t === 'meeting_reminder' ? '' : 'none';
+  }
+
+  function openGrpEditor(g){
+    editingGrpId = g ? g.id : null;
+    document.getElementById('grpTitle').textContent = g ? `עריכת התראה — ${g.name}` : 'התראה חדשה';
+    document.getElementById('gName').value = g?.name || '';
+    document.getElementById('gGroup').value = g?.groupId || WA_GROUPS[0].id;
+    document.getElementById('gBody').value = g?.body || '';
+    const tr = g?.trigger || {type:'new_lead'};
+    document.getElementById('gTriggerType').value = tr.type || 'new_lead';
+    document.getElementById('gSource').value      = tr.sourceChannel || '';
+    document.getElementById('gStage').value       = tr.targetStage || 'contacted';
+    document.getElementById('gReminder').value    = tr.reminderMinutes || 30;
+    updateGrpTriggerFields();
+    document.getElementById('gDeleteBtn').style.display = g ? '' : 'none';
+    grpModal.classList.add('is-open');
+    setTimeout(() => document.getElementById('gName').focus(), 50);
+  }
+  document.getElementById('gTriggerType').addEventListener('change', updateGrpTriggerFields);
+
+  grpModal.addEventListener('click', (e) => {
+    if (e.target.dataset.closeGrp !== undefined || e.target === grpModal){
+      grpModal.classList.remove('is-open');
+    }
+  });
+  // Insert variable into group body
+  grpModal.querySelector('.vars').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-gvar]');
+    if (!btn) return;
+    const ta = document.getElementById('gBody');
+    const placeholder = `{${btn.dataset.gvar}}`;
+    const start = ta.selectionStart || 0;
+    const end = ta.selectionEnd || 0;
+    ta.value = ta.value.slice(0, start) + placeholder + ta.value.slice(end);
+    ta.focus();
+    ta.selectionStart = ta.selectionEnd = start + placeholder.length;
+  });
+
+  document.getElementById('gSaveBtn').addEventListener('click', () => {
+    const name = document.getElementById('gName').value.trim();
+    const groupId = document.getElementById('gGroup').value;
+    const body = document.getElementById('gBody').value.trim();
+    if (!name){ alert('שם חובה'); return; }
+    if (!groupId){ alert('בחר קבוצה'); return; }
+    if (!body){ alert('תוכן חובה'); return; }
+    const type = document.getElementById('gTriggerType').value;
+    const trigger = {type};
+    if (type === 'new_lead'){
+      const src = document.getElementById('gSource').value;
+      if (src) trigger.sourceChannel = src;
+    } else if (type === 'status_changed'){
+      trigger.targetStage = document.getElementById('gStage').value;
+    } else if (type === 'meeting_reminder'){
+      trigger.reminderMinutes = +document.getElementById('gReminder').value || 30;
+    }
+
+    if (editingGrpId){
+      Object.assign(groupNotifications.find(g => g.id === editingGrpId), {name, groupId, body, trigger});
+    } else {
+      const newId = groupNotifications.length ? Math.max(...groupNotifications.map(g => g.id)) + 1 : 1;
+      groupNotifications.push({id:newId, name, groupId, body, trigger});
+    }
+    saveGroupNotifications();
+    grpModal.classList.remove('is-open');
+    renderGroupNotifications();
+  });
+
+  document.getElementById('gDeleteBtn').addEventListener('click', () => {
+    if (!editingGrpId) return;
+    const g = groupNotifications.find(x => x.id === editingGrpId);
+    if (!confirm(`למחוק את ההתראה "${g.name}"?`)) return;
+    groupNotifications = groupNotifications.filter(x => x.id !== editingGrpId);
+    saveGroupNotifications();
+    grpModal.classList.remove('is-open');
+    renderGroupNotifications();
+  });
+
+  renderGroupNotifications();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>תיאום פגישה · HK Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --salmon-h:#b8685c;
+    --green:#1e8e5f;
+    --green-bg:#dff3e9;
+    --gold:#C29A3B;
+    --gold-bg:#f8efd6;
+    --divider:#E3E3E3;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.55;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+  a{color:inherit;text-decoration:none}
+
+  /* ===== Brand bar ===== */
+  .brand{
+    display:flex;align-items:center;justify-content:center;gap:11px;
+    padding:20px 16px;
+  }
+  .brand__logo{
+    width:38px;height:38px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#fff;font-size:.92rem;letter-spacing:.5px;
+  }
+  .brand__name{font-size:1.05rem;font-weight:600;color:var(--navy);letter-spacing:.2px}
+
+  /* ===== Page container ===== */
+  .page{max-width:600px;margin:0 auto;padding:4px 18px 56px}
+  .stack > * + *{margin-top:16px}
+
+  .card{
+    background:var(--white);
+    border-top:3px solid var(--blue);
+    border-radius:18px;
+    box-shadow:var(--shadow-card);
+    padding:26px 26px 28px;
+  }
+
+  /* ===== Block 1 — Hero ===== */
+  .hero{text-align:center;padding:30px 26px 30px}
+  .hero__avatar{
+    width:72px;height:72px;border-radius:50%;margin:0 auto 14px;
+    background:linear-gradient(135deg, var(--blue), var(--navy));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:1.7rem;font-weight:500;
+    box-shadow:0 6px 16px rgba(12,64,104,.22);
+  }
+  .hero__greet{font-size:1.7rem;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
+  .hero__lead{font-size:1.08rem;color:var(--navy);font-weight:300}
+  .hero__lead b{font-weight:500}
+  .hero__role{font-size:.9rem;color:var(--muted);margin-top:5px}
+
+  /* ===== Block 2 — Conversation summary ===== */
+  .summary{
+    background:var(--off);
+    border:1px solid var(--divider);
+    border-radius:16px;
+    padding:18px 20px;
+    display:flex;align-items:flex-start;gap:14px;
+  }
+  .summary__body{flex:1}
+  .summary__label{font-size:.82rem;color:var(--muted);font-weight:500;margin-bottom:5px}
+  .summary__text{font-size:1rem;color:var(--navy);font-weight:400}
+  .summary__text b{font-weight:500}
+  .summary__note{font-size:.9rem;color:var(--muted);margin-top:10px;font-weight:300}
+  .summary__icon{
+    flex:none;width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);
+    display:flex;align-items:center;justify-content:center;font-size:1.15rem;
+  }
+
+  /* ===== Block 3 — Meeting value ===== */
+  .value__list{list-style:none;display:flex;flex-direction:column;gap:13px}
+  .value__list li{display:flex;align-items:flex-start;gap:11px;font-size:1.02rem;color:var(--navy)}
+  .vcheck{
+    flex:none;width:23px;height:23px;border-radius:50%;margin-top:2px;
+    background:var(--gold-bg);color:var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.78rem;font-weight:700;
+  }
+  .value__fine{
+    margin-top:18px;padding-top:15px;border-top:1px dashed var(--divider);
+    font-size:.86rem;color:var(--muted);font-style:italic;text-align:center;
+  }
+
+  /* ===== Block 4 — Booking widget ===== */
+  .booking__title{font-size:1.18rem;font-weight:500;margin-bottom:4px}
+  .booking__sub{font-size:.88rem;color:var(--muted);margin-bottom:18px}
+  .step-label{
+    font-size:.82rem;color:var(--muted);font-weight:500;
+    margin:18px 0 10px;
+  }
+  .step-label:first-of-type{margin-top:6px}
+
+  /* Week navigation */
+  .week-nav{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--off);border-radius:12px;
+    padding:5px 8px;margin-bottom:10px;
+  }
+  .week-nav__btn{
+    width:34px;height:34px;border-radius:50%;
+    color:var(--navy);font-size:1.1rem;font-weight:500;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .14s;
+  }
+  .week-nav__btn:hover:not(:disabled){background:#fff;color:var(--blue)}
+  .week-nav__btn:disabled{color:var(--muted-2);cursor:not-allowed;opacity:.5}
+  .week-nav__label{font-size:.92rem;font-weight:500;color:var(--navy);letter-spacing:.1px}
+
+  .date-row{display:grid;grid-template-columns:repeat(7, 1fr);gap:6px}
+  .date-pill{
+    background:#fff;border:1px solid var(--divider);border-radius:14px;
+    padding:11px 4px 10px;text-align:center;color:var(--navy);
+    transition:all .14s;
+  }
+  .date-pill:hover:not(.is-empty){border-color:var(--blue);background:var(--blue-soft)}
+  .date-pill.is-selected{
+    background:var(--navy);border-color:var(--navy);color:#fff;
+    box-shadow:0 0 0 3px rgba(12,64,104,.18);
+  }
+  .date-pill.is-empty{
+    color:var(--muted-2);cursor:not-allowed;
+    background:transparent;border-style:dashed;
+  }
+  .date-pill__dow{display:block;font-size:.7rem;font-weight:400;opacity:.8}
+  .date-pill__day{display:block;font-size:1.35rem;font-weight:600;line-height:1.2;margin:1px 0}
+  .date-pill__mon{display:block;font-size:.68rem;font-weight:400;opacity:.8}
+
+  .week-empty{
+    margin-top:10px;text-align:center;font-size:.86rem;color:var(--muted);
+    background:var(--off);padding:9px 12px;border-radius:10px;
+  }
+
+  .slot-grid{display:flex;flex-wrap:wrap;gap:9px}
+  .slot{
+    padding:10px 18px;
+    background:#fff;border:1px solid var(--divider);border-radius:60px;
+    color:var(--navy);font-size:.95rem;font-weight:500;
+    font-variant-numeric:tabular-nums;transition:all .14s;
+  }
+  .slot:hover{border-color:var(--blue);background:var(--blue-soft)}
+  .slot.is-selected{
+    background:var(--navy);color:#fff;border-color:var(--navy);
+    box-shadow:0 0 0 3px rgba(12,64,104,.18);
+  }
+
+  .booking__selected{
+    margin-top:18px;
+    background:var(--blue-soft);border:1px solid #c8e0ec;border-radius:12px;
+    padding:12px 16px;font-size:.95rem;color:var(--navy);
+    display:flex;align-items:center;gap:9px;
+  }
+  .booking__selected b{font-weight:500}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 22px;border-radius:60px;
+    font-weight:500;font-size:1rem;transition:all .15s;
+    border:1px solid transparent;
+  }
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:var(--salmon-h)}
+  .btn--block{display:flex;width:100%;margin-top:22px}
+  .btn:disabled{background:var(--divider);color:var(--muted-2);cursor:not-allowed}
+
+  /* "All taken" empty state inside booking */
+  .empty-slots{
+    text-align:center;padding:22px 16px;background:var(--off);
+    border-radius:14px;color:var(--muted);
+  }
+  .empty-slots__title{color:var(--navy);font-weight:500;font-size:1.02rem;margin-bottom:5px}
+  .empty-slots .btn{margin-top:14px}
+
+  /* ===== Success screen ===== */
+  .success{text-align:center;padding:42px 28px 38px}
+  .success__check{
+    width:74px;height:74px;border-radius:50%;margin:0 auto 18px;
+    background:var(--green-bg);color:var(--green);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2.1rem;font-weight:700;
+    animation:pop .25s ease-out;
+  }
+  .success h1{font-size:1.55rem;font-weight:600;margin-bottom:8px}
+  .success__when{font-size:1.12rem;color:var(--navy);font-weight:500;margin-bottom:8px}
+  .success__loc{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:.92rem;color:var(--navy);
+    background:var(--off);border-radius:60px;padding:6px 14px;margin-bottom:14px;
+  }
+  .success__loc-icon{font-size:1rem}
+  .success__loc-addr{color:var(--muted);font-weight:300;font-size:.84rem}
+  .success__desc{font-size:.98rem;color:var(--muted);max-width:380px;margin:0 auto 18px;font-weight:300}
+  .success__meta{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--blue-soft);border-radius:60px;
+    padding:7px 16px;font-size:.88rem;color:var(--navy);font-weight:500;
+  }
+
+  /* ===== Location picker ===== */
+  .loc-pick{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+  .loc-pick__card{
+    display:flex;align-items:center;gap:14px;
+    width:100%;background:#fff;
+    border:1px solid var(--divider);border-radius:14px;
+    padding:14px 16px;cursor:pointer;text-align:right;
+    transition:all .15s;
+    border-inline-start:4px solid var(--accent, var(--divider));
+    color:var(--navy);font-family:inherit;
+  }
+  .loc-pick__card:hover{
+    border-color:var(--blue);
+    box-shadow:0 4px 14px rgba(12,64,104,.10);
+    transform:translateY(-1px);
+  }
+  .loc-pick__icon{
+    flex:none;width:42px;height:42px;border-radius:50%;
+    background:var(--off);display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+  }
+  .loc-pick__body{flex:1;min-width:0}
+  .loc-pick__name{font-size:1.05rem;font-weight:500;color:var(--navy)}
+  .loc-pick__addr{font-size:.84rem;color:var(--muted);margin-top:2px}
+  .loc-pick__meta{font-size:.78rem;color:var(--accent, var(--blue));margin-top:5px;font-weight:500}
+  .loc-pick__arrow{
+    flex:none;color:var(--muted-2);font-size:1.3rem;
+    transition:transform .14s, color .14s;
+  }
+  .loc-pick__card:hover .loc-pick__arrow{color:var(--blue);transform:translateX(-3px)}
+
+  /* ===== Selected location chip (אחרי שנבחר מיקום) ===== */
+  .loc-chip{
+    display:flex;align-items:center;gap:11px;
+    background:var(--off);border-radius:12px;padding:9px 12px;margin-bottom:16px;
+    border-inline-start:3px solid var(--accent, var(--blue));
+  }
+  .loc-chip__icon{font-size:1.15rem;width:28px;text-align:center}
+  .loc-chip__body{flex:1;min-width:0}
+  .loc-chip__name{font-size:.92rem;font-weight:500;color:var(--navy)}
+  .loc-chip__addr{font-size:.74rem;color:var(--muted);margin-top:1px}
+  .loc-chip__change{
+    background:#fff;border:1px solid var(--divider);
+    color:var(--navy);font-size:.78rem;font-weight:500;
+    padding:5px 12px;border-radius:60px;cursor:pointer;
+    transition:all .14s;
+  }
+  .loc-chip__change:hover{border-color:var(--blue);color:var(--blue)}
+
+  /* ===== Error screen ===== */
+  .error{text-align:center;padding:46px 28px 40px}
+  .error__icon{
+    width:66px;height:66px;border-radius:50%;margin:0 auto 18px;
+    background:var(--gold-bg);color:var(--gold);
+    display:flex;align-items:center;justify-content:center;font-size:1.9rem;
+  }
+  .error h1{font-size:1.4rem;font-weight:600;margin-bottom:8px}
+  .error p{font-size:.98rem;color:var(--muted);max-width:360px;margin:0 auto 22px;font-weight:300}
+  .error__phone{margin-top:14px;font-size:1.05rem;font-weight:500;color:var(--navy);direction:ltr}
+
+  /* ===== Footer ===== */
+  .foot{
+    text-align:center;margin-top:26px;
+    font-size:.8rem;color:var(--muted-2);font-weight:300;
+  }
+  .foot b{font-weight:600;color:var(--muted)}
+
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+  .fade{animation:fade .3s ease-out}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  @media(max-width:480px){
+    .hero__greet{font-size:1.45rem}
+    .card{padding:22px 18px 24px}
+    .date-row{gap:4px}
+    .date-pill{padding:9px 2px 8px}
+    .date-pill__day{font-size:1.2rem}
+    .week-nav__label{font-size:.85rem}
+  }
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <div class="brand__logo">HK</div>
+  <div class="brand__name">HK Money</div>
+</div>
+
+<main class="page" id="app"></main>
+
+<script>
+/* ============================================================
+   הגדרות + חיבור ל-API
+   USE_MOCK=true מציג נתוני דמו כדי לראות את הדף ללא שרת.
+   להפעלה אמיתית: USE_MOCK=false (ואז משתמש ב-API_BASE).
+   להדגמת מצבי קצה: ?preview=error | nosummary | noslots
+   ============================================================ */
+const CONFIG = {
+  USE_MOCK: true,
+  API_BASE: '',
+  WHATSAPP_DISPLAY: '055-964-7897',
+  WHATSAPP_INTL: '972559647897',
+};
+
+/* ---------- Date helpers (Hebrew, RTL) ---------- */
+const DOW      = ['יום א׳','יום ב׳','יום ג׳','יום ד׳','יום ה׳','יום ו׳','שבת'];
+const DOW_LONG = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const MON      = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const MON_S    = ['ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳'];
+function parseKey(k){ return new Date(k + 'T00:00:00'); }
+function isoKey(d){
+  return d.getFullYear() + '-' +
+         String(d.getMonth()+1).padStart(2,'0') + '-' +
+         String(d.getDate()).padStart(2,'0');
+}
+function startOfDay(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function getSunday(d){ const x = startOfDay(d); x.setDate(x.getDate() - x.getDay()); return x; }
+function fmtLong(k){ const d = parseKey(k); return 'יום ' + DOW_LONG[d.getDay()] + ', ' + d.getDate() + ' ב' + MON[d.getMonth()]; }
+function weekLabel(start){
+  const end = addDays(start, 6);
+  if (start.getMonth() === end.getMonth())
+    return `${start.getDate()}–${end.getDate()} ב${MON[start.getMonth()]}`;
+  return `${start.getDate()} ב${MON_S[start.getMonth()]} – ${end.getDate()} ב${MON_S[end.getMonth()]}`;
+}
+
+function parseTime(t){ const [h,m] = t.split(':').map(Number); return h*60 + m; }
+function fmtTime(min){
+  const h = Math.floor(min/60), m = min%60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+}
+const DOW_S = ['א','ב','ג','ד','ה','ו','ש'];
+
+const MOCK = {
+  lead: {
+    name: 'דני',
+    business_type: 'רשת בתי קפה',
+    size: '12 עובדים',
+    main_pain: 'אובדן שליטה על תזרים, גבייה ותשלומים לספקים',
+  },
+  /* מקומות עבודה — כל מקום עם השעות שלו לפי ימי השבוע (0=א׳, 6=ש׳).
+     כל יום הוא מערך של טווחי זמן (blocks) — מאפשר שעות מפוצלות. */
+  locations: [
+    {
+      id:'yavne', name:'יבנה', address:'הרצל 12, יבנה',
+      icon:'🏥', color:'#1e8e5f', desc:'משרד · חניה במקום',
+      hours:{
+        0:[{start:'09:00',end:'12:00'},{start:'15:00',end:'18:00'}],
+        2:[{start:'09:00',end:'15:00'}],
+        4:[{start:'09:00',end:'15:00'}],
+      },
+    },
+    {
+      id:'tel-aviv', name:'תל אביב', address:'אבן גבירול 50, ת״א',
+      icon:'🏥', color:'#39ABE2', desc:'משרד · גישה בתחבורה ציבורית',
+      hours:{
+        1:[{start:'14:00',end:'20:00'}],
+        3:[{start:'14:00',end:'20:00'}],
+      },
+    },
+    {
+      id:'online', name:'מקוון (Google Meet)', address:'שיחת וידאו מהבית',
+      icon:'💻', color:'#c97b6e', desc:'קישור Meet יישלח אליך לפני השיחה',
+      hours:{
+        5:[{start:'09:00',end:'13:00'}],
+      },
+    },
+  ],
+};
+
+/* מחשב slots פנויים למקום נתון ב-14 הימים הקרובים, על בסיס שעות העבודה שלו. */
+function buildAvailabilityForLocation(loc, daysAhead=14){
+  const t = startOfDay(new Date());
+  const out = {};
+  const seedBase = (loc.id || '').split('').reduce((a,c)=>a + c.charCodeAt(0), 0);
+  for (let i = 1; i <= daysAhead; i++){
+    const d = addDays(t, i);
+    const blocks = (loc.hours && loc.hours[d.getDay()]) || [];
+    if (!blocks.length) continue;
+    const slots = [];
+    blocks.forEach(b => {
+      const s = parseTime(b.start), e = parseTime(b.end);
+      for (let m = s; m + 30 <= e; m += 30) slots.push(fmtTime(m));
+    });
+    // pseudo-filter: כמה שעות "תפוסות" (דטרמיניסטי לפי המקום+יום)
+    const seed = seedBase + i;
+    const filtered = slots.filter((_, idx) => ((seed + idx) * 13) % 10 > 3);
+    if (filtered.length) out[isoKey(d)] = filtered;
+  }
+  return out;
+}
+
+const params  = new URLSearchParams(location.search);
+const preview = params.get('preview');
+const leadId  = params.get('lead');
+
+/* ---------- API layer ---------- */
+const api = {
+  async getLead(id){
+    if (CONFIG.USE_MOCK){
+      if (preview === 'error') throw new Error('mock-error');
+      if (preview === 'nosummary') return { name: MOCK.lead.name, business_type: null, size: null, main_pain: null };
+      return MOCK.lead;
+    }
+    const r = await fetch(`${CONFIG.API_BASE}/api/leads/${encodeURIComponent(id)}`);
+    if (!r.ok) throw new Error('lead fetch failed');
+    return r.json();
+  },
+  async getLocations(){
+    if (CONFIG.USE_MOCK){
+      // ?preview=onelocation → להציג מצב של מקום יחיד (מדלגים על בחירת מיקום)
+      if (preview === 'onelocation') return [MOCK.locations[0]];
+      return MOCK.locations;
+    }
+    const r = await fetch(`${CONFIG.API_BASE}/api/locations`);
+    if (!r.ok) throw new Error('locations fetch failed');
+    return r.json();
+  },
+  async getAvailability(locationId){
+    if (CONFIG.USE_MOCK){
+      if (preview === 'noslots') return {};
+      const loc = MOCK.locations.find(l => l.id === locationId) || MOCK.locations[0];
+      return buildAvailabilityForLocation(loc);
+    }
+    const r = await fetch(`${CONFIG.API_BASE}/api/availability?location=${encodeURIComponent(locationId)}`);
+    if (!r.ok) throw new Error('availability fetch failed');
+    return r.json();
+  },
+  async postBooking(payload){
+    if (CONFIG.USE_MOCK){ await new Promise(r => setTimeout(r, 600)); return { ok: true }; }
+    const r = await fetch(`${CONFIG.API_BASE}/api/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error('booking failed');
+    return r.json();
+  },
+};
+
+/* ---------- App state ---------- */
+const state = {
+  lead: null,
+  locations: [],          // מקומות פעילים של הנציג
+  selLoc: null,            // מזהה המקום שהלקוח בחר (או יחיד אוטומטי)
+  availability: null,
+  selDate: null, selTime: null,
+  weekStart: null, today: null,
+};
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Screens ---------- */
+function renderError(){
+  app.innerHTML = `
+    <section class="card error fade">
+      <div class="error__icon">⚠</div>
+      <h1>הלינק לא תקף</h1>
+      <p>נראה שהקישור פג או חסר. אפשר לפנות אלינו ישירות בוואטסאפ ונשמח לתאם.</p>
+      <a class="btn btn--primary" href="https://wa.me/${CONFIG.WHATSAPP_INTL}">פנייה בוואטסאפ</a>
+      <div class="error__phone">${CONFIG.WHATSAPP_DISPLAY}</div>
+    </section>
+    <div class="foot">© <b>HK Money</b> · כל הזכויות שמורות</div>`;
+}
+
+function summaryBlock(l){
+  // הצג רק אם כל שלושת השדות קיימים
+  if (!l.business_type || !l.size || !l.main_pain) return '';
+  return `
+    <section class="summary fade">
+      <div class="summary__body">
+        <div class="summary__label">ממה שכבר דיברנו:</div>
+        <div class="summary__text">${esc(l.business_type)}, ${esc(l.size)}. האתגר העיקרי שלך: ${esc(l.main_pain)}.</div>
+        <div class="summary__note">אופיר ייכנס לשיחה מוכן — כדי שתוכל להתחיל ישר מהעומק.</div>
+      </div>
+      <div class="summary__icon">💬</div>
+    </section>`;
+}
+
+/* תקציר ימי פעילות של מקום (לתצוגה בכרטיס המיקום): "ימים: א, ג, ה · 09:00–15:00" */
+function locActivitySummary(loc){
+  const days = [0,1,2,3,4,5,6].filter(d => (loc.hours && loc.hours[d] && loc.hours[d].length));
+  if (!days.length) return 'אין זמנים זמינים';
+  const dayLabels = days.map(d => DOW_S[d]).join(' · ');
+  const firstBlock = loc.hours[days[0]][0];
+  return 'ימים ' + dayLabels + ' · ' + firstBlock.start + '–' + firstBlock.end;
+}
+
+function locationPickerBlock(){
+  return `
+    <section class="card fade">
+      <h2 class="booking__title">בחר מיקום</h2>
+      <div class="booking__sub">איפה נוח לך לדבר? אחרי שתבחר, נראה לך את הזמנים הפנויים בדיוק שם.</div>
+      <div class="loc-pick" id="locPick">
+        ${state.locations.map(loc => `
+          <button class="loc-pick__card" data-loc="${esc(loc.id)}" style="--accent:${loc.color}">
+            <div class="loc-pick__icon">${loc.icon || '📍'}</div>
+            <div class="loc-pick__body">
+              <div class="loc-pick__name">${esc(loc.name)}</div>
+              <div class="loc-pick__addr">${esc(loc.address)}</div>
+              <div class="loc-pick__meta">${esc(locActivitySummary(loc))}</div>
+            </div>
+            <div class="loc-pick__arrow">‹</div>
+          </button>`).join('')}
+      </div>
+    </section>`;
+}
+
+function selectedLocChip(){
+  if (!state.selLoc) return '';
+  const loc = state.locations.find(l => l.id === state.selLoc);
+  if (!loc) return '';
+  const canChange = state.locations.length > 1;
+  return `
+    <div class="loc-chip" style="--accent:${loc.color}">
+      <div class="loc-chip__icon">${loc.icon || '📍'}</div>
+      <div class="loc-chip__body">
+        <div class="loc-chip__name">${esc(loc.name)}</div>
+        <div class="loc-chip__addr">${esc(loc.address)}</div>
+      </div>
+      ${canChange ? '<button class="loc-chip__change" id="changeLocBtn">החלף</button>' : ''}
+    </div>`;
+}
+
+function bookingBlock(){
+  // מצב 1: עוד לא נבחר מיקום וקיימים מספר מקומות → מציגים פיקר מיקום
+  if (!state.selLoc && state.locations.length > 1){
+    return locationPickerBlock();
+  }
+
+  const dates = Object.keys(state.availability || {}).sort();
+  if (dates.length === 0){
+    return `
+      <section class="card fade">
+        ${selectedLocChip()}
+        <h2 class="booking__title">בחירת מועד</h2>
+        <div class="empty-slots">
+          <div class="empty-slots__title">כל הזמנים הקרובים תפוסים</div>
+          <div>נשמח לתאם מועד אחר — פנה אלינו בוואטסאפ ונמצא זמן שמתאים לך.</div>
+          <a class="btn btn--primary" href="https://wa.me/${CONFIG.WHATSAPP_INTL}">פנייה בוואטסאפ</a>
+        </div>
+      </section>`;
+  }
+  return `
+    <section class="card fade">
+      ${selectedLocChip()}
+      <h2 class="booking__title">בחירת מועד</h2>
+      <div class="booking__sub">שיחת טלפון · 30 דקות · אופיר מתקשר אליך בזמן שתבחר</div>
+
+      <div class="step-label">בחר יום</div>
+      <div class="week-nav">
+        <button class="week-nav__btn" id="prevWeek" title="שבוע קודם">›</button>
+        <div class="week-nav__label" id="weekLabel">—</div>
+        <button class="week-nav__btn" id="nextWeek" title="שבוע הבא">‹</button>
+      </div>
+      <div class="date-row" id="dateRow"></div>
+      <div class="week-empty" id="weekEmpty" hidden>אין זמנים פנויים בשבוע זה — נסה שבוע הבא ›</div>
+
+      <div id="timeWrap" hidden>
+        <div class="step-label">בחר שעה</div>
+        <div class="slot-grid" id="slotGrid"></div>
+      </div>
+
+      <div class="booking__selected" id="bookingSelected" hidden></div>
+
+      <button class="btn btn--primary btn--block" id="confirmBtn" disabled>אשר את הפגישה</button>
+    </section>`;
+}
+
+function renderMain(){
+  const l = state.lead;
+  const greet = l.name ? `היי ${esc(l.name)} 👋` : 'היי 👋';
+  app.innerHTML = `
+    <div class="stack">
+      <section class="card hero fade">
+        <div class="hero__avatar">א</div>
+        <h1 class="hero__greet">${greet}</h1>
+        <p class="hero__lead">שיחת אבחון של חצי שעה עם <b>אופיר קריספין</b></p>
+        <p class="hero__role">רו"ח ומייסד-שותף של HK Money</p>
+      </section>
+
+      ${summaryBlock(l)}
+
+      <section class="card fade">
+        <ul class="value__list">
+          <li><span class="vcheck">✓</span> ניתוח של המצב התזרימי בעסק שלך</li>
+          <li><span class="vcheck">✓</span> זיהוי 2-3 נקודות שבהן אתה מאבד כסף</li>
+          <li><span class="vcheck">✓</span> צ'קליסט קונקרטי לחודש הקרוב — גם אם תחליט שלא להמשיך</li>
+        </ul>
+        <p class="value__fine">ללא התחייבות · בלי מכירה אגרסיבית · תצא עם ערך</p>
+      </section>
+
+      ${bookingBlock()}
+    </div>
+    <div class="foot">© <b>HK Money</b> · הפרטים שלך מאובטחים ולא מועברים לצד שלישי</div>`;
+
+  wireBooking();
+}
+
+function wireBooking(){
+  // אם אנחנו במסך פיקר מיקום — מאזינים לבחירה
+  const locPick = document.getElementById('locPick');
+  if (locPick){
+    locPick.addEventListener('click', async (e) => {
+      const card = e.target.closest('.loc-pick__card');
+      if (!card) return;
+      await selectLocation(card.dataset.loc);
+    });
+    return;
+  }
+  // החלף מיקום (מופיע רק אם יש >1 מקומות)
+  const changeBtn = document.getElementById('changeLocBtn');
+  if (changeBtn){
+    changeBtn.addEventListener('click', () => {
+      state.selLoc = null;
+      state.availability = null;
+      state.selDate = null; state.selTime = null;
+      renderMain();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  }
+
+  const dateRow = document.getElementById('dateRow');
+  if (!dateRow) return; // empty-slots state, nothing more to wire
+
+  // Initialize week: start on the week of the first available date,
+  // but never earlier than the current week.
+  state.today = startOfDay(new Date());
+  const dates = Object.keys(state.availability).sort();
+  const firstAvail = parseKey(dates[0]);
+  const todaySunday = getSunday(state.today);
+  const firstSunday = getSunday(firstAvail);
+  state.weekStart = (firstSunday > todaySunday) ? firstSunday : todaySunday;
+
+  renderWeekDates();
+
+  dateRow.addEventListener('click', (e) => {
+    const pill = e.target.closest('.date-pill');
+    if (!pill || pill.classList.contains('is-empty')) return;
+    state.selDate = pill.dataset.date;
+    state.selTime = null;
+    dateRow.querySelectorAll('.date-pill').forEach(p =>
+      p.classList.toggle('is-selected', p === pill));
+    renderTimes();
+  });
+
+  document.getElementById('prevWeek').addEventListener('click', () => {
+    if (state.weekStart <= getSunday(state.today)) return;
+    state.weekStart = addDays(state.weekStart, -7);
+    state.selDate = null; state.selTime = null;
+    renderWeekDates();
+    document.getElementById('timeWrap').hidden = true;
+    updateSelected();
+  });
+  document.getElementById('nextWeek').addEventListener('click', () => {
+    state.weekStart = addDays(state.weekStart, 7);
+    state.selDate = null; state.selTime = null;
+    renderWeekDates();
+    document.getElementById('timeWrap').hidden = true;
+    updateSelected();
+  });
+
+  document.getElementById('confirmBtn').addEventListener('click', confirmBooking);
+}
+
+function renderWeekDates(){
+  const dateRow = document.getElementById('dateRow');
+  const label   = document.getElementById('weekLabel');
+  const empty   = document.getElementById('weekEmpty');
+  const prevBtn = document.getElementById('prevWeek');
+
+  label.textContent = weekLabel(state.weekStart);
+  prevBtn.disabled  = state.weekStart <= getSunday(state.today);
+
+  let anyAvail = false;
+  const cells = [];
+  for (let i = 0; i < 7; i++){
+    const d = addDays(state.weekStart, i);
+    const key = isoKey(d);
+    const slots = state.availability[key] || [];
+    const isPast = d < state.today;
+    const has = slots.length > 0 && !isPast;
+    if (has) anyAvail = true;
+    cells.push(`
+      <button class="date-pill ${has ? '' : 'is-empty'}" data-date="${key}" ${has ? '' : 'disabled'}>
+        <span class="date-pill__dow">${DOW[d.getDay()]}</span>
+        <span class="date-pill__day">${d.getDate()}</span>
+        <span class="date-pill__mon">${MON_S[d.getMonth()]}</span>
+      </button>`);
+  }
+  dateRow.innerHTML = cells.join('');
+  empty.hidden = anyAvail;
+}
+
+function renderTimes(){
+  const wrap = document.getElementById('timeWrap');
+  const grid = document.getElementById('slotGrid');
+  const times = state.availability[state.selDate] || [];
+  grid.innerHTML = times.map(t => `<button class="slot" data-time="${t}">${t}</button>`).join('');
+  wrap.hidden = false;
+
+  grid.querySelectorAll('.slot').forEach(s =>
+    s.addEventListener('click', () => {
+      state.selTime = s.dataset.time;
+      grid.querySelectorAll('.slot').forEach(x => x.classList.toggle('is-selected', x === s));
+      updateSelected();
+    }));
+
+  updateSelected();
+}
+
+function updateSelected(){
+  const sel = document.getElementById('bookingSelected');
+  const btn = document.getElementById('confirmBtn');
+  if (state.selDate && state.selTime){
+    sel.hidden = false;
+    sel.innerHTML = `📞 <span>נבחר: <b>${fmtLong(state.selDate)}</b> בשעה <b>${state.selTime}</b></span>`;
+    btn.disabled = false;
+  } else {
+    sel.hidden = true;
+    btn.disabled = true;
+  }
+}
+
+async function selectLocation(locId){
+  state.selLoc = locId;
+  state.selDate = null; state.selTime = null;
+  try {
+    state.availability = await api.getAvailability(locId);
+  } catch (err){
+    state.availability = {};
+  }
+  renderMain();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+async function confirmBooking(){
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'קובע...';
+  try {
+    await api.postBooking({
+      lead_id: leadId,
+      location_id: state.selLoc,
+      date: state.selDate,
+      time: state.selTime,
+    });
+    renderSuccess(state.selDate, state.selTime);
+  } catch (err){
+    btn.disabled = false;
+    btn.textContent = 'אשר את הפגישה';
+    alert('משהו השתבש בקביעת הפגישה. נסה שוב או פנה אלינו בוואטסאפ.');
+  }
+}
+
+function renderSuccess(date, time){
+  window.scrollTo(0, 0);
+  const loc = state.locations.find(l => l.id === state.selLoc);
+  const locLine = loc
+    ? `<div class="success__loc"><span class="success__loc-icon">${loc.icon}</span> ${esc(loc.name)} · <span class="success__loc-addr">${esc(loc.address)}</span></div>`
+    : '';
+  app.innerHTML = `
+    <section class="card success">
+      <div class="success__check">✓</div>
+      <h1>הפגישה נקבעה!</h1>
+      <div class="success__when">${fmtLong(date)} · ${time}</div>
+      ${locLine}
+      <p class="success__desc">אופיר יתקשר אליך בזמן שנקבע. שלחנו לך אישור עם כל הפרטים, ותקבל גם תזכורת לפני השיחה.</p>
+      <div class="success__meta">📞 שיחת אבחון · 30 דקות</div>
+    </section>
+    <div class="foot">© <b>HK Money</b> · נתראה בקרוב</div>`;
+}
+
+/* ---------- Init ---------- */
+async function init(){
+  // מצב קצה 1: lead_id חסר ב-URL
+  if (!CONFIG.USE_MOCK && !leadId){ renderError(); return; }
+
+  try {
+    // מצב קצה 2: כשל ב-API מחזיר למסך השגיאה
+    const [lead, locations] = await Promise.all([
+      api.getLead(leadId),
+      api.getLocations(),
+    ]);
+    state.lead = lead;
+    state.locations = locations || [];
+
+    // קביעת מיקום ראשוני:
+    //   1. אם ב-URL מצוין ?loc=xxx ויש מקום כזה → הוא נבחר אוטומטית
+    //   2. אחרת אם יש רק מקום אחד → נבחר אוטומטית (אין צורך לבחור)
+    //   3. אחרת → המשתמש יבחר בעצמו במסך הפיקר
+    const locParam = params.get('loc');
+    if (locParam && state.locations.find(l => l.id === locParam)) {
+      state.selLoc = locParam;
+    } else if (state.locations.length === 1) {
+      state.selLoc = state.locations[0].id;
+    }
+
+    if (state.selLoc){
+      state.availability = await api.getAvailability(state.selLoc);
+    }
+
+    renderMain();
+  } catch (err){
+    renderError();
+  }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – בסיס ידע משותף</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068; --blue:#39ABE2; --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --green:#1e8e5f; --green-bg:#dff3e9;
+    --amber:#b46e0e; --amber-bg:#fbecd0;
+    --red:#a8302a;   --red-bg:#fbe1de;
+    --gray:#6b7c8d;  --gray-bg:#eef2f6;
+    --divider:#E3E3E3; --line:#eaecef;
+    --muted:#7E7E7E; --muted-2:#a9a9a9;
+    --bg:#F4F7FA; --off:#F8FAFC;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;background:var(--bg);color:var(--navy);
+    line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:.92rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  .top{
+    background:#fff;padding:14px 32px;
+    display:flex;align-items:center;gap:14px;
+    border-bottom:1px solid var(--divider);
+  }
+  .top__logo{
+    width:40px;height:40px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;
+  }
+  .top__title{font-size:1.05rem;font-weight:500}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{max-width:none;margin:0;padding:18px}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:32px 40px 60px}
+
+  .page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:22px;gap:14px;flex-wrap:wrap;
+  }
+  .page-head__title{font-size:1.55rem;font-weight:500;color:var(--navy);letter-spacing:-.4px}
+  .page-head__meta{color:var(--muted);font-size:.86rem;margin-top:4px}
+  .page-head__actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 16px;border-radius:10px;
+    font-weight:500;font-size:.88rem;transition:all .15s;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  .btn--primary{background:var(--navy);color:#fff}
+  .btn--primary:hover:not(:disabled){background:#0a3553}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+  .btn--danger{color:var(--red);background:#fff;border-color:#f0c5be}
+  .btn--danger:hover:not(:disabled){background:var(--red-bg)}
+  .btn--danger-solid{background:var(--red);color:#fff}
+  .btn--danger-solid:hover:not(:disabled){background:#891f1a}
+  .btn--sm{padding:6px 12px;font-size:.82rem}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .card{
+    background:#fff;border-top:2px solid var(--blue);box-shadow:var(--shadow-card);
+    border-radius:0;padding:22px 28px;margin-bottom:18px;
+  }
+  .card--clean{border-top:none;box-shadow:none;border:1px solid var(--line);border-radius:12px}
+  .card--table{padding:0;overflow:hidden}
+
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .field input,.field select,.field textarea{
+    width:100%;padding:9px 12px;border-radius:10px;
+    border:1px solid var(--divider);background:#fff;font-size:.92rem;outline:none;
+    transition:border-color .15s;color:var(--navy);
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}
+  .field textarea{font-family:inherit;resize:vertical;min-height:140px;line-height:1.55}
+  .field__hint{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.55}
+
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .search{flex:1;min-width:240px;padding:9px 14px;border-radius:10px;border:1px solid var(--divider);background:#fff;font-size:.9rem}
+  .search:focus{outline:none;border-color:var(--blue)}
+  .toolbar select{padding:9px 12px;border-radius:10px;border:1px solid var(--divider);background:#fff;font-size:.9rem;min-width:180px}
+
+  /* Table */
+  .table-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+  .colhead, .row{
+    display:grid;grid-template-columns:2fr 1fr 1.5fr 80px 140px 130px 170px;
+    gap:12px;align-items:center;padding:11px 18px;
+    font-size:.88rem;min-width:980px;
+  }
+  .colhead{background:var(--off);color:var(--muted);font-weight:500;font-size:.82rem;border-bottom:1px solid var(--line)}
+  .row{border-bottom:1px solid var(--line);background:#fff;transition:background .12s}
+  .row:last-child{border-bottom:none}
+  .row:hover{background:var(--off)}
+
+  .row__title{font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row__tags{display:flex;flex-wrap:wrap;gap:4px}
+  .row__date{color:var(--muted);direction:ltr;text-align:right;font-variant-numeric:tabular-nums;font-size:.82rem}
+  .col-action{display:flex;gap:6px;justify-content:flex-end}
+
+  .tag{display:inline-block;padding:1px 9px;background:var(--blue-soft);color:#1a6e9a;border-radius:4px;font-size:.76rem}
+  .tag--editable{display:inline-flex;align-items:center;gap:5px;padding-left:4px}
+  .tag--editable button{
+    background:rgba(255,255,255,.5);border:none;color:#1a6e9a;cursor:pointer;
+    font-size:.9rem;line-height:1;padding:0;border-radius:50%;
+    width:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  }
+  .tag--editable button:hover{background:#fff;color:var(--red)}
+
+  .status{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:6px;font-size:.76rem;font-weight:500}
+  .status::before{content:'';width:6px;height:6px;border-radius:50%}
+  .status--ready{background:var(--green-bg);color:var(--green)}
+  .status--ready::before{background:var(--green)}
+  .status--pending{background:var(--amber-bg);color:var(--amber)}
+  .status--pending::before{background:var(--amber)}
+  .status--failed{background:var(--red-bg);color:var(--red)}
+  .status--failed::before{background:var(--red)}
+
+  .bool{font-size:.82rem;color:var(--navy);font-weight:500}
+  .bool--off{color:var(--muted-2);font-weight:400}
+
+  .empty{padding:60px 20px;text-align:center;color:var(--muted)}
+  .empty__title{color:var(--navy);font-weight:500;font-size:1rem;margin-bottom:4px}
+
+  .dash{color:var(--muted-2);font-size:.82rem}
+
+  .alert{
+    padding:11px 14px;background:var(--red-bg);color:var(--red);
+    border-radius:8px;font-size:.86rem;border:1px solid #f0c5be;
+    margin-bottom:14px;
+  }
+  .info-box{
+    padding:12px 16px;background:var(--blue-soft);
+    border-radius:8px;color:var(--navy);font-size:.82rem;line-height:1.55;
+    border:1px solid #c8e3f5;
+  }
+  .info-box b{color:var(--navy);font-weight:500}
+
+  /* Modal */
+  .modal-back{
+    position:fixed;inset:0;background:rgba(12,64,104,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:100;padding:20px;
+  }
+  .modal-back.is-open{display:flex}
+  .modal{
+    background:#fff;box-shadow:var(--shadow-card);width:100%;
+    max-width:640px;max-height:90vh;display:flex;flex-direction:column;
+    border-radius:14px;overflow:hidden;animation:pop .18s ease-out;
+  }
+  .modal--sm{max-width:420px}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{
+    padding:18px 22px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .modal__head h3{color:var(--navy);font-size:1.08rem;font-weight:500}
+  .modal__close{
+    font-size:1.4rem;color:var(--muted);width:32px;height:32px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .modal__close:hover{background:var(--off);color:var(--navy)}
+  .modal__body{padding:18px 22px;overflow-y:auto;flex:1}
+  .modal__body > * + *{margin-top:14px}
+  .modal__foot{
+    padding:13px 22px;background:var(--off);
+    display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--divider);
+  }
+  .modal__row{display:grid;grid-template-columns:1fr 120px;gap:18px;align-items:end}
+
+  .toggle{
+    width:42px;height:24px;border-radius:24px;
+    background:var(--divider);position:relative;cursor:pointer;
+    transition:background .15s;margin-top:4px;
+  }
+  .toggle::after{
+    content:'';position:absolute;top:2px;right:2px;
+    width:20px;height:20px;background:#fff;border-radius:50%;
+    transition:right .15s;
+  }
+  .toggle.is-on{background:var(--green)}
+  .toggle.is-on::after{right:20px}
+
+  .chip-input{
+    display:flex;flex-wrap:wrap;gap:5px;padding:6px 10px;
+    border:1px solid var(--divider);border-radius:10px;
+    min-height:42px;background:#fff;transition:border-color .15s;
+  }
+  .chip-input:focus-within{border-color:var(--blue)}
+  .chip-input__field{
+    flex:1;min-width:140px;border:none;outline:none;background:transparent;
+    padding:4px;font-size:.92rem;color:var(--navy);
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:24px;right:50%;transform:translateX(50%);
+    background:var(--navy);color:#fff;padding:11px 20px;border-radius:60px;
+    box-shadow:0 6px 18px rgba(12,64,104,.22);font-size:.88rem;
+    z-index:200;opacity:0;pointer-events:none;
+    transition:opacity .18s,transform .18s;
+  }
+  .toast.is-on{opacity:1;transform:translateX(50%) translateY(-4px)}
+  .toast--success{background:var(--green)}
+  .toast--error{background:var(--red)}
+
+  .confirm-title{font-size:1.02rem;font-weight:500;color:var(--navy);margin-bottom:6px}
+  .confirm-text{font-size:.92rem;color:var(--muted);line-height:1.55}
+
+  .cat-item{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:9px 12px;border:1px solid var(--line);
+    border-radius:8px;margin-top:6px;font-size:.9rem;
+  }
+  .cat-item__count{color:var(--muted);font-size:.78rem}
+  .cat-item__remove{
+    width:26px;height:26px;border-radius:6px;
+    background:#fff;border:1px solid var(--divider);color:var(--red);
+    font-size:1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cat-item__remove:hover{background:var(--red-bg);border-color:#f0c5be}
+  .cat-item__remove:disabled{opacity:.4;cursor:not-allowed}
+
+  .icon-btn{
+    width:38px;height:38px;border-radius:10px;
+    background:#fff;border:1px solid var(--divider);color:var(--navy);
+    font-size:1.1rem;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:all .14s;flex:none;
+  }
+  .icon-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+  @media(max-width:900px){
+    .wrap{padding:18px}
+    .colhead, .row{grid-template-columns:2fr 1fr 90px 140px 130px}
+    .row__tags, .row__date{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top__logo">HK</div>
+  <div>
+    <div class="top__title">HK Money</div>
+    <div class="top__sub">בסיס ידע משותף</div>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Edit/New modal -->
+<div class="modal-back" id="recModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="recModalTitle">רשומה חדשה</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="field">
+        <label for="rmTitle">כותרת / נושא</label>
+        <input id="rmTitle" type="text">
+      </div>
+
+      <div class="field">
+        <label for="rmContent">תוכן</label>
+        <textarea id="rmContent" rows="8"></textarea>
+      </div>
+
+      <div class="modal__row">
+        <div class="field">
+          <label for="rmCategory">קטגוריה</label>
+          <select id="rmCategory"></select>
+        </div>
+        <div class="field">
+          <label>פעיל</label>
+          <div class="toggle" id="rmActive" tabindex="0" role="switch"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>תגיות</label>
+        <div class="chip-input" id="rmChipInput">
+          <input type="text" id="rmChipField" class="chip-input__field" placeholder="הקלד תגית ולחץ Enter">
+        </div>
+      </div>
+
+      <div class="alert" id="rmError" hidden></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close id="rmCancel">ביטול</button>
+      <button class="btn btn--primary" id="rmSave">שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Manage categories modal -->
+<div class="modal-back" id="catModal" role="dialog" aria-modal="true">
+  <div class="modal modal--sm">
+    <div class="modal__head">
+      <h3>ניהול קטגוריות</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="field">
+        <label for="catNew">הוספת קטגוריה</label>
+        <div style="display:flex;gap:8px">
+          <input id="catNew" type="text" placeholder="שם קטגוריה" style="flex:1">
+          <button class="btn btn--primary" id="catAdd">הוסף</button>
+        </div>
+      </div>
+      <div id="catList" style="margin-top:6px"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm delete modal -->
+<div class="modal-back" id="confirmModal" role="dialog" aria-modal="true">
+  <div class="modal modal--sm">
+    <div class="modal__body" style="padding:22px 24px 14px">
+      <div class="confirm-title">מחיקת רשומה</div>
+      <div class="confirm-text" id="confirmText"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>ביטול</button>
+      <button class="btn btn--danger-solid" id="confirmOk">מחק</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script>
+(function(){
+'use strict';
+
+if (location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+
+/* ============================================================
+   CONFIG + CONSTANTS
+   ============================================================ */
+let CATEGORIES = [
+  'מדיניות',
+  'הליכי עבודה',
+  'שאלות נפוצות',
+  'מוצר',
+  'פיננסי',
+  'טכני',
+  'כללי',
+];
+/* בייצור: ה-frontend עושה POST ל-/api/kb והשרת מטפל ב-embedding מול Gemini
+   (המפתח חי ב-process.env.GEMINI_API_KEY בצד שרת, לא ב-frontend). */
+const API_BASE = '';        // יישתל ל-backend אמיתי כשיהיה
+const USE_MOCK = true;      // מצב דמו — שומר ב-state בלבד
+
+const state = {
+  records: [],
+  query: '',
+  categoryFilter: '',
+  editingId: null,
+  draft: null,
+  saving: false,
+  confirmDeleteId: null,
+};
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const $ = s => document.querySelector(s);
+function uuid(){
+  return 'k_' + Math.random().toString(36).slice(2,10) + '_' + Date.now().toString(36);
+}
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+/* קריאת backend — הוא זה שיוצר embedding מול Gemini ושומר ל-pgvector.
+   במצב mock: מחזיר אובייקט עם סטטוס pending (backend ימלא בעתיד). */
+async function apiSaveRecord(payload){
+  if (USE_MOCK){
+    await new Promise(r => setTimeout(r, 250));
+    return { ok:true, embedding:[], embeddingStatus:'pending' };
+  }
+  const res = await fetch(`${API_BASE}/api/kb`, {
+    method: payload.id ? 'PATCH' : 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+  return res.json();   // expected: { ok, embedding:[…], embeddingStatus:'ready' }
+}
+async function apiDeleteRecord(id){
+  if (USE_MOCK){ await new Promise(r => setTimeout(r, 150)); return { ok:true }; }
+  const res = await fetch(`${API_BASE}/api/kb/${id}`, { method:'DELETE' });
+  if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+  return res.json();
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let toastTimer;
+function toast(msg, kind){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast is-on' + (kind ? ' toast--'+kind : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('is-on'), 2400);
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const q = state.query.trim().toLowerCase();
+  const filtered = state.records.filter(r => {
+    if (q && !r.title.toLowerCase().includes(q)) return false;
+    if (state.categoryFilter && r.category !== state.categoryFilter) return false;
+    return true;
+  });
+
+  $('#app').innerHTML = `
+    <div class="page-head">
+      <div>
+        <div class="page-head__title">בסיס ידע משותף</div>
+        <div class="page-head__meta">ניהול רשומות ידע כללי לכל חברות HK Money — כל רשומה מקבלת embedding בעת השמירה</div>
+      </div>
+      <div class="page-head__actions">
+        <button class="btn btn--ghost" id="importBtn">ייבוא JSON</button>
+        <button class="btn btn--ghost" id="exportBtn" ${state.records.filter(r => r.is_active).length === 0 ? 'disabled' : ''}>ייצוא JSON</button>
+        <button class="btn btn--primary" id="newBtn">רשומה חדשה</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input class="search" id="search" type="search" placeholder="חיפוש לפי כותרת..." value="${escapeHtml(state.query)}">
+      <select id="catFilter">
+        <option value="">כל הקטגוריות</option>
+        ${CATEGORIES.map(c => `<option value="${escapeHtml(c)}" ${c===state.categoryFilter?'selected':''}>${escapeHtml(c)}</option>`).join('')}
+      </select>
+      <button class="btn btn--ghost" id="catManageBtn">ניהול קטגוריות</button>
+    </div>
+
+    <div class="card card--table">
+      <div class="table-scroll">
+        <div class="colhead">
+          <div>כותרת</div>
+          <div>קטגוריה</div>
+          <div>תגיות</div>
+          <div>פעיל</div>
+          <div>embedding</div>
+          <div>עודכן</div>
+          <div class="col-action">פעולות</div>
+        </div>
+        <div id="rows">
+          ${filtered.length === 0
+            ? `<div class="empty">
+                 <div class="empty__title">${state.records.length === 0 ? 'אין עדיין רשומות' : 'לא נמצאו תוצאות'}</div>
+                 <div>${state.records.length === 0 ? 'לחץ "רשומה חדשה" כדי להתחיל' : 'נסה לשנות את החיפוש או הקטגוריה'}</div>
+               </div>`
+            : filtered.map(rowHtml).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  wire();
+}
+
+function rowHtml(r){
+  const status = r.embeddingStatus || 'pending';
+  const statusLabel = status === 'ready' ? `מוכן (${r.embedding.length}d)`
+                    : status === 'failed' ? 'שגיאה'
+                    : 'ממתינה לווקטור';
+  const tagsHtml = r.tags.length
+    ? r.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')
+    : '<span class="dash">—</span>';
+  return `<div class="row" data-id="${r.id}">
+    <div class="row__title" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div>
+    <div>${escapeHtml(r.category)}</div>
+    <div class="row__tags">${tagsHtml}</div>
+    <div class="bool ${r.is_active ? '' : 'bool--off'}">${r.is_active ? 'פעיל' : 'לא פעיל'}</div>
+    <div><span class="status status--${status}">${statusLabel}</span></div>
+    <div class="row__date">${r.updated_at.slice(0,16).replace('T',' ')}</div>
+    <div class="col-action">
+      <button class="btn btn--ghost btn--sm" data-action="edit">עריכה</button>
+      <button class="btn btn--danger btn--sm" data-action="delete">מחיקה</button>
+    </div>
+  </div>`;
+}
+
+function wire(){
+  $('#search').addEventListener('input', e => { state.query = e.target.value; render(); });
+  $('#catFilter').addEventListener('change', e => { state.categoryFilter = e.target.value; render(); });
+  $('#newBtn').addEventListener('click', startNew);
+  $('#exportBtn').addEventListener('click', exportJSON);
+  $('#importBtn').addEventListener('click', () => $('#importFile').click());
+  $('#catManageBtn').addEventListener('click', openCatModal);
+  /* Row actions handled by document delegation — see end of script (survives re-renders) */
+}
+
+/* ============================================================
+   EDIT / NEW MODAL
+   ============================================================ */
+function startNew(){
+  state.editingId = null;
+  state.draft = {
+    title: '', content: '', category: CATEGORIES[0], tags: [], is_active: true,
+  };
+  openRecModal();
+}
+
+function openEditModal(id){
+  const r = state.records.find(x => x.id === id);
+  if (!r) return;
+  state.editingId = id;
+  state.draft = {
+    title: r.title, content: r.content, category: r.category,
+    tags: r.tags.slice(), is_active: r.is_active,
+  };
+  openRecModal();
+}
+
+function openRecModal(){
+  $('#recModalTitle').textContent = state.editingId ? 'עריכת רשומה' : 'רשומה חדשה';
+  $('#rmTitle').value = state.draft.title;
+  $('#rmContent').value = state.draft.content;
+  $('#rmCategory').innerHTML = CATEGORIES.map(c =>
+    `<option value="${escapeHtml(c)}" ${c===state.draft.category?'selected':''}>${escapeHtml(c)}</option>`
+  ).join('');
+  $('#rmActive').classList.toggle('is-on', state.draft.is_active);
+  $('#rmChipField').value = '';
+  $('#rmError').hidden = true;
+  $('#rmError').textContent = '';
+  $('#rmSave').textContent = state.saving ? 'שומר...' : 'שמור';
+  renderChips();
+  $('#recModal').classList.add('is-open');
+  setTimeout(() => $('#rmTitle').focus(), 50);
+}
+
+function renderChips(){
+  const cont = $('#rmChipInput');
+  // remove existing chips, keep input
+  cont.querySelectorAll('.tag--editable').forEach(c => c.remove());
+  const field = $('#rmChipField');
+  state.draft.tags.forEach((t, i) => {
+    const span = document.createElement('span');
+    span.className = 'tag tag--editable';
+    span.innerHTML = `${escapeHtml(t)}<button type="button" data-rm="${i}" aria-label="הסר ${escapeHtml(t)}">×</button>`;
+    cont.insertBefore(span, field);
+  });
+  cont.querySelectorAll('button[data-rm]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.draft.tags.splice(+b.dataset.rm, 1);
+      renderChips();
+    });
+  });
+}
+
+function addTag(v){
+  v = (v || '').trim().replace(/,$/, '').trim();
+  if (!v) return;
+  if (state.draft.tags.includes(v)) return;
+  state.draft.tags.push(v);
+  renderChips();
+}
+
+$('#rmActive').addEventListener('click', () => {
+  state.draft.is_active = !state.draft.is_active;
+  $('#rmActive').classList.toggle('is-on', state.draft.is_active);
+});
+$('#rmActive').addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'Enter'){
+    e.preventDefault();
+    $('#rmActive').click();
+  }
+});
+
+$('#rmChipField').addEventListener('keydown', e => {
+  const field = e.target;
+  if (e.key === 'Enter' || e.key === ','){
+    e.preventDefault();
+    addTag(field.value);
+    field.value = '';
+  } else if (e.key === 'Backspace' && !field.value && state.draft.tags.length){
+    state.draft.tags.pop();
+    renderChips();
+  }
+});
+$('#rmChipField').addEventListener('blur', e => {
+  if (e.target.value.trim()){ addTag(e.target.value); e.target.value = ''; }
+});
+$('#rmChipInput').addEventListener('click', e => {
+  if (e.target.closest('.tag--editable')) return;
+  $('#rmChipField').focus();
+});
+
+$('#rmSave').addEventListener('click', async () => {
+  const title   = $('#rmTitle').value.trim();
+  const content = $('#rmContent').value.trim();
+  const category = $('#rmCategory').value;
+  if (!title || !content){
+    $('#rmError').textContent = 'כותרת ותוכן הם שדות חובה';
+    $('#rmError').hidden = false;
+    return;
+  }
+  // flush any unsubmitted tag text
+  const pending = $('#rmChipField').value.trim();
+  if (pending){ addTag(pending); $('#rmChipField').value = ''; }
+
+  state.saving = true;
+  $('#rmSave').disabled = true;
+  $('#rmCancel').disabled = true;
+  $('#rmSave').textContent = 'שומר...';
+  $('#rmError').hidden = true;
+
+  const payload = {
+    title, content, category,
+    tags: state.draft.tags.slice(),
+    is_active: state.draft.is_active,
+  };
+  /* note: id ISN'T in payload — for PATCH backend route puts it in the URL.
+     Putting `id: undefined` here would overwrite the freshly generated uuid() below. */
+
+  let result;
+  try {
+    result = await apiSaveRecord(payload);
+  } catch (err){
+    state.saving = false;
+    $('#rmSave').disabled = false;
+    $('#rmCancel').disabled = false;
+    $('#rmSave').textContent = 'שמור';
+    $('#rmError').textContent = 'שגיאה בשמירה: ' + err.message;
+    $('#rmError').hidden = false;
+    return;
+  }
+
+  const now = new Date().toISOString();
+  if (state.editingId){
+    const r = state.records.find(x => x.id === state.editingId);
+    if (r){
+      Object.assign(r, payload, {
+        embedding: result.embedding || [],
+        embeddingStatus: result.embeddingStatus || 'pending',
+        updated_at: now,
+      });
+      toast('הרשומה עודכנה', 'success');
+    }
+  } else {
+    state.records.unshift(Object.assign({
+      id: uuid(),
+      embedding: result.embedding || [],
+      embeddingStatus: result.embeddingStatus || 'pending',
+      created_at: now,
+      updated_at: now,
+    }, payload));
+    toast('הרשומה נוצרה — embedding ייווצר בצד שרת', 'success');
+  }
+
+  state.saving = false;
+  $('#rmSave').disabled = false;
+  $('#rmCancel').disabled = false;
+  state.editingId = null;
+  state.draft = null;
+  $('#recModal').classList.remove('is-open');
+  render();
+});
+
+/* ============================================================
+   CONFIRM DELETE MODAL
+   ============================================================ */
+function openConfirmDelete(id){
+  const r = state.records.find(x => x.id === id);
+  if (!r) return;
+  state.confirmDeleteId = id;
+  $('#confirmText').innerHTML = `האם למחוק את הרשומה "<b>${escapeHtml(r.title)}</b>"? פעולה זו אינה הפיכה.`;
+  $('#confirmModal').classList.add('is-open');
+}
+$('#confirmOk').addEventListener('click', () => {
+  if (!state.confirmDeleteId) return;
+  state.records = state.records.filter(r => r.id !== state.confirmDeleteId);
+  state.confirmDeleteId = null;
+  $('#confirmModal').classList.remove('is-open');
+  render();
+  toast('הרשומה נמחקה', 'success');
+});
+
+/* ============================================================
+   EXPORT / IMPORT
+   ============================================================ */
+function exportJSON(){
+  const data = state.records.filter(r => r.is_active).map(r => ({
+    id: r.id,
+    title: r.title,
+    content: r.content,
+    category: r.category,
+    tags: r.tags,
+    embedding: r.embedding,
+    is_active: r.is_active,
+    created_at: r.created_at,
+    updated_at: r.updated_at,
+  }));
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `knowledge_base_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast(`יוצאו ${data.length} רשומות`, 'success');
+}
+
+$('#importFile').addEventListener('change', e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (!Array.isArray(parsed)) throw new Error('הקובץ אינו מערך JSON');
+      const normalized = parsed.map(r => ({
+        id: r.id || uuid(),
+        title: r.title || '',
+        content: r.content || '',
+        category: CATEGORIES.includes(r.category) ? r.category : CATEGORIES[0],
+        tags: Array.isArray(r.tags) ? r.tags : [],
+        embedding: Array.isArray(r.embedding) ? r.embedding : [],
+        embeddingStatus: Array.isArray(r.embedding) && r.embedding.length > 0 ? 'ready' : 'pending',
+        is_active: r.is_active !== false,
+        created_at: r.created_at || new Date().toISOString(),
+        updated_at: r.updated_at || new Date().toISOString(),
+      }));
+      state.records = normalized;
+      render();
+      toast(`יובאו ${normalized.length} רשומות`, 'success');
+    } catch (err){
+      toast('שגיאה בקריאת הקובץ: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* ============================================================
+   CATEGORIES MANAGEMENT
+   ============================================================ */
+function openCatModal(){
+  $('#catNew').value = '';
+  renderCatList();
+  $('#catModal').classList.add('is-open');
+  setTimeout(() => $('#catNew').focus(), 50);
+}
+function renderCatList(){
+  const usage = {};
+  state.records.forEach(r => { usage[r.category] = (usage[r.category] || 0) + 1; });
+  $('#catList').innerHTML = CATEGORIES.map(c => {
+    const count = usage[c] || 0;
+    const blocked = count > 0;
+    return `<div class="cat-item">
+      <div>
+        <span>${escapeHtml(c)}</span>
+        ${blocked ? `<span class="cat-item__count" style="margin-inline-start:6px">(${count} רשומות)</span>` : ''}
+      </div>
+      <button class="cat-item__remove" data-cat-remove="${escapeHtml(c)}" ${blocked ? 'disabled title="לא ניתן למחוק — בשימוש"' : 'title="מחק"'}>×</button>
+    </div>`;
+  }).join('');
+}
+$('#catAdd').addEventListener('click', () => {
+  const v = $('#catNew').value.trim();
+  if (!v) return;
+  if (CATEGORIES.includes(v)){ toast('הקטגוריה כבר קיימת', 'error'); return; }
+  CATEGORIES.push(v);
+  $('#catNew').value = '';
+  renderCatList();
+  render();   // update filter + select in form
+  toast('נוספה קטגוריה', 'success');
+});
+$('#catNew').addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); $('#catAdd').click(); }
+});
+$('#catList').addEventListener('click', e => {
+  const btn = e.target.closest('[data-cat-remove]');
+  if (!btn || btn.disabled) return;
+  const name = btn.dataset.catRemove;
+  CATEGORIES = CATEGORIES.filter(c => c !== name);
+  renderCatList();
+  render();
+  toast('הקטגוריה נמחקה', 'success');
+});
+
+/* ============================================================
+   DOCUMENT-LEVEL DELEGATION
+   ============================================================ */
+document.addEventListener('click', e => {
+  // 1. Table row actions (edit/delete) — survives re-renders
+  const tableBtn = e.target.closest('button[data-action]');
+  if (tableBtn){
+    const row = tableBtn.closest('.row');
+    if (row && row.dataset.id){
+      const action = tableBtn.dataset.action;
+      const id = row.dataset.id;
+      if (action === 'edit') openEditModal(id);
+      else if (action === 'delete') openConfirmDelete(id);
+      return;
+    }
+  }
+  // 2. Modal close (button or backdrop)
+  const closer = e.target.closest('[data-close]');
+  if (closer){
+    const back = closer.closest('.modal-back');
+    if (back) back.classList.remove('is-open');
+    return;
+  }
+  if (e.target.classList && e.target.classList.contains('modal-back')){
+    e.target.classList.remove('is-open');
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    document.querySelectorAll('.modal-back.is-open').forEach(m => m.classList.remove('is-open'));
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+render();
+
+})();
+</script>
+</body>
+</html>

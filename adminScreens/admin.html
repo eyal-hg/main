@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אדמין HK Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --divider:#E3E3E3;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  /* Top bar — same as index.html */
+  .top{
+    background:var(--white);
+    padding:14px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+    flex-shrink:0;
+  }
+  .top__brand{display:flex;align-items:center;gap:14px}
+  .top__logo{
+    width:40px;height:40px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;font-size:1rem;letter-spacing:-.5px;
+  }
+  .top__title{font-size:1.05rem;font-weight:500;color:var(--navy);letter-spacing:-.3px}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px;font-weight:400}
+  .top__user{display:flex;align-items:center;gap:12px;font-size:.9rem}
+  .top__avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:500;
+  }
+  .top__user-name{font-weight:500;color:var(--navy)}
+  .top__user-role{font-size:.78rem;color:var(--muted);margin-top:1px}
+
+  /* Layout: sidebar (right in RTL) + main (left) */
+  .layout{
+    display:flex;
+    height:calc(100% - 70px);
+  }
+
+  /* Sidebar (first child = right side in RTL) */
+  .sidebar{
+    width:260px;flex-shrink:0;
+    background:var(--white);
+    border-left:1px solid var(--divider);
+    overflow-y:auto;
+    padding:18px 12px;
+  }
+  .nav-group{margin-bottom:20px}
+  .nav-group__title{
+    padding:0 14px 8px;
+    font-size:.74rem;
+    color:var(--muted-2);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-weight:500;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:11px;
+    width:100%;padding:9px 16px;
+    text-align:right;
+    font-size:.93rem;font-weight:400;color:var(--navy);
+    border-radius:60px;
+    margin-bottom:3px;
+    transition:all .15s;
+  }
+  .nav-item:hover{background:var(--blue-soft)}
+  .nav-item.is-active{
+    background:var(--navy);
+    color:#fff;
+    font-weight:500;
+  }
+  .nav-item__icon{
+    width:22px;font-size:1rem;text-align:center;flex-shrink:0;
+  }
+  .nav-item__badge{
+    margin-right:auto;
+    font-size:.7rem;font-weight:500;
+    background:#fbeae7;color:var(--salmon);
+    padding:2px 8px;border-radius:60px;
+  }
+  .nav-item.is-active .nav-item__badge{background:rgba(255,255,255,.18);color:#fff}
+  .nav-item__notif{
+    margin-right:auto;
+    min-width:18px;height:18px;padding:0 6px;
+    background:var(--salmon);color:#fff;
+    border-radius:60px;
+    font-size:.7rem;font-weight:600;
+    display:none;align-items:center;justify-content:center;
+    animation:notifPulse 1.8s infinite;
+  }
+  .nav-item__notif.is-on{display:inline-flex}
+  @keyframes notifPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(201,123,110,.45)}
+    50%{box-shadow:0 0 0 5px rgba(201,123,110,0)}
+  }
+
+  /* Main content */
+  .main{
+    flex:1;min-width:0;
+    background:var(--bg);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  #contentFrame{
+    width:100%;height:100%;
+    border:none;background:var(--bg);
+  }
+  .placeholder{
+    flex:1;
+    display:none;
+    align-items:center;justify-content:center;
+    padding:40px;
+  }
+  .placeholder.is-on{display:flex}
+  .placeholder__inner{
+    background:var(--white);
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    padding:48px 56px;
+    text-align:center;
+    max-width:520px;
+  }
+  .placeholder__icon{
+    font-size:2.4rem;margin-bottom:14px;
+  }
+  .placeholder__title{
+    font-size:1.4rem;font-weight:500;
+    color:var(--navy);letter-spacing:-.5px;margin-bottom:8px;
+  }
+  .placeholder__desc{
+    color:var(--muted);font-size:.95rem;font-weight:400;
+    line-height:1.6;
+  }
+
+  /* Meeting reminder toasts */
+  .toast-container{
+    position:fixed;top:80px;left:50%;transform:translateX(-50%);
+    z-index:2000;display:flex;flex-direction:column;gap:10px;align-items:center;
+  }
+  .meeting-toast{
+    background:var(--navy);color:#fff;
+    border-radius:14px;
+    box-shadow:0 12px 32px rgba(12,64,104,.3);
+    padding:14px 18px;
+    display:flex;align-items:center;gap:14px;
+    max-width:560px;min-width:380px;
+    border-right:4px solid #25d366;
+    animation:toastDrop .3s ease-out;
+  }
+  @keyframes toastDrop{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+  .meeting-toast__icon{font-size:1.5rem}
+  .meeting-toast__body{flex:1;min-width:0}
+  .meeting-toast__title{font-weight:500;font-size:1rem}
+  .meeting-toast__sub{font-size:.84rem;color:rgba(255,255,255,.82);margin-top:2px}
+  .meeting-toast__open{
+    background:var(--blue);color:#fff;border:none;
+    padding:6px 16px;border-radius:60px;font-weight:500;
+    font-size:.85rem;cursor:pointer;font-family:inherit;white-space:nowrap;
+  }
+  .meeting-toast__open:hover{filter:brightness(.95)}
+  .meeting-toast__close{
+    width:26px;height:26px;border-radius:50%;
+    color:rgba(255,255,255,.7);font-size:1.2rem;cursor:pointer;
+    background:none;border:none;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .meeting-toast__close:hover{background:rgba(255,255,255,.12);color:#fff}
+
+  /* Mobile */
+  .menu-btn{display:none}
+  @media(max-width:900px){
+    .menu-btn{
+      display:flex;align-items:center;justify-content:center;
+      width:36px;height:36px;border-radius:8px;
+      background:var(--blue-soft);color:var(--navy);font-size:1.1rem;
+    }
+    .sidebar{
+      position:absolute;top:70px;right:0;bottom:0;
+      transform:translateX(100%);
+      transition:transform .2s;z-index:10;
+      box-shadow:-4px 0 12px rgba(0,0,0,.08);
+    }
+    .sidebar.is-open{transform:translateX(0)}
+    .top{padding:12px 16px}
+    .top__sub{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<header class="top">
+  <div class="top__brand">
+    <div class="top__logo">HK</div>
+    <div>
+      <div class="top__title">אדמין HK Money</div>
+      <div class="top__sub" id="topSub">ניהול פגישות ודוחות</div>
+    </div>
+  </div>
+  <button class="menu-btn" id="menuBtn" aria-label="תפריט">☰</button>
+  <div class="top__user">
+    <div class="top__avatar">א</div>
+    <div>
+      <div class="top__user-name">אייל חזות</div>
+      <div class="top__user-role">מנהל מערכת</div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar (right in RTL — first flex child) -->
+  <aside class="sidebar" id="sidebar" aria-label="ניווט אדמין">
+    <nav>
+
+      <div class="nav-group">
+        <div class="nav-group__title">AI ובינה</div>
+        <button class="nav-item" data-tool="chat">
+          <span class="nav-item__icon">💬</span>הנחיות צ'אט
+        </button>
+        <button class="nav-item" data-tool="agents">
+          <span class="nav-item__icon">🤖</span>ניהול סוכנים
+        </button>
+        <button class="nav-item" data-tool="playground">
+          <span class="nav-item__icon">🧪</span>HK AI Playground
+        </button>
+        <button class="nav-item" data-tool="aitests" data-url="ai-tests.html">
+          <span class="nav-item__icon">✅</span>בדיקות AI
+          <span class="nav-item__badge">חדש</span>
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group__title">ניהול תפעולי</div>
+        <button class="nav-item" data-tool="advisors" data-url="advisors.html">
+          <span class="nav-item__icon">👥</span>ניהול יועצים
+        </button>
+        <button class="nav-item" data-tool="leads" data-url="leads.html">
+          <span class="nav-item__icon">🎯</span>ניהול לידים
+          <span class="nav-item__notif" id="leadsNotif">0</span>
+        </button>
+        <button class="nav-item" data-tool="tags" data-url="tags.html">
+          <span class="nav-item__icon">🏷️</span>ניהול טאגים
+        </button>
+        <button class="nav-item is-active" data-tool="meetings" data-url="index.html">
+          <span class="nav-item__icon">📅</span>ניהול פגישות ודוחות
+          <span class="nav-item__badge">חדש</span>
+        </button>
+        <button class="nav-item" data-tool="calendar" data-url="calendar.html">
+          <span class="nav-item__icon">🗓</span>יומן
+          <span class="nav-item__badge">חדש</span>
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group__title">תקשורת</div>
+        <button class="nav-item" data-tool="templates" data-url="messages.html">
+          <span class="nav-item__icon">📝</span>ניהול תבניות
+        </button>
+        <button class="nav-item" data-tool="messages">
+          <span class="nav-item__icon">✉️</span>ניהול הודעות
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group__title">כספים</div>
+        <button class="nav-item" data-tool="billing" data-url="billing.html">
+          <span class="nav-item__icon">💳</span>ניהול גבייה
+          <span class="nav-item__badge">חדש</span>
+        </button>
+        <button class="nav-item" data-tool="budgets">
+          <span class="nav-item__icon">💰</span>ניהול תקציבים
+        </button>
+      </div>
+
+    </nav>
+  </aside>
+
+  <!-- Main content (left in RTL) -->
+  <main class="main">
+    <iframe id="contentFrame" src="index.html?embed=1" title="תוכן המסך"></iframe>
+    <div class="placeholder" id="placeholder">
+      <div class="placeholder__inner">
+        <div class="placeholder__icon" id="placeholderIcon">⚙️</div>
+        <div class="placeholder__title" id="placeholderTitle">—</div>
+        <div class="placeholder__desc">המסך הזה קיים בסביבת הייצור של HK Money. זהו מוקאפ של ה-shell המרכזי לאדמין.</div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  const toolMeta = {
+    chat:       {title:'הנחיות צ\'אט',       icon:'💬'},
+    agents:     {title:'ניהול סוכנים',        icon:'🤖'},
+    playground: {title:'HK AI Playground',   icon:'🧪'},
+    aitests:    {title:'בדיקות AI',          icon:'✅'},
+    advisors:   {title:'ניהול יועצים',       icon:'👥'},
+    leads:      {title:'ניהול לידים',         icon:'🎯'},
+    tags:       {title:'ניהול טאגים',         icon:'🏷️'},
+    meetings:   {title:'ניהול פגישות ודוחות', icon:'📅'},
+    calendar:   {title:'יומן',                icon:'🗓'},
+    templates:  {title:'ניהול תבניות',        icon:'📝'},
+    messages:   {title:'ניהול הודעות',        icon:'✉️'},
+    billing:    {title:'ניהול גבייה',         icon:'💳'},
+    budgets:    {title:'ניהול תקציבים',       icon:'💰'},
+  };
+
+  const frame = document.getElementById('contentFrame');
+  const placeholder = document.getElementById('placeholder');
+  const placeholderIcon = document.getElementById('placeholderIcon');
+  const placeholderTitle = document.getElementById('placeholderTitle');
+  const topSub = document.getElementById('topSub');
+
+  function selectTool(btn){
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+
+    const tool = btn.dataset.tool;
+    const url = btn.dataset.url;
+    const meta = toolMeta[tool];
+
+    topSub.textContent = meta.title;
+
+    if (url){
+      frame.style.display = 'block';
+      placeholder.classList.remove('is-on');
+      const embedUrl = url + (url.includes('?')?'&':'?') + 'embed=1';
+      if (frame.getAttribute('src') !== embedUrl) frame.src = embedUrl;
+    } else {
+      frame.style.display = 'none';
+      placeholderIcon.textContent = meta.icon;
+      placeholderTitle.textContent = meta.title;
+      placeholder.classList.add('is-on');
+    }
+
+    document.getElementById('sidebar').classList.remove('is-open');
+  }
+
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => selectTool(btn));
+  });
+
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('is-open');
+  });
+
+  // Listen for messages from iframes
+  window.addEventListener('message', (e) => {
+    if (!e.data) return;
+    if (e.data.type === 'leads:unread'){
+      const notif = document.getElementById('leadsNotif');
+      const c = e.data.count;
+      notif.textContent = c;
+      notif.classList.toggle('is-on', c > 0);
+    }
+    if (e.data.type === 'admin:navigate'){
+      const btn = document.querySelector(`.nav-item[data-tool="${e.data.tool}"]`);
+      if (btn) selectTool(btn);
+    }
+  });
+
+  // ============================================
+  // MEETING / REMINDER ALERTS (5 min before) — shell-level, works on all screens
+  // ============================================
+  const ALERT_WINDOW_MIN = 5;
+  const alertedMeetings = new Set();
+
+  function checkUpcomingMeetings(){
+    let meetings = [];
+    try { meetings = JSON.parse(localStorage.getItem('hk_upcoming_meetings') || '[]'); } catch(e){}
+    const now = Date.now();
+    meetings.forEach(m => {
+      if (!m.datetime) return;
+      const dt = new Date(m.datetime).getTime();
+      const diffMin = (dt - now) / 60000;
+      if (diffMin > 0 && diffMin <= ALERT_WINDOW_MIN){
+        const key = m.leadId + '|' + m.datetime;
+        if (!alertedMeetings.has(key)){
+          alertedMeetings.add(key);
+          showMeetingToast(m, Math.max(1, Math.round(diffMin)));
+        }
+      }
+    });
+  }
+
+  function showMeetingToast(m, minutesLeft){
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'meeting-toast';
+    toast.innerHTML = `
+      <div class="meeting-toast__icon">⏰</div>
+      <div class="meeting-toast__body">
+        <div class="meeting-toast__title">${m.format || 'פגישה'} בעוד ${minutesLeft} דקות</div>
+        <div class="meeting-toast__sub">${m.leadName}${m.time ? ' · ' + m.time : ''}${m.advisor ? ' · ' + m.advisor : ''}</div>
+      </div>
+      <button class="meeting-toast__open" data-open-leads>פתח לידים</button>
+      <button class="meeting-toast__close" aria-label="סגירה">×</button>
+    `;
+    container.appendChild(toast);
+    const timer = setTimeout(() => toast.remove(), 90000); // auto-dismiss after 90s
+    toast.querySelector('.meeting-toast__close').addEventListener('click', () => { clearTimeout(timer); toast.remove(); });
+    toast.querySelector('[data-open-leads]').addEventListener('click', () => {
+      const btn = document.querySelector('.nav-item[data-tool="leads"]');
+      if (btn) selectTool(btn);
+      clearTimeout(timer); toast.remove();
+    });
+    // Optional: a subtle sound (commented out — enable in production)
+    // new Audio('data:audio/wav;base64,...').play().catch(()=>{});
+  }
+
+  setInterval(checkUpcomingMeetings, 20000);  // check every 20 sec
+  setTimeout(checkUpcomingMeetings, 3000);    // initial check after leads iframe writes to storage
+</script>
+
+</body>
+</html>

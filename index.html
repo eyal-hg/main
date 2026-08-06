@@ -61,7 +61,7 @@
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
       <span class="tb-badge" id="tbBadge">8</span>
     </button>
-    <div class="who">ערב טוב, אייל חזות<br><b>לאיזור האישי</b></div>
+    <div class="who" onclick="openAdmin()" style="cursor:pointer" title="איזור האדמין">ערב טוב, אייל חזות<br><b>לאיזור האישי</b></div>
     <div class="avatar">אח</div>
     </div>
   </div>
@@ -647,6 +647,64 @@
   </div>
 </div>
 
+<!-- כרטיס לקוח — זיכרון ומספרים -->
+<div class="mx-ov" id="memOv">
+  <div class="mx2 mem-modal">
+    <button class="mx2-x" onclick="closeMemCard()">✕</button>
+    <div class="mem-title" id="memTitle"></div>
+    <div class="mem-body" id="memBody"></div>
+    <div class="mx2-foot">
+      <button class="mx2-btn" onclick="closeMemCard()">סגירה</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ניהול קטגוריות הזיכרון (אדמין) -->
+<div class="mx-ov" id="memAdmOv">
+  <div class="mx2" style="max-width:680px">
+    <button class="mx2-x" onclick="closeMemAdmin()">✕</button>
+    <div class="mx2-title">ניהול קטגוריות הזיכרון</div>
+    <div class="catm-sub"><b>הגדרה מערכתית — חלה על כל הלקוחות.</b> כל קטגוריה מתוחזקת ע״י flow אחד שמקבל את הפרומפט שלה. לחיצה על קטגוריה — עריכת הפרומפט. קטגוריה שלא עודכנה זמן רב — מועמדת להסרה.</div>
+    <div id="memAdmBody" class="ap-body" style="max-height:60vh"></div>
+    <div class="mx2-foot"><button class="mx2-btn" onclick="closeMemAdmin()">סגירה</button></div>
+  </div>
+</div>
+
+<!-- ===== איזור האדמין — מסכי HK Money מוטמעים ===== -->
+<div id="adminShell">
+  <div class="adm-top">
+    <button class="adm-back" onclick="closeAdmin()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> חזרה למערכת</button>
+    <div class="adm-ttl">איזור האדמין · HK Money</div>
+  </div>
+  <div class="adm-body">
+    <aside class="adm-rail" id="admRail"></aside>
+    <div class="adm-main">
+      <iframe id="admFrame" title="מסך אדמין"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- הגדרות יוזר -->
+<div class="mx-ov" id="userSetOv">
+  <div class="mx2" style="max-width:520px">
+    <button class="mx2-x" onclick="closeUserSet()">✕</button>
+    <div class="mx2-title">הגדרות היוזר</div>
+    <div id="userSetBody"></div>
+    <div class="mx2-foot"><button class="mx2-btn primary" onclick="closeUserSet();toast('הגדרות היוזר נשמרו')">שמירה</button><button class="mx2-btn" onclick="closeUserSet()">ביטול</button></div>
+  </div>
+</div>
+
+<!-- מבט-על יועץ: פירוט קוביות -->
+<div class="mx-ov" id="advPopOv">
+  <div class="mx2" style="max-width:760px">
+    <button class="mx2-x" onclick="advPopClose()">✕</button>
+    <div class="mx2-title" id="advPopTitle"></div>
+    <div id="advPopBody" class="ap-body"></div>
+    <div class="mx2-foot"><button class="mx2-btn" onclick="advPopClose()">סגירה</button></div>
+  </div>
+</div>
+
 <!-- פגישה חדשה — שיקוף הפופאפ מהיומן המלא -->
 <div class="mx-ov" id="evOv">
   <div class="mx2" style="max-width:600px">
@@ -753,6 +811,8 @@
 <script src="js/topbar.js"></script>
 <script src="js/meetings.js"></script>
 <script src="js/client.js"></script>
+<script src="js/memory.js"></script>
+<script src="js/admin.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

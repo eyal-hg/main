@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – ניהול טאגים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --salmon-h:#b8685c;
+    --green:#1e8e5f;
+    --green-bg:#dff3e9;
+    --amber:#b46e0e;
+    --amber-bg:#fbecd0;
+    --divider:#E3E3E3;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;font-size:.92rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  /* Top bar */
+  .top{
+    background:var(--white);
+    padding:14px 32px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .top__brand{display:flex;align-items:center;gap:14px}
+  .top__logo{
+    width:40px;height:40px;border-radius:10px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;color:#fff;font-size:1rem;
+  }
+  .top__title{font-size:1.05rem;font-weight:500;color:var(--navy)}
+  .top__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .top__user{display:flex;align-items:center;gap:12px;font-size:.9rem}
+  .top__avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--blue-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:500;
+  }
+  .top__user-name{font-weight:500;color:var(--navy)}
+  .top__user-role{font-size:.78rem;color:var(--muted);margin-top:1px}
+
+  /* Embedded mode */
+  body.is-embedded .top{display:none}
+  body.is-embedded .wrap{
+    max-width:none;margin:0;
+    padding:18px 0 28px 18px;
+  }
+
+  .wrap{max-width:1500px;margin:0 auto;padding:32px 40px 60px}
+
+  .card{
+    background:var(--white);
+    border-top:2px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    padding:26px 32px 30px;
+  }
+
+  .page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    margin-bottom:22px;flex-wrap:wrap;gap:14px;
+  }
+  .page-head__title{font-size:1.7rem;font-weight:500;color:var(--navy);letter-spacing:-.7px}
+  .page-head__meta{color:var(--muted);font-size:.88rem;margin-top:4px}
+
+  /* Toolbar */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
+    margin-bottom:18px;
+  }
+  .field{display:flex;flex-direction:column;gap:4px;min-width:140px}
+  .field--grow{flex:1;min-width:240px}
+  .field label{font-size:.74rem;color:var(--muted);font-weight:500}
+  .field input,.field select{
+    padding:8px 14px;border:1px solid var(--divider);
+    border-radius:60px;background:#fff;outline:none;
+    transition:border-color .15s;
+  }
+  .field input:focus,.field select:focus{border-color:var(--blue)}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 18px;border-radius:60px;
+    font-weight:500;font-size:.88rem;transition:all .15s;
+    border:1px solid transparent;
+  }
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:var(--salmon-h)}
+  .btn--blue{background:var(--blue);color:#fff}
+  .btn--blue:hover{filter:brightness(.95)}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--sm{padding:7px 16px;font-size:.85rem}
+  .btn--icon{display:inline-flex;align-items:center;gap:5px}
+
+  /* Table */
+  .table-scroll{overflow-x:auto;margin:0 -32px;padding:0 32px}
+  body.is-embedded .table-scroll{margin:0 0 0 -18px;padding:0 0 0 18px}
+
+  .colhead{
+    background:var(--blue-soft);
+    border-radius:60px;
+    padding:11px 22px;
+    display:grid;
+    grid-template-columns: 60px 1.2fr 1.4fr 200px 120px 80px 110px 80px 110px 90px;
+    gap:14px;align-items:center;
+    font-size:.85rem;color:var(--navy);font-weight:400;
+    margin-bottom:6px;min-width:1220px;
+  }
+  .colhead > div{text-align:right}
+  .colhead > .col-action{text-align:left}
+
+  .row{
+    display:grid;
+    grid-template-columns: 60px 1.2fr 1.4fr 200px 120px 80px 110px 80px 110px 90px;
+    gap:14px;align-items:center;
+    padding:12px 22px;
+    border-bottom:1px solid var(--divider);
+    color:var(--navy);font-size:.88rem;
+    transition:background .12s;min-width:1220px;
+  }
+  .row:last-child{border-bottom:none}
+  .row:hover{background:var(--off)}
+
+  .id-cell{
+    color:var(--muted);font-weight:500;font-size:.88rem;
+  }
+  .name{font-weight:500;color:var(--navy)}
+  .company-id{
+    color:var(--muted);font-weight:400;
+  }
+  .tags-cell{
+    display:flex;gap:4px;flex-wrap:wrap;
+  }
+  .tag-chip{
+    display:inline-block;
+    padding:2px 10px;border-radius:60px;
+    background:var(--off);color:var(--muted);
+    font-size:.78rem;font-weight:400;
+    border:1px solid var(--divider);
+  }
+
+  /* Header chip — 4-bucket P&L classification */
+  .header-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 11px;border-radius:60px;
+    font-size:.78rem;font-weight:500;
+    border:1px solid;
+  }
+  .header-chip__num{
+    font-weight:600;font-size:.7rem;
+    background:rgba(255,255,255,.5);
+    padding:1px 6px;border-radius:60px;
+  }
+  .header-chip--1{background:#dff3e9;color:#0f6b46;border-color:#b5dfca}   /* הכנסות — ירוק */
+  .header-chip--2{background:#fbecd0;color:#7e4d09;border-color:#ecd29a}   /* עלות המכר — ענבר */
+  .header-chip--3{background:#fbe1de;color:#8a2620;border-color:#f0c5be}   /* הוצאות — אדום */
+  .header-chip--4{background:#e4f0fb;color:#1a5b8a;border-color:#b9d7ec}   /* מימון/השקעות — כחול */
+
+  /* Filter pills row */
+  .pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .pill{
+    padding:6px 14px;border-radius:60px;font-size:.82rem;font-weight:500;
+    background:#fff;border:1px solid var(--divider);color:var(--navy);
+    transition:all .14s;cursor:pointer;
+  }
+  .pill:hover{border-color:var(--blue);color:var(--blue)}
+  .pill.is-active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .pill__count{
+    margin-inline-start:5px;
+    background:rgba(255,255,255,.18);
+    padding:1px 7px;border-radius:60px;font-size:.72rem;
+  }
+  .pill:not(.is-active) .pill__count{background:var(--blue-soft);color:var(--navy)}
+
+  /* Modal */
+  .modal-back{
+    position:fixed;inset:0;background:rgba(12,64,104,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:100;padding:20px;
+  }
+  .modal-back.is-open{display:flex}
+  .modal{
+    background:#fff;box-shadow:var(--shadow-card);
+    width:100%;max-width:520px;border-radius:14px;overflow:hidden;
+    animation:pop .18s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .modal__head{
+    padding:18px 22px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .modal__head h3{color:var(--navy);font-size:1.1rem;font-weight:500}
+  .modal__close{
+    font-size:1.4rem;color:var(--muted);
+    width:32px;height:32px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .modal__close:hover{background:var(--off);color:var(--navy)}
+  .modal__body{padding:18px 22px;max-height:72vh;overflow-y:auto}
+  .modal__foot{
+    padding:13px 22px;background:var(--off);
+    display:flex;justify-content:space-between;gap:8px;
+    border-top:1px solid var(--divider);
+  }
+  .modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+  .modal-field label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .modal-field input,.modal-field select,.modal-field textarea{
+    width:100%;padding:9px 12px;border-radius:10px;
+    border:1px solid var(--divider);background:#fff;font-size:.9rem;
+    font-family:inherit;color:var(--navy);outline:none;
+  }
+  .modal-field input:focus,.modal-field select:focus{border-color:var(--blue)}
+
+  /* Header picker — 4 large buttons */
+  .header-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .header-pick__btn{
+    padding:11px 13px;border:1.5px solid var(--divider);border-radius:11px;
+    background:#fff;text-align:right;cursor:pointer;transition:all .15s;
+    display:flex;flex-direction:column;gap:3px;
+  }
+  .header-pick__btn:hover{border-color:var(--blue)}
+  .header-pick__btn.is-on{border-color:var(--blue);background:var(--blue-soft)}
+  .header-pick__title{font-weight:500;font-size:.88rem;display:flex;align-items:center;gap:7px}
+  .header-pick__num{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--gray-bg);color:var(--navy);
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:.78rem;font-weight:600;
+  }
+  .header-pick__btn.is-on .header-pick__num{background:var(--blue);color:#fff}
+
+  .modal__row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  /* Toggle */
+  .toggle-row{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:8px 0;font-size:.86rem;
+  }
+  .toggle{
+    position:relative;width:38px;height:22px;
+    background:var(--divider);border-radius:60px;transition:background .15s;cursor:pointer;
+  }
+  .toggle.is-on{background:var(--green)}
+  .toggle::after{
+    content:'';position:absolute;top:2px;right:2px;
+    width:18px;height:18px;border-radius:50%;background:#fff;
+    transition:right .15s;
+  }
+  .toggle.is-on::after{right:18px}
+
+  /* Company combobox */
+  .combo{position:relative;min-width:240px}
+  .combo__input{
+    display:flex;align-items:center;gap:8px;
+    padding:8px 14px;border:1px solid var(--divider);
+    border-radius:60px;background:#fff;cursor:pointer;
+    transition:border-color .15s;font-size:.92rem;
+    min-height:38px;
+  }
+  .combo__input:hover{border-color:var(--blue)}
+  .combo__input.is-open{border-color:var(--blue);box-shadow:0 0 0 3px rgba(57,171,226,.1)}
+  .combo__placeholder{color:var(--muted-2)}
+  .combo__name{color:var(--navy);font-weight:400;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .combo__id-badge{
+    background:var(--blue-soft);color:var(--navy);
+    padding:1px 8px;border-radius:60px;
+    font-size:.72rem;font-weight:500;font-variant-numeric:tabular-nums;
+    direction:ltr;
+  }
+  .combo__caret{color:var(--muted-2);font-size:.7rem;flex:none}
+  .combo__clear{
+    width:18px;height:18px;border-radius:50%;
+    background:var(--gray-bg);color:var(--gray);
+    display:none;align-items:center;justify-content:center;
+    font-size:.7rem;line-height:1;flex:none;
+  }
+  .combo__clear:hover{background:var(--divider);color:var(--navy)}
+  .combo.has-value .combo__clear{display:inline-flex}
+  .combo__pop{
+    position:absolute;top:calc(100% + 4px);right:0;left:0;
+    background:#fff;border:1px solid var(--divider);
+    border-radius:14px;box-shadow:0 8px 24px rgba(12,64,104,.14);
+    z-index:50;overflow:hidden;display:none;
+  }
+  .combo__pop.is-open{display:block}
+  .combo__search{
+    padding:10px 12px;border-bottom:1px solid var(--line);
+  }
+  .combo__search input{
+    width:100%;padding:7px 12px;border:1px solid var(--divider);
+    border-radius:60px;font-size:.86rem;outline:none;
+  }
+  .combo__search input:focus{border-color:var(--blue)}
+  .combo__list{max-height:280px;overflow-y:auto}
+  .combo__opt{
+    display:flex;align-items:center;gap:9px;
+    padding:9px 14px;cursor:pointer;
+    border-bottom:1px solid var(--line);
+    transition:background .12s;font-size:.88rem;
+  }
+  .combo__opt:last-child{border-bottom:none}
+  .combo__opt:hover, .combo__opt.is-focused{background:var(--off)}
+  .combo__opt.is-selected{background:var(--blue-soft)}
+  .combo__opt__name{flex:1;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .combo__opt__id{
+    background:var(--gray-bg);color:var(--gray);
+    padding:1px 7px;border-radius:60px;
+    font-size:.7rem;font-weight:500;font-variant-numeric:tabular-nums;
+    direction:ltr;
+  }
+  .combo__opt.is-selected .combo__opt__id{background:var(--blue);color:#fff}
+  .combo__opt--all{
+    color:var(--muted);font-weight:500;
+    border-bottom:1px solid var(--line);
+  }
+  .combo__opt--all .combo__opt__name{color:var(--navy)}
+  .combo__empty{padding:18px;text-align:center;color:var(--muted);font-size:.84rem}
+
+  .field--combo{min-width:280px}
+  .field--combo .field__bottom-spacer{height:0}
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:24px;right:50%;transform:translateX(50%);
+    background:var(--navy);color:#fff;padding:11px 20px;border-radius:60px;
+    box-shadow:0 6px 18px rgba(12,64,104,.22);font-size:.88rem;
+    z-index:200;opacity:0;pointer-events:none;
+    transition:opacity .18s,transform .18s;
+  }
+  .toast.is-on{opacity:1;transform:translateX(50%) translateY(-4px)}
+  .toast--success{background:var(--green)}
+
+  .bool{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:.84rem;font-weight:400;
+  }
+  .bool::before{
+    content:'';width:7px;height:7px;border-radius:50%;
+  }
+  .bool--true::before{background:var(--green)}
+  .bool--false::before{background:var(--muted-2)}
+  .bool--true{color:var(--green)}
+  .bool--false{color:var(--muted-2)}
+
+  .date{
+    color:var(--muted);font-weight:300;font-size:.82rem;
+    direction:ltr;text-align:right;
+  }
+
+  .dash{color:var(--muted-2);text-align:center}
+  .col-action{text-align:left}
+
+  .empty{padding:48px 20px;text-align:center;color:var(--muted)}
+  .empty__title{font-size:1rem;color:var(--navy);font-weight:500;margin-bottom:4px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:6px;margin:-4px 0 20px;border-bottom:1px solid var(--divider)}
+  .tab{
+    padding:10px 18px;font-weight:400;font-size:.95rem;color:var(--muted);
+    border-bottom:2px solid transparent;margin-bottom:-1px;
+    transition:all .12s;
+  }
+  .tab:hover{color:var(--navy)}
+  .tab.is-active{color:var(--navy);font-weight:500;border-bottom-color:var(--salmon)}
+
+  /* Row-toggle (small clickable toggle in table row) */
+  .toggle-cell{display:flex;align-items:center;gap:6px;font-size:.84rem}
+  .toggle-cell__sw{
+    position:relative;width:34px;height:20px;
+    background:var(--divider);border-radius:60px;cursor:pointer;
+    transition:background .15s;flex:none;
+  }
+  .toggle-cell__sw.is-on{background:var(--green)}
+  .toggle-cell__sw::after{
+    content:'';position:absolute;top:2px;right:2px;
+    width:16px;height:16px;border-radius:50%;background:#fff;
+    transition:right .15s;
+  }
+  .toggle-cell__sw.is-on::after{right:16px}
+
+  /* Category chip (alternative to header chip) */
+  .cat-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 11px;border-radius:60px;
+    background:#f0eef9;color:#4a3a8a;
+    border:1px solid #ddd6f0;
+    font-size:.78rem;font-weight:500;
+  }
+  .cat-chip::before{content:'#';opacity:.55;font-weight:600}
+
+  /* Classification-type picker (header / category) in modal */
+  .cl-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+  .cl-pick__btn{
+    padding:10px 13px;border:1.5px solid var(--divider);border-radius:11px;
+    background:#fff;cursor:pointer;transition:all .15s;
+    display:flex;align-items:center;gap:7px;font-weight:500;font-size:.88rem;
+  }
+  .cl-pick__btn:hover{border-color:var(--blue)}
+  .cl-pick__btn.is-on{border-color:var(--blue);background:var(--blue-soft)}
+
+  /* Sum-mode chip (in row) + picker (in modal) */
+  .sum-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 10px;border-radius:60px;
+    font-size:.78rem;font-weight:500;
+    border:1px solid transparent;
+  }
+  .sum-chip--income {background:#dff3e9;color:#0f6b46;border-color:#b5dfca}
+  .sum-chip--expense{background:#fbe1de;color:#8a2620;border-color:#f0c5be}
+  .sum-chip--all    {background:var(--gray-bg);color:var(--gray);border-color:#dadfe5}
+  .sum-chip__icon{font-weight:600;font-size:.78rem}
+
+  .sum-pick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px}
+  .sum-pick__btn{
+    padding:11px 8px;border:1.5px solid var(--divider);border-radius:11px;
+    background:#fff;cursor:pointer;transition:all .15s;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:.84rem;color:var(--navy);
+  }
+  .sum-pick__btn:hover{border-color:var(--blue)}
+  .sum-pick__btn.is-on{border-color:var(--blue);background:var(--blue-soft)}
+  .sum-pick__icon{font-size:1.3rem;line-height:1}
+  .sum-pick__label{font-weight:500}
+
+  /* Chip-input — free-text keywords with chips */
+  .chip-input{
+    display:flex;align-items:center;flex-wrap:wrap;gap:5px;
+    padding:7px 10px;border:1px solid var(--divider);border-radius:10px;
+    background:#fff;min-height:42px;
+    transition:border-color .15s;
+  }
+  .chip-input:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(57,171,226,.1)}
+  .chip-input__chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:3px 5px 3px 10px;border-radius:60px;
+    background:#f0eef9;color:#4a3a8a;
+    border:1px solid #ddd6f0;
+    font-size:.82rem;font-weight:500;
+    animation:chipIn .14s ease-out;
+  }
+  @keyframes chipIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  .chip-input__x{
+    width:18px;height:18px;border-radius:50%;
+    background:rgba(255,255,255,.6);color:#4a3a8a;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.85rem;cursor:pointer;line-height:1;padding:0;
+    transition:background .12s;
+  }
+  .chip-input__x:hover{background:#fff;color:var(--red)}
+  .chip-input__field{
+    flex:1;min-width:120px;border:none;outline:none;background:transparent;
+    font-size:.88rem;padding:4px;color:var(--navy);
+  }
+  .field__hint{font-size:.74rem;color:var(--muted);margin-top:6px;line-height:1.4}
+
+  /* P&L tab — two stacked cards */
+  .pl-intro{
+    background:var(--blue-soft);
+    border:1px solid #cce6f3;
+    border-radius:11px;
+    padding:12px 16px;font-size:.86rem;line-height:1.55;
+    color:var(--navy);margin-bottom:20px;
+  }
+  .pl-card{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    margin-bottom:22px;overflow:hidden;
+  }
+  .pl-card__head{
+    padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+    gap:14px;border-bottom:1px solid var(--line);background:var(--off);flex-wrap:wrap;
+  }
+  .pl-card__title{font-size:1.02rem;font-weight:500;color:var(--navy)}
+  .pl-card__sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .pl-card__body{padding:16px 20px}
+
+  /* P&L tables — smaller min-width */
+  .colhead--map, .row--map{
+    display:grid;grid-template-columns:60px 1.4fr 1fr 200px 90px;
+    gap:14px;align-items:center;
+    padding:11px 16px;
+    min-width:700px;font-size:.88rem;
+  }
+  .colhead--map{
+    background:var(--blue-soft);border-radius:60px;
+    color:var(--navy);font-weight:400;font-size:.85rem;
+    margin-bottom:6px;
+  }
+  .row--map{background:#fff;border-bottom:1px solid var(--line);transition:background .12s}
+  .row--map:hover{background:var(--off)}
+
+  .colhead--excl, .row--excl{
+    display:grid;grid-template-columns:60px 1fr 2fr 90px;
+    gap:14px;align-items:center;
+    padding:11px 16px;
+    min-width:700px;font-size:.88rem;
+  }
+  .colhead--excl{
+    background:var(--blue-soft);border-radius:60px;
+    color:var(--navy);font-weight:400;font-size:.85rem;
+    margin-bottom:6px;
+  }
+  .row--excl{background:#fff;border-bottom:1px solid var(--line);transition:background .12s}
+  .row--excl:hover{background:var(--off)}
+
+  .all-companies{
+    color:var(--blue);font-size:.78rem;font-weight:500;
+    display:inline-flex;align-items:center;gap:4px;
+  }
+  .all-companies::before{content:'🌐';font-size:.85rem}
+
+  /* Categories list (excluded — multi-chip) */
+  .cat-list{display:flex;flex-wrap:wrap;gap:5px}
+  .cat-list .cat-chip{cursor:default}
+
+  /* Company combobox for inside modals */
+  .modal-field .combo{min-width:auto}
+
+  @media(max-width:900px){
+    .top{padding:12px 16px}
+    .wrap{padding:18px}
+    .card{padding:20px 14px 24px}
+    .table-scroll{margin:0 -14px;padding:0 14px}
+  }
+</style>
+</head>
+<body>
+<script>
+  if (location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+</script>
+
+<header class="top">
+  <div class="top__brand">
+    <div class="top__logo">HK</div>
+    <div>
+      <div class="top__title">ניהול טאגים</div>
+      <div class="top__sub">HK Money</div>
+    </div>
+  </div>
+  <div class="top__user">
+    <div class="top__avatar">א</div>
+    <div>
+      <div class="top__user-name">אייל חזות</div>
+      <div class="top__user-role">מנהל מערכת</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+
+    <div class="page-head">
+      <div>
+        <div class="page-head__title">ניהול טאגים וכותרות רווח והפסד</div>
+        <div class="page-head__meta">סיווג כל טאג לקטגוריה משלך או לאחת מ-4 כותרות הדו"ח</div>
+      </div>
+      <button class="btn btn--primary" id="newBtn"><span>+</span> טאג חדש</button>
+    </div>
+
+    <nav class="tabs" id="tabsNav">
+      <button class="tab is-active" data-tab="tags">ניהול טאגים</button>
+      <button class="tab" data-tab="pl">ניהול רווח והפסד</button>
+    </nav>
+
+    <div id="tagsTab">
+      <div class="toolbar">
+        <div class="field field--grow">
+          <label for="search">חיפוש</label>
+          <input id="search" type="search" placeholder="סינון לפי שם הטאג...">
+        </div>
+        <div class="field">
+          <label for="filterDraft">סינון טיוטה</label>
+          <select id="filterDraft">
+            <option value="false" selected>לא טיוטה</option>
+            <option value="true">טיוטה בלבד</option>
+            <option value="">הכל</option>
+          </select>
+        </div>
+        <div class="field field--combo">
+          <label>חברה</label>
+          <div id="companyFilterCombo"></div>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <div class="colhead">
+          <div>מזהה</div>
+          <div>שם חברה</div>
+          <div>שם הטאג</div>
+          <div>סיווג</div>
+          <div>סיכום</div>
+          <div>פעיל</div>
+          <div>ללא סינון</div>
+          <div>טיוטה</div>
+          <div>נוצר ב</div>
+          <div class="col-action">פעולות</div>
+        </div>
+
+        <div id="rows"></div>
+      </div>
+
+      <div class="empty" id="empty" hidden>
+        <div class="empty__title">לא נמצאו טאגים</div>
+      </div>
+    </div>
+
+    <div id="plTab" hidden>
+      <div class="pl-intro">
+        שני סוגי כללים מנהלים איך כל קטגוריה (מתוך נתוני העסק) נכנסת לדוח רווח והפסד.<br>
+        כלל עם <b>חברה ריקה</b> חל על <b>כל החברות</b> (גלובלי). כלל עם חברה ספציפית — חל רק עליה.
+      </div>
+
+      <section class="pl-card">
+        <div class="pl-card__head">
+          <div>
+            <div class="pl-card__title">📊 שיוך קטגוריות לכותרות רו"ה</div>
+            <div class="pl-card__sub">לכל קטגוריה — מתחת לאיזו מ-4 הכותרות היא תיכלל בדוח</div>
+          </div>
+          <button class="btn btn--primary btn--sm" id="newMapBtn">+ שיוך חדש</button>
+        </div>
+        <div class="table-scroll">
+          <div class="colhead colhead--map">
+            <div>מזהה</div>
+            <div>שם הקטגוריה</div>
+            <div>חברה</div>
+            <div>כותרת רו"ה</div>
+            <div class="col-action">פעולות</div>
+          </div>
+          <div id="mapRows"></div>
+        </div>
+      </section>
+
+      <section class="pl-card">
+        <div class="pl-card__head">
+          <div>
+            <div class="pl-card__title">🚫 קטגוריות להוצאה מהדוח</div>
+            <div class="pl-card__sub">קטגוריות שלא ייכללו כלל בדוח החודשי</div>
+          </div>
+          <button class="btn btn--primary btn--sm" id="newExclBtn">+ הוספה</button>
+        </div>
+        <div class="table-scroll">
+          <div class="colhead colhead--excl">
+            <div>מזהה</div>
+            <div>חברה</div>
+            <div>קטגוריות מוסתרות</div>
+            <div class="col-action">פעולות</div>
+          </div>
+          <div id="exclRows"></div>
+        </div>
+      </section>
+    </div>
+
+  </section>
+</main>
+
+<!-- Confirm modal — replaces native confirm() -->
+<div class="modal-back" id="confirmModal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width:400px">
+    <div class="modal__body" style="padding:22px 24px 14px">
+      <div id="confirmTitle" style="font-size:1.05rem;font-weight:500;margin-bottom:6px;color:var(--navy)"></div>
+      <div id="confirmBody" style="font-size:.88rem;color:var(--muted);line-height:1.55"></div>
+    </div>
+    <div class="modal__foot" style="justify-content:flex-end">
+      <button class="btn btn--ghost" id="confirmCancel">ביטול</button>
+      <button class="btn btn--primary" id="confirmOk" style="background:var(--salmon)">אישור</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mapping modal — category → P&L header -->
+<div class="modal-back" id="mapModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="mapModalTitle">שיוך חדש</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="modal-field">
+        <label>שם הקטגוריה (כפי שמופיע בנתוני בנק/אשראי)</label>
+        <input id="mmCategory" type="text" placeholder="לדוגמה: קניות מלאי-יבוא">
+      </div>
+      <div class="modal-field">
+        <label>חברה</label>
+        <div id="mmCompanyCombo"></div>
+      </div>
+      <div class="modal-field">
+        <label>כותרת רו"ה</label>
+        <div class="header-pick" id="mmHeaderPick"></div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" id="mmDelete" style="color:var(--salmon)" hidden>מחק</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="mmSave">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Exclusion modal — exclude categories -->
+<div class="modal-back" id="exclModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="exclModalTitle">הוצאה מהדוח</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="modal-field">
+        <label>חברה</label>
+        <div id="emCompanyCombo"></div>
+      </div>
+      <div class="modal-field">
+        <label>קטגוריות (אחת בכל שורה)</label>
+        <textarea id="emCategories" rows="6" placeholder="לדוגמה:&#10;לא לקיטלוגי&#10;קטגוריות שונות&#10;העברה בין חשבונות" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--divider);background:#fff;font-size:.9rem;font-family:inherit;color:var(--navy);outline:none;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" id="emDelete" style="color:var(--salmon)" hidden>מחק</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="emSave">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New/Edit Tag modal -->
+<div class="modal-back" id="tagModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="tagModalTitle">טאג חדש</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="modal-field">
+        <label>שם הטאג</label>
+        <input id="tmName" type="text" placeholder="לדוגמה: הוצאות שכירות">
+      </div>
+
+      <div class="modal-field">
+        <label>חברה</label>
+        <div id="tmCompanyCombo"></div>
+      </div>
+
+      <div class="modal-field">
+        <label>סיווג לפי</label>
+        <div class="cl-pick" id="tmClPick">
+          <button class="cl-pick__btn" data-cl="header" type="button">📊 כותרת רו"ה</button>
+          <button class="cl-pick__btn" data-cl="category" type="button"># קטגוריה</button>
+        </div>
+
+        <div id="tmHeaderWrap" style="margin-bottom:0">
+          <div class="header-pick" id="tmHeaderPick"></div>
+        </div>
+        <div id="tmCategoryWrap" style="display:none;margin-bottom:0">
+          <div class="chip-input" id="tmChipInput">
+            <input type="text" class="chip-input__field" id="tmChipField" placeholder="הקלד מילה ולחץ Enter...">
+          </div>
+          <div class="field__hint">ה-AI יחפש קטגוריות בנתוני בנק/אשראי שמכילות כל אחת מהמילים. ניתן להזין יותר ממילה אחת — Enter או פסיק להוספה.</div>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label>מצב סיכום</label>
+        <div class="sum-pick" id="tmSumPick">
+          <button class="sum-pick__btn" data-sm="income" type="button">
+            <span class="sum-pick__icon">↑</span>
+            <span class="sum-pick__label">הכנסות בלבד</span>
+          </button>
+          <button class="sum-pick__btn" data-sm="expense" type="button">
+            <span class="sum-pick__icon">↓</span>
+            <span class="sum-pick__label">הוצאות בלבד</span>
+          </button>
+          <button class="sum-pick__btn" data-sm="all" type="button">
+            <span class="sum-pick__icon">↕</span>
+            <span class="sum-pick__label">הכל</span>
+          </button>
+        </div>
+        <div class="field__hint">קובע אילו עסקאות נכללות בסיכום של הטאג: רק חיוביות, רק שליליות, או כולן.</div>
+      </div>
+
+      <div class="toggle-row">
+        <span>פעיל</span>
+        <div class="toggle" id="tmActive" data-toggle></div>
+      </div>
+      <div class="toggle-row">
+        <span>טיוטה</span>
+        <div class="toggle" id="tmDraft" data-toggle></div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" id="tmDelete" style="color:var(--salmon)" hidden>מחק</button>
+      <div style="display:flex;gap:8px;margin-inline-start:auto">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="tmSave">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* 4 הכותרות של דו"ח רווח והפסד */
+  const HEADERS = {
+    1: {label:'הכנסות',                       short:'הכנסות'},
+    2: {label:'עלות המכר',                    short:'עלות המכר'},
+    3: {label:'הוצאות',                       short:'הוצאות'},
+    4: {label:'מימון, השקעות ובעלים',         short:'מימון/השקעות'},
+  };
+
+  /* רשימת חברות לדמו — בייצור תגיע מ-API */
+  const companies = [
+    {id:70, name:'כאמלה הסעדה בע"מ'},
+    {id:71, name:'פלאפל אצל מוטי בע"מ'},
+    {id:72, name:'סלון גליה'},
+    {id:73, name:'אביב מנעולים'},
+    {id:74, name:'אומניבייס בע"מ'},
+    {id:75, name:'מכולת נור'},
+    {id:76, name:'יולי הסעדה בע"מ'},
+    {id:77, name:'גבדור בע"מ'},
+    {id:78, name:'בוטיק הפרח'},
+    {id:79, name:'קרמבו בע"מ'},
+  ];
+  const companyName = id => {
+    if (!id) return null; // signal "all" — UI shows styled chip instead
+    return (companies.find(c => c.id === id) || {}).name || ('חברה #' + id);
+  };
+
+  /* מצבי סיכום: income | expense | all */
+  const SUM_MODES = {
+    income:  {label:'הכנסות בלבד', short:'הכנסות', icon:'↑', cls:'sum-chip--income'},
+    expense: {label:'הוצאות בלבד', short:'הוצאות', icon:'↓', cls:'sum-chip--expense'},
+    all:     {label:'הכל',         short:'הכל',     icon:'↕', cls:'sum-chip--all'},
+  };
+
+  /* טאג מסווג ל-EITHER header (1-4) OR categoryKeywords (מילות חיפוש שה-AI יתאים).
+     רוב הטאגים מוגדרים כגלובליים (company:null) — חלים על כל החברות. ספציפיים — חריגים. */
+  const tags = [
+    {id:2103, name:'אחזקת עסק',                 header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:false, company:null, created:'29/04/2026'},
+    {id:2102, name:'הוצאות פרטיות',             header:4,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:false, company:null, created:'29/04/2026'},
+    {id:2101, name:'קניות חומרי גלם',           header:null, categoryKeywords:['חומרי גלם','מזון'], sumMode:'expense', active:true,  draft:false, noFilter:false, company:null, created:'29/04/2026'},
+    {id:2100, name:'ייעוץ ושירותים מקצועיים',   header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:true,  noFilter:false, company:null, created:'20/04/2026'},
+    {id:2099, name:'הוצאות פעילות הקמה',        header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:true,  company:null, created:'20/04/2026'},
+    {id:2098, name:'הכנסות אחרות',              header:1,    categoryKeywords:null,                  sumMode:'income',  active:true,  draft:false, noFilter:false, company:null, created:'20/04/2026'},
+    {id:2097, name:'אחזקת רכב ונסיעות',         header:null, categoryKeywords:['דלק','חניה','רכב'], sumMode:'expense', active:true,  draft:false, noFilter:false, company:null, created:'20/04/2026'},
+    {id:2096, name:'עמלות וריביות בנקים',       header:4,    categoryKeywords:null,                  sumMode:'all',     active:true,  draft:false, noFilter:false, company:null, created:'20/04/2026'},
+    {id:2095, name:'מוסדות מס',                 header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:true,  company:null, created:'20/04/2026'},
+    {id:2094, name:'פרסום ושיווק',              header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:false, company:null, created:'20/04/2026'},
+    {id:2093, name:'תשלומי הלוואה',             header:4,    categoryKeywords:null,                  sumMode:'all',     active:true,  draft:false, noFilter:false, company:null, created:'20/04/2026'},
+    {id:2092, name:'ציוד משרדי',                 header:null, categoryKeywords:['ציוד','משרד'],      sumMode:'expense', active:true,  draft:false, noFilter:false, company:null, created:'20/04/2026'},
+    /* חריגים — חברה ספציפית (override של הגלובלי) */
+    {id:2091, name:'הוצאות שכירות',             header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:false, company:74, created:'20/04/2026'},
+    {id:2090, name:'דמי ניהול מבנה',            header:3,    categoryKeywords:null,                  sumMode:'expense', active:true,  draft:false, noFilter:false, company:75, created:'20/04/2026'},
+    {id:2089, name:'מזון',                       header:null, categoryKeywords:['פיצה','פלאפל','המבורגר'], sumMode:'expense', active:true,  draft:false, noFilter:false, company:76, created:'18/04/2026'},
+  ];
+  const todayDmy = () => { const d = new Date(); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); };
+
+  const state = {
+    activeTab: 'tags',
+    companyFilter: null,
+    editingId: null,
+    draft: null,
+  };
+
+  function $(s){ return document.querySelector(s); }
+  function bool(v){
+    return `<span class="bool bool--${v?'true':'false'}">${v?'כן':'לא'}</span>`;
+  }
+  function tagChips(arr){
+    if (!arr || arr.length === 0) return '<span class="dash">—</span>';
+    return arr.map(t => `<span class="tag-chip">${t}</span>`).join('');
+  }
+  function headerChip(h){
+    if (!h || !HEADERS[h]) return '<span class="dash">—</span>';
+    return `<span class="header-chip header-chip--${h}"><span class="header-chip__num">${h}</span>${HEADERS[h].short}</span>`;
+  }
+  function keywordChip(kws){
+    if (!kws || kws.length === 0) return '<span class="dash">—</span>';
+    if (kws.length <= 2) return `<span class="cat-chip">🔍 ${kws.join(', ')}</span>`;
+    return `<span class="cat-chip" title="${kws.join(', ')}">🔍 ${kws[0]} +${kws.length - 1}</span>`;
+  }
+  function classificationChip(t){
+    if (t.header) return headerChip(t.header);
+    if (t.categoryKeywords && t.categoryKeywords.length) return keywordChip(t.categoryKeywords);
+    return '<span class="dash">—</span>';
+  }
+  function sumChip(mode){
+    const m = SUM_MODES[mode] || SUM_MODES.all;
+    return `<span class="sum-chip ${m.cls}"><span class="sum-chip__icon">${m.icon}</span>${m.short}</span>`;
+  }
+
+  let toastTimer;
+  function toast(msg, kind){
+    const t = $('#toast'); t.textContent = msg;
+    t.className = 'toast is-on' + (kind ? ' toast--'+kind : '');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('is-on'), 2200);
+  }
+
+  /* Styled confirm — replaces native confirm() */
+  function askConfirm(title, body){
+    return new Promise(resolve => {
+      $('#confirmTitle').textContent = title;
+      $('#confirmBody').textContent = body || '';
+      $('#confirmModal').classList.add('is-open');
+      const close = ok => {
+        $('#confirmModal').classList.remove('is-open');
+        $('#confirmOk').removeEventListener('click', okH);
+        $('#confirmCancel').removeEventListener('click', cancelH);
+        resolve(ok);
+      };
+      const okH = () => close(true);
+      const cancelH = () => close(false);
+      $('#confirmOk').addEventListener('click', okH);
+      $('#confirmCancel').addEventListener('click', cancelH);
+    });
+  }
+
+  function render(){
+    // Tab switching
+    $('#tagsTab').hidden = state.activeTab !== 'tags';
+    $('#plTab').hidden = state.activeTab !== 'pl';
+    document.querySelectorAll('#tabsNav .tab').forEach(t => t.classList.toggle('is-active', t.dataset.tab === state.activeTab));
+    // "+ טאג חדש" shouldn't appear when we're in the P&L tab — it's unrelated there
+    $('#newBtn').style.display = state.activeTab === 'tags' ? '' : 'none';
+    if (state.activeTab !== 'tags') return;
+
+    const q = $('#search').value.trim().toLowerCase();
+    const draftFilter = $('#filterDraft').value;
+    const list = tags.filter(t => {
+      if (state.companyFilter && t.company !== state.companyFilter) return false;
+      if (q && !t.name.toLowerCase().includes(q)) return false;
+      if (draftFilter && String(t.draft) !== draftFilter) return false;
+      return true;
+    });
+
+    const rowsEl = $('#rows');
+    const emptyEl = $('#empty');
+    if (list.length === 0){
+      rowsEl.innerHTML = '';
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+    rowsEl.innerHTML = list.map(t => `
+      <div class="row" data-id="${t.id}">
+        <div class="id-cell">${t.id}</div>
+        <div class="company-id">${companyOrAll(t.company)}</div>
+        <div class="name">${t.name}</div>
+        <div>${classificationChip(t)}</div>
+        <div>${sumChip(t.sumMode)}</div>
+        <div class="toggle-cell"><div class="toggle-cell__sw ${t.active?'is-on':''}"  data-toggle-field="active"></div></div>
+        <div class="toggle-cell"><div class="toggle-cell__sw ${t.noFilter?'is-on':''}" data-toggle-field="noFilter"></div></div>
+        <div class="toggle-cell"><div class="toggle-cell__sw ${t.draft?'is-on':''}"   data-toggle-field="draft"></div></div>
+        <div class="date">${t.created || '—'}</div>
+        <div class="col-action">
+          <button class="btn btn--ghost btn--sm" data-edit="${t.id}">עריכה</button>
+        </div>
+      </div>
+    `).join('');
+    rowsEl.querySelectorAll('[data-edit]').forEach(b => {
+      b.addEventListener('click', () => openModal(+b.dataset.edit));
+    });
+    rowsEl.querySelectorAll('[data-toggle-field]').forEach(sw => {
+      sw.addEventListener('click', () => {
+        const row = sw.closest('.row');
+        const id = +row.dataset.id;
+        const field = sw.dataset.toggleField;
+        const t = tags.find(x => x.id === id);
+        if (!t) return;
+        t[field] = !t[field];
+        sw.classList.toggle('is-on', t[field]);
+        toast(field === 'noFilter' ? (t[field] ? 'הופעל: ללא סינון' : 'בוטל: ללא סינון')
+              : field === 'active' ? (t[field] ? 'הופעל' : 'הושבת')
+              : (t[field] ? 'סומן כטיוטה' : 'בוטלה טיוטה'), 'success');
+      });
+    });
+  }
+
+  /* GENERIC COMPANY COMBO — reusable factory */
+  function attachCompanyCombo(container, opts){
+    opts = opts || {};
+    const allowAll = opts.allowAll !== false;
+    const placeholder = opts.placeholder || (allowAll ? 'כל החברות' : 'בחר חברה...');
+    const onChange = opts.onChange || (() => {});
+    const local = {value: opts.value != null ? opts.value : null, search: '', open: false};
+
+    container.innerHTML = `
+      <div class="combo">
+        <div class="combo__input"></div>
+        <div class="combo__pop">
+          <div class="combo__search"><input type="search" placeholder="חיפוש חברה..."></div>
+          <div class="combo__list"></div>
+        </div>
+      </div>
+    `;
+    const comboEl  = container.querySelector('.combo');
+    const inputEl  = container.querySelector('.combo__input');
+    const popEl    = container.querySelector('.combo__pop');
+    const searchEl = container.querySelector('.combo__search input');
+    const listEl   = container.querySelector('.combo__list');
+
+    function renderInput(){
+      const sel = local.value;
+      comboEl.classList.toggle('has-value', !!sel);
+      if (sel){
+        const c = companies.find(x => x.id === sel);
+        inputEl.innerHTML =
+          `<span class="combo__name">${c ? c.name : 'חברה #'+sel}</span>` +
+          `<span class="combo__id-badge">${sel}</span>` +
+          (allowAll ? `<button class="combo__clear" type="button" title="נקה">×</button>` : '') +
+          `<span class="combo__caret">▾</span>`;
+      } else {
+        inputEl.innerHTML =
+          `<span class="combo__placeholder">${placeholder}</span>` +
+          `<span class="combo__caret">▾</span>`;
+      }
+      inputEl.classList.toggle('is-open', local.open);
+      popEl.classList.toggle('is-open', local.open);
+    }
+    function renderList(){
+      const q = local.search.trim().toLowerCase();
+      const filtered = companies.filter(c => !q || c.name.toLowerCase().includes(q) || String(c.id).includes(q));
+      const sel = local.value;
+      let html = '';
+      if (allowAll && !q){
+        html += `<div class="combo__opt combo__opt--all ${!sel?'is-selected':''}" data-id="">
+          <span class="combo__opt__name">— כל החברות —</span>
+          <span class="combo__opt__id">${companies.length}</span>
+        </div>`;
+      }
+      html += filtered.map(c => `<div class="combo__opt ${c.id===sel?'is-selected':''}" data-id="${c.id}">
+        <span class="combo__opt__name">${c.name}</span>
+        <span class="combo__opt__id">${c.id}</span>
+      </div>`).join('');
+      if (!filtered.length) html += `<div class="combo__empty">לא נמצאו חברות</div>`;
+      listEl.innerHTML = html;
+    }
+    function refresh(){ renderInput(); if (local.open) renderList(); }
+
+    inputEl.addEventListener('click', e => {
+      if (e.target.closest('.combo__clear')){
+        e.stopPropagation();
+        local.value = null; refresh(); onChange(null);
+        return;
+      }
+      local.open = !local.open;
+      local.search = '';
+      searchEl.value = '';
+      refresh();
+      if (local.open) setTimeout(() => searchEl.focus(), 50);
+    });
+    searchEl.addEventListener('input', e => { local.search = e.target.value; renderList(); });
+    searchEl.addEventListener('keydown', e => { if (e.key === 'Escape'){ local.open = false; refresh(); } });
+    listEl.addEventListener('mousedown', e => {
+      const o = e.target.closest('.combo__opt');
+      if (!o) return;
+      e.preventDefault();
+      const v = o.dataset.id;
+      local.value = v ? +v : null;
+      local.open = false; local.search = '';
+      refresh(); onChange(local.value);
+    });
+    document.addEventListener('click', e => {
+      if (local.open && !comboEl.contains(e.target)){ local.open = false; refresh(); }
+    });
+
+    refresh();
+    return {
+      get: () => local.value,
+      set: v => { local.value = v; refresh(); },
+    };
+  }
+
+  /* Combo instances — created lazily so DOM exists */
+  let toolbarCombo = null;
+  let tmCombo = null, mmCombo = null, emCombo = null;
+  function ensureCombos(){
+    if (!toolbarCombo){
+      const c = document.getElementById('companyFilterCombo');
+      if (c) toolbarCombo = attachCompanyCombo(c, {allowAll: true, onChange: v => { state.companyFilter = v; render(); }});
+    }
+    if (!tmCombo){
+      const c = document.getElementById('tmCompanyCombo');
+      if (c) tmCombo = attachCompanyCombo(c, {allowAll: true, placeholder: '— כל החברות —'});
+    }
+    if (!mmCombo){
+      const c = document.getElementById('mmCompanyCombo');
+      if (c) mmCombo = attachCompanyCombo(c, {allowAll: true, placeholder: '— כל החברות —'});
+    }
+    if (!emCombo){
+      const c = document.getElementById('emCompanyCombo');
+      if (c) emCombo = attachCompanyCombo(c, {allowAll: true, placeholder: '— כל החברות —'});
+    }
+  }
+
+  /* MODAL */
+  function setToggle(el, on){ el.classList.toggle('is-on', !!on); }
+  function getToggle(el){ return el.classList.contains('is-on'); }
+  function renderHeaderPick(selected){
+    $('#tmHeaderPick').innerHTML = [1,2,3,4].map(h => `
+      <button class="header-pick__btn ${selected===h?'is-on':''}" data-h="${h}">
+        <span class="header-pick__title"><span class="header-pick__num">${h}</span>${HEADERS[h].label}</span>
+      </button>
+    `).join('');
+    $('#tmHeaderPick').querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => {
+        state.draft.header = +b.dataset.h;
+        renderHeaderPick(state.draft.header);
+      });
+    });
+  }
+  function setClType(cl){
+    state.draft.classificationType = cl;
+    document.querySelectorAll('#tmClPick .cl-pick__btn').forEach(b => b.classList.toggle('is-on', b.dataset.cl === cl));
+    // Use style.display because `.modal-field { display:flex }` overrides the [hidden] attribute
+    $('#tmHeaderWrap').style.display   = cl === 'header'   ? '' : 'none';
+    $('#tmCategoryWrap').style.display = cl === 'category' ? '' : 'none';
+  }
+  function setSumMode(sm){
+    state.draft.sumMode = sm;
+    document.querySelectorAll('#tmSumPick .sum-pick__btn').forEach(b => b.classList.toggle('is-on', b.dataset.sm === sm));
+  }
+
+  function renderChips(){
+    const list = state.draft.categoryKeywords || [];
+    const cont = $('#tmChipInput');
+    // Remove existing chips, keep the input field
+    cont.querySelectorAll('.chip-input__chip').forEach(c => c.remove());
+    const field = $('#tmChipField');
+    list.forEach((kw, i) => {
+      const span = document.createElement('span');
+      span.className = 'chip-input__chip';
+      span.innerHTML = `${kw}<button type="button" class="chip-input__x" data-rm="${i}">×</button>`;
+      cont.insertBefore(span, field);
+    });
+    cont.querySelectorAll('button[data-rm]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.draft.categoryKeywords.splice(+b.dataset.rm, 1);
+        renderChips();
+      });
+    });
+  }
+  function addChip(v){
+    v = (v || '').trim().replace(/,$/, '').trim();
+    if (!v) return;
+    state.draft.categoryKeywords = state.draft.categoryKeywords || [];
+    if (state.draft.categoryKeywords.includes(v)) return;
+    state.draft.categoryKeywords.push(v);
+    renderChips();
+  }
+
+  function openModal(id){
+    ensureCombos();
+    state.editingId = id;
+    const t = id ? tags.find(x => x.id === id) : null;
+    state.draft = t ? Object.assign({}, t, {categoryKeywords: t.categoryKeywords ? t.categoryKeywords.slice() : null})
+                    : {id:null, name:'', header:3, categoryKeywords:null, sumMode:'all', active:true, draft:false, noFilter:false, company:null};
+    state.draft.classificationType = (state.draft.categoryKeywords && state.draft.categoryKeywords.length) ? 'category' : 'header';
+    $('#tagModalTitle').textContent = t ? 'עריכת טאג #' + t.id : 'טאג חדש';
+    $('#tmName').value = state.draft.name;
+    tmCombo.set(state.draft.company);
+    $('#tmChipField').value = '';
+    state.draft.categoryKeywords = state.draft.categoryKeywords || [];
+    renderChips();
+    setToggle($('#tmActive'), state.draft.active);
+    setToggle($('#tmDraft'), state.draft.draft);
+    $('#tmDelete').hidden = !t;
+    renderHeaderPick(state.draft.header || 3);
+    setClType(state.draft.classificationType);
+    setSumMode(state.draft.sumMode || 'all');
+    $('#tagModal').classList.add('is-open');
+  }
+  // wire classification picker + chip input field — once
+  document.querySelectorAll('#tmClPick .cl-pick__btn').forEach(b => {
+    b.addEventListener('click', () => setClType(b.dataset.cl));
+  });
+  document.querySelectorAll('#tmSumPick .sum-pick__btn').forEach(b => {
+    b.addEventListener('click', () => setSumMode(b.dataset.sm));
+  });
+  document.getElementById('tmChipField').addEventListener('keydown', e => {
+    const field = e.target;
+    if (e.key === 'Enter' || e.key === ','){
+      e.preventDefault();
+      addChip(field.value);
+      field.value = '';
+    } else if (e.key === 'Backspace' && !field.value && state.draft && state.draft.categoryKeywords && state.draft.categoryKeywords.length){
+      state.draft.categoryKeywords.pop();
+      renderChips();
+    }
+  });
+  document.getElementById('tmChipField').addEventListener('blur', e => {
+    if (e.target.value.trim()){ addChip(e.target.value); e.target.value = ''; }
+  });
+  // Focus the field when user clicks anywhere inside the chip-input container
+  document.getElementById('tmChipInput').addEventListener('click', e => {
+    if (e.target.closest('.chip-input__chip')) return;
+    document.getElementById('tmChipField').focus();
+  });
+  function closeModal(){ $('#tagModal').classList.remove('is-open'); state.editingId = null; state.draft = null; }
+
+  $('#newBtn').addEventListener('click', () => openModal(null));
+
+  document.querySelectorAll('[data-toggle]').forEach(el => {
+    el.addEventListener('click', () => el.classList.toggle('is-on'));
+  });
+
+  $('#tmSave').addEventListener('click', () => {
+    const name = $('#tmName').value.trim();
+    if (!name){ toast('שם הטאג חובה', ''); return; }
+    const cl = state.draft.classificationType;
+    if (cl === 'header' && !state.draft.header){ toast('יש לבחור כותרת רו"ה', ''); return; }
+    // Flush any unsubmitted text in the chip field
+    const pending = $('#tmChipField').value.trim();
+    if (cl === 'category' && pending){ addChip(pending); $('#tmChipField').value = ''; }
+    if (cl === 'category' && (!state.draft.categoryKeywords || state.draft.categoryKeywords.length === 0)){
+      toast('יש להזין לפחות מילה אחת לחיפוש', ''); return;
+    }
+    const company = tmCombo.get(); // null = כל החברות
+    const payload = {
+      name,
+      header:           cl === 'header'   ? state.draft.header                              : null,
+      categoryKeywords: cl === 'category' ? (state.draft.categoryKeywords || []).slice()    : null,
+      sumMode:          state.draft.sumMode || 'all',
+      company,
+      active: getToggle($('#tmActive')),
+      draft: getToggle($('#tmDraft')),
+    };
+    if (state.editingId){
+      const t = tags.find(x => x.id === state.editingId);
+      // Preserve noFilter — it's toggled directly from the row
+      Object.assign(t, payload);
+      toast('הטאג עודכן', 'success');
+    } else {
+      const id = Math.max(...tags.map(t => t.id)) + 1;
+      tags.unshift(Object.assign({id, noFilter:false, created: todayDmy()}, payload));
+      toast('הטאג נוצר', 'success');
+    }
+    closeModal();
+    render();
+  });
+
+  $('#tmDelete').addEventListener('click', async () => {
+    if (!state.editingId) return;
+    const t = tags.find(x => x.id === state.editingId);
+    if (!await askConfirm('מחיקת טאג', `למחוק לצמיתות את הטאג "${t ? t.name : ''}"?`)) return;
+    const idx = tags.findIndex(x => x.id === state.editingId);
+    if (idx >= 0) tags.splice(idx, 1);
+    closeModal(); render();
+    toast('הטאג נמחק', 'success');
+  });
+
+  document.addEventListener('click', e => {
+    const closer = e.target.closest('[data-close]');
+    if (closer){
+      const back = closer.closest('.modal-back');
+      if (back) back.classList.remove('is-open');
+    } else if (e.target.classList && e.target.classList.contains('modal-back')){
+      e.target.classList.remove('is-open');
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape'){
+      document.querySelectorAll('.modal-back.is-open').forEach(m => m.classList.remove('is-open'));
+    }
+  });
+
+  /* ===========================
+     TAB 2 — P&L MANAGEMENT
+     =========================== */
+  /* Monthrep_Company_Categories — מיפוי קטגוריה לכותרת */
+  const REPORT_GROUP_TO_HEADER = {
+    INCOME: 1, COST_OF_GOODS: 2, EXPENSES: 3, FINANCE_INVEST: 4,
+  };
+  const HEADER_TO_REPORT_GROUP = {1:'INCOME', 2:'COST_OF_GOODS', 3:'EXPENSES', 4:'FINANCE_INVEST'};
+
+  const categoryMappings = [
+    {id:1,  category:'קבלת הלוואה',                companyId:null, header:4},
+    {id:2,  category:'משיכות והזרמות בעלים',       companyId:null, header:4},
+    {id:3,  category:'הכנסות אחרות',               companyId:null, header:1},
+    {id:5,  category:'הוצאות אחרות',                companyId:null, header:3},
+    {id:6,  category:'תשלומי הלוואה',               companyId:null, header:4},
+    {id:7,  category:'הוצאות פרטיות',               companyId:null, header:4},
+    {id:8,  category:'פיקדונות',                   companyId:null, header:4},
+    {id:9,  category:'העברות בין חברות',            companyId:null, header:4},
+    {id:10, category:'פעילות הקמה',                companyId:null, header:4},
+    {id:11, category:'עמלות וריביות בנק',           companyId:null, header:4},
+    {id:12, category:'העברה בין חברתית',            companyId:null, header:4},
+    {id:13, category:'רכישת/משיכת מטה',             companyId:null, header:4},
+    {id:14, category:'קניות מלאי וחלפים',           companyId:null, header:2},
+    {id:15, category:'קניות - ריהוט וציוד לבית',    companyId:null, header:2},
+    {id:16, category:'קניות מלאי-יבוא',             companyId:null, header:2},
+    {id:17, category:'קניות מלאי - מסעדה',          companyId:null, header:2},
+    {id:18, category:'קניות - עיתון',               companyId:null, header:2},
+    {id:19, category:'קניות מלאי - סיגריות',        companyId:null, header:2},
+    {id:20, category:'קניות מלאי B2C - שופ הרים',  companyId:null, header:2},
+    {id:21, category:'שכר קבלני משנה - מחלקה עסקית', companyId:null, header:2},
+    {id:22, category:'קניות מלאי - צעצועי מין',    companyId:null, header:2},
+    {id:23, category:'קניות מלאי פ"ית',             companyId:null, header:2},
+    {id:24, category:'קניות מלאי - רב קו',          companyId:null, header:2},
+    {id:25, category:'קניות מלאי יבוא-חו"ל',        companyId:null, header:2},
+    {id:26, category:'קניות מלאי',                  companyId:null, header:2},
+    {id:27, category:'שכר קבלני משנה - מחלקה פרטית', companyId:null, header:2},
+    {id:28, category:'קבלני משנה',                  companyId:null, header:2},
+  ];
+
+  /* Excluded_Company_Categories — קטגוריות מוסתרות מהדוח */
+  const excludedCategories = [
+    {id:1, companyId:null, categories:['לא לקיטלוגי','קטגוריות שונות','העברה בין חשבונות']},
+  ];
+
+  const plState = {
+    editingMapId: null,
+    editingExclId: null,
+    mmHeader: 1,
+  };
+
+  function companyOrAll(id){
+    if (!id) return '<span class="all-companies">כל החברות</span>';
+    return companyName(id);
+  }
+  function companySelectOptions(selected){
+    return `<option value="">— כל החברות —</option>` +
+      companies.map(c => `<option value="${c.id}" ${c.id===selected?'selected':''}>${c.name}</option>`).join('');
+  }
+
+  function renderMappings(){
+    const rowsEl = $('#mapRows');
+    rowsEl.innerHTML = categoryMappings.map(m => `
+      <div class="row row--map" data-id="${m.id}">
+        <div class="id-cell">${m.id}</div>
+        <div class="name">${m.category}</div>
+        <div>${companyOrAll(m.companyId)}</div>
+        <div>${headerChip(m.header)}</div>
+        <div class="col-action">
+          <button class="btn btn--ghost btn--sm" data-edit-map="${m.id}">עריכה</button>
+        </div>
+      </div>
+    `).join('');
+    rowsEl.querySelectorAll('[data-edit-map]').forEach(b => {
+      b.addEventListener('click', () => openMapModal(+b.dataset.editMap));
+    });
+  }
+  function renderExclusions(){
+    const rowsEl = $('#exclRows');
+    rowsEl.innerHTML = excludedCategories.map(e => `
+      <div class="row row--excl" data-id="${e.id}">
+        <div class="id-cell">${e.id}</div>
+        <div>${companyOrAll(e.companyId)}</div>
+        <div class="cat-list">${e.categories.map(c => `<span class="cat-chip">${c}</span>`).join('') || '<span class="dash">—</span>'}</div>
+        <div class="col-action">
+          <button class="btn btn--ghost btn--sm" data-edit-excl="${e.id}">עריכה</button>
+        </div>
+      </div>
+    `).join('');
+    rowsEl.querySelectorAll('[data-edit-excl]').forEach(b => {
+      b.addEventListener('click', () => openExclModal(+b.dataset.editExcl));
+    });
+  }
+
+  /* MAPPING MODAL */
+  function renderMmHeaderPick(selected){
+    $('#mmHeaderPick').innerHTML = [1,2,3,4].map(h => `
+      <button class="header-pick__btn ${selected===h?'is-on':''}" data-h="${h}" type="button">
+        <span class="header-pick__title"><span class="header-pick__num">${h}</span>${HEADERS[h].label}</span>
+      </button>
+    `).join('');
+    $('#mmHeaderPick').querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => { plState.mmHeader = +b.dataset.h; renderMmHeaderPick(plState.mmHeader); });
+    });
+  }
+  function openMapModal(id){
+    ensureCombos();
+    plState.editingMapId = id;
+    const m = id ? categoryMappings.find(x => x.id === id) : null;
+    $('#mapModalTitle').textContent = m ? 'עריכת שיוך #' + m.id : 'שיוך חדש';
+    $('#mmCategory').value = m ? m.category : '';
+    mmCombo.set(m ? m.companyId : null);
+    plState.mmHeader = m ? m.header : 1;
+    renderMmHeaderPick(plState.mmHeader);
+    $('#mmDelete').hidden = !m;
+    $('#mapModal').classList.add('is-open');
+  }
+  $('#newMapBtn').addEventListener('click', () => openMapModal(null));
+  $('#mmSave').addEventListener('click', () => {
+    const category = $('#mmCategory').value.trim();
+    if (!category){ toast('שם קטגוריה חובה', ''); return; }
+    const companyId = mmCombo.get();
+    const header = plState.mmHeader;
+    if (plState.editingMapId){
+      const m = categoryMappings.find(x => x.id === plState.editingMapId);
+      Object.assign(m, {category, companyId, header});
+      toast('השיוך עודכן', 'success');
+    } else {
+      const id = (categoryMappings.length ? Math.max(...categoryMappings.map(m => m.id)) : 0) + 1;
+      categoryMappings.unshift({id, category, companyId, header});
+      toast('השיוך נוסף', 'success');
+    }
+    $('#mapModal').classList.remove('is-open');
+    plState.editingMapId = null;
+    renderMappings();
+  });
+  $('#mmDelete').addEventListener('click', async () => {
+    if (!plState.editingMapId) return;
+    const m = categoryMappings.find(x => x.id === plState.editingMapId);
+    if (!await askConfirm('מחיקת שיוך', `למחוק את השיוך של "${m ? m.category : ''}"?`)) return;
+    const idx = categoryMappings.findIndex(m => m.id === plState.editingMapId);
+    if (idx >= 0) categoryMappings.splice(idx, 1);
+    $('#mapModal').classList.remove('is-open');
+    plState.editingMapId = null;
+    renderMappings();
+    toast('השיוך נמחק', 'success');
+  });
+
+  /* EXCLUSION MODAL */
+  function openExclModal(id){
+    ensureCombos();
+    plState.editingExclId = id;
+    const e = id ? excludedCategories.find(x => x.id === id) : null;
+    $('#exclModalTitle').textContent = e ? 'עריכת רשומה #' + e.id : 'הוצאה מהדוח';
+    emCombo.set(e ? e.companyId : null);
+    $('#emCategories').value = e ? e.categories.join('\n') : '';
+    $('#emDelete').hidden = !e;
+    $('#exclModal').classList.add('is-open');
+  }
+  $('#newExclBtn').addEventListener('click', () => openExclModal(null));
+  $('#emSave').addEventListener('click', () => {
+    const cats = $('#emCategories').value.split('\n').map(s => s.trim()).filter(Boolean);
+    if (cats.length === 0){ toast('יש להזין לפחות קטגוריה אחת', ''); return; }
+    const companyId = emCombo.get();
+    if (plState.editingExclId){
+      const e = excludedCategories.find(x => x.id === plState.editingExclId);
+      Object.assign(e, {companyId, categories: cats});
+      toast('הרשומה עודכנה', 'success');
+    } else {
+      const id = (excludedCategories.length ? Math.max(...excludedCategories.map(e => e.id)) : 0) + 1;
+      excludedCategories.unshift({id, companyId, categories: cats});
+      toast('הרשומה נוספה', 'success');
+    }
+    $('#exclModal').classList.remove('is-open');
+    plState.editingExclId = null;
+    renderExclusions();
+  });
+  $('#emDelete').addEventListener('click', async () => {
+    if (!plState.editingExclId) return;
+    if (!await askConfirm('מחיקת רשומה', 'למחוק את רשומת הקטגוריות המוסתרות?')) return;
+    const idx = excludedCategories.findIndex(e => e.id === plState.editingExclId);
+    if (idx >= 0) excludedCategories.splice(idx, 1);
+    $('#exclModal').classList.remove('is-open');
+    plState.editingExclId = null;
+    renderExclusions();
+    toast('הרשומה נמחקה', 'success');
+  });
+
+  ['search','filterDraft'].forEach(id =>
+    document.getElementById(id).addEventListener('input', render));
+
+  document.getElementById('tabsNav').addEventListener('click', e => {
+    const b = e.target.closest('.tab');
+    if (!b) return;
+    state.activeTab = b.dataset.tab;
+    render();
+    if (state.activeTab === 'pl'){ renderMappings(); renderExclusions(); }
+  });
+
+  ensureCombos();
+  render();
+</script>
+
+</body>
+</html>
