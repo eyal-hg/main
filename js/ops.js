@@ -1300,8 +1300,6 @@
           <span class="cu-amt"><input type="number" value="${ci.days}" onchange="window._cuSet.cain.days=+this.value"> ימים</span></div>
         <div class="cu-set-row sub"><span>תזכורת גבייה ללקוח כל</span>
           <span class="cu-amt"><input type="number" value="${ci.remind}" onchange="window._cuSet.cain.remind=+this.value"> ימים</span></div>
-        <div class="cu-set-row sub"><span>אחרי</span>
-          <span class="cu-amt"><input type="number" value="${ci.esc}" onchange="window._cuSet.cain.esc=+this.value"> תזכורות</span><span>— מעבר לטיפול היועץ</span></div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
     };
