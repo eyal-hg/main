@@ -1278,7 +1278,7 @@
         <label class="cu-set-row"><input type="checkbox" ${st.on?'checked':''} onchange="window._cuSet.un.on=this.checked">
           <span>אירועים על פעולות לא צפויות בסכומים מעל</span>
           <span class="cu-amt"><input type="number" value="${st.min}" onchange="window._cuSet.un.min=+this.value"> ₪</span></label>
-        <div class="cu-set-note">אירועים שנמצאה להם התאמה או שטופלו — נמחקים מהמסך אוטומטית</div>
+        <div class="cu-set-note">אירועים בסכום מתחת לסף — יימחקו אוטומטית</div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
       return `<div class="cu-set">
@@ -1290,7 +1290,7 @@
           <span class="cu-amt"><input type="number" value="${st.days}" onchange="window._cuSet.ca.days=+this.value"> ימים</span></div>
         <div class="cu-set-row sub"><span>הודעה נוספת ללקוח על אותה פעולה — רק בחלוף</span>
           <span class="cu-amt"><input type="number" value="${st.wait}" onchange="window._cuSet.ca.wait=+this.value"> ימים</span><span>מההודעה הקודמת</span></div>
-        <div class="cu-set-note">אירועים שנמצאה להם התאמה או שטופלו — נמחקים מהמסך אוטומטית</div>
+        <div class="cu-set-note">אירועים בסכום מתחת לסף — יימחקו אוטומטית</div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
     };
@@ -1648,8 +1648,7 @@
 
     if(t.type==='unexpected'||t.type==='carry'){
       const nRel=(t.related||[]).length;
-      return (nRel?B('ghost','היסטוריה ('+nRel+')',`opsToggleRow(${i})`):`<span class="ot-none">אין היסטוריה</span>`)
-        +B('ghost','בדיקת התאמה',`matchCheck(${i})`)
+      return B('ghost','היסטוריה ובדיקת התאמה'+(nRel?' ('+nRel+')':''),`histMatch(${i})`)
         +(t.type==='carry'
           ?B('ghost','לא רלוונטי',`carrySnooze(${i})`)      // נגררת: מוסתרת להיום וחוזרת מחר
           :B('ghost','לא רלוונטי',`openNR(${i})`))          // לא צפויה: נמחקת עם סיבה
@@ -1669,7 +1668,6 @@
       const rel=(t.related&&t.related.length)?`<div class="rel-wrap">
       <div class="rel-h">היסטוריה — "${t.who}" <span>${t.related.length}</span></div>
       ${t.related.map(r=>`<div class="rel-row"><span class="rel-d">${r.d}</span><span class="rel-t">${r.t}</span><span class="rel-cat">${r.cat}</span><b class="rel-amt">${r.amt}</b></div>`).join('')}
-      <div class="rel-note">נראה כמו תשלום חוזר — אפשר לקטלג לפי ההיסטוריה או לשלוח שאלה ללקוח.</div>
     </div>`:`<div class="rel-wrap"><div class="ops-empty" style="padding:14px">אין היסטוריה ל"${t.who||'המוטב'}" — מופע ראשון.</div></div>`;
       return mb+rel;
     }
@@ -1711,6 +1709,11 @@
     t._matchChk=true;
     OPS_OPEN.add(i);
     renderOps();
+  }
+  /* כפתור מאוחד: פותח יחד את ההיסטוריה ואת בדיקת ההתאמה; לחיצה נוספת סוגרת */
+  function histMatch(i){
+    if(OPS_OPEN.has(i)){OPS_OPEN.delete(i);renderOps();return;}
+    matchCheck(i);
   }
   /* התאמה ידנית רבים-מול-רבים בין לא צפויות לנגררות */
   function muClear(){ window._muSel=new Set(); renderOps(); }
