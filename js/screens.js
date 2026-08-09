@@ -25,7 +25,7 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
@@ -129,12 +129,12 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'תקציב תזרימי'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'תקציב תזרימי',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
@@ -144,6 +144,14 @@
       document.getElementById('viewCal').style.display='';
       const f=document.getElementById('calFrame');
       if(!f.src) f.src=f.dataset.src;   // טעינה עצלה — היומן נטען רק בכניסה הראשונה
+    }
+    else if(t==='coset'){
+      document.getElementById('viewCoSet').style.display='';
+      if(typeof renderCoSet==='function')renderCoSet();
+    }
+    else if(t==='prep'){
+      document.getElementById('viewPrep').style.display='';
+      if(typeof renderPrepView==='function')renderPrepView();
     }
     else if(t==='budget'){
       document.getElementById('viewBudget').style.display='';
@@ -276,6 +284,11 @@
       if(!(ROLE==='client1'||ROLE==='clientN')){
         html+=`<div class="gn-sec-h">ליווי</div>`;
         html+=`<div class="gn-item sec ${CUR_TAB==='flow'?'on':''}" onclick="showTab('flow')">${SEC_ICO.flow}<span>${TAB_LABELS.flow}</span></div>`;
+      }
+      // הגדרות החברה — פר חברה, בתחתית
+      if(ROLE==='manager'||ROLE==='advisor'){
+        html+=`<div class="gn-sec-h">החברה</div>`;
+        html+=`<div class="gn-item sec ${CUR_TAB==='coset'?'on':''}" onclick="showTab('coset')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>הגדרות חברה</span></div>`;
       }
       }
     }else{

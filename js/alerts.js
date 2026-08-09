@@ -256,6 +256,36 @@
   /* היומן של היועץ להיום — פגישות + משימות, נבנה פעם אחת מהנתונים */
   let ADV_AGENDA=null, ADV_TODO=null;
   const ADV_NOW='10:54';
+  /* ניווט ימים ביומן היועץ */
+  let ADV_DOFF=0;
+  function advDayNav(d){ADV_DOFF=Math.max(-3,Math.min(6,ADV_DOFF+d));renderAlerts();}
+  function advDayToday(){ADV_DOFF=0;renderAlerts();}
+  const ADV_OTHER={
+    1:[{time:'10:00',kind:'meet',title:'פ.ע חודשית — רימון יצחק',sub:'רימון יצחק · 10:00-11:00 · Money+'}],
+    3:[{time:'09:30',kind:'meet',title:'פגישת הקמה — לביא הובלות',sub:'לביא הובלות · 09:30-10:30'},
+       {time:'14:30',kind:'task',title:'הכנה לפגישת אנרגי גולני',sub:'תקציר AI יוכן אוטומטית'}],
+    '-1':[{time:'09:00',kind:'meet',title:'פ.ע חודשית — אנרגי גולני',sub:'אנרגי גולני · הוקלטה · הסיכום אושר',done:true},
+       {time:'13:00',kind:'client',title:'שיחת גבייה — משה עובד',sub:'הוקלטה בסים · הזיכרון עודכן',done:true}],
+  };
+  function advSlotAdd(t){
+    if(typeof evQuick==='function'){
+      evQuick(t,null);
+      const dt=new Date(2026,6,2+ADV_DOFF);
+      const el=document.getElementById('evDate');
+      if(el) el.value=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    }
+  }
+  function memUpApprove(i){
+    MEM_UPDATES[i].pend=false;
+    toast('העדכון אושר ונכנס לכרטיס הלקוח');
+    renderAlerts(); advPop('mem');
+  }
+  /* רדאר שימור והרחבה — אותות מהזיכרון ומהתפעול */
+  const ADV_RADAR=[
+    {c:'אנרגי אינטרנשיונל', ci:0, kind:'churn',  why:'שביעות הרצון בירידה — תסכול מקצב התגובה (מהזיכרון · פגישת היום)', act:'שיחה אישית של היועץ השבוע'},
+    {c:'משה עובד',           ci:3, kind:'churn',  why:'לא הביא חומר לתזרים 21 יום · הפגישה האחרונה לא התקיימה',          act:'תיאום פגישת חידוש קשר'},
+    {c:'מטעי גבעון',         ci:2, kind:'upsell', why:'שימוש גבוה במדדים + ביקש פעמיים תחזית מפורטת (מהזיכרון)',          act:'להציע Money+ בפגישה הבאה'},
+  ];
   function advInit(){
     if(ADV_AGENDA) return;
     const TODAY='02.07.2026';
@@ -265,10 +295,9 @@
       ADV_AGENDA.push({time:m.time.split('-')[0], kind:'meet', mix:ix, client:m.client,
         title:m.name, sub:m.client+' · '+m.time+(m.rec?' · 🎙 '+m.rec:''), st:m.status, done:false});
     });
+    /* ביומן — רק פגישות ושיחות. משימות חיות בפאנל המשימות */
     ADV_AGENDA.push(
-      {time:'11:00', kind:'task',   title:'הכנה לפגישת משה עובד',      sub:'תקציר AI מוכן · 10 דק׳', done:false, act:'goPrep(3)', actLbl:'להכנה'},
-      {time:'13:00', kind:'client', title:'שיחת מעקב — מטעי גבעון',     sub:'אחרי חריגת התקציב (114%)', done:false, act:'selectClient(2)', actLbl:'פתיחה'},
-      {time:'17:30', kind:'task',   title:'עדכוני וואטסאפ ללקוחות',     sub:'סיכום יום · 4 חברות', done:false});
+      {time:'13:00', kind:'client', title:'שיחת מעקב — מטעי גבעון',     sub:'אחרי חריגת התקציב (114%)', done:false, act:'selectClient(2)', actLbl:'פתיחה'});
     ADV_AGENDA.sort((a,b)=>a.time.localeCompare(b.time));
     ADV_TODO=[];
     MEETINGS.forEach((m,ix)=>{
@@ -280,7 +309,11 @@
       if(c.product==='money+'&&!hasUpcomingMeeting(c))
         ADV_TODO.push({t:'שליחת זמנים לפגישה חודשית — '+c.name+' (Money+)', act:"toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')", lbl:'שליחה', done:false});
     });
+    ADV_TODO.push(
+      {t:'עדכוני וואטסאפ ללקוחות — סיכום יום · 4 חברות', done:false, manual:true},
+      {t:'לחזור לרו״ח של מטעי גבעון על המע״מ', done:false, manual:true});
   }
+  function advTaskNew(){ window._mtkTarget='adv'; if(typeof mcQuick==='function') mcQuick(); }
   function advTgl(ix){ADV_AGENDA[ix].done=!ADV_AGENDA[ix].done;renderAlerts();if(ADV_AGENDA[ix].done)toast('סומן כבוצע');}
   function advTodoDone(ix){ADV_TODO[ix].done=!ADV_TODO[ix].done;renderAlerts();}
 
@@ -317,6 +350,11 @@
         <div class="advt-v">${openT}<span>פתוחות</span></div>
         <div class="advt-s">מעקב אחרי מה שביקשת מהתפעול</div>
       </div>
+      <div class="advt-card radar" onclick="advPop('radar')">
+        <div class="advt-k">רדאר שימור והרחבה</div>
+        <div class="advt-v">${ADV_RADAR.filter(r=>r.kind==='churn').length}<span>לקוחות לא מרוצים</span></div>
+        <div class="advt-s">${ADV_RADAR.filter(r=>r.kind==='upsell').length} מועמד לשדרוג Money+ · מבוסס זיכרון לקוח</div>
+      </div>
     </div>`;
   }
   window._advTaskOpen=null;
@@ -345,6 +383,24 @@
           <b>${r.c}</b><span>${r.days} ימים</span><span class="ap-num neg">-${r.amt.toLocaleString('en-US')} ₪</span><span>${r.bank}</span>
           ${r.fix?`<span class="ap-fix ok">✓ ${r.fix}</span>`:'<span class="ap-fix no">אין פתרון בין חשבונות — נדרש טיפול</span>'}
         </div>`).join('');
+    }else if(kind==='mem'){
+      title='עדכוני זיכרון — פגישת 09:00 · אנרגי אינטרנשיונל';
+      const ups=MEM_UPDATES.map((u,gi)=>({u,gi})).filter(x=>x.u.ci===0&&x.u.src.includes('09:00'));
+      body=`<div class="apm-sub">ה-AI עדכן את כרטיס הלקוח מתוך תמלול הפגישה. עדכון בקטגוריה רגישה ממתין לאישורך לפני שנכנס למסמך.</div>`+
+        ups.map(({u,gi})=>`<div class="apm-row ${u.pend?'pend':''}">
+          <span class="mf-cat">${u.catName}</span>
+          <div class="apm-b"><div class="mf-l">${u.line}</div><div class="mf-meta">${u.when}</div></div>
+          ${u.pend?`<button class="ot-btn done" onclick="memUpApprove(${gi})">אישור</button><button class="mt-btn view" onclick="advPopClose();openMemCard(0)">עריכה בכרטיס</button>`:'<span class="apm-ok">✓ עודכן</span>'}
+        </div>`).join('');
+    }else if(kind==='radar'){
+      title='רדאר שימור והרחבה — מבוסס זיכרון לקוח ותפעול';
+      body=`<div class="apm-sub">אותות שה-AI מזהה מהזיכרון, מהשימוש ומהתפעול — לפני שחוסר שביעות הרצון הופך לעזיבה.</div>`+
+        ADV_RADAR.map(r=>`<div class="apm-row">
+          <span class="rad-tag ${r.kind}">${r.kind==='churn'?'חוסר שביעות רצון':'הזדמנות שדרוג'}</span>
+          <div class="apm-b"><div class="mf-l"><b>${r.c}</b> — ${r.why}</div><div class="mf-meta">מומלץ: ${r.act}</div></div>
+          <button class="mt-btn" onclick="toast('נפתח תיאום ביומן — ${r.c}')">תיאום</button>
+          <button class="mt-btn view" onclick="advPopClose();openMemCard(${r.ci})">כרטיס לקוח</button>
+        </div>`).join('');
     }else{
       title='משימות פתוחות למנהל תזרים';
       body=`<div class="ap-row tk head"><b>נפתחה</b><span>מנהל תזרים</span><span>לקוח</span><span>המשימה</span><span></span><span></span></div>`+
@@ -363,6 +419,15 @@
   function advSchedCall(i){
     toast('נפתח תיאום שיחה עם '+CLIENTS[i].name+' — הוצעו 3 חלונות ביומן');
   }
+  /* הכנה לפגישה — מוצמדת לפגישה ביומן, לא פאנל נפרד */
+  const ADV_PREPS={
+    'אנרגי אינטרנשיונל':{pts:['ההכנסות +12% מהחודש הקודם — כדאי לפתוח בזה','חריגה צפויה בעו״ש בעוד 9 ימים — להציע העברה מפועלים 112','25,000 ₪ קניות מלאי עוד לא נצבעו בתזרים'],
+      mem:['פתח במספרים — צחי מאבד סבלנות מהקדמות','רגישות סביב התלות ברימון — לגעת בזה בעדינות, בלי לחץ']},
+    'משה עובד':{pts:['ההקמה כמעט הושלמה — נשארו הרשאות בנק','אין עדיין נתוני תפעול — לתאם ציפיות לחודש הראשון','להציג את דוח התזרים הראשון בפגישה'],
+      mem:['לקוח בהקמה — טון מלווה ומרגיע, בלי ז׳רגון מקצועי']},
+  };
+  const ADV_PREP_OPEN=new Set();
+  function advPrepTg(ix){ ADV_PREP_OPEN.has(ix)?ADV_PREP_OPEN.delete(ix):ADV_PREP_OPEN.add(ix); renderAlerts(); }
   function renderAdvisorHome(){
     const board=document.getElementById('alBoard');
     board.classList.add('advh');
@@ -372,12 +437,13 @@
     /* --- היומן: משימות פתוחות + ציר היום --- */
     const openTodo=ADV_TODO.filter(x=>!x.done).length;
     const todoHtml=`<div class="mc-todo">
-      <div class="mc-todo-h">משימות פתוחות <span class="mc-todo-n">${openTodo}</span><i>אישורים, תיאומים ומעקבים</i></div>
+      <div class="mc-todo-h">המשימות שלי <span class="mc-todo-n">${openTodo}</span><i>אישורים, מעקבים ומשימות אישיות</i>
+        <button class="mt-btn sm" style="margin-inline-start:auto" onclick="advTaskNew()">+ משימה</button></div>
       ${ADV_TODO.map((x,i)=>`
         <div class="mc-todo-row ${x.done?'done':''}">
           <label class="mc-chk"><input type="checkbox" ${x.done?'checked':''} onchange="advTodoDone(${i})"><span></span></label>
           <span class="mc-todo-t">${x.t}</span>
-          ${x.done?'':`<button class="mt-btn ${x.lbl==='אישור'?'':'view'}" onclick="${x.act}">${x.lbl}</button>`}
+          ${x.done||!x.lbl?'':`<button class="mt-btn ${x.lbl==='אישור'?'':'view'}" onclick="${x.act}">${x.lbl}</button>`}
         </div>`).join('')}
     </div>`;
     let nowDrawn=false, tl='';
@@ -391,24 +457,59 @@
       if(it.kind==='meet'&&it.st==='upcoming'&&!it.done) action=`<button class="mrec-btn on-card sm" onclick="startMeetRec('${it.client}')"><span class="mrec-dot"></span> הקלטה</button>`;
       else if(it.kind==='meet'&&it.st==='ai') action=`<span class="msp-chip purple">בעיבוד AI</span>`;
       else if(it.act&&!it.done) action=`<button class="mt-btn view" onclick="${it.act}">${it.actLbl}</button>`;
+      const prep=it.kind==='meet'?ADV_PREPS[it.client]:null;
+      const pOpen=ADV_PREP_OPEN.has(ix);
       tl+=`<div class="mc-item ${k[1]} ${it.done?'done':''}">
         <div class="mc-time" dir="ltr">${it.time}</div>
         <label class="mc-chk"><input type="checkbox" ${it.done?'checked':''} onchange="advTgl(${ix})"><span></span></label>
         <div class="mc-b"><div class="mc-t">${it.title}</div><div class="mc-s">${it.sub}</div></div>
+        ${prep?`<button class="mt-btn view sm ${pOpen?'on':''}" onclick="advPrepTg(${ix})">הכנה ${pOpen?'▴':'▾'}</button>`:''}
         ${action}
         <span class="mc-tag ${k[1]}">${k[0]}</span>
+      </div>`;
+      if(prep&&pOpen) tl+=`<div class="adv-prep">
+        ${prep.pts.map(pt=>`<div class="prep-pt">${pt}</div>`).join('')}
+        ${(prep.mem||[]).map(pt=>`<div class="prep-pt mem"><span class="pm-tag">מהזיכרון</span>${pt}</div>`).join('')}
+        <button class="mt-btn view sm" onclick="goPrep(0)">להכנה המלאה</button>
       </div>`;
     });
     if(!nowDrawn) tl+=`<div class="mc-now"><span class="mc-now-t" dir="ltr">${ADV_NOW}</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>`;
     const leftCnt=ADV_AGENDA.filter(x=>!x.done).length;
+    /* ניווט ימים: היום = יומן חי; ימים אחרים מ-ADV_OTHER */
+    const DAYN=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+    const dvt=new Date(2026,6,2+ADV_DOFF);
+    const dLbl=(ADV_DOFF===0?'היום · ':'')+'יום '+DAYN[dvt.getDay()]+' '+dvt.getDate()+'.'+String(dvt.getMonth()+1).padStart(2,'0');
+    let calBody;
+    if(ADV_DOFF===0){ calBody=todoHtml+tl+`<div class="mc-foot">${leftCnt} פריטים נותרו להיום</div>`; }
+    else{
+      const evs=(ADV_OTHER[ADV_DOFF]||[]).slice().sort((a,b)=>a.time.localeCompare(b.time));
+      const slots=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00'];
+      const taken=new Set(evs.map(e=>e.time.slice(0,2)+':00'));
+      let oh='';
+      [...slots.filter(t=>!taken.has(t)).map(t=>({slot:true,time:t})),...evs.map(e=>({slot:false,time:e.time,e}))]
+        .sort((a,b)=>a.time.localeCompare(b.time)||(a.slot?1:-1))
+        .forEach(en=>{
+          if(en.slot){ if(ADV_DOFF>0) oh+=`<div class="mc-drop" onclick="advSlotAdd('${en.time}')"><span dir="ltr">${en.time}</span><i class="add-t">+ הוספת אירוע</i></div>`; return; }
+          const e=en.e, k=AK[e.kind]||AK.task;
+          oh+=`<div class="mc-item ${k[1]} ${e.done?'done':''}">
+            <div class="mc-time" dir="ltr">${e.time}</div>
+            <div class="mc-b"><div class="mc-t">${e.title}</div><div class="mc-s">${e.sub}</div></div>
+            <span class="mc-tag ${k[1]}">${k[0]}</span></div>`;
+        });
+      calBody=oh+`<div class="mc-foot">${evs.length?evs.length+' אירועים ביום זה':'יום פנוי'}</div>`;
+    }
     const calCard=`<div class="advl advcal">
       <div class="advl-head">
-        <span class="advl-title">היומן שלי</span><span class="advl-sub">יום חמישי · 2.7.2026</span>
+        <span class="advl-title">היומן שלי</span><span class="advl-sub">${dLbl}</span>
+        <span class="adv-dnav">
+          <button class="mcw-arr" onclick="advDayNav(-1)" title="יום קודם"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+          ${ADV_DOFF!==0?`<button class="mcw-todaybtn" onclick="advDayToday()">חזרה להיום</button>`:''}
+          <button class="mcw-arr" onclick="advDayNav(1)" title="יום הבא"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        </span>
         <button class="mrec-btn on-card sm" style="margin-inline-start:auto" onclick="startMeetRec()"><span class="mrec-dot"></span> התחל פגישה</button>
         <button class="mt-btn view" onclick="gnavGo('cal')">היומן המלא</button>
       </div>
-      ${todoHtml}${tl}
-      <div class="mc-foot">${leftCnt} פריטים נותרו להיום</div>
+      ${calBody}
     </div>`;
     /* --- התראות: חריגות צפויות (הכי חשוב), מדדים, ומה השתפר --- */
     const ovd=alerts.filter(a=>a.mkey==='overdraft');
@@ -416,6 +517,8 @@
     const ATT=[
       {sev:'high', i:0, c:'אנרגי אינטרנשיונל', what:'חריגה צפויה בעו״ש בעוד 9 ימים', act:'לתאם שיחה על הזרמה או דחיית תשלומים — יש יתרה חיובית בפועלים 112',
        btn:'תיאום שיחה', go:`advSchedCall(0)`},
+      {sev:'high', i:0, c:'אנרגי אינטרנשיונל', what:'שביעות הרצון ירדה — תסכול מקצב התגובה', act:'עלה בפגישה המוקלטת של היום · מומלץ שיחה אישית קצרה מהיועץ',
+       btn:'כרטיס לקוח', go:`openMemCard(0)`, mem:true},
       {sev:'high', i:2, c:'מטעי גבעון', what:'חריגת תקציב — 114% מהיעד', act:'מומלץ שיחת מעקב על קניות המלאי לפני חריגת המסגרת',
        btn:'תיאום שיחה', go:`advSchedCall(2)`},
       {sev:'mid', i:1, c:'אנרגי גולני', what:'חוב פתוח לגבייה — 1,200 ₪ בפיגור', act:'לשלוח תזכורת גבייה בוואטסאפ',
@@ -428,7 +531,7 @@
       ${ATT.map(x=>`
         <div class="att-row ${x.sev}">
           <div class="att-b">
-            <div class="att-t"><b>${x.c}</b> — ${x.what}</div>
+            <div class="att-t"><b>${x.c}</b> — ${x.what}${x.mem?' <span class="pm-tag">מהזיכרון</span>':''}</div>
             <div class="att-a">${x.act}</div>
           </div>
           <div class="att-btns">
@@ -438,32 +541,27 @@
         </div>`).join('')}
     </div>`;
     /* הכנה לפגישות היום — שלוש נקודות AI לכל פגישה */
-    const PREPS=[
-      {time:'09:00', c:'אנרגי אינטרנשיונל', pts:[
-        'ההכנסות +12% מהחודש הקודם — כדאי לפתוח בזה',
-        'חריגה צפויה בעו״ש בעוד 9 ימים — להציע העברה מפועלים 112',
-        '25,000 ₪ קניות מלאי עוד לא נצבעו בתזרים']},
-      {time:'16:00', c:'משה עובד', pts:[
-        'ההקמה כמעט הושלמה — נשארו הרשאות בנק',
-        'אין עדיין נתוני תפעול — לתאם ציפיות לחודש הראשון',
-        'להציג את דוח התזרים הראשון בפגישה']},
-    ];
-    const prepCard=`<div class="advl">
-      <div class="advl-head"><span class="advl-title">הכנה לפגישות היום</span><span class="advl-sub">שלוש נקודות מוכנות מה-AI לכל פגישה</span></div>
-      ${PREPS.map(p=>`
-        <div class="prep-blk">
-          <div class="prep-h"><b dir="ltr">${p.time}</b><span>${p.c}</span><button class="mt-btn view sm" onclick="goPrep(0)">להכנה המלאה</button></div>
-          ${p.pts.map(pt=>`<div class="prep-pt">${pt}</div>`).join('')}
-        </div>`).join('')}
+    /* פיד עדכוני הזיכרון — הפגישות המוקלטות מייצרות זיכרון מול העיניים */
+    const pendN=MEM_UPDATES.filter(u=>u.pend).length;
+    const memFeedCard=`<div class="advl memfeed">
+      <div class="advl-head"><span class="advl-title">זיכרון לקוח — עדכונים</span><span class="advl-sub">נוצר אוטומטית מפגישות ושיחות מוקלטות</span></div>
+      <div class="mf-pipe">
+        <span class="mrec-dot"></span>
+        <div class="mf-pipe-t">פגישת 09:00 · אנרגי אינטרנשיונל<span>הוקלטה 46 דק׳ ← תומללה ← 3 עדכוני זיכרון${pendN?` · <b>${pendN} ממתין לאישורך</b>`:''}</span></div>
+        <button class="mt-btn" onclick="advPop('mem')">סקירה</button>
+      </div>
+      ${MEM_UPDATES.map(u=>`<div class="mf-row">
+        <span class="mf-dot ${u.sev}"></span>
+        <div class="mf-b">
+          <div class="mf-t"><b>${CLIENTS[u.ci].name}</b><span class="mf-cat">${u.catName}</span>${u.pend?'<span class="mf-wait">ממתין לאישור</span>':''}</div>
+          <div class="mf-l">${u.line}</div>
+          <div class="mf-meta">${u.src} · ${u.when}</div>
+        </div>
+        <button class="mt-btn view sm" onclick="openMemCard(${u.ci})">כרטיס</button>
+      </div>`).join('')}
     </div>`;
-    const wins=[
-      ['אנרגי אינטרנשיונל','הכנסות יוני +12% מהחודש הקודם'],
-      ['מטעי גבעון','3 שבועות רצופים בלי חריגת תקציב'],
-      ['אנרגי גולני','סך הליטרים חצה את היעד החודשי'],
-    ].map(w=>`<div class="advw-row"><span class="advw-ic">↑</span><b>${w[0]}</b><span>${w[1]}</span></div>`).join('');
-    const winsCard=`<div class="advl"><div class="advl-head"><span class="advl-title">מה השתפר השבוע</span></div>${wins}</div>`;
     board.innerHTML=advTopCards()+`<div class="advh2">
       <div class="advcal-col">${calCard}</div>
-      <div class="advh-side">${attCard}${prepCard}${winsCard}</div>
+      <div class="advh-side">${attCard}${memFeedCard}</div>
     </div>`;
   }

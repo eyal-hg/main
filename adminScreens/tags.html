@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HK Money – ניהול טאגים</title>
+<title>HK Money – ניהול קטגוריות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -558,7 +558,7 @@
   <div class="top__brand">
     <div class="top__logo">HK</div>
     <div>
-      <div class="top__title">ניהול טאגים</div>
+      <div class="top__title">ניהול קטגוריות</div>
       <div class="top__sub">HK Money</div>
     </div>
   </div>
@@ -576,7 +576,7 @@
 
     <div class="page-head">
       <div>
-        <div class="page-head__title">ניהול טאגים וכותרות רווח והפסד</div>
+        <div class="page-head__title">ניהול קטגוריות — טאגים, רווח והפסד והחרגות</div>
         <div class="page-head__meta">סיווג כל טאג לקטגוריה משלך או לאחת מ-4 כותרות הדו"ח</div>
       </div>
       <button class="btn btn--primary" id="newBtn"><span>+</span> טאג חדש</button>
@@ -585,6 +585,7 @@
     <nav class="tabs" id="tabsNav">
       <button class="tab is-active" data-tab="tags">ניהול טאגים</button>
       <button class="tab" data-tab="pl">ניהול רווח והפסד</button>
+      <button class="tab" data-tab="excl">החרגות</button>
     </nav>
 
     <div id="tagsTab">
@@ -655,11 +656,18 @@
         </div>
       </section>
 
+    </div>
+
+    <div id="exclTab" hidden>
+      <div class="pl-intro">
+        שני סוגי החרגה. כלל עם <b>חברה ריקה</b> חל על <b>כל החברות</b> (גלובלי).
+      </div>
+
       <section class="pl-card">
         <div class="pl-card__head">
           <div>
-            <div class="pl-card__title">🚫 קטגוריות להוצאה מהדוח</div>
-            <div class="pl-card__sub">קטגוריות שלא ייכללו כלל בדוח החודשי</div>
+            <div class="pl-card__title">🚫 הוצאה מהדוח</div>
+            <div class="pl-card__sub">קטגוריות שלא ייכללו כלל בדוח החודשי — התנועות נשארות כמו שהן</div>
           </div>
           <button class="btn btn--primary btn--sm" id="newExclBtn">+ הוספה</button>
         </div>
@@ -671,6 +679,25 @@
             <div class="col-action">פעולות</div>
           </div>
           <div id="exclRows"></div>
+        </div>
+      </section>
+
+      <section class="pl-card">
+        <div class="pl-card__head">
+          <div>
+            <div class="pl-card__title">🏷️ קטגוריות לקטלוג</div>
+            <div class="pl-card__sub">לא ייכללו בדוח, וכל תנועה בהן חייבת קיטלוג מחדש — מזינות את שלב הקיטלוג בתפעול</div>
+          </div>
+          <button class="btn btn--primary btn--sm" id="newReclBtn">+ הוספה</button>
+        </div>
+        <div class="table-scroll">
+          <div class="colhead colhead--excl">
+            <div>מזהה</div>
+            <div>חברה</div>
+            <div>קטגוריות לקטלוג</div>
+            <div class="col-action">פעולות</div>
+          </div>
+          <div id="reclRows"></div>
         </div>
       </section>
     </div>
@@ -946,6 +973,7 @@
     // Tab switching
     $('#tagsTab').hidden = state.activeTab !== 'tags';
     $('#plTab').hidden = state.activeTab !== 'pl';
+    $('#exclTab').hidden = state.activeTab !== 'excl';
     document.querySelectorAll('#tabsNav .tab').forEach(t => t.classList.toggle('is-active', t.dataset.tab === state.activeTab));
     // "+ טאג חדש" shouldn't appear when we're in the P&L tab — it's unrelated there
     $('#newBtn').style.display = state.activeTab === 'tags' ? '' : 'none';
@@ -1332,14 +1360,20 @@
 
   /* Excluded_Company_Categories — קטגוריות מוסתרות מהדוח */
   const excludedCategories = [
-    {id:1, companyId:null, categories:['לא לקיטלוגי','קטגוריות שונות','העברה בין חשבונות']},
+    {id:1, companyId:null, categories:['קטגוריות שונות','העברה בין חשבונות']},
+  ];
+  /* קטגוריות לקטלוג — לא בדוח + התנועות שלהן חייבות קיטלוג מחדש */
+  const reclassCategories = [
+    {id:1, companyId:null, categories:['כללי','לא לקיטלוג']},
   ];
 
   const plState = {
     editingMapId: null,
     editingExclId: null,
+    exclKind: 'report',   // report = הוצאה מהדוח · reclass = קטגוריות לקטלוג
     mmHeader: 1,
   };
+  const exclListOf = () => plState.exclKind === 'reclass' ? reclassCategories : excludedCategories;
 
   function companyOrAll(id){
     if (!id) return '<span class="all-companies">כל החברות</span>';
@@ -1368,20 +1402,23 @@
     });
   }
   function renderExclusions(){
-    const rowsEl = $('#exclRows');
-    rowsEl.innerHTML = excludedCategories.map(e => `
-      <div class="row row--excl" data-id="${e.id}">
-        <div class="id-cell">${e.id}</div>
-        <div>${companyOrAll(e.companyId)}</div>
-        <div class="cat-list">${e.categories.map(c => `<span class="cat-chip">${c}</span>`).join('') || '<span class="dash">—</span>'}</div>
-        <div class="col-action">
-          <button class="btn btn--ghost btn--sm" data-edit-excl="${e.id}">עריכה</button>
+    const draw = (el, list, kind) => {
+      el.innerHTML = list.map(e => `
+        <div class="row row--excl" data-id="${e.id}">
+          <div class="id-cell">${e.id}</div>
+          <div>${companyOrAll(e.companyId)}</div>
+          <div class="cat-list">${e.categories.map(c => `<span class="cat-chip">${c}</span>`).join('') || '<span class="dash">—</span>'}</div>
+          <div class="col-action">
+            <button class="btn btn--ghost btn--sm" data-edit-excl="${e.id}">עריכה</button>
+          </div>
         </div>
-      </div>
-    `).join('');
-    rowsEl.querySelectorAll('[data-edit-excl]').forEach(b => {
-      b.addEventListener('click', () => openExclModal(+b.dataset.editExcl));
-    });
+      `).join('');
+      el.querySelectorAll('[data-edit-excl]').forEach(b => {
+        b.addEventListener('click', () => openExclModal(+b.dataset.editExcl, kind));
+      });
+    };
+    draw($('#exclRows'), excludedCategories, 'report');
+    draw($('#reclRows'), reclassCategories, 'reclass');
   }
 
   /* MAPPING MODAL */
@@ -1439,28 +1476,33 @@
   });
 
   /* EXCLUSION MODAL */
-  function openExclModal(id){
+  function openExclModal(id, kind){
     ensureCombos();
+    plState.exclKind = kind || 'report';
     plState.editingExclId = id;
-    const e = id ? excludedCategories.find(x => x.id === id) : null;
-    $('#exclModalTitle').textContent = e ? 'עריכת רשומה #' + e.id : 'הוצאה מהדוח';
+    const list = exclListOf();
+    const e = id ? list.find(x => x.id === id) : null;
+    const kindTitle = plState.exclKind === 'reclass' ? 'קטגוריות לקטלוג' : 'הוצאה מהדוח';
+    $('#exclModalTitle').textContent = e ? kindTitle + ' — עריכת רשומה #' + e.id : kindTitle;
     emCombo.set(e ? e.companyId : null);
     $('#emCategories').value = e ? e.categories.join('\n') : '';
     $('#emDelete').hidden = !e;
     $('#exclModal').classList.add('is-open');
   }
-  $('#newExclBtn').addEventListener('click', () => openExclModal(null));
+  $('#newExclBtn').addEventListener('click', () => openExclModal(null, 'report'));
+  $('#newReclBtn').addEventListener('click', () => openExclModal(null, 'reclass'));
   $('#emSave').addEventListener('click', () => {
     const cats = $('#emCategories').value.split('\n').map(s => s.trim()).filter(Boolean);
     if (cats.length === 0){ toast('יש להזין לפחות קטגוריה אחת', ''); return; }
     const companyId = emCombo.get();
+    const list = exclListOf();
     if (plState.editingExclId){
-      const e = excludedCategories.find(x => x.id === plState.editingExclId);
+      const e = list.find(x => x.id === plState.editingExclId);
       Object.assign(e, {companyId, categories: cats});
       toast('הרשומה עודכנה', 'success');
     } else {
-      const id = (excludedCategories.length ? Math.max(...excludedCategories.map(e => e.id)) : 0) + 1;
-      excludedCategories.unshift({id, companyId, categories: cats});
+      const id = (list.length ? Math.max(...list.map(e => e.id)) : 0) + 1;
+      list.unshift({id, companyId, categories: cats});
       toast('הרשומה נוספה', 'success');
     }
     $('#exclModal').classList.remove('is-open');
@@ -1469,9 +1511,10 @@
   });
   $('#emDelete').addEventListener('click', async () => {
     if (!plState.editingExclId) return;
-    if (!await askConfirm('מחיקת רשומה', 'למחוק את רשומת הקטגוריות המוסתרות?')) return;
-    const idx = excludedCategories.findIndex(e => e.id === plState.editingExclId);
-    if (idx >= 0) excludedCategories.splice(idx, 1);
+    if (!await askConfirm('מחיקת רשומה', 'למחוק את הרשומה?')) return;
+    const list = exclListOf();
+    const idx = list.findIndex(e => e.id === plState.editingExclId);
+    if (idx >= 0) list.splice(idx, 1);
     $('#exclModal').classList.remove('is-open');
     plState.editingExclId = null;
     renderExclusions();
@@ -1486,7 +1529,8 @@
     if (!b) return;
     state.activeTab = b.dataset.tab;
     render();
-    if (state.activeTab === 'pl'){ renderMappings(); renderExclusions(); }
+    if (state.activeTab === 'pl'){ renderMappings(); }
+    if (state.activeTab === 'excl'){ renderExclusions(); }
   });
 
   ensureCombos();

@@ -150,3 +150,81 @@
     if(typeof renderAdvisorHome==='function'&&ROLE==='advisor'&&SCOPE==='portfolio') renderAlerts();
   }
 
+
+/* ===== הכנה לפגישה — נגזרת מהזיכרון בזמן אמת, לא נשמרת =====
+   מקורות: מסמכי הזיכרון + snapshot מספרים + משימות מהפגישה הקודמת.
+   נוצרת בפתיחת המסך (ובפרודקשן: אוטומטית 24ש׳ לפני + רענון 30 דק׳ לפני). */
+let PREP_TASKS=[
+  {t:'העברת הרשאות צפייה בפועלים 112', done:true},
+  {t:'עדכון שורה תקציבית — קניות מלאי', done:false},
+  {t:'שליחת דוח גבייה מרוכז לצחי', done:true},
+];
+function prepTaskTg(i){PREP_TASKS[i].done=!PREP_TASKS[i].done;renderPrepView();}
+function renderPrepView(){
+  const el=document.getElementById('viewPrep'); if(!el) return;
+  const c=CLIENTS[CUR]||{};
+  const now=new Date();
+  const stamp='היום '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const N=(typeof MEM_NUMS!=='undefined'&&MEM_NUMS[CUR])?MEM_NUMS[CUR]:null;
+  const kpis=N?N.kpi.slice(0,4).map(n=>`<div class="mem-num ${n.bad?'bad':''}"><span>${n.k}</span><b>${n.v}</b></div>`).join(''):'';
+  const openTasks=PREP_TASKS.filter(t=>!t.done).length;
+  el.innerHTML=`
+  <div class="prp">
+    <div class="prp-head">
+      <div>
+        <div class="prp-ttl">הכנה לפגישה — פגישה חודשית · יולי</div>
+        <div class="prp-sub">${c.name||''} · היום 16:00 · <b>נוצרה מהזיכרון והמספרים ${stamp}</b></div>
+      </div>
+      <div class="prp-acts">
+        <button class="mt-btn view" onclick="toast('ההכנה נוצרה מחדש מהזיכרון והמספרים העדכניים');renderPrepView()">↻ רענון</button>
+        <button class="mt-btn" onclick="toast('ההכנה נשלחה אליך בוואטסאפ')">שליחה אליי בוואטסאפ</button>
+      </div>
+    </div>
+
+    <div class="prp-grid">
+      <div class="prp-main">
+        <div class="prp-card ai">
+          <div class="prp-card-h"><span class="prp-spark">✦</span> סיכום AI לפגישה</div>
+          <p>הפגישה מגיעה אחרי חודש חזק (הכנסות +12%) אבל עם חריגה צפויה בעו״ש בעוד 9 ימים. הנושא המרכזי: קניות המלאי — גם חרגו מהתקציב (114%) וגם 25,000 ₪ מהן טרם נצבעו בתזרים. צחי ביקש בפגישה הקודמת לרדת לרזולוציית ספקים — להגיע עם הפירוט מוכן.</p>
+        </div>
+
+        <div class="prp-card">
+          <div class="prp-card-h">נקודות פתיחה</div>
+          <div class="prep-pt">ההכנסות +12% מהחודש הקודם — כדאי לפתוח בזה <span class="prp-src">מדדים</span></div>
+          <div class="prep-pt">חריגה צפויה בעו״ש בעוד 9 ימים — להציע העברה מפועלים 112 <span class="prp-src">תזרים</span></div>
+          <div class="prep-pt">25,000 ₪ קניות מלאי עוד לא נצבעו בתזרים <span class="prp-src">תפעול</span></div>
+        </div>
+
+        <div class="prp-card">
+          <div class="prp-card-h">מטרה מוצעת לפגישה</div>
+          <div class="prp-goal">סגירת תוכנית מלאי לרבעון — תקציב חדש לשורת הקניות + צביעת ה-25,000 ₪ הפתוחים</div>
+          <div class="prp-goal-why">למה: זה החוט שמחבר את חריגת התקציב, החריגה הצפויה בעו״ש והכאב שעלה בפגישה הקודמת</div>
+        </div>
+
+        <div class="prp-card">
+          <div class="prp-card-h">משימות מהפגישה הקודמת <span class="prp-cnt">${openTasks} פתוחות</span></div>
+          ${PREP_TASKS.map((t,i)=>`<div class="prp-task ${t.done?'done':''}">
+            <label class="mc-chk"><input type="checkbox" ${t.done?'checked':''} onchange="prepTaskTg(${i})"><span></span></label>
+            <span>${t.t}</span></div>`).join('')}
+        </div>
+      </div>
+
+      <aside class="prp-side">
+        <div class="prp-card mem">
+          <div class="prp-card-h"><span class="pm-tag">מהזיכרון</span> הנחיות אישיות</div>
+          <div class="prep-pt mem">פתח במספרים — צחי מאבד סבלנות מהקדמות</div>
+          <div class="prep-pt mem">רגישות סביב התלות ברימון — לגעת בזה בעדינות, בלי לחץ</div>
+          <div class="prep-pt mem">לצ׳אט נשלח רק: ״ענה ברוגע ובקצרה — הצג תמיד פתרון לצד בעיה״</div>
+        </div>
+        <div class="prp-card">
+          <div class="prp-card-h">מהזיכרון — רלוונטי לפגישה</div>
+          <div class="prp-memrow"><span class="mf-cat">מצב תזרימי</span>חריגה בפועל 6 ימים בלאומי · מסגרת 150K בניצול 107%</div>
+          <div class="prp-memrow"><span class="mf-cat">כאבי לקוח</span>תלות בשני לקוחות גדולים — 70% מהמחזור</div>
+          <div class="prp-memrow"><span class="mf-cat">יעדים והסכמות</span>פתיחת מסגרת נוספת 100 א׳ ₪ — באחריותנו, יעד 15.7</div>
+          <button class="mt-btn view sm" style="margin-top:8px" onclick="openMemCard(${CUR})">לכרטיס הלקוח המלא</button>
+        </div>
+        ${N?`<div class="prp-card"><div class="prp-card-h">מספרים · עכשיו</div><div class="mem-kpis prp-kpis">${kpis}</div></div>`:''}
+      </aside>
+    </div>
+  </div>`;
+}

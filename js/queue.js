@@ -686,6 +686,11 @@
     }else if(time){
       MGR_AGENDA.push({time, dur:'30 דק׳', kind:'task', title:t, sub:client?('משימת לקוח · '+client):'משימה שלי', done:false, ...extra});
       toast('המשימה נוספה ליומן'+(client?' — '+client:''));
+    }else if(window._mtkTarget==='adv'){
+      ADV_TODO.push({t:t+(client?' · '+client:''), done:false, manual:true});
+      window._mtkTarget=null;
+      toast('נוספה למשימות שלך'+(client?' — '+client:''));
+      mtkClose(); if(typeof renderAlerts==='function')renderAlerts(); return;
     }else{
       MGR_TODO.push({t, done:false, ...extra});
       toast('נוספה למשימות הפתוחות'+(client?' — '+client:''));
@@ -826,5 +831,17 @@
       ${withPend.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
     </div>`;
     el.innerHTML=c2;
-    const mEl=document.getElementById('msgCol'); if(mEl) mEl.innerHTML=c1;
+    /* רדאר נטישה — אותות שיתוף פעולה מהתפעול והזיכרון */
+    const MGR_RADAR=[
+      {ci:3, c:'משה עובד',    why:'לא הביא חומר לתזרים 21 יום · הפגישה האחרונה לא התקיימה', act:'תזכורת חומרים + עדכון היועץ'},
+      {ci:1, c:'אנרגי גולני', why:'ירידה בקצב המענה בצ׳אט — 5 ימים ללא תגובה',              act:'שיחת טלפון קצרה מהמתפעל'},
+    ];
+    const cRad=`<div class="advl oi radm"><div class="advl-head"><span class="advl-title">רדאר נטישה</span><span class="advl-sub">אותות שיתוף פעולה — לפני שזה הופך ללקוח שעוזב</span></div>
+      ${MGR_RADAR.map(r=>`<div class="mf-row">
+        <span class="rad-tag churn">סיכון נטישה</span>
+        <div class="mf-b"><div class="mf-l"><b>${r.c}</b> — ${r.why}</div><div class="mf-meta">מומלץ: ${r.act}</div></div>
+        <button class="mt-btn view sm" onclick="selectClient(${r.ci})">פתיחה</button>
+        <button class="mt-btn sm" onclick="toast('היועץ עודכן — ${r.c}')">עדכון היועץ</button>
+      </div>`).join('')}</div>`;
+    const mEl=document.getElementById('msgCol'); if(mEl) mEl.innerHTML=cRad+c1;
   }

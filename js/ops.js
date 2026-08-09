@@ -898,6 +898,8 @@
       {budget:63,  overdraft:0, liters:112, cfprofit:130},
     ];
     MET.forEach((m,i)=>{if(CLIENTS[i]){CLIENTS[i].metrics=m;CLIENTS[i].budgetPct=m.budget;}});
+    // דמו: קטגוריות ומוטבים כבר טופלו — הכניסה לתפעול נוחתת ישר על נגררות ולא צפויות
+    CLIENTS.forEach(c=>(c.tasks||[]).forEach(t=>{if(t.type==='ai'||t.type==='payee')t.done=true;}));
     CLIENTS.forEach(c=>{if(!c.stat)c.stat='active'; c.opsPending=(c.tasks||[]).filter(t=>!t.done).length;});
   }
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
@@ -1274,19 +1276,21 @@
       if(cls==='un') return `<div class="cu-set">
         <div class="cu-set-h">הגדרות ללקוח — ${CLIENTS[CUR].name}</div>
         <label class="cu-set-row"><input type="checkbox" ${st.on?'checked':''} onchange="window._cuSet.un.on=this.checked">
-          <span>הודעות על פעולות לא צפויות בסכומים מעל</span>
+          <span>אירועים על פעולות לא צפויות בסכומים מעל</span>
           <span class="cu-amt"><input type="number" value="${st.min}" onchange="window._cuSet.un.min=+this.value"> ₪</span></label>
+        <div class="cu-set-note">אירועים שנמצאה להם התאמה או שטופלו — נמחקים מהמסך אוטומטית</div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
       return `<div class="cu-set">
         <div class="cu-set-h">הגדרות ללקוח — ${CLIENTS[CUR].name}</div>
         <label class="cu-set-row"><input type="checkbox" ${st.on?'checked':''} onchange="window._cuSet.ca.on=this.checked">
-          <span>הודעות על פעולות נגררות בסכומים מעל</span>
+          <span>אירועים על פעולות נגררות בסכומים מעל</span>
           <span class="cu-amt"><input type="number" value="${st.min}" onchange="window._cuSet.ca.min=+this.value"> ₪</span></label>
         <div class="cu-set-row sub"><span>נחשבת נגררת אחרי</span>
           <span class="cu-amt"><input type="number" value="${st.days}" onchange="window._cuSet.ca.days=+this.value"> ימים</span></div>
         <div class="cu-set-row sub"><span>הודעה נוספת ללקוח על אותה פעולה — רק בחלוף</span>
           <span class="cu-amt"><input type="number" value="${st.wait}" onchange="window._cuSet.ca.wait=+this.value"> ימים</span><span>מההודעה הקודמת</span></div>
+        <div class="cu-set-note">אירועים שנמצאה להם התאמה או שטופלו — נמחקים מהמסך אוטומטית</div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
     };

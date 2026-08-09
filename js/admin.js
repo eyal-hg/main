@@ -10,7 +10,7 @@ const ADMIN_SCREENS=[
    ic:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>'},
   {k:'messages',label:'הודעות ואוטומציה',file:'adminScreens/messages.html?embed=1',
    ic:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
-  {k:'tags',   label:'תגיות',         file:'adminScreens/tags.html?embed=1',
+  {k:'tags',   label:'ניהול קטגוריות', file:'adminScreens/tags.html?embed=1',
    ic:'<path d="M20.59 13.41 12 22l-9-9V3h10z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/>'},
   {k:'kb',     label:'בסיס ידע',      file:'adminScreens/knowledge-base.html?embed=1',
    ic:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'},
@@ -19,7 +19,7 @@ const ADMIN_SCREENS=[
   {k:'calendar',label:'יומן',file:'adminScreens/calendar.html',
    ic:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
   {sep:'המערכת'},
-  {k:'memory', label:'זיכרון לקוח — קטגוריות', modal:true,
+  {k:'memory', label:'זיכרון לקוח — קטגוריות', panel:true,
    ic:'<path d="M12 2a3 3 0 0 0-3 3 3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v1a3 3 0 0 0 6 0M12 2a3 3 0 0 1 3 3 3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v1a3 3 0 0 1-6 0M12 2v20"/>'},
 ];
 let ADM_CUR='meetings';
@@ -39,8 +39,13 @@ function renderAdmRail(){
 }
 function admGo(k){
   const s=ADMIN_SCREENS.find(x=>x.k===k); if(!s) return;
-  if(s.modal){ if(typeof openMemAdmin==='function') openMemAdmin(); return; }  // זיכרון לקוח — מודל
   ADM_CUR=k; renderAdmRail();
-  const f=document.getElementById('admFrame');
+  const f=document.getElementById('admFrame'), p=document.getElementById('admPanel');
+  if(s.panel){   // זיכרון לקוח — מסך פנימי, לא iframe ולא פופאפ
+    f.style.display='none'; p.style.display='';
+    if(typeof renderMemAdminScreen==='function') renderMemAdminScreen(p);
+    return;
+  }
+  f.style.display=''; p.style.display='none';
   if(f.getAttribute('data-k')!==k){ f.src=s.file; f.setAttribute('data-k',k); }
 }
