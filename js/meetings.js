@@ -228,3 +228,121 @@ function renderPrepView(){
     </div>
   </div>`;
 }
+
+/* ===== זירת הפגישות — גלובלי ליועץ ולמנהל תזרים =====
+   כל אינטראקציה מוקלטת (פגישה / שיחה) עוברת צינור אחד:
+   הקלטה ← תמלול ← סיכום ← עדכוני זיכרון. המסך שומר שלא מפספסים. */
+let MEETS_TAB='meet';   // meet | call
+const MEETS_UP=[
+  {d:'היום 16:00',  c:'משה עובד',           t:'פגישה חודשית — יולי (Money+)', by:'me',  prep:'ready'},
+  {d:'מחר 10:00',   c:'רימון יצחק',          t:'פ.ע חודשית (Money+)',          by:'hk',  hkName:'דנה לוין', prep:'auto'},
+  {d:'יום א׳ 09:30', c:'לביא הובלות',         t:'פגישת הקמה',                   by:'me',  prep:'auto'},
+];
+const MEETS_PAST=[
+  {d:'היום 09:00',  c:'אנרגי אינטרנשיונל',  t:'פגישה שוטפת — סקירת תזרים', by:'me', rec:true,  dur:'46 דק׳', sum:'pend', mem:3},
+  {d:'אתמול 14:00', c:'מטעי גבעון',          t:'שיחת מעקב — חריגת תקציב',   by:'me', rec:true,  dur:'22 דק׳', sum:'ok',   mem:1},
+  {d:'28.06 11:00', c:'אנרגי גולני',         t:'פ.ע חודשית — יוני',          by:'hk', hkName:'דנה לוין', rec:true, dur:'51 דק׳', sum:'ok', mem:2},
+  {d:'25.06 13:00', c:'משה עובד',            t:'שיחת היכרות',                by:'me', rec:false, sum:null,  mem:0},
+];
+const MEETS_CAD=[
+  {ci:0, c:'אנרגי אינטרנשיונל', prod:'money+', by:'me', last:'היום',   next:'02.08 · מתואמת', ok:true},
+  {ci:2, c:'מטעי גבעון',        prod:'money',  by:'me', last:'אתמול',  next:'לא נדרשת בחוזה',  ok:true, none:true},
+  {ci:1, c:'אנרגי גולני',       prod:'money+', by:'hk', last:'28.06',  next:'29.07 · מתואמת', ok:true},
+  {ci:3, c:'משה עובד',          prod:'money+', by:'me', last:'25.06',  next:'לא מתואמת',       ok:false, gap:'41 יום מהאחרונה'},
+  {ci:4, c:'רימון יצחק',        prod:'money+', by:'hk', last:'15.06',  next:'מחר 10:00',       ok:true},
+];
+const MEETS_CALLS=[
+  {d:'היום 11:15',  c:'אנרגי גולני',  who:'לירון בן כליפא', t:'עדכון חומרים לתזרים', dur:'6 דק׳',  mem:1, st:'ok'},
+  {d:'היום 09:40',  c:'משה עובד',     who:'שמרית טובול',    t:'השלמת הרשאות בנק',    dur:'9 דק׳',  mem:0, st:'proc'},
+  {d:'אתמול 15:20', c:'מטעי גבעון',   who:'לירון בן כליפא', t:'בירור חריגת תקציב',   dur:'11 דק׳', mem:2, st:'ok'},
+];
+function meetsTab(t){MEETS_TAB=t;renderMeetsArena();}
+const _byChip=m=>m.by==='hk'
+  ?`<span class="ms-by hk">יועץ HK · ${m.hkName||'דנה לוין'}</span>`
+  :`<span class="ms-by me">שלי</span>`;
+function renderMeetsArena(){
+  const el=document.getElementById('meetsView'); if(!el) return;
+  const isMgr=(typeof ROLE!=='undefined'&&ROLE==='manager');
+  const pendSum=MEETS_PAST.filter(m=>m.sum==='pend').length;
+  const noNext=MEETS_CAD.filter(r=>!r.ok).length;
+  const memTot=MEETS_PAST.reduce((s,m)=>s+m.mem,0);
+  /* פס סטטיסטיקה */
+  const stats=`<div class="ms-stats">
+    <div class="ms-stat"><b>${MEETS_UP.length}</b><span>פגישות קרובות</span></div>
+    <div class="ms-stat ${noNext?'bad':''}"><b>${noNext}</b><span>לקוח בלי פגישה מתואמת</span></div>
+    <div class="ms-stat ${pendSum?'warn':''}"><b>${pendSum}</b><span>סיכומים לאישורך</span></div>
+    <div class="ms-stat mem"><b>${memTot}</b><span>עדכוני זיכרון מהפגישות</span></div>
+  </div>`;
+  /* טאבים — פגישות / שיחות */
+  const tabs=`<div class="ms-tabs">
+    <button class="ms-tab ${MEETS_TAB==='meet'?'on':''}" onclick="meetsTab('meet')">פגישות</button>
+    <button class="ms-tab ${MEETS_TAB==='call'?'on':''}" onclick="meetsTab('call')">שיחות טלפון${isMgr?'':' <i class="ms-soon">בקרוב · SIM</i>'}</button>
+  </div>`;
+  let body='';
+  if(MEETS_TAB==='call'&&!isMgr){
+    body=`<div class="advl"><div class="ms-empty">
+      <b>שיחות מוקלטות — בדרך אליך.</b><br>
+      עם ה-SIM של HK כל שיחת טלפון עם לקוח תוקלט, תתומלל ותעדכן את זיכרון הלקוח — בדיוק כמו פגישה.
+      כרגע השיחות המוקלטות פעילות אצל מנהלי התזרים.</div></div>`;
+  }else if(MEETS_TAB==='call'){
+    body=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">שיחות מוקלטות · SIM</span><span class="advl-sub">כל שיחה מתומללת ומעדכנת את זיכרון הלקוח</span></div>
+      ${MEETS_CALLS.map(cl=>`<div class="ms-row">
+        <div class="ms-when">${cl.d}</div>
+        <div class="ms-b"><div class="ms-t"><b>${cl.c}</b> — ${cl.t}</div>
+          <div class="ms-meta">${cl.who} · ${cl.dur} · ${cl.st==='proc'?'<span class="msp-chip purple">בעיבוד AI</span>':`הזיכרון עודכן${cl.mem?' ('+cl.mem+')':''}`}</div></div>
+        ${cl.st==='ok'&&cl.mem?`<button class="mt-btn view sm" onclick="advPop&&advPop('mem')">עדכוני זיכרון</button>`:''}
+      </div>`).join('')}
+    </div>`;
+  }else{
+    /* דורש פעולה */
+    const act=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">דורש פעולה</span></div>
+      ${pendSum?`<div class="ms-row act"><span class="ms-dot warn"></span><div class="ms-b"><div class="ms-t"><b>אנרגי אינטרנשיונל</b> — סיכום פגישת 09:00 ממתין לאישורך</div><div class="ms-meta">כולל עדכון זיכרון רגיש אחד</div></div><button class="mt-btn" onclick="toast('נפתח הסיכום לאישור')">לאישור</button></div>`:''}
+      <div class="ms-row act"><span class="ms-dot bad"></span><div class="ms-b"><div class="ms-t"><b>משה עובד</b> — Money+ בלי פגישה מתואמת · 41 יום מהאחרונה</div><div class="ms-meta">מגיעה לו פגישה חודשית בחוזה</div></div><button class="mt-btn" onclick="toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')">שליחת זמנים</button></div>
+      <div class="ms-row act"><span class="ms-dot warn"></span><div class="ms-b"><div class="ms-t"><b>אנרגי גולני</b> — הפגישה לא התקיימה · לתאם מחדש</div><div class="ms-meta">בוטלה אתמול ע״י הלקוח</div></div><button class="mt-btn" onclick="toast('נשלחה הצעה לתיאום מחדש')">תיאום מחדש</button></div>
+    </div>`;
+    /* קרובות */
+    const up=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">הפגישות הקרובות</span><span class="advl-sub">שלך ושל יועצי HK עבור הלקוחות שלך</span></div>
+      ${MEETS_UP.map(m=>`<div class="ms-row">
+        <div class="ms-when">${m.d}</div>
+        <div class="ms-b"><div class="ms-t"><b>${m.c}</b> — ${m.t}</div>
+          <div class="ms-meta">${m.prep==='ready'?'<span class="ms-prep ok">הכנה מוכנה</span>':'<span class="ms-prep">הכנה תיווצר אוטומטית מהזיכרון</span>'}</div></div>
+        ${_byChip(m)}
+        ${m.by==='me'?`<button class="mt-btn view sm" onclick="selectClient(${(CLIENTS.findIndex(x=>x.name===m.c)+1||1)-1});showTab('prep')">להכנה</button>`:''}
+      </div>`).join('')}
+    </div>`;
+    /* התקיימו — צינור עיבוד */
+    const pipe=m=>{
+      if(!m.rec) return `<span class="ms-pipe warn">לא הוקלטה — הזיכרון לא התעדכן</span>`;
+      const sum=m.sum==='pend'?'<i class="msp warn">סיכום · לאישורך</i>':'<i class="msp ok">סיכום ✓</i>';
+      const mem=m.mem?`<i class="msp mem">זיכרון עודכן (${m.mem})</i>`:'<i class="msp">—</i>';
+      return `<span class="ms-pipe"><i class="msp ok">הוקלטה · ${m.dur}</i><i class="msp ok">תומללה ✓</i>${sum}${mem}</span>`;
+    };
+    const past=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">התקיימו לאחרונה</span><span class="advl-sub">כל פגישה מוקלטת הופכת לסיכום, משימות וזיכרון</span></div>
+      ${MEETS_PAST.map(m=>`<div class="ms-row">
+        <div class="ms-when">${m.d}</div>
+        <div class="ms-b"><div class="ms-t"><b>${m.c}</b> — ${m.t}</div><div class="ms-meta">${pipe(m)}</div></div>
+        ${_byChip(m)}
+        ${m.mem?`<button class="mt-btn view sm" onclick="advPop&&advPop('mem')">עדכוני זיכרון</button>`:''}
+      </div>`).join('')}
+    </div>`;
+    /* מקצב פר לקוח */
+    const cad=`<div class="advl">
+      <div class="advl-head"><span class="advl-title">מקצב פגישות — לפי לקוח</span><span class="advl-sub">לפי המוצר של כל לקוח · שאף אחד לא יתפספס</span></div>
+      <div class="ms-cad-h"><span>לקוח</span><span>מוצר</span><span>מי מקיים</span><span>אחרונה</span><span>הבאה</span><span></span></div>
+      ${MEETS_CAD.map(r=>`<div class="ms-cad ${r.ok?'':'bad'}">
+        <b>${r.c}</b>
+        <span>${typeof prodLogo==='function'&&r.prod?prodLogo(r.prod,'sm'):r.prod}</span>
+        <span>${r.by==='hk'?'יועץ HK':'אני'}</span>
+        <span>${r.last}</span>
+        <span class="${r.ok?(r.none?'mut':''):'neg'}">${r.next}${r.gap?` · ${r.gap}`:''}</span>
+        <span>${r.ok?'':`<button class="mt-btn sm" onclick="toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')">שליחת זמנים</button>`}</span>
+      </div>`).join('')}
+    </div>`;
+    body=`${act}<div class="ms-2col">${up}${past}</div>${cad}`;
+  }
+  el.innerHTML=`<div class="ms-arena">${stats}${tabs}${body}</div>`;
+}

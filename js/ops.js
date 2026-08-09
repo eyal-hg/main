@@ -838,13 +838,13 @@
       {type:'payee', chk:'0010814', bank:'הפועלים · סניף 736', amount:'216', date:'26.07.2026', ocrName:'ויקה רזניק', img:'check.jpeg', time:'לפני 25 דק׳'},
       {type:'payee', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
       {type:'payee', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
-      {type:'carry', text:'בחשבון מזרחי 295199 צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪. הפעולה טרם הופיעה — נגררת 11 ימים.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
+      {type:'carry', dir:'exp', text:'בחשבון מזרחי 295199 צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪. הפעולה טרם הופיעה — נגררת 11 ימים.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
         related:[{d:'15.06.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'},
                  {d:'15.05.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'}]},
-      {type:'carry', text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע, נגרר 6 ימים.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
+      {type:'carry', dir:'exp', text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע, נגרר 6 ימים.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
         match:{t:'חיוב ויזה כ.א.ל — אלקטרה מיזוג', amt:'3,660 ₪-', d:'28.07 · אשראי'},
         related:[{d:'22.06.2026',t:'העברה — אלקטרה מיזוג',amt:'3,660 ₪-',cat:'ספקים'}]},
-      {type:'carry', text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה, נגררת 3 ימים.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
+      {type:'carry', dir:'inc', text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה, נגררת 3 ימים.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
         related:[{d:'25.06.2026',t:'תקבול — מרכז הבנייה',amt:'18,600 ₪+',cat:'הכנסות ממכירות'},
                  {d:'25.05.2026',t:'תקבול — מרכז הבנייה',amt:'17,200 ₪+',cat:'הכנסות ממכירות'},
                  {d:'26.04.2026',t:'תקבול — מרכז הבנייה',amt:'18,900 ₪+',cat:'הכנסות ממכירות'}]},
@@ -1265,7 +1265,7 @@
     </div>`:'';
 
     // הגדרות פר-עמודה — נפתחות בגלגל השיניים שבכותרת
-    window._cuSet=window._cuSet||{un:{on:true,min:1000},ca:{on:true,min:500,days:3,wait:4},open:null};
+    window._cuSet=window._cuSet||{un:{on:true,min:1000},ca:{on:true,min:500,days:3,wait:4},cain:{on:true,min:1000,days:2,remind:3,esc:2},open:null};
     const CS=window._cuSet;
     const gear=cls=>`<button class="cu-gear ${CS.open===cls?'on':''}" title="הגדרות" onclick="event.stopPropagation();window._cuSet.open=window._cuSet.open==='${cls}'?null:'${cls}';renderOps()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1281,8 +1281,10 @@
         <div class="cu-set-note">אירועים בסכום מתחת לסף — יימחקו אוטומטית</div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
+      const ci=CS.cain;
       return `<div class="cu-set">
         <div class="cu-set-h">הגדרות ללקוח — ${CLIENTS[CUR].name}</div>
+        <div class="cu-set-grp">הוצאות — תשלומים שצפינו וטרם ירדו</div>
         <label class="cu-set-row"><input type="checkbox" ${st.on?'checked':''} onchange="window._cuSet.ca.on=this.checked">
           <span>אירועים על פעולות נגררות בסכומים מעל</span>
           <span class="cu-amt"><input type="number" value="${st.min}" onchange="window._cuSet.ca.min=+this.value"> ₪</span></label>
@@ -1290,6 +1292,16 @@
           <span class="cu-amt"><input type="number" value="${st.days}" onchange="window._cuSet.ca.days=+this.value"> ימים</span></div>
         <div class="cu-set-row sub"><span>הודעה נוספת ללקוח על אותה פעולה — רק בחלוף</span>
           <span class="cu-amt"><input type="number" value="${st.wait}" onchange="window._cuSet.ca.wait=+this.value"> ימים</span><span>מההודעה הקודמת</span></div>
+        <div class="cu-set-grp inc">הכנסות — גבייה מלקוחות</div>
+        <label class="cu-set-row"><input type="checkbox" ${ci.on?'checked':''} onchange="window._cuSet.cain.on=this.checked">
+          <span>אירועי גבייה על תקבולים צפויים בסכומים מעל</span>
+          <span class="cu-amt"><input type="number" value="${ci.min}" onchange="window._cuSet.cain.min=+this.value"> ₪</span></label>
+        <div class="cu-set-row sub"><span>נחשב באיחור אחרי</span>
+          <span class="cu-amt"><input type="number" value="${ci.days}" onchange="window._cuSet.cain.days=+this.value"> ימים</span></div>
+        <div class="cu-set-row sub"><span>תזכורת גבייה ללקוח כל</span>
+          <span class="cu-amt"><input type="number" value="${ci.remind}" onchange="window._cuSet.cain.remind=+this.value"> ימים</span></div>
+        <div class="cu-set-row sub"><span>אחרי</span>
+          <span class="cu-amt"><input type="number" value="${ci.esc}" onchange="window._cuSet.cain.esc=+this.value"> תזכורות</span><span>— מעבר לטיפול היועץ</span></div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
     };
@@ -1647,11 +1659,13 @@
 
     if(t.type==='unexpected'||t.type==='carry'){
       const nRel=(t.related||[]).length;
-      return B('ghost','היסטוריה ובדיקת התאמה'+(nRel?' ('+nRel+')':''),`histMatch(${i})`)
+      const isInc=t.type==='carry'&&t.dir==='inc';
+      return (isInc?'<span class="ct-coll">גבייה מלקוחות</span>':'')
+        +B('ghost','היסטוריה ובדיקת התאמה'+(nRel?' ('+nRel+')':''),`histMatch(${i})`)
         +(t.type==='carry'
           ?B('ghost','לא רלוונטי',`carrySnooze(${i})`)      // נגררת: מוסתרת להיום וחוזרת מחר
           :B('ghost','לא רלוונטי',`openNR(${i})`))          // לא צפויה: נמחקת עם סיבה
-        +B('','שליחת הודעה',`openSM(${i})`);
+        +(isInc?B('','תזכורת גבייה',`openSM(${i})`):B('','שליחת הודעה',`openSM(${i})`));
     }
     return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
   }
@@ -1659,7 +1673,9 @@
     const rep=`<div class="ot-reply" style="display:flex"><input id="oti${i}" placeholder="הקלד תגובה ללקוח…" onkeydown="if(event.key==='Enter')otSend(${i})"><button onclick="otSend(${i})">שלח</button></div>`;
     if(t.type==='unexpected'||t.type==='carry'){
       const isCa=t.type==='carry';
-      const how=isCa?'נבדקו חיובי כרטיסי האשראי 30 יום אחורה לפי תיאור — ייתכן ששולם באשראי ואינו נגרר'
+      const how=isCa?(t.dir==='inc'
+                    ?'נבדקו תקבולים בבנק 30 יום אחורה — ייתכן שהתקבל בסכום שונה או בהעברה מפוצלת'
+                    :'נבדקו חיובי כרטיסי האשראי 30 יום אחורה לפי תיאור — ייתכן ששולם באשראי ואינו נגרר')
                     :'נבדקו תנועות הבנק 30 יום קדימה לפי תיאור וקטגוריה';
       const mb=(t._matchChk||isCa)?(t.match
         ?`<div class="mu-res found"><div><b>${isCa?'נמצא חיוב תואם באשראי':'נמצאה התאמה ב-Bizibox'}:</b> ${t.match.t} · <b>${t.match.amt}</b> · ${t.match.d}<span class="mu-how">${how}</span></div><button class="ot-btn done" onclick="otHandle(${i},'${isCa?'שולם באשראי — הותאם':'הותאם ב-Bizibox'}')">${isCa?'סימון כשולם באשראי':'ביצוע ההתאמה ב-Bizibox'}</button></div>`
