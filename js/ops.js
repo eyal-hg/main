@@ -1290,7 +1290,6 @@
           <span class="cu-amt"><input type="number" value="${st.days}" onchange="window._cuSet.ca.days=+this.value"> ימים</span></div>
         <div class="cu-set-row sub"><span>הודעה נוספת ללקוח על אותה פעולה — רק בחלוף</span>
           <span class="cu-amt"><input type="number" value="${st.wait}" onchange="window._cuSet.ca.wait=+this.value"> ימים</span><span>מההודעה הקודמת</span></div>
-        <div class="cu-set-note">אירועים בסכום מתחת לסף — יימחקו אוטומטית</div>
         <div class="cu-set-foot"><button class="ot-btn done" onclick="window._cuSet.open=null;renderOps();toast('ההגדרות נשמרו')">שמירה</button></div>
       </div>`;
     };
@@ -1662,7 +1661,7 @@
       const isCa=t.type==='carry';
       const how=isCa?'נבדקו חיובי כרטיסי האשראי 30 יום אחורה לפי תיאור — ייתכן ששולם באשראי ואינו נגרר'
                     :'נבדקו תנועות הבנק 30 יום קדימה לפי תיאור וקטגוריה';
-      const mb=t._matchChk?(t.match
+      const mb=(t._matchChk||isCa)?(t.match
         ?`<div class="mu-res found"><div><b>${isCa?'נמצא חיוב תואם באשראי':'נמצאה התאמה ב-Bizibox'}:</b> ${t.match.t} · <b>${t.match.amt}</b> · ${t.match.d}<span class="mu-how">${how}</span></div><button class="ot-btn done" onclick="otHandle(${i},'${isCa?'שולם באשראי — הותאם':'הותאם ב-Bizibox'}')">${isCa?'סימון כשולם באשראי':'ביצוע ההתאמה ב-Bizibox'}</button></div>`
         :`<div class="mu-res none">${how} — לא נמצאה התאמה.</div>`):'';
       const rel=(t.related&&t.related.length)?`<div class="rel-wrap">
