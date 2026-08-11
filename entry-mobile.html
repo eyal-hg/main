@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>הזנת צפי — HK</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Rubik",sans-serif;background:#F4F7FA;color:#0C4068;font-size:15px}
+.top{background:#0C4068;color:#fff;padding:14px 18px;display:flex;align-items:center;gap:10px}
+.top b{font-size:15px}
+.top span{font-size:11px;opacity:.75;display:block}
+.logo{background:#fff;color:#0C4068;font-weight:800;border-radius:10px;padding:4px 9px;font-size:13px}
+.wrap{padding:14px;max-width:520px;margin:0 auto}
+.tsel{display:flex;gap:7px;margin-bottom:12px}
+.tsel button{flex:1;border:1.5px solid #D3DCED;background:#fff;border-radius:999px;padding:9px 6px;font-family:inherit;font-size:12.5px;font-weight:700;color:#64748b}
+.tsel button.on{background:#0C4068;border-color:#0C4068;color:#fff}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 14px rgba(12,64,104,.08);padding:6px 14px 14px}
+.row{padding:12px 2px;border-bottom:1px solid #F1F6FA;cursor:pointer}
+.row:active{background:#F7FBFE}
+.r1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.r1 b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.r2{display:flex;justify-content:space-between;align-items:center;margin-top:3px}
+.r2 .d{color:#8A97A3;font-size:11.5px}
+.st{font-size:10px;font-weight:800;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.st.ok{background:#E7F7EF;color:#13895B}
+.st.wait{background:#FDF4E3;color:#B4690E}
+.edit-hint{text-align:center;font-size:10.5px;color:#9AA7BB;padding:8px 0 2px}
+.add,.editbox{margin-top:12px;background:#F7FBFE;border:1px solid #D8EAF6;border-radius:14px;padding:14px}
+.editbox{background:#FFFDF6;border-color:#ECD9A8}
+.add label,.editbox label{display:block;font-size:11.5px;font-weight:700;color:#41586C;margin:9px 0 4px}
+.add input,.editbox input{width:100%;border:1.5px solid #D3DCED;border-radius:12px;padding:11px 13px;font-family:inherit;font-size:15px;background:#fff}
+.send{width:100%;margin-top:14px;background:#E48375;border:0;color:#fff;font-family:inherit;font-size:15px;font-weight:800;border-radius:14px;padding:14px}
+.ghostb{width:100%;margin-top:8px;background:#fff;border:1.5px solid #D3DCED;color:#64748b;font-family:inherit;font-size:13px;font-weight:700;border-radius:14px;padding:11px}
+.note{text-align:center;font-size:10.5px;color:#9AA7BB;margin-top:10px;line-height:1.6}
+.legend{display:flex;gap:10px;justify-content:center;font-size:10.5px;color:#8A97A3;margin:10px 0 2px}
+</style>
+</head>
+<body>
+<div class="top"><span class="logo">HK</span><div><b>הזנת צפי — אנרגי אינטרנשיונל</b><span>שלום צחי · נכנסת מקישור מאובטח, בלי סיסמה</span></div></div>
+<div class="wrap">
+  <div class="tsel">
+    <button class="on" onclick="setTab(0,this)">תשלומים לספקים</button>
+    <button onclick="setTab(1,this)">תקבולים מלקוחות</button>
+  </div>
+  <div class="legend"><span>🟢 בתזרים — HK אישרה</span><span>🟠 ממתין לאישור HK</span></div>
+  <div class="card" id="list"></div>
+  <div class="editbox" id="editbox" style="display:none">
+    <b style="font-size:14px">✎ עריכת שורה</b>
+    <label>ספק / תיאור</label><input id="eDesc"/>
+    <label>סכום ₪</label><input id="eAmt" type="number" inputmode="numeric"/>
+    <label>מועד פירעון</label><input id="eDate"/>
+    <button class="send" onclick="saveEdit()">שמירת השינוי</button>
+    <button class="ghostb" onclick="closeEdit()">ביטול</button>
+  </div>
+  <div class="add" id="addbox">
+    <b style="font-size:14px" id="addTitle">+ תשלום חדש לספק</b>
+    <label>ספק / תיאור</label><input id="aDesc" placeholder="למשל: פלסט-גל — חומרי גלם"/>
+    <label>סכום ₪</label><input id="aAmt" type="number" placeholder="0" inputmode="numeric"/>
+    <label>סוג תשלום</label><input id="aType" value="שיק"/>
+    <label>אסמכתא (חובה בשיק)</label><input id="aRef" placeholder="מספר שיק" inputmode="numeric"/>
+    <label>מועד פירעון</label><input id="aDate" value="25.08.2026"/>
+    <button class="send" onclick="addRow()">שליחה ל-HK</button>
+  </div>
+  <div class="note">כל שורה שתוסיף או תערוך נכנסת לתזרים רק אחרי אישור HK.<br>אפשר גם לכתוב לבוט בקבוצה — "לשלם לפלסט-גל 7,500 בשיק 21045 ב-25.8"</div>
+</div>
+<script>
+const T=[
+ {name:'תשלומים לספקים',addT:'+ תשלום חדש לספק',rows:[
+   {d:'לדובק הפצה — סחורה יולי',a:'8,400',dt:'10.08',ok:true},
+   {d:'ספק אריזות — הזמנה חדשה',a:'5,200',dt:'15.08',ok:false},
+   {d:'יועץ שיווק — ריטיינר',a:'3,000',dt:'20.08',ok:false},
+   {d:'שכירות מחסן',a:'6,450',dt:'28.08',ok:true},
+ ]},
+ {name:'תקבולים מלקוחות',addT:'+ תקבול צפוי מלקוח',rows:[
+   {d:'מרכז הבנייה — יתרת פרויקט',a:'19,800',dt:'12.08',ok:true},
+   {d:'רימון מוצרי אנרגיה — הזמנה 122',a:'24,000',dt:'18.08',ok:true},
+   {d:'פז חברת נפט — חודשי',a:'11,500',dt:'25.08',ok:false},
+ ]},
+];
+let cur=0, editIx=null;
+function render(){
+  document.getElementById('list').innerHTML=T[cur].rows.map((r,i)=>`
+    <div class="row" onclick="openEdit(${i})">
+      <div class="r1"><span>${r.d}</span><b>${r.a} ₪</b></div>
+      <div class="r2"><span class="d">פירעון ${r.dt}${r.edited?' · עודכן על ידך':''}</span>
+        <span class="st ${r.ok?'ok':'wait'}">${r.ok?'✓ בתזרים':'ממתין לאישור HK'}</span></div>
+    </div>`).join('')+`<div class="edit-hint">לחיצה על שורה — עריכה</div>`;
+  document.getElementById('addTitle').textContent=T[cur].addT;
+}
+function setTab(i,btn){cur=i;editIx=null;document.querySelectorAll('.tsel button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');closeEdit();render();}
+function openEdit(i){
+  editIx=i;const r=T[cur].rows[i];
+  document.getElementById('eDesc').value=r.d;
+  document.getElementById('eAmt').value=r.a.replace(/,/g,'');
+  document.getElementById('eDate').value=r.dt;
+  document.getElementById('editbox').style.display='';
+  document.getElementById('addbox').style.display='none';
+  document.getElementById('editbox').scrollIntoView({behavior:'smooth'});
+}
+function closeEdit(){editIx=null;document.getElementById('editbox').style.display='none';document.getElementById('addbox').style.display='';}
+function saveEdit(){
+  const r=T[cur].rows[editIx];
+  r.d=document.getElementById('eDesc').value;
+  r.a=(+document.getElementById('eAmt').value).toLocaleString('en-US');
+  r.dt=document.getElementById('eDate').value;
+  r.ok=false; r.edited=true;      // עריכה מחזירה לאישור HK
+  closeEdit(); render();
+}
+function addRow(){
+  const d=document.getElementById('aDesc').value.trim(), a=document.getElementById('aAmt').value;
+  if(!d||!a){alert2('צריך תיאור וסכום');return;}
+  const ty=document.getElementById('aType').value, ref=document.getElementById('aRef').value.trim();
+  if(ty.includes('שיק')&&!ref){alert2('שיק חייב אסמכתא — מספר השיק');return;}
+  T[cur].rows.push({d:d+(ty?' · '+ty+(ref?' '+ref:''):''), a:(+a).toLocaleString('en-US'), dt:document.getElementById('aDate').value, ok:false});
+  document.getElementById('aDesc').value='';document.getElementById('aAmt').value='';document.getElementById('aRef').value='';
+  render();
+}
+function alert2(t){const n=document.createElement('div');n.textContent=t;n.style.cssText='position:fixed;bottom:20px;inset-inline:20px;background:#0C4068;color:#fff;padding:12px 16px;border-radius:12px;text-align:center;font-weight:700;z-index:9';document.body.appendChild(n);setTimeout(()=>n.remove(),2200);}
+render();
+if(location.hash==='#edit')setTimeout(()=>openEdit(1),300);
+</script>
+</body>
+</html>

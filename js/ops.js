@@ -7,7 +7,7 @@
     ['payee','מוטבים','שיקים יוצאים מ-Bizibox — הזנת מוטב וקטגוריה'],
     ['carry','נגררות ולא צפויות','פעולות שצפינו וטרם הופיעו · פעולות שהופיעו בלי צפי'],
     ['msg','הודעות לקוח','הודעות מלל וקבצים מהלקוח — מענה והזנה לתזרים'],
-    ['sheet','גוגל שיט','עדכוני הכנסות והוצאות מהגיליונות'],
+    ['sheet','הזנות לקוח','צפי קדימה מהלקוח: תשלומים לספקים ותקבולים מלקוחות — אישור וצביעה בתזרים'],
   ];
   let OPS_STAGE_LOG=[];
   const STAGE_TASK_TYPES=['ai','payee','carry','unexpected','msg','doc','sheet'];
@@ -804,10 +804,12 @@
   let OPS_FILTER='all', OPS_VIEW='open', OPS_DONE=14;
   function seedOps(){
     CLIENTS[0].tasks=[
-      {type:'msg', who:'תומר לוי', thread:['האם עדכנת את כל התשלומים?','מה הצפי סה"כ בשלוש החשבונות?'], time:'לפני 12 דק׳'},
-      {type:'doc', name:'אישור העברה — דיסקונט · 1,381 ₪', who:'צחי עובד', note:'העברתי עכשיו ללדובק, מצרף אישור 🙏', time:'לפני 10 דק׳', src:'הודעת לקוח', img:'m3.jpeg',
+      {type:'msg', who:'תומר לוי', thread:['האם עדכנת את כל התשלומים?','מה הצפי סה"כ בשלוש החשבונות?'], time:'לפני 12 דק׳', grp:true,
+        ctx:['[יועץ] נדבר על זה בפגישה החודשית','[תומר] סבבה. ובנתיים —','[תומר] האם עדכנת את כל התשלומים?']},
+      {type:'doc', name:'אישור העברה — דיסקונט · 1,381 ₪', who:'צחי עובד', note:'העברתי עכשיו ללדובק, מצרף אישור 🙏', time:'לפני 10 דק׳', src:'קבוצת וואטסאפ', grp:true,
+        ctx:['[מנהל תזרים] צחי, חסר לי אישור על ההעברה ללדובק','[צחי] שניה עליי','[צחי] העברתי עכשיו ללדובק, מצרף אישור 🙏 + קובץ'], img:'m3.jpeg',
         file:{payee:'לדובק הפצה בע״מ', amount:'1,381', date:'28.07.2026', ref:'745851', desc:'העברה בנקאית — תשלום לספק'}},
-      {type:'doc', name:'צילום שיק — הבינלאומי · 6,300 ₪', who:'צחי עובד', note:'', time:'לפני 25 דק׳', src:'הודעת לקוח', img:'m2.jpeg',
+      {type:'doc', name:'צילום שיק — הבינלאומי · 6,300 ₪', who:'צחי עובד', note:'', time:'לפני 25 דק׳', src:'קבוצת וואטסאפ', grp:true, img:'m2.jpeg',
         file:{payee:'', amount:'6,300', date:'10.09.2026', ref:'3816543', desc:'שיק ידני'}},
       {type:'doc', name:'ספח שיק בכתב יד · 2,964 ₪', who:'צחי עובד', note:'רשמתי שיק ידני, מצרף את הספח', time:'לפני 40 דק׳', src:'הודעת לקוח', img:'m1.jpeg',
         file:{payee:'', amount:'2,964', date:'31.08.2026', ref:'21036', desc:''}},
@@ -839,6 +841,7 @@
       {type:'payee', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
       {type:'payee', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
       {type:'carry', dir:'exp', text:'בחשבון מזרחי 295199 צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪. הפעולה טרם הופיעה — נגררת 11 ימים.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
+        promise:'הלקוח כתב בקבוצה (היום 11:40): ״ההוראה להראל יורדת מחר״',
         related:[{d:'15.06.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'},
                  {d:'15.05.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'}]},
       {type:'carry', dir:'exp', text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע, נגרר 6 ימים.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
@@ -857,19 +860,19 @@
       {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ — חלקי" ע"ס 10,000 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ — חלקי', amt:10000, time:'היום 10:02', related:[]},
       {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[],
        match:{t:'הכנסה צפויה — מרכז הבנייה', amt:'8,600 ₪+', d:'12.08 · בתזרים'}},
-      {type:'sheet', kind:'add', sheet:'הוצאות אוגוסט', who:'צחי עובד', time:'לפני 3 דק׳',
-        rows:[{date:'02.08.2026', ref:'', desc:'ספק אריזות — הזמנה חדשה', amount:'5,200'},
-              {date:'05.08.2026', ref:'', desc:'תשלום יועץ שיווק', amount:'3,000'}]},
-      {type:'sheet', kind:'edit', sheet:'הכנסות אוגוסט', who:'צחי עובד', time:'לפני 20 דק׳',
-        cell:'D14', desc:'תקבול מרכז הבנייה — אוגוסט', old:'17,500', new:'19,800'},
-      {type:'sheet', kind:'edit', sheet:'הוצאות אוגוסט', who:'אוטומציה (Make)', time:'היום 08:55',
-        cell:'C8', desc:'שכירות מחסן', old:'6,000', new:'6,450'},
+      {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי אוגוסט', who:'צחי עובד', time:'לפני 3 דק׳',
+        rows:[{date:'15.08.2026', ref:'', desc:'ספק אריזות — הזמנה חדשה', amount:'5,200'},
+              {date:'20.08.2026', ref:'', desc:'יועץ שיווק — ריטיינר', amount:'3,000'}]},
+      {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי אוגוסט', who:'צחי עובד · דרך הבוט בקבוצה', time:'לפני 20 דק׳',
+        rows:[{date:'25.08.2026', ref:'שיק 21045', desc:'פלסט-גל — חומרי גלם', amount:'7,500'}]},
+      {type:'sheet', kind:'edit', sheet:'תקבולים מלקוחות · צפי', who:'רות אלמוג', time:'היום 08:55',
+        field:'מרכז הבנייה · 12.08', desc:'תקבול מרכז הבנייה', old:'17,500', new:'19,800'},
       {type:'overdraft', text:'חשבון מרכנתיל 69855155 נמצא בחריגה ע"ס 42,445 ₪ ממסגרת האשראי. נא טיפול בהקדם.', time:'היום 09:14'},
       {type:'msg', who:'לירון', thread:['תודה על העדכון!'], time:'אתמול', done:true, result:'טופל · ✓ נשלח ללקוח', handledAt:'אתמול 16:20'},
       {type:'ai', op:'הוצאת ביטוח · 890 ₪-', cur:'כללי', rec:'ביטוחים', reason:'לפי תיאור הספק.', src:'HISTORY', time:'אתמול', done:true, result:'אושר — קוטלג בביטוחים', handledAt:'אתמול 15:05'},
     ];
     CLIENTS[1].tasks=[
-      {type:'doc', name:'דף חשבון — מזרחי טפחות · יוני', time:'לפני 20 דק׳', src:'גוגל שיט'},
+      {type:'doc', name:'ריכוז הוצאות ידניות · יוני', time:'לפני 20 דק׳', src:'טבלת הזנה'},
       {type:'ai', op:'תשלום ספקים · 2,100 ₪-', cur:'כללי', rec:'ספקים', reason:'לפי היסטוריית התשלומים לספק זה.', src:'HISTORY', time:'לפני שעה'},
     ];
     CLIENTS[2].tasks=[
@@ -903,6 +906,7 @@
     CLIENTS.forEach(c=>{if(!c.stat)c.stat='active'; c.opsPending=(c.tasks||[]).filter(t=>!t.done).length;});
   }
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
+  const grpChip=t=>t.grp?'<span class="grp-tag">מהקבוצה</span> ':'';
   function taskTitle(t){
     if(t.type==='msg') return (t.who?t.who+': ':'')+(t.thread?t.thread[t.thread.length-1]:'הודעה');
     if(t.type==='doc') return t.name;
@@ -1372,37 +1376,55 @@
 
   /* ===== שלב גוגל שיט: דיף שינויים — שורות חדשות ועדכוני סכום ===== */
   function sheetStage(rows,T){
-    // שלב ראשון: לוג שינויים בלבד — העבודה נעשית ידנית ב-Bizibox, כאן רק מוודאים שכלום לא פוספס
+    // טבלאות הזנה מנוהלות (במקום גוגל שיט): הלקוח מזין — מהאפליקציה או דרך הבוט בקבוצה; כאן מאשרים לתזרים
     const logRow=t=>{
       const i=T.indexOf(t);
       if(t.done) return opsRow(t,i);
       const chip=t.kind==='add'?`<span class="sh-chip add">＋ ${t.rows.length} שורות</span>`:`<span class="sh-chip edit">✎ עדכון</span>`;
+      const bot=(t.who||'').includes('בוט')?' <span class="grp-tag">מהקבוצה</span>':'';
       const title=t.kind==='add'
-        ?`גיליון "${t.sheet}" — נוספו ${t.rows.length} שורות`
-        :`גיליון "${t.sheet}" — עודכן סכום: ${t.desc}`;
+        ?`טבלת "${t.sheet}" — נוספו ${t.rows.length} שורות${bot}`
+        :`טבלת "${t.sheet}" — עודכנה שורה: ${t.desc}`;
       const sub=t.kind==='add'
         ?`${t.rows.map(r=>r.desc+' · '+r.amount+' ₪').join('  ·  ')} — ${t.who} · ${t.time}`
-        :`תא ${t.cell} · <s class="sh-old">${t.old} ₪</s> <span class="sh-arrow">←</span> <b class="sh-new">${t.new} ₪</b> — ${t.who} · ${t.time}`;
+        :`${t.field} · <s class="sh-old">${t.old} ₪</s> <span class="sh-arrow">←</span> <b class="sh-new">${t.new} ₪</b> — ${t.who} · ${t.time}`;
+      /* הטבלה חכמה: מציגים את השורות עצמן — אישור פר שורה, בלי לפתוח כלום */
+      const okBtn=`<button class="ot-btn done xs" onclick="event.stopPropagation();this.outerHTML='<span class=&quot;ent-ok&quot;>✓ בתזרים</span>'">אישור</button>`;
+      const rows2=t.kind==='add'
+        ?`<div class="ent-rows">
+            <div class="ent-rh"><span>מועד</span><span>ספק / תיאור</span><span>סכום ₪</span><span>סוג · אסמכתא</span><span></span></div>
+            ${t.rows.map(r=>`<div class="ent-r">
+              <span>${r.date}</span><span class="ent-desc">${r.desc}</span><b>${r.amount}</b>
+              <span class="ent-ty">${r.ref||'העברה'}</span>${okBtn}
+            </div>`).join('')}
+          </div>`
+        :`<div class="ent-rows">
+            <div class="ent-r edit">
+              <span>${(t.field||'').split('·')[1]||''}</span><span class="ent-desc">${t.desc}</span>
+              <b><s class="sh-old">${t.old}</s> <span class="sh-arrow">←</span> <span class="sh-new">${t.new}</span></b>
+              <span class="ent-ty">עודכן ע״י ${t.who}</span>${okBtn}
+            </div>
+          </div>`;
       return `<div class="orow2item sheet"><div class="orow2">
         ${chip}
         <div class="orow2-body"><div class="orow2-title">${title}</div><div class="orow2-sub">${sub}</div></div>
         <div class="orow2-act">
-          <button class="ot-btn gsheet" onclick="event.stopPropagation();toast('נפתח הגיליון — ${t.sheet}${t.cell?' · תא ${t.cell}':''}')">📗 לגיליון ↗</button>
-          <button class="ot-btn ghost" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${t.sheet}')">פתיחה ב-Bizibox ↗</button>
-          <button class="ot-btn done" onclick="otHandle(${i},'טופל ידנית ב-Bizibox · ✓ סומן בגיליון')">טיפלתי ✓</button>
+          <button class="ot-btn ghost" onclick="event.stopPropagation();openDataTable('${t.sheet}')">פתיחת הטבלה</button>
+          <button class="ot-btn done" onclick="otHandle(${i},'אושר — הוזן לתזרים ✓')">אישור הכל ✓</button>
         </div>
-      </div></div>`;};
+      </div>${rows2}</div>`;};
     const devNote=`<div class="dev-note">
-      <div class="dev-note-h">🛠 הערה למתכנת — איך בונים את לוג השינויים</div>
+      <div class="dev-note-h">🛠 הערה למתכנת — טבלאות הזנה מנוהלות (מחליף את גוגל שיט להזנה)</div>
       <ol>
-        <li><b>זיהוי שינוי:</b> Drive API <code>files.watch</code> על כל spreadsheet — webhook נורה בכל שמירה (לחדש את ההרשמה כל 6 ימים, היא פגה). גיבוי: polling כל 5 דק׳. ה-webhook אומר רק "השתנה" — הוא מפעיל את הדיף.</li>
-        <li><b>דיף:</b> Sheets API <code>values.get</code> על טווח הנתונים ← השוואה מול הסנפשוט האחרון ששמור אצלנו ← מפיקים: שורה חדשה / תא שעודכן (ערך ישן+חדש) / שורה שנמחקה. זיהוי שורה יציב גם אחרי מיון: עמודת ID נסתרת בגיליון או <code>DeveloperMetadata</code> מוצמד-שורה.</li>
-        <li><b>שמירה:</b> טבלת <code>sheet_changes</code>: company_id, spreadsheet_id, sheet_name, change_type (add/edit/delete), row_key, cell, old_value, new_value, row_data (JSON), changed_by (מ-Apps Script onChange אם מותקן, אחרת null), detected_at, status (open/handled), handled_by, handled_at. הסנפשוט: <code>sheet_snapshots</code> — גרסה אחרונה בלבד פר גיליון + hash להשוואה מהירה.</li>
-        <li><b>"טיפלתי":</b> status=handled + כתיבה חזרה לגיליון בעמודת סטטוס — <code>values.update</code>: "✓ טופל · 28.07 · אייל". זה מה שהלקוח רואה ומה שמונע טיפול כפול.</li>
-        <li><b>המסך הזה:</b> כל הרשומות עם status=open של החברה הנוכחית, ממוינות לפי detected_at. הכפתור "לגיליון" פותח <code>spreadsheetUrl#gid=…&range=D14</code>.</li>
+        <li><b>תבנית:</b> טבלת <code>entry_templates</code> — עמודות, טיפוסים וולידציה; מנוהלת ע"י HK. התבניות הן <b>צפי קדימה</b> (תשלומים לספקים / תקבולים מלקוחות) — לא תיעוד עבר; העבר נשאב אוטומטית מהבנק. עמודות חובה: סוג תשלום; <b>שיק ← אסמכתא חובה</b> (ולידציה בתבנית — היא גם מפתח ההתאמה כשהשיק יורד). ללקוח: מסך הזנה באפליקציה + הדבקה מאקסל.</li>
+        <li><b>שורות:</b> <code>entry_rows</code>: company_id, template_id, row_data (JSON), entered_by (user / bot / paste), entered_at, status (new/approved), approved_by/at. אין סנכרון ואין דיפים — ההזנה היא האירוע.</li>
+        <li><b>ערוץ הבוט:</b> הודעה בקבוצה שמסווגת כהזנה ("מכירות היום 12,400") → שורה עם entered_by=bot + קישור להודעת המקור.</li>
+        <li><b>גישת הלקוח במובייל:</b> קישור-קסם (token חתום פר טבלה+לקוח, תוקף מתחדש) שהבוט שולח לקבוצה — נפתח כדף הזנה רספונסיבי בלי התחברות (ראו <code>entry-mobile.html</code>). אותו דף חי גם באפליקציית הלקוח.</li>
+        <li><b>המסך הזה:</b> כל השורות status=new של החברה; "אישור לתזרים" → approved + <b>צביעה בתזרים קדימה</b> (וזה מה שמזין את הנגררות: צפי שאושר ← מעקב אם ירד בפועל). עריכת שורה נרשמת כ-edit עם old/new.</li>
+        <li><b>מדדים:</b> ללא שינוי — ממשיכים מגוגל שיט (הפניות תא+לוגיקה). ההחלפה היא רק בזרימת ההזנה.</li>
       </ol>
     </div>`;
-    return `<div class="pay-grp" style="padding-inline:16px">יומן השינויים בגיליונות <em>${rows.filter(t=>!t.done).length}/${rows.length}</em></div>`+rows.map(logRow).join('')+devNote;
+    return `<div class="pay-grp" style="padding-inline:16px">שורות חדשות בטבלאות ההזנה <em>${rows.filter(t=>!t.done).length}/${rows.length}</em></div>`+rows.map(logRow).join('')+devNote;
   }
   function openSheetEntry(i){
     const t=curTasks()[i]; if(!t||t.type!=='sheet') return;
@@ -1430,6 +1452,142 @@
   }
 
   /* ===== שלב הודעות לקוח: מלל + קבצים, הזנה בסגנון Bizibox ===== */
+  /* בקשות חומר פתוחות — נוצרות אוטומטית כשחסר מסמך; הבוט מפרסם בקבוצה ועוקב */
+  let OPS_REQS=[
+    {t:'קניות מלאי מספקים — מה נשאר לשלם החודש ומתי', d:'לפני 3 ימים', st:'open'},
+    {t:'צפי תקבולים מלקוחות — אוגוסט (מי, כמה, מתי)',  d:'אתמול',       st:'open'},
+    {t:'מועד פירעון לשיק ידני 21036 · 2,964 ₪',        d:'היום 10:20',  st:'done'},
+  ];
+  function reqRemind(i){toast('הבוט שלח תזכורת בקבוצה: '+OPS_REQS[i].t);}
+  /* בקשות חומר — לא בתור. המתפעל מזין מה שיש; מה שחסר חי בטבלאות ההזנה והבוט מתזכר לבד. */
+  /* ---- טבלת הזנה מנוהלת: התבנית נקבעת אצלנו, הלקוח מזין שורות ---- */
+  const DATA_TABLES={
+    'תשלומים לספקים · צפי אוגוסט':{cols:['מועד פירעון','ספק / תיאור','סכום ₪','אמצעי','סטטוס'],rows:[
+      {d:'22.07.2026', t:'לדובק הפצה — סחורה יוני', a:'8,400',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',    st:'done', when:'הותאם 22.07'},
+      {d:'10.08.2026', t:'לדובק הפצה — סחורה יולי', a:'8,400',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',    st:'flow'},
+      {d:'15.08.2026', t:'ספק אריזות — הזמנה חדשה', a:'5,200',  pay:'שיק',   ref:'21044', by:'צחי עובד', ch:'link', st:'new'},
+      {d:'20.08.2026', t:'יועץ שיווק — ריטיינר',    a:'3,000',  pay:'העברה', ref:'', by:'צחי עובד', ch:'link',   st:'new'},
+      {d:'25.08.2026', t:'פלסט-גל — חומרי גלם',     a:'7,500',  pay:'שיק',   ref:'21045', by:'צחי עובד', ch:'grp', st:'new'},
+      {d:'28.08.2026', t:'שכירות מחסן',             a:'6,450',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',   st:'new', edit:'6,000 ← 6,450'},
+      {d:'05.08.2026', t:'הראל (שילוח) — הו״ק',     a:'2,049',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',   st:'late'},
+    ]},
+    'תקבולים מלקוחות · צפי':{cols:['מועד צפוי','לקוח','סכום ₪','אמצעי','סטטוס'],rows:[
+      {d:'12.08.2026', t:'מרכז הבנייה — יתרת פרויקט', a:'19,800', pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',  st:'new', edit:'17,500 ← 19,800'},
+      {d:'18.08.2026', t:'רימון מוצרי אנרגיה — הזמנה 122', a:'24,000', pay:'שיק', ref:'8734', by:'צחי עובד', ch:'link', st:'flow'},
+      {d:'25.08.2026', t:'פז חברת נפט — חודשי',      a:'11,500', pay:'העברה', ref:'', by:'—', ch:'link', st:'flow', anon:true},
+      {d:'20.07.2026', t:'מרכז הבנייה — מקדמה',      a:'12,000', pay:'העברה', ref:'', by:'צחי עובד', ch:'grp',  st:'done', when:'הותאם 21.07'},
+      {d:'28.07.2026', t:'אלקטרו סחר — חשבונית 4471', a:'14,300', pay:'העברה', ref:'', by:'רות אלמוג', ch:'app', st:'late', days:12},
+      {d:'01.08.2026', t:'מרכז הבנייה — שלב ב׳',      a:'22,000', pay:'שיק',   ref:'8801', by:'צחי עובד', ch:'link', st:'late', days:8},
+    ]},
+  };
+  const ENT_ST={
+    new :{t:'ממתין לאישור', c:'wait'},
+    flow:{t:'✓ בתזרים',     c:'ok'},
+    done:{t:'● בוצע',       c:'exec'},
+    late:{t:'⚠ נגררת',      c:'late'},
+  };
+  let ENT_TAB='live';   // live | done | all
+  const ENT_PAYTYPES=['העברה','שיק'];
+  let ENT_NEWTYPE='העברה';
+  function entTypeCycle(){
+    ENT_NEWTYPE=ENT_PAYTYPES[(ENT_PAYTYPES.indexOf(ENT_NEWTYPE)+1)%ENT_PAYTYPES.length];
+    const b=document.getElementById('entType'); if(b)b.textContent=ENT_NEWTYPE+' ↺';
+    const r=document.getElementById('entRef'); if(r)r.style.display=ENT_NEWTYPE==='שיק'?'':'none';
+  }
+  let ENTRIES_SEL=null;
+  function renderEntriesView(){
+    const el=document.getElementById('viewEntries'); if(!el)return;
+    const names=Object.keys(DATA_TABLES);
+    if(!ENTRIES_SEL||!DATA_TABLES[ENTRIES_SEL])ENTRIES_SEL=names[0];
+    const t=DATA_TABLES[ENTRIES_SEL];
+    const vis=r=>ENT_TAB==='all'?true:ENT_TAB==='done'?r.st==='done':r.st!=='done';
+    const rows=t.rows.filter(vis).sort((a,b)=>a.d.split('.').reverse().join('')<b.d.split('.').reverse().join('')?-1:1);
+    const nNew=t.rows.filter(r=>r.st==='new').length, nDone=t.rows.filter(r=>r.st==='done').length;
+    const INC=ENTRIES_SEL.includes('תקבולים');
+    const lateRows=t.rows.filter(r=>r.st==='late');
+    const lateSum=lateRows.reduce((s,r)=>s+ +r.a.replace(/,/g,''),0);
+    el.innerHTML=`<div class="ent">
+      <div class="ent-head">
+        <div><div class="ent-ttl">טבלאות הזנה — ${CLIENTS[CUR]?CLIENTS[CUR].name:''}</div>
+          <div class="ent-sub">צפי קדימה מהלקוח · מה שבוצע בפועל מסומן אוטומטית מהבנק · מה שאיחר הופך לנגררת</div></div>
+        <div class="ent-acts">
+          <button class="mt-btn sm" onclick="toast('הבוט שלח לקבוצה קישור לטבלה — נפתח במובייל')">📱 שליחת קישור</button>
+          <button class="mt-btn view sm" onclick="window.open('entry-mobile.html','_blank')">תצוגת הלקוח</button>
+        </div>
+      </div>
+      <div class="ent-tabs">${names.map(n=>`<button class="ent-tab ${n===ENTRIES_SEL?'on':''}" onclick="ENTRIES_SEL='${n}';renderEntriesView()">${n}${DATA_TABLES[n].rows.some(r=>r.st==='new')?' <i class="ent-dot"></i>':''}</button>`).join('')}</div>
+
+      <div class="ent-card">
+        ${INC&&lateRows.length?`<div class="collbar">
+          <span class="cb-ic">⏱</span>
+          <div class="cb-tx"><b>${lateRows.length} תקבולים באיחור · ${lateSum.toLocaleString('en-US')} ₪</b>
+            <span>לקוחות של ${CLIENTS[CUR]?CLIENTS[CUR].name:''} שטרם שילמו — אפשר לשלוח תזכורת גבייה בשם הלקוח</span></div>
+          <button class="ot-btn done sm" onclick="toast('נשלחו תזכורות גבייה ל-'+${lateRows.length}+' לקוחות בשם החברה')">תזכורת לכולם</button>
+        </div>`:''}
+        <div class="ent-filters">
+          <button class="ent-f ${ENT_TAB==='live'?'on':''}" onclick="ENT_TAB='live';renderEntriesView()">פעילות${nNew?` <i>${nNew} לאישור</i>`:''}</button>
+          <button class="ent-f ${ENT_TAB==='done'?'on':''}" onclick="ENT_TAB='done';renderEntriesView()">בוצעו <i>${nDone}</i></button>
+          <button class="ent-f ${ENT_TAB==='all'?'on':''}" onclick="ENT_TAB='all';renderEntriesView()">הכל</button>
+          <span class="ent-keep">שורות שבוצעו נשמרות 90 יום ואז עוברות לארכיון</span>
+        </div>
+        <div class="dt-grid ent-grid">
+          ${t.cols.map(c=>`<div class="dt-h">${c}</div>`).join('')}<div class="dt-h"></div>
+          ${rows.map(r=>{
+            const st=ENT_ST[r.st];
+            return `<div class="dt-c ${r.st==='late'?'lateD':''}">${r.d}</div>
+              <div class="dt-c">${r.t}${r.edit?`<i class="ent-edit">עודכן ${r.edit}</i>`:''}</div>
+              <div class="dt-c num">${r.a}</div>
+              <div class="dt-c">${r.pay}${r.ref?` <i class="ent-ref">${r.ref}</i>`:''}</div>
+              <div class="dt-c"><span class="ent-st ${st.c}">${r.st==='late'&&r.days?`⚠ באיחור ${r.days} ימים`:st.t}</span>${r.when?`<i class="ent-when">${r.when}</i>`:''}</div>
+              <div class="dt-c">${r.st==='new'?`<button class="ot-btn done sm" onclick="entOk(this)">אישור</button>`
+                :r.st==='late'?(INC?`<button class="ot-btn done sm" onclick="toast('נשלחה תזכורת גבייה ל${r.t.split('—')[0].trim()} בשם הלקוח')">תזכורת גבייה</button>`
+                                   :`<button class="mt-btn view sm" onclick="toast('נפתחה נגררת — בדיקת התאמה')">לנגררות</button>`):''}</div>`;
+          }).join('')}
+          <div class="dt-c"><input class="ent-inp" value="25.08.2026"></div>
+          <div class="dt-c"><input class="ent-inp" id="entDesc" placeholder="ספק / תיאור…"></div>
+          <div class="dt-c"><input class="ent-inp num" id="entAmt" placeholder="סכום"></div>
+          <div class="dt-c"><button class="ent-type" id="entType" onclick="entTypeCycle()">${ENT_NEWTYPE} ↺</button>
+            <input class="ent-inp ref" id="entRef" placeholder="אסמכתא" style="display:${ENT_NEWTYPE==='שיק'?'':'none'}"></div>
+          <div class="dt-c"></div>
+          <div class="dt-c"><button class="mt-btn view sm" onclick="entAddRow()">+ הוספה</button></div>
+        </div>
+        <div class="dt-foot">
+          <button class="mt-btn view sm" onclick="toast('הדבקה מאקסל — ולידציה לפי התבנית')">📋 הדבקה מאקסל</button>
+          <span class="dt-hint">ממתין לאישור ← ✓ בתזרים ← ● בוצע (התאמה אוטומטית מהבנק) · עבר המועד ולא בוצע ← נגררת</span>
+        </div>
+      </div>
+    </div>`;
+  }
+  function entOk(b){ b.outerHTML='<span class="ent-st ok">✓ בתזרים</span>'; toast('אושר ונצבע בתזרים קדימה'); }
+  function entAddRow(){
+    const d=document.getElementById('entDesc'), a=document.getElementById('entAmt'), r=document.getElementById('entRef');
+    if(!d||!d.value.trim()||!a.value){toast('צריך תיאור וסכום');return;}
+    if(ENT_NEWTYPE==='שיק'&&!(r&&r.value.trim())){toast('שיק חייב אסמכתא — מספר השיק');r&&r.focus();return;}
+    DATA_TABLES[ENTRIES_SEL].rows.push({d:'25.08.2026', t:d.value.trim(), a:a.value, pay:ENT_NEWTYPE, ref:ENT_NEWTYPE==='שיק'?r.value.trim():'', by:'לירון בן כליפא', ch:'mgr', st:'flow'});
+    renderEntriesView(); toast('נוסף ונצבע בתזרים');
+  }
+  function openDataTable(name,ci){
+    ENTRIES_SEL=name;
+    if(typeof OPSMODE!=='undefined'&&OPSMODE){ openDataTableModal(name); return; }   // בתוך תפעול — מודל מהיר, לא עוזבים את התור
+    // המסך הוא פר-חברה — נכנסים לחברה לפני שמציגים אותו (שלא יאבד ההקשר)
+    if(SCOPE!=='client') selectClient(ci!=null?ci:CUR||0);
+    else if(ci!=null&&ci!==CUR) selectClient(ci);
+    showTab('entries');
+  }
+  function openDataTableModal(name){
+    const t=DATA_TABLES[name]||Object.values(DATA_TABLES)[0];
+    document.getElementById('dtTitle').textContent='טבלת הזנה — '+name;
+    document.getElementById('dtBody').innerHTML=`
+      <div class="dt-note">טבלה מנוהלת של HK · ממתין לאישור ← בתזרים ← בוצע (התאמה מהבנק)</div>
+      <div class="dt-grid" style="grid-template-columns:95px 1.4fr 80px 90px 110px 110px">
+        ${t.cols.map(c=>`<div class="dt-h">${c}</div>`).join('')}
+        ${t.rows.map(r=>{const st=ENT_ST[r.st];return `<div class="dt-c">${r.d}</div><div class="dt-c">${r.t}</div><div class="dt-c num">${r.a}</div>
+          <div class="dt-c">${r.pay}${r.ref?' '+r.ref:''}</div><div class="dt-c">${r.anon?'לא זוהה':r.by}</div>
+          <div class="dt-c"><span class="ent-st ${st.c}">${st.t}</span></div>`;}).join('')}
+      </div>`;
+    document.getElementById('dataTblOv').classList.add('show');
+  }
+  function closeDataTable(){document.getElementById('dataTblOv').classList.remove('show');}
   function msgStage(rows,T){
     const txt=rows.filter(t=>t.type==='msg'), docs=rows.filter(t=>t.type==='doc');
     const docRow=t=>{
@@ -1438,7 +1596,7 @@
       const thumb=t.img?`<img src="${t.img}" alt="">`:'<span class="msg-thumb-x">📊</span>';
       return `<div class="orow2item doc"><div class="orow2">
         <span class="msg-thumb" onclick="openDocEntry(${i})" title="פתיחת ההזנה">${thumb}</span>
-        <div class="orow2-body" onclick="openDocEntry(${i})"><div class="orow2-title">${taskTitle(t)}</div><div class="orow2-sub">${t.who||''} · ${t.time||''}${t.note?' · "'+t.note+'"':''}</div></div>
+        <div class="orow2-body" onclick="openDocEntry(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div><div class="orow2-sub">${t.who||''} · ${t.time||''}${t.note?' · "'+t.note+'"':''}</div></div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
       </div></div>`;};
     const grp=(label,arr,render)=>arr.length?`<div class="pay-grp" style="padding-inline:16px">${label} <em>${arr.filter(t=>!t.done).length}/${arr.length}</em></div>`+arr.map(render).join(''):'';
@@ -1667,6 +1825,8 @@
     }
     return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
   }
+  const grpCtx=t=>t.ctx?`<div class="grp-ctx"><div class="grp-ctx-h">הקשר מהקבוצה <span class="grp-tag">בוט · סווג תפעולי</span></div>
+    ${t.ctx.map(c=>`<div class="grp-ctx-m ${c.startsWith('[מנהל')?'me':''}">${c}</div>`).join('')}</div>`:'';
   function taskBody(t,i){
     const rep=`<div class="ot-reply" style="display:flex"><input id="oti${i}" placeholder="הקלד תגובה ללקוח…" onkeydown="if(event.key==='Enter')otSend(${i})"><button onclick="otSend(${i})">שלח</button></div>`;
     if(t.type==='unexpected'||t.type==='carry'){
@@ -1675,16 +1835,18 @@
                     ?'נבדקו תקבולים בבנק 30 יום אחורה — ייתכן שהתקבל בסכום שונה או בהעברה מפוצלת'
                     :'נבדקו חיובי כרטיסי האשראי 30 יום אחורה לפי תיאור — ייתכן ששולם באשראי ואינו נגרר')
                     :'נבדקו תנועות הבנק 30 יום קדימה לפי תיאור וקטגוריה';
+      const prom=t.promise?`<div class="grp-prom">⚑ ${t.promise} <span class="grp-tag">מהקבוצה · בוט</span></div>`:'';
       const mb=(t._matchChk||isCa)?(t.match
         ?`<div class="mu-res found"><div><b>${isCa?'נמצא חיוב תואם באשראי':'נמצאה התאמה ב-Bizibox'}:</b> ${t.match.t} · <b>${t.match.amt}</b> · ${t.match.d}<span class="mu-how">${how}</span></div><button class="ot-btn done" onclick="otHandle(${i},'${isCa?'שולם באשראי — הותאם':'הותאם ב-Bizibox'}')">${isCa?'סימון כשולם באשראי':'ביצוע ההתאמה ב-Bizibox'}</button></div>`
         :`<div class="mu-res none">${how} — לא נמצאה התאמה.</div>`):'';
+      const mb2=prom+mb;
       const rel=(t.related&&t.related.length)?`<div class="rel-wrap">
       <div class="rel-h">היסטוריה — "${t.who}" <span>${t.related.length}</span></div>
       ${t.related.map(r=>`<div class="rel-row"><span class="rel-d">${r.d}</span><span class="rel-t">${r.t}</span><span class="rel-cat">${r.cat}</span><b class="rel-amt">${r.amt}</b></div>`).join('')}
     </div>`:`<div class="rel-wrap"><div class="ops-empty" style="padding:14px">אין היסטוריה ל"${t.who||'המוטב'}" — מופע ראשון.</div></div>`;
-      return mb+rel;
+      return mb2+rel;
     }
-    if(t.type==='msg') return `<div class="ot-thread">${(t.thread||[]).map(m=>`<div class="ot-bub">${m}</div>`).join('')}</div>${rep}`;
+    if(t.type==='msg') return `${grpCtx(t)}<div class="ot-thread">${(t.thread||[]).map(m=>`<div class="ot-bub">${m}</div>`).join('')}</div>${rep}`;
     if(t.type==='doc') return `<div class="ot-doc"><div class="ot-docprev" onclick="toast('הגדלת מסמך')"><span class="ot-zoom">⤢ הגדלה</span><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>תצוגה מקדימה של המסמך</div></div>${rep}`;
     if(t.type==='ai') return `<div class="ot-ai"><div class="ot-airow"><span class="ot-ailbl">פעולה</span><span>${t.op}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה נוכחית</span><span>${t.cur}</span></div><div class="ot-airow"><span class="ot-ailbl">קטגוריה מומלצת</span><span class="ot-rec">${t.rec}</span></div><div class="ot-reason"><b>סיבה:</b> ${t.reason}</div>
       <div class="ot-srcs">
@@ -1696,13 +1858,13 @@
   }
   function opsRow(t,i){
     const tp=OPS_TYPES[t.type], op=OPS_OPEN.has(i);
-    if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><div class="orow2-body"><div class="orow2-title">${taskTitle(t)}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
+    if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><div class="orow2-body"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
     const muChk=(t.type==='unexpected'||t.type==='carry')
       ?`<label class="mu-chk side" onclick="event.stopPropagation()"><input type="checkbox" ${window._muSel&&window._muSel.has(i)?'checked':''} onchange="muSel(${i},this.checked)" title="בחירה להתאמה ידנית"></label>`:'';
     return `<div class="orow2item ${t.type} ${op?'open':''}">
       <div class="orow2">
         ${muChk}
-        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${taskTitle(t)}</div></div>
+        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div></div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
         <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
       </div>
@@ -1759,3 +1921,80 @@
   function otSend(i){const inp=document.getElementById('oti'+i);if(!inp)return;const v=inp.value.trim();if(!v)return;inp.value='';toast('נשלחה תגובה ללקוח בוואטסאפ');}
   seedOps();
 
+
+/* ===== מסך הודעות — הקבוצה + שיחות פרטיות של המנהל (בלי צ'אטי AI) =====
+   הסים של HK: גם הפרטי עובר בצינור — ראוטינג זהה לקבוצה. */
+let MSGS_SEL='group', MSGS_Q='';
+const MSGS_THREADS={
+  group:{name:'הקבוצה', sub:'לקוח · יועץ · מנהל תזרים · בוט', icon:'📱', unread:2, msgs:[
+    {day:'אתמול'},
+    {who:'צחי עובד', role:'cl', t:'מצרף את אישור ההעברה ללדובק 🙏 [קובץ]', time:'10:12', tag:'→ משימת הזנה'},
+    {who:'לירון (מנהל תזרים)', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
+    {who:'אילון (יועץ)', role:'adv', t:'צחי, מחר ב-16:00 עוברים על התקציב לקראת הרבעון', time:'12:40'},
+    {who:'צחי עובד', role:'cl', t:'סגור. דרך אגב — סגרנו את החוזה עם מרכז הבנייה 🎉', time:'12:44', tag:'→ זיכרון · אירועים'},
+    {who:'בוט HK', role:'bot', t:'📋 סיכום פגישת 09:00 נשלח · נפתחו 3 משימות', time:'13:05'},
+    {day:'היום'},
+    {who:'רות אלמוג', role:'cl', t:'מעבירה את צפי התשלומים לאוגוסט [טבלה]', time:'08:55', tag:'→ טבלת הזנה'},
+    {who:'צחי עובד', role:'cl', t:'ההוראה להראל יורדת מחר', time:'11:40', tag:'→ נגררת'},
+    {who:'אילון (יועץ)', role:'adv', t:'בוא נדבר גם על התמחור מול רימון בפגישה', time:'12:10', tag:'→ זיכרון'},
+  ]},
+  u0:{name:'צחי עובד · פרטי', sub:'שיחה ישירה שלך · דרך הסים של HK', icon:'👤', unread:0, msgs:[
+    {day:'אתמול'},
+    {who:'לירון (מנהל תזרים)', role:'me', t:'צחי, ראיתי חיוב PAYPAL 1,120 ₪ בכרטיס — של מה זה?', time:'14:02'},
+    {who:'צחי עובד', role:'cl', t:'זה כלי ניהול המלאי החדש, מנוי שנתי', time:'14:15', tag:'→ קיטלוג'},
+    {who:'לירון (מנהל תזרים)', role:'me', t:'מעולה, מקטלג ככה. תודה!', time:'14:16'},
+  ]},
+  u1:{name:'רות אלמוג · פרטי', sub:'שיחה ישירה שלך · דרך הסים של HK', icon:'👤', unread:1, msgs:[
+    {day:'היום'},
+    {who:'לירון (מנהל תזרים)', role:'me', t:'רות, מה מועד הפירעון של השיק לפלסט-גל?', time:'09:30'},
+    {who:'רות אלמוג', role:'cl', t:'25.8, שיק 21045. מעדכנת גם בטבלה', time:'09:44', tag:'→ טבלת הזנה'},
+    {who:'רות אלמוג', role:'cl', t:'ותגיד — אפשר לדחות את ההו״ק של הליסינג לסוף חודש?', time:'11:52'},
+  ]},
+};
+function renderMsgsView(){
+  const el=document.getElementById('viewMsgs'); if(!el)return;
+  const isAdv=(typeof ROLE!=='undefined'&&ROLE==='advisor');
+  const keys=Object.keys(MSGS_THREADS).filter(k=>!isAdv||k==='group');   // ליועץ — רק הקבוצה
+  if(!keys.includes(MSGS_SEL))MSGS_SEL=keys[0];
+  const T=MSGS_THREADS[MSGS_SEL];
+  const q=MSGS_Q.trim();
+  const list=keys.map(k=>{const t=MSGS_THREADS[k];const last=[...t.msgs].reverse().find(m=>!m.day);
+    return `<div class="mg-th ${k===MSGS_SEL?'on':''}" onclick="MSGS_SEL='${k}';MSGS_Q='';renderMsgsView()">
+      <span class="mg-ico">${t.icon}</span>
+      <div class="mg-tb"><b>${t.name}</b><span>${last?last.t.slice(0,34):''}${last&&last.t.length>34?'…':''}</span></div>
+      ${t.unread?`<i class="mg-n">${t.unread}</i>`:''}
+    </div>`;}).join('');
+  const msgs=T.msgs.filter(m=>m.day||!q||m.t.includes(q)||m.who.includes(q)).map(m=>m.day
+    ?`<div class="mg-day"><span>${m.day}</span></div>`
+    :`<div class="mg-m ${m.role}">
+        <div class="mg-bub">
+          ${MSGS_SEL==='group'?`<b class="mg-who ${m.role}">${m.who}</b>`:''}
+          <span class="mg-t">${m.t}</span>
+          <span class="mg-meta">${m.time}${m.tag?` <i class="mg-tag">${m.tag}</i>`:''}</span>
+        </div>
+      </div>`).join('');
+  el.innerHTML=`<div class="mg">
+    <aside class="mg-side">
+      <div class="mg-side-h">שיחות · ${(CLIENTS[CUR]||{}).name||''}</div>
+      ${list}
+      <div class="mg-note">הכל דרך הסים של HK — כל שיחה עוברת את אותו ראוטינג: משימות, זיכרון, נגררות. ${isAdv?'':'הפרטי שלך גלוי רק לך ולאדמין.'}</div>
+    </aside>
+    <div class="mg-main">
+      <div class="mg-head">
+        <div><b>${T.name}</b><span>${T.sub}</span></div>
+        <input class="mg-search" placeholder="חיפוש בשיחה…" value="${q}" oninput="MSGS_Q=this.value;renderMsgsView();this.focus();this.setSelectionRange(this.value.length,this.value.length)">
+      </div>
+      <div class="mg-scroll" id="mgScroll">${msgs||'<div class="ops-empty" style="padding:30px">אין תוצאות</div>'}</div>
+      <div class="mg-comp">
+        <input class="mx2-inp" id="mgInp" placeholder="${MSGS_SEL==='group'?'כתיבה לקבוצה — בשמך…':'הודעה ל'+T.name.replace(' · פרטי','')+'…'}" onkeydown="if(event.key==='Enter')mgSend()">
+        <button class="oqs-send" onclick="mgSend()">שליחה</button>
+      </div>
+    </div>
+  </div>`;
+  const sc=document.getElementById('mgScroll'); if(sc)sc.scrollTop=sc.scrollHeight;
+}
+function mgSend(){
+  const i=document.getElementById('mgInp'); if(!i||!i.value.trim())return;
+  MSGS_THREADS[MSGS_SEL].msgs.push({who:'לירון (מנהל תזרים)', role:'me', t:i.value.trim(), time:'עכשיו'});
+  renderMsgsView();
+}

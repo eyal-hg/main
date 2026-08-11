@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>מה השתנה בתזרים · חזות קריספין</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F4F7FA; --surface:#fff;
+  --border:#e6ecf4; --border-strong:#d3dced; --line:#f1f6fa;
+  --text:#0C4068; --muted:#64748b; --soft:#9aa7bb;
+  --accent:#1B6C9C; --accent-soft:#EAF4FB;
+  --coral:#E48375; --coral-deep:#C2372A; --coral-soft:#FDECEB;
+  --pos:#13895b; --pos-soft:#e7f7ef;
+  --warn:#B4690E; --warn-soft:#FDF4E3;
+  --mem:#7C5CBF; --mem-soft:#F6F3FC; --mem-border:#E4DCF5;
+  --shadow-sm:0 2px 8px rgba(15,35,65,.06);
+  --shadow-md:0 6px 18px rgba(12,64,104,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:"Rubik",-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+.app{max-width:1240px;margin:0 auto;padding:24px 22px 70px}
+body.is-embedded .app{padding:4px 2px 30px;max-width:none}
+
+/* כותרת */
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.head h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.3px}
+.head .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.rng{display:flex;gap:6px;align-items:center}
+.rbtn{border:1.5px solid var(--border-strong);background:#fff;color:var(--muted);font-weight:700;font-size:12px;border-radius:999px;padding:7px 15px}
+.rbtn.on{background:var(--text);border-color:var(--text);color:#fff}
+.rbtn:hover:not(.on){border-color:#b9c9da;color:var(--text)}
+
+/* הכותרת הגדולה — הדלתא */
+.delta{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-md);padding:20px 26px;margin-bottom:16px}
+.delta-top{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.d-main{flex:1;min-width:260px}
+.d-main .q{font-size:12px;color:var(--muted);font-weight:600}
+.d-main .a{font-size:22px;font-weight:800;margin-top:4px;line-height:1.35}
+.d-main .a .down{color:var(--coral-deep)}
+.d-main .a .up{color:var(--pos)}
+.d-chips{display:flex;gap:10px}
+.dch{background:#FAFCFE;border:1px solid var(--border);border-radius:14px;padding:10px 16px;min-width:132px}
+.dch span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.dch b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.dch.bad b{color:var(--coral-deep)}
+.dch.ok b{color:var(--pos)}
+/* גרף מיני: אתמול מול היום */
+.spark{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.spark-h{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--muted);margin-bottom:8px}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.lg i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.lg.y i{background:#C6D3E0}
+.lg.t i{background:var(--coral)}
+.chart{position:relative;height:118px}
+.chart svg{width:100%;height:100%;overflow:visible}
+.zero{stroke:#E3EDF5;stroke-width:1;stroke-dasharray:3 3}
+.pathY{fill:none;stroke:#C6D3E0;stroke-width:2}
+.pathT{fill:none;stroke:var(--coral);stroke-width:2.5}
+.mark{fill:var(--coral-deep)}
+.mlbl{font-size:10px;fill:var(--coral-deep);font-weight:700}
+.xlbl{font-size:9.5px;fill:#9aa7bb}
+
+/* הסיבות */
+.sec{display:flex;align-items:baseline;gap:9px;margin:20px 0 10px}
+.sec b{font-size:14px;font-weight:700}
+.sec i{font-style:normal;font-size:12px;color:var(--soft)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden}
+.ev{display:grid;grid-template-columns:44px 96px 1fr 150px 108px;gap:14px;align-items:center;padding:13px 18px;border-top:1px solid var(--line);cursor:pointer}
+.ev:first-child{border-top:0}
+.ev:hover{background:#FBFDFF}
+.rank{width:26px;height:26px;border-radius:9px;background:#F1F6FA;color:var(--muted);display:grid;place-items:center;font-size:12px;font-weight:800}
+.ev.big .rank{background:var(--coral-soft);color:var(--coral-deep)}
+.amt{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;text-align:start}
+.amt.neg{color:var(--coral-deep)}
+.amt.pos{color:var(--pos)}
+.ev-b .t{font-size:13.5px;font-weight:600}
+.ev-b .s{font-size:11.5px;color:var(--soft);margin-top:3px}
+.tag{font-size:10px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.tag.entry{background:var(--accent-soft);color:var(--accent)}
+.tag.slip{background:var(--warn-soft);color:var(--warn)}
+.tag.actual{background:#F1F4F7;color:var(--muted)}
+.tag.unexp{background:var(--coral-soft);color:var(--coral-deep)}
+.tag.cat{background:var(--mem-soft);color:var(--mem)}
+.tag.rec{background:var(--pos-soft);color:var(--pos)}
+.who{font-size:11px;color:var(--soft);text-align:start}
+.go{color:#C9DDEC;font-size:17px;font-weight:700;text-align:center}
+.ev:hover .go{color:var(--accent)}
+.foot{padding:11px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--soft);display:flex;gap:14px;align-items:center}
+.foot b{color:var(--muted);font-weight:600}
+.mini{background:#FAFCFE;border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-top:14px;font-size:12px;color:var(--muted);line-height:1.7}
+.mini b{color:var(--text)}
+</style>
+</head>
+<body>
+<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');</script>
+<div class="app">
+
+  <div class="head">
+    <div>
+      <h1>מה השתנה בתזרים</h1>
+      <div class="sub">אנרגי אינטרנשיונל · כל שינוי שהשפיע על התחזית — מדורג לפי השפעה</div>
+    </div>
+    <div class="rng">
+      <button class="rbtn on">מאתמול</button>
+      <button class="rbtn">3 ימים</button>
+      <button class="rbtn">שבוע</button>
+      <button class="rbtn">מהפגישה האחרונה</button>
+    </div>
+  </div>
+
+  <!-- הדלתא -->
+  <div class="delta">
+    <div class="delta-top">
+      <div class="d-main">
+        <div class="q">למה נוצרה חריגה שלא הייתה אתמול?</div>
+        <div class="a">היתרה הצפויה ל-<b>24.08</b> ירדה ב-<span class="down">32,400 ₪</span> — מ-<span dir="ltr">+12,150</span> ל-<span class="down" dir="ltr">-20,250</span></div>
+      </div>
+      <div class="d-chips">
+        <div class="dch bad"><span>חריגה חדשה</span><b>24.08</b></div>
+        <div class="dch"><span>שינויים בטווח</span><b>6</b></div>
+        <div class="dch ok"><span>הכי משפיע</span><b>-19,800</b></div>
+      </div>
+    </div>
+
+    <div class="spark">
+      <div class="spark-h">
+        <span class="lg y"><i></i> תחזית אתמול</span>
+        <span class="lg t"><i></i> תחזית היום</span>
+        <span style="margin-inline-start:auto">30 הימים הקרובים</span>
+      </div>
+      <div class="chart">
+        <svg viewBox="0 0 900 118" preserveAspectRatio="none">
+          <line class="zero" x1="0" y1="62" x2="900" y2="62"/>
+          <path class="pathY" d="M0,74 L90,70 L180,64 L270,58 L360,52 L450,48 L540,44 L610,40 L680,44 L760,50 L830,54 L900,56"/>
+          <path class="pathT" d="M0,74 L90,72 L180,68 L270,66 L360,70 L450,76 L540,84 L610,96 L680,104 L760,100 L830,96 L900,94"/>
+          <circle class="mark" cx="610" cy="96" r="4.5"/>
+          <text class="mlbl" x="610" y="114" text-anchor="middle">24.08 · חריגה</text>
+          <text class="xlbl" x="4" y="12">היום</text>
+          <text class="xlbl" x="880" y="12" text-anchor="end">+30 יום</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- הסיבות -->
+  <div class="sec"><b>הסיבות — לפי השפעה</b><i>לחיצה פותחת את המקור</i></div>
+  <div class="card">
+
+    <div class="ev big">
+      <span class="rank">1</span>
+      <span class="amt neg">-19,800</span>
+      <div class="ev-b">
+        <div class="t">תקבול "מרכז הבנייה — יתרת פרויקט" נדחה מ-12.08 ל-22.08</div>
+        <div class="s">הצפי עבר את מועדו ולא התקבל — הפך לנגררת והוזז קדימה 10 ימים</div>
+      </div>
+      <span class="tag slip">נגררת · נדחה</span>
+      <span class="who">אוטומטי · 06:10</span>
+      <span class="go">‹</span>
+    </div>
+
+    <div class="ev big">
+      <span class="rank">2</span>
+      <span class="amt neg">-7,500</span>
+      <div class="ev-b">
+        <div class="t">נוספה שורת תשלום — פלסט-גל, חומרי גלם (25.08)</div>
+        <div class="s">הוזן ע״י הלקוח בטבלת ההזנה · אושר לתזרים 10:12 · שיק 21045</div>
+      </div>
+      <span class="tag entry">הזנה חדשה</span>
+      <span class="who">לירון · 10:12</span>
+      <span class="go">‹</span>
+    </div>
+
+    <div class="ev">
+      <span class="rank">3</span>
+      <span class="amt neg">-5,100</span>
+      <div class="ev-b">
+        <div class="t">חיוב ויזה כ.א.ל בפועל היה גבוה מהצפי</div>
+        <div class="s">צפי 4,110 ← בפועל 9,210 · הפרש נזקף לחודש הנוכחי</div>
+      </div>
+      <span class="tag actual">בפועל ≠ צפי</span>
+      <span class="who">סנכרון בנק · 05:40</span>
+      <span class="go">‹</span>
+    </div>
+
+    <div class="ev">
+      <span class="rank">4</span>
+      <span class="amt neg">-2,300</span>
+      <div class="ev-b">
+        <div class="t">תנועה לא צפויה — "מוסך רם" (אתמול)</div>
+        <div class="s">לא היה לה צפי בתזרים · קוטלגה ל״רכב ודלק״</div>
+      </div>
+      <span class="tag unexp">לא צפויה</span>
+      <span class="who">סנכרון בנק · 05:40</span>
+      <span class="go">‹</span>
+    </div>
+
+    <div class="ev">
+      <span class="rank">5</span>
+      <span class="amt pos">+2,300</span>
+      <div class="ev-b">
+        <div class="t">עדכון סכום — תקבול מרכז הבנייה</div>
+        <div class="s">17,500 ← 19,800 · עודכן ע״י הלקוח ואושר</div>
+      </div>
+      <span class="tag entry">עריכה</span>
+      <span class="who">לירון · 08:55</span>
+      <span class="go">‹</span>
+    </div>
+
+    <div class="ev">
+      <span class="rank">6</span>
+      <span class="amt neg">-1,050</span>
+      <div class="ev-b">
+        <div class="t">שינוי קיטלוג — "אלקטרו סחר" מ״כללי״ ל״קניות מלאי״</div>
+        <div class="s">משפיע על התחזית מבוססת-התקציב בקטגוריה</div>
+      </div>
+      <span class="tag cat">קיטלוג</span>
+      <span class="who">לירון · 09:20</span>
+      <span class="go">‹</span>
+    </div>
+
+    <div class="foot">
+      <b>סה״כ השפעה על 24.08:</b> <span class="amt neg" style="font-size:13px">-32,400 ₪</span>
+      <span style="margin-inline-start:auto">6 אירועים · מתוך 41 תנועות שנקלטו היום</span>
+    </div>
+  </div>
+
+  <div class="mini">
+    <b>איך זה עובד:</b> כל לילה נשמר תצלום של עקומת התחזית. כל שינוי שנוגע לתזרים — הזנה, אישור, תנועה בפועל, נגררת, קיטלוג, הו״ק אוטומטית או סנכרון יתרה — נרשם כאירוע עם ההשפעה שלו בשקלים ועל איזה תאריך. הפער בין שני תצלומים מוסבר במלואו ע״י האירועים שביניהם, מדורגים לפי השפעה.
+  </div>
+
+</div>
+</body>
+</html>

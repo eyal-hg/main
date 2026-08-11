@@ -8,6 +8,7 @@
       {f:'widget-kpi-debt.html',            t:'חוב / יתרה מול ספק', d:'מספר בודד — חוב מול סונול',                   cat:'מספרים',  h:132, s:'sm'},
       {f:'widget-overdraft-full.html',      t:'חריגה צפויה',        d:'תחזית עו״ש מאוחד — חריגה בטווח 30 ימים',      cat:'תזרים',   h:470},
       {f:'widget-cashflow-full.html',       t:'תחזית תזרים',        d:'פירוט תנועות יומי עם יתרות ואינדיקציית סיכון',  cat:'תזרים',   h:600},
+      {f:'widget-flow-changes.html',        t:'מה השתנה בתזרים',    d:'בוחרים נקודה על הציר ורואים מה שינה אותה',      cat:'תזרים',   h:470},
       {f:'widget-coverage-full.html',       t:'יחס כיסוי',          d:'כיסוי התחייבויות מול נכסים נזילים',            cat:'תזרים',   h:480},
       {f:'widget-profitability-full.html',  t:'רווחיות חודשית',     d:'גולמי, תפעולי ותזרימי עם מגמת 4 חודשים',       cat:'רווחיות', h:500},
       {f:'widget-revenue-trends.html',      t:'מגמות הכנסה',        d:'מגמת הכנסות רב-חודשית',                        cat:'רווחיות', h:470},
@@ -36,7 +37,7 @@
   };
   let SCOPE='client';
   const BOARDS={
-    client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-cashflow-full.html','widget-profitability-full.html','widget-metric-full.html'],
+    client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-flow-changes.html','widget-cashflow-full.html','widget-profitability-full.html','widget-metric-full.html'],
     portfolio:['widget-pf-kpi-balance.html','widget-pf-kpi-budget.html','widget-pf-kpi-risk.html','widget-pf-kpi-overdraft.html','widget-pf-cashflow-budget.html','widget-pf-alerts.html','widget-pf-budget-companies.html','widget-pf-risk-list.html','widget-pf-collections.html'],
   };
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};

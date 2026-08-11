@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>מה השתנה בתזרים — HK</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0C4068;--cyan:#39ABE2;--warm:#E48375;
+  --white:#fff;--gray:#64748b;--gray2:#9aa7bb;
+  --line:#f1f6fa;--border:#e6ecf4;
+  --green:#13895b;--red:#C2372A;--yellow:#B4690E;--mem:#7C5CBF;
+}
+body{font-family:'Rubik',sans-serif;background:#e8eef4;direction:rtl;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 24px}
+.widget{width:100%;max-width:660px;background:var(--white);border-radius:14px;box-shadow:0 1px 50px rgba(0,0,0,.08);overflow:hidden}
+
+/* כותרת */
+.wh{display:flex;align-items:center;gap:9px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.wh b{font-size:14px;color:var(--navy);font-weight:700}
+.wh .rng{margin-inline-start:auto;display:flex;gap:4px}
+.rg{border:1px solid var(--border);background:#fff;color:var(--gray);font-family:inherit;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 10px;cursor:pointer}
+.rg.on{background:#F1F6FA;border-color:#d3dced;color:var(--navy)}
+
+/* בורר נקודת מבט על הציר */
+.pick{display:flex;align-items:center;gap:7px;padding:11px 18px;background:#FAFCFE;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pick .lb{font-size:11px;color:var(--gray2);font-weight:600}
+.pk{border:1px solid var(--border);background:#fff;color:var(--gray);font-family:inherit;font-size:11px;font-weight:700;border-radius:9px;padding:5px 11px;cursor:pointer}
+.pk.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pk i{font-style:normal;opacity:.7;margin-inline-start:4px;font-size:10px}
+.pk.on i{opacity:.85}
+
+/* התשובה */
+.ans{padding:15px 18px 12px}
+.ans .ttl{font-size:11.5px;color:var(--gray);font-weight:600}
+.ans .big{display:flex;align-items:baseline;gap:10px;margin-top:6px;flex-wrap:wrap}
+.ans .big .num{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.ans .big .num.neg{color:var(--red)}
+.ans .big .num.pos{color:var(--green)}
+.ans .big .from{font-size:12.5px;color:var(--gray);font-variant-numeric:tabular-nums}
+.ans .big .from s{color:var(--gray2)}
+.ans .note{font-size:11px;color:var(--gray2);margin-top:5px}
+.ans .note.bad{color:var(--red);font-weight:600}
+
+/* עקומת הדלתא */
+.chart{padding:4px 18px 12px}
+.chart svg{width:100%;height:74px;overflow:visible;display:block}
+.gl{stroke:#EEF3F8;stroke-width:1}
+.pY{fill:none;stroke:#C6D3E0;stroke-width:2}
+.pT{fill:none;stroke:var(--warm);stroke-width:2.5}
+.fx{stroke:var(--navy);stroke-width:1;stroke-dasharray:3 3}
+.fdot{fill:var(--navy)}
+.xl{font-size:9px;fill:#9aa7bb}
+.leg{display:flex;gap:12px;font-size:9.5px;color:var(--gray2);padding:0 18px 10px}
+.leg i{display:inline-block;width:11px;height:2.5px;border-radius:2px;vertical-align:2px;margin-inline-end:4px}
+.leg .y i{background:#C6D3E0}.leg .t i{background:var(--warm)}
+
+/* סיבות */
+.rows{border-top:1px solid var(--line)}
+.rhead{display:flex;align-items:center;gap:8px;padding:9px 18px 4px;font-size:10.5px;font-weight:800;color:var(--gray2)}
+.r{display:grid;grid-template-columns:70px 1fr 78px;gap:10px;align-items:center;padding:8px 18px;cursor:pointer}
+.r+.r{border-top:1px solid var(--line)}
+.r:hover{background:#FBFDFF}
+.am{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.am.neg{color:var(--red)}.am.pos{color:var(--green)}
+.tx{min-width:0}
+.tx .t{font-size:12.5px;color:var(--navy);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx .s{font-size:10.5px;color:var(--gray2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg{font-size:9.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap;text-align:center}
+.tg.slip{background:#FDF4E3;color:var(--yellow)}
+.tg.entry{background:#EAF4FB;color:#1B6C9C}
+.tg.actual{background:#F1F4F7;color:var(--gray)}
+.tg.unexp{background:#FDECEB;color:var(--red)}
+.tg.cat{background:#F6F3FC;color:var(--mem)}
+.wf{display:flex;align-items:center;gap:8px;padding:10px 18px;border-top:1px solid var(--line);background:#FCFDFE}
+.wf .sum{font-size:11px;color:var(--gray2)}
+.wf a{margin-inline-start:auto;font-size:11.5px;font-weight:700;color:#1B6C9C;text-decoration:none;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="wh">
+    <b>מה השתנה בתזרים</b>
+    <span class="rng">
+      <button class="rg on">מאתמול</button>
+      <button class="rg">שבוע</button>
+      <button class="rg">מהפגישה</button>
+    </span>
+  </div>
+
+  <!-- נקודת המבט על הציר -->
+  <div class="pick">
+    <span class="lb">היתרה הצפויה ל־</span>
+    <button class="pk on" data-p="worst">24.08 <i>ההרעה הגדולה</i></button>
+    <button class="pk" data-p="eom">31.08 <i>סוף החודש</i></button>
+    <button class="pk" data-p="d30">01.09 <i>+30 יום</i></button>
+  </div>
+
+  <!-- התשובה -->
+  <div class="ans">
+    <div class="ttl">השינוי בתחזית ליום <b id="fd">24.08</b>, מאתמול</div>
+    <div class="big">
+      <span class="num neg" id="dlt">-32,400 ₪</span>
+      <span class="from"><s id="was">+12,150</s> ← <b id="now">-20,250 ₪</b></span>
+    </div>
+    <div class="note bad" id="nt">נכנסת לחריגה בתאריך הזה — אתמול לא היית</div>
+  </div>
+
+  <!-- העקומות -->
+  <div class="chart">
+    <svg viewBox="0 0 420 74" preserveAspectRatio="none">
+      <line class="gl" x1="0" y1="38" x2="420" y2="38"/>
+      <path class="pY" d="M0,44 L52,42 L105,38 L158,34 L210,30 L250,27 L290,31 L340,34 L420,36"/>
+      <path class="pT" d="M0,44 L52,43 L105,41 L158,42 L210,48 L250,58 L290,55 L340,50 L420,49"/>
+      <line class="fx" x1="250" y1="0" x2="250" y2="74"/>
+      <circle class="fdot" cx="250" cy="58" r="3.5"/>
+      <text class="xl" x="4" y="70">היום</text>
+      <text class="xl" x="250" y="10" text-anchor="middle">24.08</text>
+      <text class="xl" x="416" y="70" text-anchor="end">+30 יום</text>
+    </svg>
+  </div>
+  <div class="leg"><span class="y"><i></i>תחזית אתמול</span><span class="t"><i></i>תחזית היום</span></div>
+
+  <!-- הסיבות -->
+  <div class="rows">
+    <div class="rhead">הסיבות שמשפיעות על 24.08 <span style="font-weight:500">· מדורג</span></div>
+    <div class="r">
+      <span class="am neg">-19,800</span>
+      <div class="tx"><div class="t">תקבול מרכז הבנייה זז מ-12.08 ל-22.08</div><div class="s">הכסף לא נעלם — הוא מאחר, ויוצר בור עד 22.08</div></div>
+      <span class="tg slip">תאריך זז</span>
+    </div>
+    <div class="r">
+      <span class="am neg">-7,500</span>
+      <div class="tx"><div class="t">תשלום חדש — פלסט-גל (25.08)</div><div class="s">הוזן ע״י הלקוח · אושר 10:12</div></div>
+      <span class="tg entry">הזנה</span>
+    </div>
+    <div class="r">
+      <span class="am neg">-5,100</span>
+      <div class="tx"><div class="t">חיוב ויזה בפועל גבוה מהצפי (08.08)</div><div class="s">4,110 ← 9,210</div></div>
+      <span class="tg actual">בפועל</span>
+    </div>
+  </div>
+
+  <div class="wf">
+    <span class="sum">3 מתוך 6 שינויים · השאר לא משפיעים על התאריך הזה</span>
+    <a onclick="parent.postMessage({hk:'flowlog'},'*')">הלוג המלא ←</a>
+  </div>
+</div>
+
+<script>
+/* בורר נקודת המבט — כל נקודה, סיפור אחר */
+const D={
+  worst:{d:'24.08', dlt:'-32,400 ₪', neg:1, was:'+12,150', now:'-20,250 ₪', nt:'נכנסת לחריגה בתאריך הזה — אתמול לא היית', bad:1,
+    rows:[['-19,800','תקבול מרכז הבנייה זז מ-12.08 ל-22.08','הכסף לא נעלם — הוא מאחר, ויוצר בור עד 22.08','slip','תאריך זז'],
+          ['-7,500','תשלום חדש — פלסט-גל (25.08)','הוזן ע״י הלקוח · אושר 10:12','entry','הזנה'],
+          ['-5,100','חיוב ויזה בפועל גבוה מהצפי (08.08)','4,110 ← 9,210','actual','בפועל']], sum:'3 מתוך 6 שינויים · השאר לא משפיעים על התאריך הזה'},
+  eom:{d:'31.08', dlt:'-12,600 ₪', neg:1, was:'+34,900', now:'+22,300 ₪', nt:'עדיין חיובי — התקבול שאיחר כבר נכנס בתאריך הזה', bad:0,
+    rows:[['-7,500','תשלום חדש — פלסט-גל (25.08)','הוזן ע״י הלקוח · אושר 10:12','entry','הזנה'],
+          ['-5,100','חיוב ויזה בפועל גבוה מהצפי (08.08)','4,110 ← 9,210','actual','בפועל'],
+          ['-2,300','תנועה לא צפויה — מוסך רם','קוטלגה לרכב ודלק','unexp','לא צפויה'],
+          ['+2,300','עדכון סכום — תקבול מרכז הבנייה','17,500 ← 19,800 · עודכן ע״י הלקוח','entry','עריכה']], sum:'4 מתוך 6 שינויים משפיעים על סוף החודש'},
+  d30:{d:'01.09', dlt:'-13,650 ₪', neg:1, was:'+41,200', now:'+27,550 ₪', nt:'ההשפעה המצטברת של כל השינויים בטווח', bad:0,
+    rows:[['-7,500','תשלום חדש — פלסט-גל (25.08)','הוזן ע״י הלקוח · אושר 10:12','entry','הזנה'],
+          ['-5,100','חיוב ויזה בפועל גבוה מהצפי','4,110 ← 9,210','actual','בפועל'],
+          ['-2,300','תנועה לא צפויה — מוסך רם','קוטלגה לרכב ודלק','unexp','לא צפויה'],
+          ['-1,050','שינוי קיטלוג — אלקטרו סחר','כללי ← קניות מלאי','cat','קיטלוג'],
+          ['+2,300','עדכון סכום — תקבול מרכז הבנייה','17,500 ← 19,800','entry','עריכה']], sum:'כל 6 השינויים · השפעה מצטברת'},
+};
+const X={worst:250,eom:340,d30:420};
+if(location.search.includes('eom'))setTimeout(()=>document.querySelector('.pk[data-p=eom]').click(),100);
+document.querySelectorAll('.pk').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.pk').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  const s=D[b.dataset.p];
+  fd.textContent=s.d; dlt.textContent=s.dlt; dlt.className='num '+(s.neg?'neg':'pos');
+  was.textContent=s.was; now.textContent=s.now;
+  nt.textContent=s.nt; nt.className='note'+(s.bad?' bad':'');
+  document.querySelector('.rhead').innerHTML='הסיבות שמשפיעות על '+s.d+' <span style="font-weight:500">· מדורג</span>';
+  document.querySelector('.rows').innerHTML=document.querySelector('.rhead').outerHTML+
+    s.rows.map(r=>`<div class="r"><span class="am ${r[0][0]==='+'?'pos':'neg'}">${r[0]}</span>
+      <div class="tx"><div class="t">${r[1]}</div><div class="s">${r[2]}</div></div>
+      <span class="tg ${r[3]}">${r[4]}</span></div>`).join('');
+  document.querySelector('.wf .sum').textContent=s.sum;
+  const x=X[b.dataset.p], ln=document.querySelector('.fx'), dt=document.querySelector('.fdot'), lb=document.querySelectorAll('.xl')[1];
+  ln.setAttribute('x1',x); ln.setAttribute('x2',x); dt.setAttribute('cx',x);
+  dt.setAttribute('cy', b.dataset.p==='worst'?58:b.dataset.p==='eom'?50:49);
+  lb.setAttribute('x', Math.min(x,410)); lb.textContent=s.d;
+}));
+</script>
+
+<style id="hk-embed-style">
+html.embed,html.embed body{background:transparent !important;height:auto !important;min-height:0 !important}
+html.embed body{display:block !important;padding:0 !important;margin:0 !important}
+html.embed .widget{margin:0 auto !important;width:100% !important;max-width:none !important;box-shadow:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05) !important;border:1px solid #eef2f6 !important}
+</style>
+<script id="hk-embed-js">
+(function(){ if(location.hash!=="#embed"&&self===top)return; document.documentElement.classList.add("embed"); })();
+</script>
+</body>
+</html>

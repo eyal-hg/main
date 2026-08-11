@@ -45,7 +45,7 @@ let MEM_CATS=[
 אם אין — החזר "אין עדכון". אם יש: עדכן — עד 5 אירועים, כל אחד עם תאריך והשפעה צפויה במשפט. הסר אירועים שמוצו.`},
   {key:'coop_co', desc:'האם הלקוח מביא חומר לתזרים ומתי', scope:'company', name:'שיתוף פעולה', internal:false, vis:'client', lastRun:'02.07',
    prompt:`אתה מתחזק את קטגוריית "שיתוף פעולה" של החברה — במרכזה: האם הלקוח מביא חומר לתזרים. קלט: סיכום האינטראקציה, היסטוריית ההודעות והמסמכים, והמסמך הנוכחי.
-בדוק: האם התקבל חומר לתזרים (דפי בנק, חשבוניות, מסמכים, עדכון גוגל-שיט) — מזוהה מקריאת ההיסטוריה או מאזכור בשיחת טלפון; וכן הרשאות בנק, יישום המלצות וזמינות אנשי הכספים.
+בדוק: האם התקבל חומר לתזרים — צפי קדימה: תשלומים לספקים, תקבולים צפויים מלקוחות, שיקים ומועדי פירעון (בטבלאות ההזנה או בקבוצה) — מזוהה מקריאת ההיסטוריה או מאזכור בשיחת טלפון; וכן הרשאות בנק, יישום המלצות וזמינות אנשי הכספים.
 השורה הראשונה של המסמך היא תמיד: "חומר אחרון לתזרים: (תאריך) · (מה התקבל ובאיזה ערוץ)" — עדכן אותה בכל פעם שמזוהה חומר חדש.
 אם אין שום מידע חדש — החזר "אין עדכון". אחרת עדכן תמונת מצב: מה עובד, מה נתקע ומאז מתי, עם (תאריך · מקור). עד 6 שורות. מדד תפעולי — בלי שיפוטיות על אנשים.`},
   /* ===== יוזר ===== */
@@ -90,7 +90,7 @@ const MEM_DATA={
       updated:'02.07', src:'פגישה חודשית', hist:[]},
     events:{txt:'1. זכייה במכרז אספקה לחברת האוטובוסים ירושלים — צפי תוספת 1.5 מ׳ ₪ במחזור שנתי, החל מאוגוסט (20.6 · שיחת טלפון). 2. עזיבת סמנכ״ל התפעול — צחי לוקח את התחום זמנית, עומס ניהולי (10.6 · פגישה).',
       updated:'20.06', src:'שיחת טלפון', hist:[]},
-    coop_co:{txt:'חומר אחרון לתזרים: 2.7 · דפי בנק וחשבוניות יוני דרך הצ׳אט. הגוגל-שיט מתעדכן בזמן כל שבוע (2.7 · תפעול). מסמכים מגיעים תוך יום-יומיים מבקשה. הרשאת חשבון הסליקה נתקעה אצל הבנק שבועיים — דורש דחיפה (25.6 · צ׳אט).',
+    coop_co:{txt:'חומר אחרון לתזרים: 2.7 · דפי בנק וחשבוניות יוני דרך הצ׳אט. טבלאות ההזנה מתעדכנות בזמן כל שבוע (2.7 · תפעול). מסמכים מגיעים תוך יום-יומיים מבקשה. הרשאת חשבון הסליקה נתקעה אצל הבנק שבועיים — דורש דחיפה (25.6 · צ׳אט).',
       updated:'02.07', src:'תפעול שוטף', hist:[]},
     commstyle:{txt:'פתח תמיד במספרים — צחי מאבד סבלנות מהקדמות. תשובות קצרות, בלי ז׳רגון פיננסי. מעדיף וואטסאפ על טלפון; זמין לשיחות רק אחרי 16:00. כשמציגים בעיה — להציג ישר גם פתרון מוצע. אוהב גרפים פשוטים, לא טבלאות.',
       updated:'02.07', src:'פגישה חודשית', hist:[]},
@@ -138,7 +138,7 @@ const MEM_UDATA={
 /* ---- דלתאות: מה השתנה בזיכרון בריצות האחרונות (מוצג בדשבורד היועץ) ---- */
 const MEM_UPDATES=[
   {ci:0, cat:'pains',   catName:'כאבי לקוח',    line:'נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה כ-70% מהמחזור', sev:'high', src:'פגישה מוקלטת 09:00', when:'היום 10:02', pend:false},
-  {ci:0, cat:'csat',    catName:'שביעות רצון',   line:'ירידה: תסכול מקצב התגובה בוואטסאפ — הנחיות הצ׳אט עודכנו בהתאם', sev:'high', src:'פגישה מוקלטת 09:00', when:'היום 10:03', pend:true},
+  {ci:0, cat:'csat',    catName:'שביעות רצון',   line:'ירידה: תסכול מקצב התגובה בוואטסאפ — הנחיות הצ׳אט עודכנו בהתאם', sev:'high', src:'פגישה מוקלטת 09:00', when:'היום 10:03', pend:false},
   {ci:0, cat:'cashpos', catName:'מצב תזרימי',    line:'צפי החריגה עודכן ל-9 ימים (במקום 12) אחרי דחיית תשלום ספק',      sev:'info', src:'פגישה מוקלטת 09:00', when:'היום 10:02', pend:false},
   {ci:2, cat:'goals',   catName:'יעדים והסכמות', line:'יעד קניות מלאי סומן בסיכון — 114% מהתקציב החודשי',               sev:'info', src:'תפעול שוטף',        when:'אתמול 16:40', pend:false},
   {ci:1, cat:'coop_co', catName:'שיתוף פעולה',   line:'חומר אחרון לתזרים: 30.6 · דפי בנק התקבלו בוואטסאפ',              sev:'info', src:'שיחת טלפון מוקלטת · SIM', when:'אתמול 11:15', pend:false},
@@ -153,14 +153,6 @@ function openMemCard(i){
 }
 function closeMemCard(){document.getElementById('memOv').classList.remove('show');}
 function memTgHist(k){ MEM_HIST.has(k)?MEM_HIST.delete(k):MEM_HIST.add(k); renderMemCard(); }
-function memEdit(k){ MEM_EDIT=k; renderMemCard(); }
-function memSave(k){
-  const d=(MEM_DATA[MEM_CUR]=MEM_DATA[MEM_CUR]||{});
-  const v=document.getElementById('memTa_'+k).value.trim();
-  d[k]=d[k]||{hist:[]};
-  d[k].txt=v; d[k].updated='היום'; d[k].src='עריכה ידנית — '+ (typeof ROLE!=='undefined'&&ROLE==='advisor'?'היועץ':'הצוות');
-  MEM_EDIT=null; renderMemCard(); toast('הקטגוריה עודכנה ידנית');
-}
 function memDel(k){
   const cat=MEM_CATS.find(c=>c.key===k);
   hkConfirm('מחיקת תוכן הקטגוריה','התוכן שנצבר ב"'+cat.name+'" יימחק. הקטגוריה עצמה תישאר ותתמלא מחדש באינטראקציות הבאות.','מחיקה',()=>{
@@ -176,11 +168,7 @@ function memEntry(cat){
 }
 function memCatBlock(cat){
   const d=memEntry(cat);
-  const editing=MEM_EDIT===cat.key;
-  const body=editing
-    ?`<textarea class="mem-ta" id="memTa_${cat.key}" rows="5">${d?d.txt:''}</textarea>
-      <div class="mem-editfoot"><button class="ot-btn done" onclick="memSave('${cat.key}')">שמירה</button><button class="ot-btn ghost" onclick="MEM_EDIT=null;renderMemCard()">ביטול</button></div>`
-    :(d?`<div class="mem-txt">${d.txt}</div>`:'<div class="mem-empty">טרם נצבר זיכרון — יתמלא מהאינטראקציה הבאה</div>');
+  const body=d?`<div class="mem-txt">${d.txt}</div>`:'<div class="mem-empty">טרם נצבר זיכרון — יתמלא מהאינטראקציה הבאה</div>';
   const hist=d&&d.hist&&d.hist.length&&MEM_HIST.has(cat.key)
     ?`<div class="mem-hist">${d.hist.map(h=>`<div class="mem-hist-row">${h}</div>`).join('')}</div>`:'';
   return `<div class="mem-cat ${cat.internal?'internal':''}">
@@ -190,7 +178,6 @@ function memCatBlock(cat){
       ${cat.internal?'<span class="mem-bg">לצ׳אט: הנחיות מזוקקות בלבד — המסמך לא נשלח</span>':''}
       <span class="mem-tools">
         ${d&&d.hist&&d.hist.length?`<button class="mem-ic" title="היסטוריית עדכונים" onclick="memTgHist('${cat.key}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg></button>`:''}
-        <button class="mem-ic" title="עריכה" onclick="memEdit('${cat.key}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
         <button class="mem-ic del" title="מחיקת התוכן" onclick="memDel('${cat.key}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
       </span>
     </div>

@@ -150,7 +150,7 @@
       ${sec('time','זמני תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
       ${sec('status','סטטוס תפעול',doneN+'<i>/'+T+'</i>','תופעלו · '+(T-doneN)+' נותרו להיום')}
       ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות · לפי מקור')}
-      ${sec('sheet','גוגל שיט','<span class="db-ago">לפני 3 דק׳</span>','עדכון אחרון · הכנסות והוצאות · 3 להזנה')}
+      ${sec('sheet','הזנות לקוח','<span class="db-ago">לפני 3 דק׳</span>','טבלאות הזנה · 3 שורות לאישור')}
       ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
     </div>`;
     renderOpsInfo();
@@ -183,7 +183,7 @@
     if(OQS_OPEN&&!e.target.closest('.opsq-stat, .db-sec')){OQS_OPEN=null;renderOpsQueue();}
   });
   function mrSend(i){CLIENTS[i].mReport=true;toast('הדוח החודשי נשלח ל'+CLIENTS[i].name+' בוואטסאפ');if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();if(typeof renderGlobalRail==='function')renderGlobalRail();if(typeof renderCoAlerts==='function')renderCoAlerts();}
-  function chatFrom(i){OQS_OPEN=null;CUR=i;openChat();} // נשארים בדשבורד — רק המגירה נפתחת
+  function chatFrom(i){OQS_OPEN=null;selectClient(i);showTab('msgs');} // מסך ההודעות המאוחד (הדראואר יצא לגמלאות)
   function qReply(inp,i){const v=inp.value.trim();if(!v)return;inp.value='';toast('התגובה נשלחה ל'+CLIENTS[i].name+' בוואטסאפ');}
   /* ההודעות שממתינות לטיפול בחברה — אחרי סינון מה שסומן כטופל */
   function msgPendOf(c,i){
@@ -215,7 +215,7 @@
     return `<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;${act}"><b>${name}</b><span>${sub}</span>${OQS_CHEV}</div>`;
   }
   function oqsPop(key){
-    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'גיליונות הכנסות והוצאות — שינויים להזנה למערכת',time:'פירוט זמני תפעול — לפי חברה',status:'סטטוס תפעול — לפי חברה',mrep:'דוח חודשי — עד 10.7'};
+    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'טבלאות ההזנה — שורות חדשות לאישור · לחיצה פותחת את הטבלה',time:'פירוט זמני תפעול — לפי חברה',status:'סטטוס תפעול — לפי חברה',mrep:'דוח חודשי — עד 10.7'};
     let rows='',foot='';
     if(key==='wait') CLIENTS.forEach((c,i)=>{const k='c'+i;
       if(!opsDoneSet.has(k)&&!opsAccum[k]&&pendOf(i)>0) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,pendOf(i)+' משימות'+(c.opsAlert?' · חריגה':''));});
@@ -241,17 +241,17 @@
         if(!firmOk(c)) return;
         (c.tasks||[]).filter(t=>!t.done&&t.type==='doc').forEach(t=>{
           rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${i})">
-            <b>${t.name}</b><span class="oqs-src ${t.src==='גוגל שיט'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`;});
+            <b>${t.name}</b><span class="oqs-src ${t.src==='טבלת הזנה'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`;});
       });
     }
     if(key==='sheet') [
-      [0,'אנרגי אינטרנשיונל','נוספו 3 שורות הוצאה · ספקים יוני','לפני 3 דק׳',false],
-      [1,'מטעי גבעון','נוספו 2 שורות הכנסה · לקוחות מזומן','לפני 25 דק׳',false],
-      [2,'אנרגי גולני','עודכנה שורת הוצאה · שכירות מבנה','לפני שעה',false],
-      [4,'משה עובד','נוספה שורת הכנסה · צ׳ק דחוי','08:40',true],
-      [1,'מטעי גבעון','עודכנו 2 שורות הוצאה · דלק ורכב','אתמול',true],
-    ].forEach(x=>rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${x[0]})">
-        <b>${x[1]}<i class="oqs-sub">${x[2]} · ${x[3]}</i></b><span class="oqs-src ${x[4]?'okk':'gs'}">${x[4]?'✓ הוזן':'להזנה'}</span></div>`);
+      [0,'אנרגי אינטרנשיונל','תשלומים לספקים · צפי אוגוסט — נוספו 2 שורות','לפני 3 דק׳',false,'תשלומים לספקים · צפי אוגוסט'],
+      [0,'אנרגי אינטרנשיונל','תשלומים לספקים — שיק מהבוט בקבוצה','לפני 20 דק׳',false,'תשלומים לספקים · צפי אוגוסט'],
+      [0,'אנרגי אינטרנשיונל','תקבולים מלקוחות · צפי — עודכן מרכז הבנייה','08:55',false,'תקבולים מלקוחות · צפי'],
+      [1,'מטעי גבעון','תקבולים מלקוחות · צפי — נוספו 2 שורות','לפני 25 דק׳',false,'תקבולים מלקוחות · צפי'],
+      [4,'משה עובד','תשלומים לספקים · צפי — שורה ראשונה!','08:40',true,'תשלומים לספקים · צפי אוגוסט'],
+    ].forEach(x=>rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;openDataTable('${x[5]}',${x[0]})">
+        <b>${x[1]}<i class="oqs-sub">${x[2]} · ${x[3]}</i></b><span class="oqs-src ${x[4]?'okk':'gs'}">${x[4]?'✓ אושר':'לאישור'}</span></div>`);
     if(key==='mrep') CLIENTS.forEach((c,i)=>{
       rows+=c.mReport
         ?oqsRow(`toast('הדוח של ${c.name} כבר נשלח')`,c.name,'✓ נשלח')

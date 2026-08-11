@@ -25,7 +25,7 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
@@ -91,6 +91,8 @@
 
   /* ---- chat drawer ---- */
   function openChat(){
+    // הדראואר הישן הוחלף במסך ההודעות — מפנים לשם
+    if(typeof renderMsgsView==='function'&&SCOPE==='client'){ showTab('msgs'); return; }
     const c=CLIENTS[CUR];
     document.getElementById('dAv').textContent=c.name.charAt(0);
     document.getElementById('dName').textContent=c.name;
@@ -131,17 +133,22 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'תקציב תזרימי',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'תקציב תזרימי',entries:'טבלאות הזנה',msgs:'הודעות',flowlog:'מה השתנה בתזרים',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
     else if(t==='chat'){document.getElementById('viewChat').style.display='';renderChat();}
-    else if(t==='meetings'){document.getElementById('viewMeetings').style.display='';renderMeetings();}
+    else if(t==='meetings'){
+      document.getElementById('viewMeetings').style.display='';
+      const mf=document.getElementById('meetFrame');
+      if(mf&&!mf.src) mf.src=mf.dataset.src;      // מסך הפגישות המעוצב — קובץ עצמאי
+      renderMeetings();                            // הרשימה הישנה נשארת מוסתרת (בשימוש openMeeting)
+    }
     else if(t==='cal'){
       document.getElementById('viewCal').style.display='';
       const f=document.getElementById('calFrame');
@@ -154,6 +161,19 @@
     else if(t==='prep'){
       document.getElementById('viewPrep').style.display='';
       if(typeof renderPrepView==='function')renderPrepView();
+    }
+    else if(t==='flowlog'){
+      document.getElementById('viewFlowLog').style.display='';
+      const ff=document.getElementById('flowLogFrame');
+      if(ff&&!ff.src) ff.src=ff.dataset.src;
+    }
+    else if(t==='entries'){
+      document.getElementById('viewEntries').style.display='';
+      if(typeof renderEntriesView==='function')renderEntriesView();
+    }
+    else if(t==='msgs'){
+      document.getElementById('viewMsgs').style.display='';
+      if(typeof renderMsgsView==='function')renderMsgsView();
     }
     else if(t==='budget'){
       document.getElementById('viewBudget').style.display='';
@@ -236,6 +256,7 @@
     dash:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
     chat:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>',
     metrics:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
+    msgs:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>',
     meetings:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
     prep:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg>',
     flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7.5"/></svg>',
@@ -248,7 +269,7 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['chat',1],['metrics',1],['meetings',0],['prep',1]];
+      const SEC=[['dash',0],['msgs',0],['chat',1],['metrics',1],['meetings',0],['prep',1]];
       html=(ROLE==='client1'?'':`<div class="gn-back" onclick="${backGo}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> ${backLbl}</div>`)+
         `<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
@@ -273,8 +294,7 @@
           if(!ks.length) return '';
           return (title?`<div class="gn-sec-h">${title}</div>`:'')+ks.map(item).join('');
         };
-        html+=seg('',['dash','chat','metrics']);
-        html+=seg('פגישות',['meetings','prep']);
+        html+=seg('',['dash','msgs','meetings','chat','metrics']);   // ההכנה לפגישה — לא בסרגל; מגיעים אליה מהפגישות ומהיומן
       }
       // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
       if(typeof OPSMODE==='undefined'||!OPSMODE){
@@ -286,14 +306,13 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
           <span>תזרים עבר</span></div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
-      // ליווי
+      html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
+      // ליווי — פריט בודד, בלי כותרת קבוצה
       if(!(ROLE==='client1'||ROLE==='clientN')){
-        html+=`<div class="gn-sec-h">ליווי</div>`;
         html+=`<div class="gn-item sec ${CUR_TAB==='flow'?'on':''}" onclick="showTab('flow')">${SEC_ICO.flow}<span>${TAB_LABELS.flow}</span></div>`;
       }
-      // הגדרות החברה — פר חברה, בתחתית
+      // הגדרות החברה — פר חברה, בתחתית, בלי כותרת
       if(ROLE==='manager'||ROLE==='advisor'){
-        html+=`<div class="gn-sec-h">החברה</div>`;
         html+=`<div class="gn-item sec ${CUR_TAB==='coset'?'on':''}" onclick="showTab('coset')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>הגדרות חברה</span></div>`;
       }
       }

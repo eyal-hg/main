@@ -210,12 +210,12 @@
       :`<div class="cb-clean">אין הודעות פתוחות ✓</div>`;
     /* המסמכים עצמם */
     const docs=T.filter(t=>!t.done&&t.type==='doc');
-    const docRows=docs.length?docs.slice(0,2).map(t=>`<div class="cb-doc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nm">${t.name}</span><span class="oqs-src ${t.src==='גוגל שיט'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`).join('')+(docs.length>2?`<div class="cb-more">+ עוד ${docs.length-2}</div>`:'')
+    const docRows=docs.length?docs.slice(0,2).map(t=>`<div class="cb-doc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nm">${t.name}</span><span class="oqs-src ${t.src==='טבלת הזנה'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`).join('')+(docs.length>2?`<div class="cb-more">+ עוד ${docs.length-2}</div>`:'')
       :`<div class="cb-clean">הכל הוזן ✓</div>`;
-    /* פיד שינויים בגיליון */
+    /* פיד שינויים בטבלאות ההזנה */
     const FEED={0:['נוספו 3 שורות הוצאה · ספקים יוני','לפני 3 דק׳'],1:['נוספו 2 שורות הכנסה · לקוחות מזומן','לפני 25 דק׳'],2:['עודכנה שורת הוצאה · שכירות מבנה','לפני שעה'],4:['נוספה שורת הכנסה · צ׳ק דחוי','08:40']};
     const fd=FEED[CUR];
-    const feed=fd?`<div class="cb-feed"><span class="cb-pulse"></span><div class="cb-fb"><b>${fd[0]}</b><span>${fd[1]} · ממתין להזנה</span></div></div>`
+    const feed=fd?`<div class="cb-feed"><span class="cb-pulse"></span><div class="cb-fb"><b>${fd[0]}</b><span>${fd[1]} · ממתין לאישור לתזרים</span></div></div>`
       :`<div class="cb-clean">אין שינויים חדשים ✓</div>`;
     el.style.display='';
     el.innerHTML=`<div class="daybar cobar rich">
@@ -227,9 +227,9 @@
         <div class="db-sub">${c.unread?'לצפייה ומענה ←':''}</div></div>
       <div class="db-sec"><div class="db-l">מסמכים להזנה ${docs.length?`<span class="cb-n">${docs.length}</span>`:''}</div>
         ${docRows}</div>
-      <div class="db-sec"><div class="db-l">גוגל שיט</div>
+      <div class="db-sec clk" onclick="openDataTable('תשלומים לספקים · צפי אוגוסט')"><div class="db-l">הזנות לקוח</div>
         ${feed}
-        <div class="db-sub">הכנסות והוצאות · 4 גיליונות</div></div>
+        <div class="db-sub">טבלאות הזנה מנוהלות · לחיצה לפתיחת הטבלה ←</div></div>
       <div class="db-sec"><div class="db-l">דוח חודשי</div>
         ${c.mReport?`<div class="cb-rep ok"><span class="db-ok">✓</span><div class="cb-fb"><b>נשלח ללקוח</b><span>יוני 2026 · בוואטסאפ</span></div></div>`
                    :`<button class="cb-send" onclick="mrSend(${CUR})">שליחת הדוח עכשיו</button><div class="db-sub">חובה עד 10.7</div>`}</div>
@@ -274,11 +274,6 @@
       const el=document.getElementById('evDate');
       if(el) el.value=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
     }
-  }
-  function memUpApprove(i){
-    MEM_UPDATES[i].pend=false;
-    toast('העדכון אושר ונכנס לכרטיס הלקוח');
-    renderAlerts(); advPop('mem');
   }
   /* רדאר שימור והרחבה — אותות מהזיכרון ומהתפעול */
   const ADV_RADAR=[
@@ -386,11 +381,11 @@
     }else if(kind==='mem'){
       title='עדכוני זיכרון — פגישת 09:00 · אנרגי אינטרנשיונל';
       const ups=MEM_UPDATES.map((u,gi)=>({u,gi})).filter(x=>x.u.ci===0&&x.u.src.includes('09:00'));
-      body=`<div class="apm-sub">ה-AI עדכן את כרטיס הלקוח מתוך תמלול הפגישה. עדכון בקטגוריה רגישה ממתין לאישורך לפני שנכנס למסמך.</div>`+
-        ups.map(({u,gi})=>`<div class="apm-row ${u.pend?'pend':''}">
+      body=`<div class="apm-sub">ה-AI עדכן את כרטיס הלקוח מתוך תמלול הפגישה — אוטומטית, לפי הפרומפט של כל קטגוריה.</div>`+
+        ups.map(({u})=>`<div class="apm-row">
           <span class="mf-cat">${u.catName}</span>
           <div class="apm-b"><div class="mf-l">${u.line}</div><div class="mf-meta">${u.when}</div></div>
-          ${u.pend?`<button class="ot-btn done" onclick="memUpApprove(${gi})">אישור</button><button class="mt-btn view" onclick="advPopClose();openMemCard(0)">עריכה בכרטיס</button>`:'<span class="apm-ok">✓ עודכן</span>'}
+          <span class="apm-ok">✓ עודכן</span>
         </div>`).join('');
     }else if(kind==='radar'){
       title='רדאר שימור והרחבה — מבוסס זיכרון לקוח ותפעול';
@@ -425,10 +420,19 @@
       mem:['פתח במספרים — צחי מאבד סבלנות מהקדמות','רגישות סביב התלות ברימון — לגעת בזה בעדינות, בלי לחץ']},
     'משה עובד':{pts:['ההקמה כמעט הושלמה — נשארו הרשאות בנק','אין עדיין נתוני תפעול — לתאם ציפיות לחודש הראשון','להציג את דוח התזרים הראשון בפגישה'],
       mem:['לקוח בהקמה — טון מלווה ומרגיע, בלי ז׳רגון מקצועי']},
+    'רימון יצחק':{pts:['המחזור יציב — 3 חודשים סביב 95 א׳ ₪','חוב פתוח לגבייה 1,200 ₪ — לוודא לפני הפגישה','יעד הליטרים חצה את הרף החודשי — לציין לטובה'],
+      mem:['מעדיף שיחה תכל׳ס — בלי סמול טוק','מגיב טוב לגרפים — להביא את מגמת המחזור']},
+    'לביא הובלות':{pts:['פגישת הקמה — לעבור על חיבורי הבנק והאשראי','להגדיר יחד את קטגוריות התזרים הראשונות','לתאם ציפיות: מה HK עושה ומה באחריותו'],
+      mem:['לקוח חדש — אין עדיין זיכרון · ההיכרות הזו תתחיל אותו']},
   };
   const ADV_PREP_OPEN=new Set();
   function advPrepTg(ix){ ADV_PREP_OPEN.has(ix)?ADV_PREP_OPEN.delete(ix):ADV_PREP_OPEN.add(ix); renderAlerts(); }
   function renderAdvisorHome(){
+    /* דמו: בר טרום-פגישה קופץ לבד לקראת פגישת היום */
+    if(!window._preBarShown&&typeof showPreMeetBar==='function'&&typeof MEETINGS!=='undefined'){
+      const mi=MEETINGS.findIndex(x=>x.date==='02.07.2026'&&x.status==='upcoming');
+      if(mi>=0){window._preBarShown=true;showPreMeetBar(mi);}
+    }
     const board=document.getElementById('alBoard');
     board.classList.add('advh');
     advInit();
@@ -442,8 +446,7 @@
       ${ADV_TODO.map((x,i)=>`
         <div class="mc-todo-row ${x.done?'done':''}">
           <label class="mc-chk"><input type="checkbox" ${x.done?'checked':''} onchange="advTodoDone(${i})"><span></span></label>
-          <span class="mc-todo-t">${x.t}</span>
-          ${x.done||!x.lbl?'':`<button class="mt-btn ${x.lbl==='אישור'?'':'view'}" onclick="${x.act}">${x.lbl}</button>`}
+          <span class="mc-todo-t ${x.act&&!x.done?'link':''}" ${x.act&&!x.done?`onclick="${x.act}"`:''}>${x.t}</span>
         </div>`).join('')}
     </div>`;
     let nowDrawn=false, tl='';
@@ -506,8 +509,7 @@
           ${ADV_DOFF!==0?`<button class="mcw-todaybtn" onclick="advDayToday()">חזרה להיום</button>`:''}
           <button class="mcw-arr" onclick="advDayNav(1)" title="יום הבא"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
         </span>
-        <button class="mrec-btn on-card sm" style="margin-inline-start:auto" onclick="startMeetRec()"><span class="mrec-dot"></span> התחל פגישה</button>
-        <button class="mt-btn view" onclick="gnavGo('cal')">היומן המלא</button>
+        <button class="mt-btn view" style="margin-inline-start:auto" onclick="gnavGo('cal')">היומן המלא</button>
       </div>
       ${calBody}
     </div>`;
@@ -515,10 +517,8 @@
     const ovd=alerts.filter(a=>a.mkey==='overdraft');
     /* "דורש את תשומת הלב שלך" — פריטים מנוסחים כפעולה, ממוינים לפי דחיפות */
     const ATT=[
-      {sev:'high', i:0, c:'אנרגי אינטרנשיונל', what:'חריגה צפויה בעו״ש בעוד 9 ימים', act:'לתאם שיחה על הזרמה או דחיית תשלומים — יש יתרה חיובית בפועלים 112',
-       btn:'תיאום שיחה', go:`advSchedCall(0)`},
-      {sev:'high', i:0, c:'אנרגי אינטרנשיונל', what:'שביעות הרצון ירדה — תסכול מקצב התגובה', act:'עלה בפגישה המוקלטת של היום · מומלץ שיחה אישית קצרה מהיועץ',
-       btn:'כרטיס לקוח', go:`openMemCard(0)`, mem:true},
+      {sev:'high', i:0, c:'אנרגי אינטרנשיונל', what:'חריגה צפויה בעו״ש בעוד 9 ימים — <b>לא הייתה אתמול</b>', act:'3 שינויים הורידו את התחזית ב-32,400 ₪ · לחיצה מציגה בדיוק מה השתנה',
+       btn:'למה?', go:`selectClient(0);showTab('flowlog')`, why:true},
       {sev:'high', i:2, c:'מטעי גבעון', what:'חריגת תקציב — 114% מהיעד', act:'מומלץ שיחת מעקב על קניות המלאי לפני חריגת המסגרת',
        btn:'תיאום שיחה', go:`advSchedCall(2)`},
       {sev:'mid', i:1, c:'אנרגי גולני', what:'חוב פתוח לגבייה — 1,200 ₪ בפיגור', act:'לשלוח תזכורת גבייה בוואטסאפ',
@@ -526,42 +526,33 @@
       {sev:'mid', i:3, c:'משה עובד', what:'חוב פתוח לגבייה — 480 ₪ בפיגור', act:'לשלוח תזכורת גבייה בוואטסאפ',
        btn:'תזכורת בוואטסאפ', go:`toast('תזכורת גבייה נשלחה למשה עובד בוואטסאפ')`},
     ];
-    const attCard=`<div class="advl">
-      <div class="advl-head"><span class="advl-title">דורש את תשומת הלב שלך</span><span class="advl-sub">מנוסח כפעולה · ממוין לפי דחיפות</span></div>
-      ${ATT.map(x=>`
-        <div class="att-row ${x.sev}">
-          <div class="att-b">
-            <div class="att-t"><b>${x.c}</b> — ${x.what}${x.mem?' <span class="pm-tag">מהזיכרון</span>':''}</div>
-            <div class="att-a">${x.act}</div>
-          </div>
-          <div class="att-btns">
-            <button class="mt-btn" onclick="${x.go}">${x.btn}</button>
-            <button class="mt-btn view" onclick="selectClient(${x.i})">פתיחת החברה</button>
-          </div>
-        </div>`).join('')}
-    </div>`;
-    /* הכנה לפגישות היום — שלוש נקודות AI לכל פגישה */
-    /* פיד עדכוני הזיכרון — הפגישות המוקלטות מייצרות זיכרון מול העיניים */
-    const pendN=MEM_UPDATES.filter(u=>u.pend).length;
-    const memFeedCard=`<div class="advl memfeed">
-      <div class="advl-head"><span class="advl-title">זיכרון לקוח — עדכונים</span><span class="advl-sub">נוצר אוטומטית מפגישות ושיחות מוקלטות</span></div>
+    /* פיד אחד: התראות מהמספרים + עדכוני זיכרון — ממוין לפי דחיפות */
+    const FEED=[
+      ...ATT.map(x=>({t:'att', sev:x.sev, i:x.i, c:x.c, what:x.what, act:x.act})),
+      ...MEM_UPDATES.map(u=>({t:'mem', sev:u.sev==='high'?'high':'info', ci:u.ci, cat:u.catName, line:u.line, src:u.src, when:u.when})),
+    ];
+    const _ord={high:0, mid:1, info:2};
+    FEED.sort((x,y)=>(_ord[x.sev]??2)-(_ord[y.sev]??2));
+    const feedCard=`<div class="advl memfeed">
+      <div class="advl-head"><span class="advl-title">דורש את תשומת הלב שלך</span><span class="advl-sub">מהמספרים ומהזיכרון — פיד אחד, ממוין לפי דחיפות</span></div>
       <div class="mf-pipe">
         <span class="mrec-dot"></span>
-        <div class="mf-pipe-t">פגישת 09:00 · אנרגי אינטרנשיונל<span>הוקלטה 46 דק׳ ← תומללה ← 3 עדכוני זיכרון${pendN?` · <b>${pendN} ממתין לאישורך</b>`:''}</span></div>
+        <div class="mf-pipe-t">פגישת 09:00 · אנרגי אינטרנשיונל<span>הוקלטה 46 דק׳ ← תומללה ← 3 עדכוני זיכרון נכנסו לכרטיס</span></div>
         <button class="mt-btn" onclick="advPop('mem')">סקירה</button>
       </div>
-      ${MEM_UPDATES.map(u=>`<div class="mf-row">
-        <span class="mf-dot ${u.sev}"></span>
-        <div class="mf-b">
-          <div class="mf-t"><b>${CLIENTS[u.ci].name}</b><span class="mf-cat">${u.catName}</span>${u.pend?'<span class="mf-wait">ממתין לאישור</span>':''}</div>
-          <div class="mf-l">${u.line}</div>
-          <div class="mf-meta">${u.src} · ${u.when}</div>
-        </div>
-        <button class="mt-btn view sm" onclick="openMemCard(${u.ci})">כרטיס</button>
-      </div>`).join('')}
+      ${FEED.map(f=>f.t==='att'
+        ?`<div class="mf-row clickable" onclick="selectClient(${f.i})">
+            <span class="mf-dot ${f.sev==='high'?'high':'mid'}"></span>
+            <div class="mf-b"><div class="mf-t"><b>${f.c}</b> — ${f.what}</div><div class="mf-l">${f.act}</div></div>
+            <span class="att-go">›</span></div>`
+        :`<div class="mf-row clickable" onclick="openMemCard(${f.ci})">
+            <span class="mf-dot ${f.sev==='high'?'high':'mem'}"></span>
+            <div class="mf-b"><div class="mf-t"><b>${CLIENTS[f.ci].name}</b><span class="mf-cat">${f.cat}</span><span class="pm-tag">מהזיכרון</span></div>
+              <div class="mf-l">${f.line}</div><div class="mf-meta">${f.src} · ${f.when}</div></div>
+            <span class="att-go">›</span></div>`).join('')}
     </div>`;
     board.innerHTML=advTopCards()+`<div class="advh2">
       <div class="advcal-col">${calCard}</div>
-      <div class="advh-side">${attCard}${memFeedCard}</div>
+      <div class="advh-side">${feedCard}</div>
     </div>`;
   }

@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>פגישות · חזות קריספין</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#F4F7FA; --surface:#fff;
+  --border:#e6ecf4; --border-strong:#d3dced; --line:#f1f6fa;
+  --text:#0C4068; --muted:#64748b; --soft:#9aa7bb;
+  --accent:#1B6C9C; --accent-soft:#EAF4FB;
+  --coral:#E48375; --coral-deep:#C2372A; --coral-soft:#FDECEB;
+  --pos:#13895b; --pos-soft:#e7f7ef;
+  --warn:#B4690E; --warn-soft:#FDF4E3;
+  --mem:#7C5CBF; --mem-soft:#F6F3FC; --mem-border:#E4DCF5;
+  --shadow-sm:0 2px 8px rgba(15,35,65,.06);
+  --shadow-md:0 6px 18px rgba(12,64,104,.08);
+  --shadow-lg:0 10px 30px rgba(12,64,104,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:"Rubik",-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+.app{max-width:1280px;margin:0 auto;padding:24px 22px 70px}
+body.is-embedded .app{padding:0 0 10px;max-width:none}
+body.is-embedded .head{display:none}
+body.is-embedded .grid{margin-top:0;height:calc(100vh - 178px)}
+
+/* ===== כותרת ===== */
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.head h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.3px}
+.head .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.head .sub b{color:var(--text);font-weight:600}
+.head .sub .ok{color:var(--pos);font-weight:700}
+.head-acts{display:flex;gap:8px;flex:0 0 auto}
+.btn{border:1.5px solid var(--border-strong);background:#fff;color:var(--muted);font-weight:600;font-size:12.5px;border-radius:999px;padding:8px 18px}
+.btn:hover{color:var(--text);border-color:#b9c9da}
+.btn.primary{background:var(--coral);border-color:var(--coral);color:#fff;font-weight:700}
+.btn.primary:hover{background:#D96A5A;border-color:#D96A5A}
+.rbtn{border:1.5px solid var(--border-strong);background:#fff;color:var(--accent);font-weight:700;font-size:12px;border-radius:999px;padding:7px 15px}
+.rbtn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.rbtn.rec{border-color:var(--coral);color:var(--coral-deep);display:inline-flex;align-items:center;gap:7px}
+.rbtn.rec i{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.35}}
+.rbtn.solid{background:var(--coral);border-color:var(--coral);color:#fff}
+.rbtn.solid:hover{background:#D96A5A}
+.rbtn.sm{padding:5px 12px;font-size:11.5px}
+
+/* ===== פריסה: ההכנה במרכז, הפגישות רזות בצד ===== */
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:stretch;margin-top:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.prep,.mcol{display:flex;flex-direction:column;height:100%}
+.prep-body{flex:1;overflow-y:auto}
+.mcols{display:contents}
+/* התראה עליונה — אין פגישה קרובה */
+.topwarn{display:flex;align-items:center;gap:14px;background:#FFF8EC;border:1px solid #ECD9A8;border-radius:14px;padding:13px 20px;margin-top:16px}
+.topwarn .ic{font-size:18px}
+.topwarn .tx{flex:1}
+.topwarn .tx b{display:block;font-size:13.5px;color:var(--warn)}
+.topwarn .tx span{font-size:12px;color:var(--muted)}
+.topwarn .wa{background:#128C7E;border:0;color:#fff;font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:8px 18px}
+.topwarn .wa:hover{background:#0F7A6D}
+.mtabs{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.mtab{flex:1;border:1px solid transparent;background:#F4F7FA;color:var(--muted);font-family:inherit;font-size:11px;font-weight:700;border-radius:9px;padding:7px 4px;white-space:nowrap}
+.mtab:hover{background:#EAF1F7}
+.mtab.on{background:var(--accent-soft);border-color:#C9E4F6;color:var(--accent)}
+.mtab i{font-style:normal;opacity:.7;margin-inline-start:3px}
+.mtab.alert{background:var(--coral-soft);color:var(--coral-deep);border-color:#F3C2BE}
+.mtab.alert i{background:var(--coral);color:#fff;border-radius:999px;padding:0 6px;font-size:9.5px;opacity:1;margin-inline-start:4px}
+.mtab.alert.on{background:var(--coral);border-color:var(--coral);color:#fff}
+.mtab.alert.on i{background:#fff;color:var(--coral-deep)}
+.actbar{display:flex;align-items:center;gap:9px;background:var(--coral-soft);border-bottom:1px solid #F3C2BE;padding:9px 16px;font-size:11.5px;font-weight:700;color:var(--coral-deep);cursor:pointer}
+.actbar:hover{background:#FCE3E0}
+.actbar .n{background:var(--coral);color:#fff;border-radius:999px;padding:1px 8px;font-size:10.5px}
+.actbar .go{margin-inline-start:auto;font-size:13px}
+.mtab .w{color:var(--warn)}
+.dgrp{font-size:10.5px;font-weight:800;color:var(--soft);padding:12px 16px 4px;display:flex;align-items:center;gap:7px}
+.dgrp.warn{color:var(--warn)}
+.dgrp .c{background:var(--warn-soft);color:var(--warn);border-radius:999px;padding:0 7px;font-size:10px}
+.mcol.desk{border-color:#DCE7F2}
+.mcol.arch{background:#FCFDFE}
+.mcol.arch .mcol-h b{color:var(--muted)}
+.mi.need-row{background:#FFFDF9}
+.mi.need-row.miss{background:#FFFBFA}
+.mi.need-row.purple{background:#FCFBFE}
+.mi .rbtn.sm{align-self:center;flex:0 0 auto;padding:4px 11px;font-size:10.5px}
+.mi .rbtn.rec.sm i{width:6px;height:6px}
+.mcol .tlscroll{flex:1;min-height:0;overflow-y:auto;max-height:none}
+.tlscroll::-webkit-scrollbar{width:6px}
+.tlscroll::-webkit-scrollbar-thumb{background:#DCE5EE;border-radius:6px}
+.prep-body::-webkit-scrollbar{width:6px}
+.prep-body::-webkit-scrollbar-thumb{background:#E6E0F5;border-radius:6px}
+.mcol{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden}
+.mcol-h{display:flex;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.mcol-h b{font-size:13px;font-weight:800}
+.mcol-h .n{font-size:10.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:1px 8px}
+.mcol-h .act{margin-inline-start:auto}
+.mcol-h .warnc{font-size:10.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:2px 9px}
+.tlscroll{overflow-y:auto;scrollbar-width:thin}
+
+/* ===== ההכנה — הכוכבת ===== */
+.prep{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-lg);overflow:hidden}
+.prep-h{display:flex;align-items:center;gap:12px;padding:14px 20px;flex-wrap:wrap;background:linear-gradient(180deg,#FAF8FE,#F6F3FC);border-bottom:1px solid var(--mem-border)}
+.prep-h .ttl{flex:1}
+.prep-h .ttl b{font-size:16px;font-weight:800;display:block}
+.prep-h .ttl span{font-size:12px;color:var(--mem);font-weight:600}
+.prep-h .stamp{font-size:11px;color:var(--soft)}
+.prep-h.warn{background:linear-gradient(180deg,#FFFBF2,#FFF8EC);border-bottom-color:#ECD9A8}
+.prep-h.warn .ttl b{color:var(--warn)}
+.prep-h.warn .ttl b::before{content:'⚠️ ';font-size:13px}
+.prep-h.warn .ttl span{color:var(--muted);font-weight:400}
+.wa{background:#128C7E;border:0;color:#fff;font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:8px 18px}
+.wa:hover{background:#0F7A6D}
+.prep-body{padding:22px 26px}
+
+/* סיכום AI */
+.ai{background:var(--mem-soft);border:1px solid var(--mem-border);border-radius:14px;padding:14px 18px;margin-bottom:20px}
+.ai h4{margin:0 0 6px;font-size:11.5px;font-weight:800;color:var(--mem)}
+.ai p{margin:0;font-size:13.5px;line-height:1.75;color:#334E63}
+
+/* גריד תוכן ההכנה */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:640px){.pgrid{grid-template-columns:1fr}}
+.blk h4{margin:0 0 10px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:7px}
+.blk h4 .tag{font-size:9.5px;font-weight:700;background:var(--mem-soft);color:var(--mem);border:1px solid var(--mem-border);border-radius:999px;padding:1.5px 8px}
+.blk+.blk{margin-top:0}
+.pt{display:flex;gap:9px;padding:7px 0;font-size:13px;color:#334E63;line-height:1.65}
+.pt .b{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:#7FB3DC;margin-top:8px}
+.pt .src{flex:0 0 auto;align-self:flex-start;margin-top:3px;font-size:9.5px;font-weight:700;background:#F1F4F7;color:var(--soft);border-radius:999px;padding:1px 8px}
+.pt.mem{background:var(--mem-soft);border-radius:10px;padding:8px 12px;margin-bottom:5px}
+.pt.mem .b{background:var(--mem)}
+.goal{background:var(--accent-soft);border:1px solid #C9E4F6;border-radius:12px;padding:12px 16px}
+.goal b{font-size:13.5px;font-weight:800;display:block;line-height:1.6}
+.goal span{display:block;font-size:11.5px;color:var(--muted);margin-top:6px}
+.task{display:flex;gap:9px;align-items:center;padding:5px 0;font-size:12.5px;color:#334E63}
+.task .ck{flex:0 0 16px;height:16px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:900;background:var(--pos-soft);color:var(--pos)}
+.task.open .ck{background:var(--warn-soft);color:var(--warn)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.kpi{background:#FAFCFE;border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.kpi span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.kpi b{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.kpi.bad b{color:var(--coral-deep)}
+.donebar{display:flex;align-items:center;gap:12px;background:var(--pos-soft);border:1px solid #BFE5CF;border-radius:12px;padding:11px 16px;margin-bottom:20px}
+.donebar .ok-ic{width:24px;height:24px;border-radius:50%;background:var(--pos);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+.donebar b{display:block;font-size:12.5px;color:#1E5B41}
+.donebar span{font-size:11px;color:var(--muted)}
+.donebar .rbtn{margin-inline-start:0}
+.donebar .rbtn:first-of-type{margin-inline-start:auto}
+.blk h4 .tag.ok{background:var(--pos-soft);color:var(--pos);border-color:#BFE5CF}
+.blk h4 .tag.priv{background:#F1F4F7;color:var(--muted);border-color:var(--border-strong)}
+.memrow{padding:8px 0;border-top:1px solid var(--mem-border);font-size:12.5px;color:#334E63;line-height:1.6}
+.memrow:first-of-type{border-top:0}
+.memrow .cat{display:inline-block;font-size:9.5px;font-weight:700;background:var(--mem-soft);color:var(--mem);border:1px solid var(--mem-border);border-radius:999px;padding:1px 8px;margin-inline-end:7px}
+.fb{padding:8px 0;border-top:1px solid var(--line)}
+.fb:first-of-type{border-top:0}
+.fb b{display:block;font-size:12.5px}
+.fb span{font-size:12px;color:var(--muted);line-height:1.6}
+.mediarow{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.prep-f{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--line);background:#FCFDFE}
+.prep-f .note{font-size:11px;color:var(--soft);margin-inline-start:auto}
+
+/* ===== רשימת הפגישות — רזה ===== */
+.side{position:sticky;top:14px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden}
+.side-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px}
+.side-h b{font-size:13px;font-weight:800}
+.segs{display:flex;gap:4px;padding:0 12px 10px;border-bottom:1px solid var(--line)}
+.seg{flex:1;border:1px solid transparent;background:#F4F7FA;color:var(--muted);font-family:inherit;font-size:10.5px;font-weight:700;border-radius:9px;padding:6px 4px;white-space:nowrap}
+.seg:hover{background:#EAF1F7}
+.seg.on{background:var(--accent-soft);border-color:#C9E4F6;color:var(--accent)}
+.seg i{font-style:normal;opacity:.65;margin-inline-start:3px}
+.tlscroll{max-height:calc(100vh - 300px);min-height:320px;overflow-y:auto;scrollbar-width:thin}
+.tlscroll::-webkit-scrollbar{width:6px}
+.tlscroll::-webkit-scrollbar-thumb{background:#DCE5EE;border-radius:6px}
+.mon{position:sticky;top:0}
+/* ציר זמן לפי חודשים */
+.tlwrap{position:relative;padding:4px 0 6px}
+.tlwrap::before{content:'';position:absolute;inset-inline-end:31px;top:0;bottom:0;width:1.5px;background:var(--line)}
+.mon{position:relative;font-size:10px;font-weight:800;color:var(--soft);padding:12px 16px 6px 16px;background:var(--surface);z-index:1}
+.mon .cnt{font-weight:700;color:#B9C6D2;margin-inline-start:5px}
+.mi{display:flex;align-items:flex-start;gap:11px;padding:8px 16px;cursor:pointer;position:relative}
+.mi:hover{background:#FBFDFF}
+.mi.on{background:var(--accent-soft)}
+.mi-pin{position:relative;flex:0 0 14px;display:flex;justify-content:center;padding-top:4px;z-index:1}
+.mi-pin i{width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--border-strong)}
+.mi.today .mi-pin i{border-color:var(--coral);background:var(--coral);box-shadow:0 0 0 3px var(--coral-soft)}
+.mi.on .mi-pin i{border-color:var(--accent)}
+.mi.amber .mi-pin i{border-color:#EFC04D}
+.mi.purple .mi-pin i{border-color:#C4B5E8}
+.mi.miss  .mi-pin i{border-color:#E3B8B2;background:#F6EEEC}
+.mi.done  .mi-pin i{border-color:#BFE5CF;background:var(--pos-soft)}
+.mi-b{flex:1;min-width:0}
+.mi-d{font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.mi.today .mi-d{color:var(--coral-deep)}
+.mi-t{font-size:12.5px;font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mi-s{font-size:10.5px;color:var(--soft);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.noup{margin:14px 16px 18px;background:#FFFBF3;border:1px solid #ECD9A8;border-radius:14px;padding:16px 18px;text-align:center}
+.noup .ic{font-size:22px;line-height:1}
+.noup b{display:block;font-size:13.5px;color:var(--warn);margin-top:8px}
+.noup span{display:block;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6}
+.noup .acts{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.noup .wa{background:#128C7E;border:0;color:#fff;font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:8px 18px;display:inline-flex;align-items:center;gap:7px}
+.noup .wa:hover{background:#0F7A6D}
+.mcol-h .warnc.bad{background:var(--coral-soft);color:var(--coral-deep)}
+.need{font-size:9.5px;font-weight:700;background:var(--warn-soft);color:var(--warn);border-radius:999px;padding:1px 8px;margin-inline-start:6px;vertical-align:1px}
+.need.proc{background:var(--mem-soft);color:var(--mem)}
+.need.miss{background:var(--coral-soft);color:var(--coral-deep)}
+.side-f{padding:10px 16px;border-top:1px solid var(--line)}
+.side-f a{font-size:11.5px;color:var(--accent);font-weight:700;text-decoration:none;cursor:pointer}
+
+/* ===== מצב פגישה שהסתיימה (החלפת תוכן המרכז) ===== */
+.hist-note{display:flex;align-items:center;gap:10px;background:var(--pos-soft);border:1px solid #BFE5CF;border-radius:12px;padding:10px 16px;margin-bottom:18px;font-size:12.5px;color:#1E5B41;font-weight:600}
+.numpt{display:flex;gap:10px;padding:5px 0;font-size:13px;color:#334E63;line-height:1.7}
+.numpt b{flex:0 0 auto;color:var(--accent);font-weight:800;font-size:12.5px;padding-top:1px}
+.row{padding:7px 0;border-top:1px solid #EDE5FA;font-size:12.5px;color:#334E63;line-height:1.6}
+.row:first-of-type{border-top:0}
+.cat{display:inline-block;font-size:9.5px;font-weight:700;background:#fff;color:var(--mem);border:1px solid var(--mem-border);border-radius:999px;padding:1px 8px;margin-inline-end:6px}
+.membox{background:var(--mem-soft);border:1px solid var(--mem-border);border-radius:14px;padding:14px 18px}
+.chip{font-size:10.5px;font-weight:700;border-radius:999px;padding:2.5px 10px}
+.chip.amber{background:var(--warn-soft);color:var(--warn)}
+.chip.line{background:none;color:var(--coral-deep);padding:0;font-size:11px}
+</style>
+</head>
+<body>
+<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');</script>
+<div class="app">
+
+  <div class="head">
+    <div>
+      <h1>פגישות</h1>
+      <div class="sub">אנרגי אינטרנשיונל · האחרונה <b>05.05.2026 — לפני 58 יום</b> · הבאה <span class="ok">היום 17:00 ✓</span></div>
+    </div>
+    <div class="head-acts">
+      <button class="btn">היומן המלא</button>
+      <button class="btn primary">+ קביעת פגישה</button>
+    </div>
+  </div>
+
+
+  <div class="grid">
+
+    <!-- ========== המרכז: ההכנה המלאה ========== -->
+    <main class="prep">
+      <div class="prep-h" id="prepH">
+        <div class="ttl">
+          <b id="prepT">הכנה לפגישה — היום 17:00</b>
+          <span id="prepS">המשך סקירה — החלטות תקציב · עם צחי עובד</span>
+        </div>
+        <button class="rbtn rec" id="prepRec"><i></i> הקלטת הפגישה</button>
+        <button class="wa" id="prepWa" style="display:none">שליחת 3 מועדים בוואטסאפ</button>
+        <span class="stamp" id="prepStamp">נוצרה 10:02</span>
+      </div>
+
+      <div class="prep-body">
+        <div class="ai">
+          <h4>✦ סיכום AI לפגישה</h4>
+          <p>הפגישה מגיעה אחרי חודש חזק (הכנסות +12%) אבל עם חריגה צפויה בעו״ש בעוד 9 ימים. הנושא המרכזי: קניות המלאי — גם חרגו מהתקציב (114%) וגם 25,000 ₪ מהן טרם נצבעו בתזרים. צחי ביקש בפגישה הקודמת לרדת לרזולוציית ספקים — להגיע עם הפירוט מוכן.</p>
+        </div>
+
+        <div class="pgrid">
+          <div>
+            <div class="blk">
+              <h4>נקודות פתיחה</h4>
+              <div class="pt"><span class="b"></span><span>ההכנסות +12% מהחודש הקודם — כדאי לפתוח בזה</span><span class="src">מדדים</span></div>
+              <div class="pt"><span class="b"></span><span>חריגה צפויה בעו״ש בעוד 9 ימים — להציע העברה מפועלים 112</span><span class="src">תזרים</span></div>
+              <div class="pt"><span class="b"></span><span>25,000 ₪ קניות מלאי עוד לא נצבעו בתזרים</span><span class="src">תפעול</span></div>
+            </div>
+
+            <div class="blk" style="margin-top:20px">
+              <h4>מטרה מוצעת לפגישה</h4>
+              <div class="goal">
+                <b>סגירת תוכנית מלאי לרבעון — תקציב חדש לשורת הקניות + צביעת ה-25,000 ₪ הפתוחים</b>
+                <span>למה: זה החוט שמחבר את חריגת התקציב, החריגה הצפויה בעו״ש והכאב שעלה בפגישה הקודמת</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="blk">
+              <h4>איך לדבר איתו <span class="tag">מהזיכרון</span></h4>
+              <div class="pt mem"><span class="b"></span><span>פתח במספרים — צחי מאבד סבלנות מהקדמות</span></div>
+              <div class="pt mem"><span class="b"></span><span>רגישות סביב התלות ברימון — לגעת בעדינות, בלי לחץ</span></div>
+              <div class="pt mem"><span class="b"></span><span>לצ׳אט נשלח רק: ״ענה ברוגע ובקצרה — הצג תמיד פתרון לצד בעיה״</span></div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /prep-body -->
+
+      <!-- ===== מצב פגישה שהסתיימה — הסיכום המלא ===== -->
+      <div class="prep-body done-view" id="doneView" style="display:none">
+        <div class="donebar">
+          <span class="ok-ic">✓</span>
+          <div><b>הסיכום אושר ונשלח ללקוח בוואטסאפ</b><span>05.05.2026 · 12:14 · נשלח לצחי עובד</span></div>
+          <button class="rbtn sm">ייצוא PDF</button>
+          <button class="rbtn sm">שליחה חוזרת</button>
+        </div>
+
+        <div class="pgrid">
+          <div>
+            <div class="blk">
+              <h4>סיכום הפגישה</h4>
+              <div class="numpt"><b>1.</b><span>ניתוח רבעון מרץ–מאי: הכנסות 116 / 140 / 120 אש״ח — יציבות תזרימית מלאה חרף גידול של 40% בהכנסות</span></div>
+              <div class="numpt"><b>2.</b><span>זוהה פער: כרטיס האשראי החדש של ״מקס״ אינו מחובר ל-Bizibox — מקשה על מעקב הוצאות השיווק</span></div>
+              <div class="numpt"><b>3.</b><span>הוחלט: החלפת פונקציית שירות הלקוחות — חיסכון של כ-2,880 ₪ לחודש</span></div>
+              <div class="numpt"><b>4.</b><span>הוגדר יעד: פתיחת מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.7 — באחריות HK</span></div>
+            </div>
+            <div class="blk" style="margin-top:20px">
+              <h4>משימות מהפגישה <span class="tag ok">4/4 הושלמו</span></h4>
+              <div class="task"><span class="ck">✓</span>חיבור כרטיס מקס ל-Bizibox</div>
+              <div class="task"><span class="ck">✓</span>גיוס מחליפה לשירות לקוחות</div>
+              <div class="task"><span class="ck">✓</span>פנייה לבנק — מסגרת נוספת</div>
+              <div class="task"><span class="ck">✓</span>עדכון תקציב יוני</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="blk">
+              <h4>נכנס לזיכרון מהפגישה <span class="tag">3 עדכונים</span></h4>
+              <div class="memrow"><span class="cat">מצב תזרימי</span>מסגרת 150K בניצול מלא — הוגדר יעד מסגרת נוספת</div>
+              <div class="memrow"><span class="cat">כאבי לקוח</span>נוסף: עומס תפעולי על צחי — מגייסים מחליפה</div>
+              <div class="memrow"><span class="cat">יעדים והסכמות</span>מסגרת 100 א׳ ₪ עד 15.7 · באחריות HK</div>
+            </div>
+            <div class="blk" style="margin-top:20px">
+              <h4>משוב ה-AI על ניהול הפגישה <span class="tag priv">לעיניך בלבד</span></h4>
+              <div class="fb"><b>מיקוד וחיבור ל״למה״</b><span>נפתח ישר במספרים — מצוין מול הלקוח הזה. המעבר בין נושאים היה מהיר; שווה לסכם כל נושא במשפט.</span></div>
+              <div class="fb"><b>הקשבה ומרחב</b><span>נתת מקום כשדיבר על התלות ברימון ולא מיהרת לפתרון — זה בנה אמון.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mediarow">
+          <button class="rbtn">▶ האזנה להקלטה · 49 דק׳</button>
+          <button class="rbtn">התמלול המלא</button>
+          <button class="rbtn">עריכת הסיכום</button>
+        </div>
+      </div>
+
+      <div class="prep-f">
+        <button class="rbtn">↻ רענון ההכנה</button>
+        <button class="rbtn">שליחה אליי בוואטסאפ</button>
+        <span class="note">נגזרת מהזיכרון ומהמספרים בזמן אמת — לא נשמרת</span>
+      </div>
+    </main>
+
+    <!-- ========== עמודת הפגישות — טאבים ========== -->
+    <section class="mcol desk">
+      <div class="mcol-h"><b>הפגישות</b><button class="rbtn sm" style="margin-inline-start:auto">+ חדשה</button></div>
+      <div class="mtabs">
+        <button class="mtab on" data-t="up">קרובות<i>2</i></button>
+        <button class="mtab alert" data-t="act">לטיפול<i class="w">3</i></button>
+        <button class="mtab" data-t="done">הסתיימו<i>10</i></button>
+        <button class="mtab" data-t="all">הכל<i>12</i></button>
+      </div>
+      <div class="actbar" id="actBar"><span class="n">3</span> פגישות שהסתיימו ומחכות לך <span class="go">←</span></div>
+      <div class="tlscroll"><div class="tlwrap">
+
+        <!-- קרובות -->
+        <div class="mon" data-g="up all">יולי 2026</div>
+        <div class="mi today on" data-g="up all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">היום · 02.07 · 17:00–17:30</div>
+            <div class="mi-t">המשך סקירה — החלטות תקציב</div>
+            <div class="mi-s">צחי עובד · ההכנה מוכנה ←</div>
+          </div>
+          <button class="rbtn rec sm"><i></i> הקלטה</button>
+        </div>
+        <div class="mon" data-g="up all">אוגוסט 2026</div>
+        <div class="mi" data-g="up all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">05.08.2026 · 10:00–11:00</div>
+            <div class="mi-t">פגישה חודשית — אוגוסט</div>
+            <div class="mi-s">בעוד 34 ימים · צחי עובד</div>
+          </div>
+        </div>
+
+        <!-- הסתיימו -->
+        <div class="mon" data-g="act done all">יולי 2026</div>
+        <div class="mi need-row purple" data-g="act done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">היום · 02.07 · 09:00–10:00</div>
+            <div class="mi-t">פגישה שוטפת — סקירת תזרים <span class="need proc">בעיבוד</span></div>
+            <div class="mi-s">הוקלטה 46 דק׳ · הסיכום בהכנה</div>
+          </div>
+        </div>
+        <div class="mon" data-g="act done all">יוני 2026</div>
+        <div class="mi need-row miss" data-g="act done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">24.06.2026 · 10:30–11:30</div>
+            <div class="mi-t">פ.ע — חודש יוני <span class="need miss">לתאם</span></div>
+            <div class="mi-s">לא התקיימה · בוטלה ע״י הלקוח</div>
+          </div>
+          <button class="rbtn sm">תיאום</button>
+        </div>
+        <div class="mi need-row amber" data-g="act done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">01.06.2026 · 11:00–12:00</div>
+            <div class="mi-t">פ.ע — חודש יוני <span class="need">לאישורך</span></div>
+            <div class="mi-s">⚠ ללא משתתף · 58 דק׳</div>
+          </div>
+          <button class="rbtn solid sm">אישור</button>
+        </div>
+        <div class="mon" data-g="done all">מאי 2026</div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">05.05.2026 · 11:00–12:00</div>
+            <div class="mi-t">פ.ע — חודש מאי</div>
+            <div class="mi-s">נשלח ✓ · 49 דק׳ · זיכרון 3</div>
+          </div>
+        </div>
+        <div class="mon" data-g="done all">אפריל 2026</div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">03.04.2026 · 10:00–11:00</div>
+            <div class="mi-t">פגישה חודשית — אפריל</div>
+            <div class="mi-s">נשלח ✓ · 57 דק׳ · זיכרון 2</div>
+          </div>
+        </div>
+        <div class="mon" data-g="done all">מרץ 2026</div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">17.03.2026 · 12:00–13:00</div>
+            <div class="mi-t">פגישה חודשית — מרץ</div>
+            <div class="mi-s">נשלח ✓ · 61 דק׳ · זיכרון 4</div>
+          </div>
+        </div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">03.03.2026 · 09:30–10:15</div>
+            <div class="mi-t">שיחת עבודה — תוכנית רבעונית</div>
+            <div class="mi-s">נשלח ✓ · 44 דק׳ · זיכרון 2</div>
+          </div>
+        </div>
+        <div class="mon" data-g="done all">פברואר 2026</div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">18.02.2026 · 11:00–12:00</div>
+            <div class="mi-t">פגישה חודשית — פברואר</div>
+            <div class="mi-s">נשלח ✓ · 52 דק׳ · זיכרון 3</div>
+          </div>
+        </div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">04.02.2026 · 15:00–15:45</div>
+            <div class="mi-t">סקירת תקציב 2026</div>
+            <div class="mi-s">נשלח ✓ · 47 דק׳ · זיכרון 5</div>
+          </div>
+        </div>
+        <div class="mon" data-g="done all">ינואר 2026</div>
+        <div class="mi done" data-g="done all">
+          <span class="mi-pin"><i></i></span>
+          <div class="mi-b">
+            <div class="mi-d">21.01.2026 · 10:00–11:00</div>
+            <div class="mi-t">פגישה חודשית — ינואר</div>
+            <div class="mi-s">נשלח ✓ · 55 דק׳ · זיכרון 3</div>
+          </div>
+        </div>
+
+      </div></div>
+    </section>
+  </div>
+</div>
+<script>
+  const tabs=document.querySelectorAll('.mtab'), rows=document.querySelectorAll('.tlwrap [data-g]');
+  const apply=f=>rows.forEach(r=>r.style.display=r.dataset.g.split(' ').includes(f)?'':'none');
+  tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');apply(t.dataset.t);}));
+  apply('up');
+  /* מעבר בין מצבים: הכנה (פגישה קרובה) ↔ סיכום (פגישה שהסתיימה) */
+  const prepBody=document.querySelector('.prep-body:not(.done-view)'), doneView=document.getElementById('doneView');
+  const showDone=(t,s)=>{prepBody.style.display='none';doneView.style.display='';prepH.classList.remove('warn');
+    prepT.textContent='סיכום פגישה — '+t;prepS.textContent=s;prepRec.style.display='none';prepStamp.style.display='none';
+    document.querySelector('.prep-f').style.display='none';};
+  const showPrep=()=>{prepBody.style.display='';doneView.style.display='none';
+    prepT.textContent='הכנה לפגישה — היום 17:00';prepS.textContent='המשך סקירה — החלטות תקציב · עם צחי עובד';
+    prepRec.style.display='';prepStamp.style.display='';document.querySelector('.prep-f').style.display='flex';};
+  document.querySelectorAll('.mi').forEach(mi=>mi.addEventListener('click',()=>{
+    document.querySelectorAll('.mi').forEach(x=>x.classList.remove('on'));mi.classList.add('on');
+    const t=mi.querySelector('.mi-t').textContent.trim(), d=mi.querySelector('.mi-d').textContent.trim();
+    if(mi.classList.contains('done')) showDone(t, d+' · עם צחי עובד'); else showPrep();
+  }));
+  if(location.search.includes('done=1')){const el=document.querySelector('.mi.done');el&&el.click();document.querySelector('.mtab[data-t="done"]').click();el&&el.click();}
+  const goAct=()=>{tabs.forEach(x=>x.classList.remove('on'));document.querySelector('.mtab[data-t="act"]').classList.add('on');apply('act');};
+  document.getElementById('actBar').addEventListener('click',goAct);
+
+  /* דמו: ?empty=1 — אין פגישה קרובה. הפס העליון של ההכנה מתריע. */
+  if(location.search.includes('empty=1')){
+    document.querySelectorAll('[data-g]').forEach(r=>{if(r.dataset.g.split(' ').includes('up'))r.remove();});
+    document.querySelector('.mtab[data-t="up"] i').textContent='0';
+    document.querySelector('.mtab[data-t="all"] i').textContent='5';
+    tabs.forEach(x=>x.classList.remove('on'));
+    document.querySelector('.mtab[data-t="done"]').classList.add('on'); apply('done');
+    document.querySelector('.head .sub').innerHTML='אנרגי אינטרנשיונל · האחרונה <b>05.05.2026 — לפני 58 יום</b> · הבאה <span style="color:var(--coral-deep);font-weight:700">לא מתואמת</span>';
+    prepH.classList.add('warn');
+    prepT.textContent='אין פגישה קרובה מתואמת';
+    prepS.textContent='האחרונה לפני 58 יום · לפי המוצר (Money+) מגיעה ללקוח פגישה חודשית · ההכנה למטה מעודכנת לעכשיו';
+    prepRec.style.display='none'; prepWa.style.display=''; prepStamp.style.display='none';
+  }
+</script>
+</body>
+</html>

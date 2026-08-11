@@ -15,7 +15,7 @@
   document.addEventListener('click',function(e){const m=document.getElementById('prodMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target)&&e.target.id!=='prodDdl')m.classList.remove('show');});
   document.addEventListener('click',function(e){const m=document.getElementById('statMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target))m.classList.remove('show');});
   function opsqToggle(i){opsqOpen.has(i)?opsqOpen.delete(i):opsqOpen.add(i);renderOpsQueue();}
-  function opsQueueMsg(i){CUR=i;openChat();}
+  function opsQueueMsg(i){selectClient(i);showTab('msgs');}
   function opsQueueEnter(i){selectClient(i);enterOps();}
 
   /* ---- messages inbox (top bar) ---- */
@@ -35,7 +35,7 @@
       <div class="ib-prev">${c.preview||'הודעה חדשה מהלקוח'}</div></div>
       <span class="ib-badge">${c.unread}</span></div>`).join('');
   }
-  function openChatFor(i){CUR=i;closeInbox();openChat();}
+  function openChatFor(i){closeInbox();selectClient(i);showTab('msgs');}
   function markHandled(){CLIENTS[CUR].unread=0;refreshMsgBadge();closeChat();toast('הלקוח סומן כטופל');}
 
   /* consolidated cashflow report */
