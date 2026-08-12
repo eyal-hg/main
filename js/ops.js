@@ -1561,14 +1561,6 @@
     });
     return recs;
   }
-  function matchApprovePair(ci,ui){
-    const T=curTasks(), c=T[ci], u=T[ui]; if(!c||!u) return;
-    c.done=true;c.result='הותאמה — הופיעה כ-"'+u.who+'"';c.handledAt='עכשיו';OPS_DONE++;
-    u.done=true;u.result='הותאמה לצפי "'+c.who+'"';u.handledAt='עכשיו';OPS_DONE++;
-    CLIENTS[CUR].opsPending=T.filter(x=>!x.done).length;
-    renderOps();
-    toast('ההתאמה אושרה — שתי הפעולות נסגרו');
-  }
   /* ===== חשבונות החברה =====
      **התאמה אפשרית רק בתוך אותו חשבון** (מגבלת ביזיבוקס). האכיפה היא
      ברגע הפעולה (muApply) ולא בפילטר: הפילטר נשאר כלי עזר לרשימות ארוכות,
@@ -1585,8 +1577,14 @@
   const acctOf=t=>ACCTS[t.acct]||null;
   const acctChip=t=>{const a=acctOf(t); return a?`<span class="acct-chip">${a.short}</span>`:'';};
 
+  /* ביזיבוקס — שם מתבצעות ההתאמות בפועל */
+  function openBizibox(){ window.open('https://app.bizibox.biz/','_blank','noopener'); }
   function carryUnexpected(rows,T){
     const un=rows.filter(t=>t.type==='unexpected'), ca=rows.filter(t=>t.type==='carry');
+    /* המלצות — מידע בלבד, בלי פעולה: מסמנות לאן להסתכל בביזיבוקס */
+    window._recMap={};
+    matchRecs(rows,T).forEach(r=>{ (window._recMap[r.ci]=window._recMap[r.ci]||[]).push(r.u);
+                                   (window._recMap[r.ui]=window._recMap[r.ui]||[]).push(r.c); });
 
     /* אין פילטר חשבונות: הצ'יפ על השורה + עמעום השורות מחשבון אחר בזמן בחירה
        עושים את העבודה בלי להסתיר שורות ובלי לדרוש החלטה מראש. */
@@ -1637,25 +1635,12 @@
       ${setPanel(cls)}
       ${items.length?items.map(t=>opsRow(t,T.indexOf(t))).join(''):'<div class="ops-empty" style="padding:14px">נקי ✓</div>'}
     </div>`;
-    // פס התאמה ידנית — רבים מול רבים
-    window._muSel=window._muSel||new Set();
-    const selT=[...window._muSel].map(ix=>T[ix]).filter(Boolean);
-    const sUn=selT.filter(t=>t.type==='unexpected'), sCa=selT.filter(t=>t.type==='carry');
-    const fmtA=a=>a.reduce((s,t)=>s+(t.amt||0),0).toLocaleString('en-US');
-    // הצ'קבוקסים תמיד גלויים — הפס מופיע ברגע שמסמנים
-    const selAcc=[...new Set(selT.map(t=>t.acct).filter(Boolean))];
-    const cross=selAcc.length>1;
-    const muBar=selT.length
-      ?(()=>{const ok=sUn.length&&sCa.length, dif=Math.abs(sUn.reduce((s,t)=>s+(t.amt||0),0)-sCa.reduce((s,t)=>s+(t.amt||0),0));
-        const okAll=ok&&!cross;
-        return `<div class="mu-bar on ${okAll?'':'part'}"><span>נבחרו <b>${sUn.length}</b> לא צפויות (${fmtA(sUn)} ₪) מול <b>${sCa.length}</b> נגררות (${fmtA(sCa)} ₪)
-          ${ok?(dif?`<i class="mu-dif">הפרש ${dif.toLocaleString()} ₪</i>`:`<i class="mu-eq">סכומים זהים ✓</i>`):''}
-          ${ok&&selAcc.length?`<i class="mu-acc ${cross?'bad':''}">${selAcc.map(k=>ACCTS[k].lbl).join(' · ')}${cross?' — חשבונות שונים, לא ניתן להתאים':''}</i>`:''}
-          ${ok?'':`<i class="mu-need">חסר צד — בחרו גם ${sUn.length?'נגררת':'לא צפויה'}</i>`}</span>
-         <button class="ot-btn done" ${okAll?'':'disabled'} onclick="muApply()">ביצוע ההתאמה</button>
-         <button class="ot-btn ghost" onclick="muClear()">ניקוי בחירה</button></div>`;})()
-      :`<div class="mu-hint">סימון שורות משני הצדדים ← התאמה ידנית, גם רבים מול רבים. ההתאמה חייבת להיות <b>בתוך אותו חשבון</b> — מגבלת ביזיבוקס.</div>`;
-    return muBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
+    /* ההתאמה עצמה נעשית בביזיבוקס — כאן רק המלצות ומידע. */
+    const bzBar=`<div class="bz-bar">
+      <span class="bz-txt">ההתאמות מתבצעות בביזיבוקס. כאן מוצג מה שמצאנו — ההמלצות, בדיקת האשראי והתנועות בבנק.</span>
+      <button class="ot-btn done" onclick="openBizibox()">פתיחת ביזיבוקס בטאב חדש ↗</button>
+    </div>`;
+    return bzBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
   }
   function payeeSplit(rows,T){
     const openRows=rows.filter(t=>!t.done);
@@ -2155,54 +2140,24 @@
     if(i==null){toast('התבנית נשלחה בוואטסאפ ✓');return;}
     otHandle(i,'נשלחה תזכורת ללקוח · ✓ וואטסאפ');
   }
-  /* ===== דחיית פעולה =====
-     לא כל שורה היא "טפל עכשיו" או "מחק": יש כאלה שרק צריך לחזור אליהן.
-     שלוש אפשרויות — מחר / תאריך / השאר והתעלם (נשארת בתזרים, מפסיקה להציק). */
-  let _dfIx=null, _dfPick=null, _dfDate='';
-  function openDF(i){
-    _dfIx=i; _dfPick=null; _dfDate='';
-    const t=curTasks()[i];
-    document.getElementById('dfTitle').textContent='דחייה'+(t&&t.who?' — '+t.who:'');
-    dfRender();
-    document.getElementById('dfOv').classList.add('show');
-  }
-  function dfRender(){
-    const O=[
-      ['tom','למחר','תחזור מחר בבוקר לרשימה, בלי לשנות כלום בתזרים'],
-      ['date','לתאריך מסוים','לא תוצג עד התאריך שתבחר'],
-      ['mute','השאר והתעלם','נשארת בתזרים אבל יורדת מהרשימה ומהתזכורות — כשידוע שהיא תקינה ואין מה לעשות איתה']
-    ];
-    document.getElementById('dfBody').innerHTML=O.map(([k,l,s])=>
-      `<div class="df-opt ${_dfPick===k?'on':''}" onclick="dfPick('${k}')">
-        <span class="rd"></span><span><b>${l}</b><small>${s}</small>
-        ${k==='date'&&_dfPick==='date'?`<span class="df-date"><input type="date" value="${_dfDate}" onclick="event.stopPropagation()" onchange="_dfDate=this.value;dfBtn()"></span>`:''}</span>
-      </div>`).join('');
-    dfBtn();
-  }
-  function dfPick(k){ _dfPick=k; dfRender(); }
-  function dfBtn(){ const b=document.getElementById('dfGoBtn'); if(b) b.disabled=!(_dfPick&&(_dfPick!=='date'||_dfDate)); }
-  function dfClose(){ document.getElementById('dfOv').classList.remove('show'); _dfIx=null; _dfPick=null; _dfDate=''; }
-  function dfGo(){
-    if(!_dfPick) return;
-    const i=_dfIx, k=_dfPick, d=_dfDate; dfClose();
-    const lbl=k==='tom'?'נדחתה למחר'
-             :k==='date'?('נדחתה ל-'+(d||'').split('-').reverse().join('.'))
-             :'הושארה בתזרים — ללא תזכורות';
-    otHandle(i,lbl);
-  }
-
-  /* ===== מחיקת פעולה — סיבה מתויגת =====
-     בלי טקסט חופשי: סיבה חופשית לא ניתנת לניתוח. התגים מנוהלים (הוספה/הסרה)
-     כדי שאפשר יהיה לשאול בהמשך "למה נמחקות פעולות אצל הלקוח הזה". */
+  /* ===== התעלמות מפעולה — סיבה מתויגת =====
+     השורה יורדת מהרשימה של HK; היא לא נמחקת בביזיבוקס. בלי טקסט חופשי —
+     סיבה חופשית לא ניתנת לניתוח. התגים מנוהלים, כדי שאפשר יהיה לשאול
+     בהמשך "ממה מתעלמים אצל הלקוח הזה, ולמה". */
   const NR_TAGS_DEF=['פעולה פנימית בין חשבונות','כבר הוזן ידנית בתזרים','טעות בנק — בבירור','סכום זניח','כפילות'];
   function nrTags(){ try{ return JSON.parse(localStorage.getItem('hkNrTags')||'null')||NR_TAGS_DEF.slice(); }catch(e){ return NR_TAGS_DEF.slice(); } }
   function nrTagsSave(a){ localStorage.setItem('hkNrTags',JSON.stringify(a)); }
-  let _nrIx=null, _nrPick=null, _nrAdd=false;
+  let _nrIx=null, _nrPick=null, _nrAdd=false, _nrMode='del';
   function openNR(i){
     if(typeof docClose==='function') docClose();
     _nrIx=i; _nrPick=null; _nrAdd=false;
     const t=curTasks()[i];
-    document.getElementById('nrTitle').textContent='מחיקת פעולה'+(t&&t.who?' — '+t.who:'');
+    const isCa=t&&t.type==='carry';
+    _nrMode=isCa?'ignore':'del';
+    document.getElementById('nrTitle').textContent=(isCa?'התעלמות מנגררת':'מחיקת פעולה')+(t&&t.who?' — '+t.who:'');
+    document.getElementById('nrSub').textContent=isCa
+      ? 'הנגררת תרד מהרשימה כאן — הצפי עצמו לא משתנה בביזיבוקס. בחרו סיבה; התגים ניתנים לניהול.'
+      : 'הפעולה תימחק מהתזרים. בחרו סיבה; התגים ניתנים לניהול.';
     nrRender();
     document.getElementById('nrOv').classList.add('show');
   }
@@ -2215,7 +2170,8 @@
         ? `<span class="nr-new"><input id="nrNew" placeholder="שם התג…" onkeydown="if(event.key==='Enter')nrTagAdd()">
              <button onclick="nrTagAdd()">הוספה</button><button class="g" onclick="_nrAdd=false;nrRender()">ביטול</button></span>`
         : `<button class="nr-addbtn" onclick="_nrAdd=true;nrRender();setTimeout(()=>{const e=document.getElementById('nrNew');if(e)e.focus();},0)">+ תג חדש</button>`);
-    const b=document.getElementById('nrGoBtn'); if(b) b.disabled=!_nrPick;
+    const b=document.getElementById('nrGoBtn');
+    if(b){ b.disabled=!_nrPick; b.textContent=_nrMode==='ignore'?'התעלם':'מחיקה'; }
   }
   function nrPick(x){ _nrPick=(_nrPick===x)?null:x; nrRender(); }
   function nrTagAdd(){
@@ -2234,7 +2190,7 @@
   function nrGo(){
     if(!_nrPick){toast('צריך לבחור תג סיבה');return;}
     const i=_nrIx, r=_nrPick; nrClose();
-    otHandle(i,'נמחקה — '+r);
+    otHandle(i,(_nrMode==='ignore'?'הוסרה מהרשימה — ':'נמחקה — ')+r);
   }
   function opsSetView(v){OPS_VIEW=v;renderOps();}
   function opsToggleRow(i){OPS_OPEN.has(i)?OPS_OPEN.delete(i):OPS_OPEN.add(i);renderOps();}
@@ -2247,12 +2203,12 @@
     if(t.type==='unexpected'||t.type==='carry'){
       const nRel=(t.related||[]).length;
       const isInc=t.type==='carry'&&t.dir==='inc';
-      /* בלי "שליחת הודעה": התזכורות ללקוח יוצאות אוטומטית לפי ההגדרות (גלגל השיניים).
-         "לא רלוונטי" הפך ל"מחיקה" — עם תג סיבה חובה, בשני הצדדים. */
+      /* לא צפויה = תנועה שקיימת בבנק ואפשר להוציא אותה מהתזרים → **מחיקה**.
+         נגררת = צפי שממתין; אין מה למחוק בו, רק להוריד אותו מהרשימה → **התעלם**.
+         שניהם עוברים באותו פופאפ תגים, עם פועל שונה. */
       return (isInc?'<span class="ct-coll">גבייה מלקוחות</span>':'')
         +B('ghost','היסטוריה ובדיקת התאמה'+(nRel?' ('+nRel+')':''),`histMatch(${i})`)
-        +(t.type==='carry'?B('ghost','דחייה',`openDF(${i})`):'')
-        +B('ghost del','מחיקה',`openNR(${i})`)
+        +B('ghost del',t.type==='carry'?'התעלם':'מחיקה',`openNR(${i})`)
         +(isInc?B('','תזכורת גבייה',`openSM(${i})`):'');
     }
     return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
@@ -2267,13 +2223,11 @@
          כן קרתה: בבנק או באשראי. ללא-צפויה מחפשים אם היא כן נצפתה בתזרים. */
       /* הבנק לא מקבל שורת בדיקה משלו — ההיסטוריה למטה **היא** תנועות הבנק,
          ושתי תצוגות לאותו מקור רק סותרות זו את זו. נשאר מה שבאמת מקור נוסף. */
-      const SRC = isCa
-        ? [['אשראי', t.mCard, 'סימון כשולם באשראי', 'שולם באשראי — הותאם']]
-        : [['הצפי בתזרים', t.mFcast, 'ביצוע ההתאמה', 'הותאם לצפי']];
-      const line=([lbl,m,btn,res])=>m
+      const SRC = isCa ? [['אשראי', t.mCard]] : [['הצפי בתזרים', t.mFcast]];
+      const line=([lbl,m])=>m
         ? `<div class="ms-row hit"><span class="ms-src">${lbl}</span>
              <span class="ms-txt">${m.t} · <b>${m.amt}</b> · ${m.d}</span>
-             <button class="ot-btn done xs" onclick="otHandle(${i},'${res}')">${btn}</button></div>`
+             <span class="ms-tag">להתאים בביזיבוקס</span></div>`
         : `<div class="ms-row"><span class="ms-src">${lbl}</span><span class="ms-none">לא נמצאה תנועה תואמת</span></div>`;
       const mb2=`<div class="ms-wrap"><div class="ms-h">${isCa?'נבדק גם בכרטיסי האשראי · 30 יום אחורה':'נבדק מול הצפי בתזרים · 30 יום קדימה'}</div>
         ${SRC.map(line).join('')}</div>`;
@@ -2298,20 +2252,16 @@
     if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><div class="orow2-body"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
     /* בחירה להתאמה ידנית — זה המנגנון היחיד מאז שהמלצות ההתאמה ירדו,
        ולכן הוא חייב להיראות כפקד ולא כריבוע דק ליד טקסט. */
-    const muOn=window._muSel&&window._muSel.has(i);
-    /* חשבון הבחירה הפעילה — שורות מחשבון אחר מעומעמות, כי אי אפשר להתאים ביניהן */
-    const selAcct=window._muAcct||null;
-    const muOff=selAcct&&t.acct&&t.acct!==selAcct&&!muOn;
-    const muChk=(t.type==='unexpected'||t.type==='carry')
-      ?`<label class="mu-pick ${muOn?'on':''} ${muOff?'off':''}" onclick="event.stopPropagation()"
-          title="${muOff?'חשבון אחר — אי אפשר להתאים מול הבחירה הנוכחית':'בחירה להתאמה ידנית'}">
-          <input type="checkbox" ${muOn?'checked':''} ${muOff?'disabled':''} onchange="muSel(${i},this.checked)">
-          <span class="mu-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6 9 17l-5-5"/></svg></span>
-        </label>`:'';
+    /* אין בחירה להתאמה — ההתאמה בביזיבוקס. במקומה: המלצה כמידע. */
+    const muOff=false, muChk='';
+    const rc=(window._recMap&&window._recMap[i])||[];
+    const recNote=rc.length?`<div class="rec-note">↔ נראה כמו ${t.type==='carry'?'הפעולה שהופיעה':'הנגררת'}
+      <b>${rc[0].who}</b> · ${(rc[0].amt||0).toLocaleString()} ₪
+      ${rc[0].acct&&t.acct&&rc[0].acct!==t.acct?'<em>חשבון אחר — לא ניתן להתאים</em>':''}</div>`:'';
     return `<div class="orow2item ${t.type} ${op?'open':''} ${muOff?'acct-dim':''}">
       <div class="orow2">
         ${muChk}
-        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div>${acctChip(t)}</div>
+        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div>${acctChip(t)}${recNote}</div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
         <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
       </div>
@@ -2331,27 +2281,6 @@
     matchCheck(i);
   }
   /* התאמה ידנית רבים-מול-רבים בין לא צפויות לנגררות */
-  function muClear(){ window._muAcct=null; window._muSel=new Set(); renderOps(); }
-  function muSel(i,on){
-    window._muSel=window._muSel||new Set();
-    on?window._muSel.add(i):window._muSel.delete(i);
-    const T=curTasks(), sel=[...window._muSel].map(x=>T[x]).filter(Boolean);
-    window._muAcct=sel.length?(sel[0].acct||null):null;   // הבחירה נועלת את החשבון
-    renderOps();
-  }
-  function muApply(){
-    const T=curTasks();
-    const sel=[...window._muSel];
-    const u=sel.filter(i=>T[i]&&T[i].type==='unexpected'), c=sel.filter(i=>T[i]&&T[i].type==='carry');
-    /* התאמה = לא צפויה מול נגררת. שתי שורות מאותו צד אינן התאמה. */
-    if(!u.length||!c.length){toast('התאמה דורשת לפחות פעולה אחת מכל צד — לא צפויה מול נגררת');return;}
-    const accs=[...new Set(sel.map(i=>T[i]&&T[i].acct).filter(Boolean))];
-    if(accs.length>1){toast('אי אפשר להתאים בין חשבונות שונים — מגבלת ביזיבוקס');return;}
-    sel.forEach(i=>{const t=T[i];if(t){t.done=true;t.result='הותאם ידנית — קבוצה';t.handledAt='עכשיו';OPS_DONE++;}});
-    toast('הותאמו '+sel.length+' פעולות — ההתאמה נרשמה ב-Bizibox');
-    window._muSel=new Set();
-    renderOps(); if(typeof renderOpsInfo==='function')renderOpsInfo();
-  }
   function otHandle(i,result,toClient){const t=curTasks()[i];if(!t)return;
     t.done=true;t.result=result;t.handledAt='עכשיו';OPS_DONE++;
     CLIENTS[CUR].opsPending=curTasks().filter(x=>!x.done).length;
