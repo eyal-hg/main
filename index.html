@@ -593,12 +593,20 @@
 </div>
 
 <!-- תיוג קטגוריות מהותיות -->
-<div class="mx-ov" id="essOv">
+<div class="mx-ov" id="brGtOv">
+  <div class="mx2" style="max-width:520px">
+    <div class="mx2-title" id="brGtTitle"></div>
+    <div class="catm-sub" id="brGtSub"></div>
+    <div id="brGtBody"></div>
+    <div class="mx2-foot" id="brGtFoot"></div>
+  </div>
+</div>
+<div class="mx-ov" id="brTgtOv">
   <div class="mx2" style="max-width:420px">
-    <div class="mx2-title">קטגוריות מהותיות לדוח התקציבי</div>
-    <div class="catm-sub">רק אלה ייבדקו ויוצגו בבדיקת הדוח התקציבי</div>
-    <div id="essBody"></div>
-    <div class="mx2-foot"><button class="mx2-btn" onclick="essClose()">סגירה</button></div>
+    <div class="mx2-title" id="brTgtTitle"></div>
+    <div class="catm-sub" id="brTgtSub"></div>
+    <div style="padding:6px 0 2px"><input class="mx2-inp" id="brTgtInp" type="number" style="width:100%;font-size:17px;font-weight:800"></div>
+    <div class="mx2-foot"><button class="mx2-btn" onclick="brTgtClose()">ביטול</button><button class="mx2-btn primary" onclick="brTgtSave()">עדכון התקציב</button></div>
   </div>
 </div>
 
@@ -620,31 +628,40 @@
 
 <!-- שליחת הודעה — תצוגה מקדימה -->
 <div class="mx-ov" id="smOv">
-  <div class="mx2" style="max-width:520px">
-    <div class="mx2-title">שליחת הודעה ללקוח</div>
+  <div class="mx2" style="max-width:540px">
+    <div class="mx2-title">הודעת תבנית ללקוח</div>
     <div class="sm-to">אל: <b id="smTo"></b></div>
-    <textarea class="mx2-inp sm-txt" id="smText" rows="4"></textarea>
+    <div class="wa-prev" id="smPrev"></div>
+    <div class="wa-note">הטקסט קבוע — זו תבנית מאושרת של WhatsApp Business ואי אפשר לערוך אותה בשליחה.
+      תשובת הלקוח על אחד הכפתורים חוזרת דרך הבוט אל תור התפעול.</div>
     <div class="mx2-foot">
-      <button class="mx2-btn primary" onclick="smGo()">אישור ושליחה</button>
+      <button class="mx2-btn primary" onclick="smGo()">שליחה</button>
       <button class="mx2-btn" onclick="smClose()">ביטול</button>
     </div>
   </div>
 </div>
 
-<!-- לא רלוונטי — סיבה -->
-<div class="mx-ov" id="nrOv">
-  <div class="mx2" style="max-width:480px">
-    <div class="mx2-title">סימון כלא רלוונטי</div>
-    <div class="catm-sub">מה הסיבה? נשמרת ביומן הטיפול של החברה.</div>
-    <div class="cp-grid" id="nrChips" style="margin-bottom:10px">
-      <span class="cp-chip" onclick="nrChip(this)">פעולה פנימית בין חשבונות</span>
-      <span class="cp-chip" onclick="nrChip(this)">כבר הוזן ידנית בתזרים</span>
-      <span class="cp-chip" onclick="nrChip(this)">טעות בנק — בבירור</span>
-      <span class="cp-chip" onclick="nrChip(this)">סכום זניח</span>
-    </div>
-    <input class="mx2-inp" id="nrReason" placeholder="או סיבה חופשית…" style="width:100%">
+<!-- דחיית פעולה -->
+<div class="mx-ov" id="dfOv">
+  <div class="mx2" style="max-width:470px">
+    <div class="mx2-title" id="dfTitle">דחיית פעולה</div>
+    <div class="catm-sub">מתי לחזור אליה?</div>
+    <div id="dfBody"></div>
     <div class="mx2-foot">
-      <button class="mx2-btn primary" onclick="nrGo()">אישור</button>
+      <button class="mx2-btn primary" id="dfGoBtn" disabled onclick="dfGo()">דחייה</button>
+      <button class="mx2-btn" onclick="dfClose()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- מחיקת פעולה — סיבה מתויגת -->
+<div class="mx-ov" id="nrOv">
+  <div class="mx2" style="max-width:520px">
+    <div class="mx2-title" id="nrTitle">מחיקת פעולה</div>
+    <div class="catm-sub">בחרו סיבה. התגים ניתנים לניהול — הם מה שמאפשר לנתח בהמשך למה פעולות נמחקות.</div>
+    <div class="nr-tags" id="nrChips"></div>
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" id="nrGoBtn" disabled onclick="nrGo()">מחיקה</button>
       <button class="mx2-btn" onclick="nrClose()">ביטול</button>
     </div>
   </div>
@@ -895,7 +912,12 @@
 <script src="js/admin.js"></script>
 <script>
 /* ווידג'ט "מה השתנה" → פתיחת התצוגה המלאה */
-window.addEventListener('message',e=>{ if(e.data&&e.data.hk==='flowlog'&&typeof showTab==='function') showTab('flowlog'); });
+window.addEventListener('message',e=>{
+    if(!e.data||!e.data.hk) return;
+    if(e.data.hk==='flowlog'&&typeof showTab==='function') showTab('flowlog');
+    /* מצב הגייט של סיווג הפערים — נכתב ע"י budget-flow.html, נקרא בשלב הבדיקה */
+    if(e.data.hk==='gapGate') window.HK_GAPGATE={n:e.data.n,sum:e.data.sum,month:e.data.month};
+  });
 </script>
 <script src="js/main.js"></script>
 </body>

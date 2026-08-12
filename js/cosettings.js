@@ -125,10 +125,70 @@ function coContacts(d){
 }
 /* ---------- טאב תפעולי ---------- */
 function coOps(d){
+  const g=coGapTh();
   return `<div class="cos-narrow">
     ${coF('מנהל תזרים', `<select class="mx2-inp" style="width:100%">${[...new Set(CLIENTS.map(c=>c.mgr))].map(n=>`<option ${n===d.mgr?'selected':''}>${n}</option>`).join('')}</select>`)}
     ${coF('חברת ייעוץ', `<select class="mx2-inp" style="width:100%"><option>HK</option><option>אשכנזי ייעוץ עסקי</option><option>ברק ושות׳</option></select>`)}
+
+    <div class="cos-sub-h big">סף מהותיות לפער בתקציב</div>
+    <div class="cos-note">פער מעל הסף חייב הגדרה לפני סיום שלב הבדיקה, ומוצג בכתום. מתחתיו — אפור ושקט.
+      <b>סכום לבד ואחוז לבד שניהם מטעים</b>: 2,000 ₪ על יעד 100,000 זה רעש, ועל יעד 20,000 זה הרבה. לכן שלושה פרמטרים.</div>
+    <div class="cos-3f">
+      ${coF('רצפה — מתחתיה אף פעם לא', coNumInp('floor',g.floor,'₪'))}
+      ${coF('אחוז מהיעד — ההכרעה באמצע', coNumInp('pct',g.pct,'%'))}
+      ${coF('תקרה — מעליה תמיד', coNumInp('ceil',g.ceil,'₪'))}
+    </div>
+    <div class="cos-gap-ex" id="gapEx">${coGapEx(g)}</div>
+
+    <div class="cos-sub-h big">ימי החומר בחודש</div>
+    <div class="cos-note">הימים שבהם הלקוח אמור לשלוח חומר. הבוט מבקש אוטומטית באותם ימים, ופריט נחשב מאחר
+      <b>רק ביחס ליום שלו</b> — לא ביחס למתי מישהו נזכר בו. בלי זה שלב "חומר מהלקוח" הופך לחותמת גומי.</div>
+    <div class="cos-days" id="coDays">${coDaysHtml()}</div>
   </div>`;
+}
+/* ימי החומר בחודש — נקרא ע"י שלב 4 בבדיקות */
+function coMatDays(){ try{ return JSON.parse(localStorage.getItem('hkMatDays')||'null')||[1,15]; }catch(e){ return [1,15]; } }
+function coDaysHtml(){
+  const on=coMatDays();
+  const DAYS=[1,5,10,15,20,25,28];
+  return DAYS.map(d=>`<button class="cos-day ${on.includes(d)?'on':''}" onclick="coDayTg(${d})">${d}</button>`).join('')
+    + `<span class="cos-day-sum">${on.length?'נבחרו: '+on.join(' · ')+' בחודש':'לא נבחרו ימים — הבוט לא יבקש אוטומטית'}</span>`;
+}
+function coDayTg(d){
+  const on=coMatDays(); const i=on.indexOf(d);
+  if(i<0) on.push(d); else on.splice(i,1);
+  on.sort((a,b)=>a-b);
+  localStorage.setItem('hkMatDays',JSON.stringify(on));
+  const el=document.getElementById('coDays'); if(el) el.innerHTML=coDaysHtml();
+}
+/* סף מהותיות פר חברה — נקרא גם ע"י budget-flow.html */
+function coGapTh(){
+  let g={floor:1000,pct:5,ceil:25000};
+  try{ const s=JSON.parse(localStorage.getItem('hkGapTh')||'null'); if(s) g=Object.assign(g,s); }catch(e){}
+  return g;
+}
+function coNumInp(k,v,unit){
+  return `<div class="cos-num"><input class="mx2-inp" type="number" value="${v}" oninput="coGapSave('${k}',this.value)"><span>${unit}</span></div>`;
+}
+function coGapSave(k,v){
+  const g=coGapTh(); g[k]=Math.max(0,+v||0);
+  localStorage.setItem('hkGapTh',JSON.stringify(g));
+  const ex=document.getElementById('gapEx'); if(ex) ex.innerHTML=coGapEx(g);
+  const fr=document.getElementById('budgetFrame');
+  if(fr&&fr.contentWindow) fr.contentWindow.postMessage({hk:'gapTh',th:g},'*');
+}
+/* דוגמאות חיות — שהמנהל יראה מיד מה הסף עושה */
+function coGapEx(g){
+  const nf=n=>n.toLocaleString('he-IL');
+  const test=(t,gap)=> gap<g.floor?['מתחת לרצפה','sub']
+                     : gap>=g.ceil?['מעל התקרה — דורש הגדרה','mat']
+                     : (t>0&&gap/t*100>=g.pct)?['מעל '+g.pct+'% — דורש הגדרה','mat']
+                     : ['מתחת ל-'+g.pct+'% — שקט','sub'];
+  const CASES=[[1000,400],[100000,2000],[20000,2000],[1000000,30000]];
+  return `<div class="cos-ex-h">איך זה מכריע</div>`+CASES.map(([t,gp])=>{
+    const [txt,cls]=test(t,gp);
+    return `<div class="cos-ex-r"><span>יעד ${nf(t)}</span><b>פער ${nf(gp)}</b>
+      <em>${t>0?(gp/t*100).toFixed(1):0}%</em><i class="${cls}">${txt}</i></div>`;}).join('');
 }
 /* ---------- טאב פיננסים ---------- */
 function coFinance(d){

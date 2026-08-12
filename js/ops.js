@@ -1,6 +1,11 @@
 /* HK Dashboard — operations mode: timer, role, enter/exit, finish flow (Bizibox checks), task handling */
   /* ---- operations mode (מתפעל בלבד) ---- */
   let isOperator=true, OPSMODE=false;
+  /* ===== דילוג דמו על שלבי התפעול =====
+     true  = לחיצה על "תפעול" נוחתת ישר על שלבי הבדיקה (לעבודה על הבדיקות).
+     false = הזרימה המלאה: 5 שלבי תפעול ← רענון וכפילויות ← בדיקות.
+     שינוי הפיך — רק הדגל הזה. */
+  const OPS_SKIP_STAGES=false;
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   const OPS_STAGES=[
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
@@ -53,6 +58,11 @@
     ['viewDash','viewMetrics','viewChat','viewCal','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('opsScope').textContent = SCOPE==='portfolio' ? 'כל החברות' : document.getElementById('headName').textContent;
     document.getElementById('opsView').style.display='';
+    /* דילוג דמו: ישר לשלבי הבדיקה — בלי 5 שלבי התפעול ובלי שער הכפילויות */
+    if(OPS_SKIP_STAGES){
+      window._refPassed=opsActiveKey;
+      setTimeout(()=>{ renderOps(); finishOps2(); },0);
+    }
     // מסך עבודה נקי: שם החברה חי בבאנר — בלי כותרת כפולה ובלי סרגל
     document.querySelector('.client-head').style.display='none';
     document.querySelector('.sub-line').style.display='none';
@@ -122,6 +132,8 @@
     'בדיקת שורה תקציבית',
     'בדיקת דוח חודשי',
     'בדיקת דוח תקציבי',
+    'חומר מהלקוח',
+    'שינויים מהותיים בתזרים',
   ];
   // findings from the Bizibox validation — each maps to the step that found it.
   // send:1 → פעולה ראשית "שלח הודעה" (כמו במצב תפעול); אחרת act ייעודי
@@ -240,7 +252,7 @@
     if(i===2){
       // דוח תקציבי: חסרים בתזרימים מול חריגות בתקציב — רק קטגוריות מהותיות
       finTimers.push(setTimeout(()=>{
-        const nOver=BR_DATA.filter(x=>x.kind==='over'&&x.ess).length, nMiss=BR_DATA.filter(x=>x.kind==='miss'&&x.ess).length;
+        const nOver=BR_DATA.filter(x=>x.kind==='over'&&brMatOver(x)).length, nMiss=BR_DATA.filter(x=>x.kind==='miss'&&brMat(x)).length;
         el.className='fin-step warn';el.querySelector('.fs-ico').innerHTML='!';
         document.getElementById('ftag'+i).textContent=nOver+' חריגות · '+nMiss+' חסרים';
         document.getElementById('finTitle').textContent='שלב 3: בדיקת דוח תקציבי';
@@ -259,6 +271,32 @@
         document.getElementById('finTitle').textContent='שלב 2: בדיקת דוח חודשי';
         document.getElementById('finSub').textContent='רווח נקי מול הפרש יתרות הבנקים · סבילות עד '+MREP_TOL.toLocaleString()+' ₪';
         renderMRep();
+      },900));
+      return;
+    }
+    if(i===4){
+      // מה השתנה בתחזית היום — כולל בגלל העבודה של המתפעל עצמו
+      finTimers.push(setTimeout(()=>{
+        const bad=FCH.newOverdraft&&!FCH.ack;
+        el.className='fin-step '+(bad?'warn':'done');
+        el.querySelector('.fs-ico').innerHTML=bad?'!':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+        document.getElementById('ftag'+i).textContent=bad?'חריגה חדשה':FCH.evs.length+' שינויים';
+        document.getElementById('finTitle').textContent='שלב 5: שינויים מהותיים בתזרים';
+        document.getElementById('finSub').textContent='מה השתנה בתחזית מאתמול — כולל בעקבות העבודה של היום';
+        renderFch();
+      },900));
+      return;
+    }
+    if(i===3){
+      // חומר מהלקוח: סגירת יום על כל פריט שעבר את יום החומר שלו
+      finTimers.push(setTimeout(()=>{
+        const due=matDue();
+        el.className='fin-step '+(due.length?'warn':'done');
+        el.querySelector('.fs-ico').innerHTML=due.length?'!':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+        document.getElementById('ftag'+i).textContent=due.length?due.length+' ממתינים':'אין חומר פתוח';
+        document.getElementById('finTitle').textContent='שלב 4: חומר מהלקוח';
+        document.getElementById('finSub').textContent='כל פריט שעבר את יום החומר שלו — מה קרה איתו היום';
+        renderMat();
       },900));
       return;
     }
@@ -494,27 +532,79 @@
     BL_INST[cat][i].amt=n;
     toast('המופע עודכן — '+n.toLocaleString()+' ₪');
   }
+  /* ===== סיווג פערים — אותם ארבעה סוגים כמו בתקציב התזרימי =====
+     חסר בדוח התקציבי הוא פער לכל דבר, רק על קטגוריה שאין לה עדיין שורה תקציבית
+     (היעד נגזר מההיסטוריה). אותה שאלה בדיוק: מי חייב לי פעולה? */
+  const GAP_TYPES={
+    wait:    {lbl:'מחכה לחומר מהלקוח', chip:'מחכה לחומר',    note:false,
+              hint:'החומר לקטגוריה טרם הגיע — התשלומים/התקבולים הצפויים לא הוזנו',
+              act:'תזכורת הבוט בקבוצה'},
+    soon:    {lbl:'טרם התגבש',          chip:'טרם התגבש',     note:false,
+              hint:'הכסף עוד לא קיים — ההוצאה/ההכנסה טרם נעשתה. אף אחד לא מאחר',
+              act:'שום פעולה — לא ייספר כפער פתוח'},
+    unlikely:{lbl:'לא צפוי להתממש',     chip:'לא יתממש',      note:true,
+              hint:'הערכה עסקית: זה לא יקרה החודש',
+              act:'עולה לפגישה עם היועץ ונכנס לזיכרון הלקוח'},
+    stale:   {lbl:'היעד לא מעודכן',     chip:'יעד לא מעודכן', note:true,
+              hint:'היעד לפי ההיסטוריה לא מתאים לחודש הזה — צריך שורה תקציבית אמיתית',
+              act:'פתיחת שורה תקציבית עם יעד מעודכן'}
+  };
+  const gapTh=()=>{ try{ return Object.assign({floor:1000,pct:5,ceil:25000}, JSON.parse(localStorage.getItem('hkGapTh')||'null')||{}); }catch(e){ return {floor:1000,pct:5,ceil:25000}; } };
+  function brGapOf(x){ return x.typical-x.actual-(x.future||0); }
+  /* חריגה: אותו כלל בדיוק, על גודל החריגה מול התקציב */
+  function brOverOf(x){ return x.actual-x.budget; }
+  function brMatOver(x){
+    const o=brOverOf(x), T=gapTh();
+    if(o<=0) return false;
+    if(o<T.floor) return false;
+    if(o>=T.ceil) return true;
+    return x.budget>0 && (o/x.budget*100)>=T.pct;
+  }
+  function brMat(x){
+    const g=brGapOf(x), T=gapTh();
+    if(g<=0) return false;
+    if(g<T.floor) return false;
+    if(g>=T.ceil) return true;
+    return x.typical>0 && (g/x.typical*100)>=T.pct;
+  }
+  /* פערים בדוח התקציבי שעדיין ללא סוג — נספרים לאותו גייט של התקציב */
+  function brUntyped(){
+    return BR_DATA.filter(x=>x.kind==='miss'&&!BL_OK.some(b=>b.cat===x.cat)&&brMat(x)&&!x.gt);
+  }
   /* ===== דוח תקציבי: חסרים בתזרימים / חריגות בתקציב — מהותיים בלבד ===== */
   const BR_DATA=[
-    {kind:'miss', cat:'ביטוחים',        typical:24000, actual:8000,  future:0,     ess:true},
-    {kind:'miss', cat:'מיסים ואגרות',   typical:42000, actual:14000, future:10000, ess:true},
-    {kind:'over', cat:'שיווק ופרסום',   budget:15000,  actual:22400, fore:0, ess:true,
+    {kind:'miss', cat:'ביטוחים',        typical:24000, actual:8000,  future:0},
+    {kind:'miss', cat:'מיסים ואגרות',   typical:42000, actual:14000, future:10000},
+    {kind:'over', cat:'שיווק ופרסום',   budget:15000,  actual:22400, fore:0,
       tx:[{d:'03.07',t:'קמפיין גוגל — יולי',a:'6,200'},{d:'09.07',t:'פייסבוק אדס',a:'5,400'},{d:'15.07',t:'הדפסות ושילוט',a:'4,300'},{d:'22.07',t:'משרד יח"צ — ריטיינר',a:'6,500'}]},
-    {kind:'over', cat:'רכב ודלק',       budget:8000,   actual:11300, fore:0, ess:true,
+    {kind:'over', cat:'רכב ודלק',       budget:8000,   actual:11300, fore:0,
       tx:[{d:'05.07',t:'דלק — פזומט',a:'3,900'},{d:'12.07',t:'טיפול 30,000 למסחרית',a:'4,200'},{d:'20.07',t:'דלק — פזומט',a:'3,200'}]},
-    {kind:'over', cat:'שכר עבודה',      budget:60000,  actual:62100, fore:0, ess:false,
+    {kind:'over', cat:'שכר עבודה',      budget:60000,  actual:62100, fore:0,
       tx:[{d:'01.07',t:'משכורות יוני',a:'62,100'}]},
   ];
   function renderBReport(){
     const box=document.getElementById('finFindings');
     box.classList.add('bl-mode');
     const fmt=n=>n.toLocaleString();
-    const ess=BR_DATA.filter(x=>x.ess);
-    const missAll=ess.filter(x=>x.kind==='miss'&&!BL_OK.some(b=>b.cat===x.cat));
+    const notLine=x=>!BL_OK.some(b=>b.cat===x.cat);
+    const missAll=BR_DATA.filter(x=>x.kind==='miss'&&notLine(x)&&brMat(x));
+    const missSub=BR_DATA.filter(x=>x.kind==='miss'&&notLine(x)&&!brMat(x)&&brGapOf(x)>0);
+    const overAll=BR_DATA.filter(x=>x.kind==='over'&&brMatOver(x));
+    const overSub=BR_DATA.filter(x=>x.kind==='over'&&!brMatOver(x)&&brOverOf(x)>0);
+    const T=gapTh();
     const missRows=missAll.map(x=>{
-      const gap=x.typical-x.actual-x.future;
+      const gap=brGapOf(x), mat=brMat(x), G=x.gt?GAP_TYPES[x.gt]:null;
       const stat=(l,v,cls)=>`<div class="fb-s ${cls||''}"><span>${l}</span><b>${v}</b></div>`;
-      return `<div class="br-row">
+      /* הפעולה נגזרת מהסוג — לא כפתורים חופשיים לצד המספר */
+      const acts = !mat
+        ? `<span class="br-sub">מתחת לסף המהותיות — לא דורש הגדרה</span>`
+        : G
+          ? `<button class="gt-chip2 gt-${x.gt}" onclick="brGtOpen('${x.cat}')">${G.chip} <i>✎</i></button>`
+            + (x.gt==='wait'?`<button class="ot-btn ghost sm" onclick="brMsg('${x.cat}','miss')">תזכורת בקבוצה</button>`:'')
+            + (x.gt==='stale'?`<button class="ot-btn done sm" onclick="brOpenLine('${x.cat}')">פתיחת שורה תקציבית</button>`:'')
+            + (x.gn?`<div class="br-gnote">${x.gn}</div>`:'')
+          : `<button class="gt-chip2 gt-set2" onclick="brGtOpen('${x.cat}')">+ הגדרת הפער</button>`;
+      return `<div class="br-row${mat&&!x.gt?' need':''}">
         <div class="br-h"><b>${x.cat}</b></div>
         <div class="fb-stats" style="margin:0 0 8px">
           ${stat('יעד (לפי היסטוריה)',fmt(x.typical))}
@@ -522,12 +612,9 @@
           ${stat('צבוע',x.future?fmt(x.future):'—')}
           ${stat('חסר',fmt(gap),gap>0?'neg':'')}
         </div>
-        <div class="br-acts">
-          <button class="ot-btn done sm" onclick="brOpenLine('${x.cat}')">פתיחת שורה תקציבית</button>
-          <button class="ot-btn ghost sm" onclick="brMsg('${x.cat}','miss')">הלקוח ישלח חומר</button>
-        </div>
+        <div class="br-acts">${acts}</div>
       </div>`;}).join('');
-    const overRows=ess.filter(x=>x.kind==='over').map(x=>{
+    const overRows=overAll.map(x=>{
       const pct=Math.round(x.actual/x.budget*100);
       return `<div class="br-row">
         <div class="br-h"><b>${x.cat}</b><span class="br-nums">בפועל ${fmt(x.actual)} · תקציב ${fmt(x.budget)}</span></div>
@@ -542,14 +629,20 @@
         </div>
       </div>`;}).join('');
     box.innerHTML=`<div class="bl-top">
-        <span>דוח תקציבי — קטגוריות מהותיות בלבד <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="brEssOpen()">⚙ תיוג מהותיים</button></span>
+        <span>דוח תקציבי — <b>המהותיות נקבעת מהסף</b>, לא ידנית
+          <span class="br-rule">רצפה ${gapTh().floor.toLocaleString()} ₪ · ${gapTh().pct}% · תקרה ${gapTh().ceil.toLocaleString()} ₪
+          <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="showTab('coset')">⚙ שינוי בהגדרות החברה</button></span></span>
         <button class="ot-btn done" onclick="brGo()">הבדיקה הושלמה — סיום</button>
       </div>
       <div class="cu-split" style="border:none">
         <div><div class="pay-grp">🔵 חסרים בתזרימים <em>${missAll.length}</em></div>
           <div class="catm-sub" style="margin:2px 4px 8px">קטגוריה עם שורה תקציבית לא מופיעה כאן — הפער שלה כבר מנוהל בשלב 1.</div>
-          ${missRows||'<div class="ops-empty" style="padding:14px">אין חסרים</div>'}</div>
-        <div><div class="pay-grp">🔴 חריגות בתקציב <em>${ess.filter(x=>x.kind==='over').length}</em></div>${overRows||'<div class="ops-empty" style="padding:14px">אין חריגות</div>'}</div>
+          ${missRows||'<div class="ops-empty" style="padding:14px">אין חסרים מעל הסף</div>'}
+          ${missSub.length?`<div class="br-sub-foot">${missSub.length} מתחת לסף · <b>${fmt(missSub.reduce((s,x)=>s+brGapOf(x),0))} ₪</b>
+            <span>${missSub.map(x=>x.cat).join(' · ')}</span></div>`:''}</div>
+        <div><div class="pay-grp">🔴 חריגות בתקציב <em>${overAll.length}</em></div>${overRows||'<div class="ops-empty" style="padding:14px">אין חריגות מעל הסף</div>'}
+          ${overSub.length?`<div class="br-sub-foot">${overSub.length} מתחת לסף · <b>${fmt(overSub.reduce((s,x)=>s+brOverOf(x),0))} ₪</b>
+            <span>${overSub.map(x=>x.cat).join(' · ')}</span></div>`:''}</div>
       </div>`;
   }
   function brOpenLine(cat){
@@ -560,7 +653,38 @@
     renderBReport();
     toast('נפתחה שורה תקציבית ל"'+cat+'" — מעכשיו מנוהלת בשלב 1, ולא תופיע כאן שוב');
   }
+  /* ===== גייט סיווג הפערים =====
+     שלב ההזנות לעולם לא חוסם ("המתפעל מזין מה שיש"). שלב הבדיקה כן:
+     פער מהותי בלי סוג = תמונה לא מובנת, ואי אפשר לסגור עליה תפעול.
+     המצב מגיע מ-budget-flow.html דרך postMessage; ברירת המחדל = מצב הדמו ההתחלתי. */
+  const gapGate=()=>window.HK_GAPGATE||{n:4,sum:29517,month:'יוני 2026'};
+  function gapGateGo(){
+    document.getElementById('finView').style.display='none';
+    document.getElementById('opsGrid').style.display='';
+    finPaused=true; FIN_STATE={key:opsActiveKey,step:finCurStep};
+    opsAccum[opsActiveKey]=opsTotal; startOpsTimer(); updateOpsBtn();
+    if(typeof showTab==='function') showTab('budget');
+    toast('הגדירו את הפערים בתקציב — ואז "סיום תפעול" יחזיר אתכם לשלב הבדיקה');
+  }
   function brGo(){
+    const bu=brUntyped();
+    if(bu.length){
+      toast('נותרו '+bu.length+' חסרים ללא הגדרה');
+      const el=document.querySelector('.br-row.need'); if(el) el.scrollIntoView({block:'center',behavior:'smooth'});
+      return;
+    }
+    const gg=gapGate();
+    if(gg.n>0){
+      const box=document.getElementById('finFindings');
+      box.insertAdjacentHTML('afterbegin',
+        `<div class="br-row" style="border:1px solid #EFB48D;background:#FFF7F2;margin-bottom:10px">
+          <div class="br-h"><b style="color:#8A3D14">${gg.n} פערים מהותיים בתקציב עדיין ללא הגדרה · ${gg.sum.toLocaleString()} ₪</b></div>
+          <div class="catm-sub" style="margin:2px 4px 9px">אי אפשר לסגור את הבדיקה עם פער שלא ברור מאיפה הוא. רק אתם יודעים אם חסר חומר מהלקוח, אם זה פשוט טרם התגבש, או שהיעד לא ריאלי.</div>
+          <div class="br-acts"><button class="ot-btn done sm" onclick="gapGateGo()">פתיחת התקציב התזרימי ←</button></div>
+        </div>`);
+      toast('נותרו '+gg.n+' פערים ללא הגדרה');
+      return;
+    }
     const el=document.getElementById('fstep2');
     if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
     document.getElementById('ftag2').textContent='נבדק ✓';
@@ -587,29 +711,210 @@
     const x=BR_DATA.find(v=>v.cat===cat); if(!x) return;
     const c=CLIENTS[CUR], contact=(c.thread&&[...c.thread].reverse().find(m=>m.from==='user')||{}).name||'הלקוח';
     const fmt=n=>n.toLocaleString();
-    document.getElementById('smTo').textContent=contact+' · '+c.name+' · וואטסאפ';
-    document.getElementById('smText').value=kind==='over'
-      ?'היי '+contact+' 👋 בקטגוריית "'+cat+'" יש חריגה מהתקציב: בפועל '+fmt(x.actual)+' ₪ מול תקציב '+fmt(x.budget)+' ₪ ('+Math.round(x.actual/x.budget*100)+'%). רצינו לוודא שאתה מודע, ולבדוק אם לעדכן את התקציב או לבלום את ההוצאה.'
-      :'היי '+contact+' 👋 בקטגוריית "'+cat+'" חסרים נתונים בתזרים: בפועל+חזוי '+fmt(x.actual+x.fore)+' ₪ מול תקציב '+fmt(x.budget)+' ₪. נשמח שתשלח חומר/אסמכתאות כדי שנשלים את התמונה.';
-    window._smCustom=true;
-    document.getElementById('smOv').classList.add('show');
+    smOpenTpl(kind==='over'?'budgetOver':'budgetMiss',
+      {name:contact, cat, actual:fmt(x.actual||0), budget:fmt(x.budget||0)},
+      'קבוצת '+c.name+' · וואטסאפ', null);
   }
   /* שינוי תקציב */
   function brBudget(cat){
     const x=BR_DATA.find(v=>v.cat===cat); if(!x) return;
-    const v=prompt('תקציב חדש ל"'+cat+'" (₪):',x.budget);
-    if(v==null) return;
-    const n=parseInt(String(v).replace(/\D/g,''),10);
-    if(n){x.budget=n;renderBReport();toast('התקציב של "'+cat+'" עודכן ל-'+n.toLocaleString()+' ₪');}
+    BRTGT=cat;
+    document.getElementById('brTgtTitle').textContent='תקציב חדש — '+cat;
+    document.getElementById('brTgtSub').textContent='תקציב נוכחי '+x.budget.toLocaleString()+' ₪ · בפועל '+x.actual.toLocaleString()+' ₪';
+    document.getElementById('brTgtInp').value=x.budget;
+    document.getElementById('brTgtOv').classList.add('show');
   }
-  /* תיוג קטגוריות מהותיות */
-  function brEssOpen(){
-    document.getElementById('essBody').innerHTML=BR_DATA.map((x,i)=>`
-      <label class="cp-rule" style="padding:5px 0"><input type="checkbox" ${x.ess?'checked':''} onchange="BR_DATA[${i}].ess=this.checked;renderBReport()">
-      <span>${x.cat} <i class="bl-hint">(${x.kind==='over'?'חריגה':'חסר'})</i></span></label>`).join('');
-    document.getElementById('essOv').classList.add('show');
+  /* ===== בורר סוג הפער בדוח התקציבי ===== */
+  let BRGT=null;
+  function brGtOpen(cat){
+    const x=BR_DATA.find(v=>v.cat===cat); if(!x) return;
+    BRGT={cat, k:x.gt||null, n:x.gn||''};
+    document.getElementById('brGtTitle').textContent=cat;
+    document.getElementById('brGtSub').textContent='הגדרת הפער · חסר '+brGapOf(x).toLocaleString()+' ₪ מתוך יעד '+x.typical.toLocaleString()+' ₪ (לפי היסטוריה)';
+    brGtRender();
+    document.getElementById('brGtOv').classList.add('show');
   }
-  function essClose(){document.getElementById('essOv').classList.remove('show');}
+  function brGtClose(){ document.getElementById('brGtOv').classList.remove('show'); BRGT=null; }
+  function brGtPick(k){ BRGT.k=k; brGtRender(); }
+  function brGtNote(v){ BRGT.n=v; const b=document.getElementById('brGtSaveBtn'); if(b) b.disabled=!brGtValid(); }
+  function brGtValid(){ return BRGT&&BRGT.k&&(!GAP_TYPES[BRGT.k].note||BRGT.n.trim().length>2); }
+  function brGtRender(){
+    document.getElementById('brGtBody').innerHTML=
+      Object.keys(GAP_TYPES).map(k=>{const G=GAP_TYPES[k];
+        return `<div class="gt-opt2 ${BRGT.k===k?'on':''}" onclick="brGtPick('${k}')">
+          <span class="rd"></span><span><b>${G.lbl}</b><small>${G.hint}</small>
+          <span class="act-h">← ${G.act}</span></span></div>`;}).join('')
+      + (BRGT.k&&GAP_TYPES[BRGT.k].note
+         ? `<div class="gt-req2">הסבר בשורה אחת <i>· חובה</i></div>
+            <textarea class="mx2-inp gt-txt2" oninput="brGtNote(this.value)" placeholder="${BRGT.k==='unlikely'?'למה זה לא יקרה החודש?':'למה היעד ההיסטורי לא מתאים?'}">${BRGT.n||''}</textarea>` : '');
+    document.getElementById('brGtFoot').innerHTML=
+      `<button class="mx2-btn" onclick="brGtClose()">ביטול</button>
+       <button class="mx2-btn primary" id="brGtSaveBtn" ${brGtValid()?'':'disabled'} onclick="brGtSave()">שמירת הסיווג</button>`;
+  }
+  function brGtSave(){
+    if(!brGtValid()) return;
+    const x=BR_DATA.find(v=>v.cat===BRGT.cat); if(!x) return;
+    x.gt=BRGT.k; x.gn=BRGT.n||'';
+    toast('הפער סווג — '+GAP_TYPES[BRGT.k].lbl);
+    brGtClose(); renderBReport();
+  }
+  /* עדכון תקציב — UI פנימי במקום prompt של הדפדפן */
+  let BRTGT=null;
+  function brTgtClose(){ document.getElementById('brTgtOv').classList.remove('show'); BRTGT=null; }
+  function brTgtSave(){
+    const x=BR_DATA.find(v=>v.cat===BRTGT); if(!x) return brTgtClose();
+    const n=parseInt(String(document.getElementById('brTgtInp').value).replace(/\D/g,''),10);
+    if(n){ x.budget=n; renderBReport(); toast('התקציב של "'+x.cat+'" עודכן ל-'+n.toLocaleString()+' ₪'); }
+    brTgtClose();
+  }
+
+  /* ===== שלב 4: חומר מהלקוח — סגירת יום =====
+     כל החברות מתופעלות כל יום, ולכן המונים כאן אמינים: "6 ימים · 4 תזכורות"
+     הוא נתון ולא ארטיפקט של ימים שדולגו.
+     הרשימה **נגזרת** מהפערים שסווגו "מחכה לחומר" (תקציב + דוח תקציבי) — לא מומצאת.
+     ימי החומר פר חברה הם מה שמונע שהשלב יהפוך לחותמת גומי: פריט שטרם הגיע
+     יום החומר שלו — שקט, לא דורש כלום. */
+  const MAT_TODAY=12;                     // יום בחודש (דמו)
+  const matDays=()=>{ try{ return JSON.parse(localStorage.getItem('hkMatDays')||'null')||[1,15]; }catch(e){ return [1,15]; } };
+  /* יום החומר האחרון שעבר, וכמה ימים חלפו ממנו */
+  function matLate(){ const d=matDays().filter(x=>x<=MAT_TODAY); return d.length?MAT_TODAY-Math.max(...d):null; }
+  const MAT_ITEMS=[
+    {cat:'קניות מלאי', src:'תקציב', amt:25000, days:6, pings:4, ans:0,
+     hist:['11.08 · הוזכר בקבוצה — אין מענה','10.08 · הוזכר בקבוצה — אין מענה','08.08 · הוזכר — "אשלח מחר"','06.08 · בקשה ראשונה']},
+    {cat:'הכנסות ממכירות - סליקה', src:'תקציב', amt:4010, days:3, pings:2, ans:1,
+     hist:['11.08 · הוזכר — "רואה החשבון מכין"','09.08 · בקשה ראשונה']},
+    {cat:'ביטוחים', src:'דוח תקציבי', amt:16000, days:1, pings:1, ans:0,
+     hist:['11.08 · בקשה ראשונה']},
+  ];
+  /* פריטים שעברו את יום החומר — רק הם דורשים התייחסות היום */
+  const matDue=()=>MAT_ITEMS.filter(m=>!m.st&&matLate()!=null);
+  let MAT_OPEN=null;
+  function matRender(){ renderMat(); }
+  function renderMat(){
+    const box=document.getElementById('finFindings');
+    box.classList.add('bl-mode');
+    const late=matLate(), days=matDays().join(' · ');
+    const done=MAT_ITEMS.filter(m=>m.st).length, due=matDue().length;
+    const row=(m,ix)=>{
+      const hot=m.pings>=3&&m.ans===0;
+      const st=m.st;
+      const badge=`<span class="mat-badge ${hot?'hot':''}">מחכה ${m.days} ימים · ${m.pings} תזכורות · ${m.ans?'ענה '+m.ans+'×':'לא ענה'}</span>`;
+      const doneTag=st
+        ? `<div class="mat-done">${st.icon} <b>${st.lbl}</b>${st.txt?' — '+st.txt:''}
+             <button class="mat-undo" onclick="matUndo(${ix})">ביטול</button></div>`
+        : `<div class="mat-acts">
+             <button class="ot-btn done sm" onclick="matSet(${ix},'ping')">הזכרתי · אין מענה</button>
+             <button class="ot-btn ghost sm" onclick="matOpen(${ix},'info')">יש מידע</button>
+             <button class="ot-btn ghost sm" onclick="matOpen(${ix},'defer')">דחייה לתאריך</button>
+           </div>`;
+      const form=MAT_OPEN&&MAT_OPEN.ix===ix
+        ? (MAT_OPEN.mode==='info'
+          ? `<div class="mat-form"><input class="mx2-inp" id="matInp" placeholder="מה הלקוח אמר? למשל: אמר שישלח ביום ראשון">
+               <button class="ot-btn done sm" onclick="matSave(${ix})">שמירה</button>
+               <button class="ot-btn ghost sm" onclick="matCancel()">ביטול</button></div>`
+          : `<div class="mat-form"><span class="mat-lbl">לנסות שוב ב־</span>
+               <select class="mx2-inp" id="matInp" style="width:auto">${[15,18,20,25,28,1].map(d=>`<option value="${d}">${d} בחודש</option>`).join('')}</select>
+               <button class="ot-btn done sm" onclick="matSave(${ix})">שמירה</button>
+               <button class="ot-btn ghost sm" onclick="matCancel()">ביטול</button></div>`)
+        : '';
+      return `<div class="mat-row${st?' ok':(hot?' hot':'')}">
+        <div class="mat-h"><b>${m.cat}</b><span class="mat-amt">${m.amt.toLocaleString()} ₪</span>
+          <span class="mat-src">${m.src}</span></div>
+        ${badge}
+        ${hot&&!st?`<div class="mat-esc">4 תזכורות בלי מענה אחד — כדאי להתקשר במקום להודיע, או להעלות ליועץ
+          <button class="ot-btn ghost xs" onclick="matEsc(${ix})">העלאה ליועץ</button></div>`:''}
+        ${doneTag}${form}
+        <details class="mat-hist"><summary>היסטוריית הרדיפה</summary>${m.hist.map(h=>`<div>${h}</div>`).join('')}</details>
+      </div>`;};
+    box.innerHTML=`<div class="bl-top">
+        <span>חומר מהלקוח — ימי החומר של החברה: <b>${days}</b> בחודש
+          <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="showTab('coset')">⚙ שינוי</button></span>
+        <button class="ot-btn done" onclick="matGo()">הבדיקה הושלמה — סיום</button>
+      </div>
+      ${late==null
+        ? `<div class="mat-quiet">✓ יום החומר הבא עוד לא הגיע — אין מה לרדוף היום. הפריטים הפתוחים ממתינים בשקט.</div>`
+        : `<div class="mat-note">עברו <b>${late} ימים</b> מיום החומר האחרון. ${due?`<b>${due}</b> פריטים עוד לא קיבלו התייחסות היום.`:'כל הפריטים קיבלו התייחסות היום ✓'}</div>`}
+      <div class="mat-list">${MAT_ITEMS.map(row).join('')}</div>`;
+  }
+  function matOpen(ix,mode){ MAT_OPEN={ix,mode}; renderMat(); setTimeout(()=>{const e=document.getElementById('matInp'); if(e)e.focus();},0); }
+  function matCancel(){ MAT_OPEN=null; renderMat(); }
+  function matSet(ix,kind){
+    const m=MAT_ITEMS[ix];
+    m.pings++; m.st={icon:'↻',lbl:'הוזכר היום · אין מענה',txt:''};
+    m.hist.unshift(MAT_TODAY+'.08 · הוזכר בקבוצה — אין מענה');
+    MAT_OPEN=null; renderMat(); toast('נרשם — נשלחה תזכורת בקבוצה');
+  }
+  function matSave(ix){
+    const el=document.getElementById('matInp'); if(!el) return;
+    const v=(el.value||'').trim(); if(!v) return;
+    const m=MAT_ITEMS[ix];
+    if(MAT_OPEN.mode==='info'){ m.ans++; m.st={icon:'💬',lbl:'הלקוח מסר',txt:v}; m.hist.unshift(MAT_TODAY+'.08 · '+v); }
+    else { m.st={icon:'⏰',lbl:'נדחה — לנסות ב-'+v+' בחודש',txt:''}; m.hist.unshift(MAT_TODAY+'.08 · נדחה ל-'+v+' בחודש'); }
+    MAT_OPEN=null; renderMat(); toast('נרשם');
+  }
+  function matUndo(ix){ const m=MAT_ITEMS[ix]; if(m.st&&m.st.icon==='↻')m.pings--; m.st=null; renderMat(); }
+  function matEsc(ix){ toast('"'+MAT_ITEMS[ix].cat+'" הועלה ליועץ — יופיע אצלו כחיכוך מול הלקוח'); }
+  function matGo(){
+    const due=matDue();
+    if(due.length){ toast(due.length+' פריטים עוד ללא התייחסות היום'); return; }
+    const el=document.getElementById('fstep3');
+    if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
+    document.getElementById('ftag3').textContent='נסגר ✓';
+    runFinStep(4);
+  }
+
+  /* ===== שלב 5: שינויים מהותיים בתזרים =====
+     נשען על לוג השינויים (docs/FLOW_CHANGE_LOG_SPEC.md): הדלתא היא עקומה,
+     ולכן מציגים נקודה — התאריך שהכי הורע — ואת האירועים שמשפיעים עליו.
+     השלב **מדווח**; הוא חוסם רק כשנוצרה חריגה שלא הייתה אתמול, כי זה
+     הדבר היחיד כאן שדורש החלטה ולא רק ידיעה. */
+  const FCH={
+    date:'24.08', delta:-32400, was:12150, now:-20250,
+    newOverdraft:true, ack:null,
+    evs:[
+      {t:'תאריך זז', d:-19800, txt:'תקבול מרכז הבנייה זז מ-12.08 ל-22.08', sub:'הכסף לא נעלם — הוא מאחר, ויוצר בור עד 22.08', me:false},
+      {t:'הזנה חדשה', d:-7500, txt:'תשלום פלטס-גל (25.08)', sub:'אושר על ידך היום בשלב ההזנות', me:true},
+      {t:'בפועל≠צפי', d:-5100, txt:'חיוב ויזה בפועל גבוה מהצפי (08.08)', sub:'4,110 ← 9,210', me:false},
+    ]};
+  function renderFch(){
+    const box=document.getElementById('finFindings');
+    box.classList.add('bl-mode');
+    const mine=FCH.evs.filter(e=>e.me).length;
+    box.innerHTML=`<div class="bl-top">
+        <span>מה השתנה בתחזית מאתמול · הנקודה שהכי הורעה: <b>${FCH.date}</b>
+          <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="showTab('flowlog')">הלוג המלא ←</button></span>
+        <button class="ot-btn done" onclick="fchGo()">הבדיקה הושלמה — סיום</button>
+      </div>
+      <div class="fch-hd ${FCH.newOverdraft?'bad':''}">
+        <div class="fch-amt">${FCH.delta.toLocaleString()} ₪</div>
+        <div class="fch-was">${FCH.was.toLocaleString()} <span>←</span> <b>${FCH.now.toLocaleString()}</b>
+          <small>היתרה הצפויה ל-${FCH.date}</small></div>
+        ${FCH.newOverdraft?`<div class="fch-flag">נכנסת לחריגה בתאריך הזה — אתמול לא היית</div>`:''}
+      </div>
+      ${FCH.newOverdraft?(FCH.ack
+        ? `<div class="fch-ack ok">✓ ${FCH.ack} <button class="mat-undo" onclick="FCH.ack=null;renderFch()">ביטול</button></div>`
+        : `<div class="fch-ack">
+             <span>חריגה חדשה מחייבת החלטה — לא מספיק לדעת עליה:</span>
+             <button class="ot-btn done sm" onclick="fchAck('הועבר כסף מפועלים 112 — החריגה נסגרה')">העברה בין חשבונות</button>
+             <button class="ot-btn ghost sm" onclick="fchAck('נשלחה התראה ללקוח וליועץ')">התראה ללקוח וליועץ</button>
+             <button class="ot-btn ghost sm" onclick="fchAck('נבדק — התקבול צפוי להיכנס לפני התאריך')">נבדק · לא נדרשת פעולה</button>
+           </div>`):''}
+      ${mine?`<div class="fch-mine">${mine} מהשינויים נובעים מהעבודה שלך היום</div>`:''}
+      <div class="fch-list">${FCH.evs.map(e=>`
+        <div class="fch-r">
+          <span class="fch-d">${e.d>0?'+':''}${e.d.toLocaleString()}</span>
+          <span class="fch-t"><b>${e.txt}</b><small>${e.sub}</small></span>
+          <span class="fch-tag${e.me?' me':''}">${e.me?'העבודה שלך':e.t}</span>
+        </div>`).join('')}</div>`;
+  }
+  function fchAck(txt){ FCH.ack=txt; renderFch(); toast('נרשם — ' + txt); }
+  function fchGo(){
+    if(FCH.newOverdraft&&!FCH.ack){ toast('החריגה החדשה עוד ללא החלטה'); return; }
+    const el=document.getElementById('fstep4');
+    if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
+    document.getElementById('ftag4').textContent='נבדק ✓';
+    runFinStep(5);
+  }
 
   /* דוח חודשי: רווח נקי צריך להתאים ל(סגירה − פתיחה) של הבנקים */
   const MREP_TOL=300;
@@ -840,26 +1145,24 @@
       {type:'payee', chk:'0010814', bank:'הפועלים · סניף 736', amount:'216', date:'26.07.2026', ocrName:'ויקה רזניק', img:'check.jpeg', time:'לפני 25 דק׳'},
       {type:'payee', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
       {type:'payee', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
-      {type:'carry', dir:'exp', text:'בחשבון מזרחי 295199 צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪. הפעולה טרם הופיעה — נגררת 11 ימים.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
-        promise:'הלקוח כתב בקבוצה (היום 11:40): ״ההוראה להראל יורדת מחר״',
+      {type:'carry', dir:'exp', acct:'mz295', days:11, text:'צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪ — טרם הופיעה.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
         related:[{d:'15.06.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'},
                  {d:'15.05.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'}]},
-      {type:'carry', dir:'exp', text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע, נגרר 6 ימים.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
-        match:{t:'חיוב ויזה כ.א.ל — אלקטרה מיזוג', amt:'3,660 ₪-', d:'28.07 · אשראי'},
+      {type:'carry', dir:'exp', acct:'pl112', days:6, text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
+        mCard:{t:'חיוב ויזה כ.א.ל — אלקטרה מיזוג', amt:'3,660 ₪-', d:'28.07'},
         related:[{d:'22.06.2026',t:'העברה — אלקטרה מיזוג',amt:'3,660 ₪-',cat:'ספקים'}]},
-      {type:'carry', dir:'inc', text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה, נגררת 3 ימים.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
+      {type:'carry', dir:'inc', acct:'mz295', days:3, text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
         related:[{d:'25.06.2026',t:'תקבול — מרכז הבנייה',amt:'18,600 ₪+',cat:'הכנסות ממכירות'},
                  {d:'25.05.2026',t:'תקבול — מרכז הבנייה',amt:'17,200 ₪+',cat:'הכנסות ממכירות'},
                  {d:'26.04.2026',t:'תקבול — מרכז הבנייה',amt:'18,900 ₪+',cat:'הכנסות ממכירות'}]},
-      {type:'unexpected', text:'בחשבון מזרחי 139287 הופיעה פעולה בשם "כהן טוב" ע"ס 238 ₪ שלא צפינו.', who:'כהן טוב', amt:238, time:'לפני שעה',
+      {type:'unexpected', acct:'mz139', text:'הופיעה פעולה בשם "כהן טוב" ע"ס 238 ₪ שלא צפינו.', who:'כהן טוב', amt:238, time:'לפני שעה',
         related:[{d:'12.06.2026',t:'העברה — כהן טוב · מזרחי 139287',amt:'238 ₪-',cat:'שכר קבלני משנה'},
                  {d:'12.05.2026',t:'העברה — כהן טוב · מזרחי 139287',amt:'238 ₪-',cat:'שכר קבלני משנה'},
                  {d:'14.04.2026',t:'העברה — כהן טוב · מזרחי 139287',amt:'220 ₪-',cat:'שכר קבלני משנה'}]},
-      {type:'unexpected', text:'חיוב לא מזוהה "PAYPAL *TX9915" ע"ס 1,120 ₪ בכרטיס האשראי.', who:'PAYPAL *TX9915', amt:1120, time:'היום 09:05', related:[]},
-      {type:'unexpected', text:'בחשבון מזרחי 295199 הופיעה פעולה "הראל חב׳ לביטוח בע״מ" ע"ס 2,049 ₪ שלא צפינו.', who:'הראל חב׳ לביטוח בע״מ', amt:2049, time:'היום 09:20', related:[]},
-      {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ — חלקי" ע"ס 10,000 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ — חלקי', amt:10000, time:'היום 10:02', related:[]},
-      {type:'unexpected', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[],
-       match:{t:'הכנסה צפויה — מרכז הבנייה', amt:'8,600 ₪+', d:'12.08 · בתזרים'}},
+      {type:'unexpected', acct:'mz295', text:'הופיעה פעולה "הראל חב׳ לביטוח בע״מ" ע"ס 2,049 ₪ שלא צפינו.', who:'הראל חב׳ לביטוח בע״מ', amt:2049, time:'היום 09:20', related:[]},
+      {type:'unexpected', dir:'inc', acct:'mz295', text:'תקבול "מרכז הבנייה בע״מ — חלקי" ע"ס 10,000 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ — חלקי', amt:10000, time:'היום 10:02', related:[]},
+      {type:'unexpected', dir:'inc', acct:'mz139', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[],
+       mFcast:{t:'הכנסה צפויה — מרכז הבנייה', amt:'8,600 ₪+', d:'12.08'}},
       {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי אוגוסט', who:'צחי עובד', time:'לפני 3 דק׳',
         rows:[{date:'15.08.2026', ref:'', desc:'ספק אריזות — הזמנה חדשה', amount:'5,200'},
               {date:'20.08.2026', ref:'', desc:'יועץ שיווק — ריטיינר', amount:'3,000'}]},
@@ -902,7 +1205,9 @@
     ];
     MET.forEach((m,i)=>{if(CLIENTS[i]){CLIENTS[i].metrics=m;CLIENTS[i].budgetPct=m.budget;}});
     // דמו: קטגוריות ומוטבים כבר טופלו — הכניסה לתפעול נוחתת ישר על נגררות ולא צפויות
-    CLIENTS.forEach(c=>(c.tasks||[]).forEach(t=>{if(t.type==='ai'||t.type==='payee')t.done=true;}));
+    // ואם OPS_SKIP_STAGES — כל שלבי התפעול מסומנים כטופלו, ונכנסים ישר לבדיקות
+    CLIENTS.forEach(c=>(c.tasks||[]).forEach(t=>{
+      if(OPS_SKIP_STAGES ? STAGE_TASK_TYPES.includes(t.type) : (t.type==='ai'||t.type==='payee')) t.done=true;}));
     CLIENTS.forEach(c=>{if(!c.stat)c.stat='active'; c.opsPending=(c.tasks||[]).filter(t=>!t.done).length;});
   }
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
@@ -914,6 +1219,14 @@
     if(t.type==='ai'){
       const B={history:['היסטוריה','hist'],google:['גוגל','goog'],ai:['AI','aid']}[t.basis||'history'];
       return 'קיטלוג: '+t.op+` <span class="ai-basis ${B[1]}">לפי ${B[0]}</span>`;
+    }
+    /* נגררות/לא צפויות: העמודה כבר אומרת "לא צפויה"/"נגררת" —
+       אז לא חוזרים על "הופיעה פעולה בשם…". נשאר מה שבאמת מזהה: שם וסכום.
+       הסכום בולט כי הוא מפתח ההתאמה הידנית. */
+    if(t.type==='unexpected'||t.type==='carry'){
+      const sign=t.dir==='inc'?'+':'';
+      return `<b class="cu-who">${t.who||''}</b><span class="cu-amt ${t.dir==='inc'?'inc':''}">${sign}${(t.amt||0).toLocaleString()} ₪</span>`
+        + (t.days?`<span class="cu-days ${t.days>=7?'hot':''}">${t.dir==='inc'?'באיחור':'נגררת'} ${t.days} ימים</span>`:'');
     }
     return (t.text||'').replace(/\s+/g,' ').slice(0,70);
   }
@@ -1256,17 +1569,29 @@
     renderOps();
     toast('ההתאמה אושרה — שתי הפעולות נסגרו');
   }
+  /* ===== חשבונות החברה =====
+     **התאמה אפשרית רק בתוך אותו חשבון** (מגבלת ביזיבוקס). האכיפה היא
+     ברגע הפעולה (muApply) ולא בפילטר: הפילטר נשאר כלי עזר לרשימות ארוכות,
+     והצ'קבוקסים פתוחים תמיד. ברגע שמסמנים — שורות מחשבונות אחרים מעומעמות,
+     כך שהכלל נלמד בדיוק כשהוא רלוונטי בלי להסתיר כלום. */
+  /* **חשבונות בנק בלבד.** כרטיס אשראי אינו חשבון במסך הזה — עסקה בכרטיס
+     אינה תנועה בבנק (רק החיוב המרוכז הוא). הכרטיס משמש כאן כ**מקור בדיקה**
+     בהתאמה (סריקת 30 יום אחורה), לא כמקור שורות. */
+  const ACCTS={
+    mz295:{lbl:'מזרחי 295199', short:'מזרחי ‎295199'},
+    mz139:{lbl:'מזרחי 139287', short:'מזרחי ‎139287'},
+    pl112:{lbl:'פועלים 112',   short:'פועלים ‎112'},
+  };
+  const acctOf=t=>ACCTS[t.acct]||null;
+  const acctChip=t=>{const a=acctOf(t); return a?`<span class="acct-chip">${a.short}</span>`:'';};
+
   function carryUnexpected(rows,T){
     const un=rows.filter(t=>t.type==='unexpected'), ca=rows.filter(t=>t.type==='carry');
-    const recs=matchRecs(rows,T);
-    const banner=recs.length?`<div class="mt-banner">
-      ${recs.map(r=>`<div class="mt-row">
-        <span class="mt-ic">🔗</span>
-        <div class="mt-b">הפעולה שהופיעה <b>"${r.u.who}"</b> (${r.u.amt.toLocaleString()} ₪) היא כנראה הנגררת <b>"${r.c.who}"</b> (${r.c.amt.toLocaleString()} ₪)</div>
-        <button class="ot-btn done sm" onclick="matchApprovePair(${r.ci},${r.ui})">אישור ההתאמה</button>
-        <button class="ot-btn ghost sm" onclick="window._matchDismiss.add('${r.key}');renderOps()">לא אותה פעולה</button>
-      </div>`).join('')}
-    </div>`:'';
+
+    /* אין פילטר חשבונות: הצ'יפ על השורה + עמעום השורות מחשבון אחר בזמן בחירה
+       עושים את העבודה בלי להסתיר שורות ובלי לדרוש החלטה מראש. */
+
+    /* המלצות ההתאמה האוטומטיות הוסרו — ההתאמה ידנית, דרך הצ'קבוקסים */
 
     // הגדרות פר-עמודה — נפתחות בגלגל השיניים שבכותרת
     window._cuSet=window._cuSet||{un:{on:true,min:1000},ca:{on:true,min:500,days:3,wait:4},cain:{on:true,min:1000,days:2,remind:3,esc:2},open:null};
@@ -1318,12 +1643,19 @@
     const sUn=selT.filter(t=>t.type==='unexpected'), sCa=selT.filter(t=>t.type==='carry');
     const fmtA=a=>a.reduce((s,t)=>s+(t.amt||0),0).toLocaleString('en-US');
     // הצ'קבוקסים תמיד גלויים — הפס מופיע ברגע שמסמנים
+    const selAcc=[...new Set(selT.map(t=>t.acct).filter(Boolean))];
+    const cross=selAcc.length>1;
     const muBar=selT.length
-      ?`<div class="mu-bar on"><span>התאמה ידנית: נבחרו <b>${sUn.length}</b> לא צפויות (${fmtA(sUn)} ₪) מול <b>${sCa.length}</b> נגררות (${fmtA(sCa)} ₪)</span>
-         <button class="ot-btn done" onclick="muApply()">ביצוע ההתאמה</button>
-         <button class="ot-btn ghost" onclick="muClear()">ניקוי בחירה</button></div>`
-      :'';
-    return banner+muBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
+      ?(()=>{const ok=sUn.length&&sCa.length, dif=Math.abs(sUn.reduce((s,t)=>s+(t.amt||0),0)-sCa.reduce((s,t)=>s+(t.amt||0),0));
+        const okAll=ok&&!cross;
+        return `<div class="mu-bar on ${okAll?'':'part'}"><span>נבחרו <b>${sUn.length}</b> לא צפויות (${fmtA(sUn)} ₪) מול <b>${sCa.length}</b> נגררות (${fmtA(sCa)} ₪)
+          ${ok?(dif?`<i class="mu-dif">הפרש ${dif.toLocaleString()} ₪</i>`:`<i class="mu-eq">סכומים זהים ✓</i>`):''}
+          ${ok&&selAcc.length?`<i class="mu-acc ${cross?'bad':''}">${selAcc.map(k=>ACCTS[k].lbl).join(' · ')}${cross?' — חשבונות שונים, לא ניתן להתאים':''}</i>`:''}
+          ${ok?'':`<i class="mu-need">חסר צד — בחרו גם ${sUn.length?'נגררת':'לא צפויה'}</i>`}</span>
+         <button class="ot-btn done" ${okAll?'':'disabled'} onclick="muApply()">ביצוע ההתאמה</button>
+         <button class="ot-btn ghost" onclick="muClear()">ניקוי בחירה</button></div>`;})()
+      :`<div class="mu-hint">סימון שורות משני הצדדים ← התאמה ידנית, גם רבים מול רבים. ההתאמה חייבת להיות <b>בתוך אותו חשבון</b> — מגבלת ביזיבוקס.</div>`;
+    return muBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
   }
   function payeeSplit(rows,T){
     const openRows=rows.filter(t=>!t.done);
@@ -1375,6 +1707,14 @@
   function paySel(i){window._paySel=i;renderOps();}
 
   /* ===== שלב גוגל שיט: דיף שינויים — שורות חדשות ועדכוני סכום ===== */
+  /* פערים בסטטוס "מחכה לחומר" — מגיעים מהתקציב התזרימי */
+  const GAPWAIT_DEMO=[
+    {cat:'הכנסות ממכירות - סליקה', gap:4010,  since:'3 ימים'},
+    {cat:'קניות מלאי',             gap:25000, since:'6 ימים'},
+  ];
+  function gapwChase(cat){
+    toast(cat?('נשלחה תזכורת בקבוצה על "'+cat+'"'):'נשלחה תזכורת בקבוצה על כל הקטגוריות החסרות');
+  }
   function sheetStage(rows,T){
     // טבלאות הזנה מנוהלות (במקום גוגל שיט): הלקוח מזין — מהאפליקציה או דרך הבוט בקבוצה; כאן מאשרים לתזרים
     const logRow=t=>{
@@ -1424,7 +1764,19 @@
         <li><b>מדדים:</b> ללא שינוי — ממשיכים מגוגל שיט (הפניות תא+לוגיקה). ההחלפה היא רק בזרימת ההזנה.</li>
       </ol>
     </div>`;
-    return `<div class="pay-grp" style="padding-inline:16px">שורות חדשות בטבלאות ההזנה <em>${rows.filter(t=>!t.done).length}/${rows.length}</em></div>`+rows.map(logRow).join('')+devNote;
+    /* פערים שסווגו "מחכה לחומר" בתקציב — כאן הם הופכים לרדיפה, לא נשארים מספר */
+    const waitGaps=(window.HK_GAPWAIT||GAPWAIT_DEMO);
+    const wSum=waitGaps.reduce((s,x)=>s+x.gap,0);
+    const gapPanel=waitGaps.length?`
+      <div class="gapw">
+        <div class="gapw-h">${waitGaps.length} קטגוריות מחכות לחומר מהלקוח · <b>${wSum.toLocaleString()} ₪</b>
+          <button class="ot-btn done xs" onclick="gapwChase()">תזכורת בקבוצה לכולן</button></div>
+        ${waitGaps.map(x=>`<div class="gapw-r"><span class="gapw-c">${x.cat}</span>
+          <b>${x.gap.toLocaleString()} ₪</b><em>${x.since}</em>
+          <button class="ot-btn ghost xs" onclick="gapwChase('${x.cat}')">תזכורת</button></div>`).join('')}
+        <div class="gapw-f">סווג בתקציב התזרימי · מה שיוזן כאן סוגר את הפער אוטומטית</div>
+      </div>`:'';
+    return gapPanel+`<div class="pay-grp" style="padding-inline:16px">שורות חדשות בטבלאות ההזנה <em>${rows.filter(t=>!t.done).length}/${rows.length}</em></div>`+rows.map(logRow).join('')+devNote;
   }
   function openSheetEntry(i){
     const t=curTasks()[i]; if(!t||t.type!=='sheet') return;
@@ -1766,44 +2118,123 @@
   }
   /* שליחת הודעה ללקוח — תצוגה מקדימה ואישור */
   let _smIx=null;
-  function openSM(i){
-    const t=curTasks()[i]; if(!t) return;
-    _smIx=i;
-    const c=CLIENTS[CUR], contact=(c.thread&&[...c.thread].reverse().find(m=>m.from==='user')||{}).name||'הלקוח';
-    const draft=t.type==='carry'
-      ?'היי '+contact+' 👋 בצפי התזרים מופיע תשלום ל"'+(t.who||'')+'" ע"ס '+(t.amt?t.amt.toLocaleString():'')+' ₪ שעדיין לא ירד בחשבון. יש עיכוב מולם, או שנעדכן את הצפי?'
-      :'היי '+contact+' 👋 זיהינו בחשבון פעולה "'+(t.who||'')+'" ע"ס '+(t.amt?t.amt.toLocaleString():'')+' ₪ שלא הייתה בצפי. אפשר לדעת במה מדובר, כדי שנקטלג נכון בתזרים?';
-    document.getElementById('smTo').textContent=contact+' · '+c.name+' · וואטסאפ';
-    document.getElementById('smText').value=draft;
+  /* ===== הודעות ללקוח = תבניות WhatsApp Business =====
+     הטקסט **אינו ניתן לעריכה**: תבנית מאושרת מראש מול Meta, עם משתנים
+     שממולאים אוטומטית ושני כפתורי תשובה מהירה. תשובת הלקוח חוזרת דרך
+     הבוט אל תור התפעול (הבוט הוא ראוטר). */
+  const WA_TPL={
+    collect:{id:'collection_reminder_he', cat:'שירות · תזכורת גבייה',
+      body:v=>`היי ${v.name} 👋\nבצפי התזרים מופיע תקבול מ־<b>${v.who}</b> ע״ס <b>${v.amt} ₪</b> שטרם נכנס לחשבון.\nנשמח לדעת מה הסטטוס, כדי שהתזרים יישאר מדויק.`,
+      btns:['שולם — אשלח אסמכתא','יש עיכוב']},
+    budgetOver:{id:'budget_over_he', cat:'שירות · חריגה מהתקציב',
+      body:v=>`היי ${v.name} 👋\nבקטגוריית <b>${v.cat}</b> נרשמה חריגה מהתקציב: <b>${v.actual} ₪</b> מול תקציב <b>${v.budget} ₪</b>.\nרצינו לוודא שאתה מודע.`,
+      btns:['מודע — זה בסדר','בוא נעדכן תקציב']},
+    budgetMiss:{id:'material_request_he', cat:'שירות · בקשת חומר',
+      body:v=>`היי ${v.name} 👋\nחסרים לנו נתונים בקטגוריית <b>${v.cat}</b> כדי להשלים את תמונת התזרים.\nאפשר לשלוח את החומר הרלוונטי?`,
+      btns:['שולח עכשיו','אין לי את זה']}
+  };
+  let _smTpl=null, _smVars=null;
+  function smOpenTpl(key,vars,to,ix){
+    _smTpl=WA_TPL[key]; _smVars=vars; _smIx=(ix==null?null:ix);
+    const T=_smTpl;
+    document.getElementById('smTo').textContent=to;
+    document.getElementById('smPrev').innerHTML=
+      `<div class="wa-bub">${T.body(vars).replace(/\n/g,'<br>')}
+         <div class="wa-btns">${T.btns.map(b=>`<span>${b}</span>`).join('')}</div></div>`;
     document.getElementById('smOv').classList.add('show');
   }
-  function smClose(){document.getElementById('smOv').classList.remove('show');_smIx=null;}
-  function smGo(){
-    const txt=document.getElementById('smText').value.trim();
-    if(!txt){toast('ההודעה ריקה');return;}
-    if(window._smCustom){window._smCustom=false;smClose();toast('נשלח ללקוח בוואטסאפ ✓');return;}
-    const i=_smIx; smClose();
-    otHandle(i,'נשלחה שאלה ללקוח · ✓ וואטסאפ');
+  function openSM(i){
+    const t=curTasks()[i]; if(!t) return;
+    const c=CLIENTS[CUR], contact=(c.thread&&[...c.thread].reverse().find(m=>m.from==='user')||{}).name||'הלקוח';
+    smOpenTpl('collect',{name:contact,who:t.who||'',amt:(t.amt||0).toLocaleString()},
+      'קבוצת '+c.name+' · וואטסאפ', i);
   }
-  /* לא רלוונטי — עם סיבה */
-  let _nrIx=null;
+  function smClose(){document.getElementById('smOv').classList.remove('show');_smIx=null;_smTpl=null;}
+  function smGo(){
+    const i=_smIx; smClose();
+    if(i==null){toast('התבנית נשלחה בוואטסאפ ✓');return;}
+    otHandle(i,'נשלחה תזכורת ללקוח · ✓ וואטסאפ');
+  }
+  /* ===== דחיית פעולה =====
+     לא כל שורה היא "טפל עכשיו" או "מחק": יש כאלה שרק צריך לחזור אליהן.
+     שלוש אפשרויות — מחר / תאריך / השאר והתעלם (נשארת בתזרים, מפסיקה להציק). */
+  let _dfIx=null, _dfPick=null, _dfDate='';
+  function openDF(i){
+    _dfIx=i; _dfPick=null; _dfDate='';
+    const t=curTasks()[i];
+    document.getElementById('dfTitle').textContent='דחייה'+(t&&t.who?' — '+t.who:'');
+    dfRender();
+    document.getElementById('dfOv').classList.add('show');
+  }
+  function dfRender(){
+    const O=[
+      ['tom','למחר','תחזור מחר בבוקר לרשימה, בלי לשנות כלום בתזרים'],
+      ['date','לתאריך מסוים','לא תוצג עד התאריך שתבחר'],
+      ['mute','השאר והתעלם','נשארת בתזרים אבל יורדת מהרשימה ומהתזכורות — כשידוע שהיא תקינה ואין מה לעשות איתה']
+    ];
+    document.getElementById('dfBody').innerHTML=O.map(([k,l,s])=>
+      `<div class="df-opt ${_dfPick===k?'on':''}" onclick="dfPick('${k}')">
+        <span class="rd"></span><span><b>${l}</b><small>${s}</small>
+        ${k==='date'&&_dfPick==='date'?`<span class="df-date"><input type="date" value="${_dfDate}" onclick="event.stopPropagation()" onchange="_dfDate=this.value;dfBtn()"></span>`:''}</span>
+      </div>`).join('');
+    dfBtn();
+  }
+  function dfPick(k){ _dfPick=k; dfRender(); }
+  function dfBtn(){ const b=document.getElementById('dfGoBtn'); if(b) b.disabled=!(_dfPick&&(_dfPick!=='date'||_dfDate)); }
+  function dfClose(){ document.getElementById('dfOv').classList.remove('show'); _dfIx=null; _dfPick=null; _dfDate=''; }
+  function dfGo(){
+    if(!_dfPick) return;
+    const i=_dfIx, k=_dfPick, d=_dfDate; dfClose();
+    const lbl=k==='tom'?'נדחתה למחר'
+             :k==='date'?('נדחתה ל-'+(d||'').split('-').reverse().join('.'))
+             :'הושארה בתזרים — ללא תזכורות';
+    otHandle(i,lbl);
+  }
+
+  /* ===== מחיקת פעולה — סיבה מתויגת =====
+     בלי טקסט חופשי: סיבה חופשית לא ניתנת לניתוח. התגים מנוהלים (הוספה/הסרה)
+     כדי שאפשר יהיה לשאול בהמשך "למה נמחקות פעולות אצל הלקוח הזה". */
+  const NR_TAGS_DEF=['פעולה פנימית בין חשבונות','כבר הוזן ידנית בתזרים','טעות בנק — בבירור','סכום זניח','כפילות'];
+  function nrTags(){ try{ return JSON.parse(localStorage.getItem('hkNrTags')||'null')||NR_TAGS_DEF.slice(); }catch(e){ return NR_TAGS_DEF.slice(); } }
+  function nrTagsSave(a){ localStorage.setItem('hkNrTags',JSON.stringify(a)); }
+  let _nrIx=null, _nrPick=null, _nrAdd=false;
   function openNR(i){
     if(typeof docClose==='function') docClose();
-    _nrIx=i;
-    document.getElementById('nrReason').value='';
-    document.querySelectorAll('#nrChips .cp-chip').forEach(c=>c.classList.remove('on'));
+    _nrIx=i; _nrPick=null; _nrAdd=false;
+    const t=curTasks()[i];
+    document.getElementById('nrTitle').textContent='מחיקת פעולה'+(t&&t.who?' — '+t.who:'');
+    nrRender();
     document.getElementById('nrOv').classList.add('show');
   }
-  function nrChip(el){
-    document.querySelectorAll('#nrChips .cp-chip').forEach(c=>c.classList.toggle('on',c===el));
-    document.getElementById('nrReason').value=el.textContent;
+  function nrRender(){
+    const list=nrTags();
+    document.getElementById('nrChips').innerHTML=
+      list.map((x,ix)=>`<span class="nr-tag ${_nrPick===x?'on':''}" onclick="nrPick('${x.replace(/'/g,"\\'")}')">${x}
+        <button class="nr-x" title="הסרת התג מהרשימה" onclick="event.stopPropagation();nrTagRm(${ix})">✕</button></span>`).join('')
+      + (_nrAdd
+        ? `<span class="nr-new"><input id="nrNew" placeholder="שם התג…" onkeydown="if(event.key==='Enter')nrTagAdd()">
+             <button onclick="nrTagAdd()">הוספה</button><button class="g" onclick="_nrAdd=false;nrRender()">ביטול</button></span>`
+        : `<button class="nr-addbtn" onclick="_nrAdd=true;nrRender();setTimeout(()=>{const e=document.getElementById('nrNew');if(e)e.focus();},0)">+ תג חדש</button>`);
+    const b=document.getElementById('nrGoBtn'); if(b) b.disabled=!_nrPick;
   }
-  function nrClose(){document.getElementById('nrOv').classList.remove('show');_nrIx=null;}
+  function nrPick(x){ _nrPick=(_nrPick===x)?null:x; nrRender(); }
+  function nrTagAdd(){
+    const e=document.getElementById('nrNew'); if(!e) return;
+    const v=(e.value||'').trim(); if(!v) return;
+    const list=nrTags(); if(!list.includes(v)) list.push(v);
+    nrTagsSave(list); _nrAdd=false; _nrPick=v; nrRender();
+  }
+  function nrTagRm(ix){
+    const list=nrTags(); const gone=list[ix];
+    list.splice(ix,1); nrTagsSave(list);
+    if(_nrPick===gone) _nrPick=null;
+    nrRender();
+  }
+  function nrClose(){document.getElementById('nrOv').classList.remove('show');_nrIx=null;_nrPick=null;_nrAdd=false;}
   function nrGo(){
-    const r=document.getElementById('nrReason').value.trim();
-    if(!r){toast('צריך סיבה — בחר או כתוב');return;}
-    const i=_nrIx; nrClose();
-    otHandle(i,'לא רלוונטי — '+r);
+    if(!_nrPick){toast('צריך לבחור תג סיבה');return;}
+    const i=_nrIx, r=_nrPick; nrClose();
+    otHandle(i,'נמחקה — '+r);
   }
   function opsSetView(v){OPS_VIEW=v;renderOps();}
   function opsToggleRow(i){OPS_OPEN.has(i)?OPS_OPEN.delete(i):OPS_OPEN.add(i);renderOps();}
@@ -1816,12 +2247,13 @@
     if(t.type==='unexpected'||t.type==='carry'){
       const nRel=(t.related||[]).length;
       const isInc=t.type==='carry'&&t.dir==='inc';
+      /* בלי "שליחת הודעה": התזכורות ללקוח יוצאות אוטומטית לפי ההגדרות (גלגל השיניים).
+         "לא רלוונטי" הפך ל"מחיקה" — עם תג סיבה חובה, בשני הצדדים. */
       return (isInc?'<span class="ct-coll">גבייה מלקוחות</span>':'')
         +B('ghost','היסטוריה ובדיקת התאמה'+(nRel?' ('+nRel+')':''),`histMatch(${i})`)
-        +(t.type==='carry'
-          ?B('ghost','לא רלוונטי',`carrySnooze(${i})`)      // נגררת: מוסתרת להיום וחוזרת מחר
-          :B('ghost','לא רלוונטי',`openNR(${i})`))          // לא צפויה: נמחקת עם סיבה
-        +(isInc?B('','תזכורת גבייה',`openSM(${i})`):B('','שליחת הודעה',`openSM(${i})`));
+        +(t.type==='carry'?B('ghost','דחייה',`openDF(${i})`):'')
+        +B('ghost del','מחיקה',`openNR(${i})`)
+        +(isInc?B('','תזכורת גבייה',`openSM(${i})`):'');
     }
     return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
   }
@@ -1831,19 +2263,24 @@
     const rep=`<div class="ot-reply" style="display:flex"><input id="oti${i}" placeholder="הקלד תגובה ללקוח…" onkeydown="if(event.key==='Enter')otSend(${i})"><button onclick="otSend(${i})">שלח</button></div>`;
     if(t.type==='unexpected'||t.type==='carry'){
       const isCa=t.type==='carry';
-      const how=isCa?(t.dir==='inc'
-                    ?'נבדקו תקבולים בבנק 30 יום אחורה — ייתכן שהתקבל בסכום שונה או בהעברה מפוצלת'
-                    :'נבדקו חיובי כרטיסי האשראי 30 יום אחורה לפי תיאור — ייתכן ששולם באשראי ואינו נגרר')
-                    :'נבדקו תנועות הבנק 30 יום קדימה לפי תיאור וקטגוריה';
-      const prom=t.promise?`<div class="grp-prom">⚑ ${t.promise} <span class="grp-tag">מהקבוצה · בוט</span></div>`:'';
-      const mb=(t._matchChk||isCa)?(t.match
-        ?`<div class="mu-res found"><div><b>${isCa?'נמצא חיוב תואם באשראי':'נמצאה התאמה ב-Bizibox'}:</b> ${t.match.t} · <b>${t.match.amt}</b> · ${t.match.d}<span class="mu-how">${how}</span></div><button class="ot-btn done" onclick="otHandle(${i},'${isCa?'שולם באשראי — הותאם':'הותאם ב-Bizibox'}')">${isCa?'סימון כשולם באשראי':'ביצוע ההתאמה ב-Bizibox'}</button></div>`
-        :`<div class="mu-res none">${how} — לא נמצאה התאמה.</div>`):'';
-      const mb2=prom+mb;
+      /* בדיקת ההתאמה — מופרדת לפי מקור, שורה למקור. לנגררת מחפשים אם הפעולה
+         כן קרתה: בבנק או באשראי. ללא-צפויה מחפשים אם היא כן נצפתה בתזרים. */
+      /* הבנק לא מקבל שורת בדיקה משלו — ההיסטוריה למטה **היא** תנועות הבנק,
+         ושתי תצוגות לאותו מקור רק סותרות זו את זו. נשאר מה שבאמת מקור נוסף. */
+      const SRC = isCa
+        ? [['אשראי', t.mCard, 'סימון כשולם באשראי', 'שולם באשראי — הותאם']]
+        : [['הצפי בתזרים', t.mFcast, 'ביצוע ההתאמה', 'הותאם לצפי']];
+      const line=([lbl,m,btn,res])=>m
+        ? `<div class="ms-row hit"><span class="ms-src">${lbl}</span>
+             <span class="ms-txt">${m.t} · <b>${m.amt}</b> · ${m.d}</span>
+             <button class="ot-btn done xs" onclick="otHandle(${i},'${res}')">${btn}</button></div>`
+        : `<div class="ms-row"><span class="ms-src">${lbl}</span><span class="ms-none">לא נמצאה תנועה תואמת</span></div>`;
+      const mb2=`<div class="ms-wrap"><div class="ms-h">${isCa?'נבדק גם בכרטיסי האשראי · 30 יום אחורה':'נבדק מול הצפי בתזרים · 30 יום קדימה'}</div>
+        ${SRC.map(line).join('')}</div>`;
       const rel=(t.related&&t.related.length)?`<div class="rel-wrap">
-      <div class="rel-h">היסטוריה — "${t.who}" <span>${t.related.length}</span></div>
+      <div class="rel-h">תנועות בבנק — "${t.who}" <span>${t.related.length}</span></div>
       ${t.related.map(r=>`<div class="rel-row"><span class="rel-d">${r.d}</span><span class="rel-t">${r.t}</span><span class="rel-cat">${r.cat}</span><b class="rel-amt">${r.amt}</b></div>`).join('')}
-    </div>`:`<div class="rel-wrap"><div class="ops-empty" style="padding:14px">אין היסטוריה ל"${t.who||'המוטב'}" — מופע ראשון.</div></div>`;
+    </div>`:`<div class="rel-wrap"><div class="ops-empty" style="padding:14px">אין תנועות בבנק ל"${t.who||'המוטב'}" — מופע ראשון.</div></div>`;
       return mb2+rel;
     }
     if(t.type==='msg') return `${grpCtx(t)}<div class="ot-thread">${(t.thread||[]).map(m=>`<div class="ot-bub">${m}</div>`).join('')}</div>${rep}`;
@@ -1859,24 +2296,27 @@
   function opsRow(t,i){
     const tp=OPS_TYPES[t.type], op=OPS_OPEN.has(i);
     if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><div class="orow2-body"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
+    /* בחירה להתאמה ידנית — זה המנגנון היחיד מאז שהמלצות ההתאמה ירדו,
+       ולכן הוא חייב להיראות כפקד ולא כריבוע דק ליד טקסט. */
+    const muOn=window._muSel&&window._muSel.has(i);
+    /* חשבון הבחירה הפעילה — שורות מחשבון אחר מעומעמות, כי אי אפשר להתאים ביניהן */
+    const selAcct=window._muAcct||null;
+    const muOff=selAcct&&t.acct&&t.acct!==selAcct&&!muOn;
     const muChk=(t.type==='unexpected'||t.type==='carry')
-      ?`<label class="mu-chk side" onclick="event.stopPropagation()"><input type="checkbox" ${window._muSel&&window._muSel.has(i)?'checked':''} onchange="muSel(${i},this.checked)" title="בחירה להתאמה ידנית"></label>`:'';
-    return `<div class="orow2item ${t.type} ${op?'open':''}">
+      ?`<label class="mu-pick ${muOn?'on':''} ${muOff?'off':''}" onclick="event.stopPropagation()"
+          title="${muOff?'חשבון אחר — אי אפשר להתאים מול הבחירה הנוכחית':'בחירה להתאמה ידנית'}">
+          <input type="checkbox" ${muOn?'checked':''} ${muOff?'disabled':''} onchange="muSel(${i},this.checked)">
+          <span class="mu-box"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6 9 17l-5-5"/></svg></span>
+        </label>`:'';
+    return `<div class="orow2item ${t.type} ${op?'open':''} ${muOff?'acct-dim':''}">
       <div class="orow2">
         ${muChk}
-        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div></div>
+        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div>${acctChip(t)}</div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
         <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
       </div>
       ${op?`<div class="orow2-detail">${taskBody(t,i)}</div>`:''}
     </div>`;
-  }
-  /* נגררת לא רלוונטית — מוסתרת להיום בלבד, תוצג שוב מחר */
-  function carrySnooze(i){
-    const t=curTasks()[i]; if(!t) return;
-    t.done=true; t.result='נדחה — יוצג שוב מחר'; t.handledAt='עכשיו';
-    renderOps();
-    toast('הפעולה הוסתרה להיום — תוצג שוב מחר בבוקר');
   }
   /* בדיקת התאמה מול Bizibox — 30 יום קדימה, לפי תיאור וקטגוריה */
   function matchCheck(i){
@@ -1891,12 +2331,22 @@
     matchCheck(i);
   }
   /* התאמה ידנית רבים-מול-רבים בין לא צפויות לנגררות */
-  function muClear(){ window._muSel=new Set(); renderOps(); }
-  function muSel(i,on){ window._muSel=window._muSel||new Set(); on?window._muSel.add(i):window._muSel.delete(i); renderOps(); }
+  function muClear(){ window._muAcct=null; window._muSel=new Set(); renderOps(); }
+  function muSel(i,on){
+    window._muSel=window._muSel||new Set();
+    on?window._muSel.add(i):window._muSel.delete(i);
+    const T=curTasks(), sel=[...window._muSel].map(x=>T[x]).filter(Boolean);
+    window._muAcct=sel.length?(sel[0].acct||null):null;   // הבחירה נועלת את החשבון
+    renderOps();
+  }
   function muApply(){
     const T=curTasks();
     const sel=[...window._muSel];
-    if(sel.length<2){toast('צריך לבחור פעולות משני הצדדים');return;}
+    const u=sel.filter(i=>T[i]&&T[i].type==='unexpected'), c=sel.filter(i=>T[i]&&T[i].type==='carry');
+    /* התאמה = לא צפויה מול נגררת. שתי שורות מאותו צד אינן התאמה. */
+    if(!u.length||!c.length){toast('התאמה דורשת לפחות פעולה אחת מכל צד — לא צפויה מול נגררת');return;}
+    const accs=[...new Set(sel.map(i=>T[i]&&T[i].acct).filter(Boolean))];
+    if(accs.length>1){toast('אי אפשר להתאים בין חשבונות שונים — מגבלת ביזיבוקס');return;}
     sel.forEach(i=>{const t=T[i];if(t){t.done=true;t.result='הותאם ידנית — קבוצה';t.handledAt='עכשיו';OPS_DONE++;}});
     toast('הותאמו '+sel.length+' פעולות — ההתאמה נרשמה ב-Bizibox');
     window._muSel=new Set();
