@@ -180,6 +180,7 @@
       renderRefDups();
     },1100);
   }
+  function refClose(){ document.getElementById('refOv').classList.remove('show'); }
   function renderRefDups(){
     const body=document.getElementById('refBody');
     if(!refDups.length){
@@ -532,22 +533,24 @@
     BL_INST[cat][i].amt=n;
     toast('המופע עודכן — '+n.toLocaleString()+' ₪');
   }
-  /* ===== סיווג פערים — אותם ארבעה סוגים כמו בתקציב התזרימי =====
+  /* ===== סיווג פערים — אותם ארבעה סוגים כמו במסך מעקב ופערים =====
      חסר בדוח התקציבי הוא פער לכל דבר, רק על קטגוריה שאין לה עדיין שורה תקציבית
      (היעד נגזר מההיסטוריה). אותה שאלה בדיוק: מי חייב לי פעולה? */
+  /* הפער = יעד − בפועל − צבוע: כל מה שמאמינים בו כבר צבוע, ולכן "טרם הגיע
+     הזמן" אינו סיבה. היעד לא מתוקן באמצע חודש — הפער מודד כמה דייקנו בבנייה. */
   const GAP_TYPES={
-    wait:    {lbl:'מחכה לחומר מהלקוח', chip:'מחכה לחומר',    note:false,
-              hint:'החומר לקטגוריה טרם הגיע — התשלומים/התקבולים הצפויים לא הוזנו',
-              act:'תזכורת הבוט בקבוצה'},
-    soon:    {lbl:'טרם התגבש',          chip:'טרם התגבש',     note:false,
-              hint:'הכסף עוד לא קיים — ההוצאה/ההכנסה טרם נעשתה. אף אחד לא מאחר',
-              act:'שום פעולה — לא ייספר כפער פתוח'},
-    unlikely:{lbl:'לא צפוי להתממש',     chip:'לא יתממש',      note:true,
-              hint:'הערכה עסקית: זה לא יקרה החודש',
-              act:'עולה לפגישה עם היועץ ונכנס לזיכרון הלקוח'},
-    stale:   {lbl:'היעד לא מעודכן',     chip:'יעד לא מעודכן', note:true,
-              hint:'היעד לפי ההיסטוריה לא מתאים לחודש הזה — צריך שורה תקציבית אמיתית',
-              act:'פתיחת שורה תקציבית עם יעד מעודכן'}
+    wait:    {lbl:'מחכה לחומר מהלקוח', chip:'מחכה לחומר',      note:false,
+              hint:'הידיעה קיימת אצל הלקוח — אי אפשר לצבוע עד שהחומר יגיע',
+              act:'תזכורת הבוט בקבוצה · מטופל יום-יום'},
+    changed: {lbl:'המציאות השתנתה',     chip:'המציאות השתנתה',  note:true,
+              hint:'התוכנית הייתה נכונה כשנבנתה — העולם זז',
+              act:'לפגישה עם היועץ ולזיכרון — היעד לא מתוקן'},
+    shifted: {lbl:'התזמון זז',           chip:'התזמון זז',      note:true,
+              hint:'הסכום יגיע — בחודש אחר ממה שתכננו. הפריסה טעתה, לא הסה״כ',
+              act:'נרשם ללמידה על הפריסה — היעד לא מתוקן'},
+    built:   {lbl:'טעינו בבנייה',        chip:'טעינו בבנייה',   note:false,
+              hint:'ברירת המחדל כשאין הסבר אחר — ההערכה מהבנייה לא פגשה את המציאות',
+              act:'נרשם ללמידה — מתוקן רק בבנייה הבאה'}
   };
   const gapTh=()=>{ try{ return Object.assign({floor:1000,pct:5,ceil:25000}, JSON.parse(localStorage.getItem('hkGapTh')||'null')||{}); }catch(e){ return {floor:1000,pct:5,ceil:25000}; } };
   function brGapOf(x){ return x.typical-x.actual-(x.future||0); }
@@ -601,7 +604,7 @@
         : G
           ? `<button class="gt-chip2 gt-${x.gt}" onclick="brGtOpen('${x.cat}')">${G.chip} <i>✎</i></button>`
             + (x.gt==='wait'?`<button class="ot-btn ghost sm" onclick="brMsg('${x.cat}','miss')">תזכורת בקבוצה</button>`:'')
-            + (x.gt==='stale'?`<button class="ot-btn done sm" onclick="brOpenLine('${x.cat}')">פתיחת שורה תקציבית</button>`:'')
+
             + (x.gn?`<div class="br-gnote">${x.gn}</div>`:'')
           : `<button class="gt-chip2 gt-set2" onclick="brGtOpen('${x.cat}')">+ הגדרת הפער</button>`;
       return `<div class="br-row${mat&&!x.gt?' need':''}">
@@ -664,7 +667,7 @@
     finPaused=true; FIN_STATE={key:opsActiveKey,step:finCurStep};
     opsAccum[opsActiveKey]=opsTotal; startOpsTimer(); updateOpsBtn();
     if(typeof showTab==='function') showTab('budget');
-    toast('הגדירו את הפערים בתקציב — ואז "סיום תפעול" יחזיר אתכם לשלב הבדיקה');
+    toast('הגדירו את הפערים במעקב ופערים — ואז "סיום תפעול" יחזיר אתכם לשלב הבדיקה');
   }
   function brGo(){
     const bu=brUntyped();
@@ -678,9 +681,9 @@
       const box=document.getElementById('finFindings');
       box.insertAdjacentHTML('afterbegin',
         `<div class="br-row" style="border:1px solid #EFB48D;background:#FFF7F2;margin-bottom:10px">
-          <div class="br-h"><b style="color:#8A3D14">${gg.n} פערים מהותיים בתקציב עדיין ללא הגדרה · ${gg.sum.toLocaleString()} ₪</b></div>
+          <div class="br-h"><b style="color:#8A3D14">${gg.n} פערים מהותיים במעקב ופערים עדיין ללא הגדרה · ${gg.sum.toLocaleString()} ₪</b></div>
           <div class="catm-sub" style="margin:2px 4px 9px">אי אפשר לסגור את הבדיקה עם פער שלא ברור מאיפה הוא. רק אתם יודעים אם חסר חומר מהלקוח, אם זה פשוט טרם התגבש, או שהיעד לא ריאלי.</div>
-          <div class="br-acts"><button class="ot-btn done sm" onclick="gapGateGo()">פתיחת התקציב התזרימי ←</button></div>
+          <div class="br-acts"><button class="ot-btn done sm" onclick="gapGateGo()">פתיחת מעקב ופערים ←</button></div>
         </div>`);
       toast('נותרו '+gg.n+' פערים ללא הגדרה');
       return;
@@ -728,7 +731,7 @@
   let BRGT=null;
   function brGtOpen(cat){
     const x=BR_DATA.find(v=>v.cat===cat); if(!x) return;
-    BRGT={cat, k:x.gt||null, n:x.gn||''};
+    BRGT={cat, k:x.gt||'built', n:x.gn||''};
     document.getElementById('brGtTitle').textContent=cat;
     document.getElementById('brGtSub').textContent='הגדרת הפער · חסר '+brGapOf(x).toLocaleString()+' ₪ מתוך יעד '+x.typical.toLocaleString()+' ₪ (לפי היסטוריה)';
     brGtRender();
@@ -1692,7 +1695,7 @@
   function paySel(i){window._paySel=i;renderOps();}
 
   /* ===== שלב גוגל שיט: דיף שינויים — שורות חדשות ועדכוני סכום ===== */
-  /* פערים בסטטוס "מחכה לחומר" — מגיעים מהתקציב התזרימי */
+  /* פערים בסטטוס "מחכה לחומר" — מגיעים ממסך מעקב ופערים */
   const GAPWAIT_DEMO=[
     {cat:'הכנסות ממכירות - סליקה', gap:4010,  since:'3 ימים'},
     {cat:'קניות מלאי',             gap:25000, since:'6 ימים'},
@@ -1759,7 +1762,7 @@
         ${waitGaps.map(x=>`<div class="gapw-r"><span class="gapw-c">${x.cat}</span>
           <b>${x.gap.toLocaleString()} ₪</b><em>${x.since}</em>
           <button class="ot-btn ghost xs" onclick="gapwChase('${x.cat}')">תזכורת</button></div>`).join('')}
-        <div class="gapw-f">סווג בתקציב התזרימי · מה שיוזן כאן סוגר את הפער אוטומטית</div>
+        <div class="gapw-f">סווג במעקב ופערים · מה שיוזן כאן סוגר את הפער אוטומטית</div>
       </div>`:'';
     return gapPanel+`<div class="pay-grp" style="padding-inline:16px">שורות חדשות בטבלאות ההזנה <em>${rows.filter(t=>!t.done).length}/${rows.length}</em></div>`+rows.map(logRow).join('')+devNote;
   }

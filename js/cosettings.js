@@ -130,7 +130,7 @@ function coOps(d){
     ${coF('מנהל תזרים', `<select class="mx2-inp" style="width:100%">${[...new Set(CLIENTS.map(c=>c.mgr))].map(n=>`<option ${n===d.mgr?'selected':''}>${n}</option>`).join('')}</select>`)}
     ${coF('חברת ייעוץ', `<select class="mx2-inp" style="width:100%"><option>HK</option><option>אשכנזי ייעוץ עסקי</option><option>ברק ושות׳</option></select>`)}
 
-    <div class="cos-sub-h big">סף מהותיות לפער בתקציב</div>
+    <div class="cos-sub-h big">סף מהותיות לפער — מעקב ופערים</div>
     <div class="cos-note">פער מעל הסף חייב הגדרה לפני סיום שלב הבדיקה, ומוצג בכתום. מתחתיו — אפור ושקט.
       <b>סכום לבד ואחוז לבד שניהם מטעים</b>: 2,000 ₪ על יעד 100,000 זה רעש, ועל יעד 20,000 זה הרבה. לכן שלושה פרמטרים.</div>
     <div class="cos-3f">

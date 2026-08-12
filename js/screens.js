@@ -133,7 +133,7 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'תקציב תזרימי',entries:'טבלאות הזנה',msgs:'הודעות',flowlog:'מה השתנה בתזרים',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'טבלאות הזנה',msgs:'הודעות',flowlog:'מה השתנה בתזרים',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   function showTab(t){
     CUR_TAB=t;
@@ -301,7 +301,7 @@
       html+=`<div class="gn-sec-h">תזרים</div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='budget'?'on':''}" onclick="showTab('budget')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span>תקציב תזרימי</span></div>`;
+          <span>מעקב ופערים</span></div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='past'?'on':''}" onclick="showTab('past')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
           <span>תזרים עבר</span></div>`;

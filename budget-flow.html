@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>תקציב תזרימי</title>
+<title>מעקב ופערים</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -70,22 +70,27 @@ button{font-family:inherit;cursor:pointer}
 .grp-h{display:flex;align-items:center;gap:8px;padding:12px 22px;font-size:13px;font-weight:700;background:var(--accent-soft)}
 .grp-h .dot{width:8px;height:8px;border-radius:50%}
 .grp-h .cnt{margin-inline-start:auto;font-size:11.5px;color:var(--muted);font-weight:500}
+.grp-gap{display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:600}
+.grp-gap b{font-variant-numeric:tabular-nums;font-weight:800}
+.gg-pos{color:#B26B12;background:#FFF3E6;border:1px solid #F3D9B4;border-radius:999px;padding:3px 11px}
+.gg-neg{color:#B3372A;background:#FDECEA;border:1px solid #F5C6C0;border-radius:999px;padding:3px 11px}
+.gg-ok{color:#0F6D48;background:#EDF8F1;border:1px solid #A7E0BF;border-radius:999px;padding:3px 11px}
 .bl-row{display:grid;grid-template-columns:190px 120px 1fr 140px;gap:20px;align-items:center;padding:15px 22px;border-top:1px solid var(--border)}
-.bl-tgt{cursor:pointer;border-radius:10px;padding:4px 10px;margin:-4px -10px;transition:background .12s}
-.bl-tgt:hover{background:var(--accent-soft)}
+.bl-tgt{border-radius:10px;padding:4px 10px;margin:-4px -10px}
 .bl-tgt span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
-.bl-tgt span i{font-style:normal;opacity:0;transition:opacity .12s}
-.bl-tgt:hover span i{opacity:1}
 .bl-tgt b{font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 .src-tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:999px;padding:1.5px 8px;margin-top:3px;white-space:nowrap}
 .src-tag.avg{background:repeating-linear-gradient(45deg,#eef2f8,#eef2f8 3px,#e0e7f1 3px,#e0e7f1 6px);color:#64748b;border:1px solid #d3dced}
 .src-tag.man{background:#EAF4FB;color:#2C7FB0;border:1px solid #bcd9f6}
 .src-tag.goal-inc{background:#e2f3e9;color:#13895b;border:1px solid #a7e0bf}
 .src-tag.goal-exp{background:#fdf4e3;color:#c98404;border:1px solid #ecd9a8}
-.bl-tgt input{width:100%;font-family:inherit;font-size:15px;font-weight:800;color:var(--text);border:none;border-bottom:2px solid var(--accent);background:transparent;outline:none;padding:0;font-variant-numeric:tabular-nums}
 .bl-row:hover{background:#FAFCFE}
-.bl-name{font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.bl-name:hover{color:var(--accent)}
+.bl-name{font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.bl-name .nm{display:inline-flex;align-items:center;gap:3px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
+  color:var(--text);background:none;border:0;padding:2px 7px 2px 4px;margin:-2px -7px -2px -4px;border-radius:8px;transition:.12s;text-align:start}
+.bl-name .nm svg{width:13px;height:13px;color:var(--soft);flex:0 0 auto;transition:transform .12s}
+.bl-name .nm:hover{background:var(--accent-soft);color:var(--accent)}
+.bl-name .nm:hover svg{color:var(--accent);transform:translateX(-2px)}
 .bl-name .cv{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:5px;background:var(--accent-soft);color:var(--accent);transition:transform .12s;flex:0 0 auto}
 .bl-name .cv.open{transform:rotate(180deg)}
 .bl-txs{grid-column:1/-1;background:#FBFDFF;border-top:1px dashed var(--border-strong);border-radius:0;margin:10px -22px -15px;padding:10px 22px 13px}
@@ -94,16 +99,58 @@ button{font-family:inherit;cursor:pointer}
 .bl-tx .d{font-variant-numeric:tabular-nums;color:var(--soft);flex:0 0 44px}
 .bl-tx .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bl-tx .v{font-variant-numeric:tabular-nums;font-weight:700;color:var(--text)}
-.tx-tag{flex:0 0 auto;font-size:10px;font-weight:700;border-radius:999px;padding:2px 9px}
+.tx-tag{flex:0 0 auto;font-size:10px;font-weight:700;border-radius:999px;padding:2px 9px;min-width:56px;text-align:center}
 .tx-tag.act{background:var(--act);color:#fff}
 .tx-tag.flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 4px,#D8EEF9 4px,#D8EEF9 8px);color:#2C7FB0}
+.tx-tag.blr{background:repeating-linear-gradient(45deg,#9B85D6,#9B85D6 4px,#E4DCF6 4px,#E4DCF6 8px);color:#4A3580}
 .bl-name .tiny{display:block;font-size:10.5px;color:var(--soft);font-weight:500;margin-top:1px}
 .bl-mid{min-width:0}
-.bl-bar{position:relative;height:11px;background:#E9EFF5;border-radius:999px;overflow:hidden;display:flex}
+.bl-bar{position:relative;height:11px;background:none;display:flex;align-items:center;overflow:visible}
+.bl-track{position:relative;height:11px;background:#E9EFF5;border-radius:999px;overflow:hidden;display:flex;width:86%;flex:0 0 86%}
 .bl-bar .seg{height:100%}
 .bl-bar .seg.act{background:var(--act);border-start-start-radius:999px;border-end-start-radius:999px}
 .bl-bar .seg.flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 4px,#D8EEF9 4px,#D8EEF9 8px)}
 .bl-bar .seg.over{background:var(--neg)}
+.bl-bar{overflow:visible}
+.bl-bar .seg{flex-shrink:0}
+.bl-bar .seg.blrow{background:repeating-linear-gradient(45deg,#9B85D6,#9B85D6 4px,#E4DCF6 4px,#E4DCF6 8px)}
+.n-blrow b{color:#6B4FA0}
+.n-over b{font-weight:700;color:var(--text)}
+.bl-on{display:inline-block;font-size:10.5px;font-weight:700;color:#6B4FA0;background:#F6F1FB;border:1px solid #DCD0EC;border-radius:999px;padding:3px 11px;cursor:pointer;font-family:inherit}
+.bl-on:hover{filter:brightness(.96)}
+.bl-set{display:inline-block;font-size:10.5px;font-weight:700;color:#5B7A99;background:#fff;border:1.5px dashed #C9D6E4;border-radius:999px;padding:3px 10px;cursor:pointer;font-family:inherit}
+.bl-set:hover{border-color:#39ABE2;color:#2C7FB0}
+.ble-modes{display:inline-flex;background:#F1F5F9;border:1.5px solid var(--border);border-radius:10px;padding:3px;gap:2px;margin-bottom:13px}
+.ble-modes button{font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);background:none;border:0;border-radius:7px;padding:6px 14px;cursor:pointer;transition:.12s}
+.ble-modes button.on{background:#fff;color:var(--text);font-weight:700;box-shadow:0 1px 3px rgba(12,64,104,.13)}
+.ble-wt{border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-top:11px}
+.ble-wt-h{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:8px}
+.ble-wsum{font-size:11px;border-radius:999px;padding:2px 10px}
+.ble-wsum.ok{background:#EDF8F1;color:#0F6D48}
+.ble-wsum.bad{background:#FDECEA;color:#B3372A}
+.ble-wrow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--muted)}
+.ble-wd{flex:0 0 70px;font-weight:600;color:var(--text)}
+.ble-wrow input{width:64px;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);border:1.5px solid var(--border-strong);border-radius:8px;padding:5px 9px;outline:none;text-align:center}
+.ble-wrow input:focus{border-color:var(--accent)}
+.ble-wa{margin-inline-start:auto;font-variant-numeric:tabular-nums;color:var(--text)}
+.ble-even{font-family:inherit;font-size:11px;font-weight:700;color:#2C7FB0;background:#EAF4FB;border:1px solid #BCD9F6;border-radius:999px;padding:4px 12px;cursor:pointer;margin-top:7px}
+.ble-err{font-size:11.5px;color:#B3372A;background:#FDECEA;border:1px solid #F5C6C0;border-radius:9px;padding:7px 12px;margin-top:9px;font-weight:600}
+.gt-save[disabled]{background:#CBD8E3;cursor:not-allowed}
+.ble-days{display:flex;gap:7px;flex-wrap:wrap;margin:4px 0 4px}
+.ble-wdays{display:flex;gap:7px;flex-wrap:wrap;margin:4px 0 11px}
+.ble-fwd{font-size:11px;color:var(--soft);margin-bottom:10px}
+.ble-day{width:42px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:.12s}
+.ble-day:hover{border-color:var(--accent)}
+.ble-day.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.ble-sum{font-size:12px;color:var(--muted);line-height:1.6;background:#F7FAFD;border:1px solid var(--border);border-radius:10px;padding:10px 13px}
+.ble-sum b{color:var(--text);font-variant-numeric:tabular-nums}
+.seg.spill{margin-inline-start:5px;border-radius:999px;height:11px}
+.seg.spill.exp{background:repeating-linear-gradient(45deg,#E24B4A,#E24B4A 4px,#F7C1C1 4px,#F7C1C1 8px)}
+.seg.spill.inc{background:repeating-linear-gradient(45deg,#4CAF7D,#4CAF7D 4px,#C6E9D6 4px,#C6E9D6 8px)}
+.sw-blrow{display:inline-block;width:12px;height:12px;border-radius:4px;background:repeating-linear-gradient(45deg,#9B85D6,#9B85D6 3px,#E4DCF6 3px,#E4DCF6 6px);vertical-align:-2px}
+.sw-spill{display:inline-block;width:14px;height:11px;border-radius:999px;background:repeating-linear-gradient(45deg,#E24B4A,#E24B4A 3px,#F7C1C1 3px,#F7C1C1 6px);vertical-align:-2px}
+.bl-nums .n-clk{cursor:pointer;border-radius:7px;padding:1px 5px;margin:-1px -5px;transition:.12s}
+.bl-nums .n-clk:hover{background:#EAF2F9;text-decoration:underline}
 .bl-nums{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:7px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
 .bl-nums b{font-weight:700;color:var(--text)}
 .bl-nums .n-act b{color:var(--act)}
@@ -142,6 +189,7 @@ button{font-family:inherit;cursor:pointer}
 .gt-soon{background:#F1F5F9;color:#6B7A8C;border-color:#E1E8EF}
 .gt-bad{background:#FDECEA;color:#B3372A;border-color:#F5C6C0}
 .gt-tgt{background:#EAF4FB;color:#2C7FB0;border-color:#BCD9F6}
+.gt-built{background:#F6F1FB;color:#6B4FA0;border-color:#DCD0EC}
 .gt-set{background:#fff;color:#C2410C;border-color:#EFB48D;border-style:dashed}
 .gt-set:hover{background:#FFF7F2}
 .gt-note{display:block;font-size:10px;color:var(--soft);font-weight:500;margin-top:3px;line-height:1.35}
@@ -173,6 +221,12 @@ button{font-family:inherit;cursor:pointer}
 .gt-opt b{font-size:13px;font-weight:700;display:block}
 .gt-opt small{font-size:11px;color:var(--muted);display:block;margin-top:2px;line-height:1.4}
 .gt-opt .act-h{display:inline-block;font-size:10px;font-weight:700;color:#2C7FB0;background:#EAF4FB;border-radius:999px;padding:1.5px 8px;margin-top:5px}
+.gt-ai{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#F6F1FB;border:1px solid #DCD0EC;border-radius:10px;padding:10px 13px;margin-bottom:13px}
+.gt-ai-h{flex:0 0 auto;font-size:11px;font-weight:800;color:#6B4FA0}
+.gt-ai-t{flex:1;min-width:200px;font-size:11.5px;color:#5B5470;line-height:1.5}
+.gt-ai-t b{color:#6B4FA0}
+.gt-ai-btn{flex:0 0 auto;font-family:inherit;font-size:11.5px;font-weight:700;color:#fff;background:#7557E3;border:0;border-radius:9px;padding:7px 14px;cursor:pointer}
+.gt-ai-btn:hover{filter:brightness(.93)}
 .gt-sug{display:flex;align-items:center;gap:8px;background:#EAF4FB;border:1px solid #BCD9F6;color:#2C7FB0;font-size:11.5px;font-weight:600;border-radius:10px;padding:9px 12px;margin-bottom:13px;line-height:1.4}
 .gt-hd{display:flex;align-items:baseline;gap:8px;background:#F7FAFD;border:1px solid var(--border);border-radius:11px;padding:10px 13px;margin-bottom:13px}
 .gt-hd .amt{font-size:19px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
@@ -203,7 +257,7 @@ body.is-embedded .page-head{display:none}
   <div class="page-head">
     <div class="brand-dot">HK</div>
     <div>
-      <h1>תקציב תזרימי</h1>
+      <h1>מעקב ופערים</h1>
       <div class="sub">היעד מול הבפועל ומה שכבר צבוע בתזרים — והפער שנשאר</div>
     </div>
   </div>
@@ -213,10 +267,11 @@ body.is-embedded .page-head{display:none}
     <span class="sp"></span>
     <span class="lg"><i class="sw-act"></i> בפועל</span>
     <span class="lg"><i class="sw-flow"></i> בתזרים · צבוע קדימה</span>
+    <span class="lg"><i class="sw-blrow"></i> שורה תקציבית · שורות דמה</span>
+    <span class="lg"><i class="sw-spill"></i> המשך אחרי סוף הבר = חריגה</span>
     <span class="lg"><i class="sw-gap"></i> פער</span>
   </div>
 
-  <div id="gate"></div>
   <div class="sumrow" id="sumrow"></div>
   <div id="groups"></div>
 </div>
@@ -224,6 +279,12 @@ body.is-embedded .page-head{display:none}
   <div class="pop">
     <div class="pop-h"><div><b id="popTitle"></b><div class="sub" id="popSub"></div></div><button class="pop-x" onclick="closeTxPop()">✕</button></div>
     <div class="pop-body" id="popBody"></div>
+  </div>
+</div>
+<div class="pop-ov" id="blOv">
+  <div class="pop" style="width:min(460px,94vw)">
+    <div class="pop-h"><div><b id="blTitle"></b><div class="sub">שורה תקציבית — הפער מתפזר כשורות דמה על הימים שנבחרו</div></div><button class="pop-x" onclick="blClose()">✕</button></div>
+    <div class="pop-body" id="blBody" style="padding-bottom:18px"></div>
   </div>
 </div>
 <div class="pop-ov" id="gtOv">
@@ -239,28 +300,28 @@ const nf=new Intl.NumberFormat('he-IL');
 /* target = היעד; act = בפועל החודש; flow = צבוע בתזרים קדימה; futFlow = הצבוע בחודש עתידי */
 const GROUPS=[
  {label:'הכנסות', kind:'inc', color:'#1B6C9C', rows:[
-   {label:'הכנסות ממכירות - מזומן',  target:89950, act:60000, flow:22000, src:'goal', gt:['soon'], parties:['פדיון קופה — סניף ראשי','פדיון קופה — סניף צפון']},
+   {label:'הכנסות ממכירות - מזומן',  target:89950, act:60000, flow:22000, src:'goal', parties:['פדיון קופה — סניף ראשי','פדיון קופה — סניף צפון']},
    {label:'הכנסות ממכירות - סליקה',  target:77010, act:48000, flow:25000, src:'avg', gt:['wait'], pend:2, parties:['ישראכרט סליקה','ויזה כאל סליקה']},
-   {label:'הכנסות מסליקה - דיירקט',  target:23501, act:15000, flow:6000, src:'avg', parties:['סליקה דיירקט']},
-   {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000, src:'manual', pend:3, parties:['אלקטרה מוצרי צריכה','אלקטרה — חשבונית 4471']},
-   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000, src:'avg', gt:['unlikely'], gn:['הלקוח איבד את מוסך רם — ההסכם לא יחודש החודש'], parties:['וולט תקבולים','תן ביס']},
+   {label:'הכנסות מסליקה - דיירקט',  target:23501, act:22000, flow:6000, src:'avg', parties:['סליקה דיירקט']},
+   {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000, bl:22583, blDays:[5,15,25], src:'manual', pend:3, parties:['אלקטרה מוצרי צריכה','אלקטרה — חשבונית 4471']},
+   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000, src:'avg', gt:['changed'], gn:['הלקוח איבד את מוסך רם — ההסכם לא יחודש החודש'], parties:['וולט תקבולים','תן ביס']},
  ]},
  {label:'עלות המכר', kind:'exp', color:'#c98404', rows:[
-   {label:'קניות מלאי',  target:155000, act:90000, flow:40000, src:'goal', gt:['wait'], pend:4, parties:['בז״ן — דלקים','פז חברת נפט','ספקי משנה']},
-   {label:'קבלני משנה',  target:28333,  act:14000, flow:12000, src:'avg', parties:['י.כהן עבודות','ר.לוי קבלנות']},
+   {label:'קניות מלאי',  target:155000, act:90000, flow:40000, src:'goal', parties:['בז״ן — דלקים','פז חברת נפט','ספקי משנה']},
+   {label:'קבלני משנה',  target:28333,  act:20000, flow:12000, src:'avg', gt:['changed'], gn:['פרויקט דחוף ללקוח גדול — תוגברו קבלנים מעבר לתוכנית'], parties:['י.כהן עבודות','ר.לוי קבלנות']},
  ]},
  {label:'הוצאות תפעוליות', kind:'exp', color:'#7557E3', rows:[
    {label:'שכר עבודה',    target:97333, act:93000, flow:8000, src:'manual', parties:['משכורות צוות','ביטוח לאומי','פנסיה — מנורה']},
    {label:'שכירות',       target:22000, act:22000, flow:0, src:'avg', parties:['שכירות משרדים — נכסי רובע']},
-   {label:'הוצאות תפעול', target:18433, act:9000,  flow:5000, src:'avg', gt:['soon'], parties:['חשמל — חח״י','ארנונה','תקשורת — בזק']},
-   {label:'פרסום ושיווק', target:15667, act:7000,  flow:6000, src:'goal', gt:['stale'], gn:['התקציב נקבע לפני שהקמפיין בגוגל הופסק — היעד לא רלוונטי'], parties:['גוגל אדס','פייסבוק']},
+   {label:'הוצאות תפעול', target:18433, act:9000,  flow:5000, src:'avg', parties:['חשמל — חח״י','ארנונה','תקשורת — בזק']},
+   {label:'פרסום ושיווק', target:15667, act:7000,  flow:6000, src:'goal', gt:['built'], gn:['ההערכה בבנייה התבססה על רבעון חזק — גבוהה מדי לחודש רגיל'], parties:['גוגל אדס','פייסבוק']},
    {label:'מוסדות מס',    target:24179, act:6000,  flow:17500, src:'avg', parties:['מקדמות מס הכנסה','מע״מ']},
  ]},
  {label:'מימון, השקעות ובעלים', kind:'exp', color:'#4CAF7D', rows:[
    {label:'מימון ועמלות בנק', target:9100,  act:4500, flow:2500, src:'avg', parties:['עמלות עו״ש — לאומי','ריבית מסגרת']},
    {label:'פיקדונות והשקעות', target:12000, act:6000, flow:6000, src:'avg', parties:['הפקדה לפיקדון חודשי']},
    {label:'תשלומי הלוואה',    target:8000,  act:8000, flow:0, src:'avg', parties:['החזר הלוואה — פועלים']},
-   {label:'משיכות בעלים',     target:15000, act:5000, flow:5000, src:'manual', gt:['soon'], parties:['משיכת בעלים — צחי']},
+   {label:'משיכות בעלים',     target:15000, act:5000, flow:5000, src:'manual', parties:['משיכת בעלים — צחי']},
  ]},
 ];
 const MONTHS=[
@@ -272,26 +333,40 @@ let mi=0;
 
 /* בחודש עתידי אין בפועל — רק מה שכבר צבוע בתזרים */
 function rowVals(r){
-  if(mi===0) return {act:r.act, flow:r.flow};
+  if(mi===0) return {act:r.act, flow:r.flow, bl:r.bl||0};
   return {act:0, flow:Math.round(r.target*(mi===1?0.72:0.38))};
 }
+/* שורה תקציבית (bl) = שורות דמה שממלאות את העקומה כדי שהתחזית תישאר
+   ריאלית — אבל הן לא ידיעה, ולכן **לא** סוגרות את פער הניהול.
+   פער שכולו שורה תקציבית עדיין דורש הגדרה. */
 function gapOf(r){ const v=rowVals(r); return r.target-v.act-v.flow; }
+/* השורה התקציבית ממשיכה לכל החודשים קדימה: ההגדרה (ימים/משקלים) קבועה,
+   והסכום מחושב מחדש פר חודש — הפער שנותר ÷ הפיזור. עד שמשנים אותה כאן. */
+function blOf(r){
+  if(mi===0) return r.bl||0;
+  if(!r.bl&&!r.blMode&&!r.blDays) return 0;
+  const v=rowVals(r); return Math.max(r.target-v.act-v.flow,0);
+}
 
 /* ===== סיווג הפער =====
    ה-type עונה "מי חייב לי פעולה?" — לא מתאר את הפער אלא את הבעלוּת עליו.  */
+/* הפער = יעד − בפועל − צבוע. כל מה שאנחנו מאמינים בו כבר צבוע —
+   ולכן הפער הוא החלק מהיעד שאין עליו שום ידיעה. "טרם הגיע הזמן" אינו סיבה:
+   אם זה רק עניין של זמן, זה צבוע. את היעד לא מתקנים באמצע חודש —
+   הוא נקבע בבניית שלושת החודשים עם הלקוח, והפער מודד כמה דייקנו. */
 const GAP_TYPES={
   wait:    {lbl:'מחכה לחומר מהלקוח', chip:'מחכה לחומר',   cls:'gt-wait', note:false,
-            hint:'החומר לקטגוריה הזו טרם הגיע — התקבולים/התשלומים הצפויים לא הוזנו',
-            act:'תזכורת הבוט בקבוצה + פריט בתור'},
-  soon:    {lbl:'טרם התגבש',          chip:'טרם התגבש',    cls:'gt-soon', note:false,
-            hint:'הכסף עוד לא קיים — המכירה טרם נעשתה. אף אחד לא מאחר',
-            act:'שום פעולה — לא ייספר כפער פתוח'},
-  unlikely:{lbl:'לא צפוי להתממש',     chip:'לא יתממש',     cls:'gt-bad',  note:true,
-            hint:'הערכה עסקית: היעד לא ייסגר החודש',
-            act:'עולה לפגישה עם היועץ ונכנס לזיכרון הלקוח'},
-  stale:   {lbl:'היעד לא מעודכן',     chip:'יעד לא מעודכן', cls:'gt-tgt', note:true,
-            hint:'התקציב לא משקף את המציאות — הפער הוא ארטיפקט של יעד ישן',
-            act:'עדכון היעד בשורה'}
+            hint:'הידיעה קיימת אצל הלקוח — אי אפשר לצבוע עד שהחומר יגיע',
+            act:'תזכורת הבוט בקבוצה + פריט בתור · מטופל יום-יום'},
+  changed: {lbl:'המציאות השתנתה',     chip:'המציאות השתנתה', cls:'gt-bad', note:true,
+            hint:'התוכנית הייתה נכונה כשנבנתה — העולם זז: לקוח אבד, מחיר עלה, עונה חלשה',
+            act:'עולה לפגישה עם היועץ ונכנס לזיכרון — היעד לא מתוקן'},
+  shifted: {lbl:'התזמון זז',           chip:'התזמון זז',    cls:'gt-tgt', note:true,
+            hint:'הסכום יגיע — אבל בחודש אחר ממה שתכננו. הסה״כ נכון, הפריסה טעתה',
+            act:'נרשם ללמידה על הפריסה — היעד לא מתוקן'},
+  built:   {lbl:'טעינו בבנייה',        chip:'טעינו בבנייה',  cls:'gt-built', note:false,
+            hint:'ברירת המחדל כשאין הסבר אחר — ההערכה מהבנייה לא פגשה את המציאות, ולא יודעים למה',
+            act:'נרשם ללמידה — מתוקן רק בבניית שלושת החודשים הבאים'}
 };
 /* סף מהותיות — שלושה פרמטרים: סכום לבד ואחוז לבד שניהם שקריים.
    רצפה: מתחתיה אף פעם לא. תקרה: מעליה תמיד. באמצע — אחוז מהיעד.
@@ -304,17 +379,113 @@ function gtOf(r){ return (r.gt||[])[mi]||null; }
 function gnOf(r){ return (r.gn||[])[mi]||''; }
 function gtSet(r,k,n){ r.gt=r.gt||[]; r.gn=r.gn||[]; r.gt[mi]=k; r.gn[mi]=n||''; }
 /* מהותי = דורש סוג. מתחת לסף — אפור ושקט, לא נספר. */
-function matOf(r){
-  const g=gapOf(r);
-  if(g<=0) return false;
+/* אותו סף מהותיות לשני הכיוונים: פער (חסר) וחריגה (עודף).
+   עודף מוגזם הוא לא "בסדר" — הוא טעות תחזית באותה מידה, רק בכיוון השני. */
+function matMag(g,target){
   if(g<GAP_TH.floor) return false;
   if(g>=GAP_TH.ceil) return true;
-  return r.target>0 && (g/r.target*100)>=GAP_TH.pct;
+  return target>0 && (g/target*100)>=GAP_TH.pct;
+}
+function matOf(r){ const g=gapOf(r); return g>0&&matMag(g,r.target); }
+function matNeg(r){ const g=gapOf(r); return g<0&&matMag(-g,r.target); }
+/* המלצת AI מהזיכרון של הלקוח: הזיכרון יודע דברים שהמספרים לא —
+   "מוסך רם עוזב", "החשבונית תוגש ביולי". ה-AI מציע סיבה + נימוק עם מקור,
+   והמתפעל מאמץ בלחיצה או בוחר אחרת. הצעה — לא סמכות. */
+const AI_SUG={
+ 'הכנסות ממכירות - אלקטרה':{k:'shifted',
+   why:'בקבוצת הוואטסאפ (28.05) הלקוח כתב שהחשבונית לאלקטרה תוגש רק בתחילת יולי',
+   note:'חשבונית אלקטרה תוגש ביולי — התקבול זז חודש קדימה'},
+ 'הכנסות - חברות שילוח':{k:'changed',
+   why:'בזיכרון הלקוח (פגישת מאי): מוסך רם מתנתק — צפויה ירידה בהכנסות השילוח',
+   note:'הלקוח איבד את מוסך רם — ההסכם לא יחודש'},
+};
+function gtAdopt(){
+  const r=GROUPS[GTP.gi].rows[GTP.ri], s=AI_SUG[r.label]; if(!s) return;
+  GTP.k=s.k; GTP.n=s.note; gtRender();
+}
+/* ===== עריכת שורה תקציבית — בחירת ימי הפיזור =====
+   משנים תאריכים ← שורות הדמה מתפזרות מחדש (הפער ÷ הימים). ביטול כל
+   הימים = ביטול השורה התקציבית, והפער חוזר להיות חשוף בעקומה. */
+let BLE=null;
+function blOpen(gi,ri){
+  const r=GROUPS[gi].rows[ri];
+  BLE={gi,ri, mode:r.blMode||'dates', wd:(r.blWd!=null?r.blWd:null), days:(r.blDays||[]).slice(),
+       w:Object.assign({},r.blW||{})};   // משקל פר תאריך באחוזים
+  document.getElementById('blTitle').textContent=r.label;
+  blRender();
+  document.getElementById('blOv').classList.add('show');
+}
+function blClose(){document.getElementById('blOv').classList.remove('show');BLE=null;}
+function blMode(m){ BLE.mode=m; blRender(); }
+function blTg(d){
+  const i=BLE.days.indexOf(d);
+  if(i<0){ BLE.days.push(d); } else { BLE.days.splice(i,1); delete BLE.w[d]; }
+  BLE.days.sort((a,b)=>a-b); blEven(); blRender();
+}
+/* ברירת מחדל: חלוקה שווה. עריכת משקל שוברת אותה — והסכום חייב 100. */
+function blEven(){ const n=BLE.days.length; BLE.days.forEach((d,i)=>{ BLE.w[d]=Math.round(100/n)+(i===0?100-Math.round(100/n)*n:0); }); }
+function blSetW(d,v){
+  BLE.w[d]=Math.max(0,Math.round(+v||0));
+  /* עדכון במקום — רינדור מלא היה מפיל את הפוקוס אחרי כל ספרה */
+  const r=GROUPS[BLE.gi].rows[BLE.ri], g=gapOf(r), sum=blWSum(), ok=sum===100;
+  const wa=document.getElementById('bleWa'+d); if(wa) wa.textContent=nf.format(Math.round(g*(BLE.w[d]||0)/100))+' ₪';
+  const ws=document.getElementById('bleWSum'); if(ws){ ws.textContent='סה״כ '+sum+'%'; ws.className='ble-wsum '+(ok?'ok':'bad'); }
+  const er=document.getElementById('bleErr'); if(er) er.style.display=ok?'none':'';
+  const sv=document.getElementById('bleSave'); if(sv) sv.disabled=!ok;
+}
+function blWSum(){ return BLE.days.reduce((s,d)=>s+(BLE.w[d]||0),0); }
+function blRender(focusless){
+  const r=GROUPS[BLE.gi].rows[BLE.ri], g=gapOf(r);
+  const DAYS=[1,5,10,15,20,25,28];
+  const MODES=[['daily','כל יום'],['weekly','פעם בשבוע'],['dates','לפי תאריכים']];
+  let body=`<div class="ble-fwd">הפיזור חל מהחודש הזה ולכל החודשים קדימה — עד שישונה כאן.</div><div class="ble-modes">${MODES.map(([k,l])=>`<button class="${BLE.mode===k?'on':''}" onclick="blMode('${k}')">${l}</button>`).join('')}</div>`;
+  if(BLE.mode==='daily'){
+    body+=`<div class="ble-sum">הפער <b>${nf.format(g)} ₪</b> יתפזר שווה על <b>כל יום עסקים</b> שנותר — <b>${nf.format(Math.round(g/18))} ₪</b> ליום (נותרו 18).</div>`;
+  }else if(BLE.mode==='weekly'){
+    const WD=[['א׳',0],['ב׳',1],['ג׳',2],['ד׳',3],['ה׳',4],['ו׳',5]];
+    if(BLE.wd==null) BLE.wd=0;
+    body+=`<div class="ble-wdays">${WD.map(([l,i])=>`<button class="ble-day ${BLE.wd===i?'on':''}" onclick="BLE.wd=${i};blRender()">${l}</button>`).join('')}</div>
+      <div class="ble-sum">הפער <b>${nf.format(g)} ₪</b> יתפזר <b>בכל יום ${WD[BLE.wd][0]}</b> — <b>${nf.format(Math.round(g/3))} ₪</b> לשורה, 3 ימי ${WD[BLE.wd][0]} שנותרו החודש.</div>`;
+  }else{
+    const sum=blWSum(), ok=sum===100;
+    body+=`<div class="ble-days">${DAYS.map(d=>`<button class="ble-day ${BLE.days.includes(d)?'on':''}" onclick="blTg(${d})">${d}</button>`).join('')}</div>`;
+    if(BLE.days.length){
+      body+=`<div class="ble-wt">
+        <div class="ble-wt-h">משקל לכל תאריך <span class="ble-wsum ${ok?'ok':'bad'}" id="bleWSum">סה״כ ${sum}%</span></div>
+        ${BLE.days.map(d=>`<div class="ble-wrow"><span class="ble-wd">${d} בחודש</span>
+          <input type="number" min="0" max="100" value="${BLE.w[d]||0}" oninput="blSetW(${d},this.value)">
+          <span class="ble-wp">%</span>
+          <b class="ble-wa" id="bleWa${d}">${nf.format(Math.round(g*(BLE.w[d]||0)/100))} ₪</b></div>`).join('')}
+        <button class="ble-even" onclick="blEven();blRender()">חלוקה שווה</button>
+      </div>`;
+      body+=`<div class="ble-err" id="bleErr" ${ok?'style="display:none"':''}>המשקלים חייבים להסתכם ב-100% כדי לשמור</div>`;
+    }else{
+      body+=`<div class="ble-sum">בלי ימים אין שורה תקציבית — הפער יישאר חשוף בעקומה</div>`;
+    }
+  }
+  const savable=BLE.mode!=='dates'||!BLE.days.length||blWSum()===100;
+  body+=`<div class="gt-foot" style="border:none;padding-top:10px">
+       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'שמירת הפיזור'}</button>
+       <button class="gt-clear" onclick="blClose()">ביטול</button>
+     </div>`;
+  document.getElementById('blBody').innerHTML=body;
+}
+function blSave(){
+  const r=GROUPS[BLE.gi].rows[BLE.ri];
+  if(BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
+  else{
+    r.blMode=BLE.mode;
+    if(BLE.mode==='weekly') r.blWd=(BLE.wd==null?0:BLE.wd);
+    if(BLE.mode==='dates'){ r.blDays=BLE.days.slice(); r.blW=Object.assign({},BLE.w); }
+    if(!r.bl) r.bl=gapOf(r);
+    toast(BLE.mode==='daily'?'הפיזור: כל יום עסקים':BLE.mode==='weekly'?('הפיזור: פעם בשבוע — יום '+['א׳','ב׳','ג׳','ד׳','ה׳','ו׳'][BLE.wd==null?0:BLE.wd]):'הפיזור נשמר — '+BLE.days.map(d=>d+' ('+BLE.w[d]+'%)').join(' · '));
+  }
+  blClose(); render();
 }
 /* ההצעה של המערכת — שורות פתוחות בטבלת ההזנה. הצעה בלבד: רק המתפעל יודע. */
 function gtSuggest(r){ return (r.pend&&mi===0)?'wait':null; }
 function allRows(){ const o=[]; GROUPS.forEach((g,gi)=>g.rows.forEach((r,ri)=>o.push({g,r,gi,ri}))); return o; }
-function gapsUntyped(){ return allRows().filter(x=>matOf(x.r)&&!gtOf(x.r)); }
+function gapsUntyped(){ return allRows().filter(x=>(matOf(x.r)||matNeg(x.r))&&!gtOf(x.r)); }
 function gapsSub(){ const l=allRows().filter(x=>gapOf(x.r)>0&&!matOf(x.r));
   return {n:l.length, sum:l.reduce((s,x)=>s+gapOf(x.r),0)}; }
 
@@ -322,17 +493,30 @@ function gapsSub(){ const l=allRows().filter(x=>gapOf(x.r)>0&&!matOf(x.r));
 function barHtml(r,kind,noTgt){
   const v=rowVals(r), t=r.target;
   const total=v.act+v.flow, over=total>t;
-  const aPct=Math.min(v.act/t,1)*100;
-  const fPct=Math.max(Math.min(total/t,1)*100-aPct,0);
-  const oPct=over?Math.min((total-t)/t,0.25)*100:0;   // קצה חריגה
+  /* הבר עצמו = היעד: המסלול נגמר תמיד באותו מקום (86% מהרוחב).
+     בר מלא עד הסוף = עמדנו ביעד. חריגה = מילוי שממשיך **אחרי סוף הבר**,
+     בשטח שלשאר השורות פשוט אין. בלי קווים, בלי מה לפרש. */
+  const actIn=over?Math.min(v.act,t):v.act;
+  const aPct=Math.min(actIn/t,1)*100;
+  const fPct=over?Math.max(t-actIn,0)/t*100:Math.max(Math.min((v.act+v.flow)/t,1)*100-aPct,0);
+  const mPct=over?0:Math.max(Math.min(total/t,1)*100-aPct-fPct,0);
+  const spill=over?Math.min((total-t)/t*86,13):0;
+  const bl=blOf(r), bPct=(!over&&bl)?Math.max(Math.min((total+bl)/t,1)*100-aPct-fPct-mPct,0):0;
+  const gi_=arguments[3], ri_=arguments[4];
+  const clk=(f)=>(gi_!=null)?` onclick="openTxPop(${gi_},${ri_},'${f}')" class="n-clk"`:'';
   return `<div class="bl-bar">
-    <i class="seg act" style="width:${aPct.toFixed(1)}%"></i>
-    <i class="seg flow" style="width:${fPct.toFixed(1)}%"></i>
-    ${over?`<i class="seg over" style="width:${oPct.toFixed(1)}%"></i>`:''}
+    <span class="bl-track">
+      <i class="seg act" style="width:${aPct.toFixed(1)}%"></i>
+      <i class="seg flow" style="width:${fPct.toFixed(1)}%"></i>
+        ${bPct?`<i class="seg blrow" style="width:${bPct.toFixed(1)}%" title="שורה תקציבית — שורות דמה"></i>`:''}
+    </span>
+    ${over?`<i class="seg spill ${kind==='exp'?'exp':'inc'}" style="width:${spill.toFixed(1)}%" title="מעבר ליעד"></i>`:''}
   </div>
   <div class="bl-nums">
-    <span class="n-act">בפועל <b>${nf.format(v.act)}</b></span>
-    <span class="n-flow">בתזרים <b>${nf.format(v.flow)}</b></span>
+    <span class="n-act"${clk('0')}>בפועל <b>${nf.format(v.act)}</b></span>
+    <span class="n-flow"${clk('1')}>בתזרים <b>${nf.format(v.flow)}</b></span>
+    ${blOf(r)?`<span class="n-blrow"${clk('2')}>שורה תקציבית <b>${nf.format(blOf(r))}</b></span>`:''}
+    ${over?`<span class="n-over">${kind==='exp'?'חריגה':'מעל היעד'} <b>${nf.format(total-t)}</b></span>`:''}
     ${noTgt?'':`<span class="n-tgt">יעד <b>${nf.format(t)}</b></span>`}
   </div>`;
 }
@@ -353,18 +537,31 @@ function txsOf(r){
     ['03.06','10.06','18.06'], P, 0));
   if(v.flow>0) out=out.concat(txSplit(v.flow, v.flow>30000?[0.6,0.4]:[1],
     ['24.06','29.06'], P.slice().reverse(), 1));
+  /* שורות הדמה של השורה התקציבית — הן חלק מהעקומה, ולכן חלק מהפירוט */
+  const bl=blOf(r);
+  if(bl){
+    const days=(r.blDays&&r.blDays.length)?r.blDays:[5,15,25];
+    const w=r.blW||{};
+    days.forEach(d=>{
+      const amt=Object.keys(w).length?Math.round(bl*(w[d]||0)/100):Math.round(bl/days.length);
+      if(amt) out.push({d:String(d).padStart(2,'0')+'.06', t:'שורה תקציבית — שורת דמה', v:amt, f:2});
+    });
+  }
   return out;
 }
 let TXPOP=null;
-function openTxPop(gi,ri){
-  TXPOP={gi,ri};
+function openTxPop(gi,ri,flt){
+  TXPOP={gi,ri,flt:(flt==null?null:+flt)};
   const g=GROUPS[gi], r=g.rows[ri], v=rowVals(r);
   document.getElementById('popTitle').textContent=r.label+' · הפעולות החודש';
-  document.getElementById('popSub').textContent=MONTHS[mi].label+' · בפועל ומה שצבוע בתזרים קדימה';
-  const txs=txsOf(r);
-  document.getElementById('popBody').innerHTML=(txs.map(x=>`
-    <div class="bl-tx"><span class="tx-tag ${x.f?'flow':'act'}">${x.f?'בתזרים':'בפועל'}</span><span class="d">${x.d}</span><span class="t">${x.t}</span><span class="v">${nf.format(x.v)}</span></div>`).join('')||'<div class="bl-tx">אין פעולות החודש</div>')+
-    `<div class="pop-sum"><span>בפועל <b>${nf.format(v.act)}</b></span><span>בתזרים <b>${nf.format(v.flow)}</b></span><span>יעד <b>${nf.format(r.target)}</b></span></div>`;
+  const FN={0:'בפועל',1:'בתזרים',2:'שורות דמה'};
+  document.getElementById('popSub').textContent=MONTHS[mi].label+(TXPOP.flt!=null?' · '+FN[TXPOP.flt]+' בלבד':' · בפועל ומה שצבוע בתזרים קדימה');
+  let txs=txsOf(r);
+  if(TXPOP.flt!=null) txs=txs.filter(x=>(x.f||0)===TXPOP.flt);
+  const TG={0:['בפועל','act'],1:['בתזרים','flow'],2:['שורת דמה','blr']};
+  document.getElementById('popBody').innerHTML=(txs.map(x=>{const g=TG[x.f]||TG[0];
+    return `<div class="bl-tx"><span class="tx-tag ${g[1]}">${g[0]}</span><span class="d">${x.d}</span><span class="t">${x.t}</span><span class="v">${nf.format(x.v)}</span></div>`;}).join('')||'<div class="bl-tx">אין פעולות החודש</div>')+
+    `<div class="pop-sum"><span>בפועל <b>${nf.format(v.act)}</b></span><span>בתזרים <b>${nf.format(v.flow)}</b></span>${blOf(r)?`<span>שורה תקציבית <b>${nf.format(blOf(r))}</b></span>`:''}<span>יעד <b>${nf.format(r.target)}</b></span></div>`;
   document.getElementById('popOv').classList.add('show');
 }
 function closeTxPop(){document.getElementById('popOv').classList.remove('show');}
@@ -375,29 +572,30 @@ function srcTag(r,kind){
   return '<span class="src-tag avg">ממוצע 3 ח׳</span>';
 }
 /* עריכת יעד במקום — לחיצה על המספר */
-function tgtEdit(el,gi,ri){
-  if(el.querySelector('input')) return;
-  const r=GROUPS[gi].rows[ri];
-  el.innerHTML=`<span>יעד</span><input type="number" value="${r.target}" onkeydown="if(event.key==='Enter')this.blur()" onblur="tgtSave(${gi},${ri},this.value)">`;
-  const inp=el.querySelector('input'); inp.focus(); inp.select();
-}
-function tgtSave(gi,ri,v){
-  const r=GROUPS[gi].rows[ri];
-  const n=Math.max(0,Math.round(+v||0));
-  if(n>0&&n!==r.target){
-    r.target=n;
-    if(r.src!=='goal') r.src='manual';   // עריכה ידנית משנה את מקור היעד
-    toast('היעד עודכן ל-'+nf.format(n)+' ₪'+(r.src==='goal'?' — היעד ללקוח עודכן':' · שונה ידנית'));
-  }
-  render();
+/* צ'יפ השורה התקציבית יושב ליד שם הקטגוריה — הוא מאפיין של השורה,
+   לא של הפער, ועמודת הפער נשארת למספר ולסיווג. */
+function blChip(r,gi,ri){
+  if(blOf(r)) return `<button class="bl-on" onclick="event.stopPropagation();blOpen(${gi},${ri})" title="בעקומה כשורות דמה בימים ${(r.blDays||[]).join(' · ')} בחודש · לחיצה לעריכה">שורה תקציבית פעילה ✎</button>`;
+  /* זמין בכל קטגוריה — גם כשאין פער כרגע, כדי שאפשר יהיה להגדיר מראש */
+  return `<button class="bl-set" onclick="event.stopPropagation();blOpen(${gi},${ri})">＋ שורה תקציבית</button>`;
 }
 function gapHtml(r,kind,gi,ri){
   const g=gapOf(r);
   if(g===0) return `<div class="bl-gap pos">✓ מכוסה במלואו<b>0</b></div>`;
-  if(g<0){ const c=kind==='exp'?'neg':'pos';
-    return `<div class="bl-gap ${c}">${kind==='exp'?'חריגה מהיעד':'מעל היעד'}<b>-${nf.format(Math.abs(g))}</b></div>`; }
+  if(g<0){
+    const c=kind==='exp'?'neg':'pos', lbl=kind==='exp'?'חריגה מהיעד':'מעל היעד';
+    const mat=matNeg(r), k=gtOf(r), T=k?GAP_TYPES[k]:null;
+    let tail='';
+    if(!mat) tail='';
+    else if(T){ const note=gnOf(r);
+      tail=`<button class="gt-chip ${T.cls}" onclick="openGtPop(${gi},${ri})" title="לחיצה לשינוי הסיווג">${T.chip}<span class="cx">✎</span></button>`
+         + (note?`<span class="gt-note">${note}</span>`:''); }
+    else tail=`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת החריגה</button>`;
+    return `<div class="bl-gap ${c}">${lbl}<b>-${nf.format(Math.abs(g))}</b>${tail}</div>`; }
 
-  /* פער חיובי — הצבע נגזר מהמהותיות ומהסוג, לא מהגודל */
+  /* פער חיובי — הצבע נגזר מהמהותיות ומהסוג, לא מהגודל.
+     פער שמכוסה בשורה תקציבית מקבל תווית משלו — הוא בעקומה, אבל הוא לא ידיעה. */
+  const bl=blOf(r);
   const mat=matOf(r), k=gtOf(r), T=k?GAP_TYPES[k]:null;
   let tail;
   if(!mat){
@@ -409,7 +607,9 @@ function gapHtml(r,kind,gi,ri){
   }else{
     tail=`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת הפער</button>`;
   }
-  return `<div class="bl-gap ${mat?(k==='soon'?'sub':'warn'):'sub'}">נותר לצביעה בתזרים<b>${nf.format(g)}</b>${tail}</div>`;
+  const lbl=bl>=g?'פער בשורה תקציבית':'נותר לצביעה בתזרים';
+  const blNote='';
+  return `<div class="bl-gap ${mat?'warn':'sub'}">${lbl}<b>${nf.format(g)}</b>${tail}${blNote}</div>`;
 }
 
 function render(){
@@ -418,14 +618,6 @@ function render(){
 
   /* גייט: פער מהותי בלי סוג חוסם את שלב הבדיקה */
   const un=gapsUntyped(), unSum=un.reduce((s,x)=>s+gapOf(x.r),0);
-  document.getElementById('gate').innerHTML = un.length
-    ? `<div class="gate"><span class="gi">!</span>
-        <span class="gtx"><b>${un.length} פערים מהותיים עדיין ללא הגדרה</b> · ${nf.format(unSum)} ₪
-          <small>אי אפשר לסיים את שלב הבדיקה עד שכל פער מעל הסף יקבל סוג — רק אתה יודע אם חסר חומר או שהיעד לא ריאלי.</small></span>
-        <button class="gbtn" onclick="gateFocus()">הגדרה עכשיו</button></div>`
-    : `<div class="gate ok"><span class="gi">✓</span>
-        <span class="gtx"><b>כל הפערים המהותיים מוגדרים</b>
-          <small>שלב הבדיקה פתוח לסיום. הסיווגים עברו לתור התפעול ולהכנה לפגישה.</small></span></div>`;
   try{ parent.postMessage({hk:'gapGate', n:un.length, sum:unSum, month:MONTHS[mi].label},'*'); }catch(e){}
 
   /* סיכום: הכנסות והוצאות — בר + פער לכל אחד + פירוק הפער לפי סוג */
@@ -437,19 +629,10 @@ function render(){
     const G=T-A-F;
     const gCls=G===0?'pos':G<0?(kind==='exp'?'neg':'pos'):'warn';
     const gTxt=G===0?'✓ מכוסה':G<0?(kind==='exp'?'חריגה':'מעל היעד'):'נותר לצביעה בתזרים';
-    /* מאיזה סוג מורכב הפער — זו התשובה ל"האם זה בכלל בעיה" */
-    const by={}; let noT=0;
-    rows.forEach(r=>{ const g=gapOf(r); if(g<=0) return;
-      if(!matOf(r)) return;
-      const k=gtOf(r); if(k) by[k]=(by[k]||0)+g; else noT+=g; });
-    const chips=Object.keys(by).map(k=>
-      `<span class="${GAP_TYPES[k].cls}">${GAP_TYPES[k].chip} ${nf.format(by[k])}</span>`).join('')
-      +(noT?`<span class="gt-set" style="border-style:dashed">ללא סוג ${nf.format(noT)}</span>`:'');
     return `<div class="scard">
       <div class="sc-top"><span class="k">${label}<small>${MONTHS[mi].label}</small></span>
         <span class="g ${gCls}">${gTxt}<b>${G<0?'-':''}${nf.format(Math.abs(G))} ₪</b></span></div>
       ${barHtml({target:T,act:A,flow:F},kind)}
-      ${chips?`<div class="g-split">${chips}</div>`:''}
     </div>`;
   };
   document.getElementById('sumrow').innerHTML=sumCard('כלל ההכנסות','inc')+sumCard('כלל ההוצאות','exp');
@@ -465,13 +648,17 @@ function render(){
     let out=`
     <div class="grp">
       <div class="grp-h"><span class="dot" style="background:${g.color}"></span>${g.label}
-        <span class="cnt">${g.rows.length} קטגוריות</span></div>
+        <span class="cnt">${g.rows.length} קטגוריות</span>
+        ${(()=>{ const pos=g.rows.reduce((s,r)=>s+Math.max(gapOf(r),0),0),
+                 neg=g.rows.reduce((s,r)=>s+Math.max(-gapOf(r),0),0);
+          return `<span class="grp-gap">${pos?`<span class="gg-pos">פער <b>${nf.format(pos)}</b></span>`:''}${neg?`<span class="gg-neg">${g.kind==='exp'?'חריגה':'מעל היעד'} <b>${nf.format(neg)}</b></span>`:''}${!pos&&!neg?'<span class="gg-ok">מכוסה ✓</span>':''}</span>`;})()}</div>
       ${g.rows.map((r,ri)=>{
         return `
         <div class="bl-row">
-          <div class="bl-name" onclick="openTxPop(${gi},${ri})" title="לחיצה — כל הפעולות בפועל ובתזרים"><span class="cv"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span><span>${r.label}</span>${gapOf(r)===0?'<span class="tiny">היעד מכוסה — בפועל + בתזרים</span>':''}${gapOf(r)>0?'<span class="tiny">היתרה עוד לא נצבעה בתזרים</span>':''}</div>
-          <div class="bl-tgt" onclick="tgtEdit(this,${gi},${ri})" title="לחיצה לעדכון היעד"><span>יעד <i>✎</i></span><b>${nf.format(r.target)}</b>${srcTag(r,g.kind)}</div>
-          <div class="bl-mid">${barHtml(r,g.kind,true)}</div>
+          <div class="bl-name"><button class="nm" onclick="openTxPop(${gi},${ri})" title="הפעולות של הקטגוריה החודש">${r.label}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 18-6-6 6-6"/></svg></button>
+            ${blChip(r,gi,ri)}</div>
+          <div class="bl-tgt" title="היעד נקבע בבניית שלושת החודשים עם הלקוח — לא נערך באמצע חודש"><span>יעד</span><b>${nf.format(r.target)}</b>${srcTag(r,g.kind)}</div>
+          <div class="bl-mid">${barHtml(r,g.kind,true,gi,ri)}</div>
           ${gapHtml(r,g.kind,gi,ri)}
         </div>`;}).join('')}
       ${(()=>{ const l=g.rows.filter(r=>gapOf(r)>0&&!matOf(r));
@@ -492,7 +679,7 @@ function render(){
 let GTP=null;
 function openGtPop(gi,ri){
   const r=GROUPS[gi].rows[ri];
-  GTP={gi,ri,k:gtOf(r)||gtSuggest(r),n:gnOf(r)};
+  GTP={gi,ri,k:gtOf(r)||gtSuggest(r)||'built',n:gnOf(r)};
   document.getElementById('gtTitle').textContent=r.label;
   document.getElementById('gtSub').textContent='הגדרת הפער · '+MONTHS[mi].label;
   gtRender();
@@ -503,24 +690,28 @@ function gtPick(k){ GTP.k=k; gtRender(); }
 function gtNote(v){ GTP.n=v; const b=document.getElementById('gtSaveBtn'); if(b) b.disabled=!gtValid(); }
 function gtValid(){ return GTP && GTP.k && (!GAP_TYPES[GTP.k].note || GTP.n.trim().length>2); }
 function gtRender(){
-  const r=GROUPS[GTP.gi].rows[GTP.ri], g=gapOf(r), sug=gtSuggest(r), pct=r.target>0?(g/r.target*100):0;
+  const r=GROUPS[GTP.gi].rows[GTP.ri], g0=gapOf(r), over=g0<0, g=Math.abs(g0), sug=over?null:gtSuggest(r), pct=r.target>0?(g/r.target*100):0;
+  const kind=GROUPS[GTP.gi].kind;
   const why = g>=GAP_TH.ceil ? 'מעל תקרת ' + nf.format(GAP_TH.ceil) + ' ₪'
             : pct.toFixed(1)+'% מהיעד · מעל סף '+GAP_TH.pct+'%';
   const need = GTP.k && GAP_TYPES[GTP.k].note;
   document.getElementById('gtBody').innerHTML=
     `<div class="gt-hd"><span class="amt">${nf.format(g)} ₪</span>
-       <span style="font-size:11.5px;color:var(--muted);font-weight:600">נותר לצביעה</span>
+       <span style="font-size:11.5px;color:var(--muted);font-weight:600">${over?(kind==='exp'?'חריגה מהיעד':'מעל היעד'):'נותר לצביעה'}</span>
        <span class="mt">${why}<br>יעד ${nf.format(r.target)} ₪</span></div>`
   + (sug&&!gtOf(r)?`<div class="gt-sug">◆ <span>יש <b>${r.pend}</b> שורות פתוחות בטבלת ההזנה לקטגוריה — ההצעה היא <b>מחכה לחומר</b>. רק אתה יודע אם זה נכון.</span></div>`:'')
-  + Object.keys(GAP_TYPES).map(k=>{
+  + (AI_SUG[r.label]&&!gtOf(r)?`<div class="gt-ai"><span class="gt-ai-h">✦ מהזיכרון של הלקוח</span>
+      <span class="gt-ai-t">${AI_SUG[r.label].why} — ההמלצה: <b>${GAP_TYPES[AI_SUG[r.label].k].lbl}</b></span>
+      <button class="gt-ai-btn" onclick="gtAdopt()">אימוץ ההצעה</button></div>`:'')
+  + Object.keys(GAP_TYPES).filter(k=>!(over&&k==='wait')).map(k=>{
       const T=GAP_TYPES[k];
       return `<div class="gt-opt ${GTP.k===k?'on':''}" onclick="gtPick('${k}')">
         <span class="rd"></span>
         <span><b>${T.lbl}</b><small>${T.hint}</small><span class="act-h">← ${T.act}</span></span></div>`;
     }).join('')
   + (need?`<div class="gt-req">הסבר בשורה אחת <i>· חובה</i></div>
-      <textarea class="gt-txt" oninput="gtNote(this.value)" placeholder="${GTP.k==='unlikely'?'למה זה לא ייסגר החודש?':'למה היעד לא מעודכן?'}">${GTP.n||''}</textarea>
-      <div style="font-size:10.5px;color:var(--soft);margin-top:5px">${GTP.k==='unlikely'?'המשפט הזה עולה להכנה לפגישה ולזיכרון הלקוח.':'המשפט הזה יופיע ליד היעד עד שיעודכן.'}</div>`:'')
+      <textarea class="gt-txt" oninput="gtNote(this.value)" placeholder="${GTP.k==='changed'?'מה השתנה בעולם? (עולה לפגישה ולזיכרון)':GTP.k==='shifted'?'לאיזה חודש זה זז, ולמה?':'למה ההערכה בבנייה הייתה שגויה?'}">${GTP.n||''}</textarea>
+      <div style="font-size:10.5px;color:var(--soft);margin-top:5px">${GTP.k==='changed'?'המשפט הזה עולה להכנה לפגישה ולזיכרון הלקוח.':'נרשם ללמידה — היעד עצמו לא מתוקן באמצע חודש.'}</div>`:'')
   + `<div class="gt-foot">
       <button class="gt-save" id="gtSaveBtn" ${gtValid()?'':'disabled'} onclick="gtSave()">שמירת הסיווג</button>
       ${gtOf(r)?'<button class="gt-clear" onclick="gtRemove()">הסרת הסיווג</button>':''}
