@@ -85,6 +85,23 @@ button{font-family:inherit;cursor:pointer}
 .src-tag.goal-inc{background:#e2f3e9;color:#13895b;border:1px solid #a7e0bf}
 .src-tag.goal-exp{background:#fdf4e3;color:#c98404;border:1px solid #ecd9a8}
 .bl-row:hover{background:#FAFCFE}
+.bl-row.grp-sum{background:#0C4068;border-top:0;padding-block:17px;color:#fff}
+.bl-row.grp-sum:hover{background:#0C4068}
+.grp .bl-row.grp-sum:last-child{border-end-start-radius:15px;border-end-end-radius:15px}
+.bl-row.grp-sum .sum-lbl{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:800;color:#fff}
+.bl-row.grp-sum .sum-lbl::before{content:'Σ';font-size:14px;font-weight:800;color:#7FC4EC}
+.bl-row.grp-sum .bl-tgt span{color:#9FC0D8}
+.bl-row.grp-sum .bl-tgt b{font-size:16px;color:#fff}
+.bl-row.grp-sum .bl-track{background:rgba(255,255,255,.16);height:12px}
+.bl-row.grp-sum .bl-bar{height:12px}
+.bl-row.grp-sum .bl-bar .seg.act{background:#7FC4EC}
+.bl-row.grp-sum .bl-nums{color:#9FC0D8}
+.bl-row.grp-sum .bl-nums b,.bl-row.grp-sum .n-act b,.bl-row.grp-sum .n-flow b,.bl-row.grp-sum .n-blrow b,.bl-row.grp-sum .n-over b{color:#fff}
+.bl-row.grp-sum .n-clk:hover{background:rgba(255,255,255,.12)}
+.bl-row.grp-sum .bl-gap{color:#9FC0D8}
+.bl-row.grp-sum .bl-gap b{font-size:19px;color:#FFC46B}
+.bl-row.grp-sum .bl-gap.pos b{color:#8FE3B8}
+.bl-row.grp-sum .bl-gap.neg b{color:#FF9E96}
 .bl-name{font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .bl-name .nm{display:inline-flex;align-items:center;gap:3px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
   color:var(--text);background:none;border:0;padding:2px 7px 2px 4px;margin:-2px -7px -2px -4px;border-radius:8px;transition:.12s;text-align:start}
@@ -130,10 +147,25 @@ button{font-family:inherit;cursor:pointer}
 .ble-wsum.bad{background:#FDECEA;color:#B3372A}
 .ble-wrow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--muted)}
 .ble-wd{flex:0 0 70px;font-weight:600;color:var(--text)}
+.ble-wrow input.wide{width:104px}
 .ble-wrow input{width:64px;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);border:1.5px solid var(--border-strong);border-radius:8px;padding:5px 9px;outline:none;text-align:center}
 .ble-wrow input:focus{border-color:var(--accent)}
-.ble-wa{margin-inline-start:auto;font-variant-numeric:tabular-nums;color:var(--text)}
+.ble-wa{margin-inline-start:auto;font-size:11px;font-weight:600;color:var(--soft)}
+.ble-wa.fixed{color:#6B4FA0}
+.ble-wa.abs{color:#2C7FB0}
+.ble-any{display:inline-flex;align-items:center;gap:4px}
+.ble-any input{width:56px;height:38px;font-family:inherit;font-size:13px;font-weight:700;text-align:center;color:var(--text);border:1.5px dashed var(--border-strong);border-radius:10px;outline:none}
+.ble-any input:focus{border-color:var(--accent);border-style:solid}
+.ble-any button{width:34px;height:38px;border:0;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:15px;font-weight:800;cursor:pointer}
+.ble-wrow.fx{background:#F6F1FB;border-radius:9px;padding-inline:8px;margin-inline:-8px}
+.ble-fxb{font-family:inherit;font-size:10.5px;font-weight:700;color:var(--muted);background:#fff;border:1px solid var(--border-strong);border-radius:999px;padding:3px 9px;cursor:pointer;white-space:nowrap}
+.ble-fxb:hover:not([disabled]){border-color:var(--accent);color:var(--accent)}
+.ble-fxb[disabled]{opacity:.4;cursor:not-allowed}
+.ble-fxb.on{background:#EDE4FA;border-color:#DCD0EC;color:#6B4FA0}
+.ble-note{font-size:10.5px;color:var(--soft);line-height:1.55;margin-top:9px}
+.ble-note b{color:var(--muted);font-weight:700}
 .ble-even{font-family:inherit;font-size:11px;font-weight:700;color:#2C7FB0;background:#EAF4FB;border:1px solid #BCD9F6;border-radius:999px;padding:4px 12px;cursor:pointer;margin-top:7px}
+.ble-warn{font-size:11.5px;color:#8A5A12;background:#FFF7EC;border:1px solid #F3D9B4;border-radius:9px;padding:8px 12px;margin-top:9px;font-weight:600;line-height:1.5}
 .ble-err{font-size:11.5px;color:#B3372A;background:#FDECEA;border:1px solid #F5C6C0;border-radius:9px;padding:7px 12px;margin-top:9px;font-weight:600}
 .gt-save[disabled]{background:#CBD8E3;cursor:not-allowed}
 .ble-days{display:flex;gap:7px;flex-wrap:wrap;margin:4px 0 4px}
@@ -343,6 +375,7 @@ function gapOf(r){ const v=rowVals(r); return r.target-v.act-v.flow; }
 /* השורה התקציבית ממשיכה לכל החודשים קדימה: ההגדרה (ימים/משקלים) קבועה,
    והסכום מחושב מחדש פר חודש — הפער שנותר ÷ הפיזור. עד שמשנים אותה כאן. */
 function blOf(r){
+  if(r.bl!=null&&r.blMode==null&&r.blDays==null&&mi!==0) return r.bl;
   if(mi===0) return r.bl||0;
   if(!r.bl&&!r.blMode&&!r.blDays) return 0;
   const v=rowVals(r); return Math.max(r.target-v.act-v.flow,0);
@@ -410,30 +443,78 @@ let BLE=null;
 function blOpen(gi,ri){
   const r=GROUPS[gi].rows[ri];
   BLE={gi,ri, mode:r.blMode||'dates', wd:(r.blWd!=null?r.blWd:null), days:(r.blDays||[]).slice(),
-       w:Object.assign({},r.blW||{})};   // משקל פר תאריך באחוזים
+       w:Object.assign({},r.blW||{}),      // משקל פר תאריך באחוזים
+       fx:Object.assign({},r.blFx||{})};   // סכום קבוע פר תאריך (₪) — היתרה מתחלקת על השאר
   document.getElementById('blTitle').textContent=r.label;
   blRender();
   document.getElementById('blOv').classList.add('show');
 }
 function blClose(){document.getElementById('blOv').classList.remove('show');BLE=null;}
 function blMode(m){ BLE.mode=m; blRender(); }
+function blAny(){ const e=document.getElementById('bleAny'); if(!e) return; const d=Math.min(31,Math.max(1,parseInt(e.value,10)||0)); if(!d) return; if(!BLE.days.includes(d)) blTg(d); e.value=''; }
 function blTg(d){
   const i=BLE.days.indexOf(d);
-  if(i<0){ BLE.days.push(d); } else { BLE.days.splice(i,1); delete BLE.w[d]; }
-  BLE.days.sort((a,b)=>a-b); blEven(); blRender();
+  if(i<0){ BLE.days.push(d); } else { BLE.days.splice(i,1); delete BLE.w[d]; delete BLE.fx[d]; }
+  BLE.days.sort((a,b)=>a-b);
+  const L=blLast(); if(L!=null&&BLE.fx[L]!=null) delete BLE.fx[L];   // האחרון תמיד סופג
+  blEven(); blRender();
 }
 /* ברירת מחדל: חלוקה שווה. עריכת משקל שוברת אותה — והסכום חייב 100. */
-function blEven(){ const n=BLE.days.length; BLE.days.forEach((d,i)=>{ BLE.w[d]=Math.round(100/n)+(i===0?100-Math.round(100/n)*n:0); }); }
-function blSetW(d,v){
-  BLE.w[d]=Math.max(0,Math.round(+v||0));
-  /* עדכון במקום — רינדור מלא היה מפיל את הפוקוס אחרי כל ספרה */
-  const r=GROUPS[BLE.gi].rows[BLE.ri], g=gapOf(r), sum=blWSum(), ok=sum===100;
-  const wa=document.getElementById('bleWa'+d); if(wa) wa.textContent=nf.format(Math.round(g*(BLE.w[d]||0)/100))+' ₪';
-  const ws=document.getElementById('bleWSum'); if(ws){ ws.textContent='סה״כ '+sum+'%'; ws.className='ble-wsum '+(ok?'ok':'bad'); }
-  const er=document.getElementById('bleErr'); if(er) er.style.display=ok?'none':'';
+/* האחוזים הם חלק **מהיתרה** שנשארה אחרי הסכומים הקבועים — תמיד מסתכמים ל-100. */
+function blFixedTotal(){ return BLE.days.reduce((s,d)=>s+(BLE.fx[d]||0),0); }
+function blRest(){ return Math.max(gapOf(GROUPS[BLE.gi].rows[BLE.ri])-blFixedTotal(),0); }
+function blFree(){ return BLE.days.filter(d=>BLE.fx[d]==null); }
+function blAmt(d){ return BLE.fx[d]!=null?BLE.fx[d]:Math.round(blRest()*(BLE.w[d]||0)/100); }
+function blEven(){
+  const free=blFree(), n=free.length; if(!n) return;
+  free.forEach((d,i)=>{ BLE.w[d]=Math.floor(100/n)+(i<100-Math.floor(100/n)*n?1:0); });
+}
+/* סכום קבוע לתאריך — נועל אותו, והיתרה מתחלקת על שאר התאריכים */
+/* התאריך האחרון הוא **הסופג**: היתרה נוחתת עליו, ולכן אי אפשר לקבע אותו. */
+function blLast(){ return BLE.days.length?Math.max(...BLE.days):null; }
+function blFxTg(d){
+  if(BLE.fx[d]!=null){ delete BLE.fx[d]; }
+  else{
+    if(d===blLast()) return;
+    BLE.fx[d]=blAmt(d); delete BLE.w[d];
+  }
+  blEven(); blRender();
+}
+function blFxSet(d,v){
+  BLE.fx[d]=Math.max(0,Math.round(+String(v).replace(/[^\d]/g,'')||0));
+  blLive();
+}
+/* אין חסימה לפי הפער של היום: הפיזור הוא הגדרה שממשיכה קדימה,
+   והפער נגזר מחדש בכל חודש. סכום קבוע גדול מהפער הנוכחי = הערה, לא שגיאה. */
+function blOkSum(){
+  const free=blFree(); if(!free.length) return false;      // חייב תאריך שסופג את היתרה
+  return Math.abs(free.reduce((s,d)=>s+(BLE.w[d]||0),0)-100)<=1;
+}
+function blOverNote(){
+  return blFixedTotal()>gapOf(GROUPS[BLE.gi].rows[BLE.ri]);
+}
+function blSumTxt(){
+  const fx=blFixedTotal(), s=blWSum();
+  return fx?('סכום קבוע '+nf.format(fx)+' ₪ · השאר '+s+'% מהיתרה'):('סה״כ '+s+'% מהפער');
+}
+/* עדכון חי בלי רינדור — שומר על הפוקוס בשדה */
+function blLive(){
+  const ok=blOkSum();
+  const ws=document.getElementById('bleWSum'); if(ws){ ws.textContent=blSumTxt(); ws.className='ble-wsum '+(ok?'ok':'bad'); }
+  const er=document.getElementById('bleErr'); if(er){ er.style.display=ok?'none':''; er.textContent=blErrTxt(); }
+  const wn=document.querySelector('.ble-warn'); if(wn) wn.style.display=blOverNote()?'':'none';
   const sv=document.getElementById('bleSave'); if(sv) sv.disabled=!ok;
 }
-function blWSum(){ return BLE.days.reduce((s,d)=>s+(BLE.w[d]||0),0); }
+function blErrTxt(){
+  if(!blFree().length) return 'התאריך האחרון חייב להישאר לא־קבוע — הוא סופג את היתרה';
+  return 'האחוזים חייבים להסתכם ב-100% מהיתרה';
+}
+function blSetW(d,v){
+  BLE.w[d]=Math.max(0,Math.min(100,Math.round(+v||0)));
+  blLive();
+}
+
+function blWSum(){ return blFree().reduce((s,d)=>s+(BLE.w[d]||0),0); }
 function blRender(focusless){
   const r=GROUPS[BLE.gi].rows[BLE.ri], g=gapOf(r);
   const DAYS=[1,5,10,15,20,25,28];
@@ -447,23 +528,31 @@ function blRender(focusless){
     body+=`<div class="ble-wdays">${WD.map(([l,i])=>`<button class="ble-day ${BLE.wd===i?'on':''}" onclick="BLE.wd=${i};blRender()">${l}</button>`).join('')}</div>
       <div class="ble-sum">הפער <b>${nf.format(g)} ₪</b> יתפזר <b>בכל יום ${WD[BLE.wd][0]}</b> — <b>${nf.format(Math.round(g/3))} ₪</b> לשורה, 3 ימי ${WD[BLE.wd][0]} שנותרו החודש.</div>`;
   }else{
-    const sum=blWSum(), ok=sum===100;
-    body+=`<div class="ble-days">${DAYS.map(d=>`<button class="ble-day ${BLE.days.includes(d)?'on':''}" onclick="blTg(${d})">${d}</button>`).join('')}</div>`;
+    const ok=blOkSum();
+    const shown=[...new Set(DAYS.concat(BLE.days))].sort((a,b)=>a-b);
+    body+=`<div class="ble-days">${shown.map(d=>`<button class="ble-day ${BLE.days.includes(d)?'on':''}" onclick="blTg(${d})">${d}</button>`).join('')}
+      <span class="ble-any"><input type="number" min="1" max="31" id="bleAny" placeholder="יום" onkeydown="if(event.key==='Enter')blAny()"><button onclick="blAny()">＋</button></span></div>`;
     if(BLE.days.length){
       body+=`<div class="ble-wt">
-        <div class="ble-wt-h">משקל לכל תאריך <span class="ble-wsum ${ok?'ok':'bad'}" id="bleWSum">סה״כ ${sum}%</span></div>
-        ${BLE.days.map(d=>`<div class="ble-wrow"><span class="ble-wd">${d} בחודש</span>
-          <input type="number" min="0" max="100" value="${BLE.w[d]||0}" oninput="blSetW(${d},this.value)">
-          <span class="ble-wp">%</span>
-          <b class="ble-wa" id="bleWa${d}">${nf.format(Math.round(g*(BLE.w[d]||0)/100))} ₪</b></div>`).join('')}
+        <div class="ble-wt-h">פיזור לכל תאריך <span class="ble-wsum ${ok?'ok':'bad'}" id="bleWSum">${blSumTxt()}</span></div>
+        ${BLE.days.map(d=>{const isFx=BLE.fx[d]!=null, isLast=d===blLast(), canFx=isFx||!isLast;
+          return `<div class="ble-wrow ${isFx?'fx':''}"><span class="ble-wd">${d} בחודש</span>
+          ${isFx
+            ? `<input class="wide" type="number" id="bleWi${d}" value="${BLE.fx[d]}" oninput="blFxSet(${d},this.value)"><span class="ble-wp">₪</span>`
+            : `<input type="number" id="bleWi${d}" min="0" max="100" value="${BLE.w[d]||0}" oninput="blSetW(${d},this.value)"><span class="ble-wp">%</span>`}
+          <button class="ble-fxb ${isFx?'on':''}" ${canFx?'':'disabled'} onclick="blFxTg(${d})"
+            title="${isFx?'חזרה לאחוז מהיתרה':(canFx?'קיבוע סכום — היתרה תתחלק על שאר התאריכים':'התאריך האחרון סופג את היתרה — אי אפשר לקבע אותו')}">${isFx?'🔒 סכום קבוע':'קיבוע סכום'}</button>
+          ${isFx?'<b class="ble-wa fixed">קבוע</b>':`<b class="ble-wa ${isLast?'abs':''}" id="bleWa${d}">${isLast?'סופג את היתרה':'מהיתרה'}</b>`}</div>`;}).join('')}
         <button class="ble-even" onclick="blEven();blRender()">חלוקה שווה</button>
+        <div class="ble-note">הפער נגזר מחדש בכל חודש, ולכן הפיזור נשמר כ<b>הגדרה</b>: סכומים קבועים יורדים ראשונים, והיתרה מתחלקת לפי האחוזים.</div>
       </div>`;
-      body+=`<div class="ble-err" id="bleErr" ${ok?'style="display:none"':''}>המשקלים חייבים להסתכם ב-100% כדי לשמור</div>`;
+      body+=`<div class="ble-err" id="bleErr" ${ok?'style="display:none"':''}>${blErrTxt()}</div>`;
+      if(blOverNote()) body+=`<div class="ble-warn">הסכום הקבוע גדול מהפער של החודש הזה — החודש ייצבע רק הפער, ומהחודש הבא הפיזור יעבוד כרגיל.</div>`;
     }else{
       body+=`<div class="ble-sum">בלי ימים אין שורה תקציבית — הפער יישאר חשוף בעקומה</div>`;
     }
   }
-  const savable=BLE.mode!=='dates'||!BLE.days.length||blWSum()===100;
+  const savable=BLE.mode!=='dates'||!BLE.days.length||blOkSum();
   body+=`<div class="gt-foot" style="border:none;padding-top:10px">
        <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'שמירת הפיזור'}</button>
        <button class="gt-clear" onclick="blClose()">ביטול</button>
@@ -472,11 +561,11 @@ function blRender(focusless){
 }
 function blSave(){
   const r=GROUPS[BLE.gi].rows[BLE.ri];
-  if(BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
+  if(BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blFx; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
   else{
     r.blMode=BLE.mode;
     if(BLE.mode==='weekly') r.blWd=(BLE.wd==null?0:BLE.wd);
-    if(BLE.mode==='dates'){ r.blDays=BLE.days.slice(); r.blW=Object.assign({},BLE.w); }
+    if(BLE.mode==='dates'){ r.blDays=BLE.days.slice(); r.blW=Object.assign({},BLE.w); r.blFx=Object.assign({},BLE.fx); }
     if(!r.bl) r.bl=gapOf(r);
     toast(BLE.mode==='daily'?'הפיזור: כל יום עסקים':BLE.mode==='weekly'?('הפיזור: פעם בשבוע — יום '+['א׳','ב׳','ג׳','ד׳','ה׳','ו׳'][BLE.wd==null?0:BLE.wd]):'הפיזור נשמר — '+BLE.days.map(d=>d+' ('+BLE.w[d]+'%)').join(' · '));
   }
@@ -607,7 +696,7 @@ function gapHtml(r,kind,gi,ri){
   }else{
     tail=`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת הפער</button>`;
   }
-  const lbl=bl>=g?'פער בשורה תקציבית':'נותר לצביעה בתזרים';
+  const lbl=bl>=g?'פער בשורה תקציבית':'פער';
   const blNote='';
   return `<div class="bl-gap ${mat?'warn':'sub'}">${lbl}<b>${nf.format(g)}</b>${tail}${blNote}</div>`;
 }
@@ -628,7 +717,7 @@ function render(){
     const F=rows.reduce((s,r)=>s+rowVals(r).flow,0);
     const G=T-A-F;
     const gCls=G===0?'pos':G<0?(kind==='exp'?'neg':'pos'):'warn';
-    const gTxt=G===0?'✓ מכוסה':G<0?(kind==='exp'?'חריגה':'מעל היעד'):'נותר לצביעה בתזרים';
+    const gTxt=G===0?'✓ מכוסה':G<0?(kind==='exp'?'חריגה':'מעל היעד'):'פער';
     return `<div class="scard">
       <div class="sc-top"><span class="k">${label}<small>${MONTHS[mi].label}</small></span>
         <span class="g ${gCls}">${gTxt}<b>${G<0?'-':''}${nf.format(Math.abs(G))} ₪</b></span></div>
@@ -661,6 +750,18 @@ function render(){
           <div class="bl-mid">${barHtml(r,g.kind,true,gi,ri)}</div>
           ${gapHtml(r,g.kind,gi,ri)}
         </div>`;}).join('')}
+      ${(()=>{ /* שורת סיכום לקבוצה — אותו מבנה עמודות, כדי שאפשר לקרוא אנכית */
+        const T=g.rows.reduce((s,r)=>s+r.target,0);
+        const A=g.rows.reduce((s,r)=>s+rowVals(r).act,0);
+        const F=g.rows.reduce((s,r)=>s+rowVals(r).flow,0);
+        const B=g.rows.reduce((s,r)=>s+blOf(r),0);
+        const G=T-A-F, ov=G<0;
+        return `<div class="bl-row grp-sum">
+          <div class="bl-name"><span class="sum-lbl">סה״כ ${g.label}</span></div>
+          <div class="bl-tgt"><span>יעד</span><b>${nf.format(T)}</b></div>
+          <div class="bl-mid">${barHtml({target:T,act:A,flow:F,bl:B},g.kind,true)}</div>
+          <div class="bl-gap ${ov?(g.kind==='exp'?'neg':'pos'):'warn'}">${ov?(g.kind==='exp'?'חריגה מהיעד':'מעל היעד'):'פער'}<b>${G<0?'-':''}${nf.format(Math.abs(G))}</b></div>
+        </div>`;})()}
       ${(()=>{ const l=g.rows.filter(r=>gapOf(r)>0&&!matOf(r));
         return l.length?`<div class="sub-foot">${l.length} ${l.length===1?'קטגוריה':'קטגוריות'} מתחת לסף · <b>${nf.format(l.reduce((s,r)=>s+gapOf(r),0))} ₪</b>
           <span class="why">מתחת ל-${nf.format(GAP_TH.floor)} ₪ או ${GAP_TH.pct}% מהיעד — לא דורש הגדרה</span></div>`:''; })()}
@@ -697,7 +798,7 @@ function gtRender(){
   const need = GTP.k && GAP_TYPES[GTP.k].note;
   document.getElementById('gtBody').innerHTML=
     `<div class="gt-hd"><span class="amt">${nf.format(g)} ₪</span>
-       <span style="font-size:11.5px;color:var(--muted);font-weight:600">${over?(kind==='exp'?'חריגה מהיעד':'מעל היעד'):'נותר לצביעה'}</span>
+       <span style="font-size:11.5px;color:var(--muted);font-weight:600">${over?(kind==='exp'?'חריגה מהיעד':'מעל היעד'):'פער'}</span>
        <span class="mt">${why}<br>יעד ${nf.format(r.target)} ₪</span></div>`
   + (sug&&!gtOf(r)?`<div class="gt-sug">◆ <span>יש <b>${r.pend}</b> שורות פתוחות בטבלת ההזנה לקטגוריה — ההצעה היא <b>מחכה לחומר</b>. רק אתה יודע אם זה נכון.</span></div>`:'')
   + (AI_SUG[r.label]&&!gtOf(r)?`<div class="gt-ai"><span class="gt-ai-h">✦ מהזיכרון של הלקוח</span>
