@@ -1148,28 +1148,28 @@
       {type:'payee', chk:'0010814', bank:'הפועלים · סניף 736', amount:'216', date:'26.07.2026', ocrName:'ויקה רזניק', img:'check.jpeg', time:'לפני 25 דק׳'},
       {type:'payee', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
       {type:'payee', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
-      {type:'carry', dir:'exp', acct:'mz295', days:11, text:'צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪ — טרם הופיעה.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
+      {type:'carry', dir:'exp', acct:'mz295', days:11, txd:'31.05', pay:'הו״ק', text:'צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪ — טרם הופיעה.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
         related:[{d:'15.06.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'},
                  {d:'15.05.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'}]},
-      {type:'carry', dir:'exp', acct:'pl112', days:6, text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
+      {type:'carry', dir:'exp', acct:'pl112', days:6, txd:'06.06', pay:'העברה', text:'צפינו תשלום ל"אלקטרה מיזוג" ע"ס 3,660 ₪ — טרם הופיע.', who:'אלקטרה מיזוג', amt:3660, time:'לפני שעתיים',
         mCard:{t:'חיוב ויזה כ.א.ל — אלקטרה מיזוג', amt:'3,660 ₪-', d:'28.07'},
         related:[{d:'22.06.2026',t:'העברה — אלקטרה מיזוג',amt:'3,660 ₪-',cat:'ספקים'}]},
-      {type:'carry', dir:'inc', acct:'mz295', days:3, text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
+      {type:'carry', dir:'inc', acct:'mz295', days:3, txd:'09.06', pay:'שיק', ref:'21044', text:'הכנסה צפויה מ"מרכז הבנייה" ע"ס 18,600 ₪ — טרם הופיעה.', who:'מרכז הבנייה', amt:18600, time:'היום 08:40',
         related:[{d:'25.06.2026',t:'תקבול — מרכז הבנייה',amt:'18,600 ₪+',cat:'הכנסות ממכירות'},
                  {d:'25.05.2026',t:'תקבול — מרכז הבנייה',amt:'17,200 ₪+',cat:'הכנסות ממכירות'},
                  {d:'26.04.2026',t:'תקבול — מרכז הבנייה',amt:'18,900 ₪+',cat:'הכנסות ממכירות'}]},
-      {type:'unexpected', acct:'mz139', text:'הופיעה פעולה בשם "כהן טוב" ע"ס 238 ₪ שלא צפינו.', who:'כהן טוב', amt:238, time:'לפני שעה',
+      {type:'unexpected', acct:'mz139', txd:'10.06', text:'הופיעה פעולה בשם "כהן טוב" ע"ס 238 ₪ שלא צפינו.', who:'כהן טוב', amt:238, time:'לפני שעה',
         related:[{d:'12.06.2026',t:'העברה — כהן טוב · מזרחי 139287',amt:'238 ₪-',cat:'שכר קבלני משנה'},
                  {d:'12.05.2026',t:'העברה — כהן טוב · מזרחי 139287',amt:'238 ₪-',cat:'שכר קבלני משנה'},
                  {d:'14.04.2026',t:'העברה — כהן טוב · מזרחי 139287',amt:'220 ₪-',cat:'שכר קבלני משנה'}]},
-      {type:'unexpected', acct:'mz295', text:'הופיעה פעולה "הראל חב׳ לביטוח בע״מ" ע"ס 2,049 ₪ שלא צפינו.', who:'הראל חב׳ לביטוח בע״מ', amt:2049, time:'היום 09:20', related:[]},
-      {type:'unexpected', dir:'inc', acct:'mz295', text:'תקבול "מרכז הבנייה בע״מ — חלקי" ע"ס 10,000 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ — חלקי', amt:10000, time:'היום 10:02', related:[]},
-      {type:'unexpected', dir:'inc', acct:'mz139', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[],
+      {type:'unexpected', acct:'mz295', txd:'11.06', text:'הופיעה פעולה "הראל חב׳ לביטוח בע״מ" ע"ס 2,049 ₪ שלא צפינו.', who:'הראל חב׳ לביטוח בע״מ', amt:2049, time:'היום 09:20', related:[]},
+      {type:'unexpected', dir:'inc', acct:'mz295', txd:'12.06', text:'תקבול "מרכז הבנייה בע״מ — חלקי" ע"ס 10,000 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ — חלקי', amt:10000, time:'היום 10:02', related:[]},
+      {type:'unexpected', dir:'inc', acct:'mz139', txd:'12.06', text:'תקבול "מרכז הבנייה בע״מ" ע"ס 8,600 ₪ שלא צפינו.', who:'מרכז הבנייה בע״מ', amt:8600, time:'היום 10:03', related:[],
        mFcast:{t:'הכנסה צפויה — מרכז הבנייה', amt:'8,600 ₪+', d:'12.08'}},
-      {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי אוגוסט', who:'צחי עובד', time:'לפני 3 דק׳',
+      {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי', who:'צחי עובד', time:'לפני 3 דק׳',
         rows:[{date:'15.08.2026', ref:'', desc:'ספק אריזות — הזמנה חדשה', amount:'5,200'},
               {date:'20.08.2026', ref:'', desc:'יועץ שיווק — ריטיינר', amount:'3,000'}]},
-      {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי אוגוסט', who:'צחי עובד · דרך הבוט בקבוצה', time:'לפני 20 דק׳',
+      {type:'sheet', kind:'add', sheet:'תשלומים לספקים · צפי', who:'צחי עובד · דרך הבוט בקבוצה', time:'לפני 20 דק׳',
         rows:[{date:'25.08.2026', ref:'שיק 21045', desc:'פלסט-גל — חומרי גלם', amount:'7,500'}]},
       {type:'sheet', kind:'edit', sheet:'תקבולים מלקוחות · צפי', who:'רות אלמוג', time:'היום 08:55',
         field:'מרכז הבנייה · 12.08', desc:'תקבול מרכז הבנייה', old:'17,500', new:'19,800'},
@@ -1229,6 +1229,7 @@
     if(t.type==='unexpected'||t.type==='carry'){
       const sign=t.dir==='inc'?'+':'';
       return `<b class="cu-who">${t.who||''}</b><span class="cu-amt ${t.dir==='inc'?'inc':''}">${sign}${(t.amt||0).toLocaleString()} ₪</span>`
+        + (t.txd?`<span class="cu-txd">${t.type==='carry'?'צפוי ל־'+t.txd:t.txd}</span>`:'')
         + (t.days?`<span class="cu-days ${t.days>=7?'hot':''}">${t.dir==='inc'?'באיחור':'נגררת'} ${t.days} ימים</span>`:'');
     }
     return (t.text||'').replace(/\s+/g,' ').slice(0,70);
@@ -1512,6 +1513,16 @@
   function catRuleFromRow(i){ const t=curTasks()[i]; if(t) openCatRules(descOf(t)); }
 
   /* קיטלוג מקובץ לפי הקטגוריה המומלצת — אישור פרטני או של קבוצה שלמה */
+  /* קפיצה לניהול קטגוריות — הפופאפ יושב בתוך iframe התקציב */
+  function openCatMgr(){
+    if(typeof showTab==='function') showTab('budget');
+    const tryOpen=n=>{
+      const fr=document.getElementById('budgetFrame');
+      if(fr&&fr.contentWindow&&fr.contentWindow.cmOpen){ fr.contentWindow.cmOpen(); }
+      else if(n<25) setTimeout(()=>tryOpen(n+1),200);
+    };
+    setTimeout(()=>tryOpen(0),300);
+  }
   function aiGrouped(rows,T){
     const groups=[];
     rows.forEach(t=>{
@@ -1519,7 +1530,12 @@
       if(!g){g={rec:t.rec,items:[]};groups.push(g);}
       g.items.push(t);
     });
-    return '<div class="ai-grid">'+groups.map(g=>`
+    /* ניהול הקטגוריות (מורשות/לא מורשות) חי במעקב ופערים — מכאן רק קופצים אליו */
+    const cmLink=`<div class="ai-cmbar">
+      <span>קטגוריה חדשה שלא ברשימת המורשות? מנהלים אותה במסך מעקב ופערים.</span>
+      <button class="ot-btn ghost sm" onclick="openCatMgr()">ניהול קטגוריות ←</button>
+    </div>`;
+    return cmLink+'<div class="ai-grid">'+groups.map(g=>`
       <div class="ai-grp">
         <div class="ai-grp-h">
           <b>${g.rec}</b><span class="ai-grp-n">${g.items.length} פעולות</span>
@@ -1801,23 +1817,32 @@
   function reqRemind(i){toast('הבוט שלח תזכורת בקבוצה: '+OPS_REQS[i].t);}
   /* בקשות חומר — לא בתור. המתפעל מזין מה שיש; מה שחסר חי בטבלאות ההזנה והבוט מתזכר לבד. */
   /* ---- טבלת הזנה מנוהלת: התבנית נקבעת אצלנו, הלקוח מזין שורות ---- */
+  /* הטבלה אינה חודשית: התאריך של השורה קובע את החודש — שיקים ותשלומים
+     נמסרים חודשים קדימה, והרשימה נחתכת בכותרות-חודש ויזואליות בלבד.
+     שורה בלי מועד = ידיעה שממתינה לתאריך: לא נצבעת עדיין, ומקבלת המלצת
+     מועד אוטומטית מההיסטוריה של המוטב. */
   const DATA_TABLES={
-    'תשלומים לספקים · צפי אוגוסט':{cols:['מועד פירעון','ספק / תיאור','סכום ₪','אמצעי','סטטוס'],rows:[
+    'תשלומים לספקים · צפי':{cols:['מועד','ספק / תיאור','סכום ₪','אמצעי','סטטוס'],rows:[
       {d:'22.07.2026', t:'לדובק הפצה — סחורה יוני', a:'8,400',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',    st:'done', when:'הותאם 22.07'},
       {d:'10.08.2026', t:'לדובק הפצה — סחורה יולי', a:'8,400',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',    st:'flow'},
-      {d:'15.08.2026', t:'ספק אריזות — הזמנה חדשה', a:'5,200',  pay:'שיק',   ref:'21044', by:'צחי עובד', ch:'link', st:'new'},
+      {d:'15.08.2026', t:'ספק אריזות — הזמנה חדשה', a:'5,200',  pay:'שיק',   ref:'21044', src:'ידני', by:'צחי עובד', ch:'link', st:'new'},
       {d:'20.08.2026', t:'יועץ שיווק — ריטיינר',    a:'3,000',  pay:'העברה', ref:'', by:'צחי עובד', ch:'link',   st:'new'},
-      {d:'25.08.2026', t:'פלסט-גל — חומרי גלם',     a:'7,500',  pay:'שיק',   ref:'21045', by:'צחי עובד', ch:'grp', st:'new'},
+      {d:'25.08.2026', t:'פלסט-גל — חומרי גלם',     a:'7,500',  pay:'שיק',   ref:'21045', src:'ידני', by:'צחי עובד', ch:'grp', st:'new'},
       {d:'28.08.2026', t:'שכירות מחסן',             a:'6,450',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',   st:'new', edit:'6,000 ← 6,450'},
       {d:'05.08.2026', t:'הראל (שילוח) — הו״ק',     a:'2,049',  pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',   st:'late'},
+      {d:'10.09.2026', t:'פלסט-גל — שיק דחוי',       a:'7,500',  pay:'שיק',   ref:'21046', src:'אוטומציה', by:'—', ch:'grp', st:'flow'},
+      {d:'10.10.2026', t:'פלסט-גל — שיק דחוי',       a:'7,500',  pay:'שיק',   ref:'21047', src:'אוטומציה', by:'—', ch:'grp', st:'flow'},
+      {d:'', t:'פז חברת נפט — חשבונית פתוחה',        a:'12,000', pay:'העברה', ref:'', by:'צחי עובד', ch:'grp', st:'nodate', rec:'25.08.2026', recWhy:'תנאי תשלום פז: שוטף+30 · חשבונית 25.07'},
     ]},
-    'תקבולים מלקוחות · צפי':{cols:['מועד צפוי','לקוח','סכום ₪','אמצעי','סטטוס'],rows:[
+    'תקבולים מלקוחות · צפי':{cols:['מועד','לקוח','סכום ₪','אמצעי','סטטוס'],rows:[
       {d:'12.08.2026', t:'מרכז הבנייה — יתרת פרויקט', a:'19,800', pay:'העברה', ref:'', by:'רות אלמוג', ch:'app',  st:'new', edit:'17,500 ← 19,800'},
-      {d:'18.08.2026', t:'רימון מוצרי אנרגיה — הזמנה 122', a:'24,000', pay:'שיק', ref:'8734', by:'צחי עובד', ch:'link', st:'flow'},
+      {d:'18.08.2026', t:'רימון מוצרי אנרגיה — הזמנה 122', a:'24,000', pay:'שיק', ref:'8734', src:'אוטומציה', by:'—', ch:'link', st:'flow'},
       {d:'25.08.2026', t:'פז חברת נפט — חודשי',      a:'11,500', pay:'העברה', ref:'', by:'—', ch:'link', st:'flow', anon:true},
       {d:'20.07.2026', t:'מרכז הבנייה — מקדמה',      a:'12,000', pay:'העברה', ref:'', by:'צחי עובד', ch:'grp',  st:'done', when:'הותאם 21.07'},
       {d:'28.07.2026', t:'אלקטרו סחר — חשבונית 4471', a:'14,300', pay:'העברה', ref:'', by:'רות אלמוג', ch:'app', st:'late', days:12},
-      {d:'01.08.2026', t:'מרכז הבנייה — שלב ב׳',      a:'22,000', pay:'שיק',   ref:'8801', by:'צחי עובד', ch:'link', st:'late', days:8},
+      {d:'01.08.2026', t:'מרכז הבנייה — שלב ב׳',      a:'22,000', pay:'שיק',   ref:'8801', src:'ידני', by:'צחי עובד', ch:'link', st:'late', days:8},
+      {d:'15.09.2026', t:'רימון מוצרי אנרגיה — הזמנה 123 · שיק דחוי', a:'24,000', pay:'שיק', ref:'8735', src:'ידני', by:'צחי עובד', ch:'link', st:'flow'},
+      {d:'', t:'מרכז הבנייה — אבן דרך ג׳',            a:'30,000', pay:'העברה', ref:'', by:'רות אלמוג', ch:'app', st:'nodate', rec:'20.09.2026', recWhy:'תנאי תשלום מרכז הבנייה: שוטף+45 · חשבונית 05.08'},
     ]},
   };
   const ENT_ST={
@@ -1825,6 +1850,7 @@
     flow:{t:'✓ בתזרים',     c:'ok'},
     done:{t:'● בוצע',       c:'exec'},
     late:{t:'⚠ נגררת',      c:'late'},
+    nodate:{t:'ללא מועד',   c:'nod'},
   };
   let ENT_TAB='live';   // live | done | all
   const ENT_PAYTYPES=['העברה','שיק'];
@@ -1835,68 +1861,225 @@
     const r=document.getElementById('entRef'); if(r)r.style.display=ENT_NEWTYPE==='שיק'?'':'none';
   }
   let ENTRIES_SEL=null;
-  function renderEntriesView(){
-    const el=document.getElementById('viewEntries'); if(!el)return;
-    const names=Object.keys(DATA_TABLES);
-    if(!ENTRIES_SEL||!DATA_TABLES[ENTRIES_SEL])ENTRIES_SEL=names[0];
-    const t=DATA_TABLES[ENTRIES_SEL];
-    const vis=r=>ENT_TAB==='all'?true:ENT_TAB==='done'?r.st==='done':r.st!=='done';
-    const rows=t.rows.filter(vis).sort((a,b)=>a.d.split('.').reverse().join('')<b.d.split('.').reverse().join('')?-1:1);
-    const nNew=t.rows.filter(r=>r.st==='new').length, nDone=t.rows.filter(r=>r.st==='done').length;
-    const INC=ENTRIES_SEL.includes('תקבולים');
-    const lateRows=t.rows.filter(r=>r.st==='late');
-    const lateSum=lateRows.reduce((s,r)=>s+ +r.a.replace(/,/g,''),0);
-    el.innerHTML=`<div class="ent">
-      <div class="ent-head">
-        <div><div class="ent-ttl">טבלאות הזנה — ${CLIENTS[CUR]?CLIENTS[CUR].name:''}</div>
-          <div class="ent-sub">צפי קדימה מהלקוח · מה שבוצע בפועל מסומן אוטומטית מהבנק · מה שאיחר הופך לנגררת</div></div>
-        <div class="ent-acts">
-          <button class="mt-btn sm" onclick="toast('הבוט שלח לקבוצה קישור לטבלה — נפתח במובייל')">📱 שליחת קישור</button>
-          <button class="mt-btn view sm" onclick="window.open('entry-mobile.html','_blank')">תצוגת הלקוח</button>
-        </div>
+  /* ===== ניהול חומר — הכנסות =====
+     המסך הוא חלון על קטגוריות התזרים שנבחרו (בד"כ "הכנסה ממכירות"):
+     סנכרון דו-כיווני — מה שצבוע נשלף לכאן, מה שמוזן כאן נצבע לתזרים.
+     כל פריט = תנועה בביזיבוקס (trans_id) — עותק אחד של האמת.
+     שינוי תאריך כאן = התנועה זזה בתזרים באותו רגע + "תאריך זז" בלוג. */
+  let ENT_MODE='inc';   // inc | exp
+  const MAT_CATS=['הכנסה ממכירות'];
+  const MAT_INC=[
+    {id:'bz-4d97a', d:'05.08.2026', cust:'מרכז הבנייה', desc:'חשבונית 1041 — אבן דרך א׳', a:22000, src:'אוטומציה', st:'done'},
+    {id:'bz-4d97b', d:'12.08.2026', cust:'מרכז הבנייה', desc:'חשבונית 1044 — אבן דרך ב׳', a:19800, src:'אוטומציה', st:'flow'},
+    {id:'bz-4e221', d:'18.08.2026', cust:'רימון מוצרי אנרגיה', desc:'חשבונית 1045 — הזמנה 122', a:24000, src:'אוטומציה', st:'flow'},
+    {id:'bz-4e222', d:'25.08.2026', cust:'פז חברת נפט', desc:'חיוב חודשי', a:11500, src:'ידני', st:'new'},
+    {id:'bz-4e223', d:'15.09.2026', cust:'רימון מוצרי אנרגיה', desc:'חשבונית 1046 — הזמנה 123', a:24000, src:'אוטומציה', st:'flow'},
+    {id:'bz-4d98c', d:'28.07.2026', cust:'אלקטרו סחר', desc:'חשבונית 4471', a:14300, src:'אוטומציה', st:'late', days:12},
+    {id:'bz-4e9f1', d:'', cust:'מרכז הבנייה', desc:'חשבונית 1047 — אבן דרך ג׳', a:30000, src:'אוטומציה', st:'nodate', rec:'20.09.2026', recWhy:'תנאי תשלום מרכז הבנייה: שוטף+45 · חשבונית 05.08'},
+    {id:'bz-4e9f2', d:'', cust:'וולט תקבולים', desc:'התחשבנות יולי', a:6200, src:'ידני', st:'nodate', rec:'10.09.2026', recWhy:'תנאי תשלום וולט: שוטף+30'},
+  ];
+  let MAT_EDIT=null;
+  function matDateStart(i){ MAT_EDIT=i; renderEntriesView(); setTimeout(()=>{const e=document.getElementById('matD'+i); if(e){e.focus();e.select();}},0); }
+  function matDateSave(i){
+    const e=document.getElementById('matD'+i); if(!e) return;
+    const v=e.value.trim(); MAT_EDIT=null;
+    const r=MAT_INC[i];
+    if(v&&v!==r.d.slice(0,5)){
+      const old=r.d.slice(0,5)||'ללא מועד';
+      r.d=(v.length===5?v+'.2026':v);
+      if(r.st==='nodate') r.st='flow';
+      toast('התאריך עודכן גם בתזרים ('+old+' ← '+v+') — נרשם בלוג כ"תאריך זז" · '+r.id);
+    }
+    renderEntriesView();
+  }
+  function matAdoptInc(i){ const r=MAT_INC[i]; r.d=r.rec; r.st='flow'; toast('נקבע מועד '+r.rec.slice(0,5)+' לפי תנאי התשלום — נצבע בתזרים'); renderEntriesView(); }
+  function matOkInc(i){ MAT_INC[i].st='flow'; toast('אושר ונצבע בתזרים'); renderEntriesView(); }
+  function renderMatInc(){
+    const inFlow=MAT_INC.filter(r=>r.st==='flow'||r.st==='done');
+    const nod=MAT_INC.filter(r=>r.st==='nodate');
+    const late=MAT_INC.filter(r=>r.st==='late');
+    const news=MAT_INC.filter(r=>r.st==='new');
+    const sum=a=>a.reduce((s,r)=>s+r.a,0);
+    const rows=MAT_INC.filter(r=>r.st!=='nodate').sort((a,b)=>a.d.split('.').reverse().join('')<b.d.split('.').reverse().join('')?-1:1);
+    let lastM='';
+    const rowH=r=>{
+      const i=MAT_INC.indexOf(r);
+      const dCell=MAT_EDIT===i
+        ?`<input class="ent-inp edd" id="matD${i}" value="${r.d.slice(0,5)}" onblur="matDateSave(${i})" onkeydown="if(event.key==='Enter')this.blur()">`
+        :`<button class="mat-date ${r.st==='late'?'lateD':''}" title="מזהה ביזיבוקס ${r.id} · לחיצה לשינוי תאריך — יזוז גם בתזרים" onclick="matDateStart(${i})">${r.d.slice(0,5)}</button>`;
+      const stCell=r.st==='new'?`<button class="ot-btn done xs" onclick="matOkInc(${i})">אישור</button>`
+        :r.st==='late'?`<button class="ent-late-btn" onclick="toast('נשלחה תזכורת גבייה בשם הלקוח')">⚠ ${r.days} ימים</button>`
+        :r.st==='done'?`<span class="ent-st exec">● בוצע</span>`
+        :`<span class="ent-st ok">✓ בתזרים</span>`;
+      const m=r.d.slice(3,5);
+      let sep='';
+      if(m!==lastM){ lastM=m; sep=`<div class="ent-month">${HE_MONTHS[m]||''} ${r.d.slice(6)}</div>`; }
+      return sep+`<div class="dt-c">${dCell}</div>
+        <div class="dt-c ent-tcell"><b class="mi-cust">${r.cust}</b> <span class="mi-desc">${r.desc}</span></div>
+        <div class="dt-c num">${r.a.toLocaleString()}</div>
+        <div class="dt-c"><i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i></div>
+        <div class="dt-c">${stCell}</div>`;
+    };
+    const nodH=nod.map(r=>{
+      const i=MAT_INC.indexOf(r);
+      return `<div class="dt-c"><button class="ent-rec" title="${r.recWhy} · לחיצה = אימוץ" onclick="matAdoptInc(${i})">✦ ${r.rec.slice(0,5)}</button></div>
+        <div class="dt-c ent-tcell"><b class="mi-cust">${r.cust}</b> <span class="mi-desc">${r.desc}</span></div>
+        <div class="dt-c num">${r.a.toLocaleString()}</div>
+        <div class="dt-c"><i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i></div>
+        <div class="dt-c"><button class="mt-btn view xs" onclick="toast('הבוט ביקש מהלקוח מועד בקבוצה')">מועד מהלקוח</button></div>`;
+    }).join('');
+    return `<div class="mat-wrap">
+      <div class="mat-side">
+        <div class="mat-side-h">השפעה על התזרים</div>
+        <div class="ms-stat"><span>בתזרים · צבוע</span><b>${sum(inFlow).toLocaleString()} ₪</b></div>
+        <div class="ms-stat warn"><span>ללא מועד — לא בתזרים</span><b>${sum(nod).toLocaleString()} ₪</b></div>
+        <div class="ms-stat late"><span>באיחור · בגבייה</span><b>${sum(late).toLocaleString()} ₪</b></div>
+        ${news.length?`<div class="ms-stat"><span>ממתין לאישור</span><b>${sum(news).toLocaleString()} ₪</b></div>`:''}
+        <div class="mat-side-note">תזמון הפריטים ללא מועד יעלה את היתרה הצפויה ב-<b>${sum(nod).toLocaleString()} ₪</b> בתאריכים שייקבעו.</div>
+        <div class="mat-side-note dim">הקטגוריות המחוברות: ${MAT_CATS.join(' · ')} · כל פריט = תנועה בביזיבוקס, סנכרון דו-כיווני.</div>
+        <button class="mt-btn view sm" style="margin-top:10px" onclick="showTab('budget')">מעקב ופערים ←</button>
       </div>
-      <div class="ent-tabs">${names.map(n=>`<button class="ent-tab ${n===ENTRIES_SEL?'on':''}" onclick="ENTRIES_SEL='${n}';renderEntriesView()">${n}${DATA_TABLES[n].rows.some(r=>r.st==='new')?' <i class="ent-dot"></i>':''}</button>`).join('')}</div>
-
       <div class="ent-card">
-        ${INC&&lateRows.length?`<div class="collbar">
-          <span class="cb-ic">⏱</span>
-          <div class="cb-tx"><b>${lateRows.length} תקבולים באיחור · ${lateSum.toLocaleString('en-US')} ₪</b>
-            <span>לקוחות של ${CLIENTS[CUR]?CLIENTS[CUR].name:''} שטרם שילמו — אפשר לשלוח תזכורת גבייה בשם הלקוח</span></div>
-          <button class="ot-btn done sm" onclick="toast('נשלחו תזכורות גבייה ל-'+${lateRows.length}+' לקוחות בשם החברה')">תזכורת לכולם</button>
-        </div>`:''}
-        <div class="ent-filters">
-          <button class="ent-f ${ENT_TAB==='live'?'on':''}" onclick="ENT_TAB='live';renderEntriesView()">פעילות${nNew?` <i>${nNew} לאישור</i>`:''}</button>
-          <button class="ent-f ${ENT_TAB==='done'?'on':''}" onclick="ENT_TAB='done';renderEntriesView()">בוצעו <i>${nDone}</i></button>
-          <button class="ent-f ${ENT_TAB==='all'?'on':''}" onclick="ENT_TAB='all';renderEntriesView()">הכל</button>
-          <span class="ent-keep">שורות שבוצעו נשמרות 90 יום ואז עוברות לארכיון</span>
+        <div class="mat-src-bar">
+          <span class="mat-conn">⟳ אוטומציה — חשבונית ירוקה <i>נמשכו 6 חשבוניות · לפני שעה</i></span>
+          <span class="mat-conn manual">✎ הזנה ידנית של הלקוח <i>2 פריטים</i></span>
         </div>
-        <div class="dt-grid ent-grid">
-          ${t.cols.map(c=>`<div class="dt-h">${c}</div>`).join('')}<div class="dt-h"></div>
-          ${rows.map(r=>{
-            const st=ENT_ST[r.st];
-            return `<div class="dt-c ${r.st==='late'?'lateD':''}">${r.d}</div>
-              <div class="dt-c">${r.t}${r.edit?`<i class="ent-edit">עודכן ${r.edit}</i>`:''}</div>
-              <div class="dt-c num">${r.a}</div>
-              <div class="dt-c">${r.pay}${r.ref?` <i class="ent-ref">${r.ref}</i>`:''}</div>
-              <div class="dt-c"><span class="ent-st ${st.c}">${r.st==='late'&&r.days?`⚠ באיחור ${r.days} ימים`:st.t}</span>${r.when?`<i class="ent-when">${r.when}</i>`:''}</div>
-              <div class="dt-c">${r.st==='new'?`<button class="ot-btn done sm" onclick="entOk(this)">אישור</button>`
-                :r.st==='late'?(INC?`<button class="ot-btn done sm" onclick="toast('נשלחה תזכורת גבייה ל${r.t.split('—')[0].trim()} בשם הלקוח')">תזכורת גבייה</button>`
-                                   :`<button class="mt-btn view sm" onclick="toast('נפתחה נגררת — בדיקת התאמה')">לנגררות</button>`):''}</div>`;
-          }).join('')}
-          <div class="dt-c"><input class="ent-inp" value="25.08.2026"></div>
-          <div class="dt-c"><input class="ent-inp" id="entDesc" placeholder="ספק / תיאור…"></div>
-          <div class="dt-c"><input class="ent-inp num" id="entAmt" placeholder="סכום"></div>
-          <div class="dt-c"><button class="ent-type" id="entType" onclick="entTypeCycle()">${ENT_NEWTYPE} ↺</button>
-            <input class="ent-inp ref" id="entRef" placeholder="אסמכתא" style="display:${ENT_NEWTYPE==='שיק'?'':'none'}"></div>
-          <div class="dt-c"></div>
-          <div class="dt-c"><button class="mt-btn view sm" onclick="entAddRow()">+ הוספה</button></div>
-        </div>
-        <div class="dt-foot">
-          <button class="mt-btn view sm" onclick="toast('הדבקה מאקסל — ולידציה לפי התבנית')">📋 הדבקה מאקסל</button>
-          <span class="dt-hint">ממתין לאישור ← ✓ בתזרים ← ● בוצע (התאמה אוטומטית מהבנק) · עבר המועד ולא בוצע ← נגררת</span>
+        <div class="dt-grid ent-grid2">
+          <div class="dt-h">מועד</div><div class="dt-h">לקוח · חשבונית</div><div class="dt-h">סכום ₪</div><div class="dt-h">מקור</div><div class="dt-h">סטטוס</div>
+          ${rows.map(rowH).join('')}
+          ${nod.length?`<div class="ent-month nod">ללא מועד — ממתין לתאריך</div>`+nodH:''}
         </div>
       </div>
     </div>`;
+  }
+  const HE_MONTHS={'01':'ינואר','02':'פברואר','03':'מרץ','04':'אפריל','05':'מאי','06':'יוני','07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר','11':'נובמבר','12':'דצמבר'};
+  function entColHtml(name){
+    const t=DATA_TABLES[name];
+    const INC=name.includes('תקבולים');
+    const key=INC?'in':'out';
+    const vis=r=>ENT_TAB==='nodate'?r.st==='nodate'
+              :ENT_TAB==='new'?r.st==='new'
+              :ENT_TAB==='done'?r.st==='done'
+              :ENT_TAB==='all'?true
+              :r.st!=='done';
+    const nodate=t.rows.filter(r=>vis(r)&&r.st==='nodate');
+    const dated=t.rows.filter(r=>vis(r)&&r.st!=='nodate').sort((a,b)=>a.d.split('.').reverse().join('')<b.d.split('.').reverse().join('')?-1:1);
+    const nNew=t.rows.filter(r=>r.st==='new').length;
+    /* ללא מועד = שורות רגילות בטבלה: תאריך "—" + המלצת מועד כצ'יפ לאימוץ */
+    const nodateHtml=nodate.length?`<div class="ent-month nod">ללא מועד — ממתין לתאריך</div>`+nodate.map(r=>{
+      const ix=t.rows.indexOf(r);
+      return `<div class="dt-c"><button class="ent-rec" title="${r.recWhy||''} · לחיצה = אימוץ המועד" onclick="entAdopt('${name}',${ix})">✦ ${r.rec?r.rec.slice(0,5):''}</button></div>
+        <div class="dt-c">${r.t}</div>
+        <div class="dt-c num">${r.a}</div>
+        <div class="dt-c">${r.pay}${r.ref?` <i class="ent-ref">${r.ref}</i>`:''}</div>
+        <div class="dt-c"><button class="mt-btn view xs" onclick="toast('הבוט ביקש מהלקוח מועד בקבוצה')">מועד מהלקוח</button></div>`;
+    }).join(''):'';
+    let lastM='';
+    const rowsHtml=dated.map(r=>{
+      const st=ENT_ST[r.st];
+      const m=r.d.slice(3,5)+'.'+r.d.slice(6);
+      let sep='';
+      if(m!==lastM){ lastM=m; sep=`<div class="ent-month">${HE_MONTHS[r.d.slice(3,5)]||''} ${r.d.slice(6)}</div>`; }
+      const ix=t.rows.indexOf(r);
+      if(ENT_EDIT&&ENT_EDIT.name===name&&ENT_EDIT.ix===ix){
+        return sep+`<div class="dt-c"><input class="ent-inp edd" id="entEdD" value="${r.d.slice(0,5)}" placeholder="dd.mm"></div>
+          <div class="dt-c"><input class="ent-inp" id="entEdT" value="${r.t.replace(/"/g,'&quot;')}"></div>
+          <div class="dt-c"><input class="ent-inp num" id="entEdA" value="${r.a}"></div>
+          <div class="dt-c">${r.pay}${r.pay==='שיק'?`<input class="ent-inp ref" id="entEdR" value="${r.ref||''}" placeholder="אסמכתא">`:''}</div>
+          <div class="dt-c ent-edact"><button class="ot-btn done xs" onclick="entEditSave()">שמירה</button><button class="mt-btn view xs" onclick="entEditCancel()">ביטול</button></div>`;
+      }
+      const stCell=r.st==='new'?`<button class="ot-btn done xs" onclick="entOk(this)">אישור</button>`
+        :r.st==='late'?`<button class="ent-late-btn" onclick="toast('${INC?'נשלחה תזכורת גבייה בשם הלקוח':'נפתחה נגררת — בדיקת התאמה'}')" title="${INC?'תזכורת גבייה':'לנגררות'}">⚠ ${r.days?r.days+' ימים':'נגררת'}</button>`
+        :`<span class="ent-st ${st.c}">${st.t}</span>`;
+      return sep+`<div class="dt-c ${r.st==='late'?'lateD':''}">${r.d.slice(0,5)}</div>
+        <div class="dt-c ent-tcell">${r.t}<button class="ent-pen" title="עריכה" onclick="entEditStart('${name}',${ix})">✎</button>${r.edit?`<i class="ent-edit">עודכן ${r.edit}</i>`:''}</div>
+        <div class="dt-c num">${r.a}</div>
+        <div class="dt-c">${r.pay}${r.ref?` <i class="ent-ref">${r.ref}</i>`:''}${r.src?` <i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i>`:''}</div>
+        <div class="dt-c">${stCell}</div>`;
+    }).join('');
+    return `<div class="ent-card">
+      <div class="ent-col-h">${name}${nNew?` <i class="ent-cnt">${nNew} לאישור</i>`:''}</div>
+
+      <div class="dt-grid ent-grid2">
+        ${t.cols.map(c=>`<div class="dt-h">${c}</div>`).join('')}
+        ${rowsHtml}
+        ${nodateHtml}
+        <div class="dt-c"><input class="ent-inp" id="entDate_${key}" placeholder="מועד · ריק=ללא"></div>
+        <div class="dt-c"><input class="ent-inp" id="entDesc_${key}" placeholder="${INC?'לקוח / תיאור…':'ספק / תיאור…'}"></div>
+        <div class="dt-c"><input class="ent-inp num" id="entAmt_${key}" placeholder="סכום"></div>
+        <div class="dt-c"><button class="ent-type" onclick="entTypeCycle2('${key}',this)">העברה ↺</button>
+          <input class="ent-inp ref" id="entRef_${key}" placeholder="אסמכתא" style="display:none"></div>
+        <div class="dt-c"><button class="mt-btn view xs" onclick="entAddRow2('${name}','${key}')">+ הוספה</button></div>
+      </div>
+    </div>`;
+  }
+  function renderEntriesView(){
+    const el=document.getElementById('viewEntries'); if(!el)return;
+    const expNames=Object.keys(DATA_TABLES).filter(n=>!n.includes('תקבולים'));
+    el.innerHTML=`<div class="ent">
+      <div class="ent-head">
+        <div><div class="ent-ttl">ניהול חומר — ${CLIENTS[CUR]?CLIENTS[CUR].name:''}</div>
+          <div class="ent-sub">${ENT_MODE==='inc'?'חלון על קטגוריות ההכנסה — סנכרון דו-כיווני עם התזרים: שינוי כאן משנה את התזרים, ולהפך':'צפי תשלומים קדימה — התאריך של השורה קובע את החודש'}</div></div>
+        <div class="ent-acts">
+          <button class="mt-btn sm" onclick="toast('הבוט שלח לקבוצה קישור — נפתח במובייל')">📱 שליחת קישור</button>
+          <button class="mt-btn view sm" onclick="window.open('entry-mobile.html','_blank')">תצוגת הלקוח</button>
+        </div>
+      </div>
+      <div class="ent-mode">
+        <button class="${ENT_MODE==='inc'?'on':''}" onclick="ENT_MODE='inc';renderEntriesView()">הכנסות</button>
+        <button class="${ENT_MODE==='exp'?'on':''}" onclick="ENT_MODE='exp';renderEntriesView()">הוצאות</button>
+      </div>
+      ${ENT_MODE==='inc'?renderMatInc():`
+      <div class="ent-filters" style="margin:0 2px 12px">
+        <button class="ent-f appr ${ENT_TAB==='new'?'on':''}" onclick="ENT_TAB='new';renderEntriesView()">לאישור <i>${expNames.reduce((s,n)=>s+DATA_TABLES[n].rows.filter(r=>r.st==='new').length,0)}</i></button>
+        <button class="ent-f ${ENT_TAB==='live'?'on':''}" onclick="ENT_TAB='live';renderEntriesView()">פעילות</button>
+        <button class="ent-f ${ENT_TAB==='nodate'?'on':''}" onclick="ENT_TAB='nodate';renderEntriesView()">ללא מועד <i>${expNames.reduce((s,n)=>s+DATA_TABLES[n].rows.filter(r=>r.st==='nodate').length,0)}</i></button>
+        <button class="ent-f ${ENT_TAB==='done'?'on':''}" onclick="ENT_TAB='done';renderEntriesView()">בוצעו</button>
+        <button class="ent-f ${ENT_TAB==='all'?'on':''}" onclick="ENT_TAB='all';renderEntriesView()">הכל</button>
+      </div>
+      <div class="ent-2cols" style="grid-template-columns:1fr">${expNames.map(entColHtml).join('')}</div>`}
+    </div>`;
+  }
+  const ENT_TYPE2={in:'העברה',out:'העברה'};
+  function entTypeCycle2(key,btn){
+    ENT_TYPE2[key]=ENT_TYPE2[key]==='העברה'?'שיק':'העברה';
+    btn.textContent=ENT_TYPE2[key]+' ↺';
+    const r=document.getElementById('entRef_'+key); if(r)r.style.display=ENT_TYPE2[key]==='שיק'?'':'none';
+  }
+  /* עריכת שורה קיימת: לחיצה על ✎ הופכת את השורה לטופס במקומה.
+     עריכת מנהל נצבעת מיד מחדש (הוא הסמכות) — עם תיעוד "עודכן ישן ← חדש". */
+  let ENT_EDIT=null;
+  function entEditStart(name,ix){ ENT_EDIT={name,ix}; renderEntriesView(); }
+  function entEditCancel(){ ENT_EDIT=null; renderEntriesView(); }
+  function entEditSave(){
+    if(!ENT_EDIT) return;
+    const r=DATA_TABLES[ENT_EDIT.name].rows[ENT_EDIT.ix];
+    const gv=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+    const nd=gv('entEdD'), nt=gv('entEdT'), na=gv('entEdA'), nr=gv('entEdR');
+    if(!nt||!na){toast('צריך תיאור וסכום');return;}
+    if(r.pay==='שיק'&&!nr){toast('שיק חייב אסמכתא');return;}
+    if(na!==r.a) r.edit=r.a+' ← '+na;
+    if(nd) r.d=(nd.length===5?nd+'.'+r.d.slice(6):nd);   // עורכים יום.חודש, השנה נשמרת
+    r.t=nt; r.a=na; if(r.pay==='שיק') r.ref=nr;
+    ENT_EDIT=null; renderEntriesView();
+    toast('עודכן — נצבע מחדש בתזרים');
+  }
+  function entAdopt(name,ix){
+    const r=DATA_TABLES[name].rows[ix]; if(!r)return;
+    r.d=r.rec; r.st='new';
+    toast('נקבע מועד '+r.rec.slice(0,5)+' — ממתין לאישור ואז ייצבע בתזרים');
+    renderEntriesView();
+  }
+  function entAddRow2(name,key){
+    const d=document.getElementById('entDesc_'+key), a=document.getElementById('entAmt_'+key),
+          rf=document.getElementById('entRef_'+key), dt=document.getElementById('entDate_'+key);
+    if(!d||!d.value.trim()||!a.value){toast('צריך תיאור וסכום');return;}
+    if(ENT_TYPE2[key]==='שיק'&&!(rf&&rf.value.trim())){toast('שיק חייב אסמכתא — מספר השיק');rf&&rf.focus();return;}
+    const dv=(dt&&dt.value.trim())||'';
+    DATA_TABLES[name].rows.push(dv
+      ?{d:dv, t:d.value.trim(), a:a.value, pay:ENT_TYPE2[key], ref:ENT_TYPE2[key]==='שיק'?rf.value.trim():'', src:ENT_TYPE2[key]==='שיק'?'ידני':'', by:'לירון בן כליפא', ch:'mgr', st:'flow'}
+      :{d:'', t:d.value.trim(), a:a.value, pay:ENT_TYPE2[key], ref:ENT_TYPE2[key]==='שיק'?rf.value.trim():'', by:'לירון בן כליפא', ch:'mgr', st:'nodate', rec:'25.08.2026', recWhy:'לפי תנאי התשלום של המוטב'});
+    renderEntriesView(); toast(dv?'נוסף ונצבע בתזרים':'נוסף ללא מועד — קיבל המלצת תאריך');
   }
   function entOk(b){ b.outerHTML='<span class="ent-st ok">✓ בתזרים</span>'; toast('אושר ונצבע בתזרים קדימה'); }
   function entAddRow(){
@@ -1908,6 +2091,7 @@
   }
   function openDataTable(name,ci){
     ENTRIES_SEL=name;
+    ENT_MODE=name&&name.includes('תקבולים')?'inc':'exp';
     if(typeof OPSMODE!=='undefined'&&OPSMODE){ openDataTableModal(name); return; }   // בתוך תפעול — מודל מהיר, לא עוזבים את התור
     // המסך הוא פר-חברה — נכנסים לחברה לפני שמציגים אותו (שלא יאבד ההקשר)
     if(SCOPE!=='client') selectClient(ci!=null?ci:CUR||0);
@@ -2143,6 +2327,21 @@
     if(i==null){toast('התבנית נשלחה בוואטסאפ ✓');return;}
     otHandle(i,'נשלחה תזכורת ללקוח · ✓ וואטסאפ');
   }
+  /* מחיקת צפי (נגררת) — אזהרה: זה מוריד את הצפי מהעקומה, לא רק מהרשימה */
+  let _cdIx=null;
+  function cdOpen(i){
+    const t2=curTasks()[i]; if(!t2) return;
+    _cdIx=i;
+    document.getElementById('cdName').textContent=t2.who||'';
+    document.getElementById('cdSum').textContent=(t2.dir==='inc'?'+':'')+(t2.amt||0).toLocaleString()+' ₪'+(t2.txd?' · צפוי ל־'+t2.txd:'');
+    document.getElementById('cdOv').classList.add('show');
+  }
+  function cdClose(){ document.getElementById('cdOv').classList.remove('show'); _cdIx=null; }
+  function cdGo(){
+    const i=_cdIx; cdClose();
+    otHandle(i,'הצפי נמחק מהתזרים');
+  }
+
   /* ===== התעלמות מפעולה — סיבה מתויגת =====
      השורה יורדת מהרשימה של HK; היא לא נמחקת בביזיבוקס. בלי טקסט חופשי —
      סיבה חופשית לא ניתנת לניתוח. התגים מנוהלים, כדי שאפשר יהיה לשאול
@@ -2212,6 +2411,7 @@
       return (isInc?'<span class="ct-coll">גבייה מלקוחות</span>':'')
         +B('ghost','היסטוריה ובדיקת התאמה'+(nRel?' ('+nRel+')':''),`histMatch(${i})`)
         +B('ghost del',t.type==='carry'?'התעלם':'מחיקה',`openNR(${i})`)
+        +(t.type==='carry'?B('ghost del','מחיקה',`cdOpen(${i})`):'')
         +(isInc?B('','תזכורת גבייה',`openSM(${i})`):'');
     }
     return B('ghost','לא רלוונטי',`otHandle(${i},'לא רלוונטי')`)+B('','שליחת הודעה',`otHandle(${i},'נשלחה הודעה ללקוח')`);
@@ -2255,16 +2455,12 @@
     if(t.done) return `<div class="orow2item ${t.type} is-done"><div class="orow2"><div class="orow2-body"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div></div><span class="orow2-doneflag">✓ ${t.result||'טופל'}</span></div></div>`;
     /* בחירה להתאמה ידנית — זה המנגנון היחיד מאז שהמלצות ההתאמה ירדו,
        ולכן הוא חייב להיראות כפקד ולא כריבוע דק ליד טקסט. */
-    /* אין בחירה להתאמה — ההתאמה בביזיבוקס. במקומה: המלצה כמידע. */
-    const muOff=false, muChk='';
-    const rc=(window._recMap&&window._recMap[i])||[];
-    const recNote=rc.length?`<div class="rec-note">↔ נראה כמו ${t.type==='carry'?'הפעולה שהופיעה':'הנגררת'}
-      <b>${rc[0].who}</b> · ${(rc[0].amt||0).toLocaleString()} ₪
-      ${rc[0].acct&&t.acct&&rc[0].acct!==t.acct?'<em>חשבון אחר — לא ניתן להתאים</em>':''}</div>`:'';
+    /* ההתאמה בביזיבוקס; ההמלצות ירדו גם מהשורות — נשארו רק בבדיקת ההתאמה שבפתיחה. */
+    const muOff=false, muChk='', recNote='';
     return `<div class="orow2item ${t.type} ${op?'open':''} ${muOff?'acct-dim':''}">
       <div class="orow2">
         ${muChk}
-        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div>${acctChip(t)}${recNote}</div>
+        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div><span class="cu-chips">${acctChip(t)}${t.pay?`<span class="pay-chip">${t.pay}${t.ref?' · אסמ׳ '+t.ref:''}</span>`:''}</span>${recNote}</div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
         <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
       </div>
