@@ -40,19 +40,24 @@ button{font-family:inherit;cursor:pointer}
 .topbar .sp{flex:1}
 .lg{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 11px}
 .lg i{width:12px;height:12px;border-radius:4px}
-.lg .sw-act{background:var(--act)}
-.lg .sw-flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 3px,#D8EEF9 3px,#D8EEF9 6px)}
-.lg .sw-gap{background:repeating-linear-gradient(45deg,#F7D9A8,#F7D9A8 3px,#FDF0DC 3px,#FDF0DC 6px);border:1px solid #EBCB9A}
+.lg .sw-act,.lg-r .sw-act{background:var(--act)}
+.lg .sw-flow,.lg-r .sw-flow{background:repeating-linear-gradient(45deg,var(--flow),var(--flow) 3px,#D8EEF9 3px,#D8EEF9 6px)}
+.lg .sw-gap,.lg-r .sw-gap{background:repeating-linear-gradient(45deg,#F7D9A8,#F7D9A8 3px,#FDF0DC 3px,#FDF0DC 6px);border:1px solid #EBCB9A}
 
 /* סיכום: שני כרטיסים — הכנסות והוצאות */
 .sumrow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
 @media(max-width:980px){.sumrow{grid-template-columns:1fr}}
 /* שורת רווחיות בין קבוצות הדוח */
-.pr-row{display:grid;grid-template-columns:190px 1fr 1fr;gap:20px;align-items:center;background:#EEF7FD;border:1px solid #D8EAF6;border-radius:16px;box-shadow:var(--shadow-sm);padding:15px 22px;margin:4px 0 26px}
-.pr-row .pr-name{font-size:13.5px;font-weight:800}
-.pr-row .pr-cell span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
-.pr-row .pr-cell b{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
-.pr-row .pr-cell b.pos{color:var(--text)} .pr-row .pr-cell b.neg{color:var(--neg)}
+.bl-row.pr-row{background:#0C4068;border-top:0;border-radius:12px;padding-block:12px;margin:4px 0 26px}
+.bl-row.pr-row:hover{background:#0C4068}
+.pr-row .pr-name{font-size:13px;font-weight:800;color:#fff}
+.pr-row .bl-act{text-align:start}
+.pr-row .bl-act>span{display:block;font-size:10.5px;font-weight:600;margin-bottom:1px}
+.pr-row .bl-tgt>span,.pr-row .bl-act>span{color:#B9D2E5}
+.pr-row .bl-tgt b,.pr-row .bl-act b{color:#fff;font-size:17px}
+.pr-row .bl-tgt b.neg,.pr-row .bl-act b.neg{color:#FF9E96}
+.pr-row .bl-act{cursor:default}
+.pr-row .bl-act:hover{background:none}
 .pr-row .pr-d{text-align:start;font-size:11.5px;font-weight:600;color:var(--muted)}
 .pr-row .pr-d b{display:block;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
 .pr-row .pr-d.pos b{color:var(--text)} .pr-row .pr-d.neg b{color:var(--neg)}
@@ -77,7 +82,7 @@ button{font-family:inherit;cursor:pointer}
 .gg-ok{color:#0F6D48;background:#EDF8F1;border:1px solid #A7E0BF;border-radius:999px;padding:3px 11px}
 .bl-row{display:grid;grid-template-columns:190px 120px 1fr 140px;gap:20px;align-items:center;padding:15px 22px;border-top:1px solid var(--border)}
 .bl-tgt{border-radius:10px;padding:4px 10px;margin:-4px -10px}
-.bl-tgt span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.bl-tgt>span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
 .bl-tgt b{font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 .src-tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:999px;padding:1.5px 8px;margin-top:3px;white-space:nowrap}
 .src-tag.avg{background:repeating-linear-gradient(45deg,#eef2f8,#eef2f8 3px,#e0e7f1 3px,#e0e7f1 6px);color:#64748b;border:1px solid #d3dced}
@@ -85,23 +90,14 @@ button{font-family:inherit;cursor:pointer}
 .src-tag.goal-inc{background:#e2f3e9;color:#13895b;border:1px solid #a7e0bf}
 .src-tag.goal-exp{background:#fdf4e3;color:#c98404;border:1px solid #ecd9a8}
 .bl-row:hover{background:#FAFCFE}
-.bl-row.grp-sum{background:#0C4068;border-top:0;padding-block:17px;color:#fff}
-.bl-row.grp-sum:hover{background:#0C4068}
-.grp .bl-row.grp-sum:last-child{border-end-start-radius:15px;border-end-end-radius:15px}
-.bl-row.grp-sum .sum-lbl{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:800;color:#fff}
-.bl-row.grp-sum .sum-lbl::before{content:'Σ';font-size:14px;font-weight:800;color:#7FC4EC}
-.bl-row.grp-sum .bl-tgt span{color:#9FC0D8}
-.bl-row.grp-sum .bl-tgt b{font-size:16px;color:#fff}
-.bl-row.grp-sum .bl-track{background:repeating-linear-gradient(45deg,rgba(247,196,107,.5),rgba(247,196,107,.5) 4px,rgba(255,255,255,.14) 4px,rgba(255,255,255,.14) 8px);height:12px}
-.bl-row.grp-sum .bl-bar{height:12px}
-.bl-row.grp-sum .bl-bar .seg.act{background:#7FC4EC}
-.bl-row.grp-sum .bl-nums{color:#9FC0D8}
-.bl-row.grp-sum .bl-nums b,.bl-row.grp-sum .n-act b,.bl-row.grp-sum .n-flow b,.bl-row.grp-sum .n-blrow b,.bl-row.grp-sum .n-over b{color:#fff}
-.bl-row.grp-sum .n-clk:hover{background:rgba(255,255,255,.12)}
-.bl-row.grp-sum .bl-gap{color:#9FC0D8}
-.bl-row.grp-sum .bl-gap b{font-size:19px;color:#FFC46B}
-.bl-row.grp-sum .bl-gap.pos b{color:#8FE3B8}
-.bl-row.grp-sum .bl-gap.neg b{color:#FF9E96}
+.bl-row.grp-sum{background:#F4F8FB;border-top:1.5px solid var(--border-strong);padding-block:13px}
+.bl-row.grp-sum:hover{background:#F4F8FB}
+.bl-row.grp-sum .sum-lbl{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--text)}
+.bl-row.grp-sum .sum-lbl::before{content:'Σ';font-size:13px;font-weight:800;color:var(--accent)}
+.bl-row.grp-sum .bl-tgt b{font-size:15.5px}
+.sum-nums{display:flex;gap:18px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sum-nums b{font-weight:700;color:var(--text)}
+.bl-row.grp-sum .bl-gap b{font-size:17px}
 .bl-name{font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .bl-name .nm{display:inline-flex;align-items:center;gap:3px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;
   color:var(--text);background:none;border:0;padding:2px 7px 2px 4px;margin:-2px -7px -2px -4px;border-radius:8px;transition:.12s;text-align:start}
@@ -169,6 +165,7 @@ button{font-family:inherit;cursor:pointer}
 .seg.spill.exp{background:repeating-linear-gradient(45deg,#E24B4A,#E24B4A 4px,#F7C1C1 4px,#F7C1C1 8px)}
 .seg.spill.inc{background:repeating-linear-gradient(45deg,#4CAF7D,#4CAF7D 4px,#C6E9D6 4px,#C6E9D6 8px)}
 .sw-blrow{display:inline-block;width:12px;height:12px;border-radius:4px;background:repeating-linear-gradient(45deg,#9B85D6,#9B85D6 3px,#E4DCF6 3px,#E4DCF6 6px);vertical-align:-2px}
+.sw-spill.grn{background:repeating-linear-gradient(45deg,#4CAF7D,#4CAF7D 3px,#C6E9D6 3px,#C6E9D6 6px) !important}
 .sw-spill{display:inline-block;width:14px;height:11px;border-radius:999px;background:repeating-linear-gradient(45deg,#E24B4A,#E24B4A 3px,#F7C1C1 3px,#F7C1C1 6px);vertical-align:-2px}
 .bl-nums .n-clk{cursor:pointer;border-radius:7px;padding:1px 5px;margin:-1px -5px;transition:.12s}
 .bl-nums .n-clk:hover{background:#EAF2F9;text-decoration:underline}
@@ -226,6 +223,44 @@ button{font-family:inherit;cursor:pointer}
 .gate.ok .gi{background:#D6F0E1;color:#13895b}
 .gate.ok .gtx{color:#0F6D48} .gate.ok .gtx small{color:#4E9273}
 /* פוטר תת-סף */
+.sp2{flex:1}
+.fbtn{font-family:inherit;font-size:12px;font-weight:700;color:#5B6B7C;background:#fff;border:1.5px solid var(--border-strong);border-radius:999px;padding:7px 15px;cursor:pointer;transition:.12s}
+.fbtn:hover{border-color:var(--accent);color:var(--accent)}
+.fbtn.on{background:#0C4068;border-color:#0C4068;color:#fff}
+.fbtn.ghost{border-style:dashed}
+.fbtn b{font-weight:800;font-variant-numeric:tabular-nums}
+.th-wrap{position:relative}
+.th-pop{display:none;position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:70;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 44px rgba(12,64,104,.22);padding:15px 17px;width:250px}
+.th-pop.show{display:block}
+.lg-pop{width:265px}
+.lg-r{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:12px;color:var(--muted)}
+.lg-r i{width:14px;height:14px;border-radius:5px;flex:0 0 auto}
+.lg-r b{font-weight:700;color:var(--text);flex:0 0 auto}
+.lg-r span{font-size:11px}
+.th-t{font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:10px}
+.th-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--muted)}
+.th-row input{width:90px;font-family:inherit;font-size:14px;font-weight:800;color:var(--text);border:1.5px solid var(--border-strong);border-radius:9px;padding:7px 10px;outline:none;text-align:center;font-variant-numeric:tabular-nums}
+.th-row input:focus{border-color:var(--accent)}
+.th-note{font-size:10.5px;color:var(--soft);line-height:1.5;margin:4px 0 10px}
+.th-foot{display:flex;gap:6px}
+.th-save{flex:1;font-family:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--accent);border:0;border-radius:9px;padding:8px;cursor:pointer}
+.th-x{font-family:inherit;font-size:12px;font-weight:600;color:var(--muted);background:none;border:0;cursor:pointer;padding:8px 10px;border-radius:8px}
+.th-x:hover{background:#F1F4F7}
+.flt-n{font-weight:800}
+.flt-t{font-size:12.5px;font-weight:800;color:var(--text);padding:2px 4px 9px}
+.flt-sep{height:1px;background:var(--border);margin:5px 2px 7px}
+.flt-r{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:10px;cursor:pointer;font-size:12.5px;color:var(--muted);transition:.1s;user-select:none}
+.flt-r:hover{background:#F4F8FB}
+.flt-r.on{background:#EAF4FB}
+.flt-r b{font-weight:600;color:var(--text)}
+.flt-r.on b{font-weight:700}
+.flt-r i{margin-inline-start:auto;font-style:normal;font-size:11px;font-weight:800;background:#F1F5F9;color:#5B6B7C;border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.flt-r.on i{background:#fff;color:var(--accent)}
+.fchk{width:18px;height:18px;border-radius:6px;border:1.8px solid #C0CFDD;background:#fff;display:grid;place-items:center;color:transparent;flex:0 0 auto;transition:.12s}
+.fchk svg{width:11px;height:11px}
+.flt-r:hover .fchk{border-color:var(--accent)}
+.fchk.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.flt-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 .sub-foot{display:flex;align-items:center;gap:8px;padding:9px 22px;font-size:11.5px;color:var(--muted);background:#FAFCFD;border-top:1px dashed var(--border-strong)}
 .sub-foot b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
 .sub-foot .why{margin-inline-start:auto;font-size:10.5px;color:var(--soft)}
@@ -286,11 +321,31 @@ body.is-embedded .page-head{display:none}
   <div class="topbar">
     <span id="months"></span>
     <span class="sp"></span>
-    <span class="lg"><i class="sw-act"></i> בפועל</span>
-    <span class="lg"><i class="sw-flow"></i> בתזרים · צבוע קדימה</span>
-    <span class="lg"><i class="sw-blrow"></i> שורה תקציבית · שורות דמה</span>
-    <span class="lg"><i class="sw-spill"></i> המשך אחרי סוף הבר = חריגה</span>
-    <span class="lg"><i class="sw-gap"></i> פער — הקטע שלא נצבע</span>
+    <span class="th-wrap">
+      <button class="fbtn ghost" onclick="lgTg()">מקרא</button>
+      <div class="th-pop lg-pop" id="lgPop">
+        <div class="lg-r"><i class="sw-act"></i><b>בפועל</b><span>מה שכבר קרה בבנק</span></div>
+        <div class="lg-r"><i class="sw-flow"></i><b>בתזרים</b><span>צבוע קדימה</span></div>
+        <div class="lg-r"><i class="sw-blrow"></i><b>שורה תקציבית</b><span>שורות דמה</span></div>
+        <div class="lg-r"><i class="sw-gap"></i><b>פער</b><span>הקטע שלא נצבע</span></div>
+        <div class="lg-r"><i class="sw-spill"></i><b>חריגה</b><span>בהוצאות — המשך אחרי סוף הבר</span></div>
+        <div class="lg-r"><i class="sw-spill grn"></i><b>מעל היעד</b><span>בהכנסות — עברנו את היעד</span></div>
+        <div class="th-foot"><button class="th-x" onclick="lgTg()">סגירה</button></div>
+      </div>
+    </span>
+    <span class="th-wrap">
+      <button class="fbtn ghost" onclick="thOpen()">סף פער · <b id="thLbl"></b></button>
+      <div class="th-pop" id="thPop">
+        <div class="th-t">מה נחשב פער</div>
+        <div class="th-note" id="thRule"></div>
+        <div class="th-note" style="color:#8A97A6">הסף הוא מדיניות של החברה — נקבע בהגדרות החברה, לא כאן, כדי שהבדיקה לא תלויה במי שנבדק.</div>
+        <div class="th-foot"><button class="th-save" onclick="thGoSet()">שינוי בהגדרות החברה ←</button><button class="th-x" onclick="thClose()">סגירה</button></div>
+      </div>
+    </span>
+    <span class="th-wrap">
+      <button class="fbtn" id="fltBtn" onclick="fltTgPop()">סינון פערים<span class="flt-n" id="fltN"></span></button>
+      <div class="th-pop" id="fltPop" style="width:245px"><div id="fltBody"></div></div>
+    </span>
   </div>
 
   <div class="sumrow" id="sumrow"></div>
@@ -403,6 +458,56 @@ let GAP_TH={floor:1000, pct:5, ceil:25000};
 try{ const s=JSON.parse(localStorage.getItem('hkGapTh')||'null'); if(s) GAP_TH=Object.assign(GAP_TH,s); }catch(e){}
 window.addEventListener('message',e=>{ if(e.data&&e.data.hk==='gapTh'){ GAP_TH=Object.assign(GAP_TH,e.data.th); render(); } });
 
+/* סינון פערים לפי סוג: בוחרים אילו פערים לראות, עם מונה לכל סוג. */
+let FLT_SET=new Set();
+const FLT_DEF=[['none','פער ללא סוג'],['wait','מחכה לחומר'],['changed','המציאות השתנתה'],['shifted','התזמון זז'],['built','טעינו בבנייה'],['over','חריגה / מעל היעד']];
+function rowKind(r){
+  const g=gapOf(r);
+  if(g>0&&matOf(r)) return gtOf(r)||'none';
+  if(g<0&&matNeg(r)) return 'over';
+  return null;
+}
+function rowHot(r){
+  const k=rowKind(r);
+  if(k==null) return false;
+  if(FLT_SET.size) return FLT_SET.has(k);
+  return FLT_ONLY;   // "כל הפערים"
+}
+function fltActive(){ return FLT_ONLY||FLT_SET.size>0; }
+function fltCounts(){
+  const c={}; allRows().forEach(x=>{ const k=rowKind(x.r); if(k) c[k]=(c[k]||0)+1; });
+  return c;
+}
+function fltTgPop(){ document.getElementById('fltPop').classList.toggle('show'); fltRender(); }
+function fltTg(k){ FLT_SET.has(k)?FLT_SET.delete(k):FLT_SET.add(k); render(); fltRender(); }
+function fltAll(){ FLT_SET=new Set(); FLT_ONLY=false; render(); fltRender(); }
+let FLT_ONLY=false;
+const FLT_DOT={none:'#EF9F27',wait:'#B26B12',changed:'#B3372A',shifted:'#2C7FB0',built:'#6B4FA0',over:'#E24B4A'};
+function fltRender(){
+  const c=fltCounts(), tot=Object.values(c).reduce((s,n)=>s+n,0);
+  const el=document.getElementById('fltBody'); if(!el) return;
+  const chk=on=>`<span class="fchk ${on?'on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6 9 17l-5-5"/></svg></span>`;
+  const allOn=FLT_ONLY&&FLT_SET.size===0;
+  el.innerHTML=
+    `<div class="flt-t">אילו פערים להציג?</div>
+     <div class="flt-r all ${allOn?'on':''}" onclick="FLT_ONLY=!FLT_ONLY;FLT_SET=new Set();render();fltRender()">
+       ${chk(allOn)}<b>כל הפערים</b><i>${tot}</i></div>
+     <div class="flt-sep"></div>`
+    +FLT_DEF.map(([k,l])=>c[k]?`<div class="flt-r ${FLT_SET.has(k)?'on':''}" onclick="fltTg('${k}')">
+       ${chk(FLT_SET.has(k))}<span class="flt-dot" style="background:${FLT_DOT[k]}"></span><b>${l}</b><i>${c[k]}</i></div>`:'').join('')
+    +`<div class="th-foot"><button class="th-x" onclick="fltAll();document.getElementById('fltPop').classList.remove('show')">הצגת הכל · ביטול הסינון</button></div>`;
+}
+function lgTg(){ document.getElementById('lgPop').classList.toggle('show'); }
+/* הסף הוא מדיניות פר חברה — נערך רק בהגדרות החברה. מכאן: קריאה בלבד.
+   (נבנה כאן עורך מהיר ונפסל: המתפעל לא קובע לעצמו מה מהותי — זה עוקף את הגייט.) */
+function thOpen(){
+  document.getElementById('thRule').innerHTML=
+    'פער מהותי הוא כזה שגם עובר <b>'+nf.format(GAP_TH.floor)+' ₪</b> וגם <b>'+GAP_TH.pct+'%</b> מהיעד. '+
+    'מעל <b>'+nf.format(GAP_TH.ceil)+' ₪</b> — תמיד פער. מה שמתחת לסף מוצג אפור ולא דורש הגדרה.';
+  document.getElementById('thPop').classList.add('show');
+}
+function thClose(){ document.getElementById('thPop').classList.remove('show'); }
+function thGoSet(){ thClose(); try{ parent.postMessage({hk:'coset'},'*'); }catch(e){} toast('הסף נערך בהגדרות החברה › תפעולי'); }
 function gtOf(r){ return (r.gt||[])[mi]||null; }
 function gnOf(r){ return (r.gn||[])[mi]||''; }
 function gtSet(r,k,n){ r.gt=r.gt||[]; r.gn=r.gn||[]; r.gt[mi]=k; r.gn[mi]=n||''; }
@@ -625,10 +730,13 @@ function blChip(r,gi,ri){
 }
 function gapHtml(r,kind,gi,ri){
   const g=gapOf(r);
-  if(g===0) return `<div class="bl-gap pos">${blOf(r)?'✓ מכוסה בשורה תקציבית':'✓ מכוסה במלואו'}<b>0</b></div>`;
+  /* אין פער — לא מציגים כלום. היעדר הוא הסיגנל; המסך נשאר נקי. */
+  if(g===0) return `<div class="bl-gap"></div>`;
   if(g<0){
+    const mat=matNeg(r);
+    if(!mat) return `<div class="bl-gap"></div>`;
     const c=kind==='exp'?'neg':'pos', lbl=kind==='exp'?'חריגה מהיעד':'מעל היעד';
-    const mat=matNeg(r), k=gtOf(r), T=k?GAP_TYPES[k]:null;
+    const k=gtOf(r), T=k?GAP_TYPES[k]:null;
     let tail='';
     if(!mat) tail='';
     else if(T){ const note=gnOf(r);
@@ -643,7 +751,8 @@ function gapHtml(r,kind,gi,ri){
   const mat=matOf(r), k=gtOf(r), T=k?GAP_TYPES[k]:null;
   let tail;
   if(!mat){
-    tail=`<span class="subtag">מתחת לסף — לא דורש הגדרה</span>`;
+    /* מתחת לסף = לא פער. לא מציגים כלום — הפוטר של הקבוצה שומר על הסכום. */
+    return `<div class="bl-gap"></div>`;
   }else if(T){
     const note=gnOf(r);
     tail=`<button class="gt-chip ${T.cls}" onclick="openGtPop(${gi},${ri})" title="לחיצה לשינוי הסיווג">${T.chip}<span class="cx">✎</span></button>`
@@ -657,6 +766,12 @@ function gapHtml(r,kind,gi,ri){
 }
 
 function render(){
+  const fb=document.getElementById('fltBtn');
+  if(fb) fb.classList.toggle('on',fltActive());
+  const fn=document.getElementById('fltN');
+  if(fn) fn.textContent=FLT_SET.size?(' · '+FLT_SET.size):(FLT_ONLY?' · הכל':'');
+  const tl=document.getElementById('thLbl');
+  if(tl) tl.textContent=nf.format(GAP_TH.floor)+' ₪ · '+GAP_TH.pct+'%';
   document.getElementById('months').innerHTML=MONTHS.map((m,i)=>
     `<button class="mbtn ${i===mi?'on':''}" onclick="mi=${i};render()">${m.tag}<small>${m.label}</small></button>`).join('');
 
@@ -673,10 +788,10 @@ function render(){
     const B=rows.reduce((s,r)=>s+blOf(r),0);
     const G=T-A-F-B;
     const gCls=G===0?'pos':G<0?(kind==='exp'?'neg':'pos'):'warn';
-    const gTxt=G===0?'✓ מכוסה':G<0?(kind==='exp'?'חריגה':'מעל היעד'):'פער';
+    const gTxt=G===0?'':G<0?(kind==='exp'?'חריגה':'מעל היעד'):'פער';
     return `<div class="scard">
       <div class="sc-top"><span class="k">${label}<small>${MONTHS[mi].label}</small></span>
-        <span class="g ${gCls}">${gTxt}<b>${nfs(G,1)}</b></span></div>
+        ${G===0?'':`<span class="g ${gCls}">${gTxt}<b>${nfs(G,1)}</b></span>`}</div>
       ${barHtml({target:T,act:A,flow:F,bl:B},kind)}
     </div>`;
   };
@@ -689,15 +804,16 @@ function render(){
   let cumT=0, cumC=0;
   document.getElementById('groups').innerHTML=GROUPS.map((g,gi)=>{
     const a=gAgg(g);
+    if(fltActive()&&!g.rows.some(rowHot)) {
+      if(g.kind==='inc'){cumT+=a.T;cumC+=a.C;}else{cumT-=a.T;cumC-=a.C;}
+      return '';
+    }
     if(g.kind==='inc'){cumT+=a.T;cumC+=a.C;}else{cumT-=a.T;cumC-=a.C;}
     let out=`
     <div class="grp">
-      <div class="grp-h"><span class="dot" style="background:${g.color}"></span>${g.label}
-        <span class="cnt">${g.rows.length} קטגוריות</span>
-        ${(()=>{ const pos=g.rows.reduce((s,r)=>s+Math.max(gapOf(r),0),0),
-                 neg=g.rows.reduce((s,r)=>s+Math.max(-gapOf(r),0),0);
-          return `<span class="grp-gap">${pos?`<span class="gg-pos">פער <b>${nf.format(pos)}</b></span>`:''}${neg?`<span class="gg-neg">${g.kind==='exp'?'חריגה':'מעל היעד'} <b>${nf.format(neg)}</b></span>`:''}${!pos&&!neg?'<span class="gg-ok">מכוסה ✓</span>':''}</span>`;})()}</div>
+      <div class="grp-h"><span class="dot" style="background:${g.color}"></span>${g.label}</div>
       ${g.rows.map((r,ri)=>{
+        if(fltActive()&&!rowHot(r)) return '';
         return `
         <div class="bl-row">
           <div class="bl-name"><button class="nm" onclick="openTxPop(${gi},${ri})" title="הפעולות של הקטגוריה החודש">${r.label}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 18-6-6 6-6"/></svg></button>
@@ -706,7 +822,7 @@ function render(){
           <div class="bl-mid">${barHtml(r,g.kind,true,gi,ri)}</div>
           ${gapHtml(r,g.kind,gi,ri)}
         </div>`;}).join('')}
-      ${(()=>{ /* שורת סיכום לקבוצה — אותו מבנה עמודות, כדי שאפשר לקרוא אנכית */
+      ${fltActive()?'':(()=>{ /* שורת סיכום לקבוצה — אותו מבנה עמודות, כדי שאפשר לקרוא אנכית */
         const T=g.rows.reduce((s,r)=>s+r.target,0);
         const A=g.rows.reduce((s,r)=>s+rowVals(r).act,0);
         const F=g.rows.reduce((s,r)=>s+rowVals(r).flow,0);
@@ -715,18 +831,20 @@ function render(){
         return `<div class="bl-row grp-sum">
           <div class="bl-name"><span class="sum-lbl">סה״כ ${g.label}</span></div>
           <div class="bl-tgt"><span>יעד</span><b>${nf.format(T)}</b></div>
-          <div class="bl-mid">${barHtml({target:T,act:A,flow:F,bl:B},g.kind,true)}</div>
-          <div class="bl-gap ${ov?(g.kind==='exp'?'neg':'pos'):(G===0?'pos':'warn')}">${ov?(g.kind==='exp'?'חריגה מהיעד':'מעל היעד'):(G===0?'✓ מכוסה':'פער')}<b>${nfs(G)}</b></div>
+          <div class="bl-mid sum-nums"><span>בפועל <b>${nf.format(A)}</b></span><span>בתזרים <b>${nf.format(F)}</b></span>${B?`<span>שורה תקציבית <b>${nf.format(B)}</b></span>`:''}</div>
+          <div class="bl-gap"></div>
         </div>`;})()}
-      ${(()=>{ const l=g.rows.filter(r=>gapOf(r)>0&&!matOf(r));
+      ${fltActive()?'':(()=>{ const l=g.rows.filter(r=>gapOf(r)>0&&!matOf(r));
         return l.length?`<div class="sub-foot">${l.length} ${l.length===1?'קטגוריה':'קטגוריות'} מתחת לסף · <b>${nf.format(l.reduce((s,r)=>s+gapOf(r),0))} ₪</b>
           <span class="why">מתחת ל-${nf.format(GAP_TH.floor)} ₪ או ${GAP_TH.pct}% מהיעד — לא דורש הגדרה</span></div>`:''; })()}
     </div>`;
-    if(PROFIT_AFTER[gi]){
-      out+=`<div class="pr-row">
-        <div class="pr-name">${PROFIT_AFTER[gi]}</div>
-        <div class="pr-cell"><span>יעד</span><b class="${cumT<0?'neg':'pos'}">${nfs(cumT)}</b></div>
-        <div class="pr-cell"><span>צפי · בפועל + בתזרים</span><b class="${cumC<0?'neg':'pos'}">${nfs(cumC)}</b></div>
+    if(PROFIT_AFTER[gi]&&!fltActive()){
+      /* אותו גריד בדיוק כמו שורות הקטגוריות — יעד מתחת ליעד, צפי מתחת לבפועל */
+      out+=`<div class="bl-row pr-row">
+        <div class="bl-name"><span class="pr-name">${PROFIT_AFTER[gi]}</span></div>
+        <div class="bl-tgt"><span>יעד</span><b class="${cumT<0?'neg':''}">${nfs(cumT)}</b></div>
+        <div class="bl-act"><span>בפועל + בתזרים</span><b class="${cumC<0?'neg':''}">${nfs(cumC)}</b></div>
+        <div></div>
       </div>`;
     }
     return out;
