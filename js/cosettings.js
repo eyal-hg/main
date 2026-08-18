@@ -124,9 +124,64 @@ function coContacts(d){
   </div>`;
 }
 /* ---------- טאב תפעולי ---------- */
+/* ===== מצב החברה — השדה שקובע אם היא בתור, במחליף, במדדים ובחיוב =====
+   שלושה מצבים בלבד (coState): פעיל · בהקמה · ארכיון.
+   ארכיון דורש אישור בתוך המסך — הוא מוציא את החברה מכל מקום. */
+let COSET_ARCH=false;
+const CO_ST=[
+  ['active','פעיל',  'בתור התפעול היומי, במחליף החברות, במדדים ובחיוב.'],
+  ['setup', 'בהקמה', 'ממתינה להרשאות בנק — לא נכנסת לתור ולא נספרת במדדי היום. נשארת במחליף כדי שאפשר יהיה להקים אותה.'],
+  ['arch',  'ארכיון','יצאה. לא בתור, לא במחליף החברות, לא במדדים ולא בחיוב. נשלפת רק כשבוחרים ארכיון במפורש.']];
+function coStTg(k){
+  const c=CLIENTS[CUR]; if(!c) return;
+  /* ארכיון מוציא את החברה מכל מקום — לכן אישור בתוך המסך לפני הביצוע */
+  if(k==='arch'&&coState(c)!=='arch'){ COSET_ARCH=true; return renderCoBody(); }
+  coApplySt(k);
+}
+function coArchGo(){ coApplySt('arch'); }
+/* החזרה לפעילות מכל מקום (כרטיס במסך לקוחות, שורה בסרגל) — לפי אינדקס */
+function coRestore(i){
+  const c=CLIENTS[i]; if(!c) return;
+  c.advStatus='פעיל'; c.archOn=null; c.archWhy=null;
+  if(typeof renderGlobalRail==='function') renderGlobalRail();
+  if(typeof renderClientsView==='function') renderClientsView();
+  if(typeof renderCoBody==='function'&&CUR===i&&CUR_TAB==='coset') renderCoBody();
+  toast(c.name+' הוחזרה לפעילות — נכנסת לתור התפעול');
+}
+function coApplySt(k){
+  const c=CLIENTS[CUR]; if(!c) return;
+  COSET_ARCH=false;
+  c.advStatus=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון';
+  if(k==='arch'){ c.archOn=c.archOn||'02.07.2026'; c.archWhy=c.archWhy||'הועברה לארכיון מהגדרות החברה'; }
+  else { c.archOn=null; c.archWhy=null; }
+  renderCoBody();
+  if(typeof renderGlobalRail==='function') renderGlobalRail();
+  const st=document.querySelector('.client-head .st');
+  if(st){ st.className='st '+(k==='active'?'active':k==='setup'?'setup':'arch');
+    st.textContent=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון'; }
+  toast(c.name+' — '+(k==='active'?'הוחזרה לפעילות ונכנסת לתור התפעול'
+                     :k==='setup'?'סומנה בהקמה — יצאה מתור התפעול'
+                     :'הועברה לארכיון'));
+}
+function coStHtml(){
+  const c=CLIENTS[CUR]||{}, cur=coState(c);
+  const note=(CO_ST.find(x=>x[0]===cur)||[])[2]||'';
+  return `<div class="cos-st">
+      ${CO_ST.map(([k,l])=>`<button class="cos-stb ${k} ${cur===k?'on':''}" onclick="coStTg('${k}')">${l}</button>`).join('')}
+    </div>
+    <div class="cos-note ${cur==='arch'?'arch':''}">${note}${cur==='arch'&&c.archOn?` <b>בארכיון מאז ${c.archOn}</b>`:''}</div>
+    ${COSET_ARCH?`<div class="cos-warn">
+      <div class="cw-t">להעביר את ${c.name} לארכיון?</div>
+      <div class="cw-s">החברה תצא מתור התפעול, מהמחליף בטופבר, ממדדי היום ומהחיוב. אפשר להחזיר אותה מכאן בכל רגע.</div>
+      <div class="cw-a"><button class="cw-go" onclick="coArchGo()">העברה לארכיון</button>
+        <button class="mt-btn view sm" onclick="COSET_ARCH=false;renderCoBody()">ביטול</button></div>
+    </div>`:''}`;
+}
 function coOps(d){
   const g=coGapTh();
   return `<div class="cos-narrow">
+    <div class="cos-sub-h big" style="margin-top:0">מצב החברה</div>
+    ${coStHtml()}
     ${coF('מנהל תזרים', `<select class="mx2-inp" style="width:100%">${[...new Set(CLIENTS.map(c=>c.mgr))].map(n=>`<option ${n===d.mgr?'selected':''}>${n}</option>`).join('')}</select>`)}
     ${coF('חברת ייעוץ', `<select class="mx2-inp" style="width:100%"><option>HK</option><option>אשכנזי ייעוץ עסקי</option><option>ברק ושות׳</option></select>`)}
 

@@ -11,9 +11,14 @@
       document.getElementById('headName').textContent='כל החברות';
       hp.style.display='none'; st.style.display='none'; acts.style.display='none';
       if(kpi)kpi.style.display='none';
-      sub.textContent='תיק לקוחות · 12 חברות · 4 בחריגה היום · נכון ל-2.7.2026';
+      sub.textContent='תיק לקוחות · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות · נכון ל-2.7.2026';
     }else{
       hp.style.display=''; st.style.display=''; acts.style.display='flex'; acts.style.visibility='visible';
+      if(st&&typeof coState==='function'){                       /* התג משקף את המצב האמיתי */
+        const k=coState(CLIENTS[CUR]);
+        st.className='st '+(k==='active'?'active':k==='setup'?'setup':'arch');
+        st.textContent=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון';
+      }
       if(kpi)kpi.style.display='';
       sub.textContent='חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 2.7.2026 10:54';
     }
@@ -436,7 +441,7 @@
           :c.coopLast?`<div class="clv-coop ok">חומר אחרון לתזרים · ${c.coopLast}</div>`
           :`<div class="clv-coop no">טרם התקבל חומר לתזרים</div>`}
         <div class="clv-foot">${stt==='arch'
-          ?`<button class="mt-btn view" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button><button class="mt-btn" onclick="event.stopPropagation();toast('${c.name} הוחזרה לפעילות — נכנסת לתור התפעול')">החזרה לפעילות</button>`
+          ?`<button class="mt-btn view" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button><button class="mt-btn" onclick="event.stopPropagation();coRestore(${i})">החזרה לפעילות</button>`
           :`<button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button><button class="mt-btn" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button>`}</div>
       </div>`;}).join('')||`<div class="ops-empty" style="padding:40px">${CLV_ST==='arch'?'אין חברות בארכיון':CLV_ST==='setup'?'אין חברות בהקמה':'לא נמצאו לקוחות'}</div>`;
   }
