@@ -26,18 +26,24 @@ function coData(i){
 }
 let COSET_CONTACT=0;
 
+/* "תפעולי" הוא פנימי ל-HK — ליועצים אין אותו. ארכיון יושב בפרטי לקוח כדי שגם הם ישנו. */
+const coHK=()=>typeof ROLE==='undefined'||ROLE==='manager';
+function coTabs(){ return CO_TABS.filter(t=>t.k!=='ops'||coHK()); }
 function renderCoSet(){
+  if(COSET_TAB==='ops'&&!coHK()) COSET_TAB='details';
   const el=document.getElementById('viewCoSet'); if(!el) return;
   const c=CLIENTS[CUR]||{}; const d=coData(CUR);
   el.innerHTML=`
     <div class="cos-head">
       <div class="cos-ttl">הגדרות חברה — ${c.name||''} <span>${c.hp||''}</span></div>
       <div class="cos-acts">
-        <button class="cos-link" onclick="toast('החברה הועברה לארכיון')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg> העברה לארכיון</button>
+        ${coState(c)==='arch'
+          ?`<button class="cos-link back" onclick="coRestore(CUR)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> החזרה לפעילות</button>`
+          :`<button class="cos-link" onclick="coArchAsk()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg> העברה לארכיון</button>`}
         <button class="cos-link danger" onclick="hkConfirm('מחיקת חברה','החברה תימחק לצמיתות. לא ניתן לשחזר.','מחיקה',()=>toast('החברה נמחקה'))"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg> מחיקת חברה</button>
       </div>
     </div>
-    <div class="cos-tabs">${CO_TABS.map(t=>`<button class="cos-tab ${COSET_TAB===t.k?'on':''}" onclick="coSetTab('${t.k}')">${t.l}</button>`).join('')}</div>
+    <div class="cos-tabs">${coTabs().map(t=>`<button class="cos-tab ${COSET_TAB===t.k?'on':''}" onclick="coSetTab('${t.k}')">${t.l}</button>`).join('')}</div>
     <div class="cos-body" id="cosBody"></div>
     ${COSET_TAB==='memory'?'':`<div class="cos-foot"><button class="mx2-btn primary" onclick="coSetSave()">אישור</button><button class="mx2-btn" onclick="showTab('dash')">ביטול</button></div>`}`;
   renderCoBody();
@@ -61,9 +67,28 @@ function renderCoBody(){
 /* ---------- טאב פרטי לקוח ---------- */
 function coF(label,inner){ return `<div class="cos-f"><label>${label}</label>${inner}</div>`; }
 function coInput(v,ph=''){ return `<input class="mx2-inp" value="${(v||'').toString().replace(/"/g,'&quot;')}" placeholder="${ph}">`; }
+/* סטטוס התקשרות — שייך לפרטי הלקוח, ולכן גם היועצים משנים אותו.
+   זה לא המצב התפעולי (פעיל/בהקמה) שהוא פנימי ל-HK. */
+function coArchHtml(){
+  const c=CLIENTS[CUR]||{}, arch=coState(c)==='arch';
+  return `<div class="cos-arch ${arch?'on':''}">
+    <div class="ca-l">
+      <div class="ca-t">${arch?'בארכיון':'בהתקשרות'}</div>
+      <div class="ca-s">${arch
+        ? (c.archOn?'מאז '+c.archOn:'')+(c.archWhy?' · '+c.archWhy:'')
+        : 'החברה בתיק — מופיעה במחליף החברות, במסך הלקוחות ובחיוב.'}</div>
+    </div>
+    ${arch
+      ? `<button class="ca-btn back" onclick="coRestore(CUR)">החזרה לפעילות</button>`
+      : `<button class="ca-btn" onclick="coArchAsk()">העברה לארכיון</button>`}
+  </div>
+  ${arch?`${coF('סיבת היציאה', `<input class="mx2-inp" value="${(c.archWhy||'').replace(/"/g,'&quot;')}"
+      onchange="CLIENTS[CUR].archWhy=this.value" placeholder="למה הלקוח יצא">`)}`:''}`;
+}
 function coDetails(d){
   return `<div class="cos-2col">
     <div class="cos-left">
+      ${coF('סטטוס התקשרות', coArchHtml())}
       ${coF('שם פרטי', coInput(d.firstName))}
       ${coF('שם עסק / שם חברה', coInput(d.company))}
       ${coF('טלפון', coInput(d.phone))}
@@ -130,52 +155,52 @@ function coContacts(d){
 let COSET_ARCH=false;
 const CO_ST=[
   ['active','פעיל',  'בתור התפעול היומי, במחליף החברות, במדדים ובחיוב.'],
-  ['setup', 'בהקמה', 'ממתינה להרשאות בנק — לא נכנסת לתור ולא נספרת במדדי היום. נשארת במחליף כדי שאפשר יהיה להקים אותה.'],
-  ['arch',  'ארכיון','יצאה. לא בתור, לא במחליף החברות, לא במדדים ולא בחיוב. נשלפת רק כשבוחרים ארכיון במפורש.']];
-function coStTg(k){
-  const c=CLIENTS[CUR]; if(!c) return;
-  /* ארכיון מוציא את החברה מכל מקום — לכן אישור בתוך המסך לפני הביצוע */
-  if(k==='arch'&&coState(c)!=='arch'){ COSET_ARCH=true; return renderCoBody(); }
-  coApplySt(k);
+  ['setup', 'בהקמה', 'ממתינה להרשאות בנק — לא נכנסת לתור ולא נספרת במדדי היום. נשארת במחליף כדי שאפשר יהיה להקים אותה.']];
+function coStTg(k){ coApplySt(k); }
+/* העברה לארכיון — פעולה של סטטוס ההתקשרות, עם אישור בתוך המערכת */
+function coArchAsk(i){
+  const c=CLIENTS[i!=null?i:CUR]; if(!c) return;
+  hkConfirm('העברת '+c.name+' לארכיון',
+    'החברה תצא מתור התפעול, מהמחליף בטופבר, ממדדי היום ומהחיוב. אפשר להחזיר אותה לפעילות בכל רגע.',
+    'העברה לארכיון', ()=>coArchGo(i));
 }
-function coArchGo(){ coApplySt('arch'); }
+function coArchGo(i){
+  const ix=i!=null?i:CUR, c=CLIENTS[ix]; if(!c) return;
+  c.advStatus='ארכיון'; c.archOn=c.archOn||'02.07.2026'; c.archWhy=c.archWhy||'הועברה לארכיון מהגדרות החברה';
+  coAfterSt(c,'arch');
+}
 /* החזרה לפעילות מכל מקום (כרטיס במסך לקוחות, שורה בסרגל) — לפי אינדקס */
 function coRestore(i){
-  const c=CLIENTS[i]; if(!c) return;
+  const c=CLIENTS[i!=null?i:CUR]; if(!c) return;
   c.advStatus='פעיל'; c.archOn=null; c.archWhy=null;
-  if(typeof renderGlobalRail==='function') renderGlobalRail();
-  if(typeof renderClientsView==='function') renderClientsView();
-  if(typeof renderCoBody==='function'&&CUR===i&&CUR_TAB==='coset') renderCoBody();
-  toast(c.name+' הוחזרה לפעילות — נכנסת לתור התפעול');
+  coAfterSt(c,'active');
 }
 function coApplySt(k){
   const c=CLIENTS[CUR]; if(!c) return;
-  COSET_ARCH=false;
-  c.advStatus=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון';
-  if(k==='arch'){ c.archOn=c.archOn||'02.07.2026'; c.archWhy=c.archWhy||'הועברה לארכיון מהגדרות החברה'; }
-  else { c.archOn=null; c.archWhy=null; }
-  renderCoBody();
+  c.advStatus=k==='active'?'פעיל':'בהקמה'; c.archOn=null; c.archWhy=null;
+  coAfterSt(c,k);
+}
+function coAfterSt(c,k){
+  if(typeof renderCoSet==='function') renderCoSet();
   if(typeof renderGlobalRail==='function') renderGlobalRail();
+  if(typeof renderClientsView==='function') renderClientsView();
   const st=document.querySelector('.client-head .st');
   if(st){ st.className='st '+(k==='active'?'active':k==='setup'?'setup':'arch');
     st.textContent=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון'; }
-  toast(c.name+' — '+(k==='active'?'הוחזרה לפעילות ונכנסת לתור התפעול'
+  toast(c.name+' — '+(k==='active'?'פעילה — בתור התפעול'
                      :k==='setup'?'סומנה בהקמה — יצאה מתור התפעול'
                      :'הועברה לארכיון'));
 }
+/* מצב תפעולי — פעיל / בהקמה. ארכיון הוא סטטוס התקשרות ויושב בפרטי לקוח. */
 function coStHtml(){
   const c=CLIENTS[CUR]||{}, cur=coState(c);
+  if(cur==='arch') return `<div class="cos-note arch">${c.name} בארכיון${c.archOn?` מאז ${c.archOn}`:''} — אין לה מצב תפעולי.
+    סטטוס ההתקשרות נקבע ב<b>פרטי לקוח</b>.</div>`;
   const note=(CO_ST.find(x=>x[0]===cur)||[])[2]||'';
   return `<div class="cos-st">
       ${CO_ST.map(([k,l])=>`<button class="cos-stb ${k} ${cur===k?'on':''}" onclick="coStTg('${k}')">${l}</button>`).join('')}
     </div>
-    <div class="cos-note ${cur==='arch'?'arch':''}">${note}${cur==='arch'&&c.archOn?` <b>בארכיון מאז ${c.archOn}</b>`:''}</div>
-    ${COSET_ARCH?`<div class="cos-warn">
-      <div class="cw-t">להעביר את ${c.name} לארכיון?</div>
-      <div class="cw-s">החברה תצא מתור התפעול, מהמחליף בטופבר, ממדדי היום ומהחיוב. אפשר להחזיר אותה מכאן בכל רגע.</div>
-      <div class="cw-a"><button class="cw-go" onclick="coArchGo()">העברה לארכיון</button>
-        <button class="mt-btn view sm" onclick="COSET_ARCH=false;renderCoBody()">ביטול</button></div>
-    </div>`:''}`;
+    <div class="cos-note">${note}</div>`;
 }
 function coOps(d){
   const g=coGapTh();
