@@ -9,7 +9,7 @@
       {f:'widget-overdraft-full.html',      t:'חריגה צפויה',        d:'תחזית עו״ש מאוחד — חריגה בטווח 30 ימים',      cat:'תזרים',   h:470},
       {f:'widget-cashflow-full.html',       t:'תחזית תזרים',        d:'פירוט תנועות יומי עם יתרות ואינדיקציית סיכון',  cat:'תזרים',   h:600},
       {f:'widget-flow-changes.html',        t:'מה השתנה בתזרים',    d:'בוחרים נקודה על הציר ורואים מה שינה אותה',      cat:'תזרים',   h:470},
-      {f:'widget-budget-gaps.html',         t:'פערי תקציב',        d:'כל החריגות מהיעד — מבוסס על מעקב ופערים',       cat:'תזרים',   h:520},
+      {f:'widget-budget-gaps.html',         t:'פערי תקציב',        d:'כל החריגות מהיעד — מבוסס על מעקב ופערים',       cat:'תזרים',   h:470},
       {f:'widget-coverage-full.html',       t:'יחס כיסוי',          d:'כיסוי התחייבויות מול נכסים נזילים',            cat:'תזרים',   h:480},
       {f:'widget-profitability-full.html',  t:'רווחיות חודשית',     d:'גולמי, תפעולי ותזרימי עם מגמת 4 חודשים',       cat:'רווחיות', h:500},
       {f:'widget-revenue-trends.html',      t:'מגמות הכנסה',        d:'מגמת הכנסות רב-חודשית',                        cat:'רווחיות', h:470},
@@ -44,7 +44,7 @@
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};
   const rowSpan=h=>Math.max(6,Math.ceil((h+18)/8));
   const SIZE={};  // per-widget width override chosen in edit mode: 'sm' | 'lg'
-  const sizeOf=f=>SIZE[f]||(wmeta(f).s==='sm'?'sm':'lg');
+  const sizeOf=f=>SIZE[f]||(wmeta(f).s==='sm'?'sm':wmeta(f).s==='xl'?'xl':'lg');
   function toggleSize(f){SIZE[f]=sizeOf(f)==='sm'?'lg':'sm';renderBoard();}
 
   function renderBoard(){
@@ -55,8 +55,8 @@
     b.classList.toggle('rows',rows);
     const top=document.getElementById('wboardTop');
     if(!active.length){b.innerHTML='<div class="wb-empty">אין ווידג\'טים בלוח — לחצו "הוספת ווידג\'ט"</div>';if(top){top.style.display='none';top.innerHTML='';}return;}
-    const frame=(f,i)=>{const w=wmeta(f);const sm=sizeOf(f)==='sm';
-      return `<div class="wframe loading ${sm?'sm':''}" data-idx="${i}" draggable="false" ${rows?'':`style="grid-row-end:span ${rowSpan(w.h)}"`}>
+    const frame=(f,i)=>{const w=wmeta(f);const sz=sizeOf(f);const sm=sz==='sm';
+      return `<div class="wframe loading ${sm?'sm':''} ${sz==='xl'?'xl':''}" data-idx="${i}" draggable="false" ${rows?'':`style="grid-row-end:span ${rowSpan(w.h)}"`}>
         <div class="wf-tools">
           <button class="wf-btn wf-grip" title="גרירה לסידור" aria-label="גרירה"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.6"/><circle cx="15" cy="5" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="19" r="1.6"/><circle cx="15" cy="19" r="1.6"/></svg></button>
           <button class="wf-btn wf-size" title="${sm?'הרחבה לרוחב מלא':'צמצום לחצי רוחב'}" aria-label="רוחב" onclick="toggleSize('${f}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7 4 12l4 5M16 7l4 5-4 5M4 12h16"/></svg></button>
