@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>פערי תקציב — HK</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0C4068;--cyan:#39ABE2;--warm:#E48375;
+  --white:#fff;--gray:#64748b;--gray2:#9aa7bb;
+  --line:#f1f6fa;--border:#e6ecf4;
+  --green:#13895b;--red:#C2372A;--yellow:#B4690E;--mem:#7C5CBF;
+}
+body{font-family:'Rubik',sans-serif;background:#e8eef4;direction:rtl;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 24px}
+.widget{width:100%;max-width:660px;background:var(--white);border-radius:14px;box-shadow:0 1px 50px rgba(0,0,0,.08);overflow:hidden}
+
+.wh{display:flex;align-items:center;gap:9px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.wh b{font-size:14px;color:var(--navy);font-weight:700}
+.wh .rng{margin-inline-start:auto;display:flex;gap:4px}
+.rg{border:1px solid var(--border);background:#fff;color:var(--gray);font-family:inherit;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 10px;cursor:pointer}
+.rg.on{background:#F1F6FA;border-color:#d3dced;color:var(--navy)}
+
+/* התשובה — כמה פער מצטבר */
+.ans{padding:15px 18px 10px}
+.ans .ttl{font-size:11.5px;color:var(--gray);font-weight:600}
+.ans .big{display:flex;align-items:baseline;gap:10px;margin-top:6px;flex-wrap:wrap}
+.ans .big .num{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px;color:var(--red)}
+.ans .big .from{font-size:12.5px;color:var(--gray);font-variant-numeric:tabular-nums}
+.ans .note{font-size:11px;color:var(--gray2);margin-top:5px}
+
+/* פסי הקבוצות — יעד מול בפועל+צבוע */
+.grps{padding:2px 18px 12px;display:flex;flex-direction:column;gap:9px}
+.gp{display:grid;grid-template-columns:96px 1fr 74px;gap:9px;align-items:center}
+.gp .gn{font-size:11px;color:var(--gray);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gp .gb{position:relative;height:9px;border-radius:999px;background:#EEF3F8;overflow:hidden}
+.gp .gb i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:999px;background:var(--cyan)}
+.gp .gv{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;text-align:end;color:var(--red)}
+.gp .gv.ok{color:var(--green)}
+
+/* פילטרים לפי סוג פער */
+.flt{display:flex;align-items:center;gap:6px;padding:10px 18px;background:#FAFCFE;border-block:1px solid var(--line);flex-wrap:wrap}
+.flt .lb{font-size:11px;color:var(--gray2);font-weight:600}
+.fb{border:1px solid var(--border);background:#fff;color:var(--gray);font-family:inherit;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 9px;cursor:pointer}
+.fb.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.fb i{font-style:normal;opacity:.65;margin-inline-start:4px}
+
+.rows{max-height:250px;overflow-y:auto}
+.r{display:grid;grid-template-columns:78px 1fr 92px;gap:10px;align-items:center;padding:8px 18px;cursor:pointer}
+.r+.r{border-top:1px solid var(--line)}
+.r:hover{background:#FBFDFF}
+.am{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--red)}
+.am.ok{color:var(--green)}
+.tx{min-width:0}
+.tx .t{font-size:12.5px;color:var(--navy);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx .s{font-size:10.5px;color:var(--gray2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg{font-size:9.5px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap;text-align:center}
+.tg.wait{background:#EAF4FB;color:#1B6C9C}
+.tg.changed{background:#FDECEB;color:var(--red)}
+.tg.shifted{background:#FDF4E3;color:var(--yellow)}
+.tg.built{background:#F1F4F7;color:var(--gray)}
+.tg.over{background:#E9F7F0;color:var(--green)}
+.empty{padding:22px 18px;text-align:center;font-size:11.5px;color:var(--gray2)}
+.wf{display:flex;align-items:center;gap:8px;padding:10px 18px;border-top:1px solid var(--line);background:#FCFDFE}
+.wf .sum{font-size:11px;color:var(--gray2)}
+.wf a{margin-inline-start:auto;font-size:11.5px;font-weight:700;color:#1B6C9C;text-decoration:none;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="wh">
+    <b>פערי תקציב</b>
+    <span class="rng">
+      <button class="rg on" data-m="0">החודש</button>
+      <button class="rg" data-m="1">חודש הבא</button>
+      <button class="rg" data-m="2">עוד חודשיים</button>
+    </span>
+  </div>
+
+  <div class="ans">
+    <div class="ttl">סך הפערים המהותיים — <b id="mlbl">יוני 2026</b></div>
+    <div class="big">
+      <span class="num" id="tot">0 ₪</span>
+      <span class="from">מתוך יעד של <b id="tgt">0 ₪</b></span>
+    </div>
+    <div class="note" id="nt"></div>
+  </div>
+
+  <div class="grps" id="grps"></div>
+
+  <div class="flt" id="flt"><span class="lb">סוג הפער:</span></div>
+
+  <div class="rows" id="rows"></div>
+
+  <div class="wf">
+    <span class="sum" id="sum"></span>
+    <a onclick="go()">פתיחת מעקב ופערים ←</a>
+  </div>
+</div>
+
+<script>
+/* מבוסס על מסך "מעקב ופערים" — אותו מודל בדיוק:
+   פער = יעד − בפועל − צבוע בתזרים, פחות מה ששורה תקציבית סוגרת.
+   מהותיות נקבעת מהסף (רצפה / אחוז / תקרה) ולא מהעין. */
+const GROUPS=[
+ {label:'הכנסות', kind:'inc', rows:[
+   {label:'הכנסות ממכירות - מזומן',  target:89950, act:60000, flow:22000},
+   {label:'הכנסות ממכירות - סליקה',  target:77010, act:48000, flow:25000, gt:'wait'},
+   {label:'הכנסות מסליקה - דיירקט',  target:23501, act:22000, flow:6000},
+   {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000, bl:22583},
+   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000, gt:'changed', gn:'הלקוח איבד את מוסך רם — ההסכם לא יחודש החודש'},
+ ]},
+ {label:'עלות המכר', kind:'exp', rows:[
+   {label:'קניות מלאי',  target:155000, act:90000, flow:40000},
+   {label:'קבלני משנה',  target:28333,  act:20000, flow:12000, gt:'changed', gn:'פרויקט דחוף ללקוח גדול — תוגברו קבלנים מעבר לתוכנית'},
+ ]},
+ {label:'הוצאות תפעוליות', kind:'exp', rows:[
+   {label:'שכר עבודה',    target:97333, act:93000, flow:8000},
+   {label:'שכירות',       target:22000, act:22000, flow:0},
+   {label:'הוצאות תפעול', target:18433, act:9000,  flow:5000},
+   {label:'פרסום ושיווק', target:15667, act:7000,  flow:6000, gt:'built', gn:'ההערכה בבנייה התבססה על רבעון חזק — גבוהה מדי לחודש רגיל'},
+   {label:'מוסדות מס',    target:24179, act:6000,  flow:17500},
+ ]},
+ {label:'מימון, השקעות ובעלים', kind:'exp', rows:[
+   {label:'מימון ועמלות בנק', target:9100,  act:4500, flow:2500},
+   {label:'פיקדונות והשקעות', target:12000, act:6000, flow:6000},
+   {label:'תשלומי הלוואה',    target:8000,  act:8000, flow:0},
+   {label:'משיכות בעלים',     target:15000, act:5000, flow:5000, gt:'shifted', gn:'המשיכה נדחתה לחודש הבא לבקשת הלקוח'},
+ ]},
+];
+const MONTHS=['יוני 2026','יולי 2026','אוגוסט 2026'];
+const TYPES={wait:'מחכה לחומר',changed:'המציאות השתנתה',shifted:'התזמון זז',built:'טעינו בבנייה',over:'מעל היעד'};
+let GAP_TH={floor:1000,pct:5,ceil:25000};
+try{const s=JSON.parse(localStorage.getItem('hkGapTh')||'null');if(s)GAP_TH=Object.assign(GAP_TH,s);}catch(e){}
+let mi=0, flt=new Set();
+
+const nf=v=>Math.round(Math.abs(v)).toLocaleString('en-US');
+const money=v=>(v<0?'-':'')+nf(v)+' ₪';
+function vals(r){ return mi===0?{act:r.act,flow:r.flow}:{act:0,flow:Math.round(r.target*(mi===1?0.72:0.38))}; }
+function gapOf(r){ const v=vals(r); return r.target-v.act-v.flow-(mi===0?(r.bl||0):0); }
+/* מהותיות: מתחת לרצפה אף פעם, מעל התקרה תמיד, באמצע לפי אחוז מהיעד */
+function material(r){
+  const g=Math.abs(gapOf(r));
+  if(g<GAP_TH.floor) return false;
+  if(g>=GAP_TH.ceil) return true;
+  return r.target?(g/r.target*100)>=GAP_TH.pct:false;
+}
+function kindOf(r){ return gapOf(r)<0?'over':(r.gt||'built'); }
+
+function render(){
+  document.getElementById('mlbl').textContent=MONTHS[mi];
+  const all=[];
+  GROUPS.forEach(g=>g.rows.forEach(r=>all.push({...r,grp:g.label,kind:g.kind})));
+  const mat=all.filter(material);
+  const short=mat.filter(r=>gapOf(r)>0);
+  const tot=short.reduce((s,r)=>s+gapOf(r),0);
+  const tgt=all.reduce((s,r)=>s+r.target,0);
+  document.getElementById('tot').textContent=money(tot);
+  document.getElementById('tgt').textContent=nf(tgt)+' ₪';
+  const over=mat.filter(r=>gapOf(r)<0).length;
+  document.getElementById('nt').textContent=
+    short.length+' קטגוריות מתחת ליעד'+(over?' · '+over+' מעל היעד':'')+' · '+(all.length-mat.length)+' בתוך הסף ולא מוצגות';
+
+  /* פסי הקבוצות */
+  document.getElementById('grps').innerHTML=GROUPS.map(g=>{
+    const t=g.rows.reduce((s,r)=>s+r.target,0);
+    const d=g.rows.reduce((s,r)=>{const v=vals(r);return s+v.act+v.flow+(mi===0?(r.bl||0):0);},0);
+    const pct=t?Math.min(d/t*100,140):0, gap=t-d;
+    return `<div class="gp"><span class="gn">${g.label}</span>
+      <span class="gb"><i style="width:${Math.min(pct,100)}%"></i></span>
+      <span class="gv ${gap<=0?'ok':''}">${gap>0?money(gap):'✓ ביעד'}</span></div>`;}).join('');
+
+  /* פילטרים */
+  const cnt={};
+  mat.forEach(r=>{const k=kindOf(r);cnt[k]=(cnt[k]||0)+1;});
+  document.getElementById('flt').innerHTML='<span class="lb">סוג הפער:</span>'+
+    Object.keys(TYPES).filter(k=>cnt[k]).map(k=>
+      `<button class="fb ${flt.has(k)?'on':''}" onclick="tg('${k}')">${TYPES[k]}<i>${cnt[k]}</i></button>`).join('');
+
+  /* השורות — כל החריגות, הגדולה למעלה */
+  const list=mat.filter(r=>!flt.size||flt.has(kindOf(r)))
+    .sort((a,b)=>Math.abs(gapOf(b))-Math.abs(gapOf(a)));
+  document.getElementById('rows').innerHTML=list.length?list.map(r=>{
+    const g=gapOf(r), k=kindOf(r);
+    const pct=r.target?Math.round(Math.abs(g)/r.target*100):0;
+    return `<div class="r" title="${r.gn||''}">
+      <span class="am ${g<0?'ok':''}">${g<0?'+'+nf(g):'-'+nf(g)}</span>
+      <span class="tx"><span class="t">${r.label}</span>
+        <span class="s">${r.grp} · ${pct}% מהיעד${r.gn?' · '+r.gn:''}</span></span>
+      <span class="tg ${k}">${TYPES[k]}</span></div>`;}).join('')
+    :'<div class="empty">אין פערים מהותיים בסינון הזה</div>';
+  document.getElementById('sum').textContent=
+    'סף מהותיות: מתחת ל-'+nf(GAP_TH.floor)+' ₪ אף פעם · מעל '+nf(GAP_TH.ceil)+' ₪ תמיד · באמצע '+GAP_TH.pct+'% מהיעד';
+}
+function tg(k){ flt.has(k)?flt.delete(k):flt.add(k); render(); }
+function go(){ try{ parent.postMessage({hk:'tab',tab:'budget'},'*'); }catch(e){} }
+document.querySelectorAll('.rg').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.rg').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); mi=+b.dataset.m; flt.clear(); render();});
+window.addEventListener('message',e=>{ if(e.data&&e.data.hk==='gapTh'){ GAP_TH=Object.assign(GAP_TH,e.data.th); render(); } });
+render();
+</script>
+</body>
+</html>

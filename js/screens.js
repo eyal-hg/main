@@ -36,7 +36,7 @@
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
     GNAV = (s==='client') ? 'client'
          : isOperator ? (MGR_VIEW==='meets'?'meets':'ops')
-         : ROLE==='advisor' ? (ADV_PVIEW==='clients'?'clients':ADV_PVIEW==='meets'?'meets':'today')
+         : ROLE==='advisor' ? (ADV_PVIEW==='clients'?'clients':ADV_PVIEW==='meets'?'meets':ADV_PVIEW==='how'?'how':'today')
          : 'home';
     renderGlobalRail();
     renderCrumb();
@@ -47,14 +47,16 @@
     if(inPortfolio){
       if(isOperator) pView=(MGR_VIEW==='meets')?'meets':'queue';   // הבית של המנהל הוא התפעול; זירת פגישות בבחירה
       else if(ROLE==='clientN') pView='board';
-      else pView=(ADV_PVIEW==='clients')?'clients':(ADV_PVIEW==='meets')?'meets':'alerts';
+      else pView=(ADV_PVIEW==='clients')?'clients':(ADV_PVIEW==='meets')?'meets':(ADV_PVIEW==='how')?'how':'alerts';
     }
     const showQueue=inPortfolio && pView==='queue';
     const showAlerts=inPortfolio && pView==='alerts';
     const showMeets=inPortfolio && pView==='meets';
     const showClients=inPortfolio && pView==='clients';
+    const showHow=inPortfolio && pView==='how';
     const showBoard = !inPortfolio || pView==='board';
     document.getElementById('clientsView').style.display=showClients?'':'none';
+    document.getElementById('howView').style.display=showHow?'':'none';
     document.getElementById('mgrToggle').style.display='none';   // אין יותר טאבים במסך המנהל
     // מסך המנהל מתחיל ישר בקוביות — בלי כותרת ושורת משנה
     const slim=(inPortfolio&&isOperator);
@@ -75,12 +77,12 @@
     document.getElementById('opsqStatus').style.display=showQueue?'flex':'none';
     if(inPortfolio){
       document.querySelector('.sub-line').textContent=
-        (pView==='queue'?'מבט-על תפעולי':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'זירת הפגישות · כל אינטראקציה מוקלטת הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
+        (pView==='queue'?'מבט-על תפעולי':pView==='how'?'איך הזיכרון נבנה — מה שמראים ליועצים':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'זירת הפגישות · כל אינטראקציה מוקלטת הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
         +' · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות במעקב · נכון ל-2.7.2026';
     }
     updateOpsBtn();
     renderMeetBtn();
-    if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showMeets){if(typeof renderMeetsArena==='function')renderMeetsArena();} else if(showClients) renderClientsView(); else renderBoard();
+    if(showHow){ if(typeof renderHowView==='function') renderHowView(); } else if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showMeets){if(typeof renderMeetsArena==='function')renderMeetsArena();} else if(showClients) renderClientsView(); else renderBoard();
     renderCoAlerts();
     if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();
@@ -231,6 +233,7 @@
   const GNAV_ICO={
     today:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>',
     ops:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>',
+    how:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
     clients:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
     home:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/></svg>',
     cal:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
@@ -242,6 +245,7 @@
       {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
       {k:'meets',   l:'פגישות',  go:"gnavGo('meets')"},
       {k:'clients', l:'לקוחות',  go:"gnavGo('clients')"},
+      {k:'how',     l:'זיכרון לקוחות', go:"gnavGo('how')"},
       {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
     if(ROLE==='manager') return [
       {k:'ops',     l:'לקוחות',  go:"gnavGo('ops')"},
@@ -255,6 +259,7 @@
   function gnavGo(k){
     if(k==='today'){ADV_PVIEW='home';selectPortfolio();return;}
     if(k==='clients'){ADV_PVIEW='clients';selectPortfolio();return;}
+    if(k==='how'){ADV_PVIEW='how';selectPortfolio();return;}
     if(k==='ops'){MGR_VIEW='ops';selectPortfolio();return;}
     if(k==='meets'){if(typeof isOperator!=='undefined'&&isOperator)MGR_VIEW='meets';else ADV_PVIEW='meets';selectPortfolio();return;}
     if(k==='home'){ROLE==='client1'?selectClient(CUR):selectPortfolio();return;}
