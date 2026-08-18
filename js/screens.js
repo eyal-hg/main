@@ -30,7 +30,7 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
@@ -143,7 +143,7 @@
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
@@ -162,6 +162,10 @@
     else if(t==='coset'){
       document.getElementById('viewCoSet').style.display='';
       if(typeof renderCoSet==='function')renderCoSet();
+    }
+    else if(t==='flow'){
+      document.getElementById('viewFlow').style.display='';
+      if(typeof renderFlowView==='function')renderFlowView();
     }
     else if(t==='prep'){
       document.getElementById('viewPrep').style.display='';
@@ -874,15 +878,40 @@
   }
 
   /* ---- AI chat (assistant) ---- */
+  /* ===== עוזר ה-AI של היועץ =====
+     לא צ'אט על נתונים יבשים — היועץ שואל על הלקוח, והעוזר עונה מתוך
+     זיכרון הלקוח, קבוצת הוואטסאפ, הפגישות המוקלטות והתזרים. כל תשובה
+     נושאת את המקורות שממנה נשלפה, כדי שהיועץ ידע על מה הוא נשען. */
   const CHAT=[
-    {role:'user', t:'כמה שילמתי על שכר דירה ברבעון האחרון?', time:'31/03/2026 15:33'},
-    {role:'bot', think:'שלפתי את תנועות סעיף "שכר דירה" מ-1.1.2026 עד 31.3.2026 ממערכת הנהלת החשבונות, סיננתי לפי הספק וחיברתי את הסכומים.',
-      t:'<span class="greet">עומרי,</span><br>לגבי חזות קריספין, בבדיקה שערכנו במערכות, לא נמצאו תשלומים שבוצעו אליה.<br>באשר לתשלומי השכירות בין יולי לאוקטובר 2025, הסכום הכולל ששולם בתקופה זו עומד על <b>46 ₪</b>.',
-      time:'15:34 31/03/2026'},
-    {role:'user', t:'כמה שילמתי על ביטוחים חודש שעבר?', time:'19/04/2026 13:33'},
-    {role:'bot', think:'חיפשתי תנועות בסעיף "ביטוחים" לחודש מרץ 2026 בטווח 1.3–31.3 — לא נמצאו רשומות תואמות במקור הנתונים הזמין.',
-      t:'<span class="greet">אייל,</span><br>לגבי שאלתך כמה שילמת על ביטוחים בחודש שעבר (מרץ 2026) – המידע הספציפי הזה אינו זמין כרגע במערכת.<br>אם תרצה, אוכל לבדוק זאת שוב בדרך אחרת.',
-      time:'13:33 19/04/2026'},
+    {role:'user', t:'יש לי פגישה עם צחי מחר ב-9. תכין לי תמונה — מה הכי בוער ומה אסור לי לפספס?', time:'02/07/2026 16:12'},
+    {role:'bot', src:['זיכרון לקוח · מצב תזרימי','תזרים · 2.7','פגישה מוקלטת · 2.7'],
+      think:'שלפתי את "מצב תזרימי" ו"כאבי לקוח" מכרטיס הזיכרון, הצלבתי מול יתרות התזרים להיום ומול היעדים הפתוחים מהפגישה הקודמת, ומיינתי לפי מה שמשנה את ההחלטה מחר.',
+      t:'<span class="greet">אייל,</span><br>שלושה דברים, לפי סדר:<br><br><b>1. החריגה בלאומי — הכי בוער.</b> 6 ימים בחריגה בפועל, <b>161,198- ₪</b> מול מסגרת 150,000. בפועלים יש 312,400 ₪ חיובי. אם לא תבוצע העברה בין החשבונות — חריגה מלאה בעוד 9 ימים.<br><b>2. היעד הפתוח מהפגישה הקודמת:</b> מסגרת נוספת של 100 א׳ ₪ בפועלים, באחריותנו, יעד 15.7 — עדיין בתהליך. הוא <b>יבקש עדכון</b>, זה הדבר שהוא ביקש.<br><b>3. הכאב שחוזר:</b> תלות בשני לקוחות — 70% מהמחזור. בפגישה האחרונה הוא חזר לזה שלוש פעמים.<br><br><span class="ai-tip">לפי סגנון התקשורת שלו: פתח במספרים בלי הקדמות, והצג פתרון לצד כל בעיה. הוא מאבד סבלנות מפתיחות.</span>',
+      time:'16:12 02/07/2026'},
+
+    {role:'user', t:'מה קרה בקבוצה מאז הפגישה האחרונה? לא הספקתי לעבור', time:'02/07/2026 16:15'},
+    {role:'bot', src:['קבוצת וואטסאפ · אנרגי אינטרנשיונל','תפעול · 2.7'],
+      think:'קראתי את הקבוצה מ-25.6 עד היום, סיננתי הודעות תפעוליות שכבר טופלו, והשארתי מה שפתוח או משנה תמונה.',
+      t:'<span class="greet">אייל,</span><br>מאז 25.6 היו 34 הודעות. ארבע שרלוונטיות לך:<br><br>• <b>2.7 08:40 · צחי</b> — ״ראיתי את החריגה הצפויה, אפשר לדחות את התשלום לספק הגדול?״ <span class="ai-flag">טרם נענה</span><br>• <b>2.7 08:52 · צחי</b> — ״צריך להוסיף את החשבונית של יולי מהמסמך״<br>• <b>2.7 09:05 · צחי</b> — ״מתי נוח לך לשיחה קצרה היום?״ <span class="ai-flag">טרם נענה</span><br>• <b>28.6 · רות (מנהלת כספים)</b> — העלתה דפי בנק וחשבוניות יוני<br><br>שים לב: <b>הרשאת חשבון הסליקה תקועה בבנק שבועיים</b> — זה מופיע גם בזיכרון תחת שיתוף פעולה, ודורש דחיפה. בלי זה חלק מהתקבולים לא נכנסים אוטומטית לתזרים.',
+      time:'16:15 02/07/2026'},
+
+    {role:'user', t:'הוא הזכיר את המכרז של חברת האוטובוסים. איפה זה עומד ומה זה עושה לתזרים?', time:'02/07/2026 16:19'},
+    {role:'bot', src:['זיכרון לקוח · אירועים מהותיים','תזרים עתידי'],
+      think:'שלפתי את האירוע מכרטיס הזיכרון (נרשם 20.6 משיחת טלפון), ובדקתי אם הוא מגולם בתחזית התזרים — ולא מצאתי לו שורות צבועות.',
+      t:'<span class="greet">אייל,</span><br>זכייה במכרז אספקה לחברת האוטובוסים ירושלים — <b>צפי תוספת 1.5 מ׳ ₪ במחזור שנתי, החל מאוגוסט</b> (נרשם 20.6 משיחת טלפון).<br><br><span class="ai-flag">פער:</span> ההכנסות מהמכרז <b>עדיין לא צבועות בתחזית</b>. התחזית שלו לאוגוסט–אוקטובר מציגה תמונה פסימית מהמציאות הצפויה, וזה משפיע גם על החלטת המסגרת הנוספת.<br><br>שווה להחליט איתו מחר: מתי הכסף הראשון נכנס בפועל, ולצבוע את זה — אחרת אנחנו מבקשים מסגרת על סמך תמונה חלקית.',
+      time:'16:19 02/07/2026'},
+
+    {role:'user', t:'תזכיר לי — היה משהו שהוא היה מתוסכל ממנו? לא רוצה ליפול בזה שוב', time:'02/07/2026 16:24'},
+    {role:'bot', src:['זיכרון לקוח · שביעות רצון','זיכרון לקוח · מצב רוח'],
+      think:'עברתי על קטגוריית שביעות הרצון וההיסטוריה שלה, וסיננתי מה שנסגר לעומת מה שעדיין פתוח.',
+      t:'<span class="greet">אייל,</span><br>שלושה, שניים מהם עדיין פתוחים:<br><br>• <span class="ai-flag">פתוח</span> <b>זמן ההמתנה לדוח החודשי</b> — חוזר על עצמו, זה הדבר שהוא הכי פחות מרוצה ממנו.<br>• <span class="ai-flag">פתוח</span> <b>25.6 · צ׳אט</b> — קיבל תשובה כללית מדי על שאלת מע״מ והתלונן.<br>• <span class="ai-ok">נסגר</span> <b>10.6</b> — טעות בקיטלוג שתוקנה באיחור; נסגר לשביעות רצונו.<br><br>הערה נוספת מהזיכרון: הוא <b>נשמע לחוץ סביב החריגה</b> וחזר לנושא שלוש פעמים, אבל נרגע כשמציגים תוכנית מסודרת. עייפות ניכרת מאז שלקח על עצמו את תחום התפעול (10.6).<br><br><span class="ai-tip">המלצה: פתח בדוח החודשי — תראה שהוא מוכן לפני שהוא שואל.</span>',
+      time:'16:24 02/07/2026'},
+
+    {role:'user', t:'תכתוב לי מה להגיד לו על המסגרת', time:'02/07/2026 16:31'},
+    {role:'bot', src:['זיכרון לקוח · סגנון תקשורת','זיכרון לקוח · מערכת יחסים','יעדים והסכמות'],
+      think:'הרכבתי ניסוח לפי סגנון התקשורת שנרשם עליו — מספרים ראשונים, קצר, פתרון לצד בעיה — והצלבתי מול קטגוריית מערכת היחסים לגבי גורמים משפיעים.',
+      t:'<span class="greet">אייל,</span><br>ניסוח מוצע, בסגנון שלו:<br><br><span class="ai-quote">״צחי, שתי דקות על המסגרת. היום אתה 161 אלף בחריגה בלאומי מול מסגרת של 150. בפועלים יש לך 312 חיובי. שני דברים: אחד — אני מעביר היום 200 אלף מפועלים ללאומי, זה מוריד את החריגה מיד. שתיים — הבקשה למסגרת נוספת של 100 אלף בפועלים אצל הבנקאי, יעד 15.7, ואני מעדכן אותך ברגע שיש תשובה.״</span><br><br><span class="ai-flag">לפני שאתה מציע:</span> לפי הזיכרון, <b>רו״ח חיצוני (משרד ברק) משפיע על החלטות מימון</b> — כדאי לתאם איתו לפני הצעות גדולות. וגם: לא לדבר על עלות השירות בנוכחות השותף.',
+      time:'16:31 02/07/2026'},
   ];
   function renderChat(){
     const b=document.getElementById('chatBody');
@@ -892,7 +921,8 @@
       const think=m.think
         ? `<div class="think" onclick="this.classList.toggle('open')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 10h8M8 14h5M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12z"/></svg> חלון חשיבה <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><div class="think-content">${m.think}</div>`
         : '';
-      return `<div class="cmsg bot">${think}<div class="bot-text">${m.t}</div>${time}</div>`;
+      const src=m.src?`<div class="ai-src">${m.src.map(s=>`<span>${s}</span>`).join('')}</div>`:'';
+      return `<div class="cmsg bot">${think}<div class="bot-text">${m.t}</div>${src}${time}</div>`;
     }).join('');
     b.scrollTop=b.scrollHeight;
   }
