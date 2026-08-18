@@ -71,7 +71,7 @@
     if(inPortfolio){
       document.querySelector('.sub-line').textContent=
         (pView==='queue'?'מבט-על תפעולי':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'זירת הפגישות · כל אינטראקציה מוקלטת הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
-        +' · '+CLIENTS.length+' חברות במעקב · נכון ל-2.7.2026';
+        +' · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות במעקב · נכון ל-2.7.2026';
     }
     updateOpsBtn();
     renderMeetBtn();
@@ -323,8 +323,25 @@
     }
     // מנהל תזרים: תור התפעול בסרגל — רק במסך הראשי (בתוך חברה הסרגל שייך לחברה)
     if(typeof ROLE!=='undefined'&&ROLE==='manager'&&GNAV==='ops'&&typeof qRule==='function'){
-      const order=CLIENTS.map((c,i)=>i).filter(i=>typeof firmOk==='undefined'||firmOk(CLIENTS[i])).sort((a,b)=>opsqRank(a)-opsqRank(b));
-      html+=`<div class="gn-co qdiv"></div>`+order.map(i=>{
+      /* תור התפעול — לא "רשימת לקוחות". רק חברות פעילות:
+         בהקמה = אין עדיין הרשאות בנק, אין מה לתפעל · ארכיון = יצאה. */
+      const order=CLIENTS.map((c,i)=>i)
+        .filter(i=>typeof firmOk==='undefined'||firmOk(CLIENTS[i]))
+        .filter(i=>typeof coActive!=='function'||coActive(CLIENTS[i]))
+        .sort((a,b)=>opsqRank(a)-opsqRank(b));
+      const doneIx=order.filter(i=>opsDoneSet.has('c'+i)), liveIx=order.filter(i=>!opsDoneSet.has('c'+i));
+      /* מצבים אחרים — נשלפים רק בבחירה מפורשת, אף פעם לא מעורבבים בתור */
+      const inSt=s=>CLIENTS.map((c,i)=>i).filter(i=>(typeof firmOk!=='function'||firmOk(CLIENTS[i]))&&coState(CLIENTS[i])===s);
+      const setupIx=inSt('setup'), archIx=inSt('arch');
+      const othr=[['active','תור התפעול',liveIx.length],['setup','בהקמה',setupIx.length],['arch','ארכיון',archIx.length]]
+        .filter(x=>x[0]!==GN_QST&&x[2]>0);
+      const stRow=i=>{const c=CLIENTS[i];
+        return `<div class="gn-q flat" onclick="selectClient(${i})" title="${c.name}">
+          <span class="dbq-dot ${GN_QST==='setup'?'setup':'off'}"></span>
+          <div class="gn-qb"><div class="gn-qn"><span class="nm">${c.name}</span></div>
+            <div class="gn-qm"><span class="nm">${GN_QST==='arch'?('בארכיון · '+(c.archOn||'')):(c.mgr||'')}</span></div></div>
+        </div>`;};
+      const qrow=i=>{
         const c=CLIENTS[i], k='c'+i, r=qRule(i);
         const tot=(c.tasks||[]).length, doneT=(c.tasks||[]).filter(t=>t.done).length;
         // באיזה שלב החברה — עבודה / בדיקות / הושלם
@@ -343,14 +360,34 @@
             <div class="gn-qm"><span class="nm">${c.mgr}</span>${c.product?prodLogo(c.product,'sm'):''}</div>
           </div>
           <span class="gn-biz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></span>
-        </div>`;}).join('');
+        </div>`;};
+      /* הסרגל מתקצר ככל שהיום מתקדם — מי שהושלם נאסף לשורה מקופלת */
+      const stTtl={active:'תור התפעול',setup:'בהקמה',arch:'ארכיון'}[GN_QST];
+      const stN={active:liveIx.length,setup:setupIx.length,arch:archIx.length}[GN_QST];
+      html+=`<div class="gn-qwrap st-${GN_QST}">
+        <div class="gn-qh"><span class="qh-t">${stTtl}</span><b class="qh-n">${stN}</b>
+          ${GN_QST==='active'&&doneIx.length?`<span class="qh-done">${doneIx.length===1?'אחת הושלמה':doneIx.length+' הושלמו'}</span>`:''}
+          ${GN_QST!=='active'?`<span class="qh-note">${GN_QST==='setup'?'לא בתפעול':'יצאו'}</span>`:''}</div>
+        <div class="gn-qlist">
+          ${GN_QST!=='active'?(GN_QST==='setup'?setupIx:archIx).map(stRow).join(''):
+            (liveIx.map(qrow).join('')||'<div class="gn-qempty">✓ אין חברות בתור — סיימת להיום</div>')+
+            (doneIx.length?`<button class="gn-qmore ${GN_QDONE?'on':''}" onclick="gnQDone()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
+              ${GN_QDONE?'הסתרה':'✓ '+(doneIx.length===1?'הושלמה אחת':'הושלמו '+doneIx.length)}</button>
+            ${GN_QDONE?doneIx.map(qrow).join(''):''}`:'')}
+        </div>
+        ${othr.length?`<div class="gn-qst">${othr.map(([k,l,n])=>
+          `<button class="qst ${GN_QST===k?'on':''} ${k}" onclick="gnQSt('${k}')">${l}<i>${n}</i></button>`).join('')}</div>`:''}
+      </div>`;
     }
     list.innerHTML=html;
     // הכל למעלה, בתפריט אחד — אין אזור תחתון
     document.getElementById('gnavBottom').innerHTML='';
   }
   function renderRailNav(){renderGlobalRail();}   // תאימות לקריאות ישנות
-  let GN_REP=false;
+  let GN_REP=false, GN_QDONE=false, GN_QST='active';
+  function gnQDone(){GN_QDONE=!GN_QDONE;renderGlobalRail();}
+  function gnQSt(k){GN_QST=k;renderGlobalRail();}
   function gnRepToggle(){GN_REP=!GN_REP;renderGlobalRail();}
 
   /* פירור לחם — מיותר כשהסרגל המתחלף נושא חזרה + שם חברה */
@@ -359,11 +396,20 @@
   }
 
   /* לקוחות — רשימת החברות כיעד גלובלי */
+  let CLV_ST='active';
+  function clvSt(k){ CLV_ST=k; if(GNAV!=='clients'&&GNAV!=='ops') gnavGo(ROLE==='manager'?'ops':'clients'); renderClientsView(); }
   function renderClientsView(){
     const grid=document.getElementById('clvGrid'); if(!grid) return;
     const q=(document.getElementById('clvQ').value||'').trim();
-    let list=CLIENTS.map((c,i)=>({c,i}));
-    if(typeof firmOk==='function') list=list.filter(x=>firmOk(x.c));
+    let base=CLIENTS.map((c,i)=>({c,i}));
+    if(typeof firmOk==='function') base=base.filter(x=>firmOk(x.c));
+    /* מצב החברה קודם לכל פילטר אחר — ארכיון לא מופיע אלא אם בחרו אותו */
+    const SEG=[['active','פעילים'],['setup','בהקמה'],['arch','ארכיון']];
+    const seg=document.getElementById('clvSeg');
+    if(seg) seg.innerHTML=SEG.map(([k,l])=>{
+      const n=base.filter(x=>coState(x.c)===k).length;
+      return `<button class="clvs ${CLV_ST===k?'on':''} ${k}" onclick="clvSt('${k}')">${l}<i>${n}</i></button>`;}).join('');
+    let list=base.filter(x=>coState(x.c)===CLV_ST);
     if(q) list=list.filter(x=>x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q)||(x.c.firm||'').includes(q));
     grid.innerHTML=list.map(({c,i})=>{
       const p=(typeof advPulse==='function')?advPulse(c):'green';
@@ -371,8 +417,11 @@
       const sp=c.spark||[]; const mx=Math.max(...sp,1);
       const bars=sp.map(v=>`<i style="height:${Math.max(3,Math.round(v/mx*26))}px"></i>`).join('');
       const trendUp=sp.length>1&&sp[sp.length-1]>=sp[sp.length-2];
-      const hl=c.hl?`<div class="clv-hl ${c.hl.sev}">${c.hl.t}</div>`:`<div class="clv-hl ok">✓ תקין — עומד ביעדים</div>`;
-      return `<div class="clv-card v2 pulse-${p}" onclick="selectClient(${i})">
+      const stt=coState(c);
+      const hl=stt==='arch'?`<div class="clv-hl arch">בארכיון מאז ${c.archOn||'—'} · ${c.archWhy||''}</div>`
+        :stt==='setup'?`<div class="clv-hl setup">${(c.hl&&c.hl.t)||'בהקמה — ממתין להרשאות בנק'}</div>`
+        :c.hl?`<div class="clv-hl ${c.hl.sev}">${c.hl.t}</div>`:`<div class="clv-hl ok">✓ תקין — עומד ביעדים</div>`;
+      return `<div class="clv-card v2 st-${stt} pulse-${p}" onclick="selectClient(${i})">
         <div class="clv-top2">
           <span class="ap-av">${c.name.charAt(0)}</span>
           <div class="clv-tt"><div class="clv-n">${c.name}</div><div class="clv-meta2">${c.hp} · ${c.mgr}</div></div>
@@ -383,11 +432,13 @@
           <div class="clv-spark"><div class="clv-bars">${bars}</div><span>6 ח׳ אחרונים</span></div>
         </div>
         ${hl}
-        ${c.coopDays!=null&&c.coopDays>=14?`<div class="clv-coop bad">⚠ לא הביא חומר לתזרים ${c.coopDays} ימים · לאחרונה ${c.coopLast}</div>`
+        ${stt==='arch'?'':c.coopDays!=null&&c.coopDays>=14?`<div class="clv-coop bad">⚠ לא הביא חומר לתזרים ${c.coopDays} ימים · לאחרונה ${c.coopLast}</div>`
           :c.coopLast?`<div class="clv-coop ok">חומר אחרון לתזרים · ${c.coopLast}</div>`
           :`<div class="clv-coop no">טרם התקבל חומר לתזרים</div>`}
-        <div class="clv-foot"><button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button><button class="mt-btn" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button></div>
-      </div>`;}).join('')||'<div class="ops-empty" style="padding:40px">לא נמצאו לקוחות</div>';
+        <div class="clv-foot">${stt==='arch'
+          ?`<button class="mt-btn view" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button><button class="mt-btn" onclick="event.stopPropagation();toast('${c.name} הוחזרה לפעילות — נכנסת לתור התפעול')">החזרה לפעילות</button>`
+          :`<button class="mt-btn view" onclick="event.stopPropagation();selectClient(${i})">פתיחת החברה</button><button class="mt-btn" onclick="event.stopPropagation();openMemCard(${i})">כרטיס לקוח</button>`}</div>
+      </div>`;}).join('')||`<div class="ops-empty" style="padding:40px">${CLV_ST==='arch'?'אין חברות בארכיון':CLV_ST==='setup'?'אין חברות בהקמה':'לא נמצאו לקוחות'}</div>`;
   }
 
   /* הגדרות — כרגע רק סדר תור התפעול; השאר בבנייה */

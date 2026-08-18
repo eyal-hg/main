@@ -2,7 +2,7 @@
   /* operator home — cross-company operations queue */
   const pendOf=i=>(CLIENTS[i].tasks||[]).filter(t=>!t.done).length;
   const totalOpsTime=()=>{let s=0;CLIENTS.forEach((c,i)=>{s+=(opsDur['c'+i]||0)+(opsAccum['c'+i]||0);});return s;};
-  let OPSQ_FILTER='all', OPSQ_STATUS='all'; const opsqOpen=new Set();
+  let OPSQ_FILTER='all', OPSQ_STATUS='active';   // ארכיון/בהקמה נשלפים רק בבחירה מפורשת const opsqOpen=new Set();
   const OPS_STATMAP={active:['st-active','פעיל'],trial:['st-trial','ניסיון'],setup:['st-setup','בהקמה']};
   function opsqSetStatus(k){OPSQ_STATUS=k;renderOpsQueue();}
   function opsStatusOf(i){const k='c'+i;
@@ -58,7 +58,7 @@
     if(!firmOk(CLIENTS[i]))return false;
     if(MGR_FILTER && CLIENTS[i].mgr!==MGR_FILTER)return false;
     if(PROD_FILTER.size>0 && !PROD_FILTER.has(CLIENTS[i].product))return false;
-    if(OPSQ_STATUS!=='all' && (CLIENTS[i].stat||'active')!==OPSQ_STATUS)return false;
+    if(coState(CLIENTS[i])!==OPSQ_STATUS)return false;
     if(OPSQ_FILTER==='all')return true;
     if(OPSQ_FILTER==='alert')return !!CLIENTS[i].opsAlert;
     const T=(CLIENTS[i].tasks||[]).filter(x=>!x.done);
@@ -122,12 +122,12 @@
   }
   function renderOpsQueue(){
     let waiting=0,prog=0,done=0,total=0;
-    CLIENTS.forEach((c,i)=>{const k='c'+i,p=pendOf(i);total+=p;
+    CLIENTS.forEach((c,i)=>{if(!coActive(c))return; const k='c'+i,p=pendOf(i);total+=p;
       if(opsDoneSet.has(k))done++; else if(opsAccum[k])prog++; else if(p>0)waiting++;});
     // תיבות עבודה לפי סוג — לחיצה מסננת את התור
-    const msgs=CLIENTS.filter(firmOk).reduce((s,c)=>s+(c.unread||0),0);
+    const msgs=CLIENTS.filter(c=>firmOk(c)&&coActive(c)).reduce((s,c)=>s+(c.unread||0),0);
     let docsN=0; const docsCos=new Set();
-    CLIENTS.forEach((c,i)=>{if(!firmOk(c))return;const n=(c.tasks||[]).filter(t=>!t.done&&t.type==='doc').length;if(n){docsN+=n;docsCos.add(i);}});
+    CLIENTS.forEach((c,i)=>{if(!firmOk(c)||!coActive(c))return;const n=(c.tasks||[]).filter(t=>!t.done&&t.type==='doc').length;if(n){docsN+=n;docsCos.add(i);}});
     const OQS_IC={
       wait:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
       prog:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -137,9 +137,9 @@
       sheet:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>',
       time:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 22h14M5 2h14M7 22v-4.2a2 2 0 0 1 .6-1.4L12 12 7.6 7.6A2 2 0 0 1 7 6.2V2M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l4.4-4.4A2 2 0 0 0 17 6.2V2"/></svg>'};
     // פס "מצב היום" — משטח אחד, טיפוגרפיה במקום קוביות
-    const FC=CLIENTS.filter(firmOk);
+    const FC=CLIENTS.filter(c=>firmOk(c)&&coActive(c));   /* ארכיון ובהקמה לא נמדדים ביום העבודה */
     const T=FC.length, msgCos=FC.filter(c=>c.unread>0).length;
-    const doneN=CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c)&&opsDoneSet.has('c'+o.i)).length;
+    const doneN=CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c)&&coActive(o.c)&&opsDoneSet.has('c'+o.i)).length;
     const sec=(key,label,big,sub)=>{
       const open=OQS_OPEN===key;
       return `<div class="db-sec ${open?'open':''}" onclick="oqsToggle('${key}')">
@@ -154,17 +154,19 @@
       ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
     </div>`;
     renderOpsInfo();
-    const SS=[['all','הכל'],['active','פעיל'],['trial','ניסיון'],['setup','בהקמה']];
-    const statTot=s=>s==='all'?CLIENTS.length:CLIENTS.filter(c=>(c.stat||'active')===s).length;
-    const statDone=s=>CLIENTS.filter((c,ix)=>(s==='all'||(c.stat||'active')===s)&&opsDoneSet.has('c'+ix)).length;
+    const SS=[['active','פעילים'],['setup','בהקמה'],['arch','ארכיון']];
+    const statTot=s=>CLIENTS.filter(c=>firmOk(c)&&coState(c)===s).length;
+    const statDone=s=>CLIENTS.filter((c,ix)=>firmOk(c)&&coState(c)===s&&opsDoneSet.has('c'+ix)).length;
     document.getElementById('opsqStatus').innerHTML=SS.map(s=>{
       const tot=statTot(s[0]), dn=statDone(s[0]), pct=tot?Math.round(dn/tot*100):0;
-      return `<div class="sseg ${OPSQ_STATUS===s[0]?'on':''}" onclick="opsqSetStatus('${s[0]}')">
+      /* רק "פעילים" מתופעל — בהקמה וארכיון לא נמדדים בהתקדמות היום */
+      const meas=s[0]==='active';
+      return `<div class="sseg s-${s[0]} ${OPSQ_STATUS===s[0]?'on':''}" onclick="opsqSetStatus('${s[0]}')">
         <div class="sseg-top">${s[1]}<span class="sseg-count">${tot}</span></div>
-        <div class="sseg-bar"><div class="fill" style="width:${pct}%"></div></div>
-        <div class="sseg-done">${dn} מתוך ${tot} סיימו תפעול</div>
-      </div>`;}).join('')
-      +`<div class="sarch" title="לקוחות בארכיון" onclick="toast('לקוחות בארכיון')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></svg></div>`;
+        ${meas?`<div class="sseg-bar"><div class="fill" style="width:${pct}%"></div></div>
+        <div class="sseg-done">${dn} מתוך ${tot} סיימו תפעול</div>`
+        :`<div class="sseg-off">${s[0]==='setup'?'ממתינות להרשאות בנק — לא בתפעול':'יצאו — לא בתפעול ולא בחיוב'}</div>`}
+      </div>`;}).join('');
     const F=[['all','הכל'],['alert','חריגות'],['doc','מסמכים'],['task','משימות'],['msg','הודעות']];
     document.getElementById('opsqFilters').innerHTML=F.map(f=>`<div class="ofilter ${OPSQ_FILTER===f[0]?'on':''}" onclick="opsqFilter('${f[0]}')">${f[1]}</div>`).join('');
     const order=CLIENTS.map((c,i)=>i).filter(opsqMatch)

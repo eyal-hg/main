@@ -93,9 +93,13 @@
   }
   function swFilter(q){
     q=(q||'').trim();
-    const hits=CLIENTS.map((c,i)=>({c,i})).filter(x=>!q||x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q));
+    /* המחליף לא מציג ארכיון — חברה שיצאה לא נבחרת מכאן. הגישה אליה דרך מסך הלקוחות. */
+    const hits=CLIENTS.map((c,i)=>({c,i}))
+      .filter(x=>typeof coState!=='function'||coState(x.c)!=='arch')
+      .filter(x=>!q||x.c.name.includes(q)||x.c.hp.includes(q)||x.c.mgr.includes(q));
+    const nAct=CLIENTS.filter(c=>typeof coState!=='function'||coState(c)!=='arch').length;
     document.getElementById('swList').innerHTML=
-      (q?'':'<div class="sw-item pinned" onclick="pickSwitcher(\'p\')"><span class="sdot" style="background:var(--navy)"></span><div><div class="nm">כל החברות</div><div class="sb">תיק לקוחות · 12 חברות</div></div></div>')
+      (q?'':'<div class="sw-item pinned" onclick="pickSwitcher(\'p\')"><span class="sdot" style="background:var(--navy)"></span><div><div class="nm">כל החברות</div><div class="sb">תיק לקוחות · '+nAct+' חברות</div></div></div>')
       +(hits.length?hits.map(({c,i})=>`<div class="sw-item" onclick="pickSwitcher(${i})"><span class="sdot" style="background:${c.warn?'var(--coral)':'var(--green)'}"></span><div><div class="nm">${c.name}</div><div class="sb">${c.hp} · ${c.mgr}</div></div></div>`).join('')
         :'<div class="sw-empty">לא נמצאו חברות ל"'+q+'"</div>');
   }

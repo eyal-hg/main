@@ -1197,6 +1197,14 @@
     CLIENTS[4].preview='אפשר דוח תזרים מעודכן?';
     CLIENTS[2].stat='trial'; CLIENTS[3].stat='setup';
     CLIENTS[0].product='money'; CLIENTS[1].product='meeting'; CLIENTS[2].product='money+'; CLIENTS[3].product='money'; CLIENTS[4].product='money+';
+    /* דמו: חלק גדול מהתיק כבר תופעל היום — ככה רואים איך התור מתקצר */
+    (function seedDone(){
+      let s=7; const rnd=()=>((s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff);
+      CLIENTS.forEach((c,i)=>{ if(i<5) return;
+        if(typeof coActive==='function'&&!coActive(c)) return;
+        if(rnd()<0.62){ opsDoneSet.add('c'+i); opsDur['c'+i]=180+Math.floor(rnd()*900); }
+      });
+    })();
     // per-company metric values feeding the alert-rule engine (order: אינטרנשיונל · גולני · גבעון · עובד · יצחק)
     // budget=% ביצוע · overdraft=ימים לחריגת עו״ש (0=אין) · liters/cfprofit=% מהיעד
     const MET=[
@@ -1867,7 +1875,7 @@
      כל פריט = תנועה בביזיבוקס (trans_id) — עותק אחד של האמת.
      שינוי תאריך כאן = התנועה זזה בתזרים באותו רגע + "תאריך זז" בלוג. */
   let ENT_MODE='inc';   // inc | exp
-  const MAT_CATS=['הכנסה ממכירות'];
+  const MAT_CATS=['הכנסות ממכירות - מזומן','הכנסות ממכירות - סליקה'];
   const MAT_INC=[
     {id:'bz-4d97a', d:'05.08.2026', cust:'מרכז הבנייה', desc:'חשבונית 1041 — אבן דרך א׳', a:22000, src:'אוטומציה', st:'done'},
     {id:'bz-4d97b', d:'12.08.2026', cust:'מרכז הבנייה', desc:'חשבונית 1044 — אבן דרך ב׳', a:19800, src:'אוטומציה', st:'flow'},
@@ -1878,139 +1886,433 @@
     {id:'bz-4e9f1', d:'', cust:'מרכז הבנייה', desc:'חשבונית 1047 — אבן דרך ג׳', a:30000, src:'אוטומציה', st:'nodate', rec:'20.09.2026', recWhy:'תנאי תשלום מרכז הבנייה: שוטף+45 · חשבונית 05.08'},
     {id:'bz-4e9f2', d:'', cust:'וולט תקבולים', desc:'התחשבנות יולי', a:6200, src:'ידני', st:'nodate', rec:'10.09.2026', recWhy:'תנאי תשלום וולט: שוטף+30'},
   ];
-  let MAT_EDIT=null;
-  function matDateStart(i){ MAT_EDIT=i; renderEntriesView(); setTimeout(()=>{const e=document.getElementById('matD'+i); if(e){e.focus();e.select();}},0); }
-  function matDateSave(i){
-    const e=document.getElementById('matD'+i); if(!e) return;
-    const v=e.value.trim(); MAT_EDIT=null;
-    const r=MAT_INC[i];
-    if(v&&v!==r.d.slice(0,5)){
-      const old=r.d.slice(0,5)||'ללא מועד';
-      r.d=(v.length===5?v+'.2026':v);
-      if(r.st==='nodate') r.st='flow';
-      toast('התאריך עודכן גם בתזרים ('+old+' ← '+v+') — נרשם בלוג כ"תאריך זז" · '+r.id);
-    }
+  const HE_MONTHS={'01':'ינואר','02':'פברואר','03':'מרץ','04':'אפריל','05':'מאי','06':'יוני','07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר','11':'נובמבר','12':'דצמבר'};
+  let MAT_EDIT=null, MAT_ROWEDIT=null, MAT_WEEK=null, MAT_ADD=false;
+  const MAT_MORE=new Set();   // תאריכים שבהם רשימת הצ'יפים פרושה במלואה
+  function matMore(d){ MAT_MORE.has(d)?MAT_MORE.delete(d):MAT_MORE.add(d); renderEntriesView(); }
+  function matAddTg(){ MAT_ADD=!MAT_ADD; renderEntriesView(); if(MAT_ADD) setTimeout(()=>{const e=document.getElementById('maC'); if(e)e.focus();},0); }
+  function matAddGo(){
+    const g=id=>{const e=document.getElementById(id); return e?e.value.trim():'';};
+    const d=g('maD'), c=g('maC'), ds=g('maT'), a=+g('maA').replace(/,/g,'');
+    if(!c||!a){toast('צריך לקוח וסכום');return;}
+    MAT_INC.push({id:'mn-'+Math.round(a)+'-'+MAT_INC.length, d:d?(d.length===5?d+'.2026':d):'', cust:c, desc:ds||'הזנה ידנית',
+      a, src:'ידני', st:d?'new':'nodate', rec:d?null:'25.08.2026', recWhy:'לפי תנאי התשלום של המוטב'});
+    MAT_ADD=false; renderEntriesView(); toast(d?'נוסף — ממתין לאישור':'נוסף ללא מועד — גרור אותו לתאריך בציר');
+  }
+  /* ===== What-If: שכבת סימולציה =====
+     כל שינוי נכנס ל-SIM ולא נוגע בביזיבוקס. הציר מתעדכן חי, ורק "שמירה"
+     כותבת. ככה הלקוח משחק — מזיז תאריכים, בוחר ספקים — ורואה מה יוצא. */
+  const SIM={inc:{}, exp:{}, pay:new Set()};   // inc/exp: id → תאריך חדש · pay: תשלומים שנבחרו
+  const simCount=()=>Object.keys(SIM.inc).length+Object.keys(SIM.exp).length+SIM.pay.size;
+  function simReset(){ SIM.inc={}; SIM.exp={}; SIM.pay=new Set(); MAT_PAYSEL=new Set(); toast('הסימולציה אופסה — חזרנו למצב הנוכחי'); renderEntriesView(); }
+  function simSave(){
+    const n=simCount(); if(!n) return;
+    Object.entries(SIM.inc).forEach(([id,d])=>{ const r=MAT_INC.find(x=>x.id===id); if(r){ r.d=d+'.2026'; r.st='flow'; } });
+    Object.entries(SIM.exp).forEach(([id,d])=>{ const r=MAT_EXP.find(x=>x.id===id); if(r) r.d=d+'.2026'; });
+    MAT_EXP.forEach(r=>{ if(SIM.pay.has(r.id)) r.st='flow'; });
+    SIM.inc={}; SIM.exp={}; SIM.pay=new Set(); MAT_PAYSEL=new Set();
+    toast((n===1?'שינוי אחד נשמר ונכתב':n+' שינויים נשמרו ונכתבו')+' לביזיבוקס — התזרים עודכן');
     renderEntriesView();
   }
-  function matAdoptInc(i){ const r=MAT_INC[i]; r.d=r.rec; r.st='flow'; toast('נקבע מועד '+r.rec.slice(0,5)+' לפי תנאי התשלום — נצבע בתזרים'); renderEntriesView(); }
-  function matOkInc(i){ MAT_INC[i].st='flow'; toast('אושר ונצבע בתזרים'); renderEntriesView(); }
+  /* התאריך האפקטיבי של פריט הכנסה — כולל סימולציה */
+  const simD=r=>SIM.inc[r.id]||r.d.slice(0,5);
+  const simSt=r=>SIM.inc[r.id]?'sim':r.st;
+  function matToward(day){
+    return MAT_INC.filter(r=>simSt(r)!=='nodate'&&simD(r)===day).reduce((s,r)=>s+r.a,0);
+  }
+  function simBar(){
+    const n=simCount();
+    return n?`<div class="simbar"><span class="sb-ic">⚗</span>
+      <b>${n===1?'שינוי אחד':n+' שינויים'} בסימולציה</b><span class="sb-t">עוד לא נכתבו לביזיבוקס — אפשר להמשיך לשחק</span>
+      <button class="ot-btn done sm" onclick="simSave()">שמירה לביזיבוקס</button>
+      <button class="gb-clr" onclick="simReset()">איפוס</button></div>`:'';
+  }
+  /* הקטגוריות מגיעות מרשימת המורשות של החברה (ניהול קטגוריות) — לא הקלדה חופשית */
+  const MAT_ALLCATS=['הכנסות ממכירות - מזומן','הכנסות ממכירות - סליקה','הכנסות מסליקה - דיירקט','הכנסות ממכירות - אלקטרה','הכנסות - חברות שילוח'];
+  function matCatPop(){ const e=document.getElementById('mcPop'); if(e) e.classList.toggle('show'); }
+  function matCatTg(c){
+    const i=MAT_CATS.indexOf(c);
+    i<0?MAT_CATS.push(c):(MAT_CATS.length>1&&MAT_CATS.splice(i,1));
+    renderEntriesView();
+  }
+  /* ציר התזרים — יתרה צפויה לשבוע. חור = יתרה שלילית; שם צריך לגבות. */
+  const MAT_WEEKS=[
+    {w:'04.08', bal: 42000}, {w:'11.08', bal: 28000}, {w:'18.08', bal: 51000}, {w:'25.08', bal: 33000},
+    {w:'01.09', bal: 12000}, {w:'08.09', bal:-22000}, {w:'15.09', bal:-8000},  {w:'22.09', bal: 16000},
+    {w:'29.09', bal: 24000}, {w:'06.10', bal:-14000}, {w:'13.10', bal: 9000},  {w:'20.10', bal: 21000},
+  ];
+  /* ===== עוזרים משותפים לשני הצירים (הכנסות + הוצאות) ===== */
+  const MAT_NOW='18.08';
+  const MON_AB={'01':'ינו','02':'פבר','03':'מרץ','04':'אפר','05':'מאי','06':'יונ','07':'יול','08':'אוג','09':'ספט','10':'אוק','11':'נוב','12':'דצמ'};
+  const dnum=d=>{const a=d.split('.'); return new Date(2026,+a[1]-1,+a[0]);};
+  const dTo=d=>Math.round((dnum(d)-dnum(MAT_NOW))/864e5);
+  const dkey=d=>d.slice(3,5)+d.slice(0,2);
+  const DOW=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  /* יתרה צפויה בבנק ליום — מהתזרים השבועי, מוזזת לפי מה שהוזז בסימולציה */
+  function balAt(d){
+    let b=MAT_WEEKS[0].bal;
+    MAT_WEEKS.forEach(w=>{ if(dkey(w.w.slice(0,5))<=dkey(d)) b=w.bal; });
+    Object.entries(SIM.inc).forEach(([id,nd])=>{
+      const r=MAT_INC.find(x=>x.id===id); if(!r) return;
+      const inFlow=r.st==='flow'||r.st==='done';
+      const od=inFlow&&r.d?r.d.slice(0,5):null;
+      if(dkey(nd)<=dkey(d)) b+=r.a;
+      if(od&&dkey(od)<=dkey(d)) b-=r.a;
+    });
+    return Math.round(b);
+  }
+  function matSim(id,day){ SIM.inc[id]=day; renderEntriesView(); }
+  /* עמידה על תאריך בציר → השורות של אותו תאריך מוארות בטבלה (בלי רינדור מחדש) */
+  function matHover(day){
+    document.querySelectorAll('.mt-r.hl').forEach(e=>e.classList.remove('hl'));
+    if(!day) return;
+    document.querySelectorAll('.mt-r[data-d="'+day+'"]').forEach(e=>e.classList.add('hl'));
+  }
+  /* ===== גרירה: שורה מהטבלה ← תאריך על הציר =====
+     זו התנועה שהופכת את המסך למשחק: גוררים, רואים את החור נסגר, ורק בסוף שומרים. */
+  let DRAG=null;
+  function matDragStart(ev,id){
+    DRAG=id; document.body.classList.add('dragging'); document.body.classList.add('is-dragging');
+    try{ ev.dataTransfer.setData('text/plain',id); ev.dataTransfer.effectAllowed='move'; }catch(e){}
+  }
+  function matDragEnd(){ DRAG=null; document.body.classList.remove('dragging'); document.body.classList.remove('is-dragging');
+    document.querySelectorAll('.over,.is-over').forEach(e=>e.classList.remove('over','is-over')); }
+  function matDragOver(ev,el){ ev.preventDefault(); el.classList.add('over'); el.classList.add('is-over'); }
+  function matDragLeave(el){ el.classList.remove('over'); el.classList.remove('is-over'); }
+  function matDrop(ev,day){
+    ev.preventDefault();
+    const id=DRAG||(ev.dataTransfer&&ev.dataTransfer.getData('text/plain'));
+    matDragEnd();
+    if(!id) return;
+    if(ENT_MODE==='exp'){
+      const r=MAT_EXP.find(x=>x.id===id); if(!r) return;
+      SIM.exp[id]=day;
+      toast(r.sup+' · '+r.a.toLocaleString()+' ₪ נדחה ל-'+day+' — בסימולציה');
+      return renderEntriesView();
+    }
+    const r=MAT_INC.find(x=>x.id===id); if(!r) return;
+    SIM.inc[id]=day;
+    toast(r.cust+' · '+r.a.toLocaleString()+' ₪ הועבר ל-'+day+' — בסימולציה');
+    renderEntriesView();
+  }
+  function matDropOff(ev){   // גרירה חזרה לרשימה = ביטול התזמון
+    ev.preventDefault();
+    const id=DRAG||(ev.dataTransfer&&ev.dataTransfer.getData('text/plain'));
+    matDragEnd();
+    if(id&&SIM.inc[id]){ delete SIM.inc[id]; renderEntriesView(); toast('התזמון בוטל'); }
+  }
+  function matSimUndo(id){ delete SIM.inc[id]; delete SIM.exp[id]; renderEntriesView(); }
+  function matWeekPick(i){ MAT_WEEK=(MAT_WEEK===i?null:i); renderEntriesView(); }
+  function matRowEdit(i){ MAT_ROWEDIT=i; renderEntriesView(); }
+  function matRowCancel(){ MAT_ROWEDIT=null; renderEntriesView(); }
+  function matRowSave(i){
+    const g=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+    const r=MAT_INC[i], nd=g('mrD'), nc=g('mrC'), ndesc=g('mrT'), na=g('mrA').replace(/,/g,'');
+    if(!nc||!na){toast('צריך לקוח וסכום');return;}
+    if(nd&&nd!==r.d.slice(0,5)){ r.d=(nd.length===5?nd+'.2026':nd); if(r.st==='nodate') r.st='flow'; }
+    r.cust=nc; r.desc=ndesc; r.a=+na||r.a;
+    MAT_ROWEDIT=null; renderEntriesView();
+    toast('עודכן — התנועה בתזרים עודכנה מיד · '+r.id);
+  }
   function renderMatInc(){
-    const inFlow=MAT_INC.filter(r=>r.st==='flow'||r.st==='done');
-    const nod=MAT_INC.filter(r=>r.st==='nodate');
-    const late=MAT_INC.filter(r=>r.st==='late');
-    const news=MAT_INC.filter(r=>r.st==='new');
     const sum=a=>a.reduce((s,r)=>s+r.a,0);
-    const rows=MAT_INC.filter(r=>r.st!=='nodate').sort((a,b)=>a.d.split('.').reverse().join('')<b.d.split('.').reverse().join('')?-1:1);
-    let lastM='';
+    const nod=MAT_INC.filter(r=>r.st==='nodate'&&!SIM.inc[r.id]);
+    const holes=MAT_WEEKS.filter(w=>w.bal<0);
+    const hole=MAT_WEEK!=null?MAT_WEEKS[MAT_WEEK]:null;
+    /* ציר לצד הטבלה: הציר = יעדי הגבייה + מי כבר נחת עליהם (צ'יפ נגרר).
+       הטבלה = כל החומר, וממנה גוררים אל הציר. */
+    const map={};
+    MAT_INC.forEach(r=>{ if(r.st==='nodate'&&!SIM.inc[r.id])return;
+      const d=simD(r); (map[d]=map[d]||{d,in:[],need:0}).in.push(r); });
+    holes.forEach(w=>{ const d=w.w.slice(0,5);
+      (map[d]=map[d]||{d,in:[],need:0}).need=Math.abs(w.bal); map[d].wi=MAT_WEEKS.indexOf(w); });
+    const key=d=>d.slice(3,5)+d.slice(0,2);
+    const list=Object.values(map).sort((a,b)=>key(a.d)<key(b.d)?-1:1);
+    /* ===== הציר (D4) — קו האפס: ימין = הפער שחסר, שמאל = מה שכבר משובץ.
+       סקאלה ליניארית אחת לשני הצדדים, אפס כרטיסיות, הצל היחיד הוא על הצ'יפ. ===== */
+    /* מה שכבר בתזרים כבר מגולם ביתרה הצפויה — ולכן לא "סוגר" את החור.
+       את החור סוגר רק מה שהמשתמש שיבץ לכאן עכשיו (גרירה = שינוי בתזרים). */
+    const isNew=r=>!!SIM.inc[r.id];
+    const gotOf=x=>x.need>0?x.in.filter(isNew).reduce((s,r)=>s+r.a,0):sum(x.in);
+    const MX=Math.max(1,...list.map(x=>Math.max(x.need,gotOf(x))));
+    const W=v=>(Math.max(v,0)/MX).toFixed(4);
+    /* מה שנותר לסגור ביום = היתרה המסומלצת אם היא עדיין שלילית.
+       ככה עודף שנגבה מוקדם סוגר מעצמו חורים מאוחרים — בדיוק כמו בתזרים. */
+    const leftOf=x=>Math.max(0,-balAt(x.d));
+    const gapsL=list.filter(x=>x.need>0&&leftOf(x)>0);
+    const lastD=list.length?list[list.length-1].d:'30.09';
+    const perTxt='עד '+(+lastD.split('.')[0])+' ב'+(HE_MONTHS[lastD.split('.')[1]]||'');
+    const missTot=gapsL.reduce((s,x)=>s+leftOf(x),0);
+    const needTot=list.reduce((s,x)=>s+x.need,0);
+    const gotTot=Math.max(0,needTot-missTot);
+    const chipH=(r,dim)=>{const isSim=!!SIM.inc[r.id];
+      return `<button class="chip ${r.st==='late'?'t-late':''} ${isSim?'is-sim':''} ${dim&&!isSim?'in-flow':''}" draggable="true"
+        style="--w:${W(r.a)}" ondragstart="matDragStart(event,'${r.id}')" ondragend="matDragEnd()"
+        onmouseenter="matHover('${simD(r)}')" onmouseleave="matHover(null)"
+        title="${(r.desc||'').replace(/"/g,'')}${dim&&!isSim?' · כבר בתזרים — כבר מגולם ביתרה':''} · גרירה לתאריך אחר">
+        <span class="grip"></span><span class="nm">${r.cust}</span><span class="am n">${r.a.toLocaleString()}</span>
+        ${isSim?`<span class="ux" onclick="event.stopPropagation();event.preventDefault();matSimUndo('${r.id}')">✕</span>`:''}</button>`;};
+    const nodeH=x=>{
+      const got=gotOf(x), need=x.need, hasNeed=need>0;
+      const left=hasNeed?leftOf(x):0;
+      const cov=hasNeed&&left===0, gap=hasNeed&&left>0;
+      const carry=cov?Math.max(0,need-got):0;   /* מה שנסגר מעודף של תאריך מוקדם יותר */
+      const lateN=x.in.filter(r=>r.st==='late').length;
+      const cls=gap?'is-gap':cov?'is-covered':'is-in';
+      const open=MAT_MORE.has(x.d), many=x.in.length>5;
+      const dt=dTo(x.d), a=x.d.split('.');
+      const eta=dt<0?'':dt===0?'היום':dt===1?'מחר':'בעוד '+dt+' ימים';
+      const pl=(n,one,many)=>n===1?one:n+' '+many;
+      const bal=balAt(x.d);
+      return `<article class="hkt-node ${cls} ${lateN?'is-late':''} ${gap&&!x.in.length?'is-empty':''} ${hasNeed&&MAT_WEEK===x.wi?'is-sel':''} ${dt<0&&!lateN?'is-past':''}"
+        data-drop tabindex="0" style="--p:${hasNeed?Math.min(got/need,1).toFixed(3):0}"
+        onmouseenter="matHover('${x.d}')" onmouseleave="matHover(null)"
+        ondragover="matDragOver(event,this)" ondragleave="matDragLeave(this)" ondrop="matDrop(event,'${x.d}')"
+        ${hasNeed?`onclick="matWeekPick(${x.wi})"`:''}>
+        <div class="hkt-when">
+          <div class="w-d">${+a[0]}<em>${MON_AB[a[1]]||''}׳</em></div>
+          <div class="w-bal ${bal<0?'neg':''}">יתרה <span class="n">${bal.toLocaleString()}</span></div>
+          ${gap&&eta?`<div class="w-eta ${dt<=3?'urgent':''}">${eta}</div>`:''}
+        </div>
+        <div class="hkt-neg">${gap?`<div class="w-gap" style="--w:${W(left)}"></div>`:''}</div>
+        <div class="hkt-mark"><i></i></div>
+        <div class="hkt-need">${gap?`<span class="miss">חסר <span class="n">${left.toLocaleString()}</span></span>`
+                              :cov?`<span class="okm">מכוסה</span>`:''}</div>
+        <div class="hkt-pos">
+          <div class="hkt-trk" style="--need:${W(hasNeed?need:got)}">
+            <div class="hkt-fill" style="--have:${W(hasNeed?Math.min(got+carry,need):got)}">${(hasNeed?x.in.filter(isNew):x.in).map(r=>`<i style="--w:${W(r.a)}"></i>`).join('')}${carry?`<i class="carry" style="--w:${W(carry)}"></i>`:''}</div>
+          </div>
+          ${hasNeed?`<span class="hkt-cap">נדרש <b class="n">${need.toLocaleString()}</b>${cov&&!got?' · נסגר מעודף קודם':''}</span>`:''}
+        </div>
+        <div class="hkt-body">
+          ${x.in.length?`<div class="hkt-chips ${many&&!open?'is-clamped':''}">${x.in.map(r=>chipH(r,hasNeed)).join('')}</div>`:''}
+          ${many?`<button class="hkt-more" onclick="event.stopPropagation();matMore('${x.d}')">${open?'הצגה מקוצרת':'עוד '+(x.in.length-5)+' תקבולים'}</button>`:''}
+          <div class="hkt-pad"><span>${gap?'שחררו כאן — יסגור '+left.toLocaleString():'שחררו כאן'}</span></div>
+        </div>
+      </article>`;};
+    let curMon='', shownNow=false, axis='';
+    list.forEach(x=>{
+      const mo=x.d.slice(3,5);
+      if(mo!==curMon){ curMon=mo; axis+=`<div class="hkt-mon"><b>${HE_MONTHS[mo]||''}</b></div>`; }
+      if(!shownNow&&dTo(x.d)>0){ shownNow=true; axis+=`<div class="hkt-now"><b>היום · ${MAT_NOW}</b></div>`; }
+      axis+=nodeH(x);
+    });
     const rowH=r=>{
-      const i=MAT_INC.indexOf(r);
-      const dCell=MAT_EDIT===i
-        ?`<input class="ent-inp edd" id="matD${i}" value="${r.d.slice(0,5)}" onblur="matDateSave(${i})" onkeydown="if(event.key==='Enter')this.blur()">`
-        :`<button class="mat-date ${r.st==='late'?'lateD':''}" title="מזהה ביזיבוקס ${r.id} · לחיצה לשינוי תאריך — יזוז גם בתזרים" onclick="matDateStart(${i})">${r.d.slice(0,5)}</button>`;
-      const stCell=r.st==='new'?`<button class="ot-btn done xs" onclick="matOkInc(${i})">אישור</button>`
-        :r.st==='late'?`<button class="ent-late-btn" onclick="toast('נשלחה תזכורת גבייה בשם הלקוח')">⚠ ${r.days} ימים</button>`
-        :r.st==='done'?`<span class="ent-st exec">● בוצע</span>`
-        :`<span class="ent-st ok">✓ בתזרים</span>`;
-      const m=r.d.slice(3,5);
-      let sep='';
-      if(m!==lastM){ lastM=m; sep=`<div class="ent-month">${HE_MONTHS[m]||''} ${r.d.slice(6)}</div>`; }
-      return sep+`<div class="dt-c">${dCell}</div>
-        <div class="dt-c ent-tcell"><b class="mi-cust">${r.cust}</b> <span class="mi-desc">${r.desc}</span></div>
-        <div class="dt-c num">${r.a.toLocaleString()}</div>
-        <div class="dt-c"><i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i></div>
-        <div class="dt-c">${stCell}</div>`;
-    };
-    const nodH=nod.map(r=>{
-      const i=MAT_INC.indexOf(r);
-      return `<div class="dt-c"><button class="ent-rec" title="${r.recWhy} · לחיצה = אימוץ" onclick="matAdoptInc(${i})">✦ ${r.rec.slice(0,5)}</button></div>
-        <div class="dt-c ent-tcell"><b class="mi-cust">${r.cust}</b> <span class="mi-desc">${r.desc}</span></div>
-        <div class="dt-c num">${r.a.toLocaleString()}</div>
-        <div class="dt-c"><i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i></div>
-        <div class="dt-c"><button class="mt-btn view xs" onclick="toast('הבוט ביקש מהלקוח מועד בקבוצה')">מועד מהלקוח</button></div>`;
-    }).join('');
-    return `<div class="mat-wrap">
-      <div class="mat-side">
-        <div class="mat-side-h">השפעה על התזרים</div>
-        <div class="ms-stat"><span>בתזרים · צבוע</span><b>${sum(inFlow).toLocaleString()} ₪</b></div>
-        <div class="ms-stat warn"><span>ללא מועד — לא בתזרים</span><b>${sum(nod).toLocaleString()} ₪</b></div>
-        <div class="ms-stat late"><span>באיחור · בגבייה</span><b>${sum(late).toLocaleString()} ₪</b></div>
-        ${news.length?`<div class="ms-stat"><span>ממתין לאישור</span><b>${sum(news).toLocaleString()} ₪</b></div>`:''}
-        <div class="mat-side-note">תזמון הפריטים ללא מועד יעלה את היתרה הצפויה ב-<b>${sum(nod).toLocaleString()} ₪</b> בתאריכים שייקבעו.</div>
-        <div class="mat-side-note dim">הקטגוריות המחוברות: ${MAT_CATS.join(' · ')} · כל פריט = תנועה בביזיבוקס, סנכרון דו-כיווני.</div>
-        <button class="mt-btn view sm" style="margin-top:10px" onclick="showTab('budget')">מעקב ופערים ←</button>
-      </div>
-      <div class="ent-card">
-        <div class="mat-src-bar">
-          <span class="mat-conn">⟳ אוטומציה — חשבונית ירוקה <i>נמשכו 6 חשבוניות · לפני שעה</i></span>
-          <span class="mat-conn manual">✎ הזנה ידנית של הלקוח <i>2 פריטים</i></span>
+      const i=MAT_INC.indexOf(r), isSim=!!SIM.inc[r.id];
+      const st=isSim?'<span class="ent-st simst">⚗ מתוזמן</span>'
+        :r.st==='nodate'?`<button class="ent-rec" onclick="matSim('${r.id}','${r.rec.slice(0,5)}')" title="${r.recWhy}">✦ ${r.rec.slice(0,5)}</button>`
+        :r.st==='new'?`<button class="ot-btn done xs" onclick="matOkInc(${i})">אישור</button>`
+        :r.st==='late'?`<span class="ent-late-btn">⚠ ${r.days} ימים</span>`
+        :r.st==='done'?'<span class="ent-st exec">● בוצע</span>':'<span class="ent-st ok">✓ בתזרים</span>';
+      const dd=isSim?SIM.inc[r.id]:(r.d?r.d.slice(0,5):'');
+      return `<div class="mt-r drg" data-d="${dd}" draggable="true" ondragstart="matDragStart(event,'${r.id}')" ondragend="matDragEnd()" title="גרירה לתאריך בציר">
+        <span class="mt-d ${r.st==='late'?'lateD':''} ${isSim?'sim':''}">${dd||'—'}</span>
+        <span class="mt-c"><b>${r.cust}</b><small>${r.desc}</small></span>
+        <span class="mt-a">${r.a.toLocaleString()}</span>
+        <span class="mt-src"><i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i></span>
+        <span class="mt-s">${st}</span></div>`;};
+    const ordered=[...MAT_INC].sort((a,b)=>{
+      const ka=SIM.inc[a.id]||(a.st==='nodate'?'99.99':a.d.slice(0,5));
+      const kb=SIM.inc[b.id]||(b.st==='nodate'?'99.99':b.d.slice(0,5));
+      return key(ka)<key(kb)?-1:1;});
+    return simBar()+`<div class="mat4">
+      <div class="mat-tbl wide">
+        <div class="mat-cats">
+          ${MAT_CATS.map(c=>`<button class="mc-chip on" onclick="matCatTg('${c}')">✓ ${c}</button>`).join('')}
+          <span class="mc-pickw"><button class="mc-more" onclick="matCatPop()">＋ קטגוריה</button>
+            <div class="mc-pop" id="mcPop"><div class="mc-pop-h">קטגוריות מורשות של החברה</div>
+              ${MAT_ALLCATS.filter(c=>!MAT_CATS.includes(c)).map(c=>`<button onclick="matCatTg('${c}');matCatPop()">${c}</button>`).join('')||'<div class="mc-pop-e">הכל מחובר</div>'}
+              <div class="mc-pop-f">הרשימה נקבעת ב<b>ניהול קטגוריות</b></div></div></span>
+          <button class="mt-add" onclick="matAddTg()">＋ הוספת תקבול</button>
+          <span class="mat-status">גרירת שורה אל תאריך בציר ←</span>
         </div>
-        <div class="dt-grid ent-grid2">
-          <div class="dt-h">מועד</div><div class="dt-h">לקוח · חשבונית</div><div class="dt-h">סכום ₪</div><div class="dt-h">מקור</div><div class="dt-h">סטטוס</div>
-          ${rows.map(rowH).join('')}
-          ${nod.length?`<div class="ent-month nod">ללא מועד — ממתין לתאריך</div>`+nodH:''}
+        ${MAT_ADD?`<div class="mt-addrow">
+          <input class="ent-inp edd" id="maD" placeholder="dd.mm · ריק=ללא מועד">
+          <input class="ent-inp" id="maC" placeholder="לקוח">
+          <input class="ent-inp" id="maT" placeholder="חשבונית / תיאור">
+          <input class="ent-inp num" id="maA" placeholder="סכום">
+          <button class="ot-btn done xs" onclick="matAddGo()">הוספה</button>
+          <button class="mt-btn view xs" onclick="matAddTg()">ביטול</button>
+        </div>`:''}
+        <div class="mt-list" ondragover="event.preventDefault()" ondrop="matDropOff(event)">
+          ${ordered.map(rowH).join('')}
         </div>
       </div>
+      <aside class="mat-axis2 v4"><section class="hkt" dir="rtl" aria-label="ציר התזרים">
+        <header class="hkt-hd">
+          <div class="hd-line">
+            <span class="hd-lbl">חסר לכיסוי</span>
+            <span class="hd-fig"><span class="n">${missTot.toLocaleString()}</span><span class="c">₪</span></span>
+            ${gapsL.length?`<span class="hd-risk"><i></i>${gapsL.length} בסיכון · ${gapsL[0].d}</span>`:''}
+          </div>
+          <div class="hd-bar" style="--w:${needTot?(gotTot/needTot).toFixed(3):0}"><i></i></div>
+          <div class="hd-lg"><span>שובץ <b class="n">${gotTot.toLocaleString()}</b></span><span>נדרש <b class="n">${needTot.toLocaleString()}</b></span></div>
+        </header>
+        <div class="hkt-pool ${nod.length?'':'is-empty'}" ondragover="matDragOver(event,this)" ondragleave="matDragLeave(this)" ondrop="matDropOff(event)">
+          <span class="pool-t">ללא תאריך <b>${nod.length}</b></span>
+          ${nod.length?`<div class="pool-rail">${nod.map(chipH).join('')}</div>`
+                      :'<span class="pool-hint">הכל מתוזמן</span>'}
+        </div>
+        <div class="hkt-scroll"><div class="hkt-track">
+          ${axis}
+          <div class="hkt-end"><i></i><span>סוף התקופה · ${lastD}</span></div>
+        </div></div>
+      </section></aside>
     </div>`;
   }
-  const HE_MONTHS={'01':'ינואר','02':'פברואר','03':'מרץ','04':'אפריל','05':'מאי','06':'יוני','07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר','11':'נובמבר','12':'דצמבר'};
-  function entColHtml(name){
-    const t=DATA_TABLES[name];
-    const INC=name.includes('תקבולים');
-    const key=INC?'in':'out';
-    const vis=r=>ENT_TAB==='nodate'?r.st==='nodate'
-              :ENT_TAB==='new'?r.st==='new'
-              :ENT_TAB==='done'?r.st==='done'
-              :ENT_TAB==='all'?true
-              :r.st!=='done';
-    const nodate=t.rows.filter(r=>vis(r)&&r.st==='nodate');
-    const dated=t.rows.filter(r=>vis(r)&&r.st!=='nodate').sort((a,b)=>a.d.split('.').reverse().join('')<b.d.split('.').reverse().join('')?-1:1);
-    const nNew=t.rows.filter(r=>r.st==='new').length;
-    /* ללא מועד = שורות רגילות בטבלה: תאריך "—" + המלצת מועד כצ'יפ לאימוץ */
-    const nodateHtml=nodate.length?`<div class="ent-month nod">ללא מועד — ממתין לתאריך</div>`+nodate.map(r=>{
-      const ix=t.rows.indexOf(r);
-      return `<div class="dt-c"><button class="ent-rec" title="${r.recWhy||''} · לחיצה = אימוץ המועד" onclick="entAdopt('${name}',${ix})">✦ ${r.rec?r.rec.slice(0,5):''}</button></div>
-        <div class="dt-c">${r.t}</div>
-        <div class="dt-c num">${r.a}</div>
-        <div class="dt-c">${r.pay}${r.ref?` <i class="ent-ref">${r.ref}</i>`:''}</div>
-        <div class="dt-c"><button class="mt-btn view xs" onclick="toast('הבוט ביקש מהלקוח מועד בקבוצה')">מועד מהלקוח</button></div>`;
-    }).join(''):'';
-    let lastM='';
-    const rowsHtml=dated.map(r=>{
-      const st=ENT_ST[r.st];
-      const m=r.d.slice(3,5)+'.'+r.d.slice(6);
-      let sep='';
-      if(m!==lastM){ lastM=m; sep=`<div class="ent-month">${HE_MONTHS[r.d.slice(3,5)]||''} ${r.d.slice(6)}</div>`; }
-      const ix=t.rows.indexOf(r);
-      if(ENT_EDIT&&ENT_EDIT.name===name&&ENT_EDIT.ix===ix){
-        return sep+`<div class="dt-c"><input class="ent-inp edd" id="entEdD" value="${r.d.slice(0,5)}" placeholder="dd.mm"></div>
-          <div class="dt-c"><input class="ent-inp" id="entEdT" value="${r.t.replace(/"/g,'&quot;')}"></div>
-          <div class="dt-c"><input class="ent-inp num" id="entEdA" value="${r.a}"></div>
-          <div class="dt-c">${r.pay}${r.pay==='שיק'?`<input class="ent-inp ref" id="entEdR" value="${r.ref||''}" placeholder="אסמכתא">`:''}</div>
-          <div class="dt-c ent-edact"><button class="ot-btn done xs" onclick="entEditSave()">שמירה</button><button class="mt-btn view xs" onclick="entEditCancel()">ביטול</button></div>`;
-      }
-      const stCell=r.st==='new'?`<button class="ot-btn done xs" onclick="entOk(this)">אישור</button>`
-        :r.st==='late'?`<button class="ent-late-btn" onclick="toast('${INC?'נשלחה תזכורת גבייה בשם הלקוח':'נפתחה נגררת — בדיקת התאמה'}')" title="${INC?'תזכורת גבייה':'לנגררות'}">⚠ ${r.days?r.days+' ימים':'נגררת'}</button>`
-        :`<span class="ent-st ${st.c}">${st.t}</span>`;
-      return sep+`<div class="dt-c ${r.st==='late'?'lateD':''}">${r.d.slice(0,5)}</div>
-        <div class="dt-c ent-tcell">${r.t}<button class="ent-pen" title="עריכה" onclick="entEditStart('${name}',${ix})">✎</button>${r.edit?`<i class="ent-edit">עודכן ${r.edit}</i>`:''}</div>
-        <div class="dt-c num">${r.a}</div>
-        <div class="dt-c">${r.pay}${r.ref?` <i class="ent-ref">${r.ref}</i>`:''}${r.src?` <i class="ent-src ${r.src==='אוטומציה'?'auto':''}">${r.src}</i>`:''}</div>
-        <div class="dt-c">${stCell}</div>`;
-    }).join('');
-    return `<div class="ent-card">
-      <div class="ent-col-h">${name}${nNew?` <i class="ent-cnt">${nNew} לאישור</i>`:''}</div>
+  /* הוצאות = אותו מנגנון הפוך: כמה אפשר לשלם בכל תאריך, והלקוח בוחר ספקים.
+     המסר: לא "שלם ואז תראה מה קרה" אלא "זו התקרה — תעדף בתוכה". */
+  const MAT_EXP=[
+    {id:'bz-5a11', d:'10.08.2026', sup:'לדובק הפצה', desc:'סחורה יולי',        a:8400,  pay:'העברה', st:'flow'},
+    {id:'bz-5a12', d:'15.08.2026', sup:'ספק אריזות', desc:'הזמנה חדשה',        a:5200,  pay:'שיק · 21044', st:'new'},
+    {id:'bz-5a13', d:'20.08.2026', sup:'יועץ שיווק',  desc:'ריטיינר',           a:3000,  pay:'העברה', st:'new'},
+    {id:'bz-5a14', d:'25.08.2026', sup:'פלסט-גל',     desc:'חומרי גלם',         a:7500,  pay:'שיק · 21045', st:'new'},
+    {id:'bz-5a15', d:'25.08.2026', sup:'מס הכנסה',    desc:'מקדמות',            a:11400, pay:'העברה', st:'new', must:true},
+    {id:'bz-5a16', d:'25.08.2026', sup:'ביטוח לאומי', desc:'ניכויים',           a:9800,  pay:'העברה', st:'new', must:true},
+    {id:'bz-5a17', d:'25.08.2026', sup:'ספק משנה ר.לוי', desc:'עבודות גמר',     a:12000, pay:'העברה', st:'new'},
+    {id:'bz-5a18', d:'28.08.2026', sup:'שכירות מחסן', desc:'חודשי',             a:6450,  pay:'העברה', st:'new'},
+    {id:'bz-5a19', d:'10.09.2026', sup:'פלסט-גל',     desc:'שיק דחוי',          a:7500,  pay:'שיק · 21046', st:'new', must:true},
+    {id:'bz-5a20', d:'10.09.2026', sup:'לדובק הפצה',  desc:'סחורה אוגוסט',      a:8400,  pay:'העברה', st:'new'},
+    {id:'bz-5a21', d:'10.09.2026', sup:'חשמל — חח״י', desc:'דו-חודשי',          a:5200,  pay:'הו״ק', st:'new', must:true},
+    {id:'bz-5a22', d:'25.09.2026', sup:'מס הכנסה',    desc:'מקדמות',            a:11400, pay:'העברה', st:'new', must:true},
+    {id:'bz-5a23', d:'25.09.2026', sup:'ספק אריזות',  desc:'הזמנה 88',          a:6100,  pay:'העברה', st:'new'},
+  ];
+  /* תקרת תשלום לכל תאריך — נגזרת מהתזרים: כמה אפשר לשלם בלי להיכנס למינוס */
+  const MAT_CAPS=[{d:'25.08',cap:50000},{d:'10.09',cap:28000},{d:'25.09',cap:41000}];
+  const MAT_CAP=Object.fromEntries(MAT_CAPS.map(c=>[c.d,c.cap]));
+  let MAT_PAYSEL=new Set(), MAT_CAPDAY='25.08';
+  function matCapPick(d){ MAT_CAPDAY=d; MAT_PAYSEL=new Set(); renderEntriesView(); }
+  function matPayTg(id){ SIM.pay.has(id)?SIM.pay.delete(id):SIM.pay.add(id); MAT_PAYSEL=SIM.pay; renderEntriesView(); }
+  function matPayGo(){
+    const n=MAT_PAYSEL.size; if(!n) return;
+    MAT_EXP.forEach(r=>{ if(MAT_PAYSEL.has(r.id)) r.st='flow'; });
+    MAT_PAYSEL=new Set();
+    toast(n+' תשלומים אושרו ל-'+MAT_CAPDAY+' — נצבעו בתזרים');
+    renderEntriesView();
+  }
+  /* ===== הציר בהוצאות — התמונה הראית של ההכנסות =====
+     בהכנסות הקו הוא האפס והפער יוצא ימינה. כאן הקו הוא **התקרה**:
+     שמאלה ממנו נערם מה ששובצת לתשלום, וימינה יוצאת החריגה — מה שלא נכנס
+     בתוך מה שהתזרים מרשה. אותה סקאלה, אותה גרירה, אותה סימולציה. */
+  const simDE=r=>SIM.exp[r.id]||r.d.slice(0,5);
+  function renderMatExp(){
+    const sum=a=>a.reduce((s,r)=>s+r.a,0);
+    const onOf=r=>r.must||SIM.pay.has(r.id);
+    /* צמתים: כל תאריך שיש בו תקרה או תשלומים */
+    const map={};
+    MAT_EXP.forEach(r=>{ const d=simDE(r); (map[d]=map[d]||{d,in:[]}).in.push(r); });
+    MAT_CAPS.forEach(c=>{ map[c.d]=map[c.d]||{d:c.d,in:[]}; });
+    /* התקרה נגזרת מהתזרים: מה שאפשר לשלם ביום = היתרה הצפויה שם. אין יתרה — אין יכולת. */
+    const list=Object.values(map).sort((a,b)=>dkey(a.d)<dkey(b.d)?-1:1);
+    list.forEach(x=>{ x.cap=Math.max(0,balAt(x.d)); });
+    const usedOf=x=>x.in.filter(onOf).reduce((s,r)=>s+r.a,0);
+    const overOf=x=>Math.max(0,usedOf(x)-x.cap);
+    const MX=Math.max(1,...list.map(x=>Math.max(x.cap,usedOf(x),sum(x.in))));
+    const W=v=>(Math.max(v,0)/MX).toFixed(4);
+    const overL=list.filter(x=>overOf(x)>0);
+    const lastD=list.length?list[list.length-1].d:'30.09';
+    const perTxt='עד '+(+lastD.split('.')[0])+' ב'+(HE_MONTHS[lastD.split('.')[1]]||'');
+    const overTot=overL.reduce((s,x)=>s+overOf(x),0);
+    const capTot=list.reduce((s,x)=>s+x.cap,0);
+    const usedTot=list.reduce((s,x)=>s+Math.min(usedOf(x),x.cap||usedOf(x)),0);
+    const leftTot=list.reduce((s,x)=>s+(x.cap>0?Math.max(0,x.cap-usedOf(x)):0),0);
+    const waitTot=sum(MAT_EXP.filter(r=>!onOf(r)));
 
-      <div class="dt-grid ent-grid2">
-        ${t.cols.map(c=>`<div class="dt-h">${c}</div>`).join('')}
-        ${rowsHtml}
-        ${nodateHtml}
-        <div class="dt-c"><input class="ent-inp" id="entDate_${key}" placeholder="מועד · ריק=ללא"></div>
-        <div class="dt-c"><input class="ent-inp" id="entDesc_${key}" placeholder="${INC?'לקוח / תיאור…':'ספק / תיאור…'}"></div>
-        <div class="dt-c"><input class="ent-inp num" id="entAmt_${key}" placeholder="סכום"></div>
-        <div class="dt-c"><button class="ent-type" onclick="entTypeCycle2('${key}',this)">העברה ↺</button>
-          <input class="ent-inp ref" id="entRef_${key}" placeholder="אסמכתא" style="display:none"></div>
-        <div class="dt-c"><button class="mt-btn view xs" onclick="entAddRow2('${name}','${key}')">+ הוספה</button></div>
+    const chipE=r=>{const on=onOf(r), moved=!!SIM.exp[r.id];
+      return `<button class="chip pay ${on?'is-on':''} ${r.must?'is-must':''} ${moved?'is-sim':''}" draggable="true"
+        style="--w:${W(r.a)}" ondragstart="matDragStart(event,'${r.id}')" ondragend="matDragEnd()"
+        onclick="event.stopPropagation();${r.must?"toast('חיוב חובה — נעול, תופס מהתקרה אוטומטית')":`matPayTg('${r.id}')`}"
+        onmouseenter="matHover('${simDE(r)}')" onmouseleave="matHover(null)"
+        title="${r.desc} · ${r.pay}${r.must?' · חובה':''} · גרירה לתאריך אחר">
+        <span class="pchk ${on?'on':''} ${r.must?'lock':''}"></span>
+        <span class="nm">${r.sup}</span><span class="am n">${r.a.toLocaleString()}</span>
+        ${moved?`<span class="ux" onclick="event.stopPropagation();event.preventDefault();matSimUndo('${r.id}')">✕</span>`:''}</button>`;};
+
+    const nodeE=x=>{
+      const used=usedOf(x), cap=x.cap, hasCap=cap>0, over=overOf(x);
+      const cls=over>0?'is-gap':used>0?'is-covered':'is-in';
+      const open=MAT_MORE.has(x.d), many=x.in.length>5;
+      const dt=dTo(x.d), a=x.d.split('.'), bal=balAt(x.d);
+      const eta=dt<0?'':dt===0?'היום':dt===1?'מחר':'בעוד '+dt+' ימים';
+      const on=x.in.filter(onOf);
+      return `<article class="hkt-node exp ${cls} ${hasCap&&!on.length?'is-empty':''} ${MAT_CAPDAY===x.d?'is-sel':''} ${dt<0?'is-past':''}"
+        data-drop tabindex="0" style="--p:${hasCap?Math.min(used/cap,1).toFixed(3):0}"
+        onmouseenter="matHover('${x.d}')" onmouseleave="matHover(null)"
+        ondragover="matDragOver(event,this)" ondragleave="matDragLeave(this)" ondrop="matDrop(event,'${x.d}')"
+        ${hasCap?`onclick="matCapPick('${x.d}')"`:''}>
+        <div class="hkt-when">
+          <div class="w-d">${+a[0]}<em>${MON_AB[a[1]]||''}׳</em></div>
+          <div class="w-bal ${bal<0?'neg':''}">יתרה <span class="n">${bal.toLocaleString()}</span></div>
+          ${over>0&&eta?`<div class="w-eta ${dt<=3?'urgent':''}">${eta}</div>`:''}
+        </div>
+        <div class="hkt-neg">${over>0?`<div class="w-gap" style="--w:${W(over)}"></div>`:''}</div>
+        <div class="hkt-mark"><i></i></div>
+        <div class="hkt-need">${over>0?`<span class="miss">חריגה <span class="n">${over.toLocaleString()}</span></span>`
+          :used>0?`<span class="okm">נשאר <span class="n">${(cap-used).toLocaleString()}</span></span>`:''}</div>
+        <div class="hkt-pos">
+          <div class="hkt-trk" style="--need:${W(hasCap?cap:used)}">
+            <div class="hkt-fill" style="--have:${W(hasCap?Math.min(used,cap):used)}">${on.map(r=>`<i class="${r.must?'must':''}" style="--w:${W(r.a)}"></i>`).join('')}</div>
+          </div>
+          <span class="hkt-cap">${hasCap?`תקרה <b class="n">${cap.toLocaleString()}</b>`:'אין יכולת תשלום ביום הזה'}</span>
+        </div>
+        <div class="hkt-body">
+          ${x.in.length?`<div class="hkt-chips ${many&&!open?'is-clamped':''}">${x.in.map(chipE).join('')}</div>`:''}
+          ${many?`<button class="hkt-more" onclick="event.stopPropagation();matMore('${x.d}')">${open?'הצגה מקוצרת':'עוד '+(x.in.length-5)+' תשלומים'}</button>`:''}
+          <div class="hkt-pad"><span>${over>0?'שחררו כאן — עדיין חורג '+over.toLocaleString():'שחררו כאן — דחיית תשלום לתאריך הזה'}</span></div>
+        </div>
+      </article>`;};
+
+    let curMon='', shownNow=false, axis='';
+    list.forEach(x=>{
+      const mo=x.d.slice(3,5);
+      if(mo!==curMon){ curMon=mo; axis+=`<div class="hkt-mon"><b>${HE_MONTHS[mo]||''}</b></div>`; }
+      if(!shownNow&&dTo(x.d)>0){ shownNow=true; axis+=`<div class="hkt-now"><b>היום · ${MAT_NOW}</b></div>`; }
+      axis+=nodeE(x);
+    });
+
+    /* הטבלה — כל התשלומים, וממנה גוררים אל הציר */
+    const rowE=r=>{
+      const on=onOf(r), moved=!!SIM.exp[r.id], d=simDE(r);
+      return `<div class="mt-r pay drg ${on?'on':''}" data-d="${d}" draggable="true"
+        ondragstart="matDragStart(event,'${r.id}')" ondragend="matDragEnd()"
+        onclick="${r.must?"toast('חיוב חובה — נעול')":`matPayTg('${r.id}')`}" title="גרירה לתאריך בציר">
+        <span class="fchk ${on?'on':''} ${r.must?'lock':''}">${r.must?'🔒':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M20 6 9 17l-5-5"/></svg>'}</span>
+        <span class="mt-d ${moved?'sim':''}">${d}</span>
+        <span class="mt-c"><b>${r.sup}</b><small>${r.desc}</small></span>
+        <span class="mt-a">${r.a.toLocaleString()}</span>
+        <span class="mt-src"><i class="ent-src">${r.pay}</i></span>
+        <span class="mt-s">${r.must?'<span class="pay-must">חובה</span>':on?'<span class="ent-st ok">✓ לתשלום</span>':'<span class="ent-st wait">לא שובץ</span>'}</span></div>`;};
+    const ordered=[...MAT_EXP].sort((a,b)=>dkey(simDE(a))<dkey(simDE(b))?-1:1);
+
+    return simBar()+`<div class="mat4">
+      <div class="mat-tbl wide">
+        <div class="mat-cats">
+          <span class="mat-hd">בחרו מה משלמים — הציר מראה כמה התזרים מרשה בכל תאריך</span>
+          <span class="mat-status">גרירת שורה אל תאריך בציר = דחיית תשלום ←</span>
+        </div>
+        <div class="mt-list">${ordered.map(rowE).join('')}</div>
       </div>
+      <aside class="mat-axis2 v4"><section class="hkt exp" dir="rtl" aria-label="ציר התשלומים">
+        <header class="hkt-hd">
+          <div class="hd-line">
+            <span class="hd-lbl">${overTot?'מעל היכולת':'נשאר לתשלום'}</span>
+            <span class="hd-fig ${overTot?'bad':'good'}"><span class="n">${(overTot||leftTot).toLocaleString()}</span><span class="c">₪</span></span>
+            ${overL.length?`<span class="hd-risk"><i></i>${overL.length} בחריגה · ${overL[0].d}</span>`
+                          :`<span class="hd-ok">✓ ${perTxt}</span>`}
+          </div>
+          <div class="hd-bar" style="--w:${capTot?(usedTot/capTot).toFixed(3):0}"><i></i></div>
+          <div class="hd-lg"><span>משובץ <b class="n">${usedTot.toLocaleString()}</b></span><span>תקרה <b class="n">${capTot.toLocaleString()}</b></span></div>
+        </header>
+        <div class="hkt-pool">
+          <span class="pool-t">לא שובצו <b>${MAT_EXP.filter(r=>!onOf(r)).length}</b></span>
+          <span class="pool-s"><span class="n">${waitTot.toLocaleString()}</span> ₪</span>
+          <span class="pool-hint">לחיצה על תשלום בציר משבצת אותו</span>
+        </div>
+        <div class="hkt-scroll"><div class="hkt-track">
+          ${axis}
+          <div class="hkt-end"><i></i><span>סוף התקופה · ${lastD}</span></div>
+        </div></div>
+      </section></aside>
     </div>`;
   }
   function renderEntriesView(){
@@ -2029,7 +2331,7 @@
         <button class="${ENT_MODE==='inc'?'on':''}" onclick="ENT_MODE='inc';renderEntriesView()">הכנסות</button>
         <button class="${ENT_MODE==='exp'?'on':''}" onclick="ENT_MODE='exp';renderEntriesView()">הוצאות</button>
       </div>
-      ${ENT_MODE==='inc'?renderMatInc():`
+      ${ENT_MODE==='inc'?renderMatInc():ENT_MODE==='exp'?renderMatExp():`
       <div class="ent-filters" style="margin:0 2px 12px">
         <button class="ent-f appr ${ENT_TAB==='new'?'on':''}" onclick="ENT_TAB='new';renderEntriesView()">לאישור <i>${expNames.reduce((s,n)=>s+DATA_TABLES[n].rows.filter(r=>r.st==='new').length,0)}</i></button>
         <button class="ent-f ${ENT_TAB==='live'?'on':''}" onclick="ENT_TAB='live';renderEntriesView()">פעילות</button>
