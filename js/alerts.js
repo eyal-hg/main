@@ -297,19 +297,29 @@
     ADV_TODO=[];
     MEETINGS.forEach((m,ix)=>{
       const ci=CLIENTS.findIndex(c=>c.name===m.client);
+      if(ci>=0&&!coActive(CLIENTS[ci])) return;
       if(m.status==='summary') ADV_TODO.push({t:'אישור סיכום — '+m.name+' · '+m.client, act:`openMeetingFrom(${ci},${ix})`, lbl:'אישור', done:false});
       else if(m.status==='noshow') ADV_TODO.push({t:'תיאום מחדש — '+m.client+' (הפגישה לא התקיימה)', act:"toast('נשלחה ללקוח הצעה לתיאום מחדש בוואטסאפ')", lbl:'תיאום', done:false});
     });
-    CLIENTS.forEach((c,i)=>{
-      if(c.product==='money+'&&!hasUpcomingMeeting(c))
-        ADV_TODO.push({t:'שליחת זמנים לפגישה חודשית — '+c.name+' (Money+)', act:"toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')", lbl:'שליחה', done:false});
-    });
+    /* בתיק של 100 חברות משימה חוזרת היא לא 30 שורות — היא שורה אחת עם מספר.
+       ארכיון ובהקמה לא מייצרים משימות בכלל. */
+    const needTimes=CLIENTS.map((c,i)=>({c,i}))
+      .filter(x=>coActive(x.c)&&x.c.product==='money+'&&!hasUpcomingMeeting(x.c));
+    if(needTimes.length===1)
+      ADV_TODO.push({t:'שליחת זמנים לפגישה חודשית — '+needTimes[0].c.name+' (Money+)',
+        act:"toast('נשלחו ללקוח 3 הצעות זמנים בוואטסאפ')", lbl:'שליחה', done:false});
+    else if(needTimes.length>1)
+      ADV_TODO.push({t:'שליחת זמנים לפגישה חודשית', n:needTimes.length, sub:'Money+ · אין פגישה קרובה',
+        group:'times', items:needTimes.map(x=>({name:x.c.name, i:x.i})),
+        act:"toast('נשלחו הצעות זמנים ל-'+"+needTimes.length+"+' לקוחות בוואטסאפ')", lbl:'שליחה לכולם', done:false});
     ADV_TODO.push(
       {t:'עדכוני וואטסאפ ללקוחות — סיכום יום · 4 חברות', done:false, manual:true},
       {t:'לחזור לרו״ח של מטעי גבעון על המע״מ', done:false, manual:true});
   }
   function advTaskNew(){ window._mtkTarget='adv'; if(typeof mcQuick==='function') mcQuick(); }
   function advTgl(ix){ADV_AGENDA[ix].done=!ADV_AGENDA[ix].done;renderAlerts();if(ADV_AGENDA[ix].done)toast('סומן כבוצע');}
+  const ADV_TG_OPEN=new Set();
+  function advTgOpen(k){ ADV_TG_OPEN.has(k)?ADV_TG_OPEN.delete(k):ADV_TG_OPEN.add(k); renderAlerts(); }
   function advTodoDone(ix){ADV_TODO[ix].done=!ADV_TODO[ix].done;renderAlerts();}
 
   /* ===== מבט-על ליועץ: שלוש קוביות עליונות ===== */
@@ -324,15 +334,17 @@
     {d:'25.07', mgr:'שמרית טובול', client:'משה עובד', t:'השלמת הקמה — הרשאות בנק', detail:'הועברו ההרשאות, ההקמה הושלמה.', open:false},
   ];
   function advTopCards(){
-    const list=CLIENTS.filter(c=>firmOk(c));
-    const nAct=list.filter(c=>c.advStatus!=='בהקמה').length, nSetup=list.length-nAct;
+    /* ארכיון לא נספר בתיק — לא בכותרת, לא בסיכון ולא בהכנסה. */
+    const list=CLIENTS.filter(c=>firmOk(c)&&coState(c)!=='arch');
+    const nAct=list.filter(c=>coState(c)==='active').length, nSetup=list.length-nAct;
+    const nArch=CLIENTS.filter(c=>firmOk(c)&&coState(c)==='arch').length;
     const openT=ADV_MGR_TASKS.filter(t=>t.open).length;
     const bars=list.map((c,ix)=>`<i class="ar-bar ${ix<ADV_RISK.length?'bad':''}"></i>`).join('');
     return `<div class="advtop">
       <div class="advt-card" onclick="advPop('status')">
         <div class="advt-k">סטטוס לקוחות</div>
         <div class="advt-v">${list.length}<span>לקוחות</span></div>
-        <div class="advt-s">${nAct} פעילים · ${nSetup} בהקמה</div>
+        <div class="advt-s">${nAct} פעילים · ${nSetup} בהקמה${nArch?' · '+nArch+' בארכיון':''}</div>
       </div>
       <div class="advt-card risk" onclick="advPop('risk')">
         <div class="advt-k"><span class="advt-warn">⚠</span> חברות בסיכון תזרימי</div>
@@ -355,14 +367,14 @@
   window._advTaskOpen=null;
   function advPop(kind){
     const ov=document.getElementById('advPopOv'); if(!ov) return;
-    const list=CLIENTS.filter(c=>firmOk(c));
+    const list=CLIENTS.filter(c=>firmOk(c)&&coState(c)!=='arch');
     let title='', body='';
     if(kind==='status'){
       title='סטטוס לקוחות';
       const rows=list.map(c=>`<div class="ap-row st">
         <div class="ap-cli"><span class="ap-av">${c.name.charAt(0)}</span><div><b>${c.name}</b><i>${c.hp}</i></div></div>
         <span class="ap-prod">${c.product?prodLogo(c.product,'sm'):'—'}</span>
-        <span class="ap-st ${c.advStatus==='בהקמה'?'setup':'ok'}">${c.advStatus||'פעיל'}</span>
+        <span class="ap-st ${coState(c)==='setup'?'setup':'ok'}">${c.advStatus||'פעיל'}</span>
         <span class="ap-mgr">${c.mgr}</span>
         <span class="ap-num">${(c.price||0).toLocaleString('en-US')} ₪</span>
         <span class="ap-last">${c.lastOps&&c.lastOps!=='—'?`<i class="ap-dot ${c.lastOps==='02.07'?'ok':'mid'}"></i>${c.lastOps}`:'<i class="ap-dot no"></i>טרם'}</span>
@@ -445,11 +457,24 @@
     const todoHtml=`<div class="mc-todo">
       <div class="mc-todo-h">המשימות שלי <span class="mc-todo-n">${openTodo}</span><i>אישורים, מעקבים ומשימות אישיות</i>
         <button class="mt-btn sm" style="margin-inline-start:auto" onclick="advTaskNew()">+ משימה</button></div>
-      ${ADV_TODO.map((x,i)=>`
+      ${ADV_TODO.map((x,i)=>{
+        if(!x.group) return `
         <div class="mc-todo-row ${x.done?'done':''}">
           <label class="mc-chk"><input type="checkbox" ${x.done?'checked':''} onchange="advTodoDone(${i})"><span></span></label>
           <span class="mc-todo-t ${x.act&&!x.done?'link':''}" ${x.act&&!x.done?`onclick="${x.act}"`:''}>${x.t}</span>
-        </div>`).join('')}
+        </div>`;
+        const op=ADV_TG_OPEN.has(x.group);
+        return `
+        <div class="mc-todo-row grp ${x.done?'done':''}">
+          <label class="mc-chk"><input type="checkbox" ${x.done?'checked':''} onchange="advTodoDone(${i})"><span></span></label>
+          <span class="mc-todo-t">${x.t}<i class="tg-n">${x.n}</i><small>${x.sub||''}</small></span>
+          <button class="tg-more ${op?'on':''}" onclick="advTgOpen('${x.group}')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
+          ${x.act&&!x.done?`<button class="tg-do" onclick="${x.act}">${x.lbl}</button>`:''}
+        </div>
+        ${op?`<div class="tg-list">${x.items.map(it=>
+          `<button class="tg-i" onclick="selectClient(${it.i})">${it.name}</button>`).join('')}</div>`:''}`;
+      }).join('')}
     </div>`;
     let nowDrawn=false, tl='';
     ADV_AGENDA.forEach((it,ix)=>{
