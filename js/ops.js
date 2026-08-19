@@ -5,9 +5,11 @@
      true  = לחיצה על "תפעול" נוחתת ישר על שלבי הבדיקה (לעבודה על הבדיקות).
      false = הזרימה המלאה: 5 שלבי תפעול ← רענון וכפילויות ← בדיקות.
      שינוי הפיך — רק הדגל הזה. */
-  const OPS_SKIP_STAGES=false;
+  const OPS_SKIP_STAGES=true;
+  /* דילוג נוסף: גם על חמשת שלבי הבדיקה — נוחתים ישר על מסך סיום התפעול */
+  const OPS_SKIP_CHECKS=true;
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג */
-  const OPS_PREDONE=['ai','payee','carry','unexpected'];
+  const OPS_PREDONE=['ai','payee','carry','unexpected','msg','doc','sheet'];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   const OPS_STAGES=[
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
@@ -229,7 +231,13 @@
     document.getElementById('finSteps').innerHTML=FIN_STEPS.map((s,i)=>
       `<div class="fin-step" id="fstep${i}"><span class="fs-num">${i+1}</span><span class="fs-ico"></span><span>${s}</span><span class="fs-tag" id="ftag${i}"></span></div>`).join('');
     finTimers.forEach(clearTimeout); finTimers=[];
-    finCurStep=0; runFinStep(0);
+    finCurStep=0;
+    if(OPS_SKIP_CHECKS){
+      /* דילגנו על הכל — משך פלוסיבילי כדי שהסיכום לא יציג 0:00 */
+      if(opsTotal<60) opsTotal=8*60+40;
+      finCurStep=FIN_STEPS.length; finOpen=[]; return finAllDone();
+    }
+    runFinStep(0);
   }
   /* מכונת שלבים: כל שלב רץ, ואם יש ממצאים — עוצרים בו עד שמטפלים, ואז ממשיכים */
   let finCurStep=0;
