@@ -1658,7 +1658,8 @@
       </div>`;
     };
     const col=(title,items,cls)=>`<div class="cu-col ${cls}">
-      <div class="cu-h">${title} <span>${items.length}</span>${gear(cls)}</div>
+      <div class="cu-h">${title} <span>${items.length}</span>
+        ${cls==='un'&&items.length?`<button class="cu-delall" onclick="nrAll()">מחק הכל</button>`:''}${gear(cls)}</div>
       ${setPanel(cls)}
       ${items.length?items.map(t=>opsRow(t,T.indexOf(t))).join(''):'<div class="ops-empty" style="padding:14px">נקי ✓</div>'}
     </div>`;
@@ -2675,7 +2676,22 @@
              <button onclick="nrTagAdd()">הוספה</button><button class="g" onclick="_nrAdd=false;nrRender()">ביטול</button></span>`
         : `<button class="nr-addbtn" onclick="_nrAdd=true;nrRender();setTimeout(()=>{const e=document.getElementById('nrNew');if(e)e.focus();},0)">+ תג חדש</button>`);
     const b=document.getElementById('nrGoBtn');
-    if(b){ b.disabled=!_nrPick; b.textContent=_nrMode==='ignore'?'התעלם':'מחיקה'; }
+    if(b){ b.disabled=!_nrPick;
+      const n=_nrBulk?curTasks().filter(x=>x.type==='unexpected'&&!x.done).length:0;
+      b.textContent=_nrBulk?('מחיקת '+n+' פעולות'):(_nrMode==='ignore'?'התעלם':'מחיקה'); }
+  }
+  /* מחיקה מרוכזת של הלא-צפויות — אותה דיסציפלינה כמו מחיקה בודדת:
+     גם כאן חייבים לבחור תג סיבה, והוא נרשם על כל השורות. */
+  let _nrBulk=false;
+  function nrAll(){
+    const open=curTasks().filter(t=>t.type==='unexpected'&&!t.done);
+    if(!open.length) return;
+    _nrBulk=true; _nrIx=null; _nrPick=null; _nrAdd=false; _nrMode='del';
+    document.getElementById('nrTitle').textContent='מחיקת '+open.length+' פעולות לא צפויות';
+    document.getElementById('nrSub').textContent=
+      'כל '+open.length+' הפעולות יימחקו מהתזרים ויקבלו את אותה סיבה. בחרו תג; התגים ניתנים לניהול.';
+    nrRender();
+    document.getElementById('nrOv').classList.add('show');
   }
   function nrPick(x){ _nrPick=(_nrPick===x)?null:x; nrRender(); }
   function nrTagAdd(){
@@ -2690,10 +2706,19 @@
     if(_nrPick===gone) _nrPick=null;
     nrRender();
   }
-  function nrClose(){document.getElementById('nrOv').classList.remove('show');_nrIx=null;_nrPick=null;_nrAdd=false;}
+  function nrClose(){document.getElementById('nrOv').classList.remove('show');_nrIx=null;_nrPick=null;_nrAdd=false;_nrBulk=false;}
   function nrGo(){
     if(!_nrPick){toast('צריך לבחור תג סיבה');return;}
-    const i=_nrIx, r=_nrPick; nrClose();
+    const r=_nrPick;
+    if(_nrBulk){
+      const T=curTasks();
+      const ix=T.map((t,k)=>k).filter(k=>T[k].type==='unexpected'&&!T[k].done);
+      nrClose();
+      ix.forEach(k=>otHandle(k,'נמחקה — '+r));
+      toast(ix.length+' פעולות לא צפויות נמחקו — '+r);
+      return;
+    }
+    const i=_nrIx; nrClose();
     otHandle(i,(_nrMode==='ignore'?'הוסרה מהרשימה — ':'נמחקה — ')+r);
   }
   function opsSetView(v){OPS_VIEW=v;renderOps();}
