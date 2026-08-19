@@ -8,6 +8,44 @@
   const OPS_SKIP_STAGES=true;
   /* דילוג נוסף: גם על חמשת שלבי הבדיקה — נוחתים ישר על מסך סיום התפעול */
   const OPS_SKIP_CHECKS=true;
+  /* דמו: מסך הסיום עם חריגות. false ⇒ "אין חריגות — מוכן לשליחה" */
+  const OPS_DEMO_EXC=true;
+  /* ===== חריגות בסיום התפעול — ארבעה מצבים על שני צירים =====
+     מתי: **בפועל** (החשבון כבר במינוס) מול **צפויה** (התחזית נכנסת למינוס).
+     פתרון: **יש** (יתרה חיובית בחשבון אחר שמכסה) מול **אין** (הכסף לא קיים בשום מקום).
+       בפועל + פתרון  → העברה בין חשבונות, נסגר עכשיו.
+       בפועל + אין     → הכי חמור: אין מאיפה לכסות ⇒ התראה ליועץ וללקוח.
+       צפויה + פתרון  → תזמון ההעברה למועד, לפני שזה קורה.
+       צפויה + אין     → החלטה עסקית: דחיית תשלום / האצת גבייה / מסגרת.
+     אי אפשר לשלוח תזרים ללקוח עם חריגה שלא הוכרעה. */
+  let FIN_EXC=[];
+  const EXC_WHEN={now:{lbl:'בפועל',cls:'now'}, soon:{lbl:'צפויה',cls:'soon'}};
+  const FIN_EXC_DEF=()=>[
+    {k:'e1', when:'now', t:'עו״ש לאומי 604 — 161,198- ₪',
+     s:'בחריגה בפועל 6 ימים · מסגרת 150,000 ₪',
+     fix:'העברה מעו״ש פועלים 112 — יתרה חיובית 312,400 ₪', done:false},
+    {k:'e2', when:'now', t:'כרטיס אשראי מקס — חיוב נדחה 18,400 ₪',
+     s:'החיוב לא כובד · אין יתרה פנויה בשום חשבון',
+     fix:null, done:false},
+    {k:'e3', when:'soon', t:'עו״ש מזרחי 295199 — חריגה צפויה ב-24.08',
+     s:'32,400- ₪ בעוד 9 ימים',
+     fix:'תזמון העברה מפועלים 112 ל-23.08', done:false},
+    {k:'e4', when:'soon', t:'עו״ש לאומי 604 — חריגה צפויה ב-10.09',
+     s:'47,900- ₪ · אין יתרה חיובית שתכסה במועד',
+     fix:null, done:false},
+  ];
+  /* HK מדווחת — היא לא מבצעת העברות ולא מתזמנת אותן.
+     הפעולה היחידה על חריגה היא להביא אותה לידיעת הלקוח. */
+  function finExcMsg(k){
+    const e=FIN_EXC.find(x=>x.k===k); if(!e) return;
+    e.done=true; e.ign=false; renderFinFoot();
+    toast('נשלחה הודעה ל'+(CLIENTS[CUR].name||'לקוח')+' — '+e.t);
+  }
+  function finExcIgn(k){
+    const e=FIN_EXC.find(x=>x.k===k); if(!e) return;
+    e.done=true; e.ign=true; renderFinFoot();
+    toastUndo('החריגה סומנה כלא לדיווח',()=>{e.done=false;e.ign=false;renderFinFoot();});
+  }
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג */
   const OPS_PREDONE=['ai','payee','carry','unexpected','msg','doc','sheet'];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
@@ -232,6 +270,7 @@
       `<div class="fin-step" id="fstep${i}"><span class="fs-num">${i+1}</span><span class="fs-ico"></span><span>${s}</span><span class="fs-tag" id="ftag${i}"></span></div>`).join('');
     finTimers.forEach(clearTimeout); finTimers=[];
     finCurStep=0;
+    FIN_EXC=OPS_DEMO_EXC?FIN_EXC_DEF():[];
     if(OPS_SKIP_CHECKS){
       /* דילגנו על הכל — משך פלוסיבילי כדי שהסיכום לא יציג 0:00 */
       if(opsTotal<60) opsTotal=8*60+40;
@@ -334,8 +373,16 @@
     });
     const ico=document.getElementById('finIco'); ico.className='fin-ico ok';
     ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
-    document.getElementById('finTitle').textContent='התפעול הסתיים ✓';
-    document.getElementById('finSub').textContent='כל שלבי העבודה והבדיקה עברו · הושלם ב-'+fmtDur(opsTotal);
+    const nx=FIN_EXC.filter(e=>!e.done).length;
+    if(nx){
+      ico.className='fin-ico warn';
+      ico.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>';
+      document.getElementById('finTitle').textContent='התפעול הסתיים — '+(nx===1?'חריגה אחת לדיווח ללקוח':nx+' חריגות לדיווח ללקוח');
+      document.getElementById('finSub').textContent='כל שלבי הבדיקה עברו · הושלם ב-'+fmtDur(opsTotal)+' · התזרים לא ייצא עד שהחריגות ידווחו';
+    }else{
+      document.getElementById('finTitle').textContent='התפעול הסתיים ✓';
+      document.getElementById('finSub').textContent='כל שלבי העבודה והבדיקה עברו · הושלם ב-'+fmtDur(opsTotal);
+    }
     document.getElementById('finFindings').innerHTML=finRecapHtml();
     document.getElementById('finFindings').classList.remove('bl-mode');
     renderFinFoot();
@@ -1072,10 +1119,30 @@
   function renderFinFoot(){
     const foot=document.getElementById('finFoot');
     if(finOpen.length){foot.classList.remove('show');foot.innerHTML='';return;}
-    foot.innerHTML=`
-      <div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> אין חריגות — התזרים מוכן לשליחה</div>
-      <button class="fin-wa" onclick="finSendCF()"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.14-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.04-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.57-.48-.5-.66-.5h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.75-.72 2-1.4.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.15l-.3-.18-3 .8.8-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg> שליחת תזרים ללקוח</button>
-      <button class="chip-btn" style="width:100%;justify-content:center" onclick="finishDone()">שמירה ללא שליחה</button>`;
+    const open=FIN_EXC.filter(e=>!e.done);
+    const excHtml=FIN_EXC.length?`<div class="fexc">
+      <div class="fexc-h ${open.length?'bad':'ok'}">${open.length
+        ?`⚠ ${open.length===1?'חריגה אחת לדיווח ללקוח':open.length+' חריגות לדיווח ללקוח'}`
+        :'✓ כל החריגות דווחו — התזרים מוכן לשליחה'}</div>
+      ${FIN_EXC.map(e=>`<div class="fexc-r ${EXC_WHEN[e.when].cls} ${e.fix?'hasfix':'nofix'} ${e.done?'done':''}">
+        <span class="fx-when">${EXC_WHEN[e.when].lbl}</span>
+        <div class="fx-b"><div class="fx-t">${e.t}</div><div class="fx-s">${e.s}</div>
+          <div class="fx-fix">${e.fix?'<b>פתרון:</b> '+e.fix:'<i>אין פתרון בחשבונות — דורש החלטה</i>'}</div></div>
+        ${e.done
+          ?`<span class="fx-ok ${e.ign?'ign':''}">${e.ign?'○ לא דווח':'✓ נשלחה הודעה'}</span>`
+          :`<span class="fx-acts">
+              <button class="fx-msg" onclick="finExcMsg('${e.k}')" title="שליחת הודעה ללקוח בוואטסאפ">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.15l-.3-.18-3 .8.8-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg>
+                הודעה ללקוח</button>
+              <button class="fx-ign" onclick="finExcIgn('${e.k}')">התעלם</button>
+            </span>`}
+      </div>`).join('')}
+    </div>`:'';
+    foot.innerHTML=`<div class="fin-2col"><div class="fin-c-exc">`+excHtml+`</div><div class="fin-c-send">`+`
+      ${open.length?`<div class="fin-block">⚠ ${open.length===1?'חריגה אחת טרם דווחה':open.length+' חריגות טרם דווחו'} — התזרים לא ייצא ללקוח</div>`:`<div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> ${FIN_EXC.length?'החריגות דווחו — התזרים מוכן לשליחה':'אין חריגות — התזרים מוכן לשליחה'}</div>`}
+      <button class="fin-wa" onclick="finSendCF()"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.14-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.04-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.57-.48-.5-.66-.5h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.75-.72 2-1.4.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.15l-.3-.18-3 .8.8-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg> שליחת תזרים ללקוח</button>`.replace('<button class="fin-wa"', open.length?'<button class="fin-wa" disabled title="יש חריגה שטרם דווחה ללקוח"':'<button class="fin-wa"')+`
+      <button class="chip-btn" style="width:100%;justify-content:center" onclick="finishDone()">שמירה ללא שליחה</button>
+      </div></div>`;
     foot.classList.add('show');
   }
   function finSendCF(){
