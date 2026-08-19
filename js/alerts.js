@@ -227,7 +227,7 @@
         <div class="db-sub">${c.unread?'לצפייה ומענה ←':''}</div></div>
       <div class="db-sec"><div class="db-l">מסמכים להזנה ${docs.length?`<span class="cb-n">${docs.length}</span>`:''}</div>
         ${docRows}</div>
-      <div class="db-sec clk" onclick="openDataTable('תשלומים לספקים · צפי')"><div class="db-l">הזנות לקוח</div>
+      <div class="db-sec clk" onclick="openDataTable('תשלומים לספקים · צפי')"><div class="db-l">הזנות ואוטומציה</div>
         ${feed}
         <div class="db-sub">טבלאות הזנה מנוהלות · לחיצה לפתיחת הטבלה ←</div></div>
       <div class="db-sec"><div class="db-l">דוח חודשי</div>

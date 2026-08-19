@@ -150,7 +150,7 @@
       ${sec('time','זמני תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
       ${sec('status','סטטוס תפעול',doneN+'<i>/'+T+'</i>','תופעלו · '+(T-doneN)+' נותרו להיום')}
       ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות · לפי מקור')}
-      ${sec('sheet','הזנות לקוח','<span class="db-ago">לפני 3 דק׳</span>','טבלאות הזנה · 3 שורות לאישור')}
+      ${sec('sheet','הזנות ואוטומציה','<span class="db-ago">לפני 3 דק׳</span>','תשלומי ספקים ולקוחות · 3 שורות לאישור')}
       ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
     </div>`;
     renderOpsInfo();
