@@ -6,6 +6,8 @@
      false = הזרימה המלאה: 5 שלבי תפעול ← רענון וכפילויות ← בדיקות.
      שינוי הפיך — רק הדגל הזה. */
   const OPS_SKIP_STAGES=false;
+  /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג */
+  const OPS_PREDONE=['ai','payee','carry','unexpected'];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   const OPS_STAGES=[
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
@@ -1215,10 +1217,11 @@
       {budget:63,  overdraft:0, liters:112, cfprofit:130},
     ];
     MET.forEach((m,i)=>{if(CLIENTS[i]){CLIENTS[i].metrics=m;CLIENTS[i].budgetPct=m.budget;}});
-    // דמו: קטגוריות ומוטבים כבר טופלו — הכניסה לתפעול נוחתת ישר על נגררות ולא צפויות
-    // ואם OPS_SKIP_STAGES — כל שלבי התפעול מסומנים כטופלו, ונכנסים ישר לבדיקות
+    /* דמו: השלבים שכבר טופלו — הכניסה לתפעול נוחתת על השלב הראשון שאינו ברשימה.
+       כרגע: קטגוריות · מוטבים · נגררות ולא צפויות ⇒ נוחתים על "הודעות לקוח".
+       ואם OPS_SKIP_STAGES — כל שלבי התפעול מסומנים כטופלו ונכנסים ישר לבדיקות. */
     CLIENTS.forEach(c=>(c.tasks||[]).forEach(t=>{
-      if(OPS_SKIP_STAGES ? STAGE_TASK_TYPES.includes(t.type) : (t.type==='ai'||t.type==='payee')) t.done=true;}));
+      if(OPS_SKIP_STAGES ? STAGE_TASK_TYPES.includes(t.type) : OPS_PREDONE.includes(t.type)) t.done=true;}));
     CLIENTS.forEach(c=>{if(!c.stat)c.stat='active'; c.opsPending=(c.tasks||[]).filter(t=>!t.done).length;});
   }
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
