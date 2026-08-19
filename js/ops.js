@@ -2421,21 +2421,65 @@
     document.getElementById('dataTblOv').classList.add('show');
   }
   function closeDataTable(){document.getElementById('dataTblOv').classList.remove('show');}
+  /* ===== שלב "הודעות לקוח" — שיחה קבועה משמאל, חלון עבודה מתחלף מימין =====
+     ההתכתבות עם הלקוח לא נעלמת בין פריט לפריט: היא עומדת במקומה, ומצד ימין
+     מתחלף החלון של הפריט הנבחר — טופס הזנה למסמך, מענה להודעה. */
+  let _msgSel=null;
+  function msgPick(i){ _msgSel=i; renderOps(); }
+  function msgNext(){
+    const T=curTasks();
+    const open=T.map((t,k)=>k).filter(k=>(T[k].type==='doc'||T[k].type==='msg')&&!T[k].done);
+    if(!open.length){ _msgSel=null; return renderOps(); }
+    const cur=open.indexOf(_msgSel);
+    _msgSel=open[(cur+1)%open.length]; renderOps();
+  }
   function msgStage(rows,T){
-    const txt=rows.filter(t=>t.type==='msg'), docs=rows.filter(t=>t.type==='doc');
-    const docRow=t=>{
-      const i=T.indexOf(t);
-      if(t.done) return opsRow(t,i);
-      /* בלי פופאפ — טופס ההזנה פתוח תמיד, וההתכתבות עם הלקוח לצידו */
-      const thumb=t.img?`<img src="${t.img}" alt="">`:'<span class="msg-thumb-x">📊</span>';
-      return `<div class="orow2item doc open"><div class="orow2">
-        <span class="msg-thumb">${thumb}</span>
-        <div class="orow2-body"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div><div class="orow2-sub">${t.who||''} · ${t.time||''}${t.note?' · "'+t.note+'"':''}</div></div>
-        <div class="orow2-act"><button class="ot-btn ghost" onclick="openNR(${i})">לא רלוונטי</button></div>
-      </div>
-      <div class="doc-inline">${fileMsgBody(t,i)}</div></div>`;};
-    const grp=(label,arr,render)=>arr.length?`<div class="pay-grp" style="padding-inline:16px">${label} <em>${arr.filter(t=>!t.done).length}/${arr.length}</em></div>`+arr.map(render).join(''):'';
-    return grp('💬 הודעות — מענה',txt,t=>opsRow(t,T.indexOf(t)))+grp('📎 מסמכים — הזנה למערכת',docs,docRow);
+    const items=rows.filter(t=>t.type==='msg'||t.type==='doc');
+    const openIx=items.filter(t=>!t.done).map(t=>T.indexOf(t));
+    if(_msgSel==null||!items.some(t=>T.indexOf(t)===_msgSel)) _msgSel=openIx[0];
+    const sel=_msgSel!=null?T[_msgSel]:null;
+
+    /* ---- שמאל: ההתכתבות, קבועה ---- */
+    const bub=(who,txt,me)=>`<div class="msgc-b ${me?'me':''}"><span class="msgc-w">${who}</span>${txt}</div>`;
+    const chat=items.map(t=>{
+      const i=T.indexOf(t), on=(i===_msgSel);
+      const lines=(t.ctx&&t.ctx.length?t.ctx:(t.thread||[]).map(x=>'['+(t.who||'הלקוח')+'] '+x));
+      const body=lines.map(l=>{
+        const m=l.match(/^\[([^\]]+)\]\s*(.*)$/)||[null,t.who||'הלקוח',l];
+        return bub(m[1],m[2],m[1].includes('מנהל תזרים')||m[1].includes('יועץ'));
+      }).join('');
+      const tag=t.type==='doc'
+        ?`<span class="msgc-att">${t.img?'📎':'📊'} ${t.name}</span>`
+        :'<span class="msgc-att q">שאלה — דורשת מענה</span>';
+      return `<div class="msgc-item ${on?'on':''} ${t.done?'done':''}" onclick="msgPick(${i})">
+        <div class="msgc-time">${t.who||''} · ${t.time||''}</div>
+        ${body}
+        <div class="msgc-foot">${tag}${t.done?'<span class="msgc-ok">✓ טופל</span>':''}</div>
+      </div>`;}).join('');
+
+    /* ---- ימין: חלון העבודה של הפריט הנבחר ---- */
+    let work;
+    if(!sel){
+      work='<div class="ops-empty" style="padding:40px">כל ההודעות טופלו ✓</div>';
+    }else{
+      const i=_msgSel;
+      const head=`<div class="mw-h">
+        <div class="mw-t">${grpChip(sel)}${taskTitle(sel)}</div>
+        <div class="mw-s">${sel.who||''} · ${sel.time||''} · ${sel.src||''}</div>
+        <div class="mw-nav">
+          <span class="mw-n">${openIx.indexOf(i)+1} מתוך ${openIx.length}</span>
+          <button class="mt-btn view sm" onclick="msgNext()">הבא ←</button>
+        </div>
+      </div>`;
+      work=head+`<div class="mw-body">${sel.type==='doc'?fileMsgBody(sel,i,1):textMsgBody(sel,i)}</div>`;
+    }
+    return `<div class="ms-split">
+      <div class="ms-work">${work}</div>
+      <aside class="ms-chat">
+        <div class="msgc-h">ההתכתבות עם ${CLIENTS[CUR].name} <span>${openIx.length} פתוחות</span></div>
+        <div class="msgc-list">${chat}</div>
+      </aside>
+    </div>`;
   }
   /* הודעת מלל — שיחה ומענה */
   function textMsgBody(t,i){
@@ -2454,7 +2498,7 @@
     otHandle(i,'טופל · ✓ נשלחה תשובה: "'+inp.value.trim()+'"',1);
   }
   /* הודעת קובץ — המסמך מול טופס הזנה בסגנון Bizibox */
-  function fileMsgBody(t,i){
+  function fileMsgBody(t,i,noCtx){
     const f=t.file||{};
     const rows=f.rows||[{date:f.date||'', ref:f.ref||'', desc:f.desc||'', amount:f.amount||''}];
     const bizRow=r=>`<div class="biz-row">
@@ -2469,7 +2513,7 @@
       const m=l.match(/^\[([^\]]+)\]\s*(.*)$/)||[null,'',l];
       const me=m[1].includes('מנהל תזרים')||m[1].includes('יועץ');
       return `<div class="mp-b ${me?'me':''}"><span class="mp-w">${m[1]}</span>${m[2]}</div>`;}).join('');
-    const ctxSide=ctx?`<div class="msg-prev">
+    const ctxSide=(ctx&&!noCtx)?`<div class="msg-prev">
         <div class="mp-h">${t.grp?'קבוצת וואטסאפ':'הודעה מהלקוח'} · ${t.who||''} · ${t.time||''}</div>
         ${ctx}</div>`:'';
     // צד המסמך: תמונה אמיתית / טבלת אקסל
