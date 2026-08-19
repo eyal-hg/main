@@ -1120,10 +1120,13 @@
         ctx:['[מנהל תזרים] צחי, חסר לי אישור על ההעברה ללדובק','[צחי] שניה עליי','[צחי] העברתי עכשיו ללדובק, מצרף אישור 🙏 + קובץ'], img:'m3.jpeg',
         file:{payee:'לדובק הפצה בע״מ', amount:'1,381', date:'28.07.2026', ref:'745851', desc:'העברה בנקאית — תשלום לספק'}},
       {type:'doc', name:'צילום שיק — הבינלאומי · 6,300 ₪', who:'צחי עובד', note:'', time:'לפני 25 דק׳', src:'קבוצת וואטסאפ', grp:true, img:'m2.jpeg',
+        ctx:['[צחי] מצרף את השיק שנתתי היום לבינלאומי','[צחי] + תמונה','[מנהל תזרים] קיבלתי, מזין'],
         file:{payee:'', amount:'6,300', date:'10.09.2026', ref:'3816543', desc:'שיק ידני'}},
       {type:'doc', name:'ספח שיק בכתב יד · 2,964 ₪', who:'צחי עובד', note:'רשמתי שיק ידני, מצרף את הספח', time:'לפני 40 דק׳', src:'הודעת לקוח', img:'m1.jpeg',
+        ctx:['[מנהל תזרים] צחי, יש שיק שיצא היום ולא ראיתי אותו בתזרים','[צחי] רשמתי שיק ידני, מצרף את הספח','[צחי] + תמונה'],
         file:{payee:'', amount:'2,964', date:'31.08.2026', ref:'21036', desc:''}},
       {type:'doc', name:'אקסל קופה קטנה — 3 שורות', who:'תומר לוי', note:'מצרף ריכוז הוצאות קופה קטנה של יולי', time:'לפני שעה', src:'הודעת לקוח',
+        ctx:['[תומר] מצרף ריכוז הוצאות קופה קטנה של יולי','[תומר] + קובץ אקסל','[מנהל תזרים] מעולה, מזין את השורות'],
         file:{payee:'קופה קטנה', rows:[
           {date:'07.07.2026', ref:'', desc:'חניה ודלק', amount:'214'},
           {date:'15.07.2026', ref:'', desc:'כיבוד לפגישות', amount:'182'},
@@ -2423,12 +2426,14 @@
     const docRow=t=>{
       const i=T.indexOf(t);
       if(t.done) return opsRow(t,i);
+      /* בלי פופאפ — טופס ההזנה פתוח תמיד, וההתכתבות עם הלקוח לצידו */
       const thumb=t.img?`<img src="${t.img}" alt="">`:'<span class="msg-thumb-x">📊</span>';
-      return `<div class="orow2item doc"><div class="orow2">
-        <span class="msg-thumb" onclick="openDocEntry(${i})" title="פתיחת ההזנה">${thumb}</span>
-        <div class="orow2-body" onclick="openDocEntry(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div><div class="orow2-sub">${t.who||''} · ${t.time||''}${t.note?' · "'+t.note+'"':''}</div></div>
-        <div class="orow2-act">${rowBtns(t,i)}</div>
-      </div></div>`;};
+      return `<div class="orow2item doc open"><div class="orow2">
+        <span class="msg-thumb">${thumb}</span>
+        <div class="orow2-body"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div><div class="orow2-sub">${t.who||''} · ${t.time||''}${t.note?' · "'+t.note+'"':''}</div></div>
+        <div class="orow2-act"><button class="ot-btn ghost" onclick="openNR(${i})">לא רלוונטי</button></div>
+      </div>
+      <div class="doc-inline">${fileMsgBody(t,i)}</div></div>`;};
     const grp=(label,arr,render)=>arr.length?`<div class="pay-grp" style="padding-inline:16px">${label} <em>${arr.filter(t=>!t.done).length}/${arr.length}</em></div>`+arr.map(render).join(''):'';
     return grp('💬 הודעות — מענה',txt,t=>opsRow(t,T.indexOf(t)))+grp('📎 מסמכים — הזנה למערכת',docs,docRow);
   }
@@ -2459,6 +2464,14 @@
         <input class="mx2-inp" value="${r.desc||''}" placeholder="תיאור">
         <input class="mx2-inp biz-amt" value="${r.amount||''}" placeholder="0" dir="ltr">
       </div>`;
+    /* תצוגה מקדימה של ההתכתבות עם הלקוח — ההקשר שממנו הגיע המסמך */
+    const ctx=(t.ctx||[]).map(l=>{
+      const m=l.match(/^\[([^\]]+)\]\s*(.*)$/)||[null,'',l];
+      const me=m[1].includes('מנהל תזרים')||m[1].includes('יועץ');
+      return `<div class="mp-b ${me?'me':''}"><span class="mp-w">${m[1]}</span>${m[2]}</div>`;}).join('');
+    const ctxSide=ctx?`<div class="msg-prev">
+        <div class="mp-h">${t.grp?'קבוצת וואטסאפ':'הודעה מהלקוח'} · ${t.who||''} · ${t.time||''}</div>
+        ${ctx}</div>`:'';
     // צד המסמך: תמונה אמיתית / טבלת אקסל
     const docSide=t.changeCard
       ?t.changeCard
@@ -2491,8 +2504,8 @@
         </div>
       </div>
       <div class="chk-imgwrap">
-        ${t.note?`<div class="oqs-bub" style="margin-bottom:10px"><div class="oqs-bub-h">${t.who||'הלקוח'} · ${t.time||''}</div>${t.note}</div>`:''}
-        ${docSide}
+        ${t.note&&!(t.ctx||[]).length?`<div class="oqs-bub" style="margin-bottom:10px"><div class="oqs-bub-h">${t.who||'הלקוח'} · ${t.time||''}</div>${t.note}</div>`:''}
+        ${ctxSide}${docSide}
         <div class="chk-ocr-chips">📎 התקבל בוואטסאפ · ${ocr}</div>
       </div>
     </div>`;
