@@ -1,603 +1,1176 @@
 <!doctype html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>תכנון חשבונאי ותזרימי</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>תכנון חודשי · תזרימי / חשבונאי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ==========================================================================
+   HK · טבלת תכנון חודשית — תזרימי / חשבונאי
+   הקונספט: מסגרת קפואה + שכבת שורות שנושמת + עמוד שדרה צבעוני שעובר בין השפות.
+   ========================================================================== */
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+
 :root{
-  --bg:#F4F7FA; --surface:#fff;
-  --border:#e6ecf4; --border-strong:#d3dced;
-  --text:#0C4068; --muted:#64748b; --soft:#9aa7bb;
-  --accent:#1B6C9C; --accent-soft:#EAF4FB;
-  --cf:#3B9AD2; --cf-soft:#EAF4FB;         /* תזרימי */
-  --acc:#7557E3; --acc-soft:#F1EDFC;        /* חשבונאי */
-  --pos:#13895b; --pos-soft:#e7f7ef;
-  --neg:#dc4436; --neg-soft:#fdeceb;
-  --warn:#c98404; --warn-soft:#FDF4E3;
-  --shadow-sm:0 2px 8px rgba(15,35,65,.06);
-  --shadow-md:0 6px 18px rgba(12,64,104,.08);
+  /* ---- מותג ---- */
+  --navy:#0C4068; --navy-d:#08304F; --navy-l:#1B5C8E;
+  --cyan:#39ABE2;
+  --bg:#F4F7FA; --card:#fff;
+  --line:#E6ECF4; --hair:#F0F4F9; --line-s:#D9E3EE;
+  --ink:#12314D; --ink-2:#3E5C79; --muted:#7B93A9; --muted-2:#A0B2C3;
+  --warn:#D9922B; --warn-bg:#FDF5E8; --warn-line:#F1DFBE; --warn-ink:#8A5B10;
+  --pos:#0E9384;
+
+  /* ---- גיאומטריה — העוגן. אף מספר כאן לא משתנה בין התצוגות ---- */
+  --namew:262px;
+  --colw:130px;
+  --rh:30px;            /* שורת נתונים בתזרימי (הצד הצפוף) */
+  --gh:23px;            /* כותרת קבוצה */
+  --th:31px;            /* שורת סה״כ */
+  --bodyH:696px;        /* 16*30 + 4*23 + 4*31 = 696  ← נעול לשתי התצוגות */
+
+  /* ---- גוון פעיל — זה כן משתנה ---- */
+  --tone:#39ABE2; --tone-d:#1B7FB2; --tone-ink:#17709F;
+  --tone-soft:#EAF6FD; --tone-line:#CCE7F8; --tone-wash:rgba(57,171,226,.032);
+
+  --ease:cubic-bezier(.22,.86,.28,1);
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;font-family:"Rubik",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45}
-button,input{font-family:inherit}
-button{cursor:pointer}
-.app{max-width:1240px;margin:0 auto;padding:24px 20px 70px}
+body[data-v="acc"]{
+  --tone:#6C63E6; --tone-d:#4E45C0; --tone-ink:#5148C4;
+  --tone-soft:#EFEEFC; --tone-line:#DBD8F7; --tone-wash:rgba(108,99,230,.030);
+}
+
+body{
+  background:
+    radial-gradient(1100px 480px at 88% -10%, rgba(57,171,226,.10), transparent 62%),
+    radial-gradient(860px 440px at 3% -8%, rgba(12,64,104,.075), transparent 64%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:"Rubik","Assistant",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:14px; -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:1340px;margin:0 auto;padding:22px 24px 34px}
+
+/* ============================ Topbar ============================ */
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{
+  width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(140deg,var(--tone),var(--navy) 80%);
+  box-shadow:0 6px 15px rgba(12,64,104,.22),inset 0 1px 0 rgba(255,255,255,.34);
+  color:#fff;font-weight:700;font-size:14px;letter-spacing:.4px;
+  transition:background .5s var(--ease);
+}
+.brand b{display:block;font-size:16.5px;font-weight:600;color:var(--navy);line-height:1.25}
+.brand span{display:block;font-size:12px;color:var(--muted)}
+.meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;height:27px;padding:0 10px;border-radius:8px;
+  background:#fff;border:1px solid var(--line);color:var(--ink-2);font-size:11.5px;font-weight:500;white-space:nowrap;
+}
+.chip--tone{background:var(--tone-soft);border-color:var(--tone-line);color:var(--tone-ink);
+  transition:background-color .5s var(--ease),border-color .5s var(--ease),color .5s var(--ease)}
+.chip--warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.chip--warn i{width:5px;height:5px;border-radius:50%;background:var(--warn)}
+
+/* ============================ KPI ============================ */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:13px}
+.kpi{
+  position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px 10px;
+  box-shadow:0 1px 2px rgba(12,64,104,.04),0 8px 20px -14px rgba(12,64,104,.22);
+}
+.kpi::before{content:"";position:absolute;inset-inline-start:0;top:12px;bottom:12px;width:3px;
+  border-radius:0 3px 3px 0;background:var(--tone);transition:background-color .5s var(--ease)}
+.kpi .lab{font-size:11px;color:var(--muted);font-weight:500;height:15px;overflow:hidden;position:relative}
+.kpi .lab span{position:absolute;inset-inline-start:0;top:0;white-space:nowrap;transition:opacity .3s,transform .34s var(--ease)}
+.kpi .lab span[data-off]{opacity:0;transform:translateY(-6px)}
+.kpi .val{font-size:21px;font-weight:600;color:var(--navy);letter-spacing:-.3px;line-height:1.2;
+  font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;text-align:start}
+.kpi .sub{font-size:11px;color:var(--muted);margin-top:1px}
+.kpi .sub b{color:var(--pos);font-weight:600}
+.kpi svg{flex:none}
+
+/* ============================ Card ============================ */
+.card{
+  position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 1px 2px rgba(12,64,104,.05),0 24px 50px -32px rgba(12,64,104,.42);
+  overflow:hidden;
+}
+.card::after{content:"";position:absolute;top:0;inset-inline:0;height:3px;z-index:9;
+  background:linear-gradient(90deg,transparent,var(--tone) 16%,var(--tone) 84%,transparent);
+  transition:background .5s var(--ease)}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 18px 12px;
+  border-bottom:1px solid var(--line);flex-wrap:wrap}
+.chead h1{margin:0;font-size:16px;font-weight:600;color:var(--navy)}
+.chead .sub{font-size:12px;color:var(--muted);position:relative;height:17px;min-width:230px;display:block}
+.chead .sub span{position:absolute;inset-inline-start:0;top:0;white-space:nowrap;transition:opacity .3s,transform .34s var(--ease)}
+.chead .sub span[data-off]{opacity:0;transform:translateY(-6px)}
+.ttlbox{display:flex;align-items:baseline;gap:11px;min-width:0}
+
+/* ---- מתג ---- */
+.switch{position:relative;display:grid;grid-template-columns:1fr 1fr;min-width:290px;
+  padding:4px;border-radius:12px;background:#EFF4F9;border:1px solid var(--line)}
+.thumb{position:absolute;top:4px;bottom:4px;inset-inline-start:4px;width:calc(50% - 4px);border-radius:9px;
+  background:linear-gradient(150deg,var(--tone),var(--tone-d));
+  box-shadow:0 4px 12px -3px rgba(12,64,104,.30),inset 0 1px 0 rgba(255,255,255,.30);
+  transform:translateX(0);z-index:0;
+  transition:transform .46s var(--ease),background .5s var(--ease)}
+body[data-v="acc"] .thumb{transform:translateX(-100%)}
+.switch button{position:relative;z-index:1;appearance:none;border:0;background:none;height:31px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--ink-2);
+  transition:color .3s;white-space:nowrap}
+.switch button[aria-pressed="true"]{color:#fff;font-weight:600}
+.switch button .n{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;font-variant-numeric:tabular-nums;
+  background:rgba(12,64,104,.08);color:var(--ink-2);transition:background .3s,color .3s}
+.switch button[aria-pressed="true"] .n{background:rgba(255,255,255,.22);color:#fff}
+.switch button:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+
+/* ============================ Grid ============================ */
+.scroll{overflow-x:auto;overflow-y:visible;background:var(--tone-wash);transition:background-color .5s var(--ease)}
+.grid{position:relative;min-width:calc(var(--namew) + 5 * var(--colw))}
+
+.gr{display:grid;grid-template-columns:var(--namew) repeat(5,minmax(var(--colw),1fr))}
+
+/* ---- ראש חודשים ---- */
+.thead{position:sticky;top:0;z-index:7;background:#fff;box-shadow:0 1px 0 var(--line)}
+.thead .c{padding:9px 13px;border-inline-start:1px solid var(--hair);display:flex;flex-direction:column;
+  justify-content:center;gap:3px;min-height:58px}
+.thead .c.nm{position:sticky;inset-inline-start:0;z-index:2;background:#fff;border-inline-start:1px solid var(--line)}
+.k{font-size:10.5px;color:var(--muted);font-weight:500;letter-spacing:.2px}
+.m{font-size:14px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:6px}
+.m em{font-style:normal;font-size:11px;font-weight:400;color:var(--muted-2)}
+.tag{font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;white-space:nowrap;letter-spacing:.2px}
+.tag.a{background:#EAF1F7;color:#365E80}
+.tag.f{background:#fff;color:var(--muted);border:1px dashed #D3DFEA}
+.tag.now{background:linear-gradient(140deg,var(--navy),var(--navy-l));color:#fff}
+.thead .c.isnow{background:linear-gradient(180deg,rgba(12,64,104,.06),rgba(12,64,104,.015))}
+
+/* ---- rail של החודש הנוכחי — שכבה אחת רציפה מהראש ועד שורת הרווח ---- */
+.rail{position:absolute;z-index:5;pointer-events:none;
+  background:linear-gradient(180deg,rgba(12,64,104,.055),rgba(12,64,104,.018) 30%,rgba(12,64,104,.05));
+  border-inline-start:1px dashed rgba(12,64,104,.32);
+  border-inline-end:1px solid rgba(12,64,104,.10)}
+.rail::before{content:"";position:absolute;top:0;inset-inline:0;height:2px;background:var(--tone);
+  transition:background-color .5s var(--ease)}
+
+/* ---- גוף — הגובה נעול. שתי שכבות באותו מיכל ---- */
+.body{position:relative;height:var(--bodyH);perspective:1500px}
+.face{position:absolute;top:0;inset-inline:0;height:var(--bodyH);display:flex;flex-direction:column;
+  visibility:hidden;pointer-events:none}
+.face.on{visibility:visible;pointer-events:auto}
+.face .grp{flex:0 0 var(--gh)}
+.face .tot{flex:0 0 var(--th)}
+.face .dr{flex:1 1 0}          /* ← כל הקסם: שורות הנתונים נמתחות למלא בדיוק את אותו גובה */
+
+/* ---- כותרת קבוצה ---- */
+.grp{align-items:stretch;background:linear-gradient(90deg,#F6FAFD,#FBFCFE);
+  border-block:1px solid var(--line);position:relative;z-index:2}
+.grp .c{border-inline-start:1px solid var(--hair)}
+.grp .nm{position:sticky;inset-inline-start:0;z-index:2;display:flex;align-items:center;gap:9px;padding:0 13px;overflow:hidden;
+  background:linear-gradient(90deg,#F6FAFD,#FAFCFE);border-inline-start:1px solid var(--line)}
+.grp .nm b{font-size:11.5px;font-weight:600;color:var(--navy);letter-spacing:.15px;display:flex;align-items:center;gap:8px;white-space:nowrap;flex:none}
+.grp .nm b::before{content:"";width:4px;height:12px;border-radius:3px;background:var(--tone);transition:background-color .5s var(--ease)}
+.grp .cnt{font-size:10px;color:var(--muted-2);font-variant-numeric:tabular-nums;margin-inline-start:auto;white-space:nowrap}
+.dna{display:flex;align-items:center;gap:3px;flex:none;margin-inline-start:9px}
+.dna i{width:9px;height:4px;border-radius:2px;display:block}
+
+/* ---- שורת נתונים ---- */
+.dr{align-items:stretch;border-bottom:1px solid var(--hair);position:relative;transition:background-color .16s}
+.dr .nm{position:sticky;inset-inline-start:0;z-index:2;display:flex;align-items:center;gap:8px;
+  padding:0 15px 0 10px;background:#fff;border-inline-start:1px solid var(--line);transition:background-color .16s}
+
+/* עמוד השדרה — הכרומוזום שעובר בין השפות */
+.spine{position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;z-index:3;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.35)}
+.dr.rs .spine,.dr.rm .spine{bottom:-1px}      /* חוצה את קו ההפרדה => הפס נקרא רצוף */
+.dr.ro .spine,.dr.rs .spine{border-start-start-radius:3px;border-start-end-radius:3px}
+.dr.ro .spine,.dr.re .spine{border-end-start-radius:3px;border-end-end-radius:3px}
+
+.nm .t{font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.nm .side{display:flex;align-items:center;gap:6px;margin-inline-start:auto;flex:none}
+.badge{font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;background:#F1F5F9;color:#5A7590;
+  border:1px solid #E4EBF2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.badge.w{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink);display:inline-flex;align-items:center;gap:4px}
+.badge.w::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--warn)}
+/* מד־פיצול זעיר: כמה חלקים ובאיזה יחס — בלי לרשום ולו שם אחד */
+.meter{display:flex;height:6px;width:34px;border-radius:4px;overflow:hidden;background:#EDF2F7;flex:none;
+  box-shadow:0 0 0 1px rgba(12,64,104,.07) inset}
+.meter i{display:block;height:100%}
+.meter i + i{border-inline-start:1px solid #fff}
+.meter i.u{background:repeating-linear-gradient(-45deg,#EFC076 0 3px,#FBEBD2 3px 6px)}
+
+/* ---- תא ---- */
+.c{position:relative;display:flex;align-items:center;padding:0 13px;border-inline-start:1px solid var(--hair);
+  font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:-.1px;color:var(--ink)}
+.c.fc{color:var(--ink-2)}
+.c.isnow{font-weight:500}
+.c .v{direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+.c .v.z{color:var(--muted-2)}
+.c .heat{position:absolute;bottom:0;inset-inline-start:0;height:2px;background:var(--tone);opacity:.15;
+  transition:background-color .5s var(--ease)}
+.c.neg .heat{background:var(--navy);opacity:.09}
+
+/* ---- הדגשת רצף בריחוף: מאיר את הקשר, מעמעם את השאר ---- */
+.body.dim .dr{opacity:.34}
+.body.dim .dr.lit{opacity:1;background:color-mix(in srgb,var(--tone) 7%,transparent)}
+.body.dim .dr.lit .nm{background:color-mix(in srgb,var(--tone) 6%,#fff)}
+.body.dim .dr.lit .t{font-weight:500;color:var(--navy)}
+.dr.pin{background:color-mix(in srgb,var(--tone) 10%,transparent)}
+
+/* ---- שורת סה״כ ---- */
+.tot{align-items:stretch;background:linear-gradient(180deg,#FAFCFE,#F3F8FC);
+  border-top:1px solid var(--line-s);border-bottom:1px solid var(--line);position:relative;z-index:2}
+.tot .nm{position:sticky;inset-inline-start:0;z-index:2;display:flex;align-items:center;gap:8px;padding:0 13px;
+  background:linear-gradient(180deg,#FAFCFE,#F3F8FC);border-inline-start:1px solid var(--line)}
+.tot .nm b{font-size:12.5px;font-weight:600;color:var(--navy)}
+.tot .c{font-weight:600;font-size:13.5px;color:var(--navy);border-inline-start-color:#E3EAF2}
+.tot .c.isnow{background:rgba(12,64,104,.03)}
+.pin-eq{font-size:9px;font-weight:600;padding:2px 6px;border-radius:5px;margin-inline-start:auto;
+  background:var(--tone-soft);color:var(--tone-ink);border:1px solid var(--tone-line);white-space:nowrap;
+  transition:background-color .5s var(--ease),color .5s var(--ease),border-color .5s var(--ease)}
+
+/* ---- שורת רווח ---- */
+.net{align-items:stretch;height:68px;position:relative;z-index:6;color:#fff;
+  background:linear-gradient(120deg,var(--navy-d),var(--navy) 48%,var(--navy-l))}
+.net::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(680px 80px at 46% -30%,color-mix(in srgb,var(--tone) 34%,transparent),transparent 70%);
+  transition:background .5s var(--ease)}
+.net::after{content:"";position:absolute;top:0;inset-inline:0;height:2px;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--tone) 22%,var(--tone) 78%,transparent);opacity:.8;
+  transition:background .5s var(--ease)}
+.net .nm{position:sticky;inset-inline-start:0;z-index:3;padding:0 13px;display:flex;flex-direction:column;
+  justify-content:center;gap:2px;background:linear-gradient(120deg,var(--navy-d),var(--navy) 92%)}
+.net .nm b{font-size:13.5px;font-weight:600;position:relative;height:19px;display:block}
+.net .nm b span{position:absolute;inset-inline-start:0;top:0;white-space:nowrap;transition:opacity .3s,transform .34s var(--ease)}
+.net .nm b span[data-off]{opacity:0;transform:translateY(-7px)}
+.net .nm small{font-size:10px;color:rgba(255,255,255,.6);position:relative;height:15px;display:block}
+.net .nm small span{position:absolute;inset-inline-start:0;top:0;white-space:nowrap;transition:opacity .3s}
+.net .nm small span[data-off]{opacity:0}
+.net .c{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;z-index:1;
+  color:#fff;border-inline-start:1px solid rgba(255,255,255,.10)}
+.net .c .v{color:#fff}
+.net .c.isnow{background:rgba(255,255,255,.09)}
+.net .c .v{font-size:17.5px;font-weight:600;letter-spacing:-.3px}
+.net .c .p{font-size:10px;color:rgba(255,255,255,.58);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+
+/* ---- אנימציית ההחלפה ---- */
+.face.out .dr,.face.out .grp,.face.out .tot{animation:rOut .19s ease-in both;animation-delay:calc(var(--i) * 6ms)}
+.face.in  .dr,.face.in  .grp,.face.in  .tot{animation:rIn .36s var(--ease) both;animation-delay:calc(120ms + var(--i) * 11ms)}
+@keyframes rOut{to{opacity:0;transform:translateY(-7px) rotateX(26deg);filter:blur(3px)}}
+@keyframes rIn{from{opacity:0;transform:translateY(11px) rotateX(-34deg);filter:blur(4px)}
+               to{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){
+  .face.out .dr,.face.out .grp,.face.out .tot,.face.in .dr,.face.in .grp,.face.in .tot{animation:none}
+}
+
+/* ============================ Ribbon ============================ */
+.ribbon{display:flex;align-items:center;gap:13px;min-height:56px;padding:9px 16px;
+  border-top:1px solid var(--line);background:linear-gradient(180deg,#FBFDFE,#F5F9FC)}
+.rk{flex:none;display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;color:var(--tone-ink);
+  letter-spacing:.3px;padding-inline-end:13px;border-inline-end:1px solid var(--line);transition:color .5s var(--ease)}
+.rb{flex:1;min-width:0;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.rsrc{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--navy);white-space:nowrap}
+.rsrc i{width:3px;height:15px;border-radius:2px;display:block}
+.rsrc em{font-style:normal;font-size:11px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;
+  direction:ltr;unicode-bidi:isolate}
+.arw{color:var(--muted-2);display:flex;flex:none}
+.ri{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 9px;border-radius:8px;background:#fff;
+  border:1px solid var(--line);font-size:11.5px;color:var(--ink-2);white-space:nowrap;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.ri b{font-weight:600;color:var(--ink)}
+.ri .pc{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--tone-ink);
+  font-variant-numeric:tabular-nums;transition:color .5s var(--ease)}
+.ri .bar{width:30px;height:5px;border-radius:3px;background:#E9EFF5;overflow:hidden;display:block}
+.ri .bar i{display:block;height:100%;background:var(--tone);transition:background-color .5s var(--ease)}
+.ri .g{font-size:10px;color:var(--muted-2)}
+.ri .g.x{color:var(--warn-ink);font-weight:600}
+.ri.un{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.ri.un .pc{color:var(--warn-ink)} .ri.un .bar i{background:var(--warn)}
+.hint{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.lg{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.lg i{width:20px;height:5px;border-radius:3px;display:block}
+.lg i.t{background:var(--tone);transition:background-color .5s var(--ease)}
+.lg i.u{background:repeating-linear-gradient(-45deg,#EFC076 0 3px,#FBEBD2 3px 6px)}
+.recon{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--warn-ink);
+  background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:7px;height:25px;padding:0 9px;
+  font-variant-numeric:tabular-nums}
+
+.foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:11px;padding:0 3px;flex-wrap:wrap}
+.foot small{font-size:11px;color:var(--muted-2)}
+
+@media (max-width:1180px){:root{--namew:228px;--colw:118px}.kpis{grid-template-columns:1fr}}
+</style>
+<style>
 body.is-embedded{background:transparent}
-body.is-embedded .app{padding:6px 2px 40px;max-width:none}
+/* מקור המספר בתא — שפה ויזואלית אחת בשתי התצוגות */
+.c.editable{cursor:text}
+.c.editable:hover{box-shadow:inset 0 0 0 1.5px rgba(12,64,104,.18);border-radius:7px}
+.c.src-user .v,.c.src-books .v{font-weight:600}
+.c.src-user .v::after,.c.src-books .v::after{content:'';position:absolute;inset-inline:0;bottom:-4px;
+  height:2px;border-radius:2px}
+.c.src-user .v,.c.src-books .v{position:relative}
+.c.src-user .v::after{background:var(--acc-ink,#7557E3)}
+.c.src-books .v::after{background:#13895b}
+.c.src-derived .v{opacity:.72}
+.c.editing{box-shadow:inset 0 0 0 1.5px #7557E3;border-radius:7px}
+.cin{position:absolute;inset:3px;width:calc(100% - 6px);text-align:center;font:inherit;font-size:13px;
+  font-weight:700;color:#0C4068;border:0;outline:none;background:#fff;border-radius:6px;z-index:3}
+.c{position:relative}
 
-/* ===== כותרת ומתג המצב ===== */
-.head{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-.head h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.3px}
-.head .sub{color:var(--muted);font-size:12.5px;margin-top:3px;max-width:640px;line-height:1.6}
-.head .sp{flex:1}
-/* מתג תזרימי / חשבונאי — הלב של המסך */
-.modesw{display:inline-flex;background:#fff;border:1.5px solid var(--border-strong);border-radius:13px;padding:4px;gap:3px;box-shadow:var(--shadow-sm)}
-.modesw button{border:0;background:none;font-size:13px;font-weight:700;color:var(--muted);
-  padding:9px 20px;border-radius:9px;transition:.15s;display:inline-flex;align-items:center;gap:7px}
-.modesw button i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.5;font-style:normal}
-.modesw button:hover{color:var(--text)}
-.modesw button.on{color:#fff}
-.modesw button.on i{opacity:1;background:#fff}
-.modesw button.cf.on{background:var(--cf)}
-.modesw button.acc.on{background:var(--acc)}
-
-.tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{border:1px solid var(--border);background:#fff;border-radius:999px;padding:7px 17px;
-  font-size:12.5px;font-weight:600;color:var(--muted);box-shadow:var(--shadow-sm)}
-.tab.on{background:var(--text);border-color:var(--text);color:#fff}
-.tab em{font-style:normal;font-weight:700;margin-inline-start:6px;opacity:.75}
-
-/* ===== טבלת התכנון ===== */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);overflow:hidden}
-.card-h{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--border)}
-.card-h b{font-size:14px}
-.card-h .tag{font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 10px}
-.tag.cf{background:var(--cf-soft);color:var(--accent)}
-.tag.acc{background:var(--acc-soft);color:var(--acc)}
-.card-h .sp{flex:1}
-.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-.tbl th{font-size:11px;font-weight:700;color:var(--soft);text-align:center;padding:10px 12px;
-  border-bottom:1px solid var(--border);white-space:nowrap}
-.tbl th.k{text-align:start;padding-inline-start:18px}
-.tbl td{padding:9px 12px;text-align:center;font-size:13px;border-bottom:1px solid #F1F6FA}
-.tbl td.k{text-align:start;padding-inline-start:18px;font-weight:600;color:var(--text);font-size:12.5px}
-.tbl tr.grp td{background:#FAFCFE;font-weight:800;font-size:11.5px;color:var(--muted);padding:8px 18px;text-align:start}
-.tbl tr.sum td{background:#F7FAFC;font-weight:800;border-top:1.5px solid var(--border-strong)}
-.tbl tr.sum td.k{color:var(--text)}
-.tbl tr.prof td{background:var(--text);color:#fff;font-weight:800}
-.tbl tr.prof td.k{color:#fff}
-.tbl tr:hover td{background:#FBFDFF}
-.tbl tr.grp:hover td,.tbl tr.sum:hover td,.tbl tr.prof:hover td{background:inherit}
-.cur{background:var(--cf-soft) !important;font-weight:700}
-/* מצב התא: מאיפה המספר הגיע */
-.tbl td.ed{cursor:text}
-.tbl td.ed:hover{box-shadow:inset 0 0 0 1.5px var(--border-strong);border-radius:8px}
-.tbl td.s-user,.tbl td.s-books{font-weight:700}
-.tbl td.s-user::after,.tbl td.s-books::after{content:'';display:block;width:14px;height:2px;border-radius:2px;margin:3px auto 0}
-.tbl td.s-user::after{background:var(--acc)}
-.tbl td.s-books::after{background:var(--pos)}
-.tbl td.s-derived{color:#7C90A2}
-.tbl td.edit{position:relative;padding:4px 6px}
-.tbl td.edit input{width:100%;text-align:center;font:inherit;font-size:13px;font-weight:700;color:var(--text);
-  border:1.5px solid var(--acc);border-radius:8px;padding:5px 4px;outline:none;background:#fff}
-.tbl td.edit .rst{position:absolute;inset-inline-start:2px;top:50%;transform:translateY(-50%);
-  border:0;background:none;color:var(--soft);font-size:12px;padding:2px}
-.tbl td.edit .rst:hover{color:var(--neg)}
-/* מקרא מקורות */
-.legend{display:flex;gap:14px;flex-wrap:wrap;padding:9px 18px;border-top:1px solid var(--border);
-  background:#FAFCFE;font-size:10.5px;color:var(--soft)}
-.legend span{display:inline-flex;align-items:center;gap:5px}
-.legend i{width:14px;height:2px;border-radius:2px;display:inline-block}
-.legend .l-user i{background:var(--acc)}
-.legend .l-books i{background:var(--pos)}
-.legend .l-der i{background:#C3D3E0}
-.warnhd{color:var(--warn) !important;background:var(--warn-soft) !important}
-.assign{margin-top:6px}
-.assign .al{font-size:10px;font-weight:700;color:var(--soft);display:block;margin-bottom:4px}
-.src{display:block;font-size:9.5px;color:var(--soft);font-weight:500;margin-top:2px}
-.mini{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
-.mini span{font-size:9px;font-weight:600;background:#F1F5F9;color:#64748b;border-radius:99px;padding:1px 7px}
-.mini span.pct{background:var(--acc-soft);color:var(--acc)}
-
-/* ===== מיפוי ===== */
-.mapbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--border);
-  border-radius:14px;padding:12px 16px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
-.mapbar .cov{font-size:12.5px;font-weight:700}
-.mapbar .cov b{color:var(--pos)}
-.mapbar .cov.bad b{color:var(--neg)}
-.mapbar .hint{font-size:11.5px;color:var(--soft)}
-.mapbar .sp{flex:1}
-.mapgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
-@media(max-width:1000px){.mapgrid{grid-template-columns:1fr}}
-.col-h{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
-.col-h b{font-size:13.5px}
-.col-h .n{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 9px}
-.col-h .n.cf{background:var(--cf-soft);color:var(--accent)}
-.col-h .n.acc{background:var(--acc-soft);color:var(--acc)}
-.col-h .sp{flex:1}
-.addbtn{border:1.5px dashed var(--border-strong);background:#fff;color:var(--accent);font-size:11.5px;
-  font-weight:700;border-radius:999px;padding:5px 12px}
-.addbtn:hover{border-color:var(--acc);color:var(--acc)}
-
-/* קטגוריה תזרימית */
-.cfrow{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #F1F6FA;
-  cursor:grab;transition:.13s}
-.cfrow:hover{background:#FBFDFF}
-.cfrow.drag{opacity:.4}
-.cfrow.un{background:#FFFBF4}
-.cfrow .grip{flex:none;width:8px;height:16px;margin-top:3px;opacity:.45;
-  background-image:radial-gradient(circle,#8FA3B5 1px,transparent 1.1px);background-size:4px 5px}
-.cfrow:hover .grip{opacity:1}
-.cfrow .b{flex:1;min-width:0}
-.cfrow .t{font-size:12.5px;font-weight:600;color:var(--text)}
-.cfrow .amt{font-size:11px;color:var(--soft);font-variant-numeric:tabular-nums;margin-top:1px}
-.cfrow .to{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.chipmap{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;
-  background:var(--acc-soft);color:var(--acc);border-radius:999px;padding:2px 9px}
-.chipmap b{font-weight:800}
-.chipmap .x{cursor:pointer;opacity:.6;font-size:10px}
-.chipmap .x:hover{opacity:1}
-.chipnone{font-size:10.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:2px 9px}
-.cfrow .split{flex:none;border:1px solid var(--border);background:#fff;color:var(--muted);
-  font-size:10.5px;font-weight:700;border-radius:8px;padding:4px 9px}
-.cfrow .split:hover{border-color:var(--acc);color:var(--acc)}
-
-/* עורך פיצול */
-.splitbox{background:#FBFAFF;border-top:1px dashed #DCD0EC;padding:11px 14px 13px}
-.splitbox .sh{font-size:11px;font-weight:700;color:var(--acc);margin-bottom:8px}
-.splitrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.splitrow .nm{flex:1;min-width:0;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.splitrow input{width:62px;text-align:center;font-size:12.5px;font-weight:700;color:var(--text);
-  border:1.5px solid var(--border-strong);border-radius:8px;padding:5px 6px;outline:none}
-.splitrow input:focus{border-color:var(--acc)}
-.splitrow .rm{border:0;background:none;color:var(--soft);font-size:13px;padding:2px 5px}
-.splitrow .rm:hover{color:var(--neg)}
-.splitfoot{display:flex;align-items:center;gap:9px;margin-top:9px}
-.sumtag{font-size:11px;font-weight:800;border-radius:999px;padding:3px 11px}
-.sumtag.ok{background:var(--pos-soft);color:var(--pos)}
-.sumtag.bad{background:var(--neg-soft);color:var(--neg)}
-.splitfoot .sp{flex:1}
-.btn{border:1px solid var(--border-strong);background:#fff;color:var(--text);font-size:12px;font-weight:700;
-  border-radius:9px;padding:6px 13px}
-.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
-.btn:hover{filter:brightness(.97)}
-
-/* קטגוריה חשבונאית */
-.accgrp{font-size:10.5px;font-weight:800;color:var(--soft);padding:9px 16px 4px;background:#FAFCFE}
-.accrow{padding:10px 14px;border-bottom:1px solid #F1F6FA;transition:.13s}
-.accrow.over{background:var(--acc-soft);box-shadow:inset 0 0 0 1.5px var(--acc)}
-.accrow .top{display:flex;align-items:center;gap:9px}
-.accrow .t{flex:1;min-width:0;font-size:12.5px;font-weight:700;color:var(--text)}
-.accrow .v{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--acc)}
-.accrow .from{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.chipcf{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;
-  background:var(--cf-soft);color:var(--accent);border-radius:999px;padding:2px 9px}
-.chipcf i{font-style:normal;font-weight:800;opacity:.75}
-.accrow .empty{font-size:10.5px;color:var(--soft);margin-top:5px}
-.accrow .del{border:0;background:none;color:var(--soft);font-size:12px;padding:2px 5px}
-.accrow .del:hover{color:var(--neg)}
-.newacc{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid #F1F6FA;background:#FBFAFF}
-.newacc input{flex:1;min-width:0;border:1.5px solid var(--border-strong);border-radius:9px;padding:7px 10px;
-  font-size:12.5px;outline:none}
-.newacc input:focus{border-color:var(--acc)}
-.pickwrap{margin-top:9px;padding-top:9px;border-top:1px dashed #DCD0EC}
-.pl{font-size:10.5px;font-weight:700;color:var(--soft);margin-bottom:6px}
-.picks{display:flex;flex-wrap:wrap;gap:5px}
-.picks.inline{flex:1;min-width:0}
-.pick{border:1px solid var(--border);background:#fff;color:var(--muted);font-size:11px;font-weight:600;
-  border-radius:999px;padding:4px 11px;transition:.13s}
-.pick:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
-.pick.on{background:var(--acc);border-color:var(--acc);color:#fff}
-.newacc{flex-wrap:wrap}
-.note{font-size:11.5px;color:var(--muted);line-height:1.7;background:#fff;border:1px solid var(--border);
-  border-radius:12px;padding:12px 15px;margin-top:14px}
-.note b{color:var(--text)}
+body.is-embedded .wrap{padding:4px 2px 20px;max-width:none}
+body.is-embedded .topbar .brand{display:none}
+body.is-embedded .topbar{justify-content:flex-end}
 </style>
 </head>
-<body>
-<div class="app">
-  <div class="head">
-    <div>
-      <h1>תכנון חשבונאי ותזרימי</h1>
-      <div class="sub">אותו תכנון, שתי שפות. היועץ העסקי מתכנן <b>חשבונאית</b>, התזרים מנוהל <b>תזרימית</b> —
-        וכאן ממפים ביניהן פעם אחת, ומחליפים תצוגה בלחיצה.</div>
+<body data-v="cf">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">HK</div>
+      <div>
+        <b>אלמוג לוגיסטיקה בע״מ</b>
+        <span>תכנון ובקרה · יוני – אוקטובר 2026</span>
+      </div>
     </div>
-    <div class="sp"></div>
-    <div class="modesw" id="modesw"></div>
+    <div class="meta">
+      <span class="chip chip--tone" id="modeChip">תצוגה תזרימית</span>
+      <span class="chip">2 בפועל · 3 תחזית</span>
+      <span class="chip chip--warn"><i></i> קטגוריה אחת ללא מיפוי מלא</span>
+    </div>
   </div>
-  <div class="tabs" id="tabs"></div>
-  <div id="view"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <div class="chead">
+      <div class="ttlbox">
+        <h1>טבלת תכנון חודשית</h1>
+        <span class="sub">
+          <span data-c="cf">16 קטגוריות תזרים · 4 קבוצות</span>
+          <span data-c="acc" data-off>10 סעיפי רו״ה · אותן 4 קבוצות</span>
+        </span>
+      </div>
+      <div class="ptabs" id="ptabs">
+        <button class="pt on" data-t="plan">התכנון</button>
+        <button class="pt" data-t="map">מיפוי קטגוריות</button>
+      </div>
+      <div class="switch" id="sw">
+        <div class="thumb"></div>
+        <button type="button" data-v="cf" aria-pressed="true">תזרימי <span class="n">16</span></button>
+        <button type="button" data-v="acc" aria-pressed="false">חשבונאי <span class="n">10</span></button>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="grid" id="grid">
+        <div class="rail" id="rail"></div>
+        <div class="gr thead" id="thead"></div>
+        <div class="body" id="body">
+          <div class="face on" data-f="cf" id="faceCf"></div>
+          <div class="face" data-f="acc" id="faceAcc"></div>
+        </div>
+        <div class="gr net" id="net"></div>
+      </div>
+    </div>
+
+    <div id="mapPane" style="display:none"></div>
+    <div class="ribbon">
+      <div class="rk">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><path d="M8 12h8"/></svg>
+        מפת מיפוי
+      </div>
+      <div class="rb" id="rb"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <small>הגיאומטריה נעולה: רוחב עמודות, ראש החודשים, כותרות הקבוצה, שורות הסה״כ ושורת הרווח — באותו מקום בדיוק בשתי התצוגות.</small>
+    <small>₪ · לא כולל מע״מ</small>
+  </div>
 </div>
 
 <script>
-/* ===================================================================
-   המודל: הקטגוריות התזרימיות הן מקור האמת (הן מה שמנוהל בתזרים).
-   הקטגוריות החשבונאיות הן שכבת תצוגה שנבנית מהן דרך מיפוי.
-   המיפוי הוא רבים-לרבים באחוזים:
-     · כמה תזרימיות → חשבונאית אחת (איחוד)
-     · תזרימית אחת → כמה חשבונאיות (פיצול באחוזים שסכומם 100)
-   =================================================================== */
-const MONTHS=['מאי 2026','יוני 2026','יולי 2026','אוגוסט 2026','ספטמבר 2026'];
-const CUR_IX=1;   /* יוני = החודש הנוכחי */
+/* =======================================================================
+   נתונים
+   ======================================================================= */
+const MONTHS=[
+  {n:'יוני',y:'2026',k:'act'},
+  {n:'יולי',y:'2026',k:'act'},
+  {n:'אוגוסט',y:'2026',k:'fc',now:true},
+  {n:'ספטמבר',y:'2026',k:'fc'},
+  {n:'אוקטובר',y:'2026',k:'fc'}
+];
+const GROUPS=[
+  {id:'rev', name:'הכנסות'},
+  {id:'cogs',name:'עלות המכר'},
+  {id:'opex',name:'הוצאות תפעוליות'},
+  {id:'fin', name:'מימון והשקעות'}
+];
 
-/* קטגוריות תזרימיות — a = שלושת החודשים האחרונים, f = תחזית קדימה */
+/* 16 קטגוריות תזרים */
 const CF=[
- {id:'cash',    g:'inc', label:'הכנסות ממכירות - מזומן',  a:[101900,89950],  f:[100000,89950,89950]},
- {id:'clearing',g:'inc', label:'הכנסות ממכירות - סליקה',  a:[84200,77010],   f:[77010,100000,77010]},
- {id:'direct',  g:'inc', label:'הכנסות מסליקה - דיירקט',  a:[28210,23501],   f:[23501,23501,23501]},
- {id:'electra', g:'inc', label:'הכנסות ממכירות - אלקטרה', a:[63769,80583],   f:[80583,80583,80583]},
- {id:'shipping',g:'inc', label:'הכנסות - חברות שילוח',    a:[28960,29553],   f:[29553,29553,29553]},
- {id:'suppliers',g:'cogs',label:'קניות מלאי',             a:[155000,155000], f:[155000,155000,155000]},
- {id:'subcon',  g:'cogs',label:'קבלני משנה',              a:[26000,28333],   f:[28333,28333,28333]},
- {id:'salary',  g:'opex',label:'שכר עבודה',               a:[99000,97333],   f:[97333,97333,97333]},
- {id:'rent',    g:'opex',label:'שכירות',                  a:[22000,22000],   f:[22000,22000,22000]},
- {id:'opex',    g:'opex',label:'הוצאות תפעול',            a:[17800,18433],   f:[18433,18433,18433]},
- {id:'marketing',g:'opex',label:'פרסום ושיווק',           a:[12000,15667],   f:[15667,15667,15667]},
- {id:'tax',     g:'opex',label:'מוסדות מס',               a:[10371,24179],   f:[24179,24179,24179]},
- {id:'finance', g:'fin', label:'מימון ועמלות בנק',        a:[8800,9100],     f:[9100,9100,9100]},
- {id:'deposits',g:'fin', label:'פיקדונות והשקעות',        a:[12000,12000],   f:[12000,12000,12000]},
- {id:'loan',    g:'fin', label:'תשלומי הלוואה',           a:[8000,8000],     f:[8000,8000,8000]},
- {id:'owners',  g:'fin', label:'משיכות בעלים',            a:[20000,15000],   f:[15000,15000,15000]},
-];
-const CF_G={inc:'הכנסות',cogs:'עלות המכר',opex:'הוצאות תפעוליות',fin:'השקעות, מימון ובעלים'};
+ {id:'cash',    g:'rev', name:'הכנסות ממכירות · מזומן',  v:[168000,161500,174000,179000,185000]},
+ {id:'clearing',g:'rev', name:'הכנסות ממכירות · סליקה',  v:[452000,468300,489000,503000,518000]},
+ {id:'direct',  g:'rev', name:'הכנסות ממכירות · דיירקט', v:[112000,107600,116500,120000,124000]},
+ {id:'electra', g:'rev', name:'הכנסות ממכירות · אלקטרה', v:[71000,68400,74000,76500,79000]},
+ {id:'ship',    g:'rev', name:'הכנסות · חברות שילוח',    v:[27400,31800,29500,30200,31000]},
 
-/* קטגוריות חשבונאיות — לפי דוח רווח והפסד */
-let ACC=[
- {id:'a_rev',  g:'inc',  label:'הכנסות ממכירות'},
- {id:'a_oth',  g:'inc',  label:'הכנסות אחרות'},
- {id:'a_cogs', g:'cogs', label:'עלות המכר'},
- {id:'a_sal',  g:'opex', label:'הוצאות שכר'},
- {id:'a_prem', g:'opex', label:'אחזקת מבנה'},
- {id:'a_mkt',  g:'opex', label:'שיווק ומכירה'},
- {id:'a_gen',  g:'opex', label:'הנהלה וכלליות'},
- {id:'a_fin',  g:'fin',  label:'הוצאות מימון'},
- {id:'a_tax',  g:'tax',  label:'מיסים'},
- {id:'a_own',  g:'own',  label:'בעלים והשקעות'},
-];
-const ACC_G={inc:'הכנסות',cogs:'עלות המכר',opex:'הוצאות תפעוליות',fin:'מימון',tax:'מיסים',own:'בעלים והשקעות'};
-const ACC_SIGN={inc:1,cogs:-1,opex:-1,fin:-1,tax:-1,own:-1};
+ {id:'inv',     g:'cogs',name:'קניות מלאי',              v:[-248000,-259400,-271000,-279500,-288000]},
+ {id:'sub',     g:'cogs',name:'קבלני משנה',              v:[-63500,-58200,-66000,-68000,-70500]},
 
-/* המיפוי — cfId → [{acc, pct}] */
-let MAP={
- cash:     [{acc:'a_rev',pct:100}],
- clearing: [{acc:'a_rev',pct:100}],
- direct:   [{acc:'a_rev',pct:100}],
- electra:  [{acc:'a_rev',pct:100}],
- shipping: [{acc:'a_oth',pct:100}],
- suppliers:[{acc:'a_cogs',pct:100}],
- subcon:   [{acc:'a_cogs',pct:100}],
- salary:   [{acc:'a_sal',pct:85},{acc:'a_cogs',pct:15}],
- rent:     [{acc:'a_prem',pct:100}],
- opex:     [{acc:'a_gen',pct:60},{acc:'a_prem',pct:40}],
- marketing:[{acc:'a_mkt',pct:100}],
- tax:      [{acc:'a_tax',pct:100}],
- finance:  [{acc:'a_fin',pct:100}],
- deposits: [],
- loan:     [{acc:'a_fin',pct:100}],
- owners:   [{acc:'a_own',pct:100}],
+ {id:'pay',     g:'opex',name:'שכר עבודה',               v:[-186000,-189500,-194000,-198000,-201500]},
+ {id:'rent',    g:'opex',name:'שכירות',                  v:[-42000,-42000,-42000,-43800,-43800]},
+ {id:'ops',     g:'opex',name:'הוצאות תפעול',            v:[-51300,-48700,-53500,-54800,-56200]},
+ {id:'mkt',     g:'opex',name:'פרסום ושיווק',            v:[-38400,-44100,-41000,-46500,-48000]},
+ {id:'tax',     g:'opex',name:'מוסדות מס',               v:[-29800,-31200,-33000,-34100,-35400]},
+
+ {id:'bank',    g:'fin', name:'מימון ועמלות בנק',        v:[-12400,-11900,-12800,-13100,-13400]},
+ {id:'loan',    g:'fin', name:'תשלומי הלוואה',           v:[-18600,-18600,-18600,-18600,-18600]},
+ {id:'dep',     g:'fin', name:'פיקדונות והשקעות',        v:[-25000,0,-25000,0,-30000]},
+ {id:'own',     g:'fin', name:'משיכות בעלים',            v:[-45000,-45000,-50000,-50000,-55000]}
+];
+
+/* 10 סעיפי רו״ה + צבע עמוד שדרה (גוון לפי קבוצה, מדרגת בהירות לפי סעיף) */
+const ACC=[
+ {id:'sales',  g:'rev', name:'הכנסות ממכירות',  c:'#2A9BD4'},
+ {id:'other',  g:'rev', name:'הכנסות אחרות',    c:'#86CDEE'},
+ {id:'cgs',    g:'cogs',name:'עלות המכר',       c:'#0C4068'},
+ {id:'wages',  g:'opex',name:'הוצאות שכר',      c:'#0F857F'},
+ {id:'bldg',   g:'opex',name:'אחזקת מבנה',      c:'#43B3AC'},
+ {id:'sell',   g:'opex',name:'שיווק ומכירה',    c:'#7FCFC8'},
+ {id:'admin',  g:'opex',name:'הנהלה וכלליות',   c:'#0A5F5C'},
+ {id:'fincost',g:'fin', name:'הוצאות מימון',    c:'#4E6E8E'},
+ {id:'taxes',  g:'fin', name:'מיסים',           c:'#87A0B8'},
+ {id:'ownin',  g:'fin', name:'בעלים והשקעות',   c:'#2F5273'}
+];
+const UN='#D9922B';                       /* צבע "ללא מיפוי" */
+
+/* מיפוי: קטגוריה תזרימית → סעיפי רו״ה באחוזים. null = לא נכלל ברו״ה. */
+const MAP={
+ cash:[['sales',1]], clearing:[['sales',1]], direct:[['sales',1]], electra:[['sales',1]],
+ ship:[['other',1]],
+ inv:[['cgs',1]], sub:[['cgs',1]],
+ pay:[['wages',.85],['admin',.15]],
+ rent:[['bldg',1]],
+ ops:[['bldg',.40],['admin',.60]],
+ mkt:[['sell',1]],
+ tax:[['taxes',1]],
+ bank:[['fincost',1]],
+ loan:[['fincost',.30],[null,.70]],
+ dep:[['ownin',1]],
+ own:[['ownin',1]]
 };
-/* ===== ארבעה סוגי מספרים, ומאיפה כל אחד מגיע =====
-   ┌──────────┬─────────────────────────┬──────────────────────────────┐
-   │          │ תזרימי                   │ חשבונאי                        │
-   ├──────────┼─────────────────────────┼──────────────────────────────┤
-   │ בפועל     │ מהבנק · לא נערך          │ מהנה"ח · היועץ מזין כל חודש     │
-   │ יעד       │ נערך                    │ נערך (ברירת מחדל: נגזר מהמיפוי) │
-   └──────────┴─────────────────────────┴──────────────────────────────┘
-   היעד החשבונאי אינו רק השתקפות של התזרימי: יש פחת, הפרשות והפרשי עיתוי
-   שאין להם תאום תזרימי. לכן המיפוי נותן ברירת מחדל, והיועץ יכול לדרוס —
-   ואז התא מסומן כ"הוזן" ומפסיק לעקוב אחרי המיפוי. */
-let BOOKS={};   /* accId → {mi: value}  — בפועל מהנה"ח */
-let TGT={cf:{}, acc:{}};   /* id → {mi: value} — יעדים שהוזנו ידנית */
-try{const s=JSON.parse(localStorage.getItem('hkAccMap')||'null');
-  if(s&&s.MAP){MAP=s.MAP; if(s.ACC)ACC=s.ACC; if(s.BOOKS)BOOKS=s.BOOKS; if(s.TGT)TGT=s.TGT;}}catch(e){}
-const save=()=>{try{localStorage.setItem('hkAccMap',JSON.stringify({MAP,ACC,BOOKS,TGT}));}catch(e){}};
-const isPast=mi=>mi<2;
-const parseNum=v=>{const n=String(v).replace(/[^\d.-]/g,''); return n===''?null:+n;};
-const bookVal=(aid,mi)=>{const r=BOOKS[aid]; return r&&r[mi]!=null?r[mi]:null;};
-const tgtVal=(kind,id,mi)=>{const r=TGT[kind][id]; return r&&r[mi]!=null?r[mi]:null;};
-function setBook(aid,mi,v){
-  const n=parseNum(v); BOOKS[aid]=BOOKS[aid]||{};
-  if(n==null) delete BOOKS[aid][mi]; else BOOKS[aid][mi]=n;
-  save(); render();
-}
-function setTgt(kind,id,mi,v){
-  const n=parseNum(v); TGT[kind][id]=TGT[kind][id]||{};
-  if(n==null) delete TGT[kind][id][mi]; else TGT[kind][id][mi]=n;
-  save(); render();
-}
-/* מצב התא — קובע גם את הצבע וגם מה אפשר לעשות בו */
-const SRC={sys:'מהמערכת',books:'מהנה״ח',user:'הוזן',derived:'נגזר מהמיפוי'};
-function cellState(row,mi){
-  if(MODE==='cf'){
-    if(isPast(mi)) return {v:cfBase(row,mi), src:'sys', edit:false};
-    const u=tgtVal('cf',row.id,mi);
-    return {v:u!=null?u:cfBase(row,mi), src:u!=null?'user':'sys', edit:true};
+
+/* =======================================================================
+   ארבעה סוגי מספרים, ומאיפה כל אחד מגיע
+   ┌────────┬──────────────────────┬────────────────────────────────┐
+   │        │ תזרימי                │ חשבונאי                          │
+   ├────────┼──────────────────────┼────────────────────────────────┤
+   │ בפועל   │ מהבנק · לא נערך        │ מהנה"ח · היועץ מזין כל חודש       │
+   │ יעד     │ נערך                  │ נערך (ברירת מחדל: נגזר מהמיפוי)   │
+   └────────┴──────────────────────┴────────────────────────────────┘
+   היעד החשבונאי אינו רק השתקפות של התזרימי — יש פחת, הפרשות והפרשי עיתוי.
+   לכן המיפוי נותן ברירת מחדל, והיועץ יכול לדרוס. תא שנדרס מסומן ומפסיק לעקוב.
+   ======================================================================= */
+const PAST=2;                       /* שני החודשים הראשונים = בפועל */
+let BOOKS={}, TGT={cf:{},acc:{}};
+try{const s=JSON.parse(localStorage.getItem('hkAcctPlan')||'null');
+  if(s){ BOOKS=s.BOOKS||{}; TGT=s.TGT||{cf:{},acc:{}}; if(s.MAP) Object.assign(MAP,s.MAP); }}catch(e){}
+const persist=()=>{try{localStorage.setItem('hkAcctPlan',JSON.stringify({BOOKS,TGT,MAP}));}catch(e){}};
+const pick=(o,id,m)=>{const r=o&&o[id]; return r&&r[m]!=null?r[m]:null;};
+const put=(o,id,m,v)=>{o[id]=o[id]||{}; if(v==null) delete o[id][m]; else o[id][m]=v;};
+const parseNum=v=>{const n=String(v).replace(/[^0-9.\-]/g,''); return n===''||n==='-'?null:+n;};
+
+const cfBy=Object.fromEntries(CF.map(r=>[r.id,r]));
+const acBy=Object.fromEntries(ACC.map(r=>[r.id,r]));
+const gName=Object.fromEntries(GROUPS.map(g=>[g.id,g.name]));
+const M=5;
+
+CF.forEach(r=>{ r.base=r.v.slice(); });      /* הערך מהמערכת, לפני הזנות */
+const UNMAP=Array(M).fill(0); const unSrc=[];
+/* מצב תא — הערך + מאיפה הוא, וגם האם ניתן לעריכה */
+function cellOf(view,id,m){
+  if(view==='cf'){
+    const base=cfBy[id].base[m];
+    if(m<PAST) return {v:base, src:'sys', edit:false};
+    const u=pick(TGT.cf,id,m);
+    return {v:u!=null?u:base, src:u!=null?'user':'sys', edit:true};
   }
-  if(isPast(mi)){
-    const b=bookVal(row.id,mi);
-    return {v:b!=null?b:accDerived(row.id,mi), src:b!=null?'books':'derived', edit:true};
-  }
-  const u=tgtVal('acc',row.id,mi);
-  return {v:u!=null?u:accDerived(row.id,mi), src:u!=null?'user':'derived', edit:true};
+  const der=acBy[id].der[m];
+  if(m<PAST){ const b=pick(BOOKS,id,m); return {v:b!=null?b:der, src:b!=null?'books':'derived', edit:true}; }
+  const u=pick(TGT.acc,id,m);
+  return {v:u!=null?u:der, src:u!=null?'user':'derived', edit:true};
 }
-function cellEdit(id,mi,v){
-  if(MODE==='cf') return setTgt('cf',id,mi,v);
-  return isPast(mi)?setBook(id,mi,v):setTgt('acc',id,mi,v);
-}
-function cellReset(id,mi){
-  if(MODE==='cf'){ if(TGT.cf[id]) delete TGT.cf[id][mi]; }
-  else if(isPast(mi)){ if(BOOKS[id]) delete BOOKS[id][mi]; }
-  else if(TGT.acc[id]) delete TGT.acc[id][mi];
-  save(); render();
-}
-
-let MODE='cf', TAB='plan', SPLIT=null, NEWACC=false, NEWG='opex', DRAG=null;
-let EDIT=null;   /* {id,mi} — התא שנמצא כרגע בעריכה */
-function openCell(id,mi){ EDIT={id,mi}; render(); setTimeout(()=>{const e=document.getElementById('ce'); if(e){e.focus();e.select();}},0); }
-function commitCell(id,mi,v){ EDIT=null; cellEdit(id,mi,v); }
-const nf=v=>Math.round(v).toLocaleString('en-US');
-const cfById=id=>CF.find(c=>c.id===id);
-const accById=id=>ACC.find(a=>a.id===id);
-/* הערך הבסיסי מהמערכת: 0,1 = בפועל מהבנק · 2,3,4 = תחזית */
-const cfBase=(c,mi)=>mi<2?c.a[mi]:c.f[mi-2];
-/* הערך התזרימי בפועל לשימוש — יעד שהוזן גובר על התחזית */
-function cfVal(c,mi){ const u=isPast(mi)?null:tgtVal('cf',c.id,mi); return u!=null?u:cfBase(c,mi); }
-/* ערך חשבונאי = סכום התזרימיות שממופות אליו, לפי אחוזים */
-function accDerived(aid,mi){
-  let s=0;
-  CF.forEach(c=>(MAP[c.id]||[]).forEach(m=>{ if(m.acc===aid) s+=cfVal(c,mi)*m.pct/100; }));
-  return s;
-}
-/* בחודשי עבר — מה שהוזן מהנה"ח גובר על הנגזר */
-function accVal(aid,mi){
-  if(isPast(mi)){ const b=bookVal(aid,mi); if(b!=null) return b; }
-  return accDerived(aid,mi);
-}
-const unmapped=()=>CF.filter(c=>!(MAP[c.id]||[]).length);
-const feeders=aid=>CF.map(c=>({c,m:(MAP[c.id]||[]).find(x=>x.acc===aid)})).filter(x=>x.m);
-
-/* ---------- כותרת ---------- */
-function renderTop(){
-  document.getElementById('modesw').innerHTML=
-    `<button class="cf ${MODE==='cf'?'on':''}" onclick="setMode('cf')"><i></i>תזרימי</button>
-     <button class="acc ${MODE==='acc'?'on':''}" onclick="setMode('acc')"><i></i>חשבונאי</button>`;
-  const un=unmapped().length;
-  document.getElementById('tabs').innerHTML=
-    `<button class="tab ${TAB==='plan'?'on':''}" onclick="setTab('plan')">התכנון</button>
-     <button class="tab ${TAB==='map'?'on':''}" onclick="setTab('map')">מיפוי קטגוריות${un?`<em>${un} לא ממופות</em>`:''}</button>`;
-}
-function setMode(m){MODE=m;render();}
-function setTab(t){TAB=t;SPLIT=null;render();}
-
-/* ---------- טבלת התכנון ---------- */
-function planHtml(){
-  const isCf=MODE==='cf';
-  const groups=isCf?CF_G:ACC_G;
-  const rows=isCf?CF:ACC;
-  const sign=isCf?{inc:1,cogs:-1,opex:-1,fin:-1}:ACC_SIGN;
-  const val=(r,mi)=>isCf?cfVal(r,mi):accVal(r.id,mi);
-  /* תא = ערך + מקור. לחיצה הופכת אותו לשדה עריכה במקום. */
-  const cell=(r,mi)=>{
-    const st=cellState(r,mi);
-    const on=EDIT&&EDIT.id===r.id&&EDIT.mi===mi;
-    if(on) return `<td class="${mi===CUR_IX?'cur':''} edit">
-      <input id="ce" value="${st.v?Math.round(st.v):''}" inputmode="numeric"
-        onblur="commitCell('${r.id}',${mi},this.value)"
-        onkeydown="if(event.key==='Enter')this.blur(); if(event.key==='Escape'){EDIT=null;render();}">
-      ${st.src==='user'||st.src==='books'?`<button class="rst" title="חזרה לברירת המחדל" onmousedown="cellReset('${r.id}',${mi})">↺</button>`:''}
-    </td>`;
-    return `<td class="${mi===CUR_IX?'cur':''} ${st.edit?'ed':''} s-${st.src}"
-      title="${SRC[st.src]}" ${st.edit?`onclick="openCell('${r.id}',${mi})"`:''}>${nf(st.v)}</td>`;
-  };
-  let body='';
-  Object.keys(groups).forEach(g=>{
-    const rs=rows.filter(r=>r.g===g); if(!rs.length) return;
-    body+=`<tr class="grp"><td colspan="${MONTHS.length+1}">${groups[g]}</td></tr>`;
-    rs.forEach(r=>{
-      const detail=isCf
-        ?`<span class="mini">${(MAP[r.id]||[]).map(m=>`<span class="pct">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?' '+m.pct+'%':''}</span>`).join('')||'<span>לא ממופה</span>'}</span>`
-        :`<span class="mini">${feeders(r.id).map(x=>`<span>${x.c.label}${x.m.pct<100?' '+x.m.pct+'%':''}</span>`).join('')||'<span>אין מקור</span>'}</span>`;
-      body+=`<tr><td class="k">${r.label}${detail}</td>`+
-        MONTHS.map((_,mi)=>cell(r,mi)).join('')+`</tr>`;
+function recompute(){
+  /* תזרימי: יעד שהוזן גובר על התחזית */
+  CF.forEach(r=>{ r.v=r.base.map((b,m)=>{ const u=m<PAST?null:pick(TGT.cf,r.id,m); return u!=null?u:b; }); });
+  /* חשבונאי: נגזר מהמיפוי, ואז מה שהוזן גובר */
+  ACC.forEach(a=>{a.der=Array(M).fill(0);a.src=[]});
+  for(let m=0;m<M;m++) UNMAP[m]=0;
+  unSrc.length=0;
+  CF.forEach(r=>{
+    r.tgt=MAP[r.id];
+    r.un=MAP[r.id].filter(([t])=>!t).reduce((s,[,p])=>s+p,0);
+    MAP[r.id].forEach(([t,p])=>{
+      if(!t){ for(let m=0;m<M;m++) UNMAP[m]+=r.v[m]*p; unSrc.push([r.id,p]); return; }
+      for(let m=0;m<M;m++) acBy[t].der[m]+=r.v[m]*p;
+      if(!acBy[t].src.some(s=>s[0]===r.id)) acBy[t].src.push([r.id,p]);
     });
-    body+=`<tr class="sum"><td class="k">סה״כ ${groups[g]}</td>`+
-      MONTHS.map((_,mi)=>`<td class="${mi===CUR_IX?'cur':''}">${nf(rs.reduce((s,r)=>s+val(r,mi),0))}</td>`).join('')+`</tr>`;
   });
-  /* שורת רווח — אותו חישוב בשתי השפות */
-  const profit=mi=>rows.reduce((s,r)=>s+val(r,mi)*(sign[r.g]||0),0);
-  body+=`<tr class="prof"><td class="k">רווח ${MODE==='cf'?'תזרימי':'חשבונאי'}</td>`+
-    MONTHS.map((_,mi)=>`<td>${nf(profit(mi))}</td>`).join('')+`</tr>`;
-  const un=unmapped();
-  return `<div class="card">
-    <div class="card-h"><b>תכנון ${MODE==='cf'?'תזרימי':'חשבונאי'}</b>
-      <span class="tag ${MODE}">${MODE==='cf'?'קטגוריות התזרים':'קטגוריות רו״ה'}</span>
-      <span class="sp"></span>
-      <span class="src" style="margin:0">${MODE==='cf'?CF.length+' קטגוריות':ACC.length+' קטגוריות · נגזר מהמיפוי'}</span></div>
-    <table class="tbl"><thead><tr><th class="k">קטגוריה</th>
-      ${MONTHS.map((m,i)=>`<th>${m}${i<2?'<span class="src">בפועל</span>':'<span class="src">תחזית</span>'}</th>`).join('')}
-    </tr></thead><tbody>${body}</tbody></table>
-    <div class="legend">
-      <span class="l-der"><i></i>${MODE==='cf'?'מהמערכת — בפועל מהבנק / תחזית':'נגזר מהמיפוי'}</span>
-      ${MODE==='acc'?'<span class="l-books"><i></i>בפועל מהנהלת חשבונות — הוזן</span>':''}
-      <span class="l-user"><i></i>יעד שהוזן ידנית</span>
-      <span style="margin-inline-start:auto">לחיצה על תא פותחת עריכה · ↺ מחזיר לברירת המחדל</span>
-    </div>
-  </div>
-  ${MODE==='acc'&&un.length?`<div class="note"><b>${un.length} קטגוריות תזרימיות לא ממופות</b> ולכן לא מופיעות בתצוגה החשבונאית:
-    ${un.map(c=>c.label).join(' · ')}. אפשר למפות אותן בלשונית <b>מיפוי קטגוריות</b>.</div>`:''}
-  <div class="note">אותם נתונים בדיוק — רק דרך אחרת להסתכל עליהם. שתי התצוגות עובדות גם על העבר (החודשים בפועל) וגם על התחזית,
-    כך שאפשר להראות ללקוח את שתי התמונות באותה פגישה.</div>`;
+  ACC.forEach(a=>{ a.v=a.der.map((d,m)=>cellOf('acc',a.id,m).v); });
+}
+recompute();
+/* צבע השדרה של שורה תזרימית = הצבע של היעד הראשי (החלק הגדול) */
+CF.forEach(r=>{
+  const sorted=[...r.tgt].sort((a,b)=>b[1]-a[1]);
+  r.prime=sorted[0][0];
+  r.spine = r.tgt.length===1
+    ? (r.tgt[0][0]?acBy[r.tgt[0][0]].c:UN)
+    : (()=>{let acc=0;const st=r.tgt.map(([t,p])=>{const a=acc;acc+=p;return `${t?acBy[t].c:UN} ${(a*100).toFixed(1)}% ${(acc*100).toFixed(1)}%`}).join(',');
+        return `linear-gradient(180deg,${st})`})();
+});
+
+const gr=(arr,g)=>arr.filter(r=>r.g===g);
+const sum=(rows,m)=>rows.reduce((s,r)=>s+r.v[m],0);
+const TOT={cf:{},acc:{}}, NET={}, REV={}, EXP={};
+function totals(){
+  GROUPS.forEach(g=>{
+    TOT.cf[g.id]=MONTHS.map((_,m)=>sum(gr(CF,g.id),m));
+    TOT.acc[g.id]=MONTHS.map((_,m)=>sum(gr(ACC,g.id),m));
+  });
+  NET.cf =MONTHS.map((_,m)=>GROUPS.reduce((s,g)=>s+TOT.cf[g.id][m],0));
+  NET.acc=MONTHS.map((_,m)=>GROUPS.reduce((s,g)=>s+TOT.acc[g.id][m],0));
+  REV.cf=TOT.cf.rev; REV.acc=TOT.acc.rev;
+  EXP.cf =MONTHS.map((_,m)=>-(GROUPS.slice(1).reduce((s,g)=>s+TOT.cf[g.id][m],0)));
+  EXP.acc=MONTHS.map((_,m)=>-(GROUPS.slice(1).reduce((s,g)=>s+TOT.acc[g.id][m],0)));
+}
+totals();
+
+/* =======================================================================
+   עזרים
+   ======================================================================= */
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const nf=v=>Math.abs(Math.round(v)).toLocaleString('en-US');
+const fmt=v=>{const r=Math.round(v);return r===0?'—':(r<0?'−':'')+nf(r)};
+const fmtN=v=>{const r=Math.round(v);return (r<0?'−':'')+nf(r)};
+
+/* =======================================================================
+   ראש החודשים
+   ======================================================================= */
+const thead=document.getElementById('thead');
+{
+  const nm=el('div','c nm');
+  nm.appendChild(el('div','k','קטגוריה'));
+  nm.appendChild(el('div','m','<span style="font-size:12px;font-weight:500;color:var(--ink-2)">שם הסעיף · מיפוי</span>'));
+  thead.appendChild(nm);
+  MONTHS.forEach(mo=>{
+    const c=el('div','c'+(mo.now?' isnow':''));
+    c.appendChild(el('div','k',mo.k==='act'?'בפועל':'תחזית'));
+    const m=el('div','m',mo.n+' <em>'+mo.y+'</em>');
+    m.appendChild(el('span','tag '+(mo.now?'now':(mo.k==='act'?'a':'f')),mo.now?'החודש':(mo.k==='act'?'סגור':'מתוכנן')));
+    c.appendChild(m);
+    thead.appendChild(c);
+  });
 }
 
-/* ---------- מיפוי ---------- */
-function mapHtml(){
-  const un=unmapped();
-  const cfRow=c=>{
-    const ms=MAP[c.id]||[];
-    const open=SPLIT===c.id;
-      return `<div class="cfrow ${ms.length?'':'un'}" draggable="true"
-          ondragstart="dragStart(event,'${c.id}')" ondragend="dragEnd()">
-        <span class="grip"></span>
-        <div class="b">
-          <div class="t">${c.label}</div>
-          <div class="amt">${nf(cfVal(c,CUR_IX))} ₪ · יוני</div>
-          ${ms.length
-            ?`<div class="to">${ms.map(m=>`<span class="chipmap">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?` <b>${m.pct}%</b>`:''}
-                <span class="x" onclick="event.stopPropagation();unmap('${c.id}','${m.acc}')">✕</span></span>`).join('')}</div>`
-            :`<div class="assign">
-                <span class="al">שייכו ל:</span>
-                <span class="picks">${ACC.map(a=>`<button class="pick" onclick="event.stopPropagation();mapTo('${c.id}','${a.id}')">${a.label}</button>`).join('')}</span>
-              </div>`}
-        </div>
-        <button class="split" onclick="event.stopPropagation();toggleSplit('${c.id}')">${open?'סגירה':'פיצול'}</button>
-      </div>${open?splitBox(c):''}`;
-  };
-  /* לא ממופות ראשונות — הן העבודה שנשארה */
-  const unRows=un.length?`<div class="accgrp warnhd">לא ממופות · ${un.length}</div>`+un.map(cfRow).join(''):'';
-  const cfCol=unRows+Object.keys(CF_G).map(g=>{
-    const rs=CF.filter(c=>c.g===g&&(MAP[c.id]||[]).length); if(!rs.length) return '';
-    return `<div class="accgrp">${CF_G[g]}</div>`+rs.map(cfRow).join('');
-  }).join('');
-  const accCol=Object.keys(ACC_G).map(g=>{
-    const rs=ACC.filter(a=>a.g===g); if(!rs.length) return '';
-    return `<div class="accgrp">${ACC_G[g]}</div>`+rs.map(a=>{
-      const fs=feeders(a.id);
-      return `<div class="accrow" id="acc_${a.id}"
-          ondragover="dragOver(event,'${a.id}')" ondragleave="dragLeave('${a.id}')" ondrop="drop(event,'${a.id}')">
-        <div class="top"><span class="t">${a.label}</span>
-          <span class="v">${nf(accVal(a.id,CUR_IX))} ₪</span>
-          <button class="del" title="הסרת הקטגוריה" onclick="delAcc('${a.id}')">✕</button></div>
-        ${fs.length
-          ?`<div class="from">${fs.map(x=>`<span class="chipcf">${x.c.label}${x.m.pct<100?` <i>${x.m.pct}%</i>`:''}</span>`).join('')}</div>`
-          :'<div class="empty">אין קטגוריה תזרימית שמזינה אותה — גררו לכאן</div>'}
-      </div>`;}).join('');
-  }).join('');
-  return `<div class="mapbar">
-      <span class="cov ${un.length?'bad':''}">${CF.length-un.length} מתוך ${CF.length} קטגוריות תזרימיות ממופות · <b>${un.length?un.length+' לא ממופות':'הכל ממופה'}</b></span>
-      <span class="sp"></span>
-      <span class="hint">גררו קטגוריה תזרימית אל קטגוריה חשבונאית · "פיצול" מחלק אותה בין כמה באחוזים</span>
-    </div>
-    <div class="mapgrid">
-      <div class="card">
-        <div class="col-h"><b>קטגוריות תזרימיות</b><span class="n cf">${CF.length}</span>
-          <span class="sp"></span><span class="hint" style="font-size:11px">מקור האמת — כפי שמנוהל בתזרים</span></div>
-        ${cfCol}
-      </div>
-      <div class="card">
-        <div class="col-h"><b>קטגוריות חשבונאיות</b><span class="n acc">${ACC.length}</span>
-          <span class="sp"></span><button class="addbtn" onclick="NEWACC=!NEWACC;render()">＋ קטגוריה</button></div>
-        ${NEWACC?`<div class="newacc">
-          <input id="naNm" placeholder="שם הקטגוריה החשבונאית" onkeydown="if(event.key==='Enter')addAcc()">
-          <span class="picks inline">${Object.keys(ACC_G).map(k=>
-            `<button class="pick ${NEWG===k?'on':''}" onclick="NEWG='${k}';render()">${ACC_G[k]}</button>`).join('')}</span>
-          <button class="btn p" onclick="addAcc()">הוספה</button>
-        </div>`:''}
-        ${accCol}
-      </div>
-    </div>
-    <div class="note"><b>למה זה עובד:</b> הקטגוריות התזרימיות נשארות כפי שהן — הן מה שמנהל התזרים עובד איתו יום-יום.
-      המיפוי הוא שכבה מעל: כמה תזרימיות יכולות להתאחד לקטגוריה חשבונאית אחת, וקטגוריה תזרימית אחת יכולה להתפצל
-      בין כמה חשבונאיות באחוזים (למשל שכר עבודה — 85% הוצאות שכר, 15% עלות המכר). מגדירים פעם אחת, ומחליפים תצוגה בלחיצה.</div>`;
+/* =======================================================================
+   בניית פנים (face)
+   ======================================================================= */
+const totCells=[], netCells=[];
+let idx=0;
+
+function cells(host,vals,opts){
+  const mx=Math.max(...vals.map(Math.abs))||1;
+  MONTHS.forEach((mo,m)=>{
+    const c=el('div','c'+(mo.now?' isnow':'')+(mo.k==='fc'?' fc':'')+(vals[m]<0?' neg':''));
+    if(opts&&opts.heat){const h=el('span','heat');h.style.width=(Math.abs(vals[m])/mx*52)+'%';c.appendChild(h)}
+    const v=el('span','v'+(vals[m]===0?' z':''),fmt(vals[m]));
+    if(opts&&opts.muted) v.style.color='var(--warn-ink)';
+    c.appendChild(v);
+    /* תא של שורת נתונים — נושא את מקור המספר, ואפשר לערוך אותו במקום */
+    if(opts&&opts.row){
+      const st=cellOf(opts.view,opts.row,m);
+      c.classList.add('src-'+st.src);
+      if(st.edit){ c.classList.add('editable');
+        c.title=({sys:'מהמערכת',books:'הוזן מהנהלת חשבונות',user:'יעד שהוזן ידנית',derived:'נגזר מהמיפוי'})[st.src];
+        c.addEventListener('click',()=>openCell(opts.view,opts.row,m,c));
+      }
+    }
+    host.appendChild(c);
+    if(opts&&opts.collect) opts.collect.push({node:v,m});
+  });
 }
-function splitBox(c){
-  const ms=MAP[c.id]||[];
-  const tot=ms.reduce((s,m)=>s+(+m.pct||0),0);
-  return `<div class="splitbox">
-    <div class="sh">פיצול "${c.label}" בין קטגוריות חשבונאיות</div>
-    ${ms.map((m,ix)=>`<div class="splitrow">
-      <span class="nm">${accById(m.acc)?accById(m.acc).label:'?'}</span>
-      <input type="number" min="0" max="100" value="${m.pct}" onchange="setPct('${c.id}',${ix},this.value)">
-      <span style="font-size:11px;color:var(--soft)">%</span>
-      <button class="rm" onclick="unmap('${c.id}','${m.acc}')">✕</button>
-    </div>`).join('')||'<div class="empty" style="font-size:11.5px;color:var(--soft);margin-bottom:8px">עדיין לא ממופה — הוסיפו קטגוריה חשבונאית</div>'}
-    <div class="pickwrap">
-      <div class="pl">הוספת קטגוריה חשבונאית לפיצול</div>
-      <div class="picks">${ACC.filter(a=>!ms.some(m=>m.acc===a.id))
-        .map(a=>`<button class="pick" onclick="addSplit('${c.id}','${a.id}')">${a.label}</button>`).join('')
-        ||'<span style="font-size:11.5px;color:var(--soft)">כל הקטגוריות כבר משויכות</span>'}</div>
+/* עריכה במקום — בלי פופאפ */
+let EDITING=null;
+function openCell(view,id,m,cellEl){
+  if(EDITING) return;
+  const st=cellOf(view,id,m);
+  EDITING={view,id,m};
+  cellEl.classList.add('editing');
+  const inp=document.createElement('input');
+  inp.className='cin'; inp.value=Math.round(Math.abs(st.v))||''; inp.inputMode='numeric';
+  const neg=st.v<0||['cogs','opex','fin'].includes((view==='cf'?cfBy[id]:acBy[id]).g);
+  cellEl.appendChild(inp); inp.focus(); inp.select();
+  const done=(commit)=>{
+    if(!EDITING) return; EDITING=null;
+    if(commit){
+      let n=parseNum(inp.value);
+      if(n!=null&&neg) n=-Math.abs(n);
+      const store=view==='cf'?TGT.cf:(m<PAST?BOOKS:TGT.acc);
+      put(store,id,m,n);
+      persist();
+    }
+    rerender();
+  };
+  inp.addEventListener('blur',()=>done(true));
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();inp.blur();}
+    if(e.key==='Escape'){EDITING=null;rerender();} });
+  cellEl.addEventListener('click',e=>e.stopPropagation(),{once:true});
+}
+function resetCell(view,id,m){
+  const store=view==='cf'?TGT.cf:(m<PAST?BOOKS:TGT.acc);
+  put(store,id,m,null); persist(); rerender();
+}
+function rerender(){
+  recompute(); totals();
+  const cf=document.getElementById('faceCf'), ac=document.getElementById('faceAcc');
+  cf.innerHTML=''; ac.innerHTML='';
+  buildFace(cf,'cf'); buildFace(ac,'acc');
+  buildNet(); buildKpis();
+  placeRail();
+}
+
+function buildFace(face,view){
+  idx=0;
+  const rows = view==='cf' ? CF : ACC;
+  GROUPS.forEach(g=>{
+    /* --- כותרת קבוצה --- */
+    const gh=el('div','gr grp'); gh.style.setProperty('--i',idx++);
+    const gn=el('div','nm');
+    gn.appendChild(el('b',null,g.name));
+    const list=gr(rows,g.id);
+    const cnt = view==='cf'
+      ? list.length+' קטגוריות'
+      : (list.length===1?'סעיף אחד':list.length+' סעיפים');
+    gn.appendChild(el('span','cnt',cnt));
+    /* ה-DNA של הקבוצה: הסעיפים החשבונאיים שהיא מזינה / מכילה — נוכח בשתי השפות */
+    const seen=[]; (view==='cf'?gr(CF,g.id):gr(rows,g.id)).forEach(x=>{
+      (view==='cf' ? x.tgt.map(([t])=>t) : [x.id]).forEach(t=>{ if(t&&!seen.includes(t)) seen.push(t) });
+    });
+    const dna=el('div','dna');
+    seen.forEach(t=>{const d=el('i');d.style.background=acBy[t].c;dna.appendChild(d)});
+    gn.appendChild(dna);
+    gh.appendChild(gn);
+    for(let i=0;i<M;i++) gh.appendChild(el('div','c'));
+    face.appendChild(gh);
+
+    /* --- שורות נתונים --- */
+    const seq=[...list];
+    /* שורת רפאים לחלק שלא ממופה — נשארת גלויה, מסומנת, ולא נספרת בסה״כ */
+    if(view==='acc' && g.id==='fin') seq.push({ghost:true,name:'קרן הלוואה',v:UNMAP,g:'fin'});
+
+    seq.forEach((r,i)=>{
+      const row=el('div','gr dr'); row.style.setProperty('--i',idx++);
+      if(r.ghost) row.classList.add('gh');
+      row.dataset.id=r.id||'ghost';
+
+      /* רצף עמוד שדרה: שורות עוקבות עם אותו יעד ראשי = פס אחד */
+      const key = x => x.ghost ? '∅' : (view==='cf' ? x.prime : x.id);
+      const prev=i>0?seq[i-1]:null, next=i<seq.length-1?seq[i+1]:null;
+      const same=(a,b)=>a&&b&&key(a)===key(b);
+      const up=same(r,prev), dn=same(r,next);
+      row.classList.add(up&&dn?'rm':up?'re':dn?'rs':'ro');
+
+      const sp=el('div','spine');
+      sp.style.background = r.ghost ? UN : (view==='cf' ? r.spine : r.c);
+      if(r.ghost) sp.style.background='repeating-linear-gradient(180deg,'+UN+' 0 3px,transparent 3px 6px)';
+      row.appendChild(sp);
+
+      const nm=el('div','nm');
+      nm.appendChild(el('div','t',r.name));
+      const side=el('div','side');
+      if(view==='cf'){
+        if(r.un>0) side.appendChild(el('span','badge w', r.un>=1?'ללא מיפוי':'קרן <bdi>'+Math.round(r.un*100)+'%</bdi>'));
+        if(r.tgt.length>1){
+          const mt=el('div','meter');
+          r.tgt.forEach(([t,p])=>{const s=el('i');s.style.width=(p*100)+'%';
+            if(!t)s.className='u'; else s.style.background=acBy[t].c; mt.appendChild(s)});
+          side.appendChild(mt);
+        }
+      }else if(r.ghost){
+        side.appendChild(el('span','badge w','לא נכלל ברו״ה'));
+      }else if(r.src.length>1){
+        side.appendChild(el('span','badge',r.src.length+' מקורות'));
+      }
+      nm.appendChild(side);
+      row.appendChild(nm);
+      cells(row,r.v,{heat:!r.ghost,muted:r.ghost,row:r.ghost?null:r.id,view});
+
+      if(!r.ghost){
+        row.addEventListener('mouseenter',()=>lite(r,view));
+        row.addEventListener('mouseleave',()=>{if(!pin)clear()});
+        row.addEventListener('click',()=>{
+          if(pin===(r.id+view)){pin=null;clear()}
+          else{pin=r.id+view;lite(r,view);row.classList.add('pin')}
+        });
+      }else{
+        row.addEventListener('mouseenter',()=>ghostRibbon());
+        row.addEventListener('mouseleave',()=>{if(!pin)clear()});
+      }
+      face.appendChild(row);
+    });
+
+    /* --- שורת סה״כ --- */
+    const tr=el('div','gr tot'); tr.style.setProperty('--i',idx++);
+    const tn=el('div','nm');
+    tn.appendChild(el('b',null,'סה״כ '+g.name));
+    if(g.id==='rev'||g.id==='cogs') tn.appendChild(el('span','pin-eq','זהה בשתי התצוגות'));
+    tr.appendChild(tn);
+    MONTHS.forEach((mo,m)=>{
+      const c=el('div','c'+(mo.now?' isnow':''));
+      const v=el('span','v',fmt(TOT[view==='cf'?'cf':'acc'][g.id][m]));
+      c.appendChild(v); tr.appendChild(c);
+      if(view==='cf') totCells.push({node:v,cf:TOT.cf[g.id][m],acc:TOT.acc[g.id][m],cur:TOT.cf[g.id][m]});
+      else totCells.push({node:v,cf:TOT.cf[g.id][m],acc:TOT.acc[g.id][m],cur:TOT.acc[g.id][m]});
+    });
+    face.appendChild(tr);
+  });
+}
+buildFace(document.getElementById('faceCf'),'cf');
+buildFace(document.getElementById('faceAcc'),'acc');
+
+/* =======================================================================
+   שורת הרווח
+   ======================================================================= */
+const net=document.getElementById('net');
+function buildNet(){
+  net.innerHTML=''; netCells.length=0;
+  const nm=el('div','nm');
+  nm.innerHTML='<b><span data-c="cf">תזרים נטו</span><span data-c="acc" data-off>רווח נקי</span></b>'+
+               '<small><span data-c="cf">לפני יתרת פתיחה</span><span data-c="acc" data-off>ללא קרן הלוואה — תנועת מאזן</span></small>';
+  net.appendChild(nm);
+  MONTHS.forEach((mo,m)=>{
+    const c=el('div','c'+(mo.now?' isnow':''));
+    const v=el('span','v',fmtN(NET.cf[m]));
+    const p=el('span','p',(NET.cf[m]/REV.cf[m]*100).toFixed(1)+'% מהמחזור');
+    c.appendChild(v);c.appendChild(p);net.appendChild(c);
+    netCells.push({v,p,cf:NET.cf[m],acc:NET.acc[m],cur:NET.cf[m],rcf:REV.cf[m],racc:REV.acc[m]});
+  });
+}
+buildNet();
+
+/* =======================================================================
+   KPI
+   ======================================================================= */
+function spark(vals,color){
+  const w=98,h=30,p=4;
+  const mn=Math.min(...vals),mx=Math.max(...vals),rg=(mx-mn)||1;
+  const pts=vals.map((v,i)=>[w-p-(i*(w-p*2)/(vals.length-1)), h-p-((v-mn)/rg)*(h-p*2)]);
+  const d=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ');
+  const ar=d+' L '+pts[pts.length-1][0].toFixed(1)+' '+(h-p)+' L '+pts[0][0].toFixed(1)+' '+(h-p)+' Z';
+  const id='s'+Math.random().toString(36).slice(2,7);
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="'+color+'" stop-opacity=".3"/><stop offset="1" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs>'+
+    '<path d="'+ar+'" fill="url(#'+id+')"/><path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="'+pts[2][0].toFixed(1)+'" cy="'+pts[2][1].toFixed(1)+'" r="3" fill="#fff" stroke="'+color+'" stroke-width="2"/></svg>';
+}
+const KDEF=[
+  {cf:'תזרים נטו · אוגוסט',acc:'רווח נקי · אוגוסט',get:v=>NET[v][2],
+   sub:v=>(NET[v][2]/REV[v][2]*100).toFixed(1)+'% מהמחזור',sp:v=>NET[v]},
+  {cf:'סה״כ הכנסות · אוגוסט',acc:'סה״כ הכנסות · אוגוסט',get:v=>REV[v][2],
+   sub:v=>'<b dir="ltr">+'+((REV[v][2]/REV[v][1]-1)*100).toFixed(1)+'%</b> מיולי · זהה בשתי התצוגות',sp:v=>REV[v]},
+  {cf:'סה״כ הוצאות · אוגוסט',acc:'סה״כ הוצאות · אוגוסט',get:v=>EXP[v][2],
+   sub:v=>(EXP[v][2]/REV[v][2]*100).toFixed(1)+'% מהמחזור',sp:v=>EXP[v]}
+];
+const kpis=document.getElementById('kpis'); let kn=[];
+function buildKpis(){
+  kpis.innerHTML=''; kn=[];
+  KDEF.forEach(d=>{
+    const n=el('div','kpi');
+    n.innerHTML='<div style="min-width:0"><div class="lab"><span data-c="cf">'+d.cf+'</span><span data-c="acc" data-off>'+d.acc+'</span></div>'+
+                '<div class="val"></div><div class="sub"></div></div><div class="sp"></div>';
+    kpis.appendChild(n);
+    kn.push({val:n.querySelector('.val'),sub:n.querySelector('.sub'),sp:n.querySelector('.sp'),d,cur:d.get('cf')});
+  });
+}
+buildKpis();
+
+/* =======================================================================
+   Ribbon — הקשר בין השפות. רצועה שקיימת תמיד, ולכן לא גוזלת פיקסל.
+   ======================================================================= */
+const rb=document.getElementById('rb');
+let pin=null;
+const ARW='<span class="arw"><svg width="15" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6H2"/><path d="M6 2 2 6l4 4"/></svg></span>';
+
+function idle(){
+  const gap=Math.abs(UNMAP[2]);
+  rb.innerHTML='<div class="hint">'+
+    '<span>ריחוף על שורה מאיר את הרצף ומציג את המיפוי המדויק · לחיצה מקבעת</span>'+
+    '<span class="lg"><i class="t"></i> צבע השדרה = הסעיף החשבונאי</span>'+
+    '<span class="lg"><i class="u"></i> לא נכלל ברו״ה</span>'+
+    '</div><span class="recon">רווח נקי = תזרים נטו <bdi>+ '+nf(gap)+' ₪</bdi> · קרן הלוואה היא תנועת מאזן, לא הוצאה</span>';
+}
+function chip(color,name,note,pct,un,cross){
+  return '<span class="ri'+(un?' un':'')+'">'+
+    '<span class="pc"><span class="bar"><i style="width:'+Math.round(pct*100)+'%'+(color?';background:'+color:'')+'"></i></span>'+Math.round(pct*100)+'%</span>'+
+    '<b>'+name+'</b>'+(note?'<span class="g'+(cross?' x':'')+'">'+note+'</span>':'')+'</span>';
+}
+function paint(r,view){
+  let h='';
+  if(view==='cf'){
+    h='<span class="rsrc"><i style="background:'+r.spine+'"></i>'+r.name+'<em>אוגוסט '+fmt(r.v[2])+'</em></span>'+ARW;
+    r.tgt.forEach(([t,p])=>{
+      if(!t){h+=chip(null,'קרן הלוואה','תנועת מאזן · לא הוצאה',p,true,false);return}
+      const a=acBy[t], x=a.g!==r.g;
+      h+=chip(a.c,a.name,(x?'עובר ל־':'')+gName[a.g],p,false,x);
+    });
+  }else{
+    h='<span class="rsrc"><i style="background:'+r.c+'"></i>'+r.name+'<em>אוגוסט '+fmt(r.v[2])+'</em></span>'+ARW;
+    const tot=r.src.reduce((s,[c,p])=>s+Math.abs(cfBy[c].v[2]*p),0)||1;
+    r.src.forEach(([c,p])=>{
+      const s=cfBy[c], share=Math.abs(s.v[2]*p)/tot, x=s.g!==r.g;
+      const note = p<1 ? Math.round(p*100)+'% מהקטגוריה' : (x?'מ־'+gName[s.g]:'מלוא הקטגוריה');
+      h+=chip(r.c,s.name,note,share,false,x);
+    });
+  }
+  rb.innerHTML=h;
+}
+function ghostRibbon(){
+  rb.innerHTML='<span class="rsrc"><i style="background:'+UN+'"></i>קרן הלוואה<em>אוגוסט '+fmt(UNMAP[2])+'</em></span>'+ARW+
+    unSrc.map(([c,p])=>chip(null,cfBy[c].name,Math.round(p*100)+'% מהקטגוריה · תנועת מאזן',p,true,false)).join('')+
+    '<span class="ri un"><b>לא נספר בסה״כ הקבוצה</b></span>';
+}
+
+const bodyEl=document.getElementById('body');
+function lite(r,view){
+  paint(r,view);
+  const key = view==='cf' ? r.prime : r.id;
+  bodyEl.classList.add('dim');
+  bodyEl.querySelectorAll('.face.on .dr').forEach(n=>n.classList.remove('lit','pin'));
+  const face=bodyEl.querySelector('.face.on');
+  const rows = view==='cf' ? CF : ACC;
+  rows.forEach(x=>{
+    const k = view==='cf' ? x.prime : x.id;
+    const hit = view==='cf' ? (k===key || x.tgt.some(([t])=>t===key)) : (k===key);
+    if(hit){const n=face.querySelector('.dr[data-id="'+x.id+'"]');if(n)n.classList.add('lit')}
+  });
+}
+function clear(){
+  pin=null; bodyEl.classList.remove('dim');
+  bodyEl.querySelectorAll('.dr').forEach(n=>n.classList.remove('lit','pin'));
+  idle();
+}
+idle();
+
+/* =======================================================================
+   מתג + טווין
+   ======================================================================= */
+const btns=[...document.querySelectorAll('#sw button')];
+const modeChip=document.getElementById('modeChip');
+let view='cf', busy=false;
+
+function tween(dur,fn){
+  const t0=performance.now();
+  requestAnimationFrame(function step(t){
+    const k=Math.min(1,(t-t0)/dur);
+    fn(1-Math.pow(1-k,3));
+    if(k<1) requestAnimationFrame(step);
+  });
+}
+
+function setView(v,instant){
+  if(busy) return;
+  view=v; document.body.dataset.v=v;
+  btns.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
+  clear();
+  modeChip.textContent = v==='cf' ? 'תצוגה תזרימית' : 'תצוגה חשבונאית';
+  document.querySelectorAll('[data-c]').forEach(n=>{
+    if(n.dataset.c===v) n.removeAttribute('data-off'); else n.setAttribute('data-off','');
+  });
+
+  const from=bodyEl.querySelector('.face.on'), to=bodyEl.querySelector('.face[data-f="'+v+'"]');
+  if(from!==to){
+    if(instant){from.classList.remove('on');to.classList.add('on')}
+    else{
+      busy=true;
+      from.classList.add('out'); to.classList.add('on','in');
+      setTimeout(()=>{from.classList.remove('on','out');to.classList.remove('in');busy=false},640);
+    }
+  }
+
+  /* count-up: השורות המסכמות משתנות מול העין, כדי שרואים מה זז ומה לא */
+  const D=instant?0:520;
+  const fT=totCells.map(c=>c.cur), tT=totCells.map(c=>c[v]);
+  const fN=netCells.map(c=>c.cur), tN=netCells.map(c=>c[v]);
+  const fK=kn.map(k=>k.cur),        tK=kn.map(k=>k.d.get(v));
+  const apply=k=>{
+    totCells.forEach((c,i)=>{c.cur=fT[i]+(tT[i]-fT[i])*k;c.node.textContent=fmt(c.cur)});
+    netCells.forEach((c,i)=>{c.cur=fN[i]+(tN[i]-fN[i])*k;c.v.textContent=fmtN(c.cur);
+      c.p.textContent=(c.cur/(v==='cf'?c.rcf:c.racc)*100).toFixed(1)+'% מהמחזור'});
+    kn.forEach((n,i)=>{n.cur=fK[i]+(tK[i]-fK[i])*k;n.val.textContent='₪ '+fmtN(n.cur)});
+  };
+  if(D===0) apply(1); else tween(D,apply);
+  kn.forEach(n=>{n.sub.innerHTML=n.d.sub(v); n.sp.innerHTML=spark(n.d.sp(v), v==='cf'?'#39ABE2':'#6C63E6')});
+}
+btns.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.v)));
+
+/* rail של החודש הנוכחי */
+const rail=document.getElementById('rail'), grid=document.getElementById('grid');
+function placeRail(){
+  const i=MONTHS.findIndex(m=>m.now);
+  const th=thead.children[i+1];
+  const a=th.getBoundingClientRect(), b=grid.getBoundingClientRect();
+  rail.style.insetInlineStart=(b.right-a.right)+'px';
+  rail.style.width=a.width+'px';
+  rail.style.top=thead.offsetHeight+'px';
+  rail.style.bottom=net.offsetHeight+'px';
+}
+addEventListener('resize',placeRail);
+
+/* boot — #acc פותח ישר בחשבונאי (משמש גם לצילומים) */
+(function(){
+  placeRail();
+  setView(location.hash.replace('#','')==='acc'?'acc':'cf',true);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(placeRail);
+})();
+</script>
+<script>
+if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
+</script>
+<script>/*HKPROBE*/
+if(location.hash==='#mapdemo'){setTimeout(()=>{document.querySelector('#ptabs .pt[data-t="map"]').click();},300);}
+
+if(location.hash==='#probe'){ setTimeout(()=>{
+  try{
+    put(BOOKS,'wages',0,-158100+12000);      /* בפועל מהנה"ח */
+    put(TGT.acc,'sell',3,-52000);            /* יעד חשבונאי */
+    put(TGT.cf,'mkt',3,-50000);              /* יעד תזרימי */
+    persist(); rerender();
+    const b=document.querySelector('#sw button[data-v="acc"]'); if(b)b.click();
+    setTimeout(()=>{ document.title='books='+document.querySelectorAll('.src-books').length
+      +' user='+document.querySelectorAll('.src-user').length
+      +' der='+document.querySelectorAll('.src-derived').length; },600);
+  }catch(e){document.title='ERR '+e.message}
+},400); }
+</script>
+<style>
+/* ===== סדנת המיפוי ===== */
+.ptabs{display:inline-flex;gap:3px;background:#EEF3F7;border-radius:11px;padding:3px;margin-inline-end:10px}
+.pt{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:#64748b;
+  padding:7px 15px;border-radius:8px;cursor:pointer;transition:.14s}
+.pt:hover{color:#0C4068}
+.pt.on{background:#fff;color:#0C4068;box-shadow:0 1px 3px rgba(12,64,104,.10)}
+#mapPane{padding:16px 18px 20px}
+.mw-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:13px;font-size:12.5px}
+.mw-cov{font-weight:700}
+.mw-cov b{color:#13895b}.mw-cov.bad b{color:#c98404}
+.mw-hint{color:#9aa7bb;font-size:11.5px;margin-inline-start:auto}
+.mw-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:1000px){.mw-grid{grid-template-columns:1fr}}
+.mw-col{background:#fff;border:1px solid #e6ecf4;border-radius:14px;overflow:hidden}
+.mw-h{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #eef3f8;background:#FBFDFF}
+.mw-h b{font-size:13px;color:#0C4068}
+.mw-h .n{font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 9px;background:#EAF4FB;color:#1B6C9C}
+.mw-h .n.a{background:#F1EDFC;color:#7557E3}
+.mw-h .sp{flex:1}
+.mw-add{border:1.5px dashed #d3dced;background:#fff;color:#7557E3;font:inherit;font-size:11.5px;
+  font-weight:700;border-radius:99px;padding:5px 12px;cursor:pointer}
+.mw-add:hover{border-color:#7557E3}
+.mw-g{font-size:10.5px;font-weight:800;color:#9aa7bb;padding:9px 14px 4px;background:#FAFCFE}
+.mw-g.warn{color:#c98404;background:#FDF4E3}
+.mw-r{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #F1F6FA;transition:.13s}
+.mw-r:hover{background:#FBFDFF}
+.mw-r.un{background:#FFFBF4}
+.mw-r .sp2{flex:1;min-width:0}
+.mw-r .t{font-size:12.5px;font-weight:600;color:#0C4068}
+.mw-r .am{font-size:11px;color:#9aa7bb;font-variant-numeric:tabular-nums;margin-top:1px}
+.mw-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.mw-c{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;
+  background:#F1EDFC;color:#7557E3;border-radius:99px;padding:2px 9px}
+.mw-c b{font-weight:800}
+.mw-c .x{cursor:pointer;opacity:.55;font-size:10px}
+.mw-c .x:hover{opacity:1}
+.mw-pick{margin-top:6px}
+.mw-pick .pl{font-size:10px;font-weight:700;color:#9aa7bb;display:block;margin-bottom:4px}
+.mw-pk{display:flex;flex-wrap:wrap;gap:4px}
+.mw-pk button{border:1px solid #e6ecf4;background:#fff;color:#64748b;font:inherit;font-size:11px;
+  font-weight:600;border-radius:99px;padding:4px 11px;cursor:pointer;transition:.13s}
+.mw-pk button:hover{border-color:#7557E3;color:#7557E3;background:#F1EDFC}
+.mw-sp{flex:none;border:1px solid #e6ecf4;background:#fff;color:#64748b;font:inherit;font-size:10.5px;
+  font-weight:700;border-radius:8px;padding:4px 9px;cursor:pointer}
+.mw-sp:hover{border-color:#7557E3;color:#7557E3}
+.mw-split{background:#FBFAFF;border-top:1px dashed #DCD0EC;padding:11px 14px 13px}
+.mw-split .sh{font-size:11px;font-weight:700;color:#7557E3;margin-bottom:8px}
+.mw-sr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.mw-sr .nm2{flex:1;min-width:0;font-size:12px;color:#0C4068;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mw-sr input{width:60px;text-align:center;font:inherit;font-size:12.5px;font-weight:700;color:#0C4068;
+  border:1.5px solid #d3dced;border-radius:8px;padding:5px 6px;outline:none}
+.mw-sr input:focus{border-color:#7557E3}
+.mw-sr .rm{border:0;background:none;color:#9aa7bb;font-size:13px;cursor:pointer;padding:2px 5px}
+.mw-sr .rm:hover{color:#dc4436}
+.mw-sf{display:flex;align-items:center;gap:9px;margin-top:9px}
+.mw-tag{font-size:11px;font-weight:800;border-radius:99px;padding:3px 11px}
+.mw-tag.ok{background:#e7f7ef;color:#13895b}
+.mw-tag.bad{background:#fdeceb;color:#dc4436}
+.mw-sf .sp3{flex:1}
+.mw-b{border:1px solid #d3dced;background:#fff;color:#0C4068;font:inherit;font-size:12px;font-weight:700;
+  border-radius:9px;padding:6px 13px;cursor:pointer}
+.mw-b.p{background:#7557E3;border-color:#7557E3;color:#fff}
+.mw-ar{padding:10px 14px;border-bottom:1px solid #F1F6FA}
+.mw-ar .top{display:flex;align-items:center;gap:9px}
+.mw-ar .t2{flex:1;min-width:0;font-size:12.5px;font-weight:700;color:#0C4068}
+.mw-ar .v2{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:#7557E3}
+.mw-ar .from{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.mw-f{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;
+  background:#EAF4FB;color:#1B6C9C;border-radius:99px;padding:2px 9px}
+.mw-f i{font-style:normal;font-weight:800;opacity:.75}
+.mw-ar .none{font-size:10.5px;color:#9aa7bb;margin-top:5px}
+.mw-new{display:flex;gap:7px;flex-wrap:wrap;padding:11px 14px;background:#FBFAFF;border-bottom:1px solid #F1F6FA}
+.mw-new input{flex:1;min-width:140px;border:1.5px solid #d3dced;border-radius:9px;padding:7px 10px;
+  font:inherit;font-size:12.5px;outline:none}
+.mw-new input:focus{border-color:#7557E3}
+.mw-note{font-size:11.5px;color:#64748b;line-height:1.75;background:#fff;border:1px solid #e6ecf4;
+  border-radius:12px;padding:12px 15px;margin-top:13px}
+.mw-note b{color:#0C4068}
+</style>
+<script>
+/* ===== סדנת המיפוי — הלשונית השנייה ===== */
+let PTAB='plan', SPLIT=null, NEWACC=false, NEWG='opex', DRAGID=null;
+const GLBL={rev:'הכנסות',cogs:'עלות המכר',opex:'הוצאות תפעוליות',fin:'מימון והשקעות'};
+const accOf=id=>acBy[id];
+const mapOf=id=>MAP[id]||[];
+const isUn=id=>{const ms=mapOf(id); return !ms.length||ms.every(([a])=>!a);};
+const feedersOf=aid=>CF.map(r=>({r,m:mapOf(r.id).find(([a])=>a===aid)})).filter(x=>x.m);
+
+function mwRow(r){
+  const ms=mapOf(r.id).filter(([a])=>a);
+  const open=SPLIT===r.id;
+  return `<div class="mw-r ${ms.length?'':'un'}" draggable="true"
+      ondragstart="mwDragStart(event,'${r.id}')" ondragend="mwDragEnd()">
+    <div class="sp2">
+      <div class="t">${r.name}</div>
+      <div class="am">${fmtN(r.v[2])} ₪ · אוגוסט</div>
+      ${ms.length
+        ?`<div class="mw-chips">${ms.map(([a,p])=>`<span class="mw-c">${accOf(a).name}${p<1?` <b>${Math.round(p*100)}%</b>`:''}
+            <span class="x" onclick="event.stopPropagation();mwUnmap('${r.id}','${a}')">✕</span></span>`).join('')}</div>`
+        :`<div class="mw-pick"><span class="pl">שייכו לסעיף חשבונאי:</span>
+            <span class="mw-pk">${ACC.map(a=>`<button onclick="event.stopPropagation();mwMap('${r.id}','${a.id}')">${a.name}</button>`).join('')}</span>
+          </div>`}
     </div>
-    <div class="splitfoot">
-      <span class="sumtag ${tot===100?'ok':'bad'}">${tot}% ${tot===100?'✓':'— צריך 100%'}</span>
-      <span class="sp"></span>
-      <button class="btn" onclick="evenSplit('${c.id}')">חלוקה שווה</button>
-      <button class="btn p" onclick="SPLIT=null;save();render()">סיום</button>
+    <button class="mw-sp" onclick="event.stopPropagation();mwSplit('${r.id}')">${open?'סגירה':'פיצול'}</button>
+  </div>${open?mwSplitBox(r):''}`;
+}
+function mwSplitBox(r){
+  const ms=mapOf(r.id).filter(([a])=>a);
+  const tot=Math.round(ms.reduce((s,[,p])=>s+p,0)*100);
+  return `<div class="mw-split">
+    <div class="sh">פיצול "${r.name}" בין סעיפים חשבונאיים</div>
+    ${ms.map(([a,p],ix)=>`<div class="mw-sr">
+      <span class="nm2">${accOf(a).name}</span>
+      <input type="number" min="0" max="100" value="${Math.round(p*100)}" onchange="mwPct('${r.id}',${ix},this.value)">
+      <span style="font-size:11px;color:#9aa7bb">%</span>
+      <button class="rm" onclick="mwUnmap('${r.id}','${a}')">✕</button>
+    </div>`).join('')||'<div style="font-size:11.5px;color:#9aa7bb;margin-bottom:8px">עדיין לא ממופה</div>'}
+    <div class="mw-pick"><span class="pl">הוספת סעיף לפיצול</span>
+      <span class="mw-pk">${ACC.filter(a=>!ms.some(([x])=>x===a.id))
+        .map(a=>`<button onclick="mwAddSplit('${r.id}','${a.id}')">${a.name}</button>`).join('')||'<span style="font-size:11.5px;color:#9aa7bb">הכל משויך</span>'}</span></div>
+    <div class="mw-sf">
+      <span class="mw-tag ${tot===100?'ok':'bad'}">${tot}% ${tot===100?'✓':'— צריך 100%'}</span>
+      <span class="sp3"></span>
+      <button class="mw-b" onclick="mwEven('${r.id}')">חלוקה שווה</button>
+      <button class="mw-b p" onclick="SPLIT=null;mwRender()">סיום</button>
     </div>
   </div>`;
 }
+function mwRender(){
+  const pane=document.getElementById('mapPane');
+  const un=CF.filter(r=>isUn(r.id));
+  const unBlock=un.length?`<div class="mw-g warn">לא ממופות · ${un.length}</div>`+un.map(mwRow).join(''):'';
+  const cfCol=unBlock+GROUPS.map(g=>{
+    const rs=CF.filter(r=>r.g===g.id&&!isUn(r.id)); if(!rs.length) return '';
+    return `<div class="mw-g">${g.name}</div>`+rs.map(mwRow).join('');
+  }).join('');
+  const accCol=GROUPS.map(g=>{
+    const rs=ACC.filter(a=>a.g===g.id); if(!rs.length) return '';
+    return `<div class="mw-g">${g.name}</div>`+rs.map(a=>{
+      const fs=feedersOf(a.id);
+      return `<div class="mw-ar" id="mwa_${a.id}"
+          ondragover="mwOver(event,'${a.id}')" ondragleave="mwLeave('${a.id}')" ondrop="mwDrop(event,'${a.id}')">
+        <div class="top"><span class="t2">${a.name}</span><span class="v2">${fmtN(a.v[2])} ₪</span></div>
+        ${fs.length?`<div class="from">${fs.map(x=>`<span class="mw-f">${x.r.name}${x.m[1]<1?` <i>${Math.round(x.m[1]*100)}%</i>`:''}</span>`).join('')}</div>`
+                   :'<div class="none">אין קטגוריה תזרימית שמזינה — גררו לכאן או בחרו מימין</div>'}
+      </div>`;}).join('');
+  }).join('');
+  pane.innerHTML=`
+    <div class="mw-bar">
+      <span class="mw-cov ${un.length?'bad':''}">${CF.length-un.length} מתוך ${CF.length} קטגוריות תזרימיות ממופות · <b>${un.length?un.length+' לא ממופות':'הכל ממופה'}</b></span>
+      <span class="mw-hint">גררו קטגוריה אל סעיף · או בחרו מהרשימה · "פיצול" מחלק באחוזים</span>
+    </div>
+    <div class="mw-grid">
+      <div class="mw-col"><div class="mw-h"><b>קטגוריות תזרימיות</b><span class="n">${CF.length}</span>
+        <span class="sp"></span><span class="mw-hint" style="margin:0">מקור האמת</span></div>${cfCol}</div>
+      <div class="mw-col"><div class="mw-h"><b>סעיפים חשבונאיים</b><span class="n a">${ACC.length}</span>
+        <span class="sp"></span><button class="mw-add" onclick="NEWACC=!NEWACC;mwRender()">＋ סעיף</button></div>
+        ${NEWACC?`<div class="mw-new">
+          <input id="mwNm" placeholder="שם הסעיף החשבונאי" onkeydown="if(event.key==='Enter')mwAddAcc()">
+          <span class="mw-pk">${GROUPS.map(g=>`<button class="${NEWG===g.id?'on':''}" style="${NEWG===g.id?'background:#7557E3;border-color:#7557E3;color:#fff':''}" onclick="NEWG='${g.id}';mwRender()">${g.name}</button>`).join('')}</span>
+          <button class="mw-b p" onclick="mwAddAcc()">הוספה</button></div>`:''}
+        ${accCol}</div>
+    </div>
+    <div class="mw-note"><b>למה זה עובד:</b> הקטגוריות התזרימיות נשארות כפי שהן — הן מה שמנהל התזרים עובד איתו יום-יום.
+      המיפוי הוא שכבה מעל: כמה תזרימיות מתאחדות לסעיף חשבונאי אחד, וקטגוריה אחת יכולה להתפצל בין כמה סעיפים באחוזים
+      (שכר עבודה — 85% הוצאות שכר, 15% הנהלה וכלליות). מגדירים פעם אחת, ומחליפים תצוגה בלחיצה.</div>`;
+}
+function mwSyncMap(id,arr){ MAP[id]=arr.length?arr:[[null,1]]; persist(); recompute(); totals(); rerender(); mwRender(); }
+function mwMap(id,aid){ mwSyncMap(id,[[aid,1]]); }
+function mwUnmap(id,aid){ mwSyncMap(id, mapOf(id).filter(([a])=>a&&a!==aid)); }
+function mwSplit(id){ SPLIT=(SPLIT===id?null:id); mwRender(); }
+function mwPct(id,ix,v){
+  const ms=mapOf(id).filter(([a])=>a); if(!ms[ix])return;
+  ms[ix][1]=Math.max(0,Math.min(100,+v||0))/100; mwSyncMap(id,ms);
+}
+function mwAddSplit(id,aid){
+  const ms=mapOf(id).filter(([a])=>a);
+  if(ms.some(([a])=>a===aid))return;
+  ms.push([aid,0]); MAP[id]=ms; mwEven(id);
+}
+function mwEven(id){
+  const ms=mapOf(id).filter(([a])=>a); if(!ms.length)return;
+  const each=1/ms.length; ms.forEach(m=>m[1]=each); mwSyncMap(id,ms);
+}
+function mwAddAcc(){
+  const nm=(document.getElementById('mwNm').value||'').trim(); if(!nm)return;
+  const id='a'+Date.now().toString(36);
+  const pal=['#2A9BD4','#0F857F','#4E6E8E','#7FCFC8','#87A0B8','#43B3AC'];
+  ACC.push({id,g:NEWG,name:nm,c:pal[ACC.length%pal.length]});
+  acBy[id]=ACC[ACC.length-1];
+  NEWACC=false; persist(); recompute(); totals(); rerender(); mwRender();
+}
+function mwDragStart(e,id){DRAGID=id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',id)}catch(x){}}
+function mwDragEnd(){DRAGID=null;document.querySelectorAll('.mw-ar').forEach(n=>n.style.background='')}
+function mwOver(e,aid){e.preventDefault();const n=document.getElementById('mwa_'+aid);if(n)n.style.background='#F1EDFC'}
+function mwLeave(aid){const n=document.getElementById('mwa_'+aid);if(n)n.style.background=''}
+function mwDrop(e,aid){e.preventDefault();const id=DRAGID||(e.dataTransfer&&e.dataTransfer.getData('text/plain'));mwDragEnd();if(id)mwMap(id,aid);}
 
-/* ---------- פעולות ---------- */
-function dragStart(e,id){DRAG=id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',id);}catch(x){}}
-function dragEnd(){DRAG=null;document.querySelectorAll('.accrow.over').forEach(el=>el.classList.remove('over'));}
-function dragOver(e,aid){e.preventDefault();const el=document.getElementById('acc_'+aid);if(el)el.classList.add('over');}
-function dragLeave(aid){const el=document.getElementById('acc_'+aid);if(el)el.classList.remove('over');}
-function drop(e,aid){
-  e.preventDefault();
-  const id=DRAG||(e.dataTransfer&&e.dataTransfer.getData('text/plain'));
-  dragEnd(); if(!id) return;
-  MAP[id]=[{acc:aid,pct:100}];      /* גרירה = מיפוי מלא. פיצול נעשה בעורך */
-  save(); render();
-}
-function unmap(cid,aid){
-  MAP[cid]=(MAP[cid]||[]).filter(m=>m.acc!==aid);
-  save(); render();
-}
-function mapTo(cid,aid){ MAP[cid]=[{acc:aid,pct:100}]; save(); render(); }
-function toggleSplit(cid){SPLIT=(SPLIT===cid?null:cid);render();}
-function setPct(cid,ix,v){
-  const ms=MAP[cid]||[]; if(!ms[ix])return;
-  ms[ix].pct=Math.max(0,Math.min(100,+v||0)); save(); render();
-}
-function addSplit(cid,aid){
-  if(!aid) return;
-  const ms=MAP[cid]=MAP[cid]||[];
-  if(ms.some(m=>m.acc===aid)) return;
-  ms.push({acc:aid,pct:0});
-  evenSplit(cid);
-}
-function evenSplit(cid){
-  const ms=MAP[cid]||[]; if(!ms.length)return;
-  const base=Math.floor(100/ms.length);
-  ms.forEach((m,i)=>m.pct=base+(i<100-base*ms.length?1:0));
-  save(); render();
-}
-function addAcc(){
-  const nm=(document.getElementById('naNm').value||'').trim();
-  const g=NEWG;
-  if(!nm) return;
-  ACC.push({id:'a_'+Date.now().toString(36), g, label:nm});
-  NEWACC=false; save(); render();
-}
-function delAcc(aid){
-  const fs=feeders(aid);
-  if(fs.length){ alertBar(accById(aid).label+' מוזנת מ-'+fs.length+' קטגוריות תזרימיות — נתקו אותן קודם'); return; }
-  ACC=ACC.filter(a=>a.id!==aid); save(); render();
-}
-let _bar=null;
-function alertBar(txt){
-  clearTimeout(_bar);
-  let el=document.getElementById('hkbar');
-  if(!el){el=document.createElement('div');el.id='hkbar';
-    el.style.cssText='position:fixed;inset-inline:0;bottom:18px;margin:auto;width:max-content;max-width:90vw;'+
-      'background:#0C4068;color:#fff;font-size:12.5px;font-weight:600;padding:10px 18px;border-radius:999px;'+
-      'box-shadow:0 8px 24px rgba(12,64,104,.28);z-index:99';
-    document.body.appendChild(el);}
-  el.textContent=txt; el.style.display='';
-  _bar=setTimeout(()=>{el.style.display='none';},2600);
-}
-
-function render(){ renderTop(); document.getElementById('view').innerHTML=TAB==='plan'?planHtml():mapHtml(); }
-if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
-if(location.hash==='#demo'){ MODE='acc';
-  setBook('a_sal',0,79500); setBook('a_cogs',1,201400);
-  setTgt('acc','a_mkt',3,22000); setTgt('cf','marketing',3,19000);
-}
-if(location.hash==='#acc')MODE='acc'; if(location.hash==='#map')TAB='map'; if(location.hash==='#accmap'){MODE='acc';TAB='map';}
-render();
+/* מתג הלשוניות */
+document.querySelectorAll('#ptabs .pt').forEach(b=>b.addEventListener('click',()=>{
+  PTAB=b.dataset.t;
+  document.querySelectorAll('#ptabs .pt').forEach(x=>x.classList.toggle('on',x===b));
+  const plan=PTAB==='plan';
+  document.querySelector('.scroll').style.display=plan?'':'none';
+  document.querySelector('.ribbon').style.display=plan?'':'none';
+  document.getElementById('sw').style.display=plan?'':'none';
+  document.getElementById('mapPane').style.display=plan?'none':'';
+  if(!plan) mwRender();
+}));
 </script>
 </body>
 </html>
