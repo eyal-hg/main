@@ -102,8 +102,8 @@
     document.getElementById('opsView').style.display='';
     /* דילוג דמו: ישר לשלבי הבדיקה — בלי 5 שלבי התפעול ובלי שער הכפילויות */
     if(OPS_SKIP_STAGES){
-      window._refPassed=opsActiveKey;
-      setTimeout(()=>{ renderOps(); finishOps2(); },0);
+      /* גם בדילוג — עוברים דרך רענון הנתונים. הוא השער למסך הסיום. */
+      setTimeout(()=>{ renderOps(); finishOps(); },0);
     }
     // מסך עבודה נקי: שם החברה חי בבאנר — בלי כותרת כפולה ובלי סרגל
     document.querySelector('.client-head').style.display='none';
