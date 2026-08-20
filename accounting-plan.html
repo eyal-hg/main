@@ -228,6 +228,8 @@ body[data-v="uni"] .switch button[aria-pressed="true"]{background:linear-gradien
 .dr.pin{background:color-mix(in srgb,var(--tone) 10%,transparent)}
 
 /* ---- שורת סה״כ ---- */
+.gr.grp{margin-top:9px}
+.face > .gr.grp:first-child{margin-top:0}
 .tot{align-items:stretch;background:linear-gradient(180deg,#FAFCFE,#F3F8FC);
   border-top:1px solid var(--line-s);border-bottom:1px solid var(--line);position:relative;z-index:2}
 .tot .nm{position:sticky;inset-inline-start:0;z-index:2;display:flex;align-items:center;gap:8px;padding:0 13px;
@@ -322,8 +324,45 @@ body.is-embedded{background:transparent}
 .c.src-books .v::after{background:#13895b}
 .c.src-derived .v{opacity:.72}
 .c.editing{box-shadow:inset 0 0 0 1.5px #7557E3;border-radius:7px}
-.cin{position:absolute;inset:3px;width:calc(100% - 6px);text-align:center;font:inherit;font-size:13px;
-  font-weight:700;color:#0C4068;border:0;outline:none;background:#fff;border-radius:6px;z-index:3}
+/* עורך התא — יעד ובפועל, אחד מתחת לשני */
+/* ===== הדגשת הגוון — שתי השפות צריכות להיקרא במבט אחד ===== */
+.card{border-top:3px solid var(--tone);transition:border-color .5s var(--ease)}
+.scroll{background:color-mix(in srgb,var(--tone) 4%,#fff)}
+.gr .nm{background:color-mix(in srgb,var(--tone) 5%,#fff);transition:background-color .5s var(--ease)}
+.gr.grp{background:color-mix(in srgb,var(--tone) 9%,#fff)}
+.gr.grp .nm{background:transparent}
+.gr.grp .nm b{color:var(--tone-ink)}
+.gr.tot{background:linear-gradient(180deg,color-mix(in srgb,var(--tone) 7%,#fff),color-mix(in srgb,var(--tone) 12%,#fff))}
+.gr.tot .nm{background:transparent}
+.gr.tot .nm b{color:var(--tone-ink)}
+.c.isnow{background:color-mix(in srgb,var(--tone) 8%,#fff)}
+.thead .c.isnow{background:color-mix(in srgb,var(--tone) 12%,#fff)}
+.net{background:linear-gradient(135deg,var(--tone-d),var(--navy) 78%) !important}
+.thead .c .k{color:var(--tone-ink);opacity:.75}
+.dr .spine{width:4px}
+/* בורר החודשים */
+.mpick{display:inline-flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line);
+  border-radius:99px;padding:2px}
+.mpick button{border:0;background:none;color:var(--ink-2);font-size:15px;font-weight:700;
+  width:24px;height:24px;border-radius:50%;cursor:pointer;line-height:1}
+.mpick button:hover:not(:disabled){background:var(--tone-soft);color:var(--tone-ink)}
+.mpick button:disabled{opacity:.28;cursor:default}
+.mpick b{font-size:11.5px;font-weight:600;color:var(--ink);padding:0 8px;white-space:nowrap}
+.cedit{position:absolute;inset-inline:2px;top:50%;transform:translateY(-50%);z-index:20;
+  background:#fff;border:1.5px solid var(--tone);border-radius:10px;padding:8px 9px;
+  box-shadow:0 10px 26px rgba(12,64,104,.20);min-width:150px}
+.cedit label{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.cedit label span{flex:none;font-size:10px;font-weight:700;color:#9aa7bb;width:32px}
+.cedit .ci{flex:1;min-width:0;text-align:center;font:inherit;font-size:12.5px;font-weight:700;color:#0C4068;
+  border:1.5px solid #d3dced;border-radius:7px;padding:4px 6px;outline:none}
+.cedit .ci:focus{border-color:var(--tone)}
+.cnote{font-size:9.5px;color:#9aa7bb;margin:-1px 0 6px;line-height:1.4}
+.cact{display:flex;align-items:center;gap:5px}
+.cact button{border:1px solid #d3dced;background:#fff;color:#0C4068;font:inherit;font-size:10.5px;
+  font-weight:700;border-radius:7px;padding:4px 9px;cursor:pointer}
+.cact .cok{background:var(--tone);border-color:var(--tone);color:#fff}
+.cact .crs{margin-inline-start:auto;color:#9aa7bb;padding:4px 7px}
+.cact .crs:hover{color:#dc4436}
 .c{position:relative}
 /* מצב מאוחד — הפער הוא הגיבור, שני המספרים מתחתיו */
 .c.uni{cursor:default}
@@ -336,12 +375,13 @@ body.is-embedded{background:transparent}
 .up .c2{color:#7557E3}
 .up .c1::after{content:'·';color:#c3d3e0;margin:0 5px;font-weight:700}
 
-.c.haspl .v{line-height:1.15}
-.pv{display:block;margin-top:3px;font-size:9.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pv .pl{color:#9aa7bb}
-.pv .dv{margin-inline-start:6px;font-weight:700}
+.c.haspl{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+.c.haspl .v{line-height:1.1}
+.pv{font-size:9.5px;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1}
+.pv .dv{font-weight:700}
 .pv .dv.g{color:#13895b}
 .pv .dv.b{color:#dc4436}
+.pv .dv.z{color:#c3d3e0;font-weight:500}
 
 body.is-embedded .wrap{padding:4px 2px 20px;max-width:none}
 body.is-embedded .topbar .brand{display:none}
@@ -363,6 +403,9 @@ body.is-embedded .topbar{justify-content:flex-end}
       <span class="chip chip--tone" id="modeChip">תצוגה תזרימית</span>
       <span class="chip">2 בפועל · 3 תחזית</span>
       <span class="chip chip--warn"><i></i> קטגוריה אחת ללא מיפוי מלא</span>
+      <span class="mpick"><button id="mPrev" title="חודש אחורה">‹</button>
+        <b id="mLbl"></b>
+        <button id="mNext" title="חודש קדימה">›</button></span>
     </div>
   </div>
 
@@ -419,13 +462,21 @@ body.is-embedded .topbar{justify-content:flex-end}
 /* =======================================================================
    נתונים
    ======================================================================= */
-const MONTHS=[
-  {n:'יוני',y:'2026',k:'act'},
-  {n:'יולי',y:'2026',k:'act'},
-  {n:'אוגוסט',y:'2026',k:'fc',now:true},
-  {n:'ספטמבר',y:'2026',k:'fc'},
-  {n:'אוקטובר',y:'2026',k:'fc'}
-];
+/* ===== חודשים =====
+   12 חודשים בזיכרון, חלון של 5 שעליו מסתכלים. החץ מזיז את החלון. */
+const MNAMES=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const ALL_M=MNAMES.map((n,i)=>({n,y:'2026',i}));
+const NOW_ABS=7;            /* אוגוסט = החודש הנוכחי */
+let WIN=5;                  /* אינדקס החודש הראשון בחלון — יוני */
+const WINN=5;               /* רוחב החלון */
+let MONTHS=[];
+function buildMonths(){
+  MONTHS=[];
+  for(let k=0;k<WINN;k++){ const a=WIN+k;
+    MONTHS.push({n:ALL_M[a].n, y:ALL_M[a].y, abs:a,
+      k:a<NOW_ABS?'act':'fc', now:a===NOW_ABS}); }
+}
+buildMonths();
 const GROUPS=[
   {id:'rev', name:'הכנסות'},
   {id:'cogs',name:'עלות המכר'},
@@ -498,7 +549,7 @@ const MAP={
    היעד החשבונאי אינו רק השתקפות של התזרימי — יש פחת, הפרשות והפרשי עיתוי.
    לכן המיפוי נותן ברירת מחדל, והיועץ יכול לדרוס. תא שנדרס מסומן ומפסיק לעקוב.
    ======================================================================= */
-const PAST=2;
+const PAST=()=>MONTHS.filter(m=>m.k==='act').length;
 /* התכנון שנקבע מראש לחודשים הסגורים — מולו נמדד הביצוע */
 let PLAN={};                       /* שני החודשים הראשונים = בפועל */
 let BOOKS={}, TGT={cf:{},acc:{}};
@@ -514,7 +565,18 @@ const acBy=Object.fromEntries(ACC.map(r=>[r.id,r]));
 const gName=Object.fromEntries(GROUPS.map(g=>[g.id,g.name]));
 const M=5;
 
-CF.forEach(r=>{ r.base=r.v.slice(); });      /* הערך מהמערכת, לפני הזנות */
+/* פריסה ל-12 חודשים: הנתונים שהוגדרו הם החלון יוני–אוקטובר (5..9),
+   והשאר נגזר מהם בצורה דטרמיניסטית כדי שהזזת החלון תראה נתונים אמיתיים. */
+CF.forEach(r=>{
+  const w=r.v.slice();
+  r.full=new Array(12);
+  for(let a=0;a<12;a++){
+    if(a>=5&&a<=9){ r.full[a]=w[a-5]; }
+    else if(a<5){ const f=[0.88,0.91,0.94,0.96,0.98][a]; r.full[a]=Math.round(w[0]*f); }
+    else { const f=[1.02,1.04][a-10]; r.full[a]=Math.round(w[4]*f); }
+  }
+  r.base=MONTHS.map(mo=>r.full[mo.abs]);
+});
 const UNMAP=Array(M).fill(0); const unSrc=[];
 /* מצב תא — הערך + מאיפה הוא, וגם האם ניתן לעריכה */
 /* הערך של סעיף לפי תצוגה: תזרימי = מה שהתזרים אומר · חשבונאי = מהנה"ח/יעד */
@@ -523,22 +585,22 @@ const valsOf=(id,view)=>MONTHS.map((_,m)=>cellOf(view,id,m).v);
 const plansOf=(id,view)=>MONTHS.map((_,m)=>{
   const u=pick(view==='cf'?TGT.cf:TGT.acc,id,m);
   if(u!=null) return u;
-  return m<PAST ? (PLAN[id]&&PLAN[id][m]!=null?PLAN[id][m]:null) : null;
+  return m<PAST() ? (PLAN[id]&&PLAN[id][m]!=null?PLAN[id][m]:null) : null;
 });
 function cellOf(view,id,m){
   const der=acBy[id]?acBy[id].der[m]:0;      /* מה שהתזרים אומר על הסעיף */
   if(view==='cf'){
-    if(m<PAST) return {v:der, src:'sys', edit:false};
+    if(m<PAST()) return {v:der, src:'sys', edit:false};
     const u=pick(TGT.cf,id,m);
     return {v:u!=null?u:der, src:u!=null?'user':'sys', edit:true};
   }
-  if(m<PAST){ const b=pick(BOOKS,id,m); return {v:b!=null?b:der, src:b!=null?'books':'derived', edit:true}; }
+  if(m<PAST()){ const b=pick(BOOKS,id,m); return {v:b!=null?b:der, src:b!=null?'books':'derived', edit:true}; }
   const u=pick(TGT.acc,id,m);
   return {v:u!=null?u:der, src:u!=null?'user':'derived', edit:true};
 }
 function recompute(){
   /* תזרימי: יעד שהוזן גובר על התחזית */
-  CF.forEach(r=>{ r.v=r.base.map((b,m)=>{ const u=m<PAST?null:pick(TGT.cf,r.id,m); return u!=null?u:b; }); });
+  CF.forEach(r=>{ r.v=r.base.map((b,m)=>{ const u=m<PAST()?null:pick(TGT.cf,r.id,m); return u!=null?u:b; }); });
   /* חשבונאי: נגזר מהמיפוי, ואז מה שהוזן גובר */
   ACC.forEach(a=>{a.der=Array(M).fill(0);a.src=[]});
   for(let m=0;m<M;m++) UNMAP[m]=0;
@@ -611,7 +673,8 @@ const fmtN=v=>{const r=Math.round(v);return (r<0?'−':'')+nf(r)};
    ראש החודשים
    ======================================================================= */
 const thead=document.getElementById('thead');
-{
+function rebuildHead(){
+  thead.innerHTML='';
   const nm=el('div','c nm');
   nm.appendChild(el('div','k','קטגוריה'));
   nm.appendChild(el('div','m','<span style="font-size:12px;font-weight:500;color:var(--ink-2)">שם הסעיף · מיפוי</span>'));
@@ -625,6 +688,7 @@ const thead=document.getElementById('thead');
     thead.appendChild(c);
   });
 }
+rebuildHead();
 
 /* =======================================================================
    בניית פנים (face)
@@ -643,7 +707,7 @@ function cells(host,vals,opts){
       c.innerHTML='<span class="ug '+(Math.round(d)===0?'z':(mat?'m':''))+'">'+
           (Math.round(d)===0?'—':(d>0?'+':'−')+nf(d))+'</span>'+
         '<span class="up"><i class="c1">'+fmt(a)+'</i><i class="c2">'+fmt(b)+'</i></span>';
-      c.title='תזרימי '+fmt(a)+' · חשבונאי '+fmt(b)+(m<PAST?' · בפועל':' · תכנון');
+      c.title='תזרימי '+fmt(a)+' · חשבונאי '+fmt(b)+(m<PAST()?' · בפועל':' · תכנון');
       host.appendChild(c);
       if(opts.collect) opts.collect.push({node:c.querySelector('.ug'),m});
     });
@@ -656,14 +720,17 @@ function cells(host,vals,opts){
     if(opts&&opts.muted) v.style.color='var(--warn-ink)';
     c.appendChild(v);
     /* חודש סגור = ביצוע מול תכנון. החודשים הפתוחים מציגים תכנון בלבד. */
-    if(opts&&opts.plan&&m<PAST&&opts.plan[m]!=null&&vals[m]!=null){
+    if(opts&&opts.plan&&m<PAST()&&opts.plan[m]!=null&&vals[m]!=null){
       const pl=opts.plan[m], ac=vals[m], d=ac-pl;
       const good=(ac<0)?(d>0):(d>=0);           /* בהוצאה — פחות זה טוב */
       const pct=pl?Math.abs(d/pl*100):0;
       const pv=el('span','pv');
-      pv.innerHTML='<span class="pl">תכנון '+nf(pl)+'</span>'+
-        (Math.abs(pct)>=0.5?'<span class="dv '+(good?'g':'b')+'">'+(d>0?'+':'−')+nf(d)+'</span>':'');
+      /* שורה שנייה שקטה: הסטייה בלבד. התכנון המלא — בטולטיפ. */
+      pv.innerHTML = Math.abs(pct)>=0.5
+        ? '<span class="dv '+(good?'g':'b')+'">'+(d>0?'▲':'▼')+' '+nf(d)+'</span>'
+        : '<span class="dv z">בתכנון</span>';
       c.appendChild(pv);
+      c.title='תכנון '+fmt(pl)+' · בפועל '+fmt(ac);
       c.classList.add('haspl');
     }
     /* תא של שורת נתונים — נושא את מקור המספר, ואפשר לערוך אותו במקום */
@@ -672,51 +739,86 @@ function cells(host,vals,opts){
       c.classList.add('src-'+st.src);
       if(st.edit){ c.classList.add('editable');
         c.title=({sys:'מהמערכת',books:'הוזן מהנהלת חשבונות',user:'יעד שהוזן ידנית',derived:'נגזר מהמיפוי'})[st.src];
-        c.addEventListener('click',()=>openCell(opts.view,opts.row,m,c));
+        c.addEventListener('click',e=>{e.stopPropagation();openCell(opts.view,opts.row,m,c)});
       }
     }
     host.appendChild(c);
     if(opts&&opts.collect) opts.collect.push({node:v,m});
   });
 }
-/* עריכה במקום — בלי פופאפ */
+/* ===== עריכה במקום — יעד ובפועל באותו תא =====
+   חודש סגור והחודש הנוכחי: שניהם ניתנים לעדכון. חודש עתידי: יעד בלבד.
+   בתצוגה התזרימית הבפועל מגיע מהבנק ולכן נעול. */
 let EDITING=null;
+const CURM=()=>MONTHS.findIndex(x=>x.now);
+const canActual=(view,m)=> view==='acc' && (m<PAST() || m===CURM());
 function openCell(view,id,m,cellEl){
   if(EDITING) return;
-  const st=cellOf(view,id,m);
   EDITING={view,id,m};
   cellEl.classList.add('editing');
-  const inp=document.createElement('input');
-  inp.className='cin'; inp.value=Math.round(Math.abs(st.v))||''; inp.inputMode='numeric';
-  const neg=st.v<0||['cogs','opex','fin'].includes((view==='cf'?cfBy[id]:acBy[id]).g);
-  cellEl.appendChild(inp); inp.focus(); inp.select();
-  const done=(commit)=>{
-    if(!EDITING) return; EDITING=null;
-    if(commit){
-      let n=parseNum(inp.value);
-      if(n!=null&&neg) n=-Math.abs(n);
-      const store=view==='cf'?TGT.cf:(m<PAST?BOOKS:TGT.acc);
-      put(store,id,m,n);
-      persist();
-    }
-    rerender();
+  const st=cellOf(view,id,m);
+  const plan=plansOf(id,view)[m];
+  const box=document.createElement('div'); box.className='cedit';
+  const act=canActual(view,m);
+  box.innerHTML=
+    '<label><span>יעד</span><input class="ci" data-k="t" value="'+(plan!=null?Math.round(Math.abs(plan)):'')+'" inputmode="numeric"></label>'+
+    (act?'<label><span>בפועל</span><input class="ci" data-k="a" value="'+((m<PAST()||m===CURM())&&st.src==='books'?Math.round(Math.abs(st.v)):'')+'" inputmode="numeric" placeholder="מהנה״ח"></label>'
+        :'<div class="cnote">'+(view==='cf'?'הבפועל מגיע מהבנק':'בפועל יוזן בסוף החודש')+'</div>')+
+    '<div class="cact"><button class="cok">שמירה</button><button class="cx">ביטול</button>'+
+      '<button class="crs" title="חזרה לברירת המחדל">↺</button></div>';
+  cellEl.appendChild(box);
+  const inps=[...box.querySelectorAll('.ci')];
+  inps[0].focus(); inps[0].select();
+  const neg=['cogs','opex','fin'].includes(acBy[id].g);
+  const close=()=>{EDITING=null;rerender();};
+  const commit=()=>{
+    inps.forEach(inp=>{
+      let n=parseNum(inp.value); if(n!=null&&neg) n=-Math.abs(n);
+      if(inp.dataset.k==='t') put(view==='cf'?TGT.cf:TGT.acc,id,m,n);
+      else put(BOOKS,id,m,n);
+    });
+    persist(); close();
   };
-  inp.addEventListener('blur',()=>done(true));
-  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();inp.blur();}
-    if(e.key==='Escape'){EDITING=null;rerender();} });
-  cellEl.addEventListener('click',e=>e.stopPropagation(),{once:true});
+  box.querySelector('.cok').addEventListener('click',e=>{e.stopPropagation();commit()});
+  box.querySelector('.cx').addEventListener('click',e=>{e.stopPropagation();close()});
+  box.querySelector('.crs').addEventListener('click',e=>{e.stopPropagation();
+    put(view==='cf'?TGT.cf:TGT.acc,id,m,null); put(BOOKS,id,m,null); persist(); close()});
+  box.addEventListener('click',e=>e.stopPropagation());
+  box.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();commit();}
+    if(e.key==='Escape'){e.preventDefault();close();} });
 }
 function resetCell(view,id,m){
-  const store=view==='cf'?TGT.cf:(m<PAST?BOOKS:TGT.acc);
+  const store=view==='cf'?TGT.cf:(m<PAST()?BOOKS:TGT.acc);
   put(store,id,m,null); persist(); rerender();
+}
+function slide(d){
+  const nw=Math.max(0,Math.min(12-WINN,WIN+d));
+  if(nw===WIN) return;
+  WIN=nw; buildMonths();
+  CF.forEach(r=>{ r.base=MONTHS.map(mo=>r.full[mo.abs]); });
+  PLAN={};                                  /* התכנון נגזר מחדש לחלון */
+  recompute();
+  (function(){ const d2=[0.94,1.07,0.98,1.05,1.02,0.96,1.09,0.97,1.03,0.99];
+    ACC.forEach((a,i)=>{ PLAN[a.id]={};
+      MONTHS.forEach((mo,m)=>{ if(mo.k==='act') PLAN[a.id][m]=Math.round(a.der[m]*d2[(i+m)%d2.length]); }); }); })();
+  rebuildHead(); rerender(); mLabel();
+}
+function mLabel(){
+  const el2=document.getElementById('mLbl'); if(!el2) return;
+  el2.textContent=MONTHS[0].n+' – '+MONTHS[WINN-1].n+' '+MONTHS[0].y;
+  document.getElementById('mPrev').disabled=WIN<=0;
+  document.getElementById('mNext').disabled=WIN>=12-WINN;
 }
 function rerender(){
   recompute(); totals();
-  const cf=document.getElementById('faceCf'), ac=document.getElementById('faceAcc');
-  cf.innerHTML=''; ac.innerHTML='';
-  const un=document.getElementById('faceUni'); un.innerHTML='';
+  const cf=document.getElementById('faceCf'), ac=document.getElementById('faceAcc'), un=document.getElementById('faceUni');
+  const keep=view;                      /* לא לאבד את התצוגה שהמשתמש נמצא בה */
+  cf.innerHTML=''; ac.innerHTML=''; un.innerHTML='';
   buildFace(cf,'cf'); buildFace(ac,'acc'); buildFace(un,'uni');
   buildNet(); buildKpis();
+  [cf,ac,un].forEach(f=>f.classList.remove('on','in','out'));
+  document.querySelector('.face[data-f="'+keep+'"]').classList.add('on');
+  busy=false; setView(keep,true);
   placeRail();
 }
 
@@ -994,6 +1096,9 @@ function setView(v,instant){
   kn.forEach(n=>{n.sub.innerHTML=n.d.sub(vv); n.sp.innerHTML=spark(n.d.sp(vv), v==='cf'?'#39ABE2':v==='acc'?'#6C63E6':'#8FA3B5')});
 }
 btns.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.v)));
+document.getElementById('mPrev').addEventListener('click',()=>slide(-1));
+document.getElementById('mNext').addEventListener('click',()=>slide(1));
+mLabel();
 
 /* rail של החודש הנוכחי */
 const rail=document.getElementById('rail'), grid=document.getElementById('grid');
@@ -1019,6 +1124,15 @@ addEventListener('resize',placeRail);
 if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
 </script>
 <script>/*HKPROBE*/
+window.__E2=[];window.addEventListener('error',e=>window.__E2.push(e.message));
+if(location.hash==='#slide'){setTimeout(()=>{slide(-2);setTimeout(()=>{
+  document.title='win='+MONTHS.map(m=>m.n).join(',')+' err='+window.__E2.join('|');},500);},400);}
+
+if(location.hash==='#editdemo'){setTimeout(()=>{
+  document.querySelector('#sw button[data-v="acc"]').click();
+  setTimeout(()=>{ const c=document.querySelector('.face.on .dr .c.editable'); if(c)c.click(); },700);
+},300);}
+
 if(location.hash==='#swdbg'){setTimeout(()=>{
   const b=document.querySelector('#sw button[data-v="uni"]'); b.click();
   setTimeout(()=>{
