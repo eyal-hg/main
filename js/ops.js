@@ -10,6 +10,8 @@
   const OPS_SKIP_CHECKS=true;
   /* דמו: מסך הסיום עם חריגות. false ⇒ "אין חריגות — מוכן לשליחה" */
   const OPS_DEMO_EXC=true;
+  /* בדיקת הכפילויות ברענון — כבויה כרגע. הרענון עצמו נשאר. */
+  const OPS_REF_DUPS=false;
   /* ===== חריגות בסיום התפעול — ארבעה מצבים על שני צירים =====
      מתי: **בפועל** (החשבון כבר במינוס) מול **צפויה** (התחזית נכנסת למינוס).
      פתרון: **יש** (יתרה חיובית בחשבון אחר שמכסה) מול **אין** (הכסף לא קיים בשום מקום).
@@ -216,9 +218,9 @@
   function openRefresh(mode){
     _refMode=mode||'manual';
     document.getElementById('refOv').classList.add('show');
-    document.getElementById('refBody').innerHTML='<div class="ref-spin"><div class="ref-spinner"></div><div>מרענן נתוני raw data מ-Bizibox · סורק כפילויות בתזרים ובאשראי…</div></div>';
+    document.getElementById('refBody').innerHTML='<div class="ref-spin"><div class="ref-spinner"></div><div>מרענן נתוני raw data מ-Bizibox'+(OPS_REF_DUPS?' · סורק כפילויות בתזרים ובאשראי':'')+'…</div></div>';
     setTimeout(()=>{
-      refDups=(CUR===0&&window._refPassed!==opsActiveKey)?REF_DUPS_DEMO.map(d=>({...d,res:null})):[];
+      refDups=(OPS_REF_DUPS&&CUR===0&&window._refPassed!==opsActiveKey)?REF_DUPS_DEMO.map(d=>({...d,res:null})):[];
       renderRefDups();
     },1100);
   }
@@ -226,7 +228,7 @@
   function renderRefDups(){
     const body=document.getElementById('refBody');
     if(!refDups.length){
-      body.innerHTML='<div class="ref-clean">✓ הנתונים עודכנו — לא נמצאו כפילויות'+(_refMode==='gate'?' · ממשיכים לבדיקות':'')+'</div>';
+      body.innerHTML='<div class="ref-clean">✓ הנתונים עודכנו מ-Bizibox'+(OPS_REF_DUPS?' — לא נמצאו כפילויות':'')+(_refMode==='gate'?' · ממשיכים':'')+'</div>';
       setTimeout(refContinue,800);
       return;
     }
