@@ -74,6 +74,31 @@ body.is-embedded .app{padding:6px 2px 40px;max-width:none}
 .tbl tr:hover td{background:#FBFDFF}
 .tbl tr.grp:hover td,.tbl tr.sum:hover td,.tbl tr.prof:hover td{background:inherit}
 .cur{background:var(--cf-soft) !important;font-weight:700}
+/* מצב התא: מאיפה המספר הגיע */
+.tbl td.ed{cursor:text}
+.tbl td.ed:hover{box-shadow:inset 0 0 0 1.5px var(--border-strong);border-radius:8px}
+.tbl td.s-user,.tbl td.s-books{font-weight:700}
+.tbl td.s-user::after,.tbl td.s-books::after{content:'';display:block;width:14px;height:2px;border-radius:2px;margin:3px auto 0}
+.tbl td.s-user::after{background:var(--acc)}
+.tbl td.s-books::after{background:var(--pos)}
+.tbl td.s-derived{color:#7C90A2}
+.tbl td.edit{position:relative;padding:4px 6px}
+.tbl td.edit input{width:100%;text-align:center;font:inherit;font-size:13px;font-weight:700;color:var(--text);
+  border:1.5px solid var(--acc);border-radius:8px;padding:5px 4px;outline:none;background:#fff}
+.tbl td.edit .rst{position:absolute;inset-inline-start:2px;top:50%;transform:translateY(-50%);
+  border:0;background:none;color:var(--soft);font-size:12px;padding:2px}
+.tbl td.edit .rst:hover{color:var(--neg)}
+/* מקרא מקורות */
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:9px 18px;border-top:1px solid var(--border);
+  background:#FAFCFE;font-size:10.5px;color:var(--soft)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:2px;border-radius:2px;display:inline-block}
+.legend .l-user i{background:var(--acc)}
+.legend .l-books i{background:var(--pos)}
+.legend .l-der i{background:#C3D3E0}
+.warnhd{color:var(--warn) !important;background:var(--warn-soft) !important}
+.assign{margin-top:6px}
+.assign .al{font-size:10px;font-weight:700;color:var(--soft);display:block;margin-bottom:4px}
 .src{display:block;font-size:9.5px;color:var(--soft);font-weight:500;margin-top:2px}
 .mini{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
 .mini span{font-size:9px;font-weight:600;background:#F1F5F9;color:#64748b;border-radius:99px;padding:1px 7px}
@@ -256,20 +281,82 @@ let MAP={
  loan:     [{acc:'a_fin',pct:100}],
  owners:   [{acc:'a_own',pct:100}],
 };
-try{const s=JSON.parse(localStorage.getItem('hkAccMap')||'null'); if(s&&s.MAP){MAP=s.MAP; if(s.ACC)ACC=s.ACC;}}catch(e){}
-const save=()=>{try{localStorage.setItem('hkAccMap',JSON.stringify({MAP,ACC}));}catch(e){}};
+/* ===== ארבעה סוגי מספרים, ומאיפה כל אחד מגיע =====
+   ┌──────────┬─────────────────────────┬──────────────────────────────┐
+   │          │ תזרימי                   │ חשבונאי                        │
+   ├──────────┼─────────────────────────┼──────────────────────────────┤
+   │ בפועל     │ מהבנק · לא נערך          │ מהנה"ח · היועץ מזין כל חודש     │
+   │ יעד       │ נערך                    │ נערך (ברירת מחדל: נגזר מהמיפוי) │
+   └──────────┴─────────────────────────┴──────────────────────────────┘
+   היעד החשבונאי אינו רק השתקפות של התזרימי: יש פחת, הפרשות והפרשי עיתוי
+   שאין להם תאום תזרימי. לכן המיפוי נותן ברירת מחדל, והיועץ יכול לדרוס —
+   ואז התא מסומן כ"הוזן" ומפסיק לעקוב אחרי המיפוי. */
+let BOOKS={};   /* accId → {mi: value}  — בפועל מהנה"ח */
+let TGT={cf:{}, acc:{}};   /* id → {mi: value} — יעדים שהוזנו ידנית */
+try{const s=JSON.parse(localStorage.getItem('hkAccMap')||'null');
+  if(s&&s.MAP){MAP=s.MAP; if(s.ACC)ACC=s.ACC; if(s.BOOKS)BOOKS=s.BOOKS; if(s.TGT)TGT=s.TGT;}}catch(e){}
+const save=()=>{try{localStorage.setItem('hkAccMap',JSON.stringify({MAP,ACC,BOOKS,TGT}));}catch(e){}};
+const isPast=mi=>mi<2;
+const parseNum=v=>{const n=String(v).replace(/[^\d.-]/g,''); return n===''?null:+n;};
+const bookVal=(aid,mi)=>{const r=BOOKS[aid]; return r&&r[mi]!=null?r[mi]:null;};
+const tgtVal=(kind,id,mi)=>{const r=TGT[kind][id]; return r&&r[mi]!=null?r[mi]:null;};
+function setBook(aid,mi,v){
+  const n=parseNum(v); BOOKS[aid]=BOOKS[aid]||{};
+  if(n==null) delete BOOKS[aid][mi]; else BOOKS[aid][mi]=n;
+  save(); render();
+}
+function setTgt(kind,id,mi,v){
+  const n=parseNum(v); TGT[kind][id]=TGT[kind][id]||{};
+  if(n==null) delete TGT[kind][id][mi]; else TGT[kind][id][mi]=n;
+  save(); render();
+}
+/* מצב התא — קובע גם את הצבע וגם מה אפשר לעשות בו */
+const SRC={sys:'מהמערכת',books:'מהנה״ח',user:'הוזן',derived:'נגזר מהמיפוי'};
+function cellState(row,mi){
+  if(MODE==='cf'){
+    if(isPast(mi)) return {v:cfBase(row,mi), src:'sys', edit:false};
+    const u=tgtVal('cf',row.id,mi);
+    return {v:u!=null?u:cfBase(row,mi), src:u!=null?'user':'sys', edit:true};
+  }
+  if(isPast(mi)){
+    const b=bookVal(row.id,mi);
+    return {v:b!=null?b:accDerived(row.id,mi), src:b!=null?'books':'derived', edit:true};
+  }
+  const u=tgtVal('acc',row.id,mi);
+  return {v:u!=null?u:accDerived(row.id,mi), src:u!=null?'user':'derived', edit:true};
+}
+function cellEdit(id,mi,v){
+  if(MODE==='cf') return setTgt('cf',id,mi,v);
+  return isPast(mi)?setBook(id,mi,v):setTgt('acc',id,mi,v);
+}
+function cellReset(id,mi){
+  if(MODE==='cf'){ if(TGT.cf[id]) delete TGT.cf[id][mi]; }
+  else if(isPast(mi)){ if(BOOKS[id]) delete BOOKS[id][mi]; }
+  else if(TGT.acc[id]) delete TGT.acc[id][mi];
+  save(); render();
+}
 
 let MODE='cf', TAB='plan', SPLIT=null, NEWACC=false, NEWG='opex', DRAG=null;
+let EDIT=null;   /* {id,mi} — התא שנמצא כרגע בעריכה */
+function openCell(id,mi){ EDIT={id,mi}; render(); setTimeout(()=>{const e=document.getElementById('ce'); if(e){e.focus();e.select();}},0); }
+function commitCell(id,mi,v){ EDIT=null; cellEdit(id,mi,v); }
 const nf=v=>Math.round(v).toLocaleString('en-US');
 const cfById=id=>CF.find(c=>c.id===id);
 const accById=id=>ACC.find(a=>a.id===id);
-/* ערך תזרימי לחודש: 0,1 = בפועל · 2,3,4 = תחזית */
-const cfVal=(c,mi)=>mi<2?c.a[mi]:c.f[mi-2];
+/* הערך הבסיסי מהמערכת: 0,1 = בפועל מהבנק · 2,3,4 = תחזית */
+const cfBase=(c,mi)=>mi<2?c.a[mi]:c.f[mi-2];
+/* הערך התזרימי בפועל לשימוש — יעד שהוזן גובר על התחזית */
+function cfVal(c,mi){ const u=isPast(mi)?null:tgtVal('cf',c.id,mi); return u!=null?u:cfBase(c,mi); }
 /* ערך חשבונאי = סכום התזרימיות שממופות אליו, לפי אחוזים */
-function accVal(aid,mi){
+function accDerived(aid,mi){
   let s=0;
   CF.forEach(c=>(MAP[c.id]||[]).forEach(m=>{ if(m.acc===aid) s+=cfVal(c,mi)*m.pct/100; }));
   return s;
+}
+/* בחודשי עבר — מה שהוזן מהנה"ח גובר על הנגזר */
+function accVal(aid,mi){
+  if(isPast(mi)){ const b=bookVal(aid,mi); if(b!=null) return b; }
+  return accDerived(aid,mi);
 }
 const unmapped=()=>CF.filter(c=>!(MAP[c.id]||[]).length);
 const feeders=aid=>CF.map(c=>({c,m:(MAP[c.id]||[]).find(x=>x.acc===aid)})).filter(x=>x.m);
@@ -294,6 +381,19 @@ function planHtml(){
   const rows=isCf?CF:ACC;
   const sign=isCf?{inc:1,cogs:-1,opex:-1,fin:-1}:ACC_SIGN;
   const val=(r,mi)=>isCf?cfVal(r,mi):accVal(r.id,mi);
+  /* תא = ערך + מקור. לחיצה הופכת אותו לשדה עריכה במקום. */
+  const cell=(r,mi)=>{
+    const st=cellState(r,mi);
+    const on=EDIT&&EDIT.id===r.id&&EDIT.mi===mi;
+    if(on) return `<td class="${mi===CUR_IX?'cur':''} edit">
+      <input id="ce" value="${st.v?Math.round(st.v):''}" inputmode="numeric"
+        onblur="commitCell('${r.id}',${mi},this.value)"
+        onkeydown="if(event.key==='Enter')this.blur(); if(event.key==='Escape'){EDIT=null;render();}">
+      ${st.src==='user'||st.src==='books'?`<button class="rst" title="חזרה לברירת המחדל" onmousedown="cellReset('${r.id}',${mi})">↺</button>`:''}
+    </td>`;
+    return `<td class="${mi===CUR_IX?'cur':''} ${st.edit?'ed':''} s-${st.src}"
+      title="${SRC[st.src]}" ${st.edit?`onclick="openCell('${r.id}',${mi})"`:''}>${nf(st.v)}</td>`;
+  };
   let body='';
   Object.keys(groups).forEach(g=>{
     const rs=rows.filter(r=>r.g===g); if(!rs.length) return;
@@ -303,7 +403,7 @@ function planHtml(){
         ?`<span class="mini">${(MAP[r.id]||[]).map(m=>`<span class="pct">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?' '+m.pct+'%':''}</span>`).join('')||'<span>לא ממופה</span>'}</span>`
         :`<span class="mini">${feeders(r.id).map(x=>`<span>${x.c.label}${x.m.pct<100?' '+x.m.pct+'%':''}</span>`).join('')||'<span>אין מקור</span>'}</span>`;
       body+=`<tr><td class="k">${r.label}${detail}</td>`+
-        MONTHS.map((_,mi)=>`<td class="${mi===CUR_IX?'cur':''}">${nf(val(r,mi))}</td>`).join('')+`</tr>`;
+        MONTHS.map((_,mi)=>cell(r,mi)).join('')+`</tr>`;
     });
     body+=`<tr class="sum"><td class="k">סה״כ ${groups[g]}</td>`+
       MONTHS.map((_,mi)=>`<td class="${mi===CUR_IX?'cur':''}">${nf(rs.reduce((s,r)=>s+val(r,mi),0))}</td>`).join('')+`</tr>`;
@@ -321,6 +421,12 @@ function planHtml(){
     <table class="tbl"><thead><tr><th class="k">קטגוריה</th>
       ${MONTHS.map((m,i)=>`<th>${m}${i<2?'<span class="src">בפועל</span>':'<span class="src">תחזית</span>'}</th>`).join('')}
     </tr></thead><tbody>${body}</tbody></table>
+    <div class="legend">
+      <span class="l-der"><i></i>${MODE==='cf'?'מהמערכת — בפועל מהבנק / תחזית':'נגזר מהמיפוי'}</span>
+      ${MODE==='acc'?'<span class="l-books"><i></i>בפועל מהנהלת חשבונות — הוזן</span>':''}
+      <span class="l-user"><i></i>יעד שהוזן ידנית</span>
+      <span style="margin-inline-start:auto">לחיצה על תא פותחת עריכה · ↺ מחזיר לברירת המחדל</span>
+    </div>
   </div>
   ${MODE==='acc'&&un.length?`<div class="note"><b>${un.length} קטגוריות תזרימיות לא ממופות</b> ולכן לא מופיעות בתצוגה החשבונאית:
     ${un.map(c=>c.label).join(' · ')}. אפשר למפות אותן בלשונית <b>מיפוי קטגוריות</b>.</div>`:''}
@@ -331,25 +437,31 @@ function planHtml(){
 /* ---------- מיפוי ---------- */
 function mapHtml(){
   const un=unmapped();
-  const cfCol=Object.keys(CF_G).map(g=>{
-    const rs=CF.filter(c=>c.g===g); if(!rs.length) return '';
-    return `<div class="accgrp">${CF_G[g]}</div>`+rs.map(c=>{
-      const ms=MAP[c.id]||[];
-      const open=SPLIT===c.id;
+  const cfRow=c=>{
+    const ms=MAP[c.id]||[];
+    const open=SPLIT===c.id;
       return `<div class="cfrow ${ms.length?'':'un'}" draggable="true"
           ondragstart="dragStart(event,'${c.id}')" ondragend="dragEnd()">
         <span class="grip"></span>
         <div class="b">
           <div class="t">${c.label}</div>
           <div class="amt">${nf(cfVal(c,CUR_IX))} ₪ · יוני</div>
-          <div class="to">${ms.length
-            ?ms.map(m=>`<span class="chipmap">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?` <b>${m.pct}%</b>`:''}
-                <span class="x" onclick="event.stopPropagation();unmap('${c.id}','${m.acc}')">✕</span></span>`).join('')
-            :'<span class="chipnone">לא ממופה — לא תופיע בתצוגה החשבונאית</span>'}</div>
+          ${ms.length
+            ?`<div class="to">${ms.map(m=>`<span class="chipmap">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?` <b>${m.pct}%</b>`:''}
+                <span class="x" onclick="event.stopPropagation();unmap('${c.id}','${m.acc}')">✕</span></span>`).join('')}</div>`
+            :`<div class="assign">
+                <span class="al">שייכו ל:</span>
+                <span class="picks">${ACC.map(a=>`<button class="pick" onclick="event.stopPropagation();mapTo('${c.id}','${a.id}')">${a.label}</button>`).join('')}</span>
+              </div>`}
         </div>
         <button class="split" onclick="event.stopPropagation();toggleSplit('${c.id}')">${open?'סגירה':'פיצול'}</button>
       </div>${open?splitBox(c):''}`;
-    }).join('');
+  };
+  /* לא ממופות ראשונות — הן העבודה שנשארה */
+  const unRows=un.length?`<div class="accgrp warnhd">לא ממופות · ${un.length}</div>`+un.map(cfRow).join(''):'';
+  const cfCol=unRows+Object.keys(CF_G).map(g=>{
+    const rs=CF.filter(c=>c.g===g&&(MAP[c.id]||[]).length); if(!rs.length) return '';
+    return `<div class="accgrp">${CF_G[g]}</div>`+rs.map(cfRow).join('');
   }).join('');
   const accCol=Object.keys(ACC_G).map(g=>{
     const rs=ACC.filter(a=>a.g===g); if(!rs.length) return '';
@@ -434,6 +546,7 @@ function unmap(cid,aid){
   MAP[cid]=(MAP[cid]||[]).filter(m=>m.acc!==aid);
   save(); render();
 }
+function mapTo(cid,aid){ MAP[cid]=[{acc:aid,pct:100}]; save(); render(); }
 function toggleSplit(cid){SPLIT=(SPLIT===cid?null:cid);render();}
 function setPct(cid,ix,v){
   const ms=MAP[cid]||[]; if(!ms[ix])return;
@@ -479,6 +592,10 @@ function alertBar(txt){
 
 function render(){ renderTop(); document.getElementById('view').innerHTML=TAB==='plan'?planHtml():mapHtml(); }
 if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
+if(location.hash==='#demo'){ MODE='acc';
+  setBook('a_sal',0,79500); setBook('a_cogs',1,201400);
+  setTgt('acc','a_mkt',3,22000); setTgt('cf','marketing',3,19000);
+}
 if(location.hash==='#acc')MODE='acc'; if(location.hash==='#map')TAB='map'; if(location.hash==='#accmap'){MODE='acc';TAB='map';}
 render();
 </script>
