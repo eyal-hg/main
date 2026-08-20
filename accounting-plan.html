@@ -323,6 +323,12 @@ body.is-embedded{background:transparent}
 .cin{position:absolute;inset:3px;width:calc(100% - 6px);text-align:center;font:inherit;font-size:13px;
   font-weight:700;color:#0C4068;border:0;outline:none;background:#fff;border-radius:6px;z-index:3}
 .c{position:relative}
+.c.haspl .v{line-height:1.15}
+.pv{display:block;margin-top:3px;font-size:9.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pv .pl{color:#9aa7bb}
+.pv .dv{margin-inline-start:6px;font-weight:700}
+.pv .dv.g{color:#13895b}
+.pv .dv.b{color:#dc4436}
 
 body.is-embedded .wrap{padding:4px 2px 20px;max-width:none}
 body.is-embedded .topbar .brand{display:none}
@@ -358,10 +364,9 @@ body.is-embedded .topbar{justify-content:flex-end}
           <span data-c="acc" data-off>10 סעיפי רו״ה · אותן 4 קבוצות</span>
         </span>
       </div>
-      <div class="ptabs" id="ptabs">
-        <button class="pt on" data-t="plan">התכנון</button>
-        <button class="pt" data-t="map">מיפוי קטגוריות</button>
-      </div>
+      <button class="gearbtn" id="gearBtn" title="מיפוי קטגוריות">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        מיפוי קטגוריות</button>
       <div class="switch" id="sw">
         <div class="thumb"></div>
         <button type="button" data-v="cf" aria-pressed="true">תזרימי <span class="n">16</span></button>
@@ -381,7 +386,6 @@ body.is-embedded .topbar{justify-content:flex-end}
       </div>
     </div>
 
-    <div id="mapPane" style="display:none"></div>
     <div class="ribbon">
       <div class="rk">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><path d="M8 12h8"/></svg>
@@ -480,7 +484,9 @@ const MAP={
    היעד החשבונאי אינו רק השתקפות של התזרימי — יש פחת, הפרשות והפרשי עיתוי.
    לכן המיפוי נותן ברירת מחדל, והיועץ יכול לדרוס. תא שנדרס מסומן ומפסיק לעקוב.
    ======================================================================= */
-const PAST=2;                       /* שני החודשים הראשונים = בפועל */
+const PAST=2;
+/* התכנון שנקבע מראש לחודשים הסגורים — מולו נמדד הביצוע */
+let PLAN={};                       /* שני החודשים הראשונים = בפועל */
 let BOOKS={}, TGT={cf:{},acc:{}};
 try{const s=JSON.parse(localStorage.getItem('hkAcctPlan')||'null');
   if(s){ BOOKS=s.BOOKS||{}; TGT=s.TGT||{cf:{},acc:{}}; if(s.MAP) Object.assign(MAP,s.MAP); }}catch(e){}
@@ -497,14 +503,21 @@ const M=5;
 CF.forEach(r=>{ r.base=r.v.slice(); });      /* הערך מהמערכת, לפני הזנות */
 const UNMAP=Array(M).fill(0); const unSrc=[];
 /* מצב תא — הערך + מאיפה הוא, וגם האם ניתן לעריכה */
+/* הערך של סעיף לפי תצוגה: תזרימי = מה שהתזרים אומר · חשבונאי = מהנה"ח/יעד */
+const valsOf=(id,view)=>MONTHS.map((_,m)=>cellOf(view,id,m).v);
+/* התכנון שנקבע לאותו חודש — מולו נמדד הביצוע */
+const plansOf=(id,view)=>MONTHS.map((_,m)=>{
+  const u=pick(view==='cf'?TGT.cf:TGT.acc,id,m);
+  if(u!=null) return u;
+  return m<PAST ? (PLAN[id]&&PLAN[id][m]!=null?PLAN[id][m]:null) : null;
+});
 function cellOf(view,id,m){
+  const der=acBy[id]?acBy[id].der[m]:0;      /* מה שהתזרים אומר על הסעיף */
   if(view==='cf'){
-    const base=cfBy[id].base[m];
-    if(m<PAST) return {v:base, src:'sys', edit:false};
+    if(m<PAST) return {v:der, src:'sys', edit:false};
     const u=pick(TGT.cf,id,m);
-    return {v:u!=null?u:base, src:u!=null?'user':'sys', edit:true};
+    return {v:u!=null?u:der, src:u!=null?'user':'sys', edit:true};
   }
-  const der=acBy[id].der[m];
   if(m<PAST){ const b=pick(BOOKS,id,m); return {v:b!=null?b:der, src:b!=null?'books':'derived', edit:true}; }
   const u=pick(TGT.acc,id,m);
   return {v:u!=null?u:der, src:u!=null?'user':'derived', edit:true};
@@ -528,6 +541,24 @@ function recompute(){
   ACC.forEach(a=>{ a.v=a.der.map((d,m)=>cellOf('acc',a.id,m).v); });
 }
 recompute();
+/* דמו: הבפועל מהנה"ח — שם נמצא כל העניין. אותו סעיף, שני מספרים:
+   מה שיצא מהבנק מול מה שהספרים אומרים (צבירה, הפרשי עיתוי, פחת). */
+(function seedBooks(){
+  if(Object.keys(BOOKS).length) return;
+  const D={ sales:[1.06,1.04], cgs:[0.92,0.95], wages:[1.02,1.01],
+            bldg:[1.00,1.00], sell:[1.18,1.12], admin:[0.96,0.98],
+            fincost:[1.00,1.00], taxes:[1.34,0.71], ownin:[0,0] };
+  Object.keys(D).forEach(id=>{ if(!acBy[id])return;
+    BOOKS[id]={}; [0,1].forEach(m=>{ const f=D[id][m];
+      if(f) BOOKS[id][m]=Math.round(acBy[id].der[m]*f); }); });
+})();
+/* דמו: תכנון לחודשים הסגורים — סטייה קטנה מהביצוע, כדי שיהיה מה להשוות */
+(function seedPlan(){
+  if(Object.keys(PLAN).length) return;
+  const d=[0.94,1.07,0.98,1.05,1.02,0.96,1.09,0.97,1.03,0.99];
+  ACC.forEach((a,i)=>{ PLAN[a.id]={0:Math.round(a.der[0]*d[i%d.length]), 1:Math.round(a.der[1]*d[(i+3)%d.length])}; });
+})();
+recompute();   /* אחרי ההזרעה — כדי שהסכומים יכללו את הבפועל מהנה"ח */
 /* צבע השדרה של שורה תזרימית = הצבע של היעד הראשי (החלק הגדול) */
 CF.forEach(r=>{
   const sorted=[...r.tgt].sort((a,b)=>b[1]-a[1]);
@@ -595,6 +626,17 @@ function cells(host,vals,opts){
     const v=el('span','v'+(vals[m]===0?' z':''),fmt(vals[m]));
     if(opts&&opts.muted) v.style.color='var(--warn-ink)';
     c.appendChild(v);
+    /* חודש סגור = ביצוע מול תכנון. החודשים הפתוחים מציגים תכנון בלבד. */
+    if(opts&&opts.plan&&m<PAST&&opts.plan[m]!=null&&vals[m]!=null){
+      const pl=opts.plan[m], ac=vals[m], d=ac-pl;
+      const good=(ac<0)?(d>0):(d>=0);           /* בהוצאה — פחות זה טוב */
+      const pct=pl?Math.abs(d/pl*100):0;
+      const pv=el('span','pv');
+      pv.innerHTML='<span class="pl">תכנון '+nf(pl)+'</span>'+
+        (Math.abs(pct)>=0.5?'<span class="dv '+(good?'g':'b')+'">'+(d>0?'+':'−')+nf(d)+'</span>':'');
+      c.appendChild(pv);
+      c.classList.add('haspl');
+    }
     /* תא של שורת נתונים — נושא את מקור המספר, ואפשר לערוך אותו במקום */
     if(opts&&opts.row){
       const st=cellOf(opts.view,opts.row,m);
@@ -648,23 +690,22 @@ function rerender(){
   placeRail();
 }
 
+/* ===== אותם סעיפים בשתי השפות =====
+   השורות הן תמיד הסעיפים החשבונאיים. מה שמתחלף הוא המספר:
+   תזרימי = סכום הקטגוריות התזרימיות שממופות לסעיף · חשבונאי = מהנה"ח / יעד. */
 function buildFace(face,view){
   idx=0;
-  const rows = view==='cf' ? CF : ACC;
+  const rows = ACC;
   GROUPS.forEach(g=>{
     /* --- כותרת קבוצה --- */
     const gh=el('div','gr grp'); gh.style.setProperty('--i',idx++);
     const gn=el('div','nm');
     gn.appendChild(el('b',null,g.name));
     const list=gr(rows,g.id);
-    const cnt = view==='cf'
-      ? list.length+' קטגוריות'
-      : (list.length===1?'סעיף אחד':list.length+' סעיפים');
+    const cnt = (list.length===1?'סעיף אחד':list.length+' סעיפים');
     gn.appendChild(el('span','cnt',cnt));
     /* ה-DNA של הקבוצה: הסעיפים החשבונאיים שהיא מזינה / מכילה — נוכח בשתי השפות */
-    const seen=[]; (view==='cf'?gr(CF,g.id):gr(rows,g.id)).forEach(x=>{
-      (view==='cf' ? x.tgt.map(([t])=>t) : [x.id]).forEach(t=>{ if(t&&!seen.includes(t)) seen.push(t) });
-    });
+    const seen=gr(rows,g.id).map(x=>x.id);
     const dna=el('div','dna');
     seen.forEach(t=>{const d=el('i');d.style.background=acBy[t].c;dna.appendChild(d)});
     gn.appendChild(dna);
@@ -675,7 +716,8 @@ function buildFace(face,view){
     /* --- שורות נתונים --- */
     const seq=[...list];
     /* שורת רפאים לחלק שלא ממופה — נשארת גלויה, מסומנת, ולא נספרת בסה״כ */
-    if(view==='acc' && g.id==='fin') seq.push({ghost:true,name:'קרן הלוואה',v:UNMAP,g:'fin'});
+    /* מה שלא משויך לאף סעיף — נשאר גלוי בתזרימי כדי שהסה״כ יישאר אמיתי */
+    if(g.id==='fin' && UNMAP.some(x=>x)) seq.push({ghost:true,name:'לא משויך לסעיף',v:view==='cf'?UNMAP:Array(M).fill(0),g:'fin'});
 
     seq.forEach((r,i)=>{
       const row=el('div','gr dr'); row.style.setProperty('--i',idx++);
@@ -697,22 +739,14 @@ function buildFace(face,view){
       const nm=el('div','nm');
       nm.appendChild(el('div','t',r.name));
       const side=el('div','side');
-      if(view==='cf'){
-        if(r.un>0) side.appendChild(el('span','badge w', r.un>=1?'ללא מיפוי':'קרן <bdi>'+Math.round(r.un*100)+'%</bdi>'));
-        if(r.tgt.length>1){
-          const mt=el('div','meter');
-          r.tgt.forEach(([t,p])=>{const s=el('i');s.style.width=(p*100)+'%';
-            if(!t)s.className='u'; else s.style.background=acBy[t].c; mt.appendChild(s)});
-          side.appendChild(mt);
-        }
-      }else if(r.ghost){
+      if(r.ghost){
         side.appendChild(el('span','badge w','לא נכלל ברו״ה'));
-      }else if(r.src.length>1){
-        side.appendChild(el('span','badge',r.src.length+' מקורות'));
+      }else if(r.src.length){
+        side.appendChild(el('span','badge',r.src.length===1?'מקור אחד':r.src.length+' מקורות'));
       }
       nm.appendChild(side);
       row.appendChild(nm);
-      cells(row,r.v,{heat:!r.ghost,muted:r.ghost,row:r.ghost?null:r.id,view});
+      cells(row,r.ghost?r.v:valsOf(r.id,view),{heat:!r.ghost,muted:r.ghost,row:r.ghost?null:r.id,view,plan:r.ghost?null:plansOf(r.id,view)});
 
       if(!r.ghost){
         row.addEventListener('mouseenter',()=>lite(r,view));
@@ -946,7 +980,14 @@ addEventListener('resize',placeRail);
 if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
 </script>
 <script>/*HKPROBE*/
-if(location.hash==='#mapdemo'){setTimeout(()=>{document.querySelector('#ptabs .pt[data-t="map"]').click();},300);}
+if(location.hash==='#sumchk'){setTimeout(()=>{
+  const rows=ACC.filter(a=>a.g==='rev');
+  document.title=rows.map(a=>a.name+'='+Math.round(a.v[0])).join(' | ')+' || TOT='+Math.round(TOT.acc.rev[0]);
+},400);}
+
+if(location.hash==='#accv'){setTimeout(()=>{const b=document.querySelector('#sw button[data-v="acc"]');if(b)b.click();},350);}
+
+if(location.hash==='#mapdemo'){setTimeout(()=>{openMap();},300);}
 
 if(location.hash==='#probe'){ setTimeout(()=>{
   try{
@@ -968,6 +1009,22 @@ if(location.hash==='#probe'){ setTimeout(()=>{
   padding:7px 15px;border-radius:8px;cursor:pointer;transition:.14s}
 .pt:hover{color:#0C4068}
 .pt.on{background:#fff;color:#0C4068;box-shadow:0 1px 3px rgba(12,64,104,.10)}
+.gearbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid #e6ecf4;background:#fff;
+  color:#64748b;font:inherit;font-size:12px;font-weight:600;border-radius:99px;padding:6px 13px;
+  cursor:pointer;margin-inline-end:10px;transition:.14s}
+.gearbtn:hover{border-color:#7557E3;color:#7557E3}
+.mapov{position:fixed;inset:0;background:rgba(12,64,104,.34);backdrop-filter:blur(2px);
+  display:none;align-items:flex-start;justify-content:center;padding:34px 20px;z-index:80;overflow:auto}
+.mapov.on{display:flex}
+.mapbox{background:#F4F7FA;border-radius:18px;box-shadow:0 24px 60px rgba(12,64,104,.28);
+  width:min(1180px,96vw);overflow:hidden}
+.mapbox-h{display:flex;align-items:center;gap:10px;padding:15px 20px;background:#fff;border-bottom:1px solid #e6ecf4}
+.mapbox-h b{font-size:15px;color:#0C4068}
+.mh-s{font-size:11.5px;color:#9aa7bb}
+.mapx{margin-inline-start:auto;border:0;background:#F1F5F9;color:#64748b;width:30px;height:30px;
+  border-radius:9px;font-size:14px;cursor:pointer}
+.mapx:hover{background:#E7EDF3;color:#0C4068}
+.mapbox-b{max-height:calc(100vh - 150px);overflow:auto}
 #mapPane{padding:16px 18px 20px}
 .mw-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:13px;font-size:12.5px}
 .mw-cov{font-weight:700}
@@ -1160,17 +1217,19 @@ function mwOver(e,aid){e.preventDefault();const n=document.getElementById('mwa_'
 function mwLeave(aid){const n=document.getElementById('mwa_'+aid);if(n)n.style.background=''}
 function mwDrop(e,aid){e.preventDefault();const id=DRAGID||(e.dataTransfer&&e.dataTransfer.getData('text/plain'));mwDragEnd();if(id)mwMap(id,aid);}
 
-/* מתג הלשוניות */
-document.querySelectorAll('#ptabs .pt').forEach(b=>b.addEventListener('click',()=>{
-  PTAB=b.dataset.t;
-  document.querySelectorAll('#ptabs .pt').forEach(x=>x.classList.toggle('on',x===b));
-  const plan=PTAB==='plan';
-  document.querySelector('.scroll').style.display=plan?'':'none';
-  document.querySelector('.ribbon').style.display=plan?'':'none';
-  document.getElementById('sw').style.display=plan?'':'none';
-  document.getElementById('mapPane').style.display=plan?'none':'';
-  if(!plan) mwRender();
-}));
+/* המיפוי הוא הגדרה — נפתח מכפתור ולא יושב באמצע המסך */
+function openMap(){ mwRender(); document.getElementById('mapOv').classList.add('on'); }
+function closeMap(){ document.getElementById('mapOv').classList.remove('on'); }
+document.getElementById('gearBtn').addEventListener('click',openMap);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMap(); });
 </script>
+<div class="mapov" id="mapOv">
+  <div class="mapbox">
+    <div class="mapbox-h"><b>מיפוי קטגוריות</b>
+      <span class="mh-s">איזו קטגוריה תזרימית מזינה איזה סעיף חשבונאי — מגדירים פעם אחת</span>
+      <button class="mapx" onclick="closeMap()">✕</button></div>
+    <div class="mapbox-b" id="mapPane"></div>
+  </div>
+</div>
 </body>
 </html>
