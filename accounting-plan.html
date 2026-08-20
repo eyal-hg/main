@@ -44,6 +44,11 @@ body[data-v="acc"]{
   --tone:#6C63E6; --tone-d:#4E45C0; --tone-ink:#5148C4;
   --tone-soft:#EFEEFC; --tone-line:#DBD8F7; --tone-wash:rgba(108,99,230,.030);
 }
+/* מאוחד — ניטרלי בכוונה: זו תצוגת השוואה, לא שפה שלישית */
+body[data-v="uni"]{
+  --tone:#8AA0B6; --tone-d:#6E8399; --tone-ink:#5B7186;
+  --tone-soft:#F1F5F9; --tone-line:#DDE4EA; --tone-wash:rgba(138,160,182,.030);
+}
 
 body{
   background:
@@ -116,15 +121,12 @@ button{font-family:inherit;cursor:pointer}
 .ttlbox{display:flex;align-items:baseline;gap:11px;min-width:0}
 
 /* ---- מתג ---- */
-.switch{position:relative;display:grid;grid-template-columns:1fr 1fr;min-width:290px;
+.switch{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;min-width:400px;
   padding:4px;border-radius:12px;background:#EFF4F9;border:1px solid var(--line)}
-.thumb{position:absolute;top:4px;bottom:4px;inset-inline-start:4px;width:calc(50% - 4px);border-radius:9px;
-  background:linear-gradient(150deg,var(--tone),var(--tone-d));
-  box-shadow:0 4px 12px -3px rgba(12,64,104,.30),inset 0 1px 0 rgba(255,255,255,.30);
-  transform:translateX(0);z-index:0;
-  transition:transform .46s var(--ease),background .5s var(--ease)}
-body[data-v="acc"] .thumb{transform:translateX(-100%)}
-.switch button{position:relative;z-index:1;appearance:none;border:0;background:none;height:31px;border-radius:9px;
+.switch button[aria-pressed="true"]{background:linear-gradient(150deg,var(--tone),var(--tone-d));
+  box-shadow:0 4px 12px -3px rgba(12,64,104,.30),inset 0 1px 0 rgba(255,255,255,.30)}
+body[data-v="uni"] .switch button[aria-pressed="true"]{background:linear-gradient(150deg,#8AA0B6,#6E8399)}
+.switch button{position:relative;z-index:1;transition:background .3s var(--ease),color .3s;appearance:none;border:0;background:none;height:31px;border-radius:9px;
   display:flex;align-items:center;justify-content:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--ink-2);
   transition:color .3s;white-space:nowrap}
 .switch button[aria-pressed="true"]{color:#fff;font-weight:600}
@@ -323,6 +325,17 @@ body.is-embedded{background:transparent}
 .cin{position:absolute;inset:3px;width:calc(100% - 6px);text-align:center;font:inherit;font-size:13px;
   font-weight:700;color:#0C4068;border:0;outline:none;background:#fff;border-radius:6px;z-index:3}
 .c{position:relative}
+/* מצב מאוחד — הפער הוא הגיבור, שני המספרים מתחתיו */
+.c.uni{cursor:default}
+.ug{display:block;font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;color:#5B7186}
+.ug.m{color:#c98404}
+.ug.z{color:#c3d3e0;font-weight:500}
+.up{display:block;margin-top:2px;font-size:9.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.up i{font-style:normal}
+.up .c1{color:#39ABE2}
+.up .c2{color:#7557E3}
+.up .c1::after{content:'·';color:#c3d3e0;margin:0 5px;font-weight:700}
+
 .c.haspl .v{line-height:1.15}
 .pv{display:block;margin-top:3px;font-size:9.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pv .pl{color:#9aa7bb}
@@ -368,9 +381,9 @@ body.is-embedded .topbar{justify-content:flex-end}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         מיפוי קטגוריות</button>
       <div class="switch" id="sw">
-        <div class="thumb"></div>
         <button type="button" data-v="cf" aria-pressed="true">תזרימי <span class="n">16</span></button>
         <button type="button" data-v="acc" aria-pressed="false">חשבונאי <span class="n">10</span></button>
+        <button type="button" data-v="uni" aria-pressed="false">מאוחד <span class="n">הפרש</span></button>
       </div>
     </div>
 
@@ -381,6 +394,7 @@ body.is-embedded .topbar{justify-content:flex-end}
         <div class="body" id="body">
           <div class="face on" data-f="cf" id="faceCf"></div>
           <div class="face" data-f="acc" id="faceAcc"></div>
+          <div class="face" data-f="uni" id="faceUni"></div>
         </div>
         <div class="gr net" id="net"></div>
       </div>
@@ -620,6 +634,21 @@ let idx=0;
 
 function cells(host,vals,opts){
   const mx=Math.max(...vals.map(Math.abs))||1;
+  /* מצב מאוחד — לצפייה בלבד: הפער בין הבפועל התזרימי לחשבונאי */
+  if(opts&&opts.view==='uni'&&opts.row){
+    MONTHS.forEach((mo,m)=>{
+      const c=el('div','c uni'+(mo.now?' isnow':'')+(mo.k==='fc'?' fc':''));
+      const a=cellOf('cf',opts.row,m).v, b=cellOf('acc',opts.row,m).v, d=b-a;
+      const base=Math.abs(a)||1, mat=Math.abs(d)/base>=0.05&&Math.abs(d)>=500;
+      c.innerHTML='<span class="ug '+(Math.round(d)===0?'z':(mat?'m':''))+'">'+
+          (Math.round(d)===0?'—':(d>0?'+':'−')+nf(d))+'</span>'+
+        '<span class="up"><i class="c1">'+fmt(a)+'</i><i class="c2">'+fmt(b)+'</i></span>';
+      c.title='תזרימי '+fmt(a)+' · חשבונאי '+fmt(b)+(m<PAST?' · בפועל':' · תכנון');
+      host.appendChild(c);
+      if(opts.collect) opts.collect.push({node:c.querySelector('.ug'),m});
+    });
+    return;
+  }
   MONTHS.forEach((mo,m)=>{
     const c=el('div','c'+(mo.now?' isnow':'')+(mo.k==='fc'?' fc':'')+(vals[m]<0?' neg':''));
     if(opts&&opts.heat){const h=el('span','heat');h.style.width=(Math.abs(vals[m])/mx*52)+'%';c.appendChild(h)}
@@ -685,7 +714,8 @@ function rerender(){
   recompute(); totals();
   const cf=document.getElementById('faceCf'), ac=document.getElementById('faceAcc');
   cf.innerHTML=''; ac.innerHTML='';
-  buildFace(cf,'cf'); buildFace(ac,'acc');
+  const un=document.getElementById('faceUni'); un.innerHTML='';
+  buildFace(cf,'cf'); buildFace(ac,'acc'); buildFace(un,'uni');
   buildNet(); buildKpis();
   placeRail();
 }
@@ -695,6 +725,7 @@ function rerender(){
    תזרימי = סכום הקטגוריות התזרימיות שממופות לסעיף · חשבונאי = מהנה"ח / יעד. */
 function buildFace(face,view){
   idx=0;
+  if(view==='uni') face.classList.add('uni');
   const rows = ACC;
   GROUPS.forEach(g=>{
     /* --- כותרת קבוצה --- */
@@ -746,7 +777,7 @@ function buildFace(face,view){
       }
       nm.appendChild(side);
       row.appendChild(nm);
-      cells(row,r.ghost?r.v:valsOf(r.id,view),{heat:!r.ghost,muted:r.ghost,row:r.ghost?null:r.id,view,plan:r.ghost?null:plansOf(r.id,view)});
+      cells(row,r.ghost?r.v:valsOf(r.id,view==='uni'?'cf':view),{heat:!r.ghost&&view!=='uni',muted:r.ghost,row:r.ghost?null:r.id,view,plan:(r.ghost||view==='uni')?null:plansOf(r.id,view)});
 
       if(!r.ghost){
         row.addEventListener('mouseenter',()=>lite(r,view));
@@ -770,7 +801,10 @@ function buildFace(face,view){
     tr.appendChild(tn);
     MONTHS.forEach((mo,m)=>{
       const c=el('div','c'+(mo.now?' isnow':''));
-      const v=el('span','v',fmt(TOT[view==='cf'?'cf':'acc'][g.id][m]));
+      const dcf=TOT.cf[g.id][m], dac=TOT.acc[g.id][m];
+      const v=el('span','v', view==='uni'
+        ? ((Math.round(dac-dcf)===0)?'—':((dac-dcf>0?'+':'−')+nf(dac-dcf)))
+        : fmt(view==='cf'?dcf:dac));
       c.appendChild(v); tr.appendChild(c);
       if(view==='cf') totCells.push({node:v,cf:TOT.cf[g.id][m],acc:TOT.acc[g.id][m],cur:TOT.cf[g.id][m]});
       else totCells.push({node:v,cf:TOT.cf[g.id][m],acc:TOT.acc[g.id][m],cur:TOT.acc[g.id][m]});
@@ -780,6 +814,7 @@ function buildFace(face,view){
 }
 buildFace(document.getElementById('faceCf'),'cf');
 buildFace(document.getElementById('faceAcc'),'acc');
+buildFace(document.getElementById('faceUni'),'uni');
 
 /* =======================================================================
    שורת הרווח
@@ -925,7 +960,7 @@ function setView(v,instant){
   view=v; document.body.dataset.v=v;
   btns.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
   clear();
-  modeChip.textContent = v==='cf' ? 'תצוגה תזרימית' : 'תצוגה חשבונאית';
+  modeChip.textContent = v==='cf' ? 'תצוגה תזרימית' : v==='acc' ? 'תצוגה חשבונאית' : 'מאוחד · הפרש בין השפות · לצפייה בלבד';
   document.querySelectorAll('[data-c]').forEach(n=>{
     if(n.dataset.c===v) n.removeAttribute('data-off'); else n.setAttribute('data-off','');
   });
@@ -942,17 +977,21 @@ function setView(v,instant){
 
   /* count-up: השורות המסכמות משתנות מול העין, כדי שרואים מה זז ומה לא */
   const D=instant?0:520;
-  const fT=totCells.map(c=>c.cur), tT=totCells.map(c=>c[v]);
-  const fN=netCells.map(c=>c.cur), tN=netCells.map(c=>c[v]);
-  const fK=kn.map(k=>k.cur),        tK=kn.map(k=>k.d.get(v));
+  const vv = v==='uni'?'cf':v;
+  const fT=totCells.map(c=>c.cur), tT=totCells.map(c=>c[vv]);
+  const fN=netCells.map(c=>c.cur), tN=netCells.map(c=>c[vv]);
+  const fK=kn.map(k=>k.cur),        tK=kn.map(k=>k.d.get(vv));
+  const dif=x=>Math.round(x)===0?'—':((x>0?'+':'−')+nf(x));
   const apply=k=>{
-    totCells.forEach((c,i)=>{c.cur=fT[i]+(tT[i]-fT[i])*k;c.node.textContent=fmt(c.cur)});
-    netCells.forEach((c,i)=>{c.cur=fN[i]+(tN[i]-fN[i])*k;c.v.textContent=fmtN(c.cur);
-      c.p.textContent=(c.cur/(v==='cf'?c.rcf:c.racc)*100).toFixed(1)+'% מהמחזור'});
+    totCells.forEach((c,i)=>{c.cur=fT[i]+(tT[i]-fT[i])*k;
+      c.node.textContent = v==='uni' ? dif(c.acc-c.cf) : fmt(c.cur)});
+    netCells.forEach((c,i)=>{c.cur=fN[i]+(tN[i]-fN[i])*k;
+      c.v.textContent = v==='uni' ? dif(c.acc-c.cf) : fmtN(c.cur);
+      c.p.textContent = v==='uni' ? 'הפרש בין השפות' : (c.cur/(vv==='cf'?c.rcf:c.racc)*100).toFixed(1)+'% מהמחזור'});
     kn.forEach((n,i)=>{n.cur=fK[i]+(tK[i]-fK[i])*k;n.val.textContent='₪ '+fmtN(n.cur)});
   };
   if(D===0) apply(1); else tween(D,apply);
-  kn.forEach(n=>{n.sub.innerHTML=n.d.sub(v); n.sp.innerHTML=spark(n.d.sp(v), v==='cf'?'#39ABE2':'#6C63E6')});
+  kn.forEach(n=>{n.sub.innerHTML=n.d.sub(vv); n.sp.innerHTML=spark(n.d.sp(vv), v==='cf'?'#39ABE2':v==='acc'?'#6C63E6':'#8FA3B5')});
 }
 btns.forEach(b=>b.addEventListener('click',()=>setView(b.dataset.v)));
 
@@ -980,6 +1019,24 @@ addEventListener('resize',placeRail);
 if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
 </script>
 <script>/*HKPROBE*/
+if(location.hash==='#swdbg'){setTimeout(()=>{
+  const b=document.querySelector('#sw button[data-v="uni"]'); b.click();
+  setTimeout(()=>{
+    const th=document.querySelector('.thumb').getBoundingClientRect();
+    const bs=[...document.querySelectorAll('#sw button')].map(x=>x.dataset.v+':'+Math.round(x.getBoundingClientRect().left));
+    const cs=getComputedStyle(document.querySelector('.thumb'));
+    document.title='tf='+cs.transform+' | thumbL='+Math.round(th.left)+' | v='+document.body.dataset.v+' | matches='+document.querySelector('.thumb').matches('body[data-v="uni"] .thumb');
+  },900);
+},300);}
+
+window.__E=[];window.addEventListener('error',e=>window.__E.push(e.message));
+if(location.hash==='#unidbg'){setTimeout(()=>{
+  const f=document.getElementById('faceUni');
+  document.title='rows='+(f?f.children.length:'nofaceUni')+' err='+window.__E.join('|');
+},500);}
+
+if(location.hash==='#univ'){setTimeout(()=>{const b=document.querySelector('#sw button[data-v="uni"]');if(b)b.click();},350);}
+
 if(location.hash==='#sumchk'){setTimeout(()=>{
   const rows=ACC.filter(a=>a.g==='rev');
   document.title=rows.map(a=>a.name+'='+Math.round(a.v[0])).join(' | ')+' || TOT='+Math.round(TOT.acc.rev[0]);
