@@ -578,6 +578,30 @@
               <div class="mf-l">${f.line}</div><div class="mf-meta">${f.src} · ${f.when}</div></div>
             <span class="att-go">›</span></div>`).join('')}
     </div>`;
+    /* ===== התדריך החדש =====
+       אם המודול נטען — מציגים אותו. אחרת נשארים על התצוגה הקודמת. */
+    if(typeof advHomeHtml==='function'){
+      const list=CLIENTS.filter(c=>typeof firmOk!=='function'||firmOk(c));
+      const st=c=>typeof coState==='function'?coState(c):'active';
+      const act=list.filter(c=>st(c)==='active').length;
+      const N={
+        tot:list.length, act, setup:list.filter(c=>st(c)==='setup').length,
+        arch:list.filter(c=>st(c)==='arch').length,
+        risk:ADV_RISK.length,
+        riskIx:ADV_RISK.map(r=>list.findIndex(c=>c.name===r.c)).filter(i=>i>=0),
+        ops:ADV_MGR_TASKS.filter(x=>x.open).length,
+        churn:ADV_RADAR.filter(r=>r.kind==='churn').length,
+        up:ADV_RADAR.filter(r=>r.kind==='upsell').length
+      };
+      /* לתדריך יש כותרת משלו — בלי כותרת עמוד כפולה מעליו */
+      const _ch=document.querySelector('.client-head'), _sl=document.querySelector('.sub-line');
+      if(_ch) _ch.style.display='none';
+      if(_sl) _sl.style.display='none';
+      board.classList.remove('advh'); board.classList.add('advhome');
+      board.innerHTML='<div class="advx">'+advHomeHtml(N)+'</div>';
+      advHomeInit(N);
+      return;
+    }
     board.innerHTML=advTopCards()+`<div class="advh2">
       <div class="advcal-col">${calCard}</div>
       <div class="advh-side">${feedCard}</div>
