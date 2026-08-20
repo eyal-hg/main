@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>תכנון חשבונאי ותזרימי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F4F7FA; --surface:#fff;
+  --border:#e6ecf4; --border-strong:#d3dced;
+  --text:#0C4068; --muted:#64748b; --soft:#9aa7bb;
+  --accent:#1B6C9C; --accent-soft:#EAF4FB;
+  --cf:#3B9AD2; --cf-soft:#EAF4FB;         /* תזרימי */
+  --acc:#7557E3; --acc-soft:#F1EDFC;        /* חשבונאי */
+  --pos:#13895b; --pos-soft:#e7f7ef;
+  --neg:#dc4436; --neg-soft:#fdeceb;
+  --warn:#c98404; --warn-soft:#FDF4E3;
+  --shadow-sm:0 2px 8px rgba(15,35,65,.06);
+  --shadow-md:0 6px 18px rgba(12,64,104,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:"Rubik",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.45}
+button,input{font-family:inherit}
+button{cursor:pointer}
+.app{max-width:1240px;margin:0 auto;padding:24px 20px 70px}
+body.is-embedded{background:transparent}
+body.is-embedded .app{padding:6px 2px 40px;max-width:none}
+
+/* ===== כותרת ומתג המצב ===== */
+.head{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.head h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.3px}
+.head .sub{color:var(--muted);font-size:12.5px;margin-top:3px;max-width:640px;line-height:1.6}
+.head .sp{flex:1}
+/* מתג תזרימי / חשבונאי — הלב של המסך */
+.modesw{display:inline-flex;background:#fff;border:1.5px solid var(--border-strong);border-radius:13px;padding:4px;gap:3px;box-shadow:var(--shadow-sm)}
+.modesw button{border:0;background:none;font-size:13px;font-weight:700;color:var(--muted);
+  padding:9px 20px;border-radius:9px;transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.modesw button i{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.5;font-style:normal}
+.modesw button:hover{color:var(--text)}
+.modesw button.on{color:#fff}
+.modesw button.on i{opacity:1;background:#fff}
+.modesw button.cf.on{background:var(--cf)}
+.modesw button.acc.on{background:var(--acc)}
+
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{border:1px solid var(--border);background:#fff;border-radius:999px;padding:7px 17px;
+  font-size:12.5px;font-weight:600;color:var(--muted);box-shadow:var(--shadow-sm)}
+.tab.on{background:var(--text);border-color:var(--text);color:#fff}
+.tab em{font-style:normal;font-weight:700;margin-inline-start:6px;opacity:.75}
+
+/* ===== טבלת התכנון ===== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);overflow:hidden}
+.card-h{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--border)}
+.card-h b{font-size:14px}
+.card-h .tag{font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 10px}
+.tag.cf{background:var(--cf-soft);color:var(--accent)}
+.tag.acc{background:var(--acc-soft);color:var(--acc)}
+.card-h .sp{flex:1}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th{font-size:11px;font-weight:700;color:var(--soft);text-align:center;padding:10px 12px;
+  border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl th.k{text-align:start;padding-inline-start:18px}
+.tbl td{padding:9px 12px;text-align:center;font-size:13px;border-bottom:1px solid #F1F6FA}
+.tbl td.k{text-align:start;padding-inline-start:18px;font-weight:600;color:var(--text);font-size:12.5px}
+.tbl tr.grp td{background:#FAFCFE;font-weight:800;font-size:11.5px;color:var(--muted);padding:8px 18px;text-align:start}
+.tbl tr.sum td{background:#F7FAFC;font-weight:800;border-top:1.5px solid var(--border-strong)}
+.tbl tr.sum td.k{color:var(--text)}
+.tbl tr.prof td{background:var(--text);color:#fff;font-weight:800}
+.tbl tr.prof td.k{color:#fff}
+.tbl tr:hover td{background:#FBFDFF}
+.tbl tr.grp:hover td,.tbl tr.sum:hover td,.tbl tr.prof:hover td{background:inherit}
+.cur{background:var(--cf-soft) !important;font-weight:700}
+.src{display:block;font-size:9.5px;color:var(--soft);font-weight:500;margin-top:2px}
+.mini{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.mini span{font-size:9px;font-weight:600;background:#F1F5F9;color:#64748b;border-radius:99px;padding:1px 7px}
+.mini span.pct{background:var(--acc-soft);color:var(--acc)}
+
+/* ===== מיפוי ===== */
+.mapbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--border);
+  border-radius:14px;padding:12px 16px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+.mapbar .cov{font-size:12.5px;font-weight:700}
+.mapbar .cov b{color:var(--pos)}
+.mapbar .cov.bad b{color:var(--neg)}
+.mapbar .hint{font-size:11.5px;color:var(--soft)}
+.mapbar .sp{flex:1}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:1000px){.mapgrid{grid-template-columns:1fr}}
+.col-h{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.col-h b{font-size:13.5px}
+.col-h .n{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 9px}
+.col-h .n.cf{background:var(--cf-soft);color:var(--accent)}
+.col-h .n.acc{background:var(--acc-soft);color:var(--acc)}
+.col-h .sp{flex:1}
+.addbtn{border:1.5px dashed var(--border-strong);background:#fff;color:var(--accent);font-size:11.5px;
+  font-weight:700;border-radius:999px;padding:5px 12px}
+.addbtn:hover{border-color:var(--acc);color:var(--acc)}
+
+/* קטגוריה תזרימית */
+.cfrow{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #F1F6FA;
+  cursor:grab;transition:.13s}
+.cfrow:hover{background:#FBFDFF}
+.cfrow.drag{opacity:.4}
+.cfrow.un{background:#FFFBF4}
+.cfrow .grip{flex:none;width:8px;height:16px;margin-top:3px;opacity:.45;
+  background-image:radial-gradient(circle,#8FA3B5 1px,transparent 1.1px);background-size:4px 5px}
+.cfrow:hover .grip{opacity:1}
+.cfrow .b{flex:1;min-width:0}
+.cfrow .t{font-size:12.5px;font-weight:600;color:var(--text)}
+.cfrow .amt{font-size:11px;color:var(--soft);font-variant-numeric:tabular-nums;margin-top:1px}
+.cfrow .to{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.chipmap{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;
+  background:var(--acc-soft);color:var(--acc);border-radius:999px;padding:2px 9px}
+.chipmap b{font-weight:800}
+.chipmap .x{cursor:pointer;opacity:.6;font-size:10px}
+.chipmap .x:hover{opacity:1}
+.chipnone{font-size:10.5px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:2px 9px}
+.cfrow .split{flex:none;border:1px solid var(--border);background:#fff;color:var(--muted);
+  font-size:10.5px;font-weight:700;border-radius:8px;padding:4px 9px}
+.cfrow .split:hover{border-color:var(--acc);color:var(--acc)}
+
+/* עורך פיצול */
+.splitbox{background:#FBFAFF;border-top:1px dashed #DCD0EC;padding:11px 14px 13px}
+.splitbox .sh{font-size:11px;font-weight:700;color:var(--acc);margin-bottom:8px}
+.splitrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.splitrow .nm{flex:1;min-width:0;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.splitrow input{width:62px;text-align:center;font-size:12.5px;font-weight:700;color:var(--text);
+  border:1.5px solid var(--border-strong);border-radius:8px;padding:5px 6px;outline:none}
+.splitrow input:focus{border-color:var(--acc)}
+.splitrow .rm{border:0;background:none;color:var(--soft);font-size:13px;padding:2px 5px}
+.splitrow .rm:hover{color:var(--neg)}
+.splitfoot{display:flex;align-items:center;gap:9px;margin-top:9px}
+.sumtag{font-size:11px;font-weight:800;border-radius:999px;padding:3px 11px}
+.sumtag.ok{background:var(--pos-soft);color:var(--pos)}
+.sumtag.bad{background:var(--neg-soft);color:var(--neg)}
+.splitfoot .sp{flex:1}
+.btn{border:1px solid var(--border-strong);background:#fff;color:var(--text);font-size:12px;font-weight:700;
+  border-radius:9px;padding:6px 13px}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn:hover{filter:brightness(.97)}
+
+/* קטגוריה חשבונאית */
+.accgrp{font-size:10.5px;font-weight:800;color:var(--soft);padding:9px 16px 4px;background:#FAFCFE}
+.accrow{padding:10px 14px;border-bottom:1px solid #F1F6FA;transition:.13s}
+.accrow.over{background:var(--acc-soft);box-shadow:inset 0 0 0 1.5px var(--acc)}
+.accrow .top{display:flex;align-items:center;gap:9px}
+.accrow .t{flex:1;min-width:0;font-size:12.5px;font-weight:700;color:var(--text)}
+.accrow .v{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--acc)}
+.accrow .from{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.chipcf{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;
+  background:var(--cf-soft);color:var(--accent);border-radius:999px;padding:2px 9px}
+.chipcf i{font-style:normal;font-weight:800;opacity:.75}
+.accrow .empty{font-size:10.5px;color:var(--soft);margin-top:5px}
+.accrow .del{border:0;background:none;color:var(--soft);font-size:12px;padding:2px 5px}
+.accrow .del:hover{color:var(--neg)}
+.newacc{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid #F1F6FA;background:#FBFAFF}
+.newacc input{flex:1;min-width:0;border:1.5px solid var(--border-strong);border-radius:9px;padding:7px 10px;
+  font-size:12.5px;outline:none}
+.newacc input:focus{border-color:var(--acc)}
+.pickwrap{margin-top:9px;padding-top:9px;border-top:1px dashed #DCD0EC}
+.pl{font-size:10.5px;font-weight:700;color:var(--soft);margin-bottom:6px}
+.picks{display:flex;flex-wrap:wrap;gap:5px}
+.picks.inline{flex:1;min-width:0}
+.pick{border:1px solid var(--border);background:#fff;color:var(--muted);font-size:11px;font-weight:600;
+  border-radius:999px;padding:4px 11px;transition:.13s}
+.pick:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-soft)}
+.pick.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.newacc{flex-wrap:wrap}
+.note{font-size:11.5px;color:var(--muted);line-height:1.7;background:#fff;border:1px solid var(--border);
+  border-radius:12px;padding:12px 15px;margin-top:14px}
+.note b{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <div>
+      <h1>תכנון חשבונאי ותזרימי</h1>
+      <div class="sub">אותו תכנון, שתי שפות. היועץ העסקי מתכנן <b>חשבונאית</b>, התזרים מנוהל <b>תזרימית</b> —
+        וכאן ממפים ביניהן פעם אחת, ומחליפים תצוגה בלחיצה.</div>
+    </div>
+    <div class="sp"></div>
+    <div class="modesw" id="modesw"></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+</div>
+
+<script>
+/* ===================================================================
+   המודל: הקטגוריות התזרימיות הן מקור האמת (הן מה שמנוהל בתזרים).
+   הקטגוריות החשבונאיות הן שכבת תצוגה שנבנית מהן דרך מיפוי.
+   המיפוי הוא רבים-לרבים באחוזים:
+     · כמה תזרימיות → חשבונאית אחת (איחוד)
+     · תזרימית אחת → כמה חשבונאיות (פיצול באחוזים שסכומם 100)
+   =================================================================== */
+const MONTHS=['מאי 2026','יוני 2026','יולי 2026','אוגוסט 2026','ספטמבר 2026'];
+const CUR_IX=1;   /* יוני = החודש הנוכחי */
+
+/* קטגוריות תזרימיות — a = שלושת החודשים האחרונים, f = תחזית קדימה */
+const CF=[
+ {id:'cash',    g:'inc', label:'הכנסות ממכירות - מזומן',  a:[101900,89950],  f:[100000,89950,89950]},
+ {id:'clearing',g:'inc', label:'הכנסות ממכירות - סליקה',  a:[84200,77010],   f:[77010,100000,77010]},
+ {id:'direct',  g:'inc', label:'הכנסות מסליקה - דיירקט',  a:[28210,23501],   f:[23501,23501,23501]},
+ {id:'electra', g:'inc', label:'הכנסות ממכירות - אלקטרה', a:[63769,80583],   f:[80583,80583,80583]},
+ {id:'shipping',g:'inc', label:'הכנסות - חברות שילוח',    a:[28960,29553],   f:[29553,29553,29553]},
+ {id:'suppliers',g:'cogs',label:'קניות מלאי',             a:[155000,155000], f:[155000,155000,155000]},
+ {id:'subcon',  g:'cogs',label:'קבלני משנה',              a:[26000,28333],   f:[28333,28333,28333]},
+ {id:'salary',  g:'opex',label:'שכר עבודה',               a:[99000,97333],   f:[97333,97333,97333]},
+ {id:'rent',    g:'opex',label:'שכירות',                  a:[22000,22000],   f:[22000,22000,22000]},
+ {id:'opex',    g:'opex',label:'הוצאות תפעול',            a:[17800,18433],   f:[18433,18433,18433]},
+ {id:'marketing',g:'opex',label:'פרסום ושיווק',           a:[12000,15667],   f:[15667,15667,15667]},
+ {id:'tax',     g:'opex',label:'מוסדות מס',               a:[10371,24179],   f:[24179,24179,24179]},
+ {id:'finance', g:'fin', label:'מימון ועמלות בנק',        a:[8800,9100],     f:[9100,9100,9100]},
+ {id:'deposits',g:'fin', label:'פיקדונות והשקעות',        a:[12000,12000],   f:[12000,12000,12000]},
+ {id:'loan',    g:'fin', label:'תשלומי הלוואה',           a:[8000,8000],     f:[8000,8000,8000]},
+ {id:'owners',  g:'fin', label:'משיכות בעלים',            a:[20000,15000],   f:[15000,15000,15000]},
+];
+const CF_G={inc:'הכנסות',cogs:'עלות המכר',opex:'הוצאות תפעוליות',fin:'השקעות, מימון ובעלים'};
+
+/* קטגוריות חשבונאיות — לפי דוח רווח והפסד */
+let ACC=[
+ {id:'a_rev',  g:'inc',  label:'הכנסות ממכירות'},
+ {id:'a_oth',  g:'inc',  label:'הכנסות אחרות'},
+ {id:'a_cogs', g:'cogs', label:'עלות המכר'},
+ {id:'a_sal',  g:'opex', label:'הוצאות שכר'},
+ {id:'a_prem', g:'opex', label:'אחזקת מבנה'},
+ {id:'a_mkt',  g:'opex', label:'שיווק ומכירה'},
+ {id:'a_gen',  g:'opex', label:'הנהלה וכלליות'},
+ {id:'a_fin',  g:'fin',  label:'הוצאות מימון'},
+ {id:'a_tax',  g:'tax',  label:'מיסים'},
+ {id:'a_own',  g:'own',  label:'בעלים והשקעות'},
+];
+const ACC_G={inc:'הכנסות',cogs:'עלות המכר',opex:'הוצאות תפעוליות',fin:'מימון',tax:'מיסים',own:'בעלים והשקעות'};
+const ACC_SIGN={inc:1,cogs:-1,opex:-1,fin:-1,tax:-1,own:-1};
+
+/* המיפוי — cfId → [{acc, pct}] */
+let MAP={
+ cash:     [{acc:'a_rev',pct:100}],
+ clearing: [{acc:'a_rev',pct:100}],
+ direct:   [{acc:'a_rev',pct:100}],
+ electra:  [{acc:'a_rev',pct:100}],
+ shipping: [{acc:'a_oth',pct:100}],
+ suppliers:[{acc:'a_cogs',pct:100}],
+ subcon:   [{acc:'a_cogs',pct:100}],
+ salary:   [{acc:'a_sal',pct:85},{acc:'a_cogs',pct:15}],
+ rent:     [{acc:'a_prem',pct:100}],
+ opex:     [{acc:'a_gen',pct:60},{acc:'a_prem',pct:40}],
+ marketing:[{acc:'a_mkt',pct:100}],
+ tax:      [{acc:'a_tax',pct:100}],
+ finance:  [{acc:'a_fin',pct:100}],
+ deposits: [],
+ loan:     [{acc:'a_fin',pct:100}],
+ owners:   [{acc:'a_own',pct:100}],
+};
+try{const s=JSON.parse(localStorage.getItem('hkAccMap')||'null'); if(s&&s.MAP){MAP=s.MAP; if(s.ACC)ACC=s.ACC;}}catch(e){}
+const save=()=>{try{localStorage.setItem('hkAccMap',JSON.stringify({MAP,ACC}));}catch(e){}};
+
+let MODE='cf', TAB='plan', SPLIT=null, NEWACC=false, NEWG='opex', DRAG=null;
+const nf=v=>Math.round(v).toLocaleString('en-US');
+const cfById=id=>CF.find(c=>c.id===id);
+const accById=id=>ACC.find(a=>a.id===id);
+/* ערך תזרימי לחודש: 0,1 = בפועל · 2,3,4 = תחזית */
+const cfVal=(c,mi)=>mi<2?c.a[mi]:c.f[mi-2];
+/* ערך חשבונאי = סכום התזרימיות שממופות אליו, לפי אחוזים */
+function accVal(aid,mi){
+  let s=0;
+  CF.forEach(c=>(MAP[c.id]||[]).forEach(m=>{ if(m.acc===aid) s+=cfVal(c,mi)*m.pct/100; }));
+  return s;
+}
+const unmapped=()=>CF.filter(c=>!(MAP[c.id]||[]).length);
+const feeders=aid=>CF.map(c=>({c,m:(MAP[c.id]||[]).find(x=>x.acc===aid)})).filter(x=>x.m);
+
+/* ---------- כותרת ---------- */
+function renderTop(){
+  document.getElementById('modesw').innerHTML=
+    `<button class="cf ${MODE==='cf'?'on':''}" onclick="setMode('cf')"><i></i>תזרימי</button>
+     <button class="acc ${MODE==='acc'?'on':''}" onclick="setMode('acc')"><i></i>חשבונאי</button>`;
+  const un=unmapped().length;
+  document.getElementById('tabs').innerHTML=
+    `<button class="tab ${TAB==='plan'?'on':''}" onclick="setTab('plan')">התכנון</button>
+     <button class="tab ${TAB==='map'?'on':''}" onclick="setTab('map')">מיפוי קטגוריות${un?`<em>${un} לא ממופות</em>`:''}</button>`;
+}
+function setMode(m){MODE=m;render();}
+function setTab(t){TAB=t;SPLIT=null;render();}
+
+/* ---------- טבלת התכנון ---------- */
+function planHtml(){
+  const isCf=MODE==='cf';
+  const groups=isCf?CF_G:ACC_G;
+  const rows=isCf?CF:ACC;
+  const sign=isCf?{inc:1,cogs:-1,opex:-1,fin:-1}:ACC_SIGN;
+  const val=(r,mi)=>isCf?cfVal(r,mi):accVal(r.id,mi);
+  let body='';
+  Object.keys(groups).forEach(g=>{
+    const rs=rows.filter(r=>r.g===g); if(!rs.length) return;
+    body+=`<tr class="grp"><td colspan="${MONTHS.length+1}">${groups[g]}</td></tr>`;
+    rs.forEach(r=>{
+      const detail=isCf
+        ?`<span class="mini">${(MAP[r.id]||[]).map(m=>`<span class="pct">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?' '+m.pct+'%':''}</span>`).join('')||'<span>לא ממופה</span>'}</span>`
+        :`<span class="mini">${feeders(r.id).map(x=>`<span>${x.c.label}${x.m.pct<100?' '+x.m.pct+'%':''}</span>`).join('')||'<span>אין מקור</span>'}</span>`;
+      body+=`<tr><td class="k">${r.label}${detail}</td>`+
+        MONTHS.map((_,mi)=>`<td class="${mi===CUR_IX?'cur':''}">${nf(val(r,mi))}</td>`).join('')+`</tr>`;
+    });
+    body+=`<tr class="sum"><td class="k">סה״כ ${groups[g]}</td>`+
+      MONTHS.map((_,mi)=>`<td class="${mi===CUR_IX?'cur':''}">${nf(rs.reduce((s,r)=>s+val(r,mi),0))}</td>`).join('')+`</tr>`;
+  });
+  /* שורת רווח — אותו חישוב בשתי השפות */
+  const profit=mi=>rows.reduce((s,r)=>s+val(r,mi)*(sign[r.g]||0),0);
+  body+=`<tr class="prof"><td class="k">רווח ${MODE==='cf'?'תזרימי':'חשבונאי'}</td>`+
+    MONTHS.map((_,mi)=>`<td>${nf(profit(mi))}</td>`).join('')+`</tr>`;
+  const un=unmapped();
+  return `<div class="card">
+    <div class="card-h"><b>תכנון ${MODE==='cf'?'תזרימי':'חשבונאי'}</b>
+      <span class="tag ${MODE}">${MODE==='cf'?'קטגוריות התזרים':'קטגוריות רו״ה'}</span>
+      <span class="sp"></span>
+      <span class="src" style="margin:0">${MODE==='cf'?CF.length+' קטגוריות':ACC.length+' קטגוריות · נגזר מהמיפוי'}</span></div>
+    <table class="tbl"><thead><tr><th class="k">קטגוריה</th>
+      ${MONTHS.map((m,i)=>`<th>${m}${i<2?'<span class="src">בפועל</span>':'<span class="src">תחזית</span>'}</th>`).join('')}
+    </tr></thead><tbody>${body}</tbody></table>
+  </div>
+  ${MODE==='acc'&&un.length?`<div class="note"><b>${un.length} קטגוריות תזרימיות לא ממופות</b> ולכן לא מופיעות בתצוגה החשבונאית:
+    ${un.map(c=>c.label).join(' · ')}. אפשר למפות אותן בלשונית <b>מיפוי קטגוריות</b>.</div>`:''}
+  <div class="note">אותם נתונים בדיוק — רק דרך אחרת להסתכל עליהם. שתי התצוגות עובדות גם על העבר (החודשים בפועל) וגם על התחזית,
+    כך שאפשר להראות ללקוח את שתי התמונות באותה פגישה.</div>`;
+}
+
+/* ---------- מיפוי ---------- */
+function mapHtml(){
+  const un=unmapped();
+  const cfCol=Object.keys(CF_G).map(g=>{
+    const rs=CF.filter(c=>c.g===g); if(!rs.length) return '';
+    return `<div class="accgrp">${CF_G[g]}</div>`+rs.map(c=>{
+      const ms=MAP[c.id]||[];
+      const open=SPLIT===c.id;
+      return `<div class="cfrow ${ms.length?'':'un'}" draggable="true"
+          ondragstart="dragStart(event,'${c.id}')" ondragend="dragEnd()">
+        <span class="grip"></span>
+        <div class="b">
+          <div class="t">${c.label}</div>
+          <div class="amt">${nf(cfVal(c,CUR_IX))} ₪ · יוני</div>
+          <div class="to">${ms.length
+            ?ms.map(m=>`<span class="chipmap">${accById(m.acc)?accById(m.acc).label:'?'}${m.pct<100?` <b>${m.pct}%</b>`:''}
+                <span class="x" onclick="event.stopPropagation();unmap('${c.id}','${m.acc}')">✕</span></span>`).join('')
+            :'<span class="chipnone">לא ממופה — לא תופיע בתצוגה החשבונאית</span>'}</div>
+        </div>
+        <button class="split" onclick="event.stopPropagation();toggleSplit('${c.id}')">${open?'סגירה':'פיצול'}</button>
+      </div>${open?splitBox(c):''}`;
+    }).join('');
+  }).join('');
+  const accCol=Object.keys(ACC_G).map(g=>{
+    const rs=ACC.filter(a=>a.g===g); if(!rs.length) return '';
+    return `<div class="accgrp">${ACC_G[g]}</div>`+rs.map(a=>{
+      const fs=feeders(a.id);
+      return `<div class="accrow" id="acc_${a.id}"
+          ondragover="dragOver(event,'${a.id}')" ondragleave="dragLeave('${a.id}')" ondrop="drop(event,'${a.id}')">
+        <div class="top"><span class="t">${a.label}</span>
+          <span class="v">${nf(accVal(a.id,CUR_IX))} ₪</span>
+          <button class="del" title="הסרת הקטגוריה" onclick="delAcc('${a.id}')">✕</button></div>
+        ${fs.length
+          ?`<div class="from">${fs.map(x=>`<span class="chipcf">${x.c.label}${x.m.pct<100?` <i>${x.m.pct}%</i>`:''}</span>`).join('')}</div>`
+          :'<div class="empty">אין קטגוריה תזרימית שמזינה אותה — גררו לכאן</div>'}
+      </div>`;}).join('');
+  }).join('');
+  return `<div class="mapbar">
+      <span class="cov ${un.length?'bad':''}">${CF.length-un.length} מתוך ${CF.length} קטגוריות תזרימיות ממופות · <b>${un.length?un.length+' לא ממופות':'הכל ממופה'}</b></span>
+      <span class="sp"></span>
+      <span class="hint">גררו קטגוריה תזרימית אל קטגוריה חשבונאית · "פיצול" מחלק אותה בין כמה באחוזים</span>
+    </div>
+    <div class="mapgrid">
+      <div class="card">
+        <div class="col-h"><b>קטגוריות תזרימיות</b><span class="n cf">${CF.length}</span>
+          <span class="sp"></span><span class="hint" style="font-size:11px">מקור האמת — כפי שמנוהל בתזרים</span></div>
+        ${cfCol}
+      </div>
+      <div class="card">
+        <div class="col-h"><b>קטגוריות חשבונאיות</b><span class="n acc">${ACC.length}</span>
+          <span class="sp"></span><button class="addbtn" onclick="NEWACC=!NEWACC;render()">＋ קטגוריה</button></div>
+        ${NEWACC?`<div class="newacc">
+          <input id="naNm" placeholder="שם הקטגוריה החשבונאית" onkeydown="if(event.key==='Enter')addAcc()">
+          <span class="picks inline">${Object.keys(ACC_G).map(k=>
+            `<button class="pick ${NEWG===k?'on':''}" onclick="NEWG='${k}';render()">${ACC_G[k]}</button>`).join('')}</span>
+          <button class="btn p" onclick="addAcc()">הוספה</button>
+        </div>`:''}
+        ${accCol}
+      </div>
+    </div>
+    <div class="note"><b>למה זה עובד:</b> הקטגוריות התזרימיות נשארות כפי שהן — הן מה שמנהל התזרים עובד איתו יום-יום.
+      המיפוי הוא שכבה מעל: כמה תזרימיות יכולות להתאחד לקטגוריה חשבונאית אחת, וקטגוריה תזרימית אחת יכולה להתפצל
+      בין כמה חשבונאיות באחוזים (למשל שכר עבודה — 85% הוצאות שכר, 15% עלות המכר). מגדירים פעם אחת, ומחליפים תצוגה בלחיצה.</div>`;
+}
+function splitBox(c){
+  const ms=MAP[c.id]||[];
+  const tot=ms.reduce((s,m)=>s+(+m.pct||0),0);
+  return `<div class="splitbox">
+    <div class="sh">פיצול "${c.label}" בין קטגוריות חשבונאיות</div>
+    ${ms.map((m,ix)=>`<div class="splitrow">
+      <span class="nm">${accById(m.acc)?accById(m.acc).label:'?'}</span>
+      <input type="number" min="0" max="100" value="${m.pct}" onchange="setPct('${c.id}',${ix},this.value)">
+      <span style="font-size:11px;color:var(--soft)">%</span>
+      <button class="rm" onclick="unmap('${c.id}','${m.acc}')">✕</button>
+    </div>`).join('')||'<div class="empty" style="font-size:11.5px;color:var(--soft);margin-bottom:8px">עדיין לא ממופה — הוסיפו קטגוריה חשבונאית</div>'}
+    <div class="pickwrap">
+      <div class="pl">הוספת קטגוריה חשבונאית לפיצול</div>
+      <div class="picks">${ACC.filter(a=>!ms.some(m=>m.acc===a.id))
+        .map(a=>`<button class="pick" onclick="addSplit('${c.id}','${a.id}')">${a.label}</button>`).join('')
+        ||'<span style="font-size:11.5px;color:var(--soft)">כל הקטגוריות כבר משויכות</span>'}</div>
+    </div>
+    <div class="splitfoot">
+      <span class="sumtag ${tot===100?'ok':'bad'}">${tot}% ${tot===100?'✓':'— צריך 100%'}</span>
+      <span class="sp"></span>
+      <button class="btn" onclick="evenSplit('${c.id}')">חלוקה שווה</button>
+      <button class="btn p" onclick="SPLIT=null;save();render()">סיום</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- פעולות ---------- */
+function dragStart(e,id){DRAG=id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',id);}catch(x){}}
+function dragEnd(){DRAG=null;document.querySelectorAll('.accrow.over').forEach(el=>el.classList.remove('over'));}
+function dragOver(e,aid){e.preventDefault();const el=document.getElementById('acc_'+aid);if(el)el.classList.add('over');}
+function dragLeave(aid){const el=document.getElementById('acc_'+aid);if(el)el.classList.remove('over');}
+function drop(e,aid){
+  e.preventDefault();
+  const id=DRAG||(e.dataTransfer&&e.dataTransfer.getData('text/plain'));
+  dragEnd(); if(!id) return;
+  MAP[id]=[{acc:aid,pct:100}];      /* גרירה = מיפוי מלא. פיצול נעשה בעורך */
+  save(); render();
+}
+function unmap(cid,aid){
+  MAP[cid]=(MAP[cid]||[]).filter(m=>m.acc!==aid);
+  save(); render();
+}
+function toggleSplit(cid){SPLIT=(SPLIT===cid?null:cid);render();}
+function setPct(cid,ix,v){
+  const ms=MAP[cid]||[]; if(!ms[ix])return;
+  ms[ix].pct=Math.max(0,Math.min(100,+v||0)); save(); render();
+}
+function addSplit(cid,aid){
+  if(!aid) return;
+  const ms=MAP[cid]=MAP[cid]||[];
+  if(ms.some(m=>m.acc===aid)) return;
+  ms.push({acc:aid,pct:0});
+  evenSplit(cid);
+}
+function evenSplit(cid){
+  const ms=MAP[cid]||[]; if(!ms.length)return;
+  const base=Math.floor(100/ms.length);
+  ms.forEach((m,i)=>m.pct=base+(i<100-base*ms.length?1:0));
+  save(); render();
+}
+function addAcc(){
+  const nm=(document.getElementById('naNm').value||'').trim();
+  const g=NEWG;
+  if(!nm) return;
+  ACC.push({id:'a_'+Date.now().toString(36), g, label:nm});
+  NEWACC=false; save(); render();
+}
+function delAcc(aid){
+  const fs=feeders(aid);
+  if(fs.length){ alertBar(accById(aid).label+' מוזנת מ-'+fs.length+' קטגוריות תזרימיות — נתקו אותן קודם'); return; }
+  ACC=ACC.filter(a=>a.id!==aid); save(); render();
+}
+let _bar=null;
+function alertBar(txt){
+  clearTimeout(_bar);
+  let el=document.getElementById('hkbar');
+  if(!el){el=document.createElement('div');el.id='hkbar';
+    el.style.cssText='position:fixed;inset-inline:0;bottom:18px;margin:auto;width:max-content;max-width:90vw;'+
+      'background:#0C4068;color:#fff;font-size:12.5px;font-weight:600;padding:10px 18px;border-radius:999px;'+
+      'box-shadow:0 8px 24px rgba(12,64,104,.28);z-index:99';
+    document.body.appendChild(el);}
+  el.textContent=txt; el.style.display='';
+  _bar=setTimeout(()=>{el.style.display='none';},2600);
+}
+
+function render(){ renderTop(); document.getElementById('view').innerHTML=TAB==='plan'?planHtml():mapHtml(); }
+if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
+if(location.hash==='#acc')MODE='acc'; if(location.hash==='#map')TAB='map'; if(location.hash==='#accmap'){MODE='acc';TAB='map';}
+render();
+</script>
+</body>
+</html>
