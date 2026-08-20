@@ -115,6 +115,8 @@
     const wasDone=opsDoneSet.has(opsActiveKey);
     if(wasDone && opsAccum[opsActiveKey]==null) opsAccum[opsActiveKey]=opsDur[opsActiveKey]||0;
     document.getElementById('opsDoneTag').style.display=wasDone?'':'none';
+    const _end=document.getElementById('opsEndBtn');
+    if(_end) _end.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> '+(wasDone?'סיכום התפעול':'סיום תפעול');
     document.getElementById('opsFinBtn').innerHTML =
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg> רענון נתונים';
     OPS_VIEW='open'; renderOps();
