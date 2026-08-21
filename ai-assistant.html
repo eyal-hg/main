@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>עוזר AI — HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0C4068; --sky:#39ABE2; --coral:#E8635A; --bg:#F4F7FA; --white:#fff;
+  --bd:#E6ECF4; --r:15px; --sh:0 6px 18px rgba(12,64,104,.08);
+  --green:#13895b; --red:#dc4436; --orange:#c98404; --purple:#7557E3;
+  --ink:#0C4068; --mut:#6B7F92; --mut2:#8A9AAB;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Rubik,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+b,strong{font-weight:600}
+.hide{display:none !important}
+
+/* ============ HEADER ============ */
+.top{background:var(--white);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:60}
+.top-in{max-width:1700px;min-width:1360px;margin:0 auto;padding:11px 26px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#39ABE2,#0C4068);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;flex:0 0 auto}
+.brand h1{font-size:17px;font-weight:600;letter-spacing:-.2px}
+.brand p{font-size:11.5px;color:var(--mut2);font-weight:300;margin-top:1px}
+.spacer{flex:1}
+.scope{display:flex;background:var(--bg);border:1px solid var(--bd);border-radius:11px;padding:3px;gap:2px}
+.scope button{padding:6px 13px;border-radius:8px;font-size:12.5px;color:var(--mut);font-weight:500;white-space:nowrap}
+.scope button.on{background:var(--white);color:var(--navy);font-weight:600;box-shadow:0 1px 3px rgba(12,64,104,.12)}
+.seg{display:flex;background:var(--bg);border:1px solid var(--bd);border-radius:11px;padding:3px;gap:2px}
+.seg button{padding:6px 14px;border-radius:8px;font-size:12.5px;color:var(--mut);font-weight:500;white-space:nowrap}
+.seg button.on{background:var(--navy);color:#fff;font-weight:500}
+.seglab{font-size:11.5px;color:var(--mut2);font-weight:300}
+.av{width:32px;height:32px;border-radius:50%;background:var(--coral);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:12.5px;font-weight:600}
+
+/* ============ SHELL ============ */
+.wrap{max-width:1700px;min-width:1360px;margin:0 auto;padding:18px 26px 0}
+.banner{border-radius:18px;padding:17px 24px;color:#fff;display:flex;align-items:center;gap:20px;
+  background:linear-gradient(100deg,#0C4068 0%,#12507f 55%,#1a6396 100%);
+  box-shadow:0 10px 26px rgba(12,64,104,.22);position:relative;overflow:hidden}
+.banner:after{content:"";position:absolute;left:-40px;top:-70px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(57,171,226,.34),transparent 68%);pointer-events:none}
+.pulse{width:9px;height:9px;border-radius:50%;background:#5BE39A;flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(91,227,154,.7);animation:pl 2.6s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(91,227,154,.55)}70%{box-shadow:0 0 0 11px rgba(91,227,154,0)}100%{box-shadow:0 0 0 0 rgba(91,227,154,0)}}
+.banner h2{font-size:19.5px;font-weight:600;letter-spacing:-.3px;white-space:nowrap}
+.banner .sub{font-size:12.5px;color:#BBD6EB;font-weight:300}
+.bdiv{width:1px;height:26px;background:rgba(255,255,255,.2)}
+.scanlab{font-size:11.5px;color:#9FC3DE;font-weight:300;white-space:nowrap}
+.schips{display:flex;gap:7px;flex-wrap:wrap;position:relative;z-index:1}
+.schip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.16);border-radius:9px;
+  padding:5px 11px;font-size:11.5px;color:#E4F0F8;white-space:nowrap;font-weight:300}
+
+.cols{display:grid;grid-template-columns:1fr 352px;gap:20px;align-items:start;padding:18px 0 0}
+.rail{display:flex;flex-direction:column;gap:14px;position:sticky;top:80px}
+.main{min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.card{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--sh)}
+.sechead{display:flex;align-items:baseline;gap:10px;padding:2px 4px 0}
+.sechead h3{font-size:15px;font-weight:600}
+.sechead p{font-size:12px;color:var(--mut2);font-weight:300}
+
+/* ============ FINDING CARDS ============ */
+.find{position:relative;padding:19px 24px 15px 22px;overflow:hidden}
+.find:before{content:"";position:absolute;right:0;top:0;bottom:0;width:5px}
+.find.t-pattern:before{background:var(--purple)} .find.t-link:before{background:var(--coral)}
+.find.t-change:before{background:var(--sky)} .find.t-scan:before{background:var(--green)}
+.fmeta{display:flex;align-items:center;gap:9px;margin-bottom:9px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:7px;letter-spacing:.2px}
+.t-pattern .tag{background:#F1EDFE;color:var(--purple)} .t-link .tag{background:#FDEEED;color:var(--red)}
+.t-change .tag{background:#E7F5FD;color:#1683BE} .t-scan .tag{background:#E6F4EE;color:var(--green)}
+.fmeta .m{font-size:11.5px;color:var(--mut2);font-weight:300}
+.fmeta .dot{color:#C7D4E1;font-size:9px}
+.find h4{font-size:19px;font-weight:600;letter-spacing:-.35px;line-height:1.42;margin-bottom:9px}
+.find .body{font-size:14px;color:#33556F;line-height:1.72;max-width:74ch}
+.find .body em{font-style:normal;font-weight:600;color:var(--navy)}
+.quote{margin:13px 0 0;background:#F7F9FC;border-radius:12px;padding:12px 16px;position:relative}
+.quote:before{content:"";position:absolute;right:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:#C9D8E6}
+.quote p{font-size:13.5px;color:#2E5573;line-height:1.6}
+.quote .src{font-size:11px;color:var(--mut2);margin-top:5px;font-weight:300}
+.srcs{display:flex;gap:6px;flex-wrap:wrap;margin-top:13px}
+.src-chip{display:inline-flex;align-items:center;gap:6px;background:#F4F7FA;border:1px solid var(--bd);
+  border-radius:8px;padding:4px 10px;font-size:11px;color:#5A7188;font-weight:300}
+.src-chip i{width:5px;height:5px;border-radius:50%;background:var(--sky);flex:0 0 auto;font-style:normal}
+.fact{display:flex;align-items:center;gap:9px;margin-top:14px;padding-top:13px;border-top:1px solid #EFF3F8;flex-wrap:wrap}
+.note{font-size:11.5px;color:var(--mut2);font-weight:300;margin-inline-start:auto;text-align:left;max-width:44ch}
+.note b{color:var(--orange);font-weight:600}
+
+/* buttons */
+.btn{border-radius:10px;padding:9px 17px;font-size:13px;font-weight:500;white-space:nowrap;
+  transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.btn.p{background:var(--navy);color:#fff} .btn.p:hover{background:#0a3557}
+.btn.s{background:var(--white);color:var(--navy);border:1px solid #D8E3EE} .btn.s:hover{border-color:var(--sky);color:#0a3557}
+.btn.g{background:var(--green);color:#fff} .btn.sky{background:var(--sky);color:#fff}
+.btn.sm{padding:6px 13px;font-size:12px;border-radius:9px}
+.btn:disabled{opacity:.55;cursor:default}
+
+/* scan list inside card */
+.scanrow{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--bd);
+  border-radius:11px;background:#FBFCFE;margin-top:9px}
+.scanrow .t{font-size:13.5px;font-weight:500;flex:1}
+.scanrow .t span{display:block;font-size:11.5px;color:var(--mut2);font-weight:300;margin-top:1px}
+.num{width:22px;height:22px;border-radius:7px;background:#EDF3F9;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;color:#4A7492;flex:0 0 auto}
+
+/* ============ RAIL ============ */
+.rcard{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--sh);padding:15px 16px}
+.rhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:11px}
+.rhead h5{font-size:13.5px;font-weight:600}
+.rhead span{font-size:11px;color:var(--mut2);font-weight:300}
+.work{background:linear-gradient(140deg,#0C4068,#17588c);color:#fff;border:none;position:relative;overflow:hidden;padding:16px 17px}
+.work:after{content:"";position:absolute;left:-30px;bottom:-60px;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle,rgba(57,171,226,.3),transparent 70%)}
+.work .rhead h5{color:#fff} .work .rhead span{color:#9FC3DE}
+.work .big{font-size:38px;font-weight:600;line-height:1;letter-spacing:-1px;position:relative;z-index:1}
+.work .cap{font-size:12.5px;color:#BBD6EB;font-weight:300;margin:5px 0 12px;position:relative;z-index:1;max-width:22ch}
+.bar{height:7px;border-radius:5px;overflow:hidden;display:flex;gap:2px;position:relative;z-index:1}
+.bar i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;position:relative;z-index:1}
+.legend span{font-size:11px;color:#CBDFEE;font-weight:300;display:inline-flex;align-items:center;gap:5px}
+.legend em{width:7px;height:7px;border-radius:2px;font-style:normal}
+
+.appr{border:1px solid #F0DFB8;background:#FFFCF4}
+.appr .rhead h5{color:#8A6100}
+.aitem{background:var(--white);border:1px solid #EDE3CC;border-radius:12px;padding:11px 13px;margin-bottom:9px}
+.aitem:last-child{margin-bottom:0}
+.aitem .h{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+.pill{font-size:10px;font-weight:600;padding:2.5px 8px;border-radius:6px}
+.pill.wa{background:#E6F4EE;color:var(--green)} .pill.tk{background:#EDF3F9;color:#3E6C93}
+.pill.mem{background:#F1EDFE;color:var(--purple)}
+.aitem .h em{font-size:10.5px;color:var(--mut2);font-weight:300;font-style:normal}
+.aitem p{font-size:12.5px;color:#3E6079;line-height:1.62}
+.aitem .acts{display:flex;gap:7px;justify-content:flex-end;margin-top:9px}
+.done-state{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--green);font-weight:500}
+.chk{width:18px;height:18px;border-radius:50%;background:var(--green);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:10px;flex:0 0 auto}
+.undo{margin-inline-start:auto;font-size:11.5px;color:var(--mut);text-decoration:underline;font-weight:300}
+
+.acc li{list-style:none;padding:9px 0;border-bottom:1px dashed #EAF0F6;display:flex;gap:9px;align-items:flex-start}
+.acc li:last-child{border-bottom:none;padding-bottom:0}
+.acc i{width:6px;height:6px;border-radius:50%;background:var(--sky);margin-top:7px;flex:0 0 auto;font-style:normal}
+.acc b{font-weight:600;font-size:12.5px} .acc span{font-size:12.5px;color:var(--mut);font-weight:300}
+
+.log li{list-style:none;padding:9px 0 9px 0;border-bottom:1px dashed #EAF0F6;position:relative;padding-inline-start:26px}
+.log li:last-child{border-bottom:none}
+.log .ic{position:absolute;right:0;top:9px;width:19px;height:19px;border-radius:6px;display:flex;
+  align-items:center;justify-content:center;font-size:9.5px}
+.log p{font-size:12.5px;line-height:1.55} .log p b{font-weight:600}
+.log em{display:block;font-size:11px;color:var(--mut2);font-weight:300;font-style:normal;margin-top:2px}
+
+.tmr{background:#F7FAFD;border:1px dashed #D5E2EE;box-shadow:none}
+.tmr p{font-size:12.5px;color:#4A6D88;line-height:1.62;font-weight:300}
+.tmr p b{color:var(--navy)}
+
+/* ============ CONVERSATION ============ */
+.crumb{display:flex;align-items:center;gap:10px;padding:2px 4px}
+.crumb .back{font-size:12.5px;color:var(--sky);font-weight:500}
+.crumb .txt{font-size:12.5px;color:var(--mut);font-weight:300;flex:1}
+.crumb .txt b{color:var(--navy);font-weight:600}
+.ask{background:var(--navy);color:#fff;border-radius:14px 14px 4px 14px;padding:11px 17px;font-size:14px;
+  align-self:flex-start;max-width:70%;box-shadow:0 4px 12px rgba(12,64,104,.16);font-weight:400}
+.askw{display:flex;justify-content:flex-start}
+.msg{padding:16px 20px 14px}
+.mhead{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.mav{width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,#39ABE2,#0C4068);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex:0 0 auto}
+.mhead b{font-size:12.5px;font-weight:600} .mhead span{font-size:11.5px;color:var(--mut2);font-weight:300}
+.think{border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:13px;background:#FBFCFE}
+.think>button{width:100%;display:flex;align-items:center;gap:9px;padding:9px 13px;font-size:12px;color:var(--mut);font-weight:300;text-align:right}
+.think>button b{color:#3E6C93;font-weight:600}
+.think>button .ar{margin-inline-start:auto;color:#9FB2C4;font-size:10px;transition:.2s}
+.think.open>button .ar{transform:rotate(180deg)}
+.tbody{border-top:1px solid var(--bd);padding:4px 13px 10px}
+.trow{display:flex;gap:12px;padding:7px 0;border-bottom:1px dashed #EAF0F6;align-items:flex-start}
+.trow:last-child{border-bottom:none}
+.trow .k{font-size:11px;color:#5D7A93;font-weight:500;width:150px;flex:0 0 auto}
+.trow .v{font-size:12.5px;color:#33556F;font-weight:300;flex:1;line-height:1.55}
+.trow .v b{font-weight:600;color:var(--navy)}
+.trow.no{opacity:.72} .trow.no .k{color:#93A6B8} .trow.no .v{color:#7B8FA1}
+.ans{font-size:14.5px;line-height:1.78;color:#26506D;max-width:78ch}
+.ans p+p{margin-top:11px}
+.ans b{color:var(--navy)}
+.cit{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;
+  border-radius:5px;background:#E7F1F9;color:#2E7CB0;font-size:10px;font-weight:600;vertical-align:1px;margin-inline-start:3px;margin-inline-end:0}
+.opener{margin-top:12px;background:#F2F8FC;border:1px solid #D9EAF6;border-radius:12px;padding:12px 15px}
+.opener .lab{font-size:10.5px;color:#2E7CB0;font-weight:600;margin-bottom:4px}
+.opener p{font-size:14px;color:#1F4C6B;line-height:1.6}
+.bullets{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.bullets div{display:flex;gap:9px;font-size:13.5px;color:#33556F;line-height:1.62}
+.bullets i{width:6px;height:6px;border-radius:50%;background:var(--sky);margin-top:8px;flex:0 0 auto;font-style:normal}
+.bullets b{color:var(--navy)}
+.canbar{margin-top:15px;padding-top:13px;border-top:1px solid #EFF3F8;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.canbar .lab{font-size:11.5px;color:var(--mut2);font-weight:300;display:inline-flex;align-items:center;gap:5px;margin-inline-end:3px}
+.srcstrip{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px solid #EFF3F8}
+.srcstrip .lab{font-size:11px;color:var(--mut2);font-weight:300;align-self:center;margin-inline-end:2px}
+.sref{display:inline-flex;align-items:center;gap:6px;background:#F4F7FA;border:1px solid var(--bd);border-radius:8px;
+  padding:4px 9px;font-size:11px;color:#5A7188;font-weight:300}
+.sref em{background:#E7F1F9;color:#2E7CB0;border-radius:4px;padding:0 4px;font-size:10px;font-weight:600;font-style:normal}
+
+.receipt{border:1px solid #CFE7DC;background:#F5FBF8;border-radius:14px;padding:14px 17px}
+.rc-h{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.rc-h b{font-size:13.5px;color:var(--green);font-weight:600;flex:1}
+.rc-h span{font-size:11.5px;color:#6E9184;font-weight:300}
+.rstep{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #DFEDE7;font-size:12.5px;color:#2F5A4B}
+.rstep:last-of-type{border-bottom:none}
+.rstep .t{flex:1} .rstep .tm{font-size:11px;color:#7FA396;font-weight:300}
+.rc-f{display:flex;gap:8px;justify-content:flex-end;margin-top:11px;padding-top:10px;border-top:1px solid #DFEDE7}
+
+.taskcard{border:1px solid #E1D8FA;background:#FBFAFF;border-radius:14px;padding:14px 17px}
+.tc-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.tc-h b{font-size:13.5px;font-weight:600}
+.taskcard .ttl{font-size:14.5px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.tmeta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.tmeta span{background:var(--white);border:1px solid #E4DCFB;border-radius:7px;padding:3px 9px;font-size:11px;color:#5C4B9C;font-weight:300}
+.tc-f{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid #EBE5FB}
+.tc-f .hint{font-size:11.5px;color:var(--mut2);font-weight:300;margin-inline-start:auto}
+
+/* ============ COMPOSER ============ */
+.main{padding-bottom:6px}
+.composer{position:sticky;bottom:0;padding:12px 0 16px;background:var(--bg);z-index:30}
+.composer:before{content:"";position:absolute;right:0;left:0;top:-30px;height:30px;
+  background:linear-gradient(to top,var(--bg),rgba(244,247,250,0));pointer-events:none}
+.ctxstrip{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:9px;position:relative}
+.ctxstrip>.lab{font-size:11.5px;color:var(--mut2);font-weight:300}
+.cchip{display:inline-flex;align-items:center;gap:7px;background:var(--white);border:1px solid #D8E3EE;
+  border-radius:9px;padding:5px 10px;font-size:11.5px;color:#3E6079;box-shadow:0 1px 2px rgba(12,64,104,.05)}
+.cchip b{font-weight:500} .cchip .x{color:#A9BACA;font-size:12px;line-height:1;padding:0 1px}
+.cchip .x:hover{color:var(--red)}
+.cchip.live{border-color:#B9E0F6;background:#F4FBFE}
+.cchip.live .lv{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#1683BE;font-weight:600}
+.cchip.live .lv i{width:5px;height:5px;border-radius:50%;background:#39ABE2;font-style:normal}
+.addctx{border:1px dashed #C2D3E2;border-radius:9px;padding:5px 11px;font-size:11.5px;color:#4A7492;font-weight:500}
+.addctx:hover{border-color:var(--sky);color:var(--sky)}
+.pop{position:absolute;bottom:34px;right:0;width:330px;background:var(--white);border:1px solid var(--bd);
+  border-radius:14px;box-shadow:0 14px 34px rgba(12,64,104,.17);padding:9px;z-index:50}
+.pop .ph{font-size:11px;color:var(--mut2);font-weight:300;padding:4px 8px 7px}
+.pop button.opt{display:flex;width:100%;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;text-align:right}
+.pop button.opt:hover{background:#F4F7FA}
+.pop .opt .t{font-size:12.5px;font-weight:500;flex:1}
+.pop .opt .t span{display:block;font-size:11px;color:var(--mut2);font-weight:300}
+.pop .opt .pl{font-size:15px;color:var(--sky)}
+.sugg{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.sugg>.lab{font-size:11.5px;color:var(--mut2);font-weight:300;display:inline-flex;align-items:center;gap:5px}
+.sc{background:var(--white);border:1px solid var(--bd);border-radius:9px;padding:6px 12px;font-size:12px;
+  color:#3E6079;font-weight:300;box-shadow:0 1px 2px rgba(12,64,104,.05)}
+.sc:hover{border-color:var(--sky);color:var(--navy)}
+.sc.act{border-color:#CFE4D9;background:#F6FBF9;color:#2F6D55}
+.sc.act em{font-style:normal;font-weight:600;color:var(--green);margin-inline-end:5px}
+.inbox{background:var(--white);border:1px solid var(--bd);border-radius:16px;box-shadow:0 6px 20px rgba(12,64,104,.1);padding:11px 13px}
+.inrow{display:flex;align-items:center;gap:11px}
+.inrow .ph{flex:1;font-size:13.5px;color:#98A9B9;font-weight:300}
+.send{width:36px;height:36px;border-radius:11px;background:var(--sky);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+.tools{display:flex;gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid #F0F4F8;flex-wrap:wrap}
+.tool{border:1px solid var(--bd);border-radius:9px;padding:5px 11px;font-size:11.5px;color:#4A7492;font-weight:400;
+  display:inline-flex;align-items:center;gap:6px}
+.tool:hover{border-color:var(--sky);color:var(--sky)}
+.foot{font-size:11px;color:#9FB0C0;font-weight:300;text-align:center;padding:2px 0 0}
+.tip{position:absolute;background:#0C4068;color:#fff;font-size:11px;padding:5px 9px;border-radius:7px;
+  white-space:nowrap;z-index:70;pointer-events:none;opacity:0;transition:.15s}
+
+/* ===== מצב הטמעה — המסך חי בתוך index.html כ-iframe ===== */
+body.is-embedded{background:transparent}
+body.is-embedded .top{background:var(--bg);border-bottom:0;padding-top:2px}
+body.is-embedded .top-in{padding:0 2px 0 2px;min-width:0}
+body.is-embedded .brand,body.is-embedded .av{display:none}
+body.is-embedded .wrap{padding:10px 14px 0;min-width:0;max-width:none}
+body.is-embedded .top-in{padding:0 14px}
+body.is-embedded .rail{top:56px}
+body.is-embedded .composer{padding-top:16px}
+body.is-embedded .ftr{padding-bottom:6px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div class="logo">✦</div>
+      <div><h1>עוזר AI</h1><p>מחובר לזיכרון הלקוח · לפגישות · למספרים · לתיק כולו</p></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="scope">
+      <button class="on">הלקוח הפעיל</button>
+      <button>כל התיק · 80 לקוחות</button>
+    </div>
+    <span class="seglab">תצוגה:</span>
+    <div class="seg">
+      <button id="tabA" class="on" onclick="setState('a')">מצב פתיחה</button>
+      <button id="tabB" onclick="setState('b')">אחרי כמה סבבים</button>
+    </div>
+    <div class="av">א</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="banner">
+    <span class="pulse"></span>
+    <div>
+      <h2 id="bannerTitle">3 ממצאים שדורשים אותך הבוקר</h2>
+      <div class="sub" id="bannerSub">הסריקה רצה ב־07:12 — לפני שנכנסת</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="bdiv"></div>
+    <span class="scanlab">מה נסרק:</span>
+    <div class="schips">
+      <span class="schip">80 לקוחות</span>
+      <span class="schip">הפגישות · תמלול וסיכומים</span>
+      <span class="schip">תזרים · יתרות · מסגרות</span>
+      <span class="schip">זיכרון הלקוח</span>
+    </div>
+  </div>
+
+  <div class="cols">
+
+    <!-- ================= MAIN ================= -->
+    <div class="main">
+
+      <!-- ---------- STATE A ---------- -->
+      <div id="stateA">
+        <div class="sechead" style="margin-bottom:12px">
+          <h3>הממצאים של הבוקר</h3>
+          <p>לחיצה על ממצא פותחת שיחה שכבר התחילה — לא תיבה ריקה.</p>
+        </div>
+
+        <div class="card find t-link" style="margin-bottom:14px">
+          <div class="fmeta">
+            <span class="tag">חיבור</span>
+            <span class="m">זיכרון הלקוח + הפגישה האחרונה</span>
+            <span class="dot">●</span><span class="m">חדש הבוקר</span>
+          </div>
+          <h4>התסכול שלו הוא לא המסגרת. הוא זמן התגובה.</h4>
+          <div class="body">
+            שני דברים עדיין פתוחים אצלו — <em>ההמתנה לדוח החודשי</em>, ו<em>תשובה כללית מדי שקיבל בצ׳אט על שאלת מע״מ (25.6)</em>.
+            שניהם על זמן ועל רזולוציה, לא על תוכן. לעומתם, טעות הקיטלוג מ־10.6 נסגרה לשביעות רצונו — כשיש תשובה מדויקת ומהירה, הוא מרוצה.
+            השיחה על המסגרת תיפול על הרקע הזה: אם היא תיפתח בהקדמה, היא תיקרא כעוד המתנה.
+          </div>
+          <div class="quote">
+            <p>״מאבד סבלנות מפתיחות. קצר, בלי ז׳רגון — פתח במספרים והצג פתרון לצד הבעיה.״</p>
+            <div class="src">זיכרון הלקוח · סגנון תקשורת</div>
+          </div>
+          <div class="srcs">
+            <span class="src-chip"><i></i>זיכרון · שביעות רצון · 25.6</span>
+            <span class="src-chip"><i></i>זיכרון · אירועים מהותיים · 10.6</span>
+            <span class="src-chip"><i></i>זיכרון · סגנון תקשורת</span>
+            <span class="src-chip"><i></i>פגישה אחרונה · תמלול</span>
+          </div>
+          <div class="fact">
+            <button class="btn p" onclick="setState('b')">הכן לי את השיחה על המסגרת ←</button>
+            <button class="btn s" onclick="railAdd('wa')">נסח וואטסאפ</button>
+            <button class="btn s" onclick="railAdd('mem')">עדכן זיכרון</button>
+            <div class="note"><b>שים לב:</b> לפני הצעה על מימון — לתאם עם משרד ברק. רו״ח חיצוני שמשפיע על ההחלטות האלה.</div>
+          </div>
+        </div>
+
+        <div class="card find t-pattern" style="margin-bottom:14px">
+          <div class="fmeta">
+            <span class="tag">דפוס</span>
+            <span class="m">חוצה את הפגישות שלך</span>
+            <span class="dot">●</span><span class="m">מהמשוב על ניהול הפגישה</span>
+          </div>
+          <h4>כשאתה פותח פגישה בעדכון כללי — המשימות נסגרות פחות.</h4>
+          <div class="body">
+            בפגישות שבהן המספרים עלו בשלוש הדקות הראשונות, רוב המשימות שנקבעו נסגרו עד הפגישה הבאה.
+            בפגישות שנפתחו בעדכון כללי לפני המספרים — פחות מהן נסגרו, והדיון על התוכן התחיל מאוחר יותר.
+            <em>אצל הלקוח הזה זה כתוב במפורש בזיכרון</em>, ובדיוק אצלו הפער הכי גדול.
+          </div>
+          <div class="srcs">
+            <span class="src-chip"><i></i>משוב על ניהול פגישות</span>
+            <span class="src-chip"><i></i>משימות שנקבעו מול נסגרו</span>
+            <span class="src-chip"><i></i>סיכומי פגישות</span>
+          </div>
+          <div class="fact">
+            <button class="btn p" onclick="setState('b')">צלול לפגישות האלה ←</button>
+            <button class="btn s" onclick="railAdd('tk')">הוסף לתבנית הפתיחה שלי</button>
+            <div class="note">רלוונטי כבר לפגישה הקרובה שלך.</div>
+          </div>
+        </div>
+
+        <div class="card find t-scan">
+          <div class="fmeta">
+            <span class="tag">סריקת תיק</span>
+            <span class="m">80 לקוחות</span>
+            <span class="dot">●</span><span class="m">מוכן להרצה — התוצאה תיפתח כרשימה</span>
+          </div>
+          <h4>שלוש סריקות שאני יכול להריץ על התיק עכשיו.</h4>
+          <div class="body" style="margin-bottom:2px">אלה הסריקות שאני מריץ הכי הרבה. כל אחת מחזירה רשימה שמית עם הסיבה לכל שורה — ואפשר להפוך כל שורה למשימה או להודעה.</div>
+          <div class="scanrow">
+            <span class="num">1</span>
+            <div class="t">מי בתיק בסיכון החודש<span>לפי תזרים, יתרות ומצב המסגרות</span></div>
+            <button class="btn s sm" onclick="setState('b')">הרץ</button>
+          </div>
+          <div class="scanrow">
+            <span class="num">2</span>
+            <div class="t">מי לא העביר חומר<span>ומה בדיוק חסר אצל כל אחד</span></div>
+            <button class="btn s sm" onclick="setState('b')">הרץ</button>
+          </div>
+          <div class="scanrow">
+            <span class="num">3</span>
+            <div class="t">עם מי לא נפגשת<span>מי נשמט מהיומן ומתי הייתה הפגישה האחרונה</span></div>
+            <button class="btn s sm" onclick="setState('b')">הרץ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- STATE B ---------- -->
+      <div id="stateB" class="hide" style="display:flex;flex-direction:column;gap:14px">
+
+        <div class="crumb">
+          <button class="back" onclick="setState('a')">→ חזרה לממצאים</button>
+          <div class="txt">מתוך הממצא של הבוקר: <b>התסכול שלו הוא לא המסגרת. הוא זמן התגובה.</b></div>
+        </div>
+
+        <div class="card msg">
+          <div class="mhead"><div class="mav">✦</div><b>העוזר</b><span>· 08:14 · פתח את הממצא</span></div>
+          <div class="think open">
+            <button onclick="this.parentElement.classList.toggle('open');this.parentElement.querySelector('.tbody').classList.toggle('hide')">
+              <span>◷</span><span>מה שלפתי כדי לענות — <b>5 מקורות</b>, ומה השארתי בחוץ</span><span class="ar">▼</span>
+            </button>
+            <div class="tbody">
+              <div class="trow"><div class="k">זיכרון · שביעות רצון</div><div class="v">שני נושאים פתוחים: <b>ההמתנה לדוח החודשי</b>, <b>תשובת מע״מ כללית מדי בצ׳אט (25.6)</b></div></div>
+              <div class="trow"><div class="k">זיכרון · אירועים מהותיים</div><div class="v">טעות קיטלוג <b>10.6</b> — נסגרה לשביעות רצונו</div></div>
+              <div class="trow"><div class="k">זיכרון · סגנון תקשורת</div><div class="v">״מאבד סבלנות מפתיחות. קצר, בלי ז׳רגון״</div></div>
+              <div class="trow"><div class="k">זיכרון · שיתוף פעולה</div><div class="v">רו״ח חיצוני (<b>משרד ברק</b>) משפיע על החלטות מימון</div></div>
+              <div class="trow"><div class="k">פגישה אחרונה · תמלול</div><div class="v">איך הנושא עלה ובאיזה טון</div></div>
+              <div class="trow no"><div class="k">לא נשלף · תקציב מול ביצוע</div><div class="v">לא רלוונטי לשאלת הסגנון — אשלוף אם תבקש מספרים</div></div>
+            </div>
+          </div>
+          <div class="ans">
+            <p>שני הדברים שנשארו פתוחים אצלו הם על <b>זמן ורזולוציה</b>, לא על תוכן<span class="cit">1</span>: ההמתנה לדוח החודשי, ותשובת המע״מ הכללית מדי מ־25.6. מה שהיה בעיית תוכן אמיתית — טעות הקיטלוג מ־10.6 — נסגר לשביעות רצונו<span class="cit">2</span>.</p>
+            <p>המשמעות לשיחה על המסגרת: <b>הבעיה שלו איתך היא לא אי־הסכמה, היא קצב.</b> אם היא תיפתח בהקדמה או בהסבר מתודולוגי, הוא יקרא את זה כעוד המתנה<span class="cit">3</span> — וזה ייצבע את כל השאר.</p>
+          </div>
+          <div class="srcstrip">
+            <span class="lab">מקורות:</span>
+            <span class="sref"><em>1</em>זיכרון · שביעות רצון · 25.6</span>
+            <span class="sref"><em>2</em>זיכרון · אירועים מהותיים · 10.6</span>
+            <span class="sref"><em>3</em>זיכרון · סגנון תקשורת</span>
+          </div>
+          <div class="canbar">
+            <span class="lab">✦ מה אני יכול לעשות עכשיו:</span>
+            <button class="btn p sm" onclick="scrollDown()">הכן לי פתיחה לשיחה</button>
+            <button class="btn s sm" onclick="railAdd('wa')">נסח לו הודעה על הדוח</button>
+            <button class="btn s sm" onclick="railAdd('tk')">פתח משימה לסגירת שני הפתוחים</button>
+          </div>
+        </div>
+
+        <div class="askw"><div class="ask">אז איך אני פותח איתו מחר?</div></div>
+
+        <div class="card msg">
+          <div class="mhead"><div class="mav">✦</div><b>העוזר</b><span>· 08:16</span></div>
+          <div class="think">
+            <button onclick="this.parentElement.classList.toggle('open');this.parentElement.querySelector('.tbody').classList.toggle('hide')">
+              <span>◷</span><span>מה שלפתי כדי לענות — <b>3 מקורות</b>: סגנון תקשורת, שיתוף פעולה, 2 נושאים פתוחים</span><span class="ar">▼</span>
+            </button>
+            <div class="tbody hide">
+              <div class="trow"><div class="k">זיכרון · סגנון תקשורת</div><div class="v">פתח במספרים, פתרון לצד הבעיה, בלי ז׳רגון</div></div>
+              <div class="trow"><div class="k">זיכרון · שביעות רצון</div><div class="v">שני נושאים פתוחים שצריך לסגור לפני שממשיכים</div></div>
+              <div class="trow"><div class="k">זיכרון · שיתוף פעולה</div><div class="v">משרד ברק — לתאם לפני הצעת מימון</div></div>
+            </div>
+          </div>
+          <div class="ans"><p>שלוש שורות פתיחה, לפי הסדר. אל תוסיף ביניהן הסבר:</p></div>
+          <div class="opener">
+            <div class="lab">פתיחה מוצעת</div>
+            <p>״המספרים על השולחן, ואחר כך אני אומר מה אני מציע.״</p>
+          </div>
+          <div class="bullets">
+            <div><i></i><span>מיד אחרי — <b>הצג את הפתרון לצד הבעיה ולא אחריה.</b> הוא מאבד סבלנות בפער שביניהן.</span></div>
+            <div><i></i><span>סגור לו את שני הפתוחים לפני שהוא מעלה אותם: מתי הדוח החודשי אצלו, ותשובה קונקרטית על המע״מ במקום הכללית.</span></div>
+            <div><i></i><span>אל תיכנס למונחים. קצר, בלי ז׳רגון.</span></div>
+            <div><i></i><span>נקודה אחת לפני שאתה מציע מימון: <b>ההחלטה הזו לא נגמרת אצלו.</b> בזיכרון רשום שרו״ח חיצוני — משרד ברק — משפיע על ההחלטות האלה.</span></div>
+          </div>
+          <div class="canbar">
+            <span class="lab">✦ מה אני יכול לעשות עכשיו:</span>
+            <button class="btn p sm" id="brakBtn" onclick="approveBrak()">נסח פנייה לתיאום עם משרד ברק</button>
+            <button class="btn s sm" onclick="railAdd('tk')">פתח משימה לפני הפגישה</button>
+            <button class="btn s sm" onclick="railAdd('mem')">עדכן את הזיכרון מהשיחה הזו</button>
+          </div>
+        </div>
+
+        <div class="card msg" id="brakCard" style="display:none">
+          <div class="mhead"><div class="mav">✦</div><b>העוזר</b><span>· 08:17 · טיוטה שהכנתי</span></div>
+          <div class="taskcard">
+            <div class="tc-h"><span class="pill tk">משימה + טיוטת פנייה</span><b>מוכן לאישור שלך</b></div>
+            <div class="ttl">תיאום עם משרד ברק לפני הצעת המימון</div>
+            <div class="tmeta"><span>מקור: זיכרון · שיתוף פעולה</span><span>לפני הפגישה הקרובה</span><span>יופיע ב״המשימות שלי״</span></div>
+            <div class="quote" style="margin-top:0"><p>״היי, לפני שאני מציג ללקוח כיוון על המסגרת — רציתי לתאם אתכם. אשמח לחמש דקות השבוע.״</p><div class="src">טיוטה — ניתנת לעריכה לפני שליחה</div></div>
+            <div class="tc-f">
+              <button class="btn g sm" onclick="doBrak(this)">✓ אשר ופתח</button>
+              <button class="btn s sm">עריכה</button>
+              <span class="hint">כלום לא יוצא בלי אישור שלך.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card msg" id="brakDone" style="display:none">
+          <div class="mhead"><div class="mav">✦</div><b>העוזר</b><span>· 08:17</span></div>
+          <div class="receipt">
+            <div class="rc-h"><span class="chk">✓</span><b>בוצע — התיאום נפתח</b><span>לפני רגע</span></div>
+            <div class="rstep"><span class="chk">✓</span><span class="t">נפתחה משימה: תיאום עם משרד ברק לפני הצעת מימון</span><span class="tm">08:17</span></div>
+            <div class="rstep"><span class="chk">✓</span><span class="t">טיוטת הפנייה צורפה למשימה</span><span class="tm">08:17</span></div>
+            <div class="rstep"><span class="chk">✓</span><span class="t">הזיכרון עודכן: ״תיאום מול ברק — בתהליך״</span><span class="tm">08:17</span></div>
+            <div class="rc-f">
+              <button class="btn s sm">צפה במשימה</button>
+              <button class="btn s sm" onclick="undoBrak()">בטל</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- COMPOSER ---------- -->
+      <div class="composer">
+        <div class="ctxstrip" id="ctxstrip">
+          <span class="lab">בהקשר עכשיו:</span>
+          <span class="cchip live" id="cc0"><span class="lv"><i></i>עוקב</span><b>הלקוח הפעיל</b><button class="x" onclick="rmCtx('cc0')">✕</button></span>
+          <span class="cchip" id="cc1"><b>זיכרון הלקוח</b><span style="color:#8A9AAB">· 9 קטגוריות</span><button class="x" onclick="rmCtx('cc1')">✕</button></span>
+          <span class="cchip" id="cc2"><b>פגישה 25.6</b><span style="color:#8A9AAB">· תמלול וסיכום</span><button class="x" onclick="rmCtx('cc2')">✕</button></span>
+          <button class="addctx" onclick="togglePop(event)">+ הוסף הקשר</button>
+          <div class="pop hide" id="pop">
+            <div class="ph">מה עוד לטעון לשיחה הזו</div>
+            <button class="opt" onclick="addCtx('תזרים · יתרות · מסגרות','המספרים העדכניים')"><span class="pl">+</span><span class="t">תזרים · יתרות · מסגרות<span>המספרים העדכניים של הלקוח</span></span></button>
+            <button class="opt" onclick="addCtx('תקציב מול ביצוע','מה תוכנן מול מה שקרה')"><span class="pl">+</span><span class="t">תקציב מול ביצוע<span>מה תוכנן מול מה שקרה</span></span></button>
+            <button class="opt" onclick="addCtx('ספקים ומקדמות','')"><span class="pl">+</span><span class="t">ספקים ומקדמות<span>מי, כמה ומתי</span></span></button>
+            <button class="opt" onclick="addCtx('פגישה 10.6','תמלול מלא')"><span class="pl">+</span><span class="t">פגישה 10.6<span>התמלול שבו עלתה טעות הקיטלוג</span></span></button>
+            <button class="opt" onclick="addCtx('התיק כולו · 80 לקוחות','')"><span class="pl">+</span><span class="t">התיק כולו · 80 לקוחות<span>להשוואה מול שאר הלקוחות</span></span></button>
+          </div>
+        </div>
+        <div class="sugg" id="sugg">
+          <span class="lab">✦ נסה לשאול:</span>
+          <button class="sc" onclick="setState('b')">ממה הוא היה מתוסכל בפעם שעברה?</button>
+          <button class="sc" onclick="setState('b')">מי בתיק בסיכון החודש?</button>
+          <button class="sc act" onclick="railAdd('tk')"><em>פעולה</em>הכן לי חומר לפגישה הקרובה</button>
+          <button class="sc act" onclick="railAdd('wa')"><em>פעולה</em>נסח לו עדכון על הדוח</button>
+        </div>
+        <div class="inbox">
+          <div class="inrow">
+            <div class="ph">שאל אותי — או בקש ממני לעשות. למשל: ״נסח לו הודעה על הדוח ופתח לי משימת מעקב״</div>
+            <button class="send">➤</button>
+          </div>
+          <div class="tools">
+            <button class="tool">+ פתח משימה</button>
+            <button class="tool">✉ נסח וואטסאפ</button>
+            <button class="tool">◈ עדכן זיכרון</button>
+            <button class="tool">▤ הכן חומר לפגישה</button>
+          </div>
+        </div>
+        <div class="foot">כל פעולה עוברת אישור שלך · לכל טענה יש מקור ותאריך</div>
+      </div>
+    </div>
+
+    <!-- ================= RAIL ================= -->
+    <div class="rail">
+
+      <div class="rcard work">
+        <div class="rhead"><h5>⚡ מה עשיתי בשבילך השבוע</h5><span id="wkTime">מתעדכן</span></div>
+        <div class="big" id="wkNum">6</div>
+        <div class="cap">פעולות שביצעתי במקומך — אחרי אישור</div>
+        <div class="bar">
+          <i style="background:#E8635A;width:17%"></i><i style="background:#13895b;width:33%"></i>
+          <i style="background:#7557E3;width:33%"></i><i style="background:#39ABE2;width:17%"></i>
+        </div>
+        <div class="legend">
+          <span><em style="background:#E8635A"></em>חומר לפגישה 1</span>
+          <span><em style="background:#13895b"></em>הודעות 2</span>
+          <span><em style="background:#7557E3"></em>משימות 2</span>
+          <span><em style="background:#39ABE2"></em>זיכרון 1</span>
+        </div>
+      </div>
+
+      <div class="rcard appr" id="apprCard">
+        <div class="rhead"><h5>◷ מוכן לאישור — מחכה לך</h5><span id="apprCount">2</span></div>
+        <div id="apprList">
+          <div class="aitem" id="ai-wa">
+            <div class="h"><span class="pill wa">וואטסאפ</span><em>ללקוח שלא העביר חומר · פעם שנייה ברציפות</em></div>
+            <p>״היי, כדי לסגור את החודש חסר לי רק החומר של החודש הקודם. שולח בהמשך רשימה קצרה של מה שחסר — זה קצר.״</p>
+            <div class="acts"><button class="btn s sm">ערוך</button><button class="btn p sm" onclick="approve(this,'ai-wa','ההודעה נשלחה')">אשר ושלח</button></div>
+          </div>
+          <div class="aitem" id="ai-tk">
+            <div class="h"><span class="pill tk">משימה</span><em>נוסחה מהפגישה האחרונה</em></div>
+            <p>לסגור את הנושא שעלה בפגישה ונשאר בלי סגירה — אצל שני לקוחות שלא נפגשתם מעל חודשיים.</p>
+            <div class="acts"><button class="btn s sm">ערוך</button><button class="btn p sm" onclick="approve(this,'ai-tk','המשימות נפתחו')">פתח משימות</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rcard" id="accessCard">
+        <div class="rhead"><h5>מה יש לעוזר גישה אליו</h5><span>מעודכן</span></div>
+        <ul class="acc">
+          <li><i></i><div><b>זיכרון הלקוח</b> <span>— מצב תזרימי, כאבים, יעדים והסכמות, סגנון תקשורת, שביעות רצון. עם תאריך ומקור לכל קביעה.</span></div></li>
+          <li><i style="background:#7557E3"></i><div><b>הפגישות</b> <span>— תמלול מלא, סיכומים, משימות, ומשוב על ניהול הפגישה.</span></div></li>
+          <li><i style="background:#13895b"></i><div><b>המספרים</b> <span>— תזרים, יתרות, מסגרות אשראי, תקציב מול ביצוע, מקדמות, ספקים.</span></div></li>
+          <li><i style="background:#E8635A"></i><div><b>התיק כולו</b> <span>— 80 לקוחות: מי בסיכון, מי לא הביא חומר, עם מי לא נפגשת.</span></div></li>
+          <li><i style="background:#c98404"></i><div><b>ויכול גם לפעול</b> <span>— לפתוח משימה, לנסח וואטסאפ, לעדכן זיכרון, להכין חומר לפגישה.</span></div></li>
+        </ul>
+      </div>
+
+      <div class="rcard" id="logCard" style="display:none">
+        <div class="rhead"><h5>יומן הפעולות</h5><span>הכל הפיך</span></div>
+        <ul class="log" id="logList">
+          <li><span class="ic" style="background:#E6F4EE;color:#13895b">✉</span>
+            <p><b>ניסחתי ושלחתי הודעה</b> ללקוח על עדכון מצב</p><em>אתמול 17:20 · אושר על ידך</em></li>
+          <li><span class="ic" style="background:#F1EDFE;color:#7557E3">◈</span>
+            <p><b>עדכנתי את הזיכרון:</b> טעות הקיטלוג מ־10.6 נסגרה לשביעות רצונו</p><em>אתמול 09:05 · מקור: סיכום פגישה</em></li>
+          <li><span class="ic" style="background:#EDF3F9;color:#3E6C93">☑</span>
+            <p><b>פתחתי משימה:</b> לחזור ללקוח על שאלת המע״מ</p><em>מהצ׳אט של 25.6</em></li>
+          <li><span class="ic" style="background:#FDEEED;color:#E8635A">▤</span>
+            <p><b>הכנתי חומר לפגישה</b> מתוך התמלול האחרון</p><em>4 נקודות פתוחות</em></li>
+        </ul>
+      </div>
+
+      <div class="rcard tmr" id="tmrCard">
+        <div class="rhead"><h5>מחר בבוקר</h5><span>07:12</span></div>
+        <p>אסרוק שוב את התיק ואביא ממצאים חדשים — כולל מעקב אם השיחה על המסגרת אכן נפתחה במספרים, ואם שני הפתוחים נסגרו.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- state switch ---------- */
+function setState(s){
+  var a=document.getElementById('stateA'), b=document.getElementById('stateB');
+  var isB = s==='b';
+  a.classList.toggle('hide',isB); b.classList.toggle('hide',!isB);
+  document.getElementById('tabA').classList.toggle('on',!isB);
+  document.getElementById('tabB').classList.toggle('on',isB);
+  document.getElementById('accessCard').style.display = isB?'none':'block';
+  document.getElementById('logCard').style.display = isB?'block':'none';
+  document.getElementById('tmrCard').style.display = isB?'none':'block';
+  document.getElementById('bannerTitle').textContent = isB
+    ? 'ממצא 1 מתוך 3 — פתוח בשיחה'
+    : '3 ממצאים שדורשים אותך הבוקר';
+  document.getElementById('bannerSub').textContent = isB
+    ? 'עוד 2 ממצאים מחכים · הסריקה רצה ב־07:12'
+    : 'הסריקה רצה ב־07:12 — לפני שנכנסת';
+  if(isB){ document.getElementById('cc2').classList.add('live'); }
+  window.scrollTo({top:0,behavior:'instant'});
+  location.hash = isB?'b':'';
+}
+
+/* ---------- approvals ---------- */
+var week = 6;
+function bumpWeek(){ week++; document.getElementById('wkNum').textContent = week;
+  document.getElementById('wkTime').textContent='עודכן עכשיו'; }
+function approve(btn,id,label){
+  var item = document.getElementById(id);
+  item.innerHTML = '<div class="done-state"><span class="chk">✓</span><span>'+label+'</span>'+
+    '<button class="undo" onclick="void 0">בטל</button></div>';
+  bumpWeek();
+  var n = document.getElementById('apprList').querySelectorAll('.acts').length;
+  document.getElementById('apprCount').textContent = n;
+  if(n===0){ document.getElementById('apprCard').querySelector('h5').textContent='◷ הכל אושר — אין ממתינים'; }
+}
+function railAdd(kind){
+  var map = {wa:['וואטסאפ','wa','טיוטה חדשה מהשיחה — מוכנה לשליחה','אשר ושלח','ההודעה נשלחה'],
+             tk:['משימה','tk','משימה שנוסחה מהשיחה — מוכנה לפתיחה','פתח משימה','המשימה נפתחה'],
+             mem:['זיכרון','mem','עדכון זיכרון שנגזר מהשיחה — ממתין לאישורך','אשר עדכון','הזיכרון עודכן']};
+  var m = map[kind]; var id='ai-'+kind+'-'+Date.now();
+  var el = document.createElement('div'); el.className='aitem'; el.id=id;
+  el.innerHTML = '<div class="h"><span class="pill '+m[1]+'">'+m[0]+'</span><em>נוצר עכשיו מהשיחה</em></div>'+
+    '<p>'+m[2]+'</p><div class="acts"><button class="btn s sm">ערוך</button>'+
+    '<button class="btn p sm" onclick="approve(this,\''+id+'\',\''+m[4]+'\')">'+m[3]+'</button></div>';
+  var list = document.getElementById('apprList'); list.insertBefore(el,list.firstChild);
+  var card = document.getElementById('apprCard');
+  card.querySelector('h5').textContent='◷ מוכן לאישור — מחכה לך';
+  document.getElementById('apprCount').textContent = list.querySelectorAll('.acts').length;
+  el.animate([{opacity:0,transform:'translateY(-6px)'},{opacity:1,transform:'none'}],{duration:260});
+}
+
+/* ---------- conversation actions ---------- */
+function approveBrak(instant){
+  document.getElementById('brakCard').style.display='block';
+  document.getElementById('brakBtn').disabled=true;
+  if(instant===undefined) document.getElementById('brakCard').scrollIntoView({block:'center',behavior:'smooth'});
+}
+function doBrak(btn){
+  document.getElementById('brakCard').style.display='none';
+  document.getElementById('brakDone').style.display='block';
+  bumpWeek();
+  var l=document.getElementById('logList');
+  var li=document.createElement('li');
+  li.innerHTML='<span class="ic" style="background:#EDF3F9;color:#3E6C93">☑</span>'+
+    '<p><b>פתחתי משימה:</b> תיאום עם משרד ברק לפני הצעת מימון</p><em>לפני רגע · אושר על ידך</em>';
+  l.insertBefore(li,l.firstChild);
+}
+function undoBrak(){
+  document.getElementById('brakDone').style.display='none';
+  document.getElementById('brakCard').style.display='block';
+  week--; document.getElementById('wkNum').textContent=week;
+  var l=document.getElementById('logList'); if(l.firstElementChild) l.removeChild(l.firstElementChild);
+}
+function scrollDown(){ window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); }
+
+/* ---------- context chips ---------- */
+function rmCtx(id){ var e=document.getElementById(id); if(e) e.remove(); }
+function togglePop(ev){ ev.stopPropagation(); document.getElementById('pop').classList.toggle('hide'); }
+function addCtx(name,sub){
+  var strip=document.getElementById('ctxstrip');
+  var id='cx'+Date.now();
+  var s=document.createElement('span'); s.className='cchip'; s.id=id;
+  s.innerHTML='<b>'+name+'</b>'+(sub?'<span style="color:#8A9AAB">· '+sub+'</span>':'')+
+    '<button class="x" onclick="rmCtx(\''+id+'\')">✕</button>';
+  strip.insertBefore(s, strip.querySelector('.addctx'));
+  document.getElementById('pop').classList.add('hide');
+  s.animate([{opacity:0,transform:'scale(.94)'},{opacity:1,transform:'none'}],{duration:220});
+}
+document.addEventListener('click',function(){ document.getElementById('pop').classList.add('hide'); });
+document.getElementById('pop').addEventListener('click',function(e){ e.stopPropagation(); });
+
+/* ===== הטמעה: מסתירים את המעטפת ומדווחים גובה לאפליקציה ===== */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.body.classList.add('is-embedded');
+})();
+
+if(location.hash==='#b') setState('b');
+if(location.hash==='#b2'){ setState('b'); approveBrak(0); }
+if(location.hash==='#tail'){ setState('b'); approveBrak(0); doBrak(); document.querySelectorAll('#stateB > .card')[0].classList.add('hide'); document.querySelector('#stateB .crumb').classList.add('hide'); }
+
+</script>
+</body>
+</html>

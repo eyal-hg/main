@@ -153,7 +153,11 @@
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
-    else if(t==='chat'){document.getElementById('viewChat').style.display='';renderChat();}
+    else if(t==='chat'){
+      document.getElementById('viewChat').style.display='';
+      const aif=document.getElementById('aiFrame');
+      if(aif&&!aif.src) aif.src=aif.dataset.src;   // מסך העוזר — קובץ עצמאי
+    }
     else if(t==='meetings'){
       document.getElementById('viewMeetings').style.display='';
       const mf=document.getElementById('meetFrame');
