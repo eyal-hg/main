@@ -147,6 +147,10 @@
     if(d.hkMeet&&d.h>200){ const f=document.getElementById('meetFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkArena&&d.h>200){ const f=document.getElementById('arenaFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkCl&&d.h>200){ const f=document.getElementById('clFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
+    if(d.hkClReady){ /* מסך הלקוחות מבקש את שמות התיק האמיתיים */
+      const f=document.getElementById('clFrame');
+      if(f&&f.contentWindow) f.contentWindow.postMessage({hkClNames:CLIENTS.map(c=>c.name)},'*');
+      return; }
     if(d.hkClOpen){ /* "פתיחת החברה" — מעבר לסביבת העבודה של אותה חברה */
       const ix=CLIENTS.findIndex(c=>c.name===d.nm);
       if(ix>=0){ selectClient(ix); showTab('dash'); }

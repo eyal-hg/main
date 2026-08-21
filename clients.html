@@ -411,6 +411,10 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   .kpi:nth-child(n+5){border-top:1px solid var(--bd)}
 }
 
+.att .rw.more{cursor:pointer;color:#3E7BA6;font-weight:500;justify-content:flex-start;gap:5px}
+.att .rw.more:hover{background:#F2F8FC}
+.att .rw.more b{color:var(--navy)}
+
 /* ===== מצב הטמעה — המסך חי בתוך index.html כ-iframe ===== */
 body.is-embedded{background:transparent}
 body.is-embedded .app{min-height:0}
@@ -476,6 +480,53 @@ const CO = [
 ];
 const RK = {red:'#dc4436', orange:'#c98404', green:'#13895b', cyan:'#39ABE2', grey:'#C4D2DF'};
 
+/* ===== התיק המלא — 80 חברות =====
+   שמונה החברות למעלה נושאות את התוכן; השאר נוצרות דטרמיניסטית (LCG, בלי Math.random)
+   באותו אלגוריתם ובאותו זרע כמו js/data.js, כדי ששני המסכים יציגו את אותו תיק. */
+(function seedPortfolio(){
+  const A=['אלפא','ברק','גל','דלתא','הדר','ורד','זוהר','חורש','טל','יובל','כרמל','לביא','מגן','נוף','סהר','עומר','פלג','צור','קדם','רימון','שחף','תמר','אביב','בזלת','גפן','דקל','הראל','ורדית','זית','חמדה'];
+  const B=['תעשיות','שיווק','הנדסה','לוגיסטיקה','בנייה','אחזקות','מערכות','ייבוא','מזון','טכנולוגיות','אנרגיה','רהיטים','טקסטיל','דפוס','חשמל','פלסטיק','תקשורת','רכב','נדל״ן','מתכת','אריזות','כימיקלים','ספנות','תעופה','ביטחון'];
+  const MGRS=['לירון בן כליפא','שמרית טובול','נועה ברששת','אבי מזרחי','דנה שקד','יוסי אלימלך'];
+  const PRODS=[['Money','money'],['Money+','moneyp'],['Meeting','meet']];
+  let s=97;
+  const rnd=()=>((s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff);
+  const pick=a=>a[Math.floor(rnd()*a.length)];
+  const used=new Set(CO.map(c=>c.nm));
+  let n=0;
+  while(CO.length<80){
+    let nm; let guard=0;
+    do{ nm=pick(A)+' '+pick(B); guard++; }while(used.has(nm)&&guard<400);
+    used.add(nm); n++;
+    const r=rnd();
+    const grp = r<0.10?'arch' : r<0.17?'setup' : 'live';
+    const bal = grp==='live' ? 40000+Math.floor(rnd()*760)*1000 : null;
+    const coop = grp==='live' ? Math.floor(rnd()*26) : null;
+    const alert = grp==='live' && rnd()<0.20;
+    const high = alert && rnd()<0.45;
+    const [pl,pc] = grp==='arch' ? [null,null] : PRODS[Math.floor(rnd()*3)];
+    const late = grp==='live' && coop>14;
+    CO.push({
+      id:'g'+n, nm, hp:String(510000000+Math.floor(rnd()*4999999)),
+      mgr: grp==='arch'?null:MGRS[Math.floor(rnd()*MGRS.length)],
+      prod:pl, pc:pc, bal,
+      trend: grp!=='live' ? 'na' : (rnd()<0.55?'up':'dn'),
+      st: grp==='arch' ? 'ארכיון'
+        : grp==='setup' ? 'בהקמה — ממתין להרשאות בנק'
+        : high ? 'חריגה צפויה בעו״ש'
+        : alert ? 'קרוב לתקרת התקציב'
+        : late ? 'תקין — חומר חסר'
+        : 'תקין — עומד ביעדים',
+      risk: grp==='arch'?'grey' : grp==='setup'?'cyan' : high?'red' : alert?'orange' : 'green',
+      grp,
+      mat: grp==='live' ? (late?'12.06':'01.07') : null,
+      warn: grp==='setup' ? 'טרם התקבל חומר' : (late? coop+' יום' : null),
+      focus: high?'cash' : alert?'budget' : late?'material' : grp==='setup'?'setup' : null,
+      gen:true
+    });
+  }
+})();
+
+
 /* attention groups — every item is a fact that was supplied */
 const ATT = [
  {id:'a1', t:'חריגה פעילה', c:'#dc4436', items:[
@@ -492,6 +543,20 @@ const ATT = [
    {co:'dekel',  tx:'דקל לוגיסטיקה', dt:'טרם התקבל חומר', focus:'setup'}]},
 ];
 const HANDLED = {};
+
+/* התור מתעדכן — החברות שנוצרו נכנסות לקבוצות לפי אותן עובדות */
+CO.filter(c=>c.gen).forEach(c=>{
+  if(c.risk==='red')    ATT[0].items.push({co:c.id, tx:c.nm, dt:'בעו״ש', focus:'cash'});
+  if(c.warn && c.grp==='live') ATT[1].items.push({co:c.id, tx:c.nm, dt:c.warn, focus:'material'});
+  if(c.risk==='orange') ATT[2].items.push({co:c.id, tx:c.nm, dt:'קרוב לתקרה', focus:'budget'});
+  if(c.grp==='setup')   ATT[3].items.push({co:c.id, tx:c.nm, dt:'טרם התקבל חומר', focus:'setup'});
+});
+const TOTAL_ALL = CO.reduce((a,c)=>a+(c.bal||0),0);
+const CNT = k => CO.filter(c=> k==='all'?true : k==='live'?c.grp==='live'
+  : k==='risk'?(c.risk==='red'||c.risk==='orange') : k==='quiet'?!!c.warn
+  : k==='setup'?c.grp==='setup' : c.grp==='arch').length;
+const MIX = () => { const m={Money:0,'Money+':0,Meeting:0,none:0};
+  CO.forEach(c=>{ m[c.prod||'none']++; }); return m; };
 
 /* ---- energy card financials (all supplied) ---- */
 const FIN = {
@@ -600,9 +665,16 @@ function screenA(){
     if(TFILTER==='quiet') return !!c.warn;
     if(TFILTER==='setup') return c.grp==='setup';
     if(TFILTER==='arch') return c.grp==='arch';
+    if(TFILTER.startsWith('att:')){
+      const g=ATT.find(a=>a.id===TFILTER.slice(4));
+      return !!g && g.items.some(i=>i.co===c.id && !HANDLED[g.id+i.co]);
+    }
     return true;
   });
   const sumShown = rows.reduce((a,c)=>a+(c.bal||0),0);
+  const mix = MIX();
+  const inQueue = new Set(ATT.flatMap(a=>a.items.map(i=>i.co)));
+  const quiet = CO.filter(c=>c.grp==='live' && !inQueue.has(c.id)).length;
 
   wrap.innerHTML = `
   <div class="hero">
@@ -610,24 +682,24 @@ function screenA(){
       <h1>התיק שלי</h1>
       <div class="fine" style="margin:0 0 12px">מנהל תזרים · לירון בן כליפא</div>
       <div class="lbl">חברות בתיק</div>
-      <div class="big">80</div>
-      <div class="fine">8 מוצגות בתצוגה זו · 72 שקטות</div>
+      <div class="big">${CO.length}</div>
+      <div class="fine">${rows.length} מוצגות בתצוגה זו · ${CO.length-rows.length} מסוננות</div>
     </div>
     <div class="seg">
       <div class="lbl">יתרות מנוהלות</div>
-      <div class="big">${NUM(TOTAL)}<small>₪</small></div>
-      <div class="fine">5 חברות עם יתרה מדווחת</div>
+      <div class="big">${NUM(TOTAL_ALL)}<small>₪</small></div>
+      <div class="fine">${CO.filter(c=>c.bal).length} חברות עם יתרה מדווחת</div>
     </div>
     <div class="seg">
-      <div class="lbl">תמהיל מוצרים · מתוך 8 המוצגות</div>
+      <div class="lbl">תמהיל מוצרים · כל התיק</div>
       <div class="mixbar">
-        <i style="flex:2;background:#39ABE2"></i><i style="flex:2;background:#7557E3"></i>
-        <i style="flex:1;background:#13895b"></i><i style="flex:3;background:#8AA0B4"></i></div>
+        <i style="flex:${mix.Money};background:#39ABE2"></i><i style="flex:${mix['Money+']};background:#7557E3"></i>
+        <i style="flex:${mix.Meeting};background:#13895b"></i><i style="flex:${mix.none};background:#8AA0B4"></i></div>
       <div class="mixleg">
-        <span><i class="dot" style="background:#39ABE2"></i>Money <b>2</b></span>
-        <span><i class="dot" style="background:#7557E3"></i>Money+ <b>2</b></span>
-        <span><i class="dot" style="background:#13895b"></i>Meeting <b>1</b></span>
-        <span><i class="dot" style="background:#8AA0B4"></i>ללא מוצר <b>3</b></span>
+        <span><i class="dot" style="background:#39ABE2"></i>Money <b>${mix.Money}</b></span>
+        <span><i class="dot" style="background:#7557E3"></i>Money+ <b>${mix['Money+']}</b></span>
+        <span><i class="dot" style="background:#13895b"></i>Meeting <b>${mix.Meeting}</b></span>
+        <span><i class="dot" style="background:#8AA0B4"></i>ללא מוצר <b>${mix.none}</b></span>
       </div>
     </div>
     <div class="seg">
@@ -646,13 +718,13 @@ function screenA(){
       return `<div class="att" id="${a.id}" style="--c:${a.c}">
         <div class="t"><i class="dot" style="background:${a.c}"></i><h3>${a.t}</h3><span class="n">${left}</span></div>
         <div class="rows">
-        ${a.items.map(i=>{
-          const done = HANDLED[a.id+i.co];
-          return `<div class="rw ${done?'done':''}" data-co="${i.co}" data-focus="${i.focus}" data-att="${a.id}">
+        ${a.items.filter(i=>!HANDLED[a.id+i.co]).slice(0,4).map(i=>{
+          return `<div class="rw" data-co="${i.co}" data-focus="${i.focus}" data-att="${a.id}">
             <span class="nm">${co(i.co).nm}</span>
             ${i.tx!==co(i.co).nm?`<span>· ${i.tx}</span>`:''}
             <span class="dt">${i.dt}</span></div>`;
         }).join('')}
+        ${left>4?`<div class="rw more" data-f="${a.id}">עוד <b>${left-4}</b> באותה קבוצה ←</div>`:''}
         </div>
       </div>`;
     }).join('')}
@@ -662,13 +734,14 @@ function screenA(){
     <h2>הפוזיציות</h2>
     <span class="hint">לחיצה על שורה פותחת את כרטיס הלקוח · לחיצה על הסיבה פותחת אותו ישר על המקום הרלוונטי</span>
     <div class="fchips">
-      ${[['all','הכל',CO.length],['live','פעילות',5],['risk','בסיכון',3],['quiet','לא הביאו חומר',3],
-         ['setup','בהקמה',2],['arch','ארכיון',2]]
+      ${(TFILTER.startsWith('att:')?[[TFILTER,ATT.find(a=>a.id===TFILTER.slice(4)).t,rows.length]]:[])
+        .concat([['all','הכל'],['live','פעילות'],['risk','בסיכון'],['quiet','לא הביאו חומר'],
+         ['setup','בהקמה'],['arch','ארכיון']].map(([k,l])=>[k,l,CNT(k)]))
         .map(([k,l,n])=>`<button class="fc ${TFILTER===k?'on':''}" data-f="${k}">${l}<span class="c">${n}</span></button>`).join('')}
       <div class="dd" id="mgrdd">
         <button class="ddb">מנהל תזרים: <b>${MGR}</b> <span style="font-size:9px">▾</span></button>
         <div class="ddm">
-          ${['הכל','לירון בן כליפא','שמרית טובול'].map(m=>`<button data-m="${m}" class="${MGR===m?'on':''}">${m}</button>`).join('')}
+          ${['הכל',...[...new Set(CO.map(c=>c.mgr).filter(Boolean))]].map(m=>`<button data-m="${m}" class="${MGR===m?'on':''}">${m}</button>`).join('')}
         </div>
       </div>
     </div>
@@ -682,7 +755,7 @@ function screenA(){
     </div>
     ${rows.map(c=>row(c)).join('')}
     <div class="tfoot">
-      <span>מוצגות <b>${rows.length}</b> מתוך 8</span>
+      <span>מוצגות <b>${rows.length}</b> מתוך ${CO.length}</span>
       <span>·</span><span>יתרות בתצוגה <b>${NUM(sumShown)} ₪</b></span>
       <span style="margin-inline-start:auto"></span>
       <span class="lg"><i class="dot" style="background:#dc4436"></i>סיכון גבוה</span>
@@ -692,7 +765,7 @@ function screenA(){
       <span class="lg"><i class="dot" style="background:#C4D2DF"></i>ארכיון</span>
     </div>
   </div>
-  <div class="quiet">עוד <b>72</b> חברות בתיק שלא נכנסו לאף קבוצה השבוע — אין בהן חריגה, חומר חסר או פעולה פתוחה.</div>
+  <div class="quiet"><b>${quiet}</b> חברות בתיק לא נכנסו לאף קבוצה השבוע — אין בהן חריגה, חומר חסר או פעולה פתוחה.</div>
   `;
 
   wrap.querySelectorAll('.fc').forEach(b=>b.onclick=()=>{TFILTER=b.dataset.f;screenA();});
@@ -706,7 +779,11 @@ function screenA(){
     t.classList.add('ring'); setTimeout(()=>t.classList.remove('ring'),1700);
   });
   wrap.querySelectorAll('.att .rw').forEach(el=>{
-    if(el.classList.contains('done')) return;
+    if(el.classList.contains('more')){
+      el.onclick=()=>{ TFILTER='att:'+el.dataset.f; screenA();
+        const tb=wrap.querySelector('.tbl'); if(tb) tb.scrollIntoView({behavior:'smooth',block:'start'}); };
+      return;
+    }
     el.onclick=()=>openCard(el.dataset.co, el.dataset.focus, el.dataset.att);
   });
   wrap.querySelectorAll('.trow').forEach(el=>{
@@ -718,7 +795,7 @@ function screenA(){
 }
 
 function row(c){
-  const w = c.bal? (c.bal/TOTAL*100) : 0;
+  const w = c.bal? (c.bal/TOTAL_ALL*100) : 0;
   const trend = c.trend==='up'?'<span class="trend up">↑ עולה</span>'
     : c.trend==='dn'?'<span class="trend dn">↓ יורדת</span>':'<span class="trend na">— אין נתון</span>';
   const attFor = ATT.find(a=>a.items.some(i=>i.co===c.id && !HANDLED[a.id+i.co]));
@@ -1148,6 +1225,15 @@ function bindMem(){
 
 /* boot */
 /* ===== הטמעה: מסתירים את המעטפת ומדווחים גובה לאפליקציה ===== */
+/* התיק שנוצר כאן דטרמיניסטית מקבל את השמות האמיתיים מהאפליקציה,
+   כדי ש"פתיחת החברה" תמיד תמצא את מי שלחצו עליו. */
+window.addEventListener('message',function(e){
+  const d=e.data||{}; if(!d.hkClNames) return;
+  const pool=d.hkClNames.filter(n=>!CO.some(c=>!c.gen&&c.nm===n));
+  let i=0; CO.forEach(c=>{ if(c.gen&&i<pool.length){ const old=c.nm; c.nm=pool[i++];
+    ATT.forEach(a=>a.items.forEach(it=>{ if(it.co===c.id&&it.tx===old) it.tx=c.nm; })); } });
+  if(!OPEN) screenA(); else renderCard();
+});
 function openInApp(id,nm){
   if(parent!==window){ parent.postMessage({hkClOpen:1,id:id,nm:nm},'*'); }
   else toast('נפתחת סביבת העבודה של '+nm);
@@ -1155,6 +1241,7 @@ function openInApp(id,nm){
 (function(){
   if(!/[?&]embed=1/.test(location.search)) return;
   document.body.classList.add('is-embedded');
+  parent.postMessage({hkClReady:1},'*');
   var last=0;
   function report(){
     var h=Math.ceil(document.documentElement.scrollHeight);
