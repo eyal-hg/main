@@ -67,6 +67,10 @@
     document.getElementById('opsQueueView').style.display=showQueue?'':'none';
     document.getElementById('alertsView').style.display=showAlerts?'':'none';
     document.getElementById('meetsView').style.display=showMeets?'':'none';
+    if(showMeets){ const af=document.getElementById('arenaFrame'); if(af&&!af.src) af.src=af.dataset.src;
+      /* למסך יש כותרת משלו — בלי כותרת עמוד כפולה */
+      const _c=document.querySelector('.client-head'), _s=document.querySelector('.sub-line');
+      if(_c)_c.style.display='none'; if(_s)_s.style.display='none'; }
     document.getElementById('wboard').style.display=showBoard?'':'none';
     // שורת ה-KPI העליונה שייכת למסך חברה — מוסתרת בכל תצוגת פורטפוליו אחרת
     const _wt=document.getElementById('wboardTop'); if(_wt&&!showBoard) _wt.style.display='none';
@@ -82,7 +86,7 @@
     }
     updateOpsBtn();
     renderMeetBtn();
-    if(showHow){ if(typeof renderHowView==='function') renderHowView(); } else if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showMeets){if(typeof renderMeetsArena==='function')renderMeetsArena();} else if(showClients) renderClientsView(); else renderBoard();
+    if(showHow){ if(typeof renderHowView==='function') renderHowView(); } else if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showMeets){ /* המסך החדש חי ב-iframe — לא דורסים אותו */ } else if(showClients) renderClientsView(); else renderBoard();
     renderCoAlerts();
     if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();

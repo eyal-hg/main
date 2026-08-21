@@ -358,6 +358,10 @@ body{
 .empty .et{font-size:14px;font-weight:600}
 .empty .ed{font-size:12.5px;color:var(--muted);margin-top:5px}
 </style>
+<style>
+body.is-embedded{background:transparent}
+body.is-embedded .wrap,body.is-embedded .app,body.is-embedded main{padding-top:4px;max-width:none}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -1050,6 +1054,11 @@ body{
   });
   refreshCnt();
 })();
+</script>
+<script>
+if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
+(function(){ const send=()=>{ try{ parent.postMessage({hkArena:1,h:Math.ceil(document.documentElement.scrollHeight)+8},'*'); }catch(e){} };
+  new ResizeObserver(send).observe(document.body); window.addEventListener('load',send); setTimeout(send,150); })();
 </script>
 </body>
 </html>

@@ -145,6 +145,7 @@
     if(d.hk==='tab'&&d.tab){ if(typeof showTab==='function') showTab(d.tab); return; }
     /* חדר הפגישה מדווח גובה — המסגרת נפתחת לכל התוכן */
     if(d.hkMeet&&d.h>200){ const f=document.getElementById('meetFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
+    if(d.hkArena&&d.h>200){ const f=document.getElementById('arenaFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(!d.hkEmbed) return;
     const fr=document.querySelector('.wboard iframe[data-file="'+d.src+'"]');
     if(fr&&d.h>60){fr.style.height=d.h+'px';
