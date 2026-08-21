@@ -598,7 +598,7 @@ body.is-embedded .wrap,body.is-embedded .app,body.is-embedded main{padding-top:4
             <div class="mcap"><span style="color:var(--green);font-weight:600">הפגישה הבאה כבר בלוח</span><span>חלון 30 יום</span></div>
           </div>
           <div class="days small"><div class="dv">היום</div><div class="dl">פגישה אחרונה</div></div>
-          <div class="lact"><button class="btn ghost">לכרטיס הלקוח</button></div>
+          <div class="lact"><button class="btn ghost" onclick="arenaCard('אנרגי אינטרנשיונל')">לכרטיס הלקוח</button></div>
         </div>
 
         <div class="lrow ok" data-g="good">
@@ -614,7 +614,7 @@ body.is-embedded .wrap,body.is-embedded .app,body.is-embedded main{padding-top:4
             <div class="mcap"><span style="color:var(--green);font-weight:600">נפגשים מחר ב‑10:00</span><span>חלון 30 יום</span></div>
           </div>
           <div class="days small"><div class="dv">15.06</div><div class="dl">פגישה אחרונה</div></div>
-          <div class="lact"><button class="btn ghost">לכרטיס הלקוח</button></div>
+          <div class="lact"><button class="btn ghost" onclick="arenaCard('רימון יצחק')">לכרטיס הלקוח</button></div>
         </div>
 
         <div class="lrow none" data-g="good">
@@ -627,7 +627,7 @@ body.is-embedded .wrap,body.is-embedded .app,body.is-embedded main{padding-top:4
             <div class="mcap"><span>Money — בלי פגישה קבועה</span></div>
           </div>
           <div class="days small"><div class="dv">אתמול</div><div class="dl">פגישה אחרונה</div></div>
-          <div class="lact"><button class="btn ghost">לכרטיס הלקוח</button></div>
+          <div class="lact"><button class="btn ghost" onclick="arenaCard('מטעי גבעון')">לכרטיס הלקוח</button></div>
         </div>
 
       </div>
@@ -1056,6 +1056,9 @@ body.is-embedded .wrap,body.is-embedded .app,body.is-embedded main{padding-top:4
 })();
 </script>
 <script>
+function arenaCard(nm){
+  if(parent!==window) parent.postMessage({hkArenaCard:1,nm:nm},'*');
+}
 if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
 (function(){ const send=()=>{ try{ parent.postMessage({hkArena:1,h:Math.ceil(document.documentElement.scrollHeight)+8},'*'); }catch(e){} };
   new ResizeObserver(send).observe(document.body); window.addEventListener('load',send); setTimeout(send,150); })();

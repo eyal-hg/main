@@ -919,11 +919,12 @@ function renderCard(){
   <div class="card mtg" id="b-mtg" style="margin-bottom:16px">
     <div class="ic">${IC.cal}</div>
     <div>
-      <h3>${hasFin?'פגישה חודשית · 02.07':'טרם התקיימה פגישה'}</h3>
+      <h3>${hasFin?'פגישה חודשית · 02.07':'אין פגישה מוקלטת בתיק הזה'}</h3>
       <div class="s">${hasFin?'מכאן נכתב הזיכרון שלמטה · הסיכום והמשימות נגזרו ממנה'
-        :'אין תמלול, אין סיכום — ולכן המערכת עוד לא כתבה כלום בזיכרון'}</div>
+        :'אין תמלול ואין סיכום, ולכן המערכת לא כתבה כלום בזיכרון. אם התקיימה פגישה שלא הוקלטה — אפשר להעלות אותה או לכתוב סיכום ידני.'}</div>
     </div>
-    ${hasFin?`<div class="lnks"><button class="btn sm">תמלול</button><button class="btn sm">סיכום</button><button class="btn sm">משימות</button></div>`:''}
+    ${hasFin?`<div class="lnks"><button class="btn sm">תמלול</button><button class="btn sm">סיכום</button><button class="btn sm">משימות</button></div>`
+      :`<div class="lnks"><button class="btn sm" onclick="toast('העלאת הקלטה — היא תעבור את אותו מסלול: תמלול, סיכום, משימות וזיכרון')">העלה הקלטה</button><button class="btn sm" onclick="toast('סיכום ידני — סוגר את החור בזיכרון, לא מחזיר את התמלול')">כתוב סיכום</button></div>`}
   </div>
 
   <div class="grid2" style="grid-template-columns:1fr 330px">
@@ -1239,7 +1240,9 @@ function bindMem(){
 /* התיק שנוצר כאן דטרמיניסטית מקבל את השמות האמיתיים מהאפליקציה,
    כדי ש"פתיחת החברה" תמיד תמצא את מי שלחצו עליו. */
 window.addEventListener('message',function(e){
-  const d=e.data||{}; if(!Array.isArray(d.hkClNames)) return;
+  const d=e.data||{};
+  if(d.hkClCard){ const c=CO.find(x=>x.nm===d.hkClCard); if(c){ openCard(c.id,null,null); } return; }
+  if(!Array.isArray(d.hkClNames)) return;
   const named=new Set(CO.filter(c=>!c.gen).map(c=>c.nm));
   const pool=d.hkClNames.filter(r=>r&&r.nm&&!named.has(r.nm));
   /* מוחקים את מה שנוצר מקומית ומרכיבים מחדש מהתיק האמיתי של האפליקציה */
@@ -1270,7 +1273,7 @@ window.addEventListener('message',function(e){
     if(grp==='setup')    ATT[3].items.push({co:c.id, tx:c.nm, dt:'טרם התקבל חומר', focus:'setup'});
   });
   TOTAL_ALL = CO.reduce((a,c)=>a+(c.bal||0),0);
-  if(!OPEN) screenA(); else renderCard();
+  if(!OPEN) screenA(); else openCard(OPEN.id,OPEN.focus,OPEN.att);
 });
 function openInApp(id,nm,tab){
   if(parent!==window){ parent.postMessage({hkClOpen:1,id:id,nm:nm,tab:tab||'dash'},'*'); }
