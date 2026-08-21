@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>פגישה · אנרגי אינטרנשיונל</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ===================================================================
+   המסך שהלקוח רואה בזום.
+   כלל הברזל: כאן לא נכנס שום דבר פנימי — לא זיכרון, לא רגישויות,
+   לא משוב על היועץ ולא מדדי שימוש. רק מספרים, והחלטות שמסוכמות מולו.
+   =================================================================== */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0C4068; --sky:#39ABE2; --coral:#E8635A;
+  --bg:#F4F7FA; --line:#E6ECF4; --ink:#183F5C; --muted:#6E8399; --soft:#9AB0C4;
+  --green:#13895b; --red:#dc4436; --amber:#c98404;
+}
+html,body{height:100%}
+body{font-family:Rubik,"Heebo",system-ui,sans-serif;background:var(--bg);color:var(--navy);
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+.n{direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}
+
+/* ---- כותרת ---- */
+.hd{flex:none;display:flex;align-items:center;gap:14px;padding:16px 30px;background:#fff;
+  border-bottom:1px solid var(--line)}
+.mark{width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,#0C4068,#1a628f);
+  color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:.5px}
+.hd .co{font-size:19px;font-weight:600}
+.hd .mt{font-size:12.5px;color:var(--muted);margin-top:1px}
+.hd .sp{flex:1}
+.rec{display:inline-flex;align-items:center;gap:8px;background:#FDF0EE;border:1px solid #F6D3CD;
+  color:#B3453B;border-radius:99px;padding:6px 14px;font-size:12.5px;font-weight:500}
+.rec i{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:p 1.6s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---- גוף ---- */
+.body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:22px;padding:22px 30px 26px}
+@media(max-width:1150px){.body{grid-template-columns:1fr}}
+.stage{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px 34px;
+  box-shadow:0 6px 18px rgba(12,64,104,.07);min-width:0;display:flex;flex-direction:column}
+.eyebrow{font-size:12.5px;font-weight:600;color:var(--sky);letter-spacing:.02em}
+.stage h1{font-size:31px;font-weight:600;line-height:1.28;letter-spacing:-.02em;margin-top:8px}
+.stage h1 em{font-style:normal;color:var(--coral)}
+.lead{font-size:15px;color:var(--muted);line-height:1.8;margin-top:12px;max-width:62ch}
+
+/* מדדים */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:#FBFDFE}
+.kpi .k{font-size:11.5px;color:var(--muted);font-weight:500}
+.kpi .v{font-size:25px;font-weight:600;letter-spacing:-.02em;margin-top:5px}
+.kpi .v.neg{color:var(--red)} .kpi .v.pos{color:var(--green)} .kpi .v.warn{color:var(--amber)}
+.kpi .s{font-size:11px;color:var(--soft);margin-top:2px}
+
+/* טבלה */
+.tbl{margin-top:24px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tr{display:grid;grid-template-columns:minmax(0,1fr) 130px 130px 120px;align-items:center;
+  padding:11px 16px;font-size:14px}
+.tr+.tr{border-top:1px solid #F1F6FA}
+.tr.h{background:#FAFCFE;font-size:11.5px;font-weight:600;color:var(--muted)}
+.tr .num{text-align:end}
+.tr b{font-weight:600}
+.tr .over{color:var(--red);font-weight:600}
+
+/* ---- מה סיכמנו ---- */
+.aside{display:flex;flex-direction:column;gap:14px;min-width:0}
+.dec{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  box-shadow:0 6px 18px rgba(12,64,104,.07);display:flex;flex-direction:column;flex:1;min-height:0}
+.dec-h{padding:16px 20px 12px;border-bottom:1px solid var(--line)}
+.dec-h b{font-size:16px;font-weight:600}
+.dec-h span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.dec-l{flex:1;min-height:0;overflow-y:auto;padding:12px 14px}
+.d{display:flex;align-items:flex-start;gap:11px;padding:12px 12px;border-radius:12px;
+  background:#F7FBFD;border:1px solid #E4EFF6;margin-bottom:9px}
+.d.fresh{animation:in .45s cubic-bezier(.2,.8,.3,1) both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.d .ck{flex:none;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;
+  display:grid;place-items:center;font-size:12px;margin-top:1px}
+.d .tx{font-size:14px;line-height:1.6;color:var(--ink)}
+.d .tx small{display:block;font-size:11.5px;color:var(--soft);margin-top:3px}
+.dec-e{padding:26px 18px;text-align:center;color:var(--soft);font-size:13px;line-height:1.7}
+.dec-f{padding:12px 18px;border-top:1px solid var(--line);background:#FBFDFE;
+  font-size:11.5px;color:var(--muted);text-align:center}
+.hint{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;
+  font-size:12.5px;color:var(--muted);line-height:1.7}
+.hint b{color:var(--navy)}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <div class="mark">HK</div>
+    <div>
+      <div class="co" id="co">אנרגי אינטרנשיונל</div>
+      <div class="mt" id="mt">פגישה חודשית · יולי 2026 · עם לירון בן כליפא</div>
+    </div>
+    <div class="sp"></div>
+    <span class="rec"><i></i> השיחה מוקלטת — לצורך סיכום הפגישה</span>
+  </div>
+
+  <div class="body">
+    <div class="stage" id="stage"></div>
+    <div class="aside">
+      <div class="dec">
+        <div class="dec-h"><b>מה סיכמנו</b><span>מתעדכן בזמן הפגישה · זה יהיה הסיכום שתקבלו</span></div>
+        <div class="dec-l" id="decl"></div>
+        <div class="dec-f" id="decf">הסיכום יישלח אליכם בוואטסאפ בסיום הפגישה</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* המצב מגיע מתצוגת המגיש דרך localStorage — שני טאבים, מקור אמת אחד */
+const KEY='hkLiveMeeting';
+const SCREENS={
+  goal:{eyebrow:'מטרת הפגישה',
+    h:'סגירת תוכנית מלאי לרבעון',
+    lead:'תקציב חדש לשורת הקניות, וצביעת ה־25,000 ₪ הפתוחים בתזרים. שני הדברים האלה מחוברים — התקציב קובע את הקצב, והצביעה קובעת מתי הכסף יוצא בפועל.',
+    kpis:[['ההכנסות','+12%','pos','מול החודש הקודם'],
+          ['שורת הקניות','114%','neg','מהתקציב'],
+          ['טרם נצבע בתזרים','25,000 ₪','warn','קניות מלאי'],
+          ['חריגה צפויה בעו״ש','בעוד 9 ימים','neg','29.8']]},
+  flow:{eyebrow:'התזרים',
+    h:'יתרת העו״ש — 14 הימים הקרובים',
+    lead:'התחזית נכנסת למינוס ב־29.8. יש יתרה חיובית של 312,400 ₪ בפועלים 112 שיכולה לכסות את זה בהעברה אחת.',
+    kpis:[['יתרה נוכחית · לאומי 604','161,198- ₪','neg','מסגרת 150,000'],
+          ['פועלים 112','312,400 ₪','pos','יתרה חיובית'],
+          ['מועד החריגה','29.8','neg','בעוד 9 ימים'],
+          ['הפער לכיסוי','32,400 ₪','warn','אחרי ההעברה — מכוסה']]},
+  budget:{eyebrow:'התקציב',
+    h:'חריגה בשורת קניות המלאי',
+    lead:'הקניות עברו את התקציב החודשי ב־14%. זה החודש השני ברציפות, ולכן שווה לקבוע תקציב חדש ולא לתקן נקודתית.',
+    tbl:[['קטגוריה','יעד','בפועל','פער'],
+         ['קניות מלאי','155,000','177,000','22,000-'],
+         ['קבלני משנה','28,333','26,000','2,333+'],
+         ['שכר עבודה','97,333','99,000','1,667-'],
+         ['שכירות','22,000','22,000','—']]}
+};
+function render(st){
+  const s=SCREENS[st.screen]||SCREENS.goal, el=document.getElementById('stage');
+  let h='<div class="eyebrow">'+s.eyebrow+'</div><h1>'+s.h+'</h1><p class="lead">'+s.lead+'</p>';
+  if(s.kpis) h+='<div class="kpis">'+s.kpis.map(k=>
+    '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v '+k[2]+' n">'+k[1]+'</div><div class="s">'+k[3]+'</div></div>').join('')+'</div>';
+  if(s.tbl) h+='<div class="tbl">'+s.tbl.map((r,i)=>
+    '<div class="tr'+(i?'':' h')+'"><div>'+r[0]+'</div>'+r.slice(1).map((c,j)=>
+      '<div class="num n '+(i&&j===2&&String(c).includes('-')?'over':'')+'">'+c+'</div>').join('')+'</div>').join('')+'</div>';
+  el.innerHTML=h;
+
+  const l=document.getElementById('decl');
+  const ds=st.decisions||[];
+  const had=l.querySelectorAll('.d').length;
+  l.innerHTML = ds.length
+    ? ds.map((d,i)=>'<div class="d'+(i>=had?' fresh':'')+'"><span class="ck">✓</span><span class="tx">'+d.t+(d.s?'<small>'+d.s+'</small>':'')+'</span></div>').join('')
+    : '<div class="dec-e">מה שנסכם ביחד יופיע כאן,<br>ויישלח אליכם בסיום.</div>';
+  document.getElementById('decf').textContent = ds.length
+    ? ds.length+' החלטות · הסיכום יישלח בוואטסאפ בסיום הפגישה'
+    : 'הסיכום יישלח אליכם בוואטסאפ בסיום הפגישה';
+}
+function read(){
+  try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s) return s; }catch(e){}
+  return {screen:'goal',decisions:[]};
+}
+let last='';
+function tick(){
+  const s=read(), sig=JSON.stringify(s);
+  if(sig!==last){ last=sig; render(s); }
+}
+/*HKDEMO*/
+if(location.hash==='#demo'){ localStorage.setItem(KEY, JSON.stringify({screen:'budget',decisions:[
+  {t:'תקציב חדש לשורת קניות המלאי — 130,000 ₪ לחודש', s:'החל מאוגוסט · במקום 155,000'},
+  {t:'צביעת 25,000 ₪ הפתוחים בתזרים עד 10.8', s:'צחי מעביר את פירוט הספקים עד יום ה׳'},
+  {t:'העברה מפועלים 112 ללאומי 604 לכיסוי החריגה', s:'עד 27.8 — לפני מועד החריגה'}
+]})); }
+render(read()); setInterval(tick,400);
+window.addEventListener('storage',tick);
+</script>
+</body>
+</html>
