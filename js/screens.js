@@ -61,6 +61,9 @@
       const _c=document.querySelector('.client-head'), _s=document.querySelector('.sub-line');
       if(_c)_c.style.display='none'; if(_s)_s.style.display='none'; }
     document.getElementById('howView').style.display=showHow?'':'none';
+    if(showHow){ /* לשקף יש כותרת ענק משלו — בלי כותרת עמוד מעליה */
+      const _c=document.querySelector('.client-head'), _s=document.querySelector('.sub-line');
+      if(_c)_c.style.display='none'; if(_s)_s.style.display='none'; }
     document.getElementById('mgrToggle').style.display='none';   // אין יותר טאבים במסך המנהל
     // מסך המנהל מתחיל ישר בקוביות — בלי כותרת ושורת משנה
     const slim=(inPortfolio&&isOperator);
