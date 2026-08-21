@@ -153,7 +153,7 @@
       return; }
     if(d.hkClOpen){ /* "פתיחת החברה" — מעבר לסביבת העבודה של אותה חברה */
       const ix=CLIENTS.findIndex(c=>c.name===d.nm);
-      if(ix>=0){ selectClient(ix); showTab('dash'); }
+      if(ix>=0){ selectClient(ix); showTab(d.tab||'dash'); }
       else toast('החברה '+d.nm+' לא נמצאה ברשימת ההדגמה');
       return; }
     if(!d.hkEmbed) return;

@@ -868,8 +868,8 @@ function renderCard(){
       </div>
     </div>
     <div class="cta">
-      <button class="btn">${IC.cal} פגישות</button>
-      <button class="btn">עוזר AI לחברה</button>
+      <button class="btn" onclick="openInApp('${c.id}','${esc(c.nm)}','meetings')">${IC.cal} פגישות</button>
+      <button class="btn" onclick="openInApp('${c.id}','${esc(c.nm)}','chat')">עוזר AI לחברה</button>
       <button class="btn nav" onclick="openInApp('${c.id}','${esc(c.nm)}')">פתיחת החברה</button>
     </div>
   </div>
@@ -1234,8 +1234,8 @@ window.addEventListener('message',function(e){
     ATT.forEach(a=>a.items.forEach(it=>{ if(it.co===c.id&&it.tx===old) it.tx=c.nm; })); } });
   if(!OPEN) screenA(); else renderCard();
 });
-function openInApp(id,nm){
-  if(parent!==window){ parent.postMessage({hkClOpen:1,id:id,nm:nm},'*'); }
+function openInApp(id,nm,tab){
+  if(parent!==window){ parent.postMessage({hkClOpen:1,id:id,nm:nm,tab:tab||'dash'},'*'); }
   else toast('נפתחת סביבת העבודה של '+nm);
 }
 (function(){
