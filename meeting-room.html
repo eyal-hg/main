@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>חדר הפגישה — HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0C4068; --sky:#39ABE2; --coral:#E8635A; --bg:#F4F7FA;
+  --line:#E6ECF4; --card:#fff;
+  --green:#13895b; --red:#dc4436; --amber:#c98404; --purple:#7557E3;
+  --ink:#0C4068; --ink2:#4b6a86; --ink3:#8fa5ba;
+  --r:16px; --r2:12px;
+  --sh:0 6px 18px rgba(12,64,104,.08);
+  --sh2:0 12px 34px rgba(12,64,104,.14);
+  --dark:#062B47; --dark2:#0A3A5E; --darkline:rgba(255,255,255,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:Rubik,"Heebo","Segoe UI",system-ui,-apple-system,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+body.dark{background:#04203A}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.n{direction:ltr;unicode-bidi:isolate;text-align:right}
+.mtrow .tm b.n,.acc b.n{text-align:center}
+.mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+/* ============ TOP BAR ============ */
+.top{
+  position:sticky;top:0;z-index:60;height:58px;display:flex;align-items:center;gap:14px;
+  padding:0 22px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+body.dark .top{background:rgba(6,32,54,.86);border-bottom-color:rgba(255,255,255,.09)}
+.logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(140deg,#0C4068,#1a628f);
+  color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px;letter-spacing:.4px;flex:none}
+.brand{font-weight:600;font-size:15px}
+body.dark .brand{color:#eaf3fa}
+.crumb{color:var(--ink3);font-size:12.5px;white-space:nowrap;padding-inline-start:12px;margin-inline-start:2px;border-inline-start:1px solid var(--line)}
+body.dark .crumb{border-inline-start-color:rgba(255,255,255,.12);color:#7d9db8}
+.spacer{flex:1;min-width:8px}
+.filters{display:flex;gap:4px;background:#EDF2F8;border-radius:11px;padding:3px;flex:none}
+body.dark .filters{background:rgba(255,255,255,.06)}
+.filters button{padding:5px 11px;border-radius:8px;font-size:12.5px;color:var(--ink2);display:flex;gap:6px;align-items:center}
+body.dark .filters button{color:#9fbdd4}
+.filters button b{font-weight:600;font-size:11px;color:var(--ink3)}
+.filters button.on{background:#fff;color:var(--navy);font-weight:500;box-shadow:0 1px 3px rgba(12,64,104,.12)}
+body.dark .filters button.on{background:rgba(255,255,255,.14);color:#fff}
+.streak{
+  display:flex;align-items:center;gap:9px;padding:6px 12px 6px 10px;border-radius:11px;flex:none;
+  background:linear-gradient(100deg,#FFF3EE,#FFE9E2);border:1px solid #FBD9CF;
+}
+body.dark .streak{background:rgba(232,99,90,.14);border-color:rgba(232,99,90,.34)}
+.streak .fl{font-size:15px;line-height:1}
+.streak .sv{font-weight:700;color:#c14a41;font-size:13.5px}
+body.dark .streak .sv{color:#FFB4A8}
+.streak .sl{font-size:11.5px;color:#9c6b62}
+body.dark .streak .sl{color:#d6a79f}
+.avatar{width:31px;height:31px;border-radius:50%;background:#E7EFF7;color:var(--navy);
+  display:grid;place-items:center;font-weight:600;font-size:12px;flex:none}
+body.dark .avatar{background:rgba(255,255,255,.12);color:#fff}
+
+/* ============ STAGE SPINE ============ */
+.stage{
+  position:sticky;top:58px;z-index:55;background:#fff;border-bottom:1px solid var(--line);
+  padding:11px 22px;display:flex;align-items:center;gap:16px;
+}
+body.dark .stage{background:#062B47;border-bottom-color:rgba(255,255,255,.09)}
+.steps{display:flex;align-items:center;background:#F1F5FA;border:1px solid var(--line);border-radius:13px;padding:4px}
+body.dark .steps{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.10)}
+.step{display:flex;align-items:center;gap:8px;padding:6px 13px;border-radius:10px;font-size:13px;color:var(--ink2);position:relative}
+body.dark .step{color:#93b4cd}
+.step .dot{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:600;
+  background:#DCE6F0;color:#6b8aa5}
+.step.done .dot{background:var(--green);color:#fff}
+.step.cur{background:#fff;color:var(--navy);font-weight:600;box-shadow:0 2px 8px rgba(12,64,104,.13)}
+body.dark .step.cur{background:rgba(255,255,255,.13);color:#fff}
+.step.cur .dot{background:var(--navy);color:#fff}
+body.dark .step.cur .dot{background:var(--sky);color:#062B47}
+.step.live .dot{background:var(--coral);color:#fff;animation:pls 1.6s infinite}
+.step.lock{opacity:.5}
+.sep{width:20px;height:1px;background:#CFDCE8;flex:none}
+body.dark .sep{background:rgba(255,255,255,.16)}
+@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(232,99,90,.55)}70%{box-shadow:0 0 0 7px rgba(232,99,90,0)}}
+.stagemeta{font-size:12.5px;color:var(--ink3)}
+body.dark .stagemeta{color:#7fa0ba}
+.stagemeta b{color:var(--ink);font-weight:600}
+body.dark .stagemeta b{color:#dbeaf5}
+
+/* ============ LAYOUT ============ */
+.wrap{padding:20px 22px 40px}
+.mode{display:none}
+.mode.on{display:block}
+.g3{display:grid;grid-template-columns:288px minmax(600px,1fr) 336px;gap:18px;align-items:start}
+@media(max-width:1460px){.g3{grid-template-columns:262px minmax(540px,1fr) 312px;gap:14px}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;gap:9px;padding:14px 16px 12px}
+.ch h3{font-size:14.5px;font-weight:600;letter-spacing:-.1px}
+.ch .cnt{font-size:11px;font-weight:600;color:var(--ink3);background:#F1F5FA;border-radius:20px;padding:2px 8px;min-width:22px;text-align:center}
+.ch .sub{font-size:11.5px;color:var(--ink3);margin-inline-start:auto;font-weight:400}
+.ic{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;flex:none}
+
+/* ============ MEETINGS RAIL ============ */
+.mtlist{overflow:hidden}
+.mtrow{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid #F0F4F9;position:relative;cursor:pointer}
+.mtrow:hover{background:#FAFCFE}
+.mtrow.cur{background:linear-gradient(90deg,#F4F9FD,#fff)}
+.mtrow.cur:after{content:"";position:absolute;inset-inline-end:0;top:0;bottom:0;width:3px;background:var(--sky)}
+.mtrow .tm{text-align:center;flex:none;width:44px}
+.mtrow .tm b{display:block;font-size:13px;font-weight:600;letter-spacing:-.2px}
+.mtrow .tm span{font-size:10px;color:var(--ink3)}
+.mtrow .nm{flex:1;min-width:0}
+.mtrow .nm b{display:block;font-size:13px;font-weight:500}
+.mtrow .nm span{font-size:11px;color:var(--ink3);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:10.5px;font-weight:500;padding:3px 8px;border-radius:7px;white-space:nowrap;flex:none}
+.p-proc{background:#EEF0FE;color:var(--purple)}
+.p-appr{background:#FFF6E3;color:var(--amber)}
+.p-sched{background:#EAF6FD;color:#1b7fb8}
+.p-done{background:#E8F6EF;color:var(--green)}
+.p-miss{background:#FDECEA;color:var(--red)}
+.norec{padding:11px 14px;border-top:1px solid #F0F4F9;background:#FEF7F6}
+.norec .t{font-size:12px;color:#9c4c44;font-weight:500;display:flex;gap:6px;align-items:center}
+.norec .d{font-size:11px;color:#b07a74;margin-top:3px;line-height:1.5}
+.streakbox{padding:13px 14px;border-top:1px solid #F0F4F9}
+.sbar{height:6px;border-radius:6px;background:#EDF2F7;overflow:hidden;margin:8px 0 7px}
+.sbar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--sky),#13895b)}
+.wk{display:flex;gap:5px;margin-top:9px}
+.wk div{flex:1;height:26px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:600}
+.wk .y{background:#E8F6EF;color:var(--green)}
+.wk .n2{background:#FDECEA;color:var(--red)}
+.wk .o{background:#F3F6F9;color:#b9c8d5}
+.wk .t{background:#FFF1EC;color:var(--coral);box-shadow:inset 0 0 0 1.5px #F8C9BF}
+.wkl{display:flex;gap:5px;margin-top:4px}
+.wkl div{flex:1;text-align:center;font-size:9.5px;color:var(--ink3)}
+
+/* ============ PREP ============ */
+.h1{font-size:23px;font-weight:600;letter-spacing:-.5px;display:flex;align-items:center;gap:12px;margin-bottom:3px}
+.h1 .tag{font-size:11.5px;font-weight:500;color:var(--green);background:#E8F6EF;border-radius:20px;padding:4px 11px;display:flex;gap:6px;align-items:center}
+.h1 .tag i{width:6px;height:6px;border-radius:50%;background:var(--green);display:block}
+.sub1{color:var(--ink3);font-size:13px;margin-bottom:16px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--r2);padding:11px 13px;box-shadow:0 3px 10px rgba(12,64,104,.05);position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;inset-inline-end:0;top:0;bottom:0;width:3px;border-radius:3px}
+.kpi.g:before{background:var(--green)}.kpi.r:before{background:var(--red)}
+.kpi.a:before{background:var(--amber)}.kpi.c:before{background:var(--coral)}
+.kpi .kl{font-size:11px;color:var(--ink3);display:flex;gap:5px;align-items:center;margin-bottom:2px}
+.kpi .kv{font-size:19px;font-weight:600;letter-spacing:-.5px;line-height:1.25}
+.kpi.g .kv{color:var(--green)}.kpi.r .kv{color:var(--red)}
+.kpi.a .kv{color:var(--amber)}.kpi.c .kv{color:var(--coral)}
+.kpi .kd{font-size:10.5px;color:var(--ink3)}
+
+.brief{padding:2px 16px 16px}
+.brief p{font-size:14.5px;line-height:1.85;color:#20496b}
+.hl{background:linear-gradient(transparent 62%,#FFE7A8 62%);font-weight:600;color:#7a5a05;padding:0 1px}
+.hl.rd{background:linear-gradient(transparent 62%,#FBD3CF 62%);color:#9c3a31}
+.hl.gr{background:linear-gradient(transparent 62%,#CDEEDF 62%);color:#0d6b47}
+
+.pt{display:flex;align-items:flex-start;gap:11px;padding:11px 16px;border-top:1px solid #F0F4F9;position:relative}
+.pt:hover{background:#FAFCFE}
+.pt .num{width:21px;height:21px;border-radius:6px;background:#F1F5FA;color:#7793ab;font-size:11px;font-weight:600;
+  display:grid;place-items:center;flex:none;margin-top:1px}
+.pt .tx{flex:1;font-size:13.5px;line-height:1.6}
+.tg{font-size:10.5px;font-weight:500;padding:3px 8px;border-radius:6px;flex:none;margin-top:1px}
+.tg-m{background:#EAF6FD;color:#1b7fb8}.tg-c{background:#FFF6E3;color:var(--amber)}
+.tg-o{background:#F1EEFE;color:var(--purple)}
+
+.goal{
+  background:linear-gradient(120deg,#0C4068 0%,#12547f 55%,#0d4a72 100%);
+  border-radius:var(--r);padding:18px 20px;color:#fff;box-shadow:0 10px 26px rgba(12,64,104,.22);position:relative;overflow:hidden}
+.goal:after{content:"";position:absolute;inset-inline-start:-40px;top:-60px;width:220px;height:220px;
+  background:radial-gradient(circle,rgba(57,171,226,.30),transparent 68%)}
+.goal .gl{font-size:11.5px;color:#8FC8EC;display:flex;gap:6px;align-items:center;margin-bottom:7px;position:relative;z-index:1}
+.goal h4{font-size:18px;font-weight:600;line-height:1.5;letter-spacing:-.3px;position:relative;z-index:1}
+.goal .why{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.16);font-size:12.5px;color:#B9D8EC;line-height:1.65;position:relative;z-index:1}
+.goal .why b{color:#fff;font-weight:500}
+
+.mem{padding:0 0 6px}
+.memrow{display:flex;gap:11px;align-items:flex-start;padding:10px 16px;border-top:1px solid #F0F4F9}
+.memrow .mi{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;flex:none;font-size:11px;margin-top:1px}
+.memrow .mt{font-size:13px;line-height:1.6;flex:1}
+.memrow .mt b{font-weight:600}
+.foot{display:flex;gap:8px;margin-top:14px}
+.btn{padding:9px 16px;border-radius:10px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px;transition:.15s}
+.btn-g{background:#fff;border:1px solid var(--line);color:var(--ink2);box-shadow:0 2px 6px rgba(12,64,104,.06)}
+.btn-g:hover{border-color:#c9d8e6;color:var(--navy)}
+.btn-n{background:var(--navy);color:#fff}
+.btn-n:hover{background:#0a3557}
+
+/* ============ RECORD RAIL (before) ============ */
+.recrail{position:sticky;top:130px;display:flex;flex-direction:column;gap:12px}
+.reccard{
+  background:radial-gradient(120% 90% at 50% 0%,#124b76 0%,#0A3556 48%,#062942 100%);
+  border-radius:var(--r);padding:20px 18px 18px;box-shadow:0 14px 34px rgba(6,41,66,.3);
+  position:relative;overflow:hidden;text-align:center;border:1px solid rgba(255,255,255,.08)}
+.reccard .kick{font-size:11px;color:#7FB8DD;letter-spacing:.4px;font-weight:500}
+.reccard h3{color:#fff;font-size:17px;font-weight:600;line-height:1.5;margin:5px 0 16px;letter-spacing:-.2px}
+.reccard h3 b{color:#FFC7BE;font-weight:600}
+.micwrap{position:relative;width:150px;height:150px;margin:0 auto 14px;display:grid;place-items:center}
+.ring{position:absolute;border-radius:50%;border:1.5px solid rgba(232,99,90,.34)}
+.ring.a{width:150px;height:150px;animation:rg 3s ease-out infinite}
+.ring.b{width:120px;height:120px;animation:rg 3s ease-out infinite .9s}
+.ring.c{width:150px;height:150px;border-color:rgba(232,99,90,.14)}
+@keyframes rg{0%{transform:scale(.72);opacity:.85}100%{transform:scale(1.12);opacity:0}}
+.mic{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#F58278,#E8635A 55%,#cf4c43);
+  display:grid;place-items:center;box-shadow:0 12px 28px rgba(232,99,90,.44),inset 0 -3px 10px rgba(0,0,0,.14);
+  position:relative;z-index:2;transition:.18s}
+.mic:hover{transform:scale(1.045)}
+.mic svg{width:34px;height:34px;fill:#fff}
+.reccard .hint{font-size:12px;color:#9CC5E0}
+.reccard .kbd{display:inline-block;border:1px solid rgba(255,255,255,.22);border-radius:5px;padding:0 5px;font-size:10.5px;color:#B9D8EC;margin:0 2px}
+.promise{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.13);text-align:start}
+.promise .pl{font-size:11px;color:#7FB8DD;margin-bottom:9px;font-weight:500}
+.prow{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:12.5px;color:#D6E8F4}
+.prow .pc{width:19px;height:19px;border-radius:6px;background:rgba(255,255,255,.09);display:grid;place-items:center;
+  font-size:10px;color:#8FC8EC;flex:none}
+.prow b{color:#fff;font-weight:600}
+.prow .pt2{margin-inline-start:auto;font-size:10.5px;color:#6f9bbb}
+
+.loss{background:#fff;border:1px solid #FADFDA;border-radius:var(--r2);padding:13px 14px;box-shadow:var(--sh)}
+.loss .lt{font-size:12.5px;font-weight:600;color:#a8433a;display:flex;gap:7px;align-items:center;margin-bottom:6px}
+.loss .ld{font-size:12px;color:#8b6560;line-height:1.6}
+.loss .lg{display:flex;gap:6px;margin-top:9px}
+.loss .lg div{flex:1;background:#FCF4F3;border-radius:8px;padding:6px 4px;text-align:center}
+.loss .lg b{display:block;font-size:14px;color:#c9948e;font-weight:600}
+.loss .lg span{font-size:9.5px;color:#b39089}
+
+/* ============ LIVE ============ */
+.live{padding:16px 22px 22px}
+.livebar{
+  display:flex;align-items:center;gap:16px;padding:0 0 14px;margin-bottom:14px;
+  border-bottom:1px solid rgba(255,255,255,.09)}
+.rec-dot{width:9px;height:9px;border-radius:50%;background:var(--coral);animation:blk 1.4s infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.25}}
+.timer{font-size:30px;font-weight:300;color:#fff;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.recl{font-size:11.5px;color:#8FB6D2;display:flex;gap:7px;align-items:center}
+.wave{display:flex;align-items:center;gap:2px;height:34px;flex:1;overflow:hidden;justify-content:center}
+.wave i{width:2.5px;border-radius:2px;background:linear-gradient(180deg,#5FC0EE,#2A87BC);display:block;animation:wv 1.05s ease-in-out infinite}
+@keyframes wv{0%,100%{height:16%}50%{height:100%}}
+.bigmark{
+  padding:12px 22px;border-radius:13px;background:linear-gradient(135deg,#F0A93E,#E08A18);color:#3a2400;
+  font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:9px;
+  box-shadow:0 8px 22px rgba(224,138,24,.34);transition:.15s}
+.bigmark:hover{transform:translateY(-1px);box-shadow:0 11px 26px rgba(224,138,24,.42)}
+.bigmark .kb{background:rgba(0,0,0,.16);border-radius:5px;padding:1px 7px;font-size:10.5px;font-weight:600}
+.stop{padding:12px 20px;border-radius:13px;background:rgba(255,255,255,.94);color:#0C4068;font-weight:600;font-size:14px;
+  display:flex;align-items:center;gap:9px}
+.stop:hover{background:#fff}
+.stop i{width:11px;height:11px;border-radius:3px;background:var(--coral);display:block}
+
+.gl3{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:14px;align-items:start;
+  }
+.gl3>div{display:flex;flex-direction:column;gap:12px}
+.endstrip{margin-top:14px;display:flex;align-items:center;gap:22px;padding:15px 18px;border-radius:var(--r);
+  background:linear-gradient(120deg,rgba(255,255,255,.075),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10)}
+.es-l{flex:none;max-width:290px}
+.es-t{display:flex;gap:9px;align-items:center;color:#fff;font-size:14px;font-weight:600}
+.es-d{font-size:12px;color:#8FB6D2;margin-top:5px;line-height:1.6}
+.es-d b{color:#DCEBF6;font-weight:600}
+.es-r{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.es-i{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:10px 12px}
+.es-i b{display:block;font-size:12.5px;color:#fff;font-weight:600;white-space:nowrap}
+.es-i span{display:block;font-size:10.5px;color:#7FA6C4;margin-top:2px}
+@media(max-width:1460px){.gl3{grid-template-columns:1fr 1.1fr .95fr;gap:11px}}
+.dcard{background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.10);border-radius:var(--r);backdrop-filter:blur(6px)}
+.dch{display:flex;align-items:center;gap:9px;padding:13px 15px 10px}
+.dch h3{font-size:14px;font-weight:600;color:#fff}
+.dch .ds{font-size:11px;color:#7FA6C4;margin-inline-start:auto}
+.dbody{padding:0 15px 14px}
+.dsplit{border-top:1px solid rgba(255,255,255,.08)}
+
+.ckrow{display:flex;align-items:flex-start;gap:10px;padding:10px 15px;border-top:1px solid rgba(255,255,255,.07);transition:.2s}
+.ckrow .cb{width:20px;height:20px;border-radius:6px;border:1.5px solid rgba(255,255,255,.24);flex:none;margin-top:1px;
+  display:grid;place-items:center;font-size:11px;transition:.2s}
+.ckrow.ok .cb{background:var(--green);border-color:var(--green);color:#fff}
+.ckrow.ok .ct{color:#7FA6C4;text-decoration:line-through;text-decoration-color:rgba(127,166,196,.5)}
+.ckrow .ct{font-size:13px;color:#DCEBF6;line-height:1.55;flex:1}
+.ckrow .cm{font-size:10.5px;color:#6f9bbb;margin-top:3px;display:flex;gap:8px;align-items:center}
+.ckrow.open{background:linear-gradient(90deg,rgba(240,169,62,.15),transparent);
+  box-shadow:inset 3px 0 0 #F0A93E}
+.ckrow.open .ct{color:#fff;font-weight:500}
+.ring2{width:34px;height:34px;flex:none;position:relative}
+.ring2 svg{transform:rotate(-90deg)}
+.ring2 span{position:absolute;inset:0;display:grid;place-items:center;font-size:10.5px;font-weight:600;color:#fff}
+
+.pin{background:linear-gradient(120deg,rgba(57,171,226,.20),rgba(57,171,226,.07));border:1px solid rgba(57,171,226,.30);
+  border-radius:var(--r);padding:14px 16px}
+.pin .pl2{font-size:11px;color:#8FC8EC;display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.pin h4{font-size:14.5px;color:#fff;font-weight:600;line-height:1.55}
+.pin .pd{font-size:11.5px;color:#9EC4DE;margin-top:7px;line-height:1.6}
+
+.mom{position:relative;padding:0 15px 16px;min-height:330px}
+.momline{position:absolute;inset-inline-start:24px;top:6px;bottom:14px;width:2px;background:rgba(255,255,255,.10)}
+.momrow{display:flex;gap:12px;padding:9px 0;position:relative}
+.momrow .md{width:19px;flex:none;display:flex;justify-content:center;padding-top:4px;position:relative;z-index:1}
+.momrow .md i{width:9px;height:9px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 3px #08314f}
+.momrow.new .md i{background:#F0A93E;animation:pop .5s}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.5)}100%{transform:scale(1)}}
+.momrow .mb{flex:1}
+.momrow .mtm{font-size:11px;color:#7FB8DD;font-weight:600;font-variant-numeric:tabular-nums}
+.momrow .mtt{font-size:13.5px;color:#fff;font-weight:500;margin-top:1px}
+.momrow .mss{font-size:11.5px;color:#8FB6D2;margin-top:1px}
+.ghost{display:flex;gap:12px;padding:9px 0;opacity:.42}
+.ghost .md i{width:9px;height:9px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.5);background:none;box-shadow:none}
+.ghost .mtt{font-size:12.5px;color:#9EC4DE;font-weight:400}
+
+.tr{max-height:440px;overflow:auto;padding:0 15px 10px}
+.trrow{display:flex;gap:9px;padding:7px 0;align-items:flex-start;border-top:1px solid rgba(255,255,255,.055)}
+.who{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;flex:none;margin-top:2px}
+.who.a{background:rgba(57,171,226,.20);color:#8FD0F2}
+.who.b{background:rgba(255,255,255,.10);color:#B9D8EC}
+.trrow p{font-size:12.5px;color:#CFE3F1;line-height:1.6;flex:1}
+.livedot{font-size:11px;color:#5FCF9E;display:flex;gap:6px;align-items:center}
+.livedot i{width:6px;height:6px;border-radius:50%;background:#5FCF9E;animation:blk 1.4s infinite}
+
+.acc{display:flex;padding:2px 15px 14px;gap:8px}
+.acc div{flex:1;background:rgba(255,255,255,.055);border-radius:11px;padding:9px 6px;text-align:center;border:1px solid rgba(255,255,255,.07)}
+.acc b{display:block;font-size:19px;font-weight:600;color:#fff;letter-spacing:-.4px;line-height:1.3}
+.acc span{font-size:10px;color:#8FB6D2}
+.nextstreak{margin:0 15px 14px;background:rgba(232,99,90,.14);border:1px solid rgba(232,99,90,.30);
+  border-radius:11px;padding:10px 12px;display:flex;gap:10px;align-items:center}
+.nextstreak .fl{font-size:17px}
+.nextstreak b{color:#FFC7BE;font-size:12.5px;font-weight:600;display:block}
+.nextstreak span{font-size:11px;color:#C9A49E}
+
+/* ============ AFTER ============ */
+.receipt{
+  background:linear-gradient(120deg,#0C4068 0%,#14568a 52%,#0e4a76 100%);border-radius:var(--r);
+  padding:20px 22px;color:#fff;box-shadow:0 12px 30px rgba(12,64,104,.24);position:relative;overflow:hidden;margin-bottom:14px}
+.receipt:after{content:"";position:absolute;inset-inline-start:-70px;top:-90px;width:300px;height:300px;
+  background:radial-gradient(circle,rgba(57,171,226,.28),transparent 68%)}
+.rtop{display:flex;align-items:flex-start;gap:14px;position:relative;z-index:1}
+.rchk{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none;font-size:17px}
+.receipt h2{font-size:21px;font-weight:600;letter-spacing:-.4px}
+.receipt h2 em{font-style:normal;color:#7FE0B6}
+.receipt .rsub{font-size:12.5px;color:#A9CDE6;margin-top:3px}
+.rmeta{margin-inline-start:auto;display:flex;gap:7px;flex:none}
+.rmeta span{background:rgba(255,255,255,.12);border-radius:8px;padding:5px 10px;font-size:11.5px;color:#DCEBF6}
+.rtiles{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:15px;position:relative;z-index:1}
+.rt{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:12px 13px;
+  cursor:pointer;transition:.16s;position:relative;overflow:hidden}
+.rt:hover{background:rgba(255,255,255,.17);transform:translateY(-2px)}
+.rt b{font-size:26px;font-weight:600;letter-spacing:-.8px;display:block;line-height:1.15}
+.rt span{font-size:11.5px;color:#B9D8EC;display:block}
+.rt .go{font-size:11px;color:#7FE0B6;margin-top:5px;display:block}
+.rt i{position:absolute;inset-inline-end:0;top:0;bottom:0;width:3px}
+.pipe{display:flex;align-items:center;gap:6px;margin-top:13px;flex-wrap:wrap;position:relative;z-index:1;
+  border-top:1px solid rgba(255,255,255,.14);padding-top:12px}
+.pipe .pi{display:flex;gap:6px;align-items:center;font-size:11.5px;color:#CFE3F1;
+  background:rgba(255,255,255,.08);border-radius:20px;padding:4px 11px}
+.pipe .pi em{font-style:normal;color:#7FE0B6;font-size:10px}
+.pipe .ar{color:#5b8bb0;font-size:10px}
+.pipe .pt3{margin-inline-start:auto;font-size:11.5px;color:#A9CDE6}
+
+.ghostbar{background:#fff;border:1px dashed #E0C9C5;border-radius:var(--r2);padding:11px 15px;
+  display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.ghostbar .gt{font-size:12.5px;color:#a8433a;font-weight:500;display:flex;gap:7px;align-items:center;flex:none}
+.ghostbar .gv{display:flex;gap:7px;flex:1}
+.ghostbar .gv div{background:#FBF5F4;border-radius:8px;padding:5px 11px;text-align:center;min-width:74px}
+.ghostbar .gv b{display:block;font-size:14px;color:#c9948e;font-weight:600;line-height:1.3}
+.ghostbar .gv span{font-size:9.5px;color:#b39089}
+.ghostbar .gd{font-size:11.5px;color:#a08d8a;margin-inline-start:auto;text-align:end;max-width:270px;line-height:1.5}
+
+.lenswrap{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.lensbar{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);background:#FAFCFE}
+.lens{padding:8px 15px;border-radius:10px;font-size:13.5px;color:var(--ink2);display:flex;gap:8px;align-items:center;transition:.14s}
+.lens:hover{background:#EEF3F9}
+.lens b{font-size:11px;font-weight:600;color:var(--ink3);background:#EDF2F8;border-radius:20px;padding:1px 7px}
+.lens.on{background:var(--navy);color:#fff;font-weight:500;box-shadow:0 3px 10px rgba(12,64,104,.2)}
+.lens.on b{background:rgba(255,255,255,.2);color:#fff}
+.srcnote{margin-inline-start:auto;font-size:11.5px;color:var(--ink3);display:flex;gap:7px;align-items:center;padding-inline-end:6px}
+.pane{display:none;padding:16px 18px 20px}
+.pane.on{display:block}
+
+.sech{display:flex;align-items:center;gap:9px;margin:0 0 4px}
+.sech h3{font-size:15px;font-weight:600}
+.sech .sc{font-size:11px;font-weight:600;color:var(--ink3);background:#F1F5FA;border-radius:20px;padding:2px 8px}
+.sech .sd{font-size:11.5px;color:var(--ink3);margin-inline-start:auto}
+.sumrow{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid #F1F5F9}
+.sumrow .sn{width:22px;height:22px;border-radius:7px;background:#F1F5FA;color:#7793ab;font-size:11px;font-weight:600;
+  display:grid;place-items:center;flex:none;margin-top:1px}
+.sumrow .sb{flex:1}
+.sumrow .sb p{font-size:13.5px;line-height:1.65}
+.sumrow .sb p b{font-weight:600}
+.stamp{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:#1b7fb8;background:#EAF6FD;
+  border:1px solid #D3EBF9;border-radius:7px;padding:2px 8px;margin-top:6px;cursor:pointer;transition:.14s;
+  font-variant-numeric:tabular-nums}
+.stamp:hover{background:#D6EEFB;border-color:#A9D9F3}
+.stamp.q{color:#7793ab;background:#F4F7FA;border-color:#E6ECF4}
+
+.ins{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:12px}
+.inscard{border:1px solid var(--line);border-radius:var(--r2);padding:13px 14px;background:#FCFDFE;position:relative}
+.inscard .it{font-size:14px;font-weight:600;line-height:1.5;margin:7px 0 6px}
+.inscard p{font-size:12.5px;color:var(--ink2);line-height:1.65}
+.inscard .more{font-size:12px;color:var(--sky);margin-top:8px;display:flex;gap:5px;align-items:center;font-weight:500}
+.inscard .hid{display:none}
+.inscard.open .hid{display:block;margin-top:7px}
+
+.tkhead{background:#FFFBEE;border:1px solid #F5E4B8;border-radius:var(--r2);padding:11px 14px;
+  font-size:12.5px;color:#7a5a05;display:flex;gap:9px;align-items:center;margin-bottom:12px}
+.tkrow{display:flex;gap:11px;align-items:flex-start;padding:12px 12px;border:1px solid var(--line);border-radius:var(--r2);
+  margin-bottom:8px;background:#fff;transition:.14s}
+.tkrow:hover{border-color:#CFE3F2;box-shadow:0 3px 12px rgba(12,64,104,.07)}
+.tkrow.done{background:#FAFDFB;border-color:#DFF0E8}
+.cbx{width:20px;height:20px;border-radius:6px;border:1.5px solid #C6D5E2;flex:none;margin-top:1px;display:grid;place-items:center;
+  font-size:11px;color:transparent;transition:.15s;cursor:pointer}
+.tkrow.done .cbx{background:var(--green);border-color:var(--green);color:#fff}
+.tkrow .tb{flex:1}
+.tkrow .tt{font-size:13.5px;line-height:1.55;font-weight:500}
+.tkrow.done .tt{color:var(--ink2)}
+.tkrow .tm2{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.own{font-size:11px;color:var(--ink2);background:#F1F5FA;border-radius:7px;padding:3px 9px;display:flex;gap:6px;align-items:center}
+.own i{width:16px;height:16px;border-radius:50%;background:#DCE8F2;color:#5b7c98;font-size:9px;font-weight:600;
+  display:grid;place-items:center;font-style:normal}
+.tkfoot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+
+.trbox{border:1px solid var(--line);border-radius:var(--r2);overflow:hidden}
+.trh{display:flex;align-items:center;gap:10px;padding:10px 13px;background:#FAFCFE;border-bottom:1px solid var(--line);
+  font-size:12px;color:var(--ink2)}
+.trlist{max-height:520px;overflow:auto}
+.trl{display:flex;gap:11px;padding:11px 14px;border-bottom:1px solid #F4F7FA;transition:.2s}
+.trl:hover{background:#FAFCFE}
+.trl.hit{background:#FFF8E8;box-shadow:inset 3px 0 0 #F0A93E}
+.trl .tsp{font-size:10.5px;color:var(--ink3);font-variant-numeric:tabular-nums;width:42px;flex:none;padding-top:2px}
+.trl .wh{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:6px;flex:none;height:20px;margin-top:1px}
+.wh.a{background:#EAF6FD;color:#1b7fb8}.wh.b{background:#F1F5FA;color:#5b7c98}
+.trl p{font-size:13px;line-height:1.65;flex:1;color:#24486a}
+.chapmark{display:flex;gap:9px;align-items:center;padding:9px 14px;background:#FFFBF2;border-bottom:1px solid #F6E9CE;
+  font-size:12px;color:#7a5a05;font-weight:500}
+.chapmark .cf{font-size:10.5px;background:#F5E4B8;color:#6b4e04;border-radius:6px;padding:2px 7px;font-variant-numeric:tabular-nums}
+
+.fbcard{border:1px solid var(--line);border-radius:var(--r2);margin-bottom:10px;overflow:hidden;background:#fff}
+.fbh{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#FBFDFE}
+.fbh .fn{width:22px;height:22px;border-radius:7px;background:#F1EEFE;color:var(--purple);font-size:11px;font-weight:600;
+  display:grid;place-items:center;flex:none}
+.fbh h4{font-size:14px;font-weight:600;flex:1;line-height:1.45}
+.fbsplit{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--line)}
+.fbcol{padding:13px 14px}
+.fbcol:first-child{border-inline-end:1px solid var(--line)}
+.fbl{font-size:11.5px;font-weight:600;display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.fbl.s{color:var(--green)}.fbl.i{color:var(--amber)}
+.fbcol p{font-size:12.5px;line-height:1.7;color:var(--ink2)}
+.quo{margin-top:8px;padding:8px 11px;border-radius:9px;background:#F7FAFC;border-inline-start:2.5px solid #D3E2EE;
+  font-size:12px;color:#4b6a86;line-height:1.6;font-style:italic}
+.quo .qt{font-style:normal;font-size:10.5px;color:#8fa5ba;display:block;margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* right rail after */
+.player{background:linear-gradient(150deg,#0C4068,#093553);border-radius:var(--r);padding:15px 16px;color:#fff;
+  box-shadow:0 10px 26px rgba(12,64,104,.2)}
+.player .ph{display:flex;align-items:center;gap:9px;font-size:12px;color:#9EC4DE;margin-bottom:11px}
+.player .ph b{color:#fff;font-weight:600;font-size:13px}
+.pwave{position:relative;height:46px;display:flex;align-items:center;gap:1.5px;margin-bottom:8px}
+.pwave i{flex:1;border-radius:1px;background:rgba(255,255,255,.22);display:block}
+.pwave i.p{background:#5FC0EE}
+.pmk{position:absolute;top:-3px;bottom:-3px;width:2px;background:#F0A93E;border-radius:2px;cursor:pointer}
+.pmk:after{content:"";position:absolute;top:-4px;inset-inline-start:-3px;width:8px;height:8px;border-radius:50%;background:#F0A93E}
+.pmk.hot{background:#fff}.pmk.hot:after{background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.25)}
+.phead{position:absolute;top:-4px;bottom:-4px;width:2px;background:#fff;border-radius:2px}
+.pctl{display:flex;align-items:center;gap:11px}
+.play{width:36px;height:36px;border-radius:50%;background:var(--sky);display:grid;place-items:center;flex:none;
+  box-shadow:0 5px 14px rgba(57,171,226,.4)}
+.play svg{width:13px;height:13px;fill:#fff;margin-inline-start:2px}
+.ptime{font-size:12.5px;color:#B9D8EC;font-variant-numeric:tabular-nums}
+.ptime b{color:#fff;font-weight:600}
+.pspd{margin-inline-start:auto;font-size:11px;background:rgba(255,255,255,.12);border-radius:7px;padding:4px 9px;color:#DCEBF6}
+
+.axis{margin-top:12px}
+.axrow{display:flex;gap:11px;padding:10px 14px;border-top:1px solid #F0F4F9;cursor:pointer;transition:.15s;position:relative}
+.axrow:hover{background:#FAFCFE}
+.axrow.hot{background:#FFFBF2}
+.axrow.hot:after{content:"";position:absolute;inset-inline-end:0;top:0;bottom:0;width:3px;background:#F0A93E}
+.axrow .ad{width:14px;flex:none;display:flex;justify-content:center;padding-top:5px}
+.axrow .ad i{width:8px;height:8px;border-radius:50%;background:#F0A93E;display:block}
+.axrow .ab{flex:1}
+.axrow .at{font-size:11px;color:#1b7fb8;font-weight:600;font-variant-numeric:tabular-nums}
+.axrow .an{font-size:13px;font-weight:500;margin-top:1px}
+.axrow .as{font-size:11px;color:var(--ink3);margin-top:1px}
+.axfoot{padding:11px 14px;border-top:1px solid #F0F4F9;font-size:11.5px;color:var(--ink2);display:flex;gap:8px;align-items:center}
+
+.memadd{display:flex;gap:9px;font-size:12.5px;color:var(--ink2);line-height:1.65;
+  padding:8px 0;border-top:1px solid #F0F4F9}
+.memadd .pls{width:18px;height:18px;border-radius:6px;background:#E8F6EF;color:var(--green);flex:none;
+  display:grid;place-items:center;font-weight:700;font-size:12px;margin-top:2px}
+.nextprep{background:linear-gradient(120deg,#F2F9FD,#fff);border:1px solid #D6EAF7;border-radius:var(--r);padding:15px 16px;
+  box-shadow:var(--sh)}
+.nextprep .nh{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px}
+.nextprep h4{font-size:14.5px;font-weight:600;line-height:1.45}
+.nextprep .nd{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.nextprep ul{list-style:none;margin:9px 0}
+.nextprep li{font-size:12.5px;color:var(--ink2);padding:5px 0;display:flex;gap:8px;line-height:1.55}
+.nextprep li:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--sky);flex:none;margin-top:7px}
+
+/* toast */
+.toast{position:fixed;bottom:26px;inset-inline-start:26px;background:#0C4068;color:#fff;border-radius:12px;
+  padding:12px 17px;font-size:13px;box-shadow:0 14px 34px rgba(6,41,66,.35);display:flex;gap:10px;align-items:center;
+  z-index:200;transform:translateY(20px);opacity:0;pointer-events:none;transition:.24s}
+.toast.on{transform:none;opacity:1}
+.toast .tk{background:rgba(255,255,255,.15);border-radius:7px;padding:2px 8px;font-size:11px;font-variant-numeric:tabular-nums}
+svg.i{width:14px;height:14px;stroke-width:1.9;stroke:currentColor;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg.i.s{width:12px;height:12px}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-thumb{background:#CFDCE8;border-radius:7px}
+body.dark ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16)}
+</style>
+<style>
+/* בתוך האפליקציה — בלי גובה מסך מלא ובלי כותרת כפולה */
+body.is-embedded{background:transparent}
+body.is-embedded .app,body.is-embedded .wrap{height:auto;min-height:0}
+body.is-embedded .topbar .brand,body.is-embedded .brandmark{display:none}
+</style>
+</head>
+<body>
+
+<!-- ================= TOP ================= -->
+<div class="top">
+  <div class="logo">HK</div>
+  <div class="brand">חדר הפגישה</div>
+  <div class="crumb">צחי · פגישה חודשית · היום <span class="n">09:00</span></div>
+  <div class="spacer"></div>
+  <div class="streak" id="streakPill">
+    <span class="fl">🔥</span>
+    <div>
+      <div class="sv"><span class="n" id="streakVal">10</span> מתוך <span class="n">12</span> הוקלטו</div>
+      <div class="sl">רצף ההקלטות שלך</div>
+    </div>
+  </div>
+  <div class="filters">
+    <button class="on">לטיפול <b class="n">3</b></button>
+    <button>קרובות <b class="n">2</b></button>
+    <button>הסתיימו <b class="n">10</b></button>
+    <button>הכל <b class="n">12</b></button>
+  </div>
+  <div class="avatar">א״ל</div>
+</div>
+
+<!-- ================= STAGE ================= -->
+<div class="stage">
+  <div class="steps">
+    <button class="step cur" id="s1" onclick="setMode('before')"><span class="dot n">1</span> הכנה</button>
+    <span class="sep"></span>
+    <button class="step lock" id="s2" onclick="setMode('live')"><span class="dot n">2</span> הקלטה</button>
+    <span class="sep"></span>
+    <button class="step lock" id="s3" onclick="setMode('after')"><span class="dot n">3</span> תוצרים</button>
+  </div>
+  <div class="stagemeta" id="stageMeta">ההכנה מוכנה · עודכנה לפני <b>20 דקות</b> · <b>45 דק׳</b> מתוכננות</div>
+</div>
+
+<!-- ================= MODE: BEFORE ================= -->
+<div class="mode on" id="m-before">
+<div class="wrap">
+<div class="g3">
+
+  <!-- meetings rail -->
+  <aside>
+    <div class="card mtlist">
+      <div class="ch"><div class="ic" style="background:#EAF6FD;color:#1b7fb8"><svg class="i s" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg></div>
+        <h3>הפגישות שלי</h3><span class="sub">היום, <span class="n">21.8</span></span></div>
+      <div class="mtrow cur"><div class="tm"><b class="n">09:00</b><span>היום</span></div>
+        <div class="nm"><b>צחי</b><span>פגישה חודשית</span></div><span class="pill p-sched">בעוד <span class="n">40</span> דק׳</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">11:30</b><span>היום</span></div>
+        <div class="nm"><b>פגישת רבעון</b><span>טרם נקבע מועד</span></div><span class="pill p-sched">לתאם</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">16:00</b><span>אתמול</span></div>
+        <div class="nm"><b>פגישה חודשית</b><span>הקלטה <span class="n">32:41</span></span></div><span class="pill p-proc">בעיבוד</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">10:30</b><span>אתמול</span></div>
+        <div class="nm"><b>פגישה ראשונה</b><span>הקלטה <span class="n">51:07</span></span></div><span class="pill p-appr">לאישור</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">13:00</b><span>ב׳ <span class="n">18.8</span></span></div>
+        <div class="nm"><b>פגישה חודשית</b><span>הקלטה <span class="n">44:15</span></span></div><span class="pill p-done">הושלם</span></div>
+      <div class="norec">
+        <div class="t"><svg class="i s" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> ג׳ <span class="n">19.8</span> · לא הוקלטה</div>
+        <div class="d">אין תמלול, אין סיכום, אין משימות — וההכנה לפגישה הבאה שם התחילה מדף חלק.</div>
+      </div>
+      <div class="streakbox">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--ink2)">רצף ההקלטות</span>
+          <b style="font-size:13px" class="n">10/12</b>
+        </div>
+        <div class="sbar"><i style="width:83%"></i></div>
+        <div class="wk">
+          <div class="y">✓</div><div class="y">✓</div><div class="n2">✕</div><div class="y">✓</div><div class="t">●</div><div class="o">–</div><div class="o">–</div>
+        </div>
+        <div class="wkl"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div>ש׳</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- prep main -->
+  <div>
+    <div class="h1">ההכנה שלך לפגישה עם צחי
+      <span class="tag"><i></i> נבנתה מהזיכרון ומהנתונים</span></div>
+    <div class="sub1">כל מה שכאן עולה איתך ללוח החי ברגע שתתחיל להקליט.</div>
+
+    <div class="kpis">
+      <div class="kpi g"><div class="kl"><svg class="i s" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg> הכנסות</div>
+        <div class="kv n">+12%</div><div class="kd">מול החודש הקודם</div></div>
+      <div class="kpi r"><div class="kl"><svg class="i s" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="9" width="3" height="9"/><rect x="14" y="5" width="3" height="13"/></svg> שורת הקניות</div>
+        <div class="kv n">114%</div><div class="kd">מהתקציב</div></div>
+      <div class="kpi a"><div class="kl"><svg class="i s" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg> טרם נצבע בתזרים</div>
+        <div class="kv"><span class="n">25,000</span> ₪</div><div class="kd">מקניות המלאי</div></div>
+      <div class="kpi c"><div class="kl"><svg class="i s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> חריגה צפויה בעו״ש</div>
+        <div class="kv">בעוד <span class="n">9</span> ימים</div><div class="kd">כיסוי: פועלים <span class="n">112</span></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="ch"><div class="ic" style="background:#F1EEFE;color:var(--purple)"><svg class="i s" viewBox="0 0 24 24"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.4L12 15l-1.9-4.6L5.5 9l4.6-1.4L12 3Z"/></svg></div>
+        <h3>התדריך</h3><span class="sub">סיכום AI · מבוסס על הפגישה הקודמת, הדוחות והתזרים</span></div>
+      <div class="brief"><p>הפגישה מגיעה אחרי <span class="hl gr">חודש חזק (הכנסות <span class="n">+12%</span>)</span> אבל עם <span class="hl rd">חריגה צפויה בעו״ש בעוד <span class="n">9</span> ימים</span>. הנושא המרכזי: קניות המלאי — גם חרגו מהתקציב (<span class="hl"><span class="n">114%</span></span>) וגם <span class="hl"><span class="n">25,000</span> ₪</span> מהן טרם נצבעו בתזרים. צחי ביקש בפגישה הקודמת לרדת לרזולוציית ספקים — להגיע עם הפירוט מוכן.</p></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="ch"><div class="ic" style="background:#EAF6FD;color:#1b7fb8"><svg class="i s" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg></div>
+        <h3>נקודות פתיחה</h3><span class="cnt n">3</span><span class="sub">יסומנו אוטומטית בלוח החי ברגע שיעלו</span></div>
+      <div class="pt"><span class="num n">01</span><div class="tx">ההכנסות <b><span class="n">+12%</span></b> מהחודש הקודם — כדאי לפתוח בזה</div><span class="tg tg-m">מדדים</span></div>
+      <div class="pt"><span class="num n">02</span><div class="tx">חריגה צפויה בעו״ש בעוד <b><span class="n">9</span> ימים</b> — להציע העברה מפועלים <span class="n">112</span></div><span class="tg tg-c">תזרים</span></div>
+      <div class="pt"><span class="num n">03</span><div class="tx"><b><span class="n">25,000</span> ₪</b> קניות מלאי עוד לא נצבעו בתזרים</div><span class="tg tg-o">תפעול</span></div>
+    </div>
+
+    <div class="goal" style="margin-bottom:12px">
+      <div class="gl"><svg class="i s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg> מטרה מוצעת לפגישה</div>
+      <h4>סגירת תוכנית מלאי לרבעון — תקציב חדש לשורת הקניות + צביעת ה־<span class="n">25,000</span> ₪ הפתוחים</h4>
+      <div class="why"><b>למה זה:</b> זה החוט שמחבר את חריגת התקציב, החריגה הצפויה בעו״ש והכאב שעלה בפגישה הקודמת.</div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div class="ic" style="background:#F1EEFE;color:var(--purple)"><svg class="i s" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></div>
+        <h3>איך לדבר איתו</h3><span class="sub">מהזיכרון של צחי</span></div>
+      <div class="mem">
+        <div class="memrow"><div class="mi" style="background:#EAF6FD;color:#1b7fb8"><svg class="i s" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+          <div class="mt"><b>פתח במספרים</b> — צחי מאבד סבלנות מהקדמות.</div></div>
+        <div class="memrow"><div class="mi" style="background:#FDECEA;color:var(--red)"><svg class="i s" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 2-3.2 2-5a7 7 0 1 0-14 0c0 1.8.5 3.5 2 5l5 6Z"/></svg></div>
+          <div class="mt"><b>רגישות סביב התלות ברימון</b> — לגעת בעדינות, בלי לחץ.</div></div>
+        <div class="memrow"><div class="mi" style="background:#E8F6EF;color:var(--green)"><svg class="i s" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5a8.4 8.4 0 0 1-.9-3.9 8.4 8.4 0 0 1 8.4-9 8.4 8.4 0 0 1 8.6 8.4Z"/></svg></div>
+          <div class="mt">לצ׳אט נשלח רק: <b>ענה ברוגע ובקצרה — הצג תמיד פתרון לצד בעיה.</b></div></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <button class="btn btn-g"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg> רענון ההכנה</button>
+      <button class="btn btn-g"><svg class="i" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5a8.4 8.4 0 0 1-.9-3.9 8.4 8.4 0 0 1 8.4-9 8.4 8.4 0 0 1 8.6 8.4Z"/></svg> שליחה אליי בוואטסאפ</button>
+    </div>
+  </div>
+
+  <!-- record rail -->
+  <aside class="recrail">
+    <div class="reccard">
+      <div class="kick">הכל מתחיל כאן</div>
+      <h3><span class="n">45</span> דקות שיחה הופכות ל־<b>שישה תוצרים</b></h3>
+      <div class="micwrap" onclick="setMode('live')">
+        <span class="ring c"></span><span class="ring a"></span><span class="ring b"></span>
+        <button class="mic" aria-label="הקלטת הפגישה">
+          <svg viewBox="0 0 24 24"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15Z"/><path d="M18.5 11a.9.9 0 0 0-1.8 0 4.7 4.7 0 0 1-9.4 0 .9.9 0 0 0-1.8 0 6.5 6.5 0 0 0 5.6 6.4V20h-2a.9.9 0 0 0 0 1.8h5.8a.9.9 0 0 0 0-1.8h-2v-2.6a6.5 6.5 0 0 0 5.6-6.4Z"/></svg>
+        </button>
+      </div>
+      <div class="hint">לחיצה אחת. השאר קורה לבד. <span class="kbd">R</span></div>
+      <div class="promise">
+        <div class="pl">מה תקבל ברגע שתעצור</div>
+        <div class="prow"><span class="pc"><svg class="i s" viewBox="0 0 24 24"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15ZM5 11a7 7 0 0 0 14 0"/></svg></span> תמלול מלא עם ציר זמן <span class="pt2">אוטומטי</span></div>
+        <div class="prow"><span class="pc"><svg class="i s" viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10"/></svg></span> סיכום פגישה · <b><span class="n">5</span> סעיפים + <span class="n">3</span> תובנות</b></div>
+        <div class="prow"><span class="pc"><svg class="i s" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg></span> <b><span class="n">6</span> משימות</b> מוכנות לאישור <span class="pt2">עם אחראי</span></div>
+        <div class="prow"><span class="pc"><svg class="i s" viewBox="0 0 24 24"><path d="m12 3 2.5 6L21 9.8l-4.7 4.4 1.2 6.3L12 17.5 6.5 20.5l1.2-6.3L3 9.8 9.5 9Z"/></svg></span> משוב אישי עליך · <b><span class="n">5</span> נושאים</b></div>
+        <div class="prow"><span class="pc"><svg class="i s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> הזיכרון של צחי מתעדכן</div>
+        <div class="prow"><span class="pc"><svg class="i s" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg></span> ההכנה לפגישה הבאה נבנית</div>
+      </div>
+    </div>
+
+    <div class="loss">
+      <div class="lt"><svg class="i s" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> בפגישה של ג׳ שלא הוקלטה</div>
+      <div class="ld">אין למה לחזור — וההכנה שנבנתה אחריה הייתה חלקית.</div>
+      <div class="lg">
+        <div><b class="n">0</b><span>משימות</span></div>
+        <div><b class="n">0</b><span>תובנות</span></div>
+        <div><b>—</b><span>תמלול</span></div>
+        <div><b>—</b><span>משוב</span></div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+</div>
+</div>
+
+<!-- ================= MODE: LIVE ================= -->
+<div class="mode" id="m-live">
+<div class="live">
+  <div class="livebar">
+    <span class="rec-dot"></span>
+    <div>
+      <div class="timer mono" id="timer">00:14:32</div>
+      <div class="recl">מקליט · צחי · פגישה חודשית · שמור אוטומטית</div>
+    </div>
+    <div class="wave" id="wave"></div>
+    <button class="bigmark" onclick="markMoment()"><svg class="i" viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4Z"/></svg> סמן רגע <span class="kb">רווח</span></button>
+    <button class="stop" onclick="finish()"><i></i> סיום ההקלטה</button>
+  </div>
+
+  <div class="gl3">
+    <!-- left: transcript + accrued -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="dcard">
+        <div class="dch"><h3>תמלול חי</h3><span class="livedot" style="margin-inline-start:auto"><i></i> מתמלל</span></div>
+        <div class="tr" id="liveTr">
+          <div class="trrow"><span class="who a">יועצת</span><p>בוא נתחיל מהמספרים. ההכנסות החודש עלו ב־<span class="n">12%</span> מול החודש הקודם.</p></div>
+          <div class="trrow"><span class="who b">צחי</span><p>יפה. אז למה אני מרגיש שאין לי כסף בעו״ש?</p></div>
+          <div class="trrow"><span class="who a">יועצת</span><p>שורת קניות המלאי נסגרה על <span class="n">114%</span> מהתקציב. זו החריגה המרכזית בדוח החודש.</p></div>
+          <div class="trrow"><span class="who b">צחי</span><p>אני צריך לראות את זה לפי ספקים. ביקשתי את זה גם בפעם הקודמת.</p></div>
+          <div class="trrow"><span class="who a">יועצת</span><p>הבאתי את הפירוט. בוא נעבור עליו, ואז נקבע תקציב חדש לשורה הזו.</p></div>
+          <div class="trrow"><span class="who a">יועצת</span><p>יש עוד משהו: <span class="n">25,000</span> ₪ מתוך הקניות עדיין לא נצבעו בתזרים.</p></div>
+          <div class="trrow"><span class="who b">צחי</span><p>אז המצב יותר גרוע ממה שאני רואה על המסך?</p></div>
+          <div class="trrow"><span class="who a">יועצת</span><p>המצב פשוט לא מדויק. ברגע שנצבע את הסכום הזה, התחזית תשקף את המציאות.</p></div>
+          <div class="trrow"><span class="who b">צחי</span><p>בסדר. סיגל תוציא את הפירוט ותצבע את מה שפתוח.</p></div>
+          <div class="trrow"><span class="who a">יועצת</span><p>מצוין. ואז נקבע יחד תקרה חדשה לשורת הקניות לרבעון הקרוב.</p></div>
+          <div class="trrow"><span class="who b">צחי</span><p>ורימון? רוב הקניות עדיין דרכו, נכון?</p></div>
+          <div class="trrow"><span class="who a">יועצת</span><p>נכון, ונחזור לזה כשהפירוט המלא יהיה מולנו. בוא קודם נסגור את התקציב.</p></div>
+        </div>
+      </div>
+      <div class="dcard">
+        <div class="dch"><h3>נאסף עד עכשיו</h3><span class="ds">מוכן לרגע שתלחץ סיום</span></div>
+        <div class="acc">
+          <div><b class="n" id="accMom">3</b><span>רגעים</span></div>
+          <div><b class="n" id="accCk">2/3</b><span>נקודות</span></div>
+          <div><b class="n">32</b><span>קטעים</span></div>
+          <div><b class="n">4</b><span>משימות</span></div>
+        </div>
+        <div class="nextstreak">
+          <span class="fl">🔥</span>
+          <div><b>הרצף שלך יעלה ל־<span class="n">11</span> מתוך <span class="n">12</span></b>
+            <span>הפגישה הזאת ממשיכה את הרצף</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- center: goal + moments -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="pin">
+        <div class="pl2"><svg class="i s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg> המטרה שנעוצה</div>
+        <h4>סגירת תוכנית מלאי לרבעון — תקציב חדש לשורת הקניות + צביעת ה־<span class="n">25,000</span> ₪ הפתוחים</h4>
+        <div class="pd">החוט שמחבר את חריגת התקציב, החריגה הצפויה בעו״ש והכאב מהפגישה הקודמת.</div>
+      </div>
+      <div class="dcard">
+        <div class="dch"><h3>רגעים מסומנים</h3><span class="ds" id="momCount"><span class="n">3</span> רגעים · כל אחד יהפוך לצ׳אפטר</span></div>
+        <div class="mom" id="momList">
+          <div class="momline"></div>
+          <div class="momrow"><div class="md"><i></i></div><div class="mb">
+            <div class="mtm n">00:03:52</div><div class="mtt">פתיחה בנתוני ההכנסות</div><div class="mss"><span class="n">+12%</span> מול החודש הקודם</div></div></div>
+          <div class="momrow"><div class="md"><i></i></div><div class="mb">
+            <div class="mtm n">00:09:20</div><div class="mtt">חריגת תקציב בשורת הקניות</div><div class="mss"><span class="n">114%</span> מהתקציב — הנושא המרכזי</div></div></div>
+          <div class="momrow"><div class="md"><i></i></div><div class="mb">
+            <div class="mtm n">00:14:05</div><div class="mtt"><span class="n">25,000</span> ₪ שטרם נצבעו</div><div class="mss">צחי ביקש לרדת לרזולוציית ספקים</div></div></div>
+          <div class="ghost" id="ghostRow"><div class="md"><i></i></div><div class="mb">
+            <div class="mtt">הרגע הבא שתסמן ייכנס לכאן</div><div class="mss">רווח — או לחיצה על ״סמן רגע״</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right: checklist + memory -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="dcard">
+        <div class="dch">
+          <div class="ring2"><svg width="34" height="34"><circle cx="17" cy="17" r="14" stroke="rgba(255,255,255,.14)" stroke-width="3.5" fill="none"/>
+            <circle id="ringArc" cx="17" cy="17" r="14" stroke="#39ABE2" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-dasharray="87.9" stroke-dashoffset="29.3"/></svg><span id="ringTxt">2/3</span></div>
+          <div><h3>נקודות הפתיחה</h3><div style="font-size:11px;color:#7FA6C4">מה שעוד לא כיסית</div></div>
+        </div>
+        <div class="ckrow ok"><span class="cb">✓</span><div><div class="ct">ההכנסות <span class="n">+12%</span> מהחודש הקודם</div>
+          <div class="cm"><span class="n">00:04:12</span> · כוסה</div></div></div>
+        <div class="ckrow ok"><span class="cb">✓</span><div><div class="ct"><span class="n">25,000</span> ₪ קניות מלאי שלא נצבעו</div>
+          <div class="cm"><span class="n">00:14:05</span> · כוסה</div></div></div>
+        <div class="ckrow open" id="ck3"><span class="cb"></span><div><div class="ct">חריגה צפויה בעו״ש בעוד <span class="n">9</span> ימים — להציע העברה מפועלים <span class="n">112</span></div>
+          <div class="cm" style="color:#F0A93E">עוד לא עלה בשיחה</div></div></div>
+      </div>
+
+      <div class="dcard">
+        <div class="dch"><h3>איך לדבר איתו</h3><span class="ds">מהזיכרון של צחי</span></div>
+        <div class="ckrow" style="border-top:1px solid rgba(255,255,255,.07)"><span class="cb" style="border:0;background:rgba(57,171,226,.18);color:#8FD0F2">›</span>
+          <div class="ct">פתח במספרים — צחי מאבד סבלנות מהקדמות.</div></div>
+        <div class="ckrow"><span class="cb" style="border:0;background:rgba(232,99,90,.18);color:#F0A093">›</span>
+          <div class="ct">רגישות סביב התלות ברימון — לגעת בעדינות, בלי לחץ.</div></div>
+        <div class="ckrow"><span class="cb" style="border:0;background:rgba(19,137,91,.20);color:#6FD6AA">›</span>
+          <div class="ct">ענה ברוגע ובקצרה — הצג תמיד פתרון לצד בעיה.</div></div>
+      </div>
+
+      <div class="dcard" style="border-color:rgba(240,169,62,.3);background:linear-gradient(160deg,rgba(240,169,62,.13),rgba(240,169,62,.04))">
+        <div class="dch"><h3>פתוח מהפגישה הקודמת</h3><span class="ds" style="color:#F0A93E">לא לשכוח</span></div>
+        <div class="dbody" style="padding-top:2px"><div style="font-size:13px;color:#EBDCC4;line-height:1.65">
+          צחי ביקש לרדת לרזולוציית ספקים — <b style="color:#fff">הפירוט צריך לעלות לשולחן היום.</b></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="endstrip">
+    <div class="es-l">
+      <div class="es-t"><svg class="i" viewBox="0 0 24 24"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15ZM5 11a7 7 0 0 0 14 0"/></svg>
+        ברגע שתלחץ ״סיום ההקלטה״</div>
+      <div class="es-d">הכל נגזר לבד תוך כ־<b><span class="n">40</span> שניות</b>. אתה לא צריך לרשום כלום עכשיו.</div>
+    </div>
+    <div class="es-r">
+      <div class="es-i"><b>תמלול מלא</b><span>עם ציר זמן וצ׳אפטרים</span></div>
+      <div class="es-i"><b>סיכום · <span class="n">5+3</span></b><span>סעיפים ותובנות</span></div>
+      <div class="es-i"><b><span class="n">6</span> משימות</b><span>עם בעלי אחריות</span></div>
+      <div class="es-i"><b>משוב אישי · <span class="n">5</span></b><span>נראה רק לך</span></div>
+      <div class="es-i"><b>זיכרון צחי</b><span>מתעדכן אוטומטית</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================= MODE: AFTER ================= -->
+<div class="mode" id="m-after">
+<div class="wrap">
+<div class="g3">
+
+  <!-- meetings rail (same object) -->
+  <aside>
+    <div class="card mtlist">
+      <div class="ch"><div class="ic" style="background:#EAF6FD;color:#1b7fb8"><svg class="i s" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg></div>
+        <h3>הפגישות שלי</h3><span class="sub">היום, <span class="n">21.8</span></span></div>
+      <div class="mtrow cur"><div class="tm"><b class="n">09:00</b><span>היום</span></div>
+        <div class="nm"><b>צחי</b><span>הקלטה <span class="n">47:20</span></span></div><span class="pill p-appr">לאישור</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">11:30</b><span>היום</span></div>
+        <div class="nm"><b>פגישת רבעון</b><span>טרם נקבע מועד</span></div><span class="pill p-sched">לתאם</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">16:00</b><span>אתמול</span></div>
+        <div class="nm"><b>פגישה חודשית</b><span>הקלטה <span class="n">32:41</span></span></div><span class="pill p-proc">בעיבוד</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">10:30</b><span>אתמול</span></div>
+        <div class="nm"><b>פגישה ראשונה</b><span>הקלטה <span class="n">51:07</span></span></div><span class="pill p-appr">לאישור</span></div>
+      <div class="mtrow"><div class="tm"><b class="n">13:00</b><span>ב׳ <span class="n">18.8</span></span></div>
+        <div class="nm"><b>פגישה חודשית</b><span>הקלטה <span class="n">44:15</span></span></div><span class="pill p-done">הושלם</span></div>
+      <div class="streakbox">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--ink2)">רצף ההקלטות</span>
+          <b style="font-size:13px"><span class="n">11/12</span> <span class="n" style="color:var(--green);font-size:11px;font-weight:600">+1</span></b>
+        </div>
+        <div class="sbar"><i style="width:92%"></i></div>
+        <div class="wk">
+          <div class="y">✓</div><div class="y">✓</div><div class="n2">✕</div><div class="y">✓</div><div class="y">✓</div><div class="o">–</div><div class="o">–</div>
+        </div>
+        <div class="wkl"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div>ש׳</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- after main -->
+  <div>
+    <div class="receipt">
+      <div class="rtop">
+        <div class="rchk">✓</div>
+        <div>
+          <h2>הפגישה הזאת <em>ייצרה בשבילך</em></h2>
+          <div class="rsub">הכל נגזר מאותה הקלטה אחת — כל אריח פותח את אותו ציר זמן.</div>
+        </div>
+        <div class="rmeta"><span>משך <span class="n">47:20</span></span><span>מוכן תוך <span class="n">38</span> שניות</span></div>
+      </div>
+      <div class="rtiles">
+        <div class="rt" onclick="lens('sum')"><i style="background:#39ABE2"></i><b class="n cu" data-to="5">0</b><span>סעיפי סיכום</span><span class="go">פתח ←</span></div>
+        <div class="rt" onclick="lens('sum')"><i style="background:#7557E3"></i><b class="n cu" data-to="3">0</b><span>תובנות מרכזיות</span><span class="go">קרא ←</span></div>
+        <div class="rt" onclick="lens('tasks')"><i style="background:#13895b"></i><b class="n cu" data-to="6">0</b><span>משימות לאישור</span><span class="go">אשר ←</span></div>
+        <div class="rt" onclick="lens('fb')"><i style="background:#c98404"></i><b class="n cu" data-to="5">0</b><span>נושאי משוב עליך</span><span class="go">אישי ←</span></div>
+        <div class="rt" onclick="lens('tr')"><i style="background:#E8635A"></i><b class="n cu" data-to="2">0</b><span>עדכוני זיכרון</span><span class="go">נכנסו ←</span></div>
+      </div>
+      <div class="pipe">
+        <span class="pi"><em>✓</em> הקלטה</span><span class="ar">←</span>
+        <span class="pi"><em>✓</em> תומללה</span><span class="ar">←</span>
+        <span class="pi"><em>✓</em> סוכמה</span><span class="ar">←</span>
+        <span class="pi"><em>✓</em> משימות נגזרו</span><span class="ar">←</span>
+        <span class="pi"><em>✓</em> הזיכרון עודכן</span>
+        <span class="pt3">הכל רץ לבד · הסתיים לפני רגע</span>
+      </div>
+    </div>
+
+    <div class="ghostbar">
+      <div class="gt"><svg class="i s" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> אם לא היית מקליט</div>
+      <div class="gv">
+        <div><b class="n">0</b><span>משימות</span></div>
+        <div><b class="n">0</b><span>תובנות</span></div>
+        <div><b>—</b><span>תמלול</span></div>
+        <div><b>—</b><span>משוב עליך</span></div>
+        <div><b class="n">0</b><span>עדכוני זיכרון</span></div>
+      </div>
+      <div class="gd">הזיכרון של צחי היה נשאר בדיוק כמו שהיה, וההכנה הבאה הייתה מתחילה מדף חלק.</div>
+    </div>
+
+    <div class="lenswrap">
+      <div class="lensbar">
+        <button class="lens on" id="l-sum" onclick="lens('sum')">סיכום פגישה <b class="n">5+3</b></button>
+        <button class="lens" id="l-tasks" onclick="lens('tasks')">משימות <b class="n">6</b></button>
+        <button class="lens" id="l-tr" onclick="lens('tr')">תמלול <b class="n">47:20</b></button>
+        <button class="lens" id="l-fb" onclick="lens('fb')">משוב עליך <b class="n">5</b></button>
+        <div class="srcnote"><svg class="i s" viewBox="0 0 24 24"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15ZM5 11a7 7 0 0 0 14 0"/></svg> ארבע עדשות · מקור אחד</div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="pane on" id="p-sum">
+        <div class="sech"><h3>תמונת מצב ונתוני יסוד</h3><span class="sc n">5</span>
+          <span class="sd">כל סעיף מעוגן ברגע שממנו נולד — לחיצה על חותמת קופצת לתמלול</span></div>
+        <div class="sumrow"><span class="sn n">1</span><div class="sb">
+          <p><b>ההכנסות</b> — החודש נסגר עם עלייה של <b><span class="n">12%</span></b> מול החודש הקודם. החודש החזק ביותר ברבעון, והנתון שבו נפתחה הפגישה.</p>
+          <span class="stamp" onclick="jump('00:03:52')">▸ <span class="n">00:03:52</span> · פתיחה בנתוני ההכנסות</span></div></div>
+        <div class="sumrow"><span class="sn n">2</span><div class="sb">
+          <p><b>קניות מלאי</b> — שורת הקניות נסגרה על <b><span class="n">114%</span></b> מהתקציב. זו החריגה המרכזית בדוח, והנושא שהוביל את הפגישה.</p>
+          <span class="stamp" onclick="jump('00:09:20')">▸ <span class="n">00:09:20</span> · חריגת התקציב בשורת הקניות</span></div></div>
+        <div class="sumrow"><span class="sn n">3</span><div class="sb">
+          <p><b>צביעה בתזרים</b> — <b><span class="n">25,000</span> ₪</b> מתוך קניות המלאי טרם נצבעו בתזרים, ולכן התמונה התזרימית חלקית. צחי ביקש לרדת לרזולוציית ספקים.</p>
+          <span class="stamp" onclick="jump('00:14:05')">▸ <span class="n">00:14:05</span> · <span class="n">25,000</span> ₪ שטרם נצבעו</span></div></div>
+        <div class="sumrow"><span class="sn n">4</span><div class="sb">
+          <p><b>עו״ש</b> — חריגה צפויה בעוד <b><span class="n">9</span> ימים</b>. הפתרון שהוצע בפגישה: העברה מחשבון פועלים <span class="n">112</span> לכיסוי.</p>
+          <span class="stamp" onclick="jump('00:31:40')">▸ <span class="n">00:31:40</span> · העברה מפועלים <span class="n">112</span></span></div></div>
+        <div class="sumrow" style="border-bottom:0"><span class="sn n">5</span><div class="sb">
+          <p><b>התלות ברימון</b> — הנושא עלה שוב כרקע לדיון על הספקים. בהתאם לזיכרון הלקוח הוא נגע בו בעדינות ולא העמיק.</p>
+          <span class="stamp q">נושא רגיש · מהזיכרון של צחי</span></div></div>
+
+        <div class="sech" style="margin-top:20px"><h3>תובנות מרכזיות</h3><span class="sc n">3</span></div>
+        <div class="ins">
+          <div class="inscard" onclick="this.classList.toggle('open')">
+            <span class="tg tg-c">תזרים</span>
+            <div class="it">החריגה בעו״ש היא תסמין — לא הבעיה</div>
+            <p>המקור הוא שורת הקניות שנסגרה על <span class="n">114%</span> מהתקציב. כיסוי נקודתי של החריגה בעוד <span class="n">9</span> ימים יקנה זמן</p>
+            <div class="hid"><p>אבל בלי תקציב חדש לשורת הקניות אותו לחץ יחזור כבר ברבעון הבא. הפתרון האמיתי הוא תקרה חדשה לשורה, לא העברה בין חשבונות.</p></div>
+            <div class="more"><svg class="i s" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg> קרא עוד</div></div>
+          <div class="inscard" onclick="this.classList.toggle('open')">
+            <span class="tg tg-o">תפעול</span>
+            <div class="it">חלק מהפער התזרימי הוא פער מידע</div>
+            <p><span class="n">25,000</span> ₪ מקניות המלאי טרם נצבעו, כך שהתחזית שעל המסך אינה משקפת את המצב המלא</p>
+            <div class="hid"><p>צביעה מלאה תדייק את התחזית עוד לפני שנוגעים בהוצאות. זה השינוי הזול ביותר שאפשר לעשות השבוע, והוא משפר את איכות כל דיון תזרימי הבא.</p></div>
+            <div class="more"><svg class="i s" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg> קרא עוד</div></div>
+          <div class="inscard" onclick="this.classList.toggle('open')">
+            <span class="tg" style="background:#FDECEA;color:var(--red)">רגיש</span>
+            <div class="it">התלות ברימון היא הנושא שלא נפתח</div>
+            <p>הנושא עלה כרקע ונסגר מהר. מהזיכרון עולה שזו נקודה רגישה, ולכן היא נשארה בלי דיון עומק</p>
+            <div class="hid"><p>גם בפגישה הזו. כל עוד רזולוציית הספקים לא נפרסת, קשה לכמת את החשיפה. שווה לתכנן לזה פגישה ייעודית, כשהפירוט כבר על השולחן.</p></div>
+            <div class="more"><svg class="i s" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg> קרא עוד</div></div>
+        </div>
+      </div>
+
+      <!-- TASKS -->
+      <div class="pane" id="p-tasks">
+        <div class="tkhead"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+          להלן המשימות המוצעות ללקוח — יש לאשרן, ורק לאחר מכן ייווצרו המשימות אצל צחי.</div>
+        <div class="tkrow done" onclick="this.classList.toggle('done')"><span class="cbx">✓</span><div class="tb">
+          <div class="tt">הפקת פירוט קניות מלאי ברמת ספק לרבעון האחרון</div>
+          <div class="tm2"><span class="own"><i>ס</i> באחריות: סיגל</span><span class="stamp" onclick="event.stopPropagation();jump('00:09:20')">▸ <span class="n">00:09:20</span></span></div></div></div>
+        <div class="tkrow done" onclick="this.classList.toggle('done')"><span class="cbx">✓</span><div class="tb">
+          <div class="tt">צביעת <span class="n">25,000</span> ₪ קניות המלאי הפתוחות בתזרים</div>
+          <div class="tm2"><span class="own"><i>ס</i> באחריות: סיגל</span><span class="stamp" onclick="event.stopPropagation();jump('00:14:05')">▸ <span class="n">00:14:05</span></span></div></div></div>
+        <div class="tkrow" onclick="this.classList.toggle('done')"><span class="cbx">✓</span><div class="tb">
+          <div class="tt">קביעת תקציב חדש לשורת הקניות לרבעון הקרוב</div>
+          <div class="tm2"><span class="own"><i>א</i> באחריות: אילון</span><span class="stamp" onclick="event.stopPropagation();jump('00:09:20')">▸ <span class="n">00:09:20</span></span></div></div></div>
+        <div class="tkrow" onclick="this.classList.toggle('done')"><span class="cbx">✓</span><div class="tb">
+          <div class="tt">הכנת העברה מחשבון פועלים <span class="n">112</span> לכיסוי החריגה הצפויה בעו״ש</div>
+          <div class="tm2"><span class="own"><i>א</i> באחריות: אילון</span><span class="stamp" onclick="event.stopPropagation();jump('00:31:40')">▸ <span class="n">00:31:40</span></span></div></div></div>
+        <div class="tkrow" onclick="this.classList.toggle('done')"><span class="cbx">✓</span><div class="tb">
+          <div class="tt">בדיקת תנאי אשראי מול הספק המרכזי לקראת הרבעון</div>
+          <div class="tm2"><span class="own"><i>ס</i> באחריות: סיגל</span><span class="stamp" onclick="event.stopPropagation();jump('00:31:40')">▸ <span class="n">00:31:40</span></span></div></div></div>
+        <div class="tkrow" onclick="this.classList.toggle('done')"><span class="cbx">✓</span><div class="tb">
+          <div class="tt">עדכון תחזית התזרים אחרי צביעת הקניות</div>
+          <div class="tm2"><span class="own"><i>א</i> באחריות: אילון</span><span class="stamp" onclick="event.stopPropagation();jump('00:14:05')">▸ <span class="n">00:14:05</span></span></div></div></div>
+        <div class="tkfoot">
+          <button class="btn btn-g"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> הוספת משימה</button>
+          <button class="btn btn-n"><svg class="i" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg> אישור <span class="n">6</span> המשימות ויצירה אצל צחי</button>
+          <span style="font-size:11.5px;color:var(--ink3);margin-inline-start:auto"><span class="n">2</span> מתוך <span class="n">6</span> סומנו</span>
+        </div>
+      </div>
+
+      <!-- TRANSCRIPT -->
+      <div class="pane" id="p-tr">
+        <div class="trbox">
+          <div class="trh"><svg class="i s" viewBox="0 0 24 24"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15ZM5 11a7 7 0 0 0 14 0"/></svg>
+            תמלול מלא · <span class="n">47:20</span> · <span class="n">32</span> קטעים
+            <span style="margin-inline-start:auto;display:flex;gap:6px;align-items:center"><span class="cf" style="font-size:10.5px;background:#F5E4B8;color:#6b4e04;border-radius:6px;padding:2px 7px">4 צ׳אפטרים</span>
+            הרגעים שסימנת הם הצ׳אפטרים כאן</span></div>
+          <div class="trlist" id="trList">
+            <div class="chapmark" data-t="00:03:52"><span class="cf">00:03:52</span> ▸ פתיחה בנתוני ההכנסות</div>
+            <div class="trl" data-t="00:03:52"><span class="tsp n">03:52</span><span class="wh a">יועצת</span><p>בוא נתחיל מהמספרים. ההכנסות החודש עלו ב־<span class="n">12%</span> מול החודש הקודם — זה החודש החזק ביותר ברבעון.</p></div>
+            <div class="trl"><span class="tsp n">04:12</span><span class="wh b">צחי</span><p>יפה. אז למה אני מרגיש שאין לי כסף בעו״ש?</p></div>
+            <div class="trl"><span class="tsp n">04:40</span><span class="wh a">יועצת</span><p>כי הצמיחה לא הורגשה ביתרות. נעבור על ההוצאות ותראה בדיוק איפה זה נעצר.</p></div>
+            <div class="chapmark" data-t="00:09:20"><span class="cf">00:09:20</span> ▸ חריגת התקציב בשורת הקניות</div>
+            <div class="trl" data-t="00:09:20"><span class="tsp n">09:20</span><span class="wh a">יועצת</span><p>שורת קניות המלאי נסגרה על <span class="n">114%</span> מהתקציב. זו החריגה המרכזית בדוח החודש, ולא אירוע חד־פעמי.</p></div>
+            <div class="trl"><span class="tsp n">09:48</span><span class="wh b">צחי</span><p>אני צריך לראות את זה לפי ספקים. ביקשתי את זה גם בפעם הקודמת.</p></div>
+            <div class="trl"><span class="tsp n">10:15</span><span class="wh a">יועצת</span><p>הבאתי את הפירוט. בוא נעבור עליו, ואז נקבע תקציב חדש לשורה הזו לרבעון הקרוב.</p></div>
+            <div class="trl"><span class="tsp n">11:30</span><span class="wh b">צחי</span><p>ורימון? רוב הקניות עדיין דרכו, נכון?</p></div>
+            <div class="trl"><span class="tsp n">11:52</span><span class="wh a">יועצת</span><p>נכון, ונחזור לזה כשהפירוט המלא יהיה מולנו. בוא קודם נסגור את התקציב.</p></div>
+            <div class="chapmark" data-t="00:14:05"><span class="cf">00:14:05</span> ▸ <span class="n">25,000</span> ₪ שטרם נצבעו</div>
+            <div class="trl" data-t="00:14:05"><span class="tsp n">14:05</span><span class="wh a">יועצת</span><p>יש עוד משהו: <span class="n">25,000</span> ₪ מתוך הקניות עדיין לא נצבעו בתזרים.</p></div>
+            <div class="trl"><span class="tsp n">14:33</span><span class="wh b">צחי</span><p>אז המצב יותר גרוע ממה שאני רואה על המסך?</p></div>
+            <div class="trl"><span class="tsp n">14:50</span><span class="wh a">יועצת</span><p>המצב פשוט לא מדויק. ברגע שנצבע את הסכום הזה, התחזית תשקף את המציאות — ואז נדע על מה אנחנו מדברים.</p></div>
+            <div class="trl"><span class="tsp n">16:20</span><span class="wh b">צחי</span><p>בסדר. סיגל תוציא את הפירוט ותצבע את מה שפתוח.</p></div>
+            <div class="chapmark" data-t="00:31:40"><span class="cf">00:31:40</span> ▸ העברה מפועלים <span class="n">112</span></div>
+            <div class="trl" data-t="00:31:40"><span class="tsp n">31:40</span><span class="wh a">יועצת</span><p>לפי התחזית צפויה חריגה בעו״ש בעוד <span class="n">9</span> ימים. אפשר לכסות אותה בהעברה מחשבון פועלים <span class="n">112</span>.</p></div>
+            <div class="trl"><span class="tsp n">32:05</span><span class="wh b">צחי</span><p>כמה זה קונה לי?</p></div>
+            <div class="trl"><span class="tsp n">32:18</span><span class="wh a">יועצת</span><p>שבועיים בערך. זה קונה זמן, אבל התיקון האמיתי הוא התקציב החדש לשורת הקניות.</p></div>
+            <div class="trl"><span class="tsp n">33:02</span><span class="wh b">צחי</span><p>אז בוא נסגור את שניהם היום.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEEDBACK -->
+      <div class="pane" id="p-fb">
+        <div class="sech"><h3>משוב אישי על ניהול הפגישה</h3><span class="sc n">5</span>
+          <span class="sd">נראה רק לך · קיים רק כי הקלטת</span></div>
+        <div style="height:12px"></div>
+
+        <div class="fbcard">
+          <div class="fbh"><span class="fn n">1</span><h4>מיקוד אסטרטגי, תכליתיות ושורת הרווח</h4></div>
+          <div class="fbsplit">
+            <div class="fbcol"><div class="fbl s"><svg class="i s" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg> נקודת חוזק</div>
+              <p>היועצת הפגינה מיקוד חזק בנתונים התזרימיים והובילה את הפגישה מהמספר אל המשמעות — מהעלייה בהכנסות אל השאלה למה היא לא מורגשת ביתרות. המעבר הזה נעשה תוך פחות מדקה, והוא מה שהחזיק את צחי בשיחה.</p>
+              <div class="quo">״כי הצמיחה לא הורגשה ביתרות. נעבור על ההוצאות ותראה בדיוק איפה זה נעצר.״<span class="qt n">00:04:40</span></div></div>
+            <div class="fbcol"><div class="fbl i"><svg class="i s" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg> נקודה לשיפור</div>
+              <p>השיחה נשארה ברמה טקטית־תפעולית עמוקה, תוך התמקדות בכיבוי שריפות — פירוט, צביעה, העברה — ופחות בשאלה מה שיעור הרווח שהעסק מכוון אליו ברבעון. שווה להקצות חמש דקות קבועות לשורת הרווח.</p></div>
+          </div>
+        </div>
+
+        <div class="fbcard">
+          <div class="fbh"><span class="fn n">2</span><h4>פתיחה במספרים והתאמה לסגנון של צחי</h4></div>
+          <div class="fbsplit">
+            <div class="fbcol"><div class="fbl s"><svg class="i s" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg> נקודת חוזק</div>
+              <p>הפתיחה תאמה במדויק את ההנחיה מהזיכרון: בלי הקדמות, ישר לנתון. צחי נכנס לשיחה כבר בדקה הרביעית ושאל שאלה עניינית — סימן שהקצב התאים לו.</p>
+              <div class="quo">״בוא נתחיל מהמספרים. ההכנסות החודש עלו ב־12% מול החודש הקודם.״<span class="qt n">00:03:52</span></div></div>
+            <div class="fbcol"><div class="fbl i"><svg class="i s" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg> נקודה לשיפור</div>
+              <p>אחרי הפתיחה החדה הקצב התארך, ובאמצע הפגישה נוצרו מקטעים ארוכים של הסבר בלי עצירה לשאלה. שווה לשמור על אותו קצב קצר לאורך כל השיחה, לא רק בפתיחה.</p></div>
+          </div>
+        </div>
+
+        <div class="fbcard">
+          <div class="fbh"><span class="fn n">3</span><h4>טיפול ברגישות סביב התלות ברימון</h4></div>
+          <div class="fbsplit">
+            <div class="fbcol"><div class="fbl s"><svg class="i s" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg> נקודת חוזק</div>
+              <p>כשצחי העלה את רימון, היועצת לא נגררה לעימות ולא הפעילה לחץ — היא הכירה בנושא והציעה לחזור אליו כשהפירוט יהיה מולם. זה בדיוק הטון שהזיכרון ממליץ עליו.</p>
+              <div class="quo">״נכון, ונחזור לזה כשהפירוט המלא יהיה מולנו. בוא קודם נסגור את התקציב.״<span class="qt n">00:11:52</span></div></div>
+            <div class="fbcol"><div class="fbl i"><svg class="i s" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg> נקודה לשיפור</div>
+              <p>הדחייה נעשתה יפה, אבל לא נקבע לה מועד. נושא רגיש שנדחה בלי תאריך נוטה לחזור באותה עוצמה בפגישה הבאה. שווה לסגור בפגישה עצמה מתי בדיוק חוזרים אליו.</p></div>
+          </div>
+        </div>
+
+        <div class="fbcard">
+          <div class="fbh"><span class="fn n">4</span><h4>העמקה לרזולוציית ספקים — בקשה חוזרת של הלקוח</h4></div>
+          <div class="fbsplit">
+            <div class="fbcol"><div class="fbl s"><svg class="i s" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg> נקודת חוזק</div>
+              <p>הפירוט הגיע מוכן לפגישה, בדיוק כפי שצחי ביקש בפעם הקודמת. הבקשה החוזרת נענתה בלי שהלקוח נאלץ לבקש פעמיים — וזה נרשם אצלו.</p>
+              <div class="quo">״הבאתי את הפירוט. בוא נעבור עליו, ואז נקבע תקציב חדש לשורה הזו.״<span class="qt n">00:10:15</span></div></div>
+            <div class="fbcol"><div class="fbl i"><svg class="i s" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg> נקודה לשיפור</div>
+              <p>הפירוט הוצג, אך לא נפרס ספק־ספק בפגישה עצמה — ולכן החשיפה מול הספק המרכזי נשארה לא מכומתת. עדיף להקדיש לזה מקטע קצר וממוקד ולסיים עם מספר אחד ברור.</p></div>
+          </div>
+        </div>
+
+        <div class="fbcard">
+          <div class="fbh"><span class="fn n">5</span><h4>סגירת מטרה, משימות ואחריות</h4></div>
+          <div class="fbsplit">
+            <div class="fbcol"><div class="fbl s"><svg class="i s" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg> נקודת חוזק</div>
+              <p>הפגישה נסגרה על שתי החלטות מוגדרות — תקציב חדש לשורת הקניות והעברה מפועלים <span class="n">112</span> — וכל משימה קיבלה בעל בית בשם. צחי עצמו סגר את שתיהן, וזה הסימן הטוב ביותר לאימוץ.</p>
+              <div class="quo">״אז בוא נסגור את שניהם היום.״<span class="qt n">00:33:02</span></div></div>
+            <div class="fbcol"><div class="fbl i"><svg class="i s" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg> נקודה לשיפור</div>
+              <p>לא נקבעו תאריכי יעד לאף אחת מהמשימות, וגם לא סוכם מתי בודקים אם הצביעה הושלמה. משימה בלי תאריך חוזרת לפגישה הבאה כפתוחה — שווה לסגור תאריך בעל פה לפני הפרידה.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nextprep" style="margin-top:14px">
+      <div class="nh">
+        <div class="ic" style="background:#EAF6FD;color:#1b7fb8;width:30px;height:30px;border-radius:9px">
+          <svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg></div>
+        <div><h4>ההכנה לפגישה הבאה עם צחי כבר מוכנה</h4>
+          <div class="nd">נבנתה מהפגישה הזאת, בלי שעשית כלום. כך נסגרת הלולאה.</div></div>
+        <button class="btn btn-n" style="margin-inline-start:auto">פתח את ההכנה הבאה</button>
+      </div>
+      <ul>
+        <li>לבדוק אם ה־<span class="n">25,000</span> ₪ נצבעו בתזרים</li>
+        <li>לחזור לרזולוציית הספקים — הנושא נדחה בלי תאריך</li>
+        <li>לוודא שהחריגה בעו״ש נסגרה אחרי ההעברה מפועלים <span class="n">112</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- after rail: player + axis -->
+  <aside class="recrail">
+    <div class="player">
+      <div class="ph"><span class="rec-dot" style="animation:none"></span><b>ההקלטה</b> · <span class="n">47:20</span>
+        <span style="margin-inline-start:auto;font-size:11px;color:#7FE0B6">עובד ונשמר</span></div>
+      <div class="pwave" id="pwave"></div>
+      <div class="pctl">
+        <button class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+        <div class="ptime"><b class="n" id="phTime">14:52</b> <span class="n">/ 47:20</span></div>
+        <span class="pspd n">×1.0</span>
+      </div>
+    </div>
+
+    <div class="card axis">
+      <div class="ch"><div class="ic" style="background:#FFF6E3;color:var(--amber)"><svg class="i s" viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4Z"/></svg></div>
+        <h3>ציר הפגישה</h3><span class="cnt n">4</span></div>
+      <div style="padding:0 14px 8px;font-size:11.5px;color:var(--ink3);line-height:1.55">
+        <span class="n">4</span> הרגעים שסימנת בזמן הפגישה — הם הצ׳אפטרים בתמלול, הסעיפים בסיכום והעוגן של כל משימה.</div>
+      <div class="axrow" data-t="00:03:52" onclick="jump('00:03:52')"><div class="ad"><i></i></div><div class="ab">
+        <div class="at n">00:03:52</div><div class="an">פתיחה בנתוני ההכנסות</div><div class="as"><span class="n">+12%</span> מול החודש הקודם</div></div></div>
+      <div class="axrow" data-t="00:09:20" onclick="jump('00:09:20')"><div class="ad"><i></i></div><div class="ab">
+        <div class="at n">00:09:20</div><div class="an">חריגת תקציב בשורת הקניות</div><div class="as"><span class="n">114%</span> מהתקציב</div></div></div>
+      <div class="axrow" data-t="00:14:05" onclick="jump('00:14:05')"><div class="ad"><i></i></div><div class="ab">
+        <div class="at n">00:14:05</div><div class="an"><span class="n">25,000</span> ₪ שטרם נצבעו</div><div class="as">רזולוציית ספקים</div></div></div>
+      <div class="axrow" data-t="00:31:40" onclick="jump('00:31:40')"><div class="ad"><i></i></div><div class="ab">
+        <div class="at n">00:31:40</div><div class="an">העברה מפועלים <span class="n">112</span></div><div class="as">כיסוי החריגה בעו״ש</div></div></div>
+      <div class="axfoot"><svg class="i s" viewBox="0 0 24 24" style="color:var(--green)"><path d="m5 12 5 5L20 7"/></svg>
+        כל <span class="n">3</span> נקודות הפתיחה כוסו בפגישה</div>
+    </div>
+
+    <div class="card" style="padding:14px 15px">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+        <div class="ic" style="background:#F1EEFE;color:var(--purple)"><svg class="i s" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3 style="font-size:14.5px;font-weight:600">הזיכרון של צחי עודכן</h3>
+      </div>
+      <div class="memadd"><span class="pls">+</span><span>רזולוציית ספקים נדחתה בלי תאריך — לפתוח בפגישה הבאה</span></div>
+      <div class="memadd"><span class="pls">+</span><span>צחי סוגר החלטות בעצמו כשמציגים שתי אפשרויות קונקרטיות</span></div>
+    </div>
+  </aside>
+
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastTxt">נשמר</span></div>
+
+<script>
+/* ---------- waves ---------- */
+(function(){
+  const w=document.getElementById('wave');let h='';
+  for(let i=0;i<74;i++){h+='<i style="animation-delay:'+(-(i%13)*.09).toFixed(2)+'s;height:'+(18+Math.abs(Math.sin(i*.7))*70)+'%"></i>'}
+  w.innerHTML=h;
+  const pw=document.getElementById('pwave');let p='';
+  const N=64,head=Math.round(N*14.9/47.3);
+  for(let i=0;i<N;i++){const hh=14+Math.abs(Math.sin(i*.9)*Math.cos(i*.31))*80;
+    p+='<i class="'+(i<head?'p':'')+'" style="height:'+hh.toFixed(0)+'%"></i>'}
+  const mk=[3.87,9.33,14.08,31.67];
+  p+=mk.map(m=>'<span class="pmk" data-t="'+m+'" style="inset-inline-start:'+(m/47.3*100).toFixed(1)+'%"></span>').join('');
+  p+='<span class="phead" style="inset-inline-start:'+(14.9/47.3*100).toFixed(1)+'%"></span>';
+  pw.innerHTML=p;
+})();
+
+/* ---------- mode ---------- */
+let mode='before';
+function setMode(m){
+  mode=m;
+  ['before','live','after'].forEach(k=>document.getElementById('m-'+k).classList.toggle('on',k===m));
+  document.body.classList.toggle('dark',m==='live');
+  const s=[document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3')];
+  s.forEach(e=>e.className='step lock');
+  const meta=document.getElementById('stageMeta');
+  if(m==='before'){s[0].className='step cur';meta.innerHTML='ההכנה מוכנה · עודכנה לפני <b>20 דקות</b> · <b>45 דק׳</b> מתוכננות';
+    document.getElementById('streakVal').textContent='10';}
+  if(m==='live'){s[0].className='step done';s[1].className='step cur live';
+    meta.innerHTML='מקליט עכשיו · אל תסגור את החלון · הכל נשמר אוטומטית';
+    document.getElementById('streakVal').textContent='10';startTimer();
+    setTimeout(()=>{const t=document.getElementById('liveTr');if(t)t.scrollTop=t.scrollHeight;},30);}
+  if(m==='after'){s[0].className='step done';s[1].className='step done';s[2].className='step cur';
+    meta.innerHTML='ההקלטה הסתיימה · <b>47:20</b> · התוצרים מוכנים · ממתין לאישור המשימות';
+    document.getElementById('streakVal').textContent='11';countUp();}
+  window.scrollTo(0,0);
+}
+
+/* ---------- timer ---------- */
+let tSec=14*60+32,tInt=null;
+function startTimer(){clearInterval(tInt);tInt=setInterval(()=>{tSec++;
+  const h=String(Math.floor(tSec/3600)).padStart(2,'0'),m=String(Math.floor(tSec/60)%60).padStart(2,'0'),s=String(tSec%60).padStart(2,'0');
+  document.getElementById('timer').textContent=h+':'+m+':'+s;},1000);}
+
+/* ---------- mark moment ---------- */
+let moms=3;
+function markMoment(){
+  if(mode!=='live')return;
+  moms++;
+  const h=String(Math.floor(tSec/3600)).padStart(2,'0'),m=String(Math.floor(tSec/60)%60).padStart(2,'0'),s=String(tSec%60).padStart(2,'0');
+  const t=h+':'+m+':'+s;
+  const g=document.getElementById('ghostRow');
+  const row=document.createElement('div');row.className='momrow new';
+  row.innerHTML='<div class="md"><i></i></div><div class="mb"><div class="mtm n">'+t+'</div><div class="mtt">רגע מסומן <span class="n">'+moms+'</span></div><div class="mss">ייהפך לצ׳אפטר בתמלול ולעוגן בסיכום</div></div>';
+  g.parentNode.insertBefore(row,g);
+  document.getElementById('accMom').textContent=moms;
+  document.getElementById('momCount').innerHTML='<span class="n">'+moms+'</span> רגעים · כל אחד יהפוך לצ׳אפטר';
+  toast('רגע סומן ב־'+t+' · ייהפך לצ׳אפטר בתמלול',t);
+  if(moms===4){const c=document.getElementById('ck3');c.className='ckrow ok';
+    c.querySelector('.cb').textContent='✓';
+    c.querySelector('.cm').innerHTML='<span class="n">'+t+'</span> · כוסה';
+    c.querySelector('.cm').style.color='';
+    document.getElementById('ringTxt').textContent='3/3';
+    document.getElementById('ringArc').setAttribute('stroke-dashoffset','0');
+    document.getElementById('accCk').textContent='3/3';}
+}
+function finish(){toast('מעבד… תמלול, סיכום, משימות ומשוב');setTimeout(()=>setMode('after'),420);}
+
+/* ---------- count up ---------- */
+let counted=false;
+function countUp(){
+  document.querySelectorAll('.cu').forEach(e=>{
+    const to=+e.dataset.to;let v=0;e.textContent='0';
+    const iv=setInterval(()=>{v++;e.textContent=v;if(v>=to)clearInterval(iv);},70+Math.random()*40);
+  });
+}
+
+/* ---------- lenses ---------- */
+function lens(k){
+  ['sum','tasks','tr','fb'].forEach(x=>{
+    document.getElementById('p-'+x).classList.toggle('on',x===k);
+    document.getElementById('l-'+x).classList.toggle('on',x===k);});
+}
+function jump(t){
+  lens('tr');
+  document.querySelectorAll('.axrow').forEach(r=>r.classList.toggle('hot',r.dataset.t===t));
+  document.querySelectorAll('.pmk').forEach(m=>m.classList.toggle('hot',Math.abs(+m.dataset.t-toMin(t))<.2));
+  document.getElementById('phTime').textContent=t.slice(3);
+  setTimeout(()=>{
+    document.querySelectorAll('.trl').forEach(r=>r.classList.remove('hit'));
+    const el=document.querySelector('.trl[data-t="'+t+'"]');
+    if(el){el.classList.add('hit');el.scrollIntoView({behavior:'smooth',block:'center'});}
+  },260);
+  toast('קפצנו לרגע '+t+' בתמלול');
+}
+function toMin(t){const p=t.split(':');return +p[1]+ +p[2]/60;}
+
+/* ---------- toast ---------- */
+let tt=null;
+function toast(txt){const e=document.getElementById('toast');
+  document.getElementById('toastTxt').textContent=txt;e.classList.add('on');
+  clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2400);}
+
+/* ---------- keys / hash ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&mode==='live'){e.preventDefault();markMoment();}
+  if(e.key==='r'||e.key==='R'){if(mode==='before')setMode('live');}
+});
+(function(){const h=location.hash.replace('#','');
+  if(['before','live','after'].includes(h))setMode(h);
+  const q=new URLSearchParams(location.search).get('lens');
+  if(q&&mode==='after')lens(q);
+})();
+</script>
+<script>
+if(new URLSearchParams(location.search).get('embed')==='1') document.body.classList.add('is-embedded');
+/* דיווח גובה להורה — כדי שה-iframe ייפתח לכל התוכן בלי גלילה כפולה */
+(function(){
+  const send=()=>{ try{ parent.postMessage({hkMeet:1,h:Math.ceil(document.documentElement.scrollHeight)+8},'*'); }catch(e){} };
+  new ResizeObserver(send).observe(document.body);
+  window.addEventListener('load',send); setTimeout(send,120);
+})();
+</script>
+</body>
+</html>
