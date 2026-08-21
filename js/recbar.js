@@ -18,6 +18,8 @@ function recClock(s){
   return (h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');
 }
 function recStart(who,what){
+  /* ההקלטה היא כלי של היועץ. בעל העסק לא מקליט את היועץ שלו. */
+  if(typeof ROLE!=='undefined'&&(ROLE==='client1'||ROLE==='clientN')) return;
   if(REC.on) return;
   REC.on=true; REC.sec=0; REC.marks=[];
   if(who) REC.who=who; if(what) REC.what=what;

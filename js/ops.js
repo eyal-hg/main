@@ -89,6 +89,11 @@
     const rs=document.getElementById('roleSel'); if(rs&&rs.value!==r) rs.value=r;
     if(OPSMODE) exitOps();
     const client=(r==='client1'||r==='clientN'), single=(r==='client1');
+    if(client){   /* משטחים של היועץ שנשארו פתוחים מהתפקיד הקודם — פס טרום-פגישה ופס הקלטה */
+      const pb=document.getElementById('preMeetBar');
+      if(pb){ pb.style.display='none'; document.body.classList.remove('bar-on'); }
+      if(typeof REC!=='undefined'&&REC.on&&typeof recStop==='function') recStop();
+    }
     document.querySelectorAll('.tab.advisor-only').forEach(t=>t.style.display=client?'none':'');
     document.querySelector('.top-mid').style.display = isOperator ? 'flex' : 'none';   /* מנהלי תזרים / מוצרים — כלי משרד בלבד */
     document.querySelector('.switcher').style.display = single ? 'none' : 'flex';   /* חברה אחת — אין מה להחליף */

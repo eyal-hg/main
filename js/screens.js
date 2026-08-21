@@ -179,8 +179,14 @@
     }
     else if(t==='meetings'){
       document.getElementById('viewMeetings').style.display='';
-      const mf=document.getElementById('meetFrame');
-      if(mf&&!mf.src) mf.src=mf.dataset.src;      // מסך הפגישות המעוצב — קובץ עצמאי
+      /* חדר הפגישה הוא שולחן העבודה של היועץ — הקלטה, תמלול, זיכרון ומשוב.
+         לבעל העסק יש מסך משלו: מתי נפגשים, מה סוכם, ומה נשאר פתוח. */
+      const isCli=(ROLE==='client1'||ROLE==='clientN');
+      const mf=document.getElementById('meetFrame'), cm=document.getElementById('cliMeet');
+      if(mf) mf.style.display=isCli?'none':'';
+      if(cm) cm.style.display=isCli?'':'none';
+      if(isCli){ if(typeof renderCliMeetings==='function') renderCliMeetings(); }
+      else{ if(mf&&!mf.src) mf.src=mf.dataset.src; }
       renderMeetings();                            // הרשימה הישנה נשארת מוסתרת (בשימוש openMeeting)
     }
     else if(t==='cal'){

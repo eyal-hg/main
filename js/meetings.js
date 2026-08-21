@@ -423,6 +423,9 @@
   /* ---- בר טרום-פגישה: קופץ לבד 5 דק׳ לפני — הקלטה / זום / לא תתקיים ---- */
   let PREBAR_MI=null;
   function showPreMeetBar(mi){
+    /* הבר הזה שייך ליועץ: הוא מציג את הפגישה הבאה שלו — עם לקוח אחר — וכפתור הקלטה.
+       לבעל העסק אין לו מה לחפש כאן. */
+    if(ROLE==='client1'||ROLE==='clientN') return;
     const mm=MEETINGS[mi]; if(!mm||mm.status!=='upcoming')return;
     PREBAR_MI=mi;
     document.getElementById('pmbTxt').innerHTML=`הפגישה הבאה בעוד <b>5 דק׳</b> — ${mm.name} · ${mm.client} · <span dir="ltr">${(mm.time||'').split('-')[0]}</span>`;
