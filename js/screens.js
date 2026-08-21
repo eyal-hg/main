@@ -56,6 +56,10 @@
     const showHow=inPortfolio && pView==='how';
     const showBoard = !inPortfolio || pView==='board';
     document.getElementById('clientsView').style.display=showClients?'':'none';
+    if(showClients){ const cf=document.getElementById('clFrame'); if(cf&&!cf.src) cf.src=cf.dataset.src;
+      /* למסך יש כותרת משלו */
+      const _c=document.querySelector('.client-head'), _s=document.querySelector('.sub-line');
+      if(_c)_c.style.display='none'; if(_s)_s.style.display='none'; }
     document.getElementById('howView').style.display=showHow?'':'none';
     document.getElementById('mgrToggle').style.display='none';   // אין יותר טאבים במסך המנהל
     // מסך המנהל מתחיל ישר בקוביות — בלי כותרת ושורת משנה
@@ -86,7 +90,7 @@
     }
     updateOpsBtn();
     renderMeetBtn();
-    if(showHow){ if(typeof renderHowView==='function') renderHowView(); } else if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showMeets){ /* המסך החדש חי ב-iframe — לא דורסים אותו */ } else if(showClients) renderClientsView(); else renderBoard();
+    if(showHow){ if(typeof renderHowView==='function') renderHowView(); } else if(showQueue) renderOpsQueue(); else if(showAlerts) renderAlerts(); else if(showMeets){ /* המסך החדש חי ב-iframe — לא דורסים אותו */ } else if(showClients){ /* גם כאן — iframe */ } else renderBoard();
     renderCoAlerts();
     if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();
