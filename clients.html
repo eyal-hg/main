@@ -570,11 +570,19 @@ const USERS = [
   {id:'tzachi', nm:'צחי עובד',  rl:'בעלים · אדמין',       ini:'צע'},
   {id:'ruth',   nm:'רות אלמוג', rl:'מנהלת כספים · עובד',  ini:'רא'},
 ];
+const USERS_BY = {energy:USERS};
 
 /* =========================================================
    MEMORY MODEL — two authors, three source types
    ========================================================= */
 const SRC_MEET = 'פגישה חודשית · 02.07';
+/* רשימת המשתמשים היא נתון של החברה. לחברה שאין לה עדיין משתמשים
+   נשארת רק הרמה הארגונית — ולא שמות של חברה אחרת. */
+function usersFor(id){
+  if(USERS_BY[id]) return USERS_BY[id];
+  const c=co(id)||{nm:''};
+  return [{id:'co', nm:c.nm, rl:'ברמת החברה', ini:c.nm.split(' ').map(w=>w[0]).slice(0,2).join('')}];
+}
 const MEM = {
  energy:{
   co:[
@@ -862,7 +870,7 @@ function renderCard(){
       <div class="meta">
         <span>ח.פ. <b>${c.hp||'לא הוזן'}</b></span><span class="sep">|</span>
         <span>מנהל תזרים <b>${c.mgr||'לא שויך'}</b></span><span class="sep">|</span>
-        ${c.bal?`<span>משקל בתיק <b>${(c.bal/TOTAL*100).toFixed(1)}%</b></span><span class="sep">|</span>`:''}
+        ${c.bal?`<span>משקל בתיק <b>${(c.bal/TOTAL_ALL*100).toFixed(1)}%</b></span><span class="sep">|</span>`:''}
         <span>חומר אחרון <b>${c.mat||'טרם התקבל'}</b></span>
         ${c.warn?`<span class="chip" style="color:var(--orange);border-color:#F5E3C4;background:#FFF8EC">${c.warn}</span>`:''}
       </div>
@@ -924,12 +932,13 @@ function renderCard(){
       <div class="card blk" id="b-ppl">
         <h3>משתמשי החברה</h3>
         <div class="plist">
-          ${USERS.slice(1).map(u=>`<div class="pu" data-u="${u.id}"><div class="av">${u.ini}</div>
+          ${usersFor(id).slice(1).map(u=>`<div class="pu" data-u="${u.id}"><div class="av">${u.ini}</div>
             <div><div class="nm">${u.nm}</div><div class="rl">${u.rl}</div></div>
-            <span class="n">${memCount(id,u.id)}</span></div>`).join('')}
+            <span class="n">${memCount(id,u.id)}</span></div>`).join('')
+          ||'<div style="font-size:12.5px;color:var(--ink3);line-height:1.6;padding:4px 0">טרם הוזנו משתמשים לחברה הזו. ברגע שיצטרפו — לכל אחד ייפתח כאן זיכרון נפרד.</div>'}
         </div>
-        <p style="font-size:11.5px;color:var(--ink3);margin-top:11px;line-height:1.6">
-          לכל משתמש זיכרון נפרד — מה שהמערכת שמעה ממנו, ומה שאתה יודע עליו.</p>
+        ${usersFor(id).length>1?`<p style="font-size:11.5px;color:var(--ink3);margin-top:11px;line-height:1.6">
+          לכל משתמש זיכרון נפרד — מה שהמערכת שמעה ממנו, ומה שאתה יודע עליו.</p>`:''}
       </div>
       <div class="card blk">
         <h3>הקול שלך בתיק הזה</h3>
@@ -1044,7 +1053,9 @@ function tally(topics){
 /* ---------- MEMORY RENDER ---------- */
 function memory(id){
   const data = MEM[id] ? MEM[id][MEMTAB] : 'never';
-  const u = USERS.find(x=>x.id===MEMTAB);
+  const UL = usersFor(id);
+  if(!UL.some(x=>x.id===MEMTAB)) MEMTAB='co';
+  const u = UL.find(x=>x.id===MEMTAB);
   const head = `
   <div class="memhd">
     <h2>הזיכרון${MEMTAB!=='co'?' · '+u.nm:''}</h2>
@@ -1054,7 +1065,7 @@ function memory(id){
       ${t.dis?`<span><i class="dot" style="background:#E8635A"></i>${t.dis} במחלוקת</span>`:''}
     </div>`;})():''}
     <div class="utabs">
-      ${USERS.map(x=>`<button class="ut ${MEMTAB===x.id?'on':''}" data-t="${x.id}">
+      ${UL.map(x=>`<button class="ut ${MEMTAB===x.id?'on':''}" data-t="${x.id}">
         <span class="av">${x.ini}</span>
         <span><span class="nm">${x.nm}</span><br><span class="rl">${x.rl}</span></span>
         <span class="n">${memCount(id,x.id)}</span></button>`).join('')}
