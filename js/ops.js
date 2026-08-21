@@ -3003,7 +3003,10 @@ const MSGS_THREADS={
 function renderMsgsView(){
   const el=document.getElementById('viewMsgs'); if(!el)return;
   const isAdv=(typeof ROLE!=='undefined'&&ROLE==='advisor');
-  const keys=Object.keys(MSGS_THREADS).filter(k=>!isAdv||k==='group');   // ליועץ — רק הקבוצה
+  /* בעל העסק רואה את הקבוצה בלבד: השיחות ה"פרטיות" הן של מנהל התזרים
+     מול כל עובד בנפרד — לא שלו, ובוודאי לא של עובד אחר. */
+  const isCli=(typeof ROLE!=='undefined'&&(ROLE==='client1'||ROLE==='clientN'));
+  const keys=Object.keys(MSGS_THREADS).filter(k=>(!isAdv&&!isCli)||k==='group');
   if(!keys.includes(MSGS_SEL))MSGS_SEL=keys[0];
   const T=MSGS_THREADS[MSGS_SEL];
   const q=MSGS_Q.trim();
@@ -3019,14 +3022,16 @@ function renderMsgsView(){
         <div class="mg-bub">
           ${MSGS_SEL==='group'?`<b class="mg-who ${m.role}">${m.who}</b>`:''}
           <span class="mg-t">${m.t}</span>
-          <span class="mg-meta">${m.time}${m.tag?` <i class="mg-tag">${m.tag}</i>`:''}</span>
+          <span class="mg-meta">${m.time}${(m.tag&&!isCli)?` <i class="mg-tag">${m.tag}</i>`:''}</span>
         </div>
       </div>`).join('');
   el.innerHTML=`<div class="mg">
     <aside class="mg-side">
       <div class="mg-side-h">שיחות · ${(CLIENTS[CUR]||{}).name||''}</div>
       ${list}
-      <div class="mg-note">הכל דרך הסים של HK — כל שיחה עוברת את אותו ראוטינג: משימות, זיכרון, נגררות. ${isAdv?'':'הפרטי שלך גלוי רק לך ולאדמין.'}</div>
+      <div class="mg-note">${isCli
+        ? 'כל מה שנכתב כאן מגיע ליועץ ולמנהל התזרים שלך ב-HK. אין צורך לחזור על זה במייל.'
+        : 'הכל דרך הסים של HK — כל שיחה עוברת את אותו ראוטינג: משימות, זיכרון, נגררות.'+(isAdv?'':' הפרטי שלך גלוי רק לך ולאדמין.')}</div>
     </aside>
     <div class="mg-main">
       <div class="mg-head">
