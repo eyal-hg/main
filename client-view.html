@@ -85,6 +85,15 @@ body{font-family:Rubik,"Heebo",system-ui,sans-serif;background:var(--bg);color:v
 .hint{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;
   font-size:12.5px;color:var(--muted);line-height:1.7}
 .hint b{color:var(--navy)}
+
+/* מה נעבור היום — הלקוח רואה את סדר היום, לא מסך חצי ריק */
+.agd{margin-top:26px;border-top:1px solid var(--bd);padding-top:20px}
+.agd-t{font-size:13px;font-weight:600;color:var(--mut);margin-bottom:12px}
+.agd-r{display:flex;align-items:center;gap:12px;font-size:16px;padding:11px 0;
+  border-bottom:1px solid #F2F6FA;color:var(--ink)}
+.agd-r:last-child{border-bottom:0}
+.agd-r .n{flex:none;width:26px;height:26px;border-radius:9px;background:#EEF5FB;color:#3E7BA6;
+  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -119,7 +128,10 @@ const SCREENS={
     kpis:[['ההכנסות','+12%','pos','מול החודש הקודם'],
           ['שורת הקניות','114%','neg','מהתקציב'],
           ['טרם נצבע בתזרים','25,000 ₪','warn','קניות מלאי'],
-          ['חריגה צפויה בעו״ש','בעוד 9 ימים','neg','29.8']]},
+          ['חריגה צפויה בעו״ש','בעוד 9 ימים','neg','29.8']],
+    agenda:['התזרים — לאן היתרה הולכת ב־14 הימים הקרובים',
+            'התקציב — שורת הקניות, ולמה זה החודש השני ברציפות',
+            'מה סוגרים היום — תקציב חדש לקניות וצביעת ה־25,000 ₪']},
   flow:{eyebrow:'התזרים',
     h:'יתרת העו״ש — 14 הימים הקרובים',
     lead:'התחזית נכנסת למינוס ב־29.8. יש יתרה חיובית של 312,400 ₪ בפועלים 112 שיכולה לכסות את זה בהעברה אחת.',
@@ -141,6 +153,8 @@ function render(st){
   let h='<div class="eyebrow">'+s.eyebrow+'</div><h1>'+s.h+'</h1><p class="lead">'+s.lead+'</p>';
   if(s.kpis) h+='<div class="kpis">'+s.kpis.map(k=>
     '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v '+k[2]+' n">'+k[1]+'</div><div class="s">'+k[3]+'</div></div>').join('')+'</div>';
+  if(s.agenda) h+='<div class="agd"><div class="agd-t">מה נעבור היום</div>'+s.agenda.map((a,i)=>
+    '<div class="agd-r"><span class="n">'+(i+1)+'</span>'+a+'</div>').join('')+'</div>';
   if(s.tbl) h+='<div class="tbl">'+s.tbl.map((r,i)=>
     '<div class="tr'+(i?'':' h')+'"><div>'+r[0]+'</div>'+r.slice(1).map((c,j)=>
       '<div class="num n '+(i&&j===2&&String(c).includes('-')?'over':'')+'">'+c+'</div>').join('')+'</div>').join('')+'</div>';
