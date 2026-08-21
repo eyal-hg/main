@@ -72,5 +72,7 @@
         archWhy:st==='ארכיון'?pick(WHY):null });
     }
   })();
+  /* קבוצת החברות של לקוח רב-חברות — 5 חברות, לא התיק של היועץ */
+  const CLIENT_GROUP_N = 5;
   let CUR = 0, RAIL_TAB='all';
 

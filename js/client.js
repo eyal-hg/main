@@ -113,9 +113,11 @@
           </div>
           <div class="cx-files cx-scroll" id="cxFiles"></div>
         </div>`},
-      {k:'task', cls:'w50 h-high', icc:'task', t:'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', hbtn:'<button class="cx-add" onclick="openCt()">+ משימה חדשה</button>', body:`
+      {k:'task', cls:'w50 h-high', icc:'task',
+       t:(ROLE==='client1'||ROLE==='clientN')?'מה ביקשתי מ-HK':'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', hbtn:'<button class="cx-add" onclick="openCt()">+ משימה חדשה</button>', body:`
         <div class="cx-files cx-scroll" id="cxTasks" style="padding:4px 16px 12px"></div>`},
-      {k:'ops', cls:'w50 h-high', icc:'ops', t:'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
+      {k:'ops', cls:'w50 h-high', icc:'ops',
+       t:(ROLE==='client1'||ROLE==='clientN')?'מה HK עשתה עבורך החודש':'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
         <div class="cx-log cx-scroll">
           ${OPS_LOG.map(l=>`
             <div class="cxl">

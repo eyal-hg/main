@@ -1,5 +1,7 @@
 /* HK Dashboard — scope routing, chat drawer, toast, tabs, metrics+alert rules editor, AI chat, reports */
   function setScope(s){
+    /* קיר אש: לבעל עסק עם חברה אחת אין "תיק" — כל מסלול לשם מוחזר לחברה שלו */
+    if(s==='portfolio'&&ROLE==='client1'){ selectClient(CUR||0); return; }
     if(OPSMODE) exitOps();
     SCOPE=s;
     const hp=document.getElementById('headHp'), st=document.querySelector('.client-head .st');
@@ -7,20 +9,28 @@
     const sub=document.querySelector('.sub-line');
     if(s==='portfolio'){
       document.getElementById('curName').textContent='כל החברות';
-      document.getElementById('curHp').textContent='תיק לקוחות';
-      document.getElementById('headName').textContent='כל החברות';
+      const _grp=(ROLE==='clientN');
+      document.getElementById('curHp').textContent=_grp?'מבט מאוחד':'תיק לקוחות';
+      document.getElementById('headName').textContent=_grp?'החברות שלי':'כל החברות';
       hp.style.display='none'; st.style.display='none'; acts.style.display='none';
       if(kpi)kpi.style.display='none';
-      sub.textContent='תיק לקוחות · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות · נכון ל-2.7.2026';
+      sub.textContent=_grp
+        ? 'מבט מאוחד · '+CLIENT_GROUP_N+' חברות · נכון ל-2.7.2026'
+        : 'תיק לקוחות · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות · נכון ל-2.7.2026';
     }else{
       hp.style.display=''; st.style.display=''; acts.style.display='flex'; acts.style.visibility='visible';
-      if(st&&typeof coState==='function'){                       /* התג משקף את המצב האמיתי */
+      /* תג המצב (פעיל/בהקמה/ארכיון) הוא סטטוס ההתקשרות מול HK — לא עניינו של בעל העסק */
+      if(st&&(ROLE==='client1'||ROLE==='clientN')) st.style.display='none';
+      else if(st&&typeof coState==='function'){                  /* התג משקף את המצב האמיתי */
         const k=coState(CLIENTS[CUR]);
         st.className='st '+(k==='active'?'active':k==='setup'?'setup':'arch');
         st.textContent=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון';
       }
       if(kpi)kpi.style.display='';
-      sub.textContent='חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 2.7.2026 10:54';
+      /* בעל העסק לא רואה סיווג פנימי של החברה שלו — הוא רואה מי מלווה אותו */
+      sub.textContent=(ROLE==='client1'||ROLE==='clientN')
+        ? 'מלווה על ידי '+CLIENTS[CUR].mgr+' · HK · עודכן 2.7.2026 10:54'
+        : 'חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 2.7.2026 10:54';
     }
     // force dashboard tab
     CUR_TAB='dash';
@@ -88,8 +98,10 @@
     document.getElementById('opsqStatus').style.display=showQueue?'flex':'none';
     if(inPortfolio){
       document.querySelector('.sub-line').textContent=
-        (pView==='queue'?'מבט-על תפעולי':pView==='how'?'איך הזיכרון נבנה — מה שמראים ליועצים':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'זירת הפגישות · כל אינטראקציה מוקלטת הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
-        +' · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות במעקב · נכון ל-2.7.2026';
+        (ROLE==='clientN'?'כל החברות שלך במבט אחד'
+        :pView==='queue'?'מבט-על תפעולי':pView==='how'?'איך הזיכרון נבנה — מה שמראים ליועצים':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'זירת הפגישות · כל אינטראקציה מוקלטת הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
+        +' · '+(ROLE==='clientN'?CLIENT_GROUP_N:CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length)
+        +' חברות'+(ROLE==='clientN'?'':' במעקב')+' · נכון ל-2.7.2026';
     }
     updateOpsBtn();
     renderMeetBtn();
@@ -340,11 +352,13 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
           <span>תזרים עבר</span></div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
-      /* תכנון חשבונאי — הכלי של היועץ העסקי: אותו תכנון בשתי שפות */
-      html+=`<div class="gn-item sec ${CUR_TAB==='acct'?'on':''}" onclick="showTab('acct')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
-          <span>${TAB_LABELS.acct}</span></div>`;
-      html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
+      /* תכנון חשבונאי ותשלומי ספקים — כלי עבודה של היועץ והמתפעל, לא של בעל העסק */
+      if(!isClientP){
+        html+=`<div class="gn-item sec ${CUR_TAB==='acct'?'on':''}" onclick="showTab('acct')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
+            <span>${TAB_LABELS.acct}</span></div>`;
+        html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
+      }
       // ליווי — פריט בודד, בלי כותרת קבוצה
       if(!(ROLE==='client1'||ROLE==='clientN')){
         html+=`<div class="gn-item sec ${CUR_TAB==='flow'?'on':''}" onclick="showTab('flow')">${SEC_ICO.flow}<span>${TAB_LABELS.flow}</span></div>`;
