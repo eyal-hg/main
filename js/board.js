@@ -149,7 +149,10 @@
     if(d.hkCl&&d.h>200){ const f=document.getElementById('clFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkClReady){ /* מסך הלקוחות מבקש את שמות התיק האמיתיים */
       const f=document.getElementById('clFrame');
-      if(f&&f.contentWindow) f.contentWindow.postMessage({hkClNames:CLIENTS.map(c=>c.name)},'*');
+      if(f&&f.contentWindow) f.contentWindow.postMessage({hkClNames:CLIENTS.map(c=>({
+        nm:c.name, hp:c.hp, mgr:c.mgr, adv:c.advStatus, prod:c.product||null,
+        hl:c.hl?c.hl.sev:null, coop:c.coopDays, bal:(c.spark&&c.spark[5])?c.spark[5]*1000:null
+      }))},'*');
       return; }
     if(d.hkClOpen){ /* "פתיחת החברה" — מעבר לסביבת העבודה של אותה חברה */
       const ix=CLIENTS.findIndex(c=>c.name===d.nm);

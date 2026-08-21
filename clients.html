@@ -441,7 +441,7 @@ body.is-embedded .wrap{padding:0 0 8px;max-width:none}
         <input placeholder="חיפוש חברה, ח.פ. או איש קשר">
       </div>
       <div class="sp"></div>
-      <div class="who"><span>לירון בן כליפא · מנהל תזרים</span><div class="av">לב</div></div>
+      <div class="who"><span>אייל חזות · יועץ</span><div class="av">אח</div></div>
     </div>
     <div class="wrap" id="wrap"></div>
   </div>
@@ -455,7 +455,7 @@ body.is-embedded .wrap{padding:0 0 8px;max-width:none}
 const NUM = n => n.toLocaleString('en-US');
 const TOTAL = 2505858;
 
-const CO = [
+let CO = [
  {id:'energy', nm:'אנרגי אינטרנשיונל', hp:'511327876', mgr:'לירון בן כליפא', prod:'Money', pc:'money',
   bal:1029208, trend:'dn', st:'חריגה צפויה בעו״ש בעוד 9 ימים', risk:'red', grp:'live', mat:'02.07', warn:null,
   focus:'cash'},
@@ -551,7 +551,7 @@ CO.filter(c=>c.gen).forEach(c=>{
   if(c.risk==='orange') ATT[2].items.push({co:c.id, tx:c.nm, dt:'קרוב לתקרה', focus:'budget'});
   if(c.grp==='setup')   ATT[3].items.push({co:c.id, tx:c.nm, dt:'טרם התקבל חומר', focus:'setup'});
 });
-const TOTAL_ALL = CO.reduce((a,c)=>a+(c.bal||0),0);
+let TOTAL_ALL = CO.reduce((a,c)=>a+(c.bal||0),0);
 const CNT = k => CO.filter(c=> k==='all'?true : k==='live'?c.grp==='live'
   : k==='risk'?(c.risk==='red'||c.risk==='orange') : k==='quiet'?!!c.warn
   : k==='setup'?c.grp==='setup' : c.grp==='arch').length;
@@ -680,7 +680,7 @@ function screenA(){
   <div class="hero">
     <div class="seg">
       <h1>התיק שלי</h1>
-      <div class="fine" style="margin:0 0 12px">מנהל תזרים · לירון בן כליפא</div>
+      <div class="fine" style="margin:0 0 12px">יועץ · אייל חזות · מתופעל ע״י מנהלי התזרים של HK</div>
       <div class="lbl">חברות בתיק</div>
       <div class="big">${CO.length}</div>
       <div class="fine">${rows.length} מוצגות בתצוגה זו · ${CO.length-rows.length} מסוננות</div>
@@ -1228,10 +1228,37 @@ function bindMem(){
 /* התיק שנוצר כאן דטרמיניסטית מקבל את השמות האמיתיים מהאפליקציה,
    כדי ש"פתיחת החברה" תמיד תמצא את מי שלחצו עליו. */
 window.addEventListener('message',function(e){
-  const d=e.data||{}; if(!d.hkClNames) return;
-  const pool=d.hkClNames.filter(n=>!CO.some(c=>!c.gen&&c.nm===n));
-  let i=0; CO.forEach(c=>{ if(c.gen&&i<pool.length){ const old=c.nm; c.nm=pool[i++];
-    ATT.forEach(a=>a.items.forEach(it=>{ if(it.co===c.id&&it.tx===old) it.tx=c.nm; })); } });
+  const d=e.data||{}; if(!Array.isArray(d.hkClNames)) return;
+  const named=new Set(CO.filter(c=>!c.gen).map(c=>c.nm));
+  const pool=d.hkClNames.filter(r=>r&&r.nm&&!named.has(r.nm));
+  /* מוחקים את מה שנוצר מקומית ומרכיבים מחדש מהתיק האמיתי של האפליקציה */
+  CO=CO.filter(c=>!c.gen);
+  ATT.forEach(a=>{ a.items=a.items.filter(i=>!/^g\d+$/.test(i.co)); });
+  const PRODS={money:['Money','money'],'money+':['Money+','moneyp'],meeting:['Meeting','meet']};
+  pool.forEach((r,n)=>{
+    const grp = r.adv==='ארכיון'?'arch' : r.adv==='בהקמה'?'setup' : 'live';
+    const high = grp==='live' && r.hl==='high';
+    const mid  = grp==='live' && r.hl==='mid';
+    const late = grp==='live' && r.coop>14;
+    const [pl,pc] = (grp!=='arch' && PRODS[r.prod]) || [null,null];
+    const c={ id:'g'+(n+1), nm:r.nm, hp:r.hp||null, mgr: grp==='arch'?null:(r.mgr||null),
+      prod:pl, pc:pc, bal: grp==='live'?r.bal:null,
+      trend: grp!=='live'?'na':(high||mid?'dn':'up'),
+      st: grp==='arch'?'ארכיון' : grp==='setup'?'בהקמה — ממתין להרשאות בנק'
+        : high?'חריגה צפויה בעו״ש' : mid?'קרוב לתקרת התקציב'
+        : late?'תקין — חומר חסר' : 'תקין — עומד ביעדים',
+      risk: grp==='arch'?'grey' : grp==='setup'?'cyan' : high?'red' : mid?'orange' : 'green',
+      grp, mat: grp==='live'?(late?'12.06':'01.07'):null,
+      warn: grp==='setup'?'טרם התקבל חומר':(late?r.coop+' יום':null),
+      focus: high?'cash' : mid?'budget' : late?'material' : grp==='setup'?'setup' : null,
+      gen:true };
+    CO.push(c);
+    if(c.risk==='red')   ATT[0].items.push({co:c.id, tx:c.nm, dt:'בעו״ש', focus:'cash'});
+    if(c.warn&&grp==='live') ATT[1].items.push({co:c.id, tx:c.nm, dt:c.warn, focus:'material'});
+    if(c.risk==='orange')ATT[2].items.push({co:c.id, tx:c.nm, dt:'קרוב לתקרה', focus:'budget'});
+    if(grp==='setup')    ATT[3].items.push({co:c.id, tx:c.nm, dt:'טרם התקבל חומר', focus:'setup'});
+  });
+  TOTAL_ALL = CO.reduce((a,c)=>a+(c.bal||0),0);
   if(!OPEN) screenA(); else renderCard();
 });
 function openInApp(id,nm,tab){
