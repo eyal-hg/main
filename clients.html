@@ -552,7 +552,7 @@ CO.filter(c=>c.gen).forEach(c=>{
 });
 let TOTAL_ALL = CO.reduce((a,c)=>a+(c.bal||0),0);
 const CNT = k => CO.filter(c=> k==='all'?true : k==='live'?c.grp==='live'
-  : k==='risk'?(c.risk==='red'||c.risk==='orange') : k==='quiet'?!!c.warn
+  : k==='risk'?(c.risk==='red'||c.risk==='orange') : k==='quiet'?(!!c.warn&&c.grp==='live')
   : k==='setup'?c.grp==='setup' : c.grp==='arch').length;
 const MIX = () => { const m={Money:0,'Money+':0,Meeting:0,none:0};
   CO.forEach(c=>{ m[c.prod||'none']++; }); return m; };
@@ -669,7 +669,7 @@ function screenA(){
     if(MGR!=='הכל' && c.mgr!==MGR) return false;
     if(TFILTER==='live') return c.grp==='live';
     if(TFILTER==='risk') return c.risk==='red'||c.risk==='orange';
-    if(TFILTER==='quiet') return !!c.warn;
+    if(TFILTER==='quiet') return !!c.warn && c.grp==='live';
     if(TFILTER==='setup') return c.grp==='setup';
     if(TFILTER==='arch') return c.grp==='arch';
     if(TFILTER.startsWith('att:')){
