@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HK · המסך שלי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0C4068; --sky:#39ABE2; --coral:#E8635A;
+  --bg:#F4F7FA; --bd:#E6ECF4;
+  --grn:#13895b; --red:#dc4436; --org:#c98404; --pur:#7557E3;
+  --ink:#0C4068; --mut:#657F9B; --fnt:#93A6BD;
+  --sh:0 6px 18px rgba(12,64,104,.08);
+  --sh2:0 10px 34px rgba(12,64,104,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  font-weight:400; -webkit-font-smoothing:antialiased; font-size:15px;
+}
+button{font-family:inherit}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block;font-variant-numeric:tabular-nums}
+
+/* ============ header ============ */
+.hd{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--bd)}
+.hd-in{max-width:1280px;margin:0 auto;padding:0 32px;height:66px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#0C4068,#15578A);
+  color:#fff;font-weight:700;font-size:14px;letter-spacing:.4px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 9px rgba(12,64,104,.28)}
+.brand b{font-size:15.5px;font-weight:600;letter-spacing:-.2px}
+.brand span{display:block;font-size:11px;color:var(--fnt);font-weight:400;margin-top:1px;letter-spacing:.2px}
+.hd-sp{flex:1}
+.seg{display:flex;background:#EEF3F8;border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--mut);font-size:13.5px;font-weight:500;
+  padding:7px 16px;border-radius:9px;cursor:pointer;transition:.18s;white-space:nowrap}
+.seg button:hover{color:var(--navy)}
+body[data-mode="single"] .seg button[data-m="single"],
+body[data-mode="multi"] .seg button[data-m="multi"]{
+  background:#fff;color:var(--navy);font-weight:600;box-shadow:0 2px 6px rgba(12,64,104,.10)}
+.ico-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--bd);background:#fff;
+  display:flex;align-items:center;justify-content:center;color:var(--mut);cursor:pointer;position:relative;transition:.18s}
+.ico-btn:hover{border-color:#CFE0EE;color:var(--navy)}
+.dotb{position:absolute;top:7px;left:8px;width:7px;height:7px;border-radius:50%;background:var(--coral);border:1.5px solid #fff}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(150deg,#DCEBF6,#C4DEEF);
+  display:flex;align-items:center;justify-content:center;color:#2C6A96}
+
+/* ============ page ============ */
+.wrap{max-width:1280px;margin:0 auto;padding:26px 32px 64px}
+.pgtop{display:flex;align-items:flex-end;gap:14px;margin:4px 0 18px}
+.pgtop h1{margin:0;font-size:25px;font-weight:600;letter-spacing:-.5px}
+.pgtop .sub{font-size:13px;color:var(--fnt);padding-bottom:3px}
+.pgtop .upd{margin-inline-start:auto;font-size:12.5px;color:var(--fnt);display:flex;align-items:center;gap:6px;padding-bottom:3px}
+
+/* ============ hero ============ */
+.hero{background:#fff;border:1px solid var(--bd);border-radius:20px;box-shadow:var(--sh2);
+  position:relative;overflow:hidden;margin-bottom:24px}
+.hero::before{content:'';position:absolute;inset:0 0 0 auto;width:5px;
+  background:linear-gradient(180deg,var(--coral),#F0968F)}
+.hero-glow{position:absolute;top:-150px;right:-100px;width:420px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,99,90,.10),transparent 68%);pointer-events:none}
+.hero-in{padding:30px 40px 0}
+.hero-top{display:flex;align-items:center;gap:12px}
+.tag{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+  padding:5px 12px 5px 10px;border-radius:99px;background:#FDECEA;color:#B93F36;letter-spacing:.1px}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--red);display:block;
+  box-shadow:0 0 0 3px rgba(220,68,54,.16)}
+.answer{margin:20px 0 0;font-size:41px;line-height:1.32;font-weight:500;letter-spacing:-1.1px;max-width:900px}
+.answer .b{font-weight:600}
+.answer .neg{color:var(--coral);font-weight:600}
+.answer .l2{display:block;color:var(--mut);font-weight:400}
+.meta{margin-top:13px;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--mut);flex-wrap:wrap}
+.meta .sep{width:3px;height:3px;border-radius:50%;background:#C3D2E0}
+.acts{display:flex;gap:10px;margin-inline-start:auto}
+.btn{border:0;border-radius:11px;padding:10px 18px;font-size:13.5px;font-weight:500;cursor:pointer;transition:.18s;
+  display:inline-flex;align-items:center;gap:7px}
+.btn.p{background:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(12,64,104,.22)}
+.btn.p:hover{background:#0a3557}
+.btn.g{background:#fff;color:var(--navy);border:1px solid var(--bd)}
+.btn.g:hover{border-color:#CFE0EE;background:#FBFDFF}
+.btn.s{padding:8px 14px;font-size:12.5px}
+
+/* chart */
+.chart{padding:6px 22px 0;position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.chart-foot{display:flex;justify-content:space-between;padding:0 20px 4px;font-size:12px;color:var(--fnt)}
+
+/* ask */
+.ask{border-top:1px solid #F0F5FA;margin-top:6px;padding:18px 40px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:linear-gradient(180deg,#FCFDFE,#F8FBFD)}
+.ask-in{flex:1;min-width:300px;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--bd);
+  border-radius:12px;padding:0 14px;height:44px;box-shadow:0 2px 6px rgba(12,64,104,.05)}
+.ask-in input{flex:1;border:0;outline:0;font-family:inherit;font-size:14px;color:var(--ink);background:transparent}
+.ask-in input::placeholder{color:#9FB2C6}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--bd);background:#fff;color:var(--mut);font-size:12.5px;font-weight:400;
+  padding:8px 13px;border-radius:99px;cursor:pointer;transition:.18s;white-space:nowrap}
+.chip:hover{border-color:#BEDDF1;color:var(--navy);background:#F7FCFF}
+
+/* ============ section label ============ */
+.slab{display:flex;align-items:center;gap:11px;margin:0 0 13px;padding-inline-start:3px}
+.slab .cnt{width:25px;height:25px;border-radius:8px;background:var(--navy);color:#fff;
+  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+.slab h2{margin:0;font-size:16.5px;font-weight:600;letter-spacing:-.35px}
+.slab .sub{font-size:13px;color:var(--fnt)}
+
+/* ============ decisions ============ */
+.dec{background:#fff;border:1px solid var(--bd);border-radius:17px;box-shadow:var(--sh);
+  margin-bottom:12px;position:relative;overflow:hidden;display:flex;gap:20px;padding:19px 26px 18px}
+.dec::before{content:'';position:absolute;inset:0 0 0 auto;width:4px;background:var(--sky)}
+.dec.r::before{background:var(--red)}
+.dec.o::before{background:var(--org)}
+.idx{width:23px;height:23px;flex:none;border-radius:7px;background:#EEF4F9;color:var(--mut);
+  font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.dmain{flex:1;min-width:0}
+.dtop{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.dtop h3{margin:0;font-size:16px;font-weight:600;letter-spacing:-.3px}
+.tchip{font-size:11.5px;font-weight:500;padding:4px 11px;border-radius:99px;background:#EEF4F9;color:var(--mut);white-space:nowrap}
+.tchip.r{background:#FDECEA;color:#B93F36}
+.tchip.o{background:#FBF2DF;color:#A06A05}
+.tchip.b{background:#EAF6FD;color:#22779F}
+.dmain>p{margin:9px 0 0;font-size:13.5px;color:var(--mut);line-height:1.65;max-width:730px}
+.dmain>p b{color:var(--ink);font-weight:500}
+.dacts{display:flex;align-items:center;gap:9px;margin-top:16px}
+.dacts .note{font-size:12.5px;color:var(--fnt);margin-inline-start:6px}
+.dval{width:196px;flex:none;text-align:left;padding-top:1px}
+.dval b{display:block;font-size:25px;font-weight:600;letter-spacing:-.7px}
+.dval b.neg{color:var(--red)}
+.dval b.org{color:var(--org)}
+.dval small{display:block;font-size:11.5px;color:var(--fnt);margin-top:4px;line-height:1.5}
+.dval .co-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--mut);
+  background:#F4F8FB;border-radius:99px;padding:4px 11px;margin-bottom:9px}
+.dval .co-tag i{width:6px;height:6px;border-radius:50%;display:block}
+
+/* ============ calm bar ============ */
+.calmbar{display:flex;align-items:center;gap:14px;background:#F3FAF6;border:1px solid #DAEFE4;
+  border-radius:15px;padding:15px 22px;margin-bottom:20px}
+.calmbar .ic{width:26px;height:26px;flex:none;border-radius:8px;background:#DFF2E9;color:var(--grn);
+  display:flex;align-items:center;justify-content:center}
+.calmbar b{font-size:14.5px;font-weight:600;letter-spacing:-.2px;display:block}
+.calmbar span{font-size:12.8px;color:var(--mut);display:block;margin-top:2px}
+.calmbar .btn{margin-inline-start:auto;flex:none}
+
+/* ============ cards / rows ============ */
+.card{background:#fff;border:1px solid var(--bd);border-radius:17px;box-shadow:var(--sh);overflow:hidden;margin-bottom:20px}
+.ch{display:flex;align-items:center;gap:10px;padding:16px 24px;border-bottom:1px solid #F1F6FA}
+.ch h2{margin:0;font-size:14px;font-weight:600;letter-spacing:-.1px}
+.ch .hint{font-size:12px;color:var(--fnt);font-weight:400;margin-inline-start:auto}
+.ch .hint.ok{color:var(--grn);font-weight:500;background:#EDF8F2;border-radius:99px;padding:4px 11px}
+.ch>svg{color:var(--sky)}
+
+.row{display:flex;align-items:center;gap:18px;padding:15px 24px;border-bottom:1px solid #F4F8FB}
+.row:last-child{border-bottom:0}
+.row .lb{width:140px;flex:none;font-size:13px;color:var(--mut);font-weight:500}
+.row .bd{flex:1;font-size:13.5px;color:var(--mut);line-height:1.55}
+.row .bd b{color:var(--ink);font-weight:500}
+.row .vl{font-size:19px;font-weight:600;letter-spacing:-.4px;text-align:left;min-width:150px}
+.row .vl small{display:block;font-size:11.5px;white-space:nowrap;font-weight:400;color:var(--fnt);letter-spacing:0;margin-top:2px}
+.up{color:var(--grn)} .dn{color:var(--red)}
+.row .vl small.dn{color:var(--red)}
+
+/* budget bars */
+.bud{padding:2px 0 2px}
+.bline{display:flex;align-items:center;gap:16px;padding:9px 0}
+.bline .nm{width:172px;flex:none;font-size:13.5px;font-weight:500}
+.bline .tr{flex:1;height:8px;border-radius:99px;background:#EFF4F9;position:relative}
+.bline .fl{position:absolute;inset-block:0;inset-inline-start:0;border-radius:99px;background:linear-gradient(90deg,#5DBDEA,#39ABE2)}
+.bline .tk{position:absolute;top:-5px;bottom:-5px;width:2px;background:#C3D3E1;border-radius:2px}
+.bline .amt{width:186px;flex:none;text-align:left;font-size:13px;color:var(--mut)}
+.bline .amt b{color:var(--ink);font-weight:500}
+.bline .dlt{width:56px;flex:none;text-align:left;font-size:12.5px;font-weight:500;color:var(--fnt)}
+.budnote{font-size:12px;color:var(--fnt);margin-top:10px}
+
+/* two cols */
+.cols{display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:stretch}
+.cols>.card{margin-bottom:0;display:flex;flex-direction:column}
+
+/* HK feed */
+.feed{padding:8px 24px 18px;position:relative}
+.fi{display:flex;gap:15px;padding:13px 0;position:relative}
+.fi::before{content:'';position:absolute;top:30px;bottom:-13px;inset-inline-start:9px;width:1.5px;background:#EAF1F7}
+.fi:last-child::before{display:none}
+.fi .bul{width:20px;height:20px;flex:none;border-radius:50%;background:#EAF7F1;color:var(--grn);
+  display:flex;align-items:center;justify-content:center;margin-top:2px;z-index:1;box-shadow:0 0 0 3px #fff}
+.fi .bul.s{background:#E9F4FB;color:#2A87BC}
+.fi .bul.p{background:#F0EDFD;color:var(--pur)}
+.fi .tx{flex:1}
+.fi .t1{font-size:14px;font-weight:500;letter-spacing:-.1px}
+.fi .t1 em{font-style:normal;color:var(--mut);font-weight:400}
+.fi .t2{font-size:12.5px;color:var(--mut);margin-top:3px;line-height:1.5}
+.fi .t2 .cotag{color:var(--fnt)}
+.fi .tm{font-size:11.5px;color:var(--fnt);white-space:nowrap;margin-top:3px}
+
+/* files */
+.fl-row{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid #F4F8FB}
+.fl-row:last-child{border-bottom:0}
+.fl-ic{width:32px;height:32px;flex:none;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600}
+.fl-ic.pdf{background:#FDEDEC;color:#C1483F} .fl-ic.xls{background:#EAF6F0;color:#12805A}
+.fl-ic.rep{background:#EDF3FA;color:#2C6A96}
+.fl-row .n{flex:1;font-size:13.5px;font-weight:500}
+.fl-row .n small{display:block;font-size:11.5px;color:var(--fnt);font-weight:400;margin-top:2px}
+.ok-t{font-size:11.5px;color:var(--grn);font-weight:500;display:flex;align-items:center;gap:4px}
+.dl{width:30px;height:30px;border-radius:9px;border:1px solid var(--bd);background:#fff;color:var(--mut);
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.dl:hover{border-color:#CFE0EE;color:var(--navy)}
+
+/* company rows (multi) */
+.co{display:flex;align-items:center;gap:18px;padding:16px 24px;border-bottom:1px solid #F4F8FB;transition:.15s}
+.co:last-child{border-bottom:0}
+.co:hover{background:#FBFDFF}
+.co .st{width:9px;height:9px;border-radius:50%;flex:none}
+.st.g{background:var(--grn);box-shadow:0 0 0 3px rgba(19,137,91,.14)}
+.st.o{background:var(--org);box-shadow:0 0 0 3px rgba(201,132,4,.14)}
+.st.r{background:var(--red);box-shadow:0 0 0 3px rgba(220,68,54,.14)}
+.co .cn{width:178px;flex:none}
+.co .cn b{display:block;font-size:14.5px;font-weight:500;letter-spacing:-.2px}
+.co .cn small{font-size:11.5px;color:var(--fnt)}
+.co .bar{width:206px;flex:none}
+.co .bar .tr{height:8px;border-radius:99px;background:#EFF4F9;position:relative}
+.co .bar .fl{position:absolute;inset-block:0;inset-inline-start:0;border-radius:99px}
+.co .bar .tk{position:absolute;top:-4px;bottom:-4px;width:2px;background:#C3D3E1;border-radius:2px}
+.co .bar .lg{display:flex;justify-content:space-between;align-items:baseline;margin-top:7px;font-size:11.5px;color:var(--fnt)}
+.co .bar .lg b{font-size:12.5px;font-weight:600;letter-spacing:-.2px}
+.co .ans{flex:1;padding-inline-end:8px;font-size:13.5px;color:var(--mut);line-height:1.5}
+.co .ans b{font-weight:500}
+.co .ans small{display:block;font-size:12px;color:var(--fnt);margin-top:2px}
+.co .go{width:28px;height:28px;flex:none;border-radius:8px;color:#B6C7D8;display:flex;align-items:center;justify-content:center}
+.co:hover .go{color:var(--navy);background:#EEF4F9}
+
+/* mode visibility */
+body[data-mode="multi"] .cols{grid-template-columns:1fr}
+body[data-mode="multi"] .feed{display:grid;grid-template-columns:1fr 1fr;column-gap:40px;padding-bottom:14px}
+body[data-mode="multi"] .fi::before{display:none}
+body[data-mode="multi"] .fi{padding:15px 0}
+body[data-mode="single"] .m-only{display:none!important}
+body[data-mode="multi"] .s-only{display:none!important}
+
+@media (max-width:1400px){
+  .wrap,.hd-in{max-width:1180px}
+  .answer{font-size:37px}
+  .cols{grid-template-columns:1fr 366px}
+  .co .bar{width:170px}
+  .co .cn{width:158px}
+  .dval{width:176px}
+  .bline .nm{width:150px}
+  .bline .amt{width:172px}
+}
+
+/* ===== מצב הטמעה — המסך חי בתוך index.html כ-iframe ===== */
+body.is-embedded{background:transparent}
+body.is-embedded .hd{display:none}
+body.is-embedded .wrap{padding:0 0 10px;max-width:none}
+body.is-embedded .pgtop{display:none}
+
+/* פעולות של בעל העסק בתוך הכרטיסים — העלאת מסמך ובקשה ל-HK */
+.ch .upl{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;
+  font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;
+  background:#F2F8FC;border:1px solid #DCEAF4;color:#2C6A93;border-radius:9px;padding:6px 11px}
+.ch .upl:hover{background:#E7F3FA;border-color:#C7DFEE}
+.ch .upl.ask{background:#F4F1FE;border-color:#E2DBFA;color:#6247C9}
+.ch .upl.ask:hover{background:#EDE8FD}
+.clh-toast{position:fixed;inset-inline-start:50%;transform:translateX(-50%);bottom:26px;z-index:99;
+  background:#0C4068;color:#fff;font-size:13px;border-radius:11px;padding:10px 18px;
+  box-shadow:0 10px 26px rgba(12,64,104,.25);opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s}
+.clh-toast.on{opacity:1;bottom:34px}
+</style>
+</head>
+<body data-mode="single">
+
+<header class="hd">
+  <div class="hd-in">
+    <div class="brand">
+      <div class="mark">HK</div>
+      <div><b>חזות קריספין</b><span>ניהול תזרים וייעוץ עסקי</span></div>
+    </div>
+    <div class="hd-sp"></div>
+    <div class="seg">
+      <button data-m="single" onclick="setMode('single')">חברה אחת</button>
+      <button data-m="multi" onclick="setMode('multi')">רב־חברות</button>
+    </div>
+    <button class="ico-btn" title="הודעות">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      <span class="dotb"></span>
+    </button>
+    <div class="av">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="pgtop">
+    <h1 class="s-only">אנרגי אינטרנשיונל</h1>
+    <div class="sub s-only">ח.פ. 511327876</div>
+    <h1 class="m-only">הקבוצה שלך</h1>
+    <div class="sub m-only">5 חברות</div>
+    <div class="upd">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+      HK עדכנה את הנתונים אתמול, 09:40
+    </div>
+  </div>
+
+  <!-- ==================== HERO · single ==================== -->
+  <section class="hero s-only">
+    <div class="hero-glow"></div>
+    <div class="hero-in">
+      <div class="hero-top">
+        <span class="tag"><i></i>צפויה חריגה</span>
+        <div class="acts">
+          <button class="btn g">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            הקדם את הפגישה
+          </button>
+          <button class="btn p">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            דבר עם אילון
+          </button>
+        </div>
+      </div>
+      <p class="answer">
+        <span class="b">אתה מכוסה עד 13 ביולי.</span>
+        <span class="l2">אחרי זה חסרים <span class="neg num">-289,161 ₪</span>.</span>
+      </p>
+      <div class="meta">
+        <span>בעוד 12 ימים</span><span class="sep"></span>
+        <span>לפי עו״ש מאוחד</span><span class="sep"></span>
+        <span>אילון, היועץ שלך, רואה את זה גם</span>
+      </div>
+    </div>
+
+    <div class="chart" dir="ltr">
+      <svg viewBox="0 0 1000 178">
+        <defs>
+          <linearGradient id="gp" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#39ABE2" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#39ABE2" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="gn" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#E8635A" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#E8635A" stop-opacity="0"/>
+          </linearGradient>
+          <clipPath id="cp"><rect x="0" y="0" width="1000" height="112"/></clipPath>
+          <clipPath id="cn"><rect x="0" y="112" width="1000" height="66"/></clipPath>
+        </defs>
+        <line x1="20" y1="112" x2="980" y2="112" stroke="#DDE7F0" stroke-width="1" stroke-dasharray="4 5"/>
+        <path clip-path="url(#cp)" fill="url(#gp)"
+          d="M960,40 C880,46 820,52 740,58 C660,64 580,76 500,88 C430,98 385,106 340,112 C300,118 250,128 200,136 C150,143 100,148 60,151 L60,112 L960,112 Z"/>
+        <path clip-path="url(#cn)" fill="url(#gn)"
+          d="M960,40 C880,46 820,52 740,58 C660,64 580,76 500,88 C430,98 385,106 340,112 C300,118 250,128 200,136 C150,143 100,148 60,151 L60,112 L960,112 Z"/>
+        <path d="M960,40 C880,46 820,52 740,58 C660,64 580,76 500,88 C430,98 385,106 340,112 C300,118 250,128 200,136 C150,143 100,148 60,151"
+          fill="none" stroke="#0C4068" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="300" y1="24" x2="944" y2="24" stroke="#C9D8E5" stroke-width="1"/>
+        <line x1="300" y1="19" x2="300" y2="29" stroke="#C9D8E5" stroke-width="1"/>
+        <line x1="944" y1="19" x2="944" y2="29" stroke="#C9D8E5" stroke-width="1"/>
+        <rect x="570" y="14" width="104" height="20" rx="10" fill="#fff"/>
+        <text x="622" y="28" text-anchor="middle" font-family="Rubik" font-size="12" fill="#657F9B">בעוד 12 ימים</text>
+        <circle cx="960" cy="40" r="5.5" fill="#fff" stroke="#0C4068" stroke-width="2.6"/>
+        <line x1="740" y1="62" x2="740" y2="112" stroke="#39ABE2" stroke-width="1" stroke-dasharray="3 4"/>
+        <circle cx="740" cy="58" r="4.5" fill="#39ABE2" stroke="#fff" stroke-width="2"/>
+        <rect x="678" y="30" width="124" height="19" rx="9.5" fill="#EAF6FD"/>
+        <text x="740" y="43.5" text-anchor="middle" font-family="Rubik" font-size="11.5" fill="#2A87BC">פגישה · 10 ביולי</text>
+        <line x1="300" y1="118" x2="300" y2="112" stroke="#E8635A" stroke-width="1"/>
+        <circle cx="300" cy="118" r="5.5" fill="#E8635A" stroke="#fff" stroke-width="2.4"/>
+        <text x="300" y="146" text-anchor="middle" font-family="Rubik" font-size="12.5" font-weight="500" fill="#C1483F">13 ביולי</text>
+        <text x="300" y="163" text-anchor="middle" font-family="Rubik" font-size="12" fill="#C1483F" direction="ltr">-289,161 ₪</text>
+      </svg>
+      <div class="chart-foot" dir="rtl">
+        <span>היום · יתרה <span class="num">1,029,208 ₪</span></span>
+        <span>תחזית תזרים</span>
+      </div>
+    </div>
+
+    <div class="ask">
+      <div class="ask-in">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#39ABE2" stroke-width="1.7" stroke-linejoin="round"><path d="m12 3 2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg>
+        <input placeholder="שאל את העוזר הפיננסי על המספרים שלך…">
+      </div>
+      <div class="chips">
+        <button class="chip">מתי בדיוק ייגמר הכסף?</button>
+        <button class="chip">מה אפשר לדחות?</button>
+        <button class="chip">מה המצב מול סונול?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HERO · multi ==================== -->
+  <section class="hero m-only">
+    <div class="hero-glow"></div>
+    <div class="hero-in">
+      <div class="hero-top">
+        <span class="tag"><i></i>2 מתוך 5 החברות בסיכון</span>
+        <div class="acts">
+          <button class="btn g">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+            השווה בין החברות
+          </button>
+          <button class="btn p">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            דבר עם אילון
+          </button>
+        </div>
+      </div>
+      <p class="answer">
+        <span class="b">שלוש חברות בסדר. שתיים לא.</span>
+        <span class="l2">מטעי גבעון ואנרגי גולני — יחד <span class="neg num">-289,161 ₪</span>.</span>
+      </p>
+      <div class="meta">
+        <span>צפויות לחרוג ב־14 הימים הקרובים</span><span class="sep"></span>
+        <span>שיא הפער בעוד 12 ימים</span><span class="sep"></span>
+        <span>יתרה מצרפית <b style="color:var(--ink);font-weight:500" class="num">3,214,860 ₪</b></span><span class="sep"></span>
+        <span class="up num">+4.2%</span><span>מהחודש הקודם</span>
+      </div>
+    </div>
+
+    <div class="chart" dir="ltr">
+      <svg viewBox="0 0 1000 178">
+        <line x1="20" y1="112" x2="980" y2="112" stroke="#DDE7F0" stroke-width="1" stroke-dasharray="4 5"/>
+        <path clip-path="url(#cp)" fill="url(#gp)"
+          d="M960,44 C870,48 800,54 720,62 C640,70 570,82 500,94 C450,102 400,108 355,112 C320,116 260,128 200,138 C150,145 100,150 60,153 L60,112 L960,112 Z"/>
+        <path clip-path="url(#cn)" fill="url(#gn)"
+          d="M960,44 C870,48 800,54 720,62 C640,70 570,82 500,94 C450,102 400,108 355,112 C320,116 260,128 200,138 C150,145 100,150 60,153 L60,112 L960,112 Z"/>
+        <path d="M960,44 C870,48 800,54 720,62 C640,70 570,82 500,94 C450,102 400,108 355,112 C320,116 260,128 200,138 C150,145 100,150 60,153"
+          fill="none" stroke="#0C4068" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="300" y1="24" x2="944" y2="24" stroke="#C9D8E5" stroke-width="1"/>
+        <line x1="300" y1="19" x2="300" y2="29" stroke="#C9D8E5" stroke-width="1"/>
+        <line x1="944" y1="19" x2="944" y2="29" stroke="#C9D8E5" stroke-width="1"/>
+        <rect x="562" y="14" width="120" height="20" rx="10" fill="#fff"/>
+        <text x="622" y="28" text-anchor="middle" font-family="Rubik" font-size="12" fill="#657F9B">שיא בעוד 12 ימים</text>
+        <circle cx="960" cy="44" r="5.5" fill="#fff" stroke="#0C4068" stroke-width="2.6"/>
+        <line x1="630" y1="76" x2="630" y2="112" stroke="#c98404" stroke-width="1" stroke-dasharray="3 4"/>
+        <circle cx="630" cy="72" r="4.5" fill="#c98404" stroke="#fff" stroke-width="2"/>
+        <rect x="546" y="44" width="168" height="19" rx="9.5" fill="#FBF2DF"/>
+        <text x="630" y="57.5" text-anchor="middle" font-family="Rubik" font-size="11.5" fill="#A06A05">מטעי גבעון · בעוד 6 ימים</text>
+        <circle cx="300" cy="120" r="5.5" fill="#E8635A" stroke="#fff" stroke-width="2.4"/>
+        <text x="300" y="147" text-anchor="middle" font-family="Rubik" font-size="12.5" font-weight="500" fill="#C1483F">שיא הפער</text>
+        <text x="300" y="164" text-anchor="middle" font-family="Rubik" font-size="12" fill="#C1483F" direction="ltr">-289,161 ₪</text>
+      </svg>
+      <div class="chart-foot" dir="rtl">
+        <span>היום · יתרה מצרפית <span class="num">3,214,860 ₪</span></span>
+        <span>תחזית תזרים מצרפית</span>
+      </div>
+    </div>
+
+    <div class="ask">
+      <div class="ask-in">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#39ABE2" stroke-width="1.7" stroke-linejoin="round"><path d="m12 3 2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg>
+        <input placeholder="שאל את העוזר הפיננסי על הקבוצה…">
+      </div>
+      <div class="chips">
+        <button class="chip">למה מטעי גבעון חורגת?</button>
+        <button class="chip">איזו חברה הכי רחוקה מהתקציב?</button>
+        <button class="chip">מה צפי סוף החודש?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== calm bar · multi (above decisions) ==================== -->
+  <div class="calmbar m-only">
+    <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+    <div>
+      <b>ב־3 מתוך 5 החברות אין מה לעשות השבוע</b>
+      <span>משה עובד, אנרגי אינטרנשיונל ורימון יצחק בתוך התקציב — HK מתפעלת אותן כרגיל.</span>
+    </div>
+  </div>
+
+  <!-- ==================== decisions · single ==================== -->
+  <div class="s-only">
+    <div class="slab">
+      <span class="cnt">3</span>
+      <h2>מחכה להחלטה שלך</h2>
+      <span class="sub">שלושה דברים שרק אתה יכול להכריע השבוע</span>
+    </div>
+
+    <article class="dec r">
+      <div class="idx">1</div>
+      <div class="dmain">
+        <div class="dtop">
+          <h3>העו״ש יעבור למינוס ב־13 ביולי — צריך להחליט מאיפה מכסים</h3>
+          <span class="tchip r">בעוד 12 ימים</span>
+        </div>
+        <p>מסגרת האשראי היא <b class="num">150,000 ₪</b> והיא כבר מנוצלת ב־<b class="num">107%</b>, כך שהיא לא מכסה את הפער. אילון רואה את המספר הזה גם, והוא כבר על סדר היום של הפגישה ב־10 ביולי — שלושה ימים לפני.</p>
+        <div class="dacts">
+          <button class="btn p">דבר עם אילון</button>
+          <button class="btn g">פתח את תחזית התזרים</button>
+        </div>
+      </div>
+      <div class="dval">
+        <b class="neg num">-289,161 ₪</b>
+        <small>יתרה צפויה במועד החריגה</small>
+      </div>
+    </article>
+
+    <article class="dec">
+      <div class="idx">2</div>
+      <div class="dmain">
+        <div class="dtop">
+          <h3>סקירת רבעון Q3 — לאשר את המועד</h3>
+          <span class="tchip b">בעוד 4 ימים</span>
+        </div>
+        <p><b>אילון אשכנזי</b>, היועץ שלך ב־HK, ב־<b class="num">14:00–15:00</b> בזום. הקישור יישלח אליך בוואטסאפ. אם המועד לא מתאים — כדאי להזיז אותו קדימה ולא אחורה, כי החריגה נופלת שלושה ימים אחרי.</p>
+        <div class="dacts">
+          <button class="btn p">אישור הגעה</button>
+          <button class="btn g">הצע מועד אחר</button>
+          <span class="note">הוסף ליומן</span>
+        </div>
+      </div>
+      <div class="dval">
+        <b>10 ביולי</b>
+        <small>הפגישה הבאה שלך · Zoom</small>
+      </div>
+    </article>
+
+    <article class="dec">
+      <div class="idx">3</div>
+      <div class="dmain">
+        <div class="dtop">
+          <h3>יוני נסגר מתחת ליעד — מה מעלים לדיון בפגישה</h3>
+          <span class="tchip b">לפני ה־10 ביולי</span>
+        </div>
+        <p>8 קטגוריות מתחת ליעד ו־2 מעל, מתוך יעד חודשי של <b class="num">705,642 ₪</b>. אלה הארבע שהזיזו הכי הרבה — סמן מה מעניין אותך ואילון יגיע עם הפירוט.</p>
+        <div class="bud">
+          <div class="bline">
+            <div class="nm">קניות מלאי</div>
+            <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:69.9%"></div></div>
+            <div class="amt"><b class="num">130,000 ₪</b> מתוך <span class="num">155,000 ₪</span></div>
+            <div class="dlt num">-16%</div>
+          </div>
+          <div class="bline">
+            <div class="nm">הכנסות ממכירות־מזומן</div>
+            <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:75.9%"></div></div>
+            <div class="amt"><b class="num">82,000 ₪</b> מתוך <span class="num">89,950 ₪</span></div>
+            <div class="dlt num">-9%</div>
+          </div>
+          <div class="bline">
+            <div class="nm">משיכות בעלים</div>
+            <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:55.5%"></div></div>
+            <div class="amt"><b class="num">10,000 ₪</b> מתוך <span class="num">15,000 ₪</span></div>
+            <div class="dlt num">-33%</div>
+          </div>
+          <div class="bline">
+            <div class="nm">הוצאות תפעול</div>
+            <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:63.3%"></div></div>
+            <div class="amt"><b class="num">14,000 ₪</b> מתוך <span class="num">18,433 ₪</span></div>
+            <div class="dlt num">-24%</div>
+          </div>
+          <div class="budnote">הקו האנכי הוא היעד החודשי של הקטגוריה.</div>
+        </div>
+        <div class="dacts">
+          <button class="btn p">הוסף לסדר היום של הפגישה</button>
+          <button class="btn g">פתח את כל הקטגוריות</button>
+        </div>
+      </div>
+      <div class="dval">
+        <b class="num">53,713 ₪</b>
+        <small>הפער המצטבר · יוני 2026</small>
+      </div>
+    </article>
+  </div>
+
+  <!-- ==================== decisions · multi ==================== -->
+  <div class="m-only">
+    <div class="slab">
+      <span class="cnt">3</span>
+      <h2>מחכה להחלטה שלך</h2>
+      <span class="sub">שתי חברות דורשות הכרעה, ופגישה אחת לאישור</span>
+    </div>
+
+    <article class="dec r">
+      <div class="idx">1</div>
+      <div class="dmain">
+        <div class="dtop">
+          <h3>מטעי גבעון — הוצאות השכר חרגו מהתקציב</h3>
+          <span class="tchip r">6 ימים עד לחריגה</span>
+        </div>
+        <p>החברה עומדת על <b class="num">114%</b> מהתקציב — <b class="num">301,000 ₪</b> מתוך <b class="num">265,000 ₪</b>. הסיבה: הוצאות שכר מעל התקציב. ההכרעה היא אם מזרימים כסף מהקבוצה או מקצצים בהוצאה.</p>
+        <div class="dacts">
+          <button class="btn p">התייעץ עם אילון</button>
+          <button class="btn g">פתח את מטעי גבעון</button>
+        </div>
+      </div>
+      <div class="dval">
+        <span class="co-tag"><i style="background:var(--red)"></i>מטעי גבעון</span>
+        <b class="neg num">-142,000 ₪</b>
+        <small>פער צפוי עד לחריגה</small>
+      </div>
+    </article>
+
+    <article class="dec o">
+      <div class="idx">2</div>
+      <div class="dmain">
+        <div class="dtop">
+          <h3>אנרגי גולני — תשלום ספק מעל התכנון</h3>
+          <span class="tchip o">12 ימים עד לחריגה</span>
+        </div>
+        <p>עדיין בגבול — <b class="num">96%</b> מהתקציב, <b class="num">489,000 ₪</b> מתוך <b class="num">510,000 ₪</b> — אבל תשלום הספק דוחף את החברה החוצה בעוד שבועיים. אפשר לדחות את התשלום בשבוע.</p>
+        <div class="dacts">
+          <button class="btn p">אשר דחיית תשלום</button>
+          <button class="btn g">פתח את אנרגי גולני</button>
+        </div>
+      </div>
+      <div class="dval">
+        <span class="co-tag"><i style="background:var(--org)"></i>אנרגי גולני</span>
+        <b class="org num">-72,000 ₪</b>
+        <small>פער צפוי עד לחריגה</small>
+      </div>
+    </article>
+
+    <article class="dec">
+      <div class="idx">3</div>
+      <div class="dmain">
+        <div class="dtop">
+          <h3>סקירת רבעון Q3 — לאשר את המועד</h3>
+          <span class="tchip b">בעוד 4 ימים</span>
+        </div>
+        <p><b>אילון אשכנזי</b>, היועץ שלך ב־HK, ב־<b class="num">14:00–15:00</b> בזום. שתי החברות בסיכון ייכנסו לסדר היום אוטומטית.</p>
+        <div class="dacts">
+          <button class="btn p">אישור הגעה</button>
+          <button class="btn g">הצע מועד אחר</button>
+          <span class="note">הוסף ליומן</span>
+        </div>
+      </div>
+      <div class="dval">
+        <b>10 ביולי</b>
+        <small>הפגישה הבאה שלך · Zoom</small>
+      </div>
+    </article>
+  </div>
+
+  <!-- ==================== state · single ==================== -->
+  <div class="s-only">
+    <div class="card" style="margin-top:24px">
+      <div class="ch">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <h2>הכסף שלך</h2>
+        <span class="hint">נכון לעדכון האחרון של HK</span>
+      </div>
+      <div class="row">
+        <div class="lb">יתרת עו״ש</div>
+        <div class="bd">היתרה בכל החשבונות, נכון להיום</div>
+        <div class="vl num">1,029,208 ₪</div>
+      </div>
+      <div class="row">
+        <div class="lb">מסגרת אשראי</div>
+        <div class="bd">אתה מנצל <b>107%</b> מהמסגרת — כלומר מעבר לגבול שסוכם עם הבנק</div>
+        <div class="vl">
+          <span class="num">150,000 ₪</span>
+          <small class="dn">ניצול <span class="num">107%</span></small>
+        </div>
+      </div>
+      <div class="row">
+        <div class="lb">רווח גולמי · יולי</div>
+        <div class="bd">מה שנשאר אחרי עלות הסחורה</div>
+        <div class="vl">
+          <span class="num">21,639 ₪</span>
+          <small class="num">100% מהחודש הקודם</small>
+        </div>
+      </div>
+      <div class="row">
+        <div class="lb">ספק סונול</div>
+        <div class="bd">החשבונית האחרונה שולמה ונרשמה — אין יתרה פתוחה</div>
+        <div class="vl num">0 ₪</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== state · multi ==================== -->
+  <div class="m-only">
+    <div class="card" style="margin-top:24px">
+      <div class="ch">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+        <h2>החברות שלך</h2>
+        <span class="hint">ביצוע מול תקציב · הקו האנכי הוא היעד</span>
+      </div>
+
+      <div class="co">
+        <span class="st r"></span>
+        <div class="cn"><b>מטעי גבעון</b><small>חורגת מהתקציב</small></div>
+        <div class="ans"><b>חריגה צפויה בעוד 6 ימים</b><small>הוצאות שכר מעל התקציב</small></div>
+        <div class="bar">
+          <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:95%;background:linear-gradient(90deg,#EE8880,#dc4436)"></div></div>
+          <div class="lg"><b class="num" style="color:var(--red)">114%</b><span class="num">301,000 / 265,000 ₪</span></div>
+        </div>
+        <div class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      </div>
+
+      <div class="co">
+        <span class="st o"></span>
+        <div class="cn"><b>אנרגי גולני</b><small>קרובה לגבול</small></div>
+        <div class="ans"><b>חריגה צפויה בעוד 12 ימים</b><small>תשלום ספק מעל התכנון</small></div>
+        <div class="bar">
+          <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:80%;background:linear-gradient(90deg,#E5B14A,#c98404)"></div></div>
+          <div class="lg"><b class="num" style="color:var(--org)">96%</b><span class="num">489,000 / 510,000 ₪</span></div>
+        </div>
+        <div class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      </div>
+
+      <div class="co">
+        <span class="st g"></span>
+        <div class="cn"><b>משה עובד</b><small>בתקציב</small></div>
+        <div class="ans">אין חריגה צפויה בשבועיים הקרובים</div>
+        <div class="bar">
+          <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:70.8%;background:linear-gradient(90deg,#5DBDEA,#39ABE2)"></div></div>
+          <div class="lg"><b class="num" style="color:#2A87BC">85%</b><span class="num">153,000 / 180,000 ₪</span></div>
+        </div>
+        <div class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      </div>
+
+      <div class="co">
+        <span class="st g"></span>
+        <div class="cn"><b>אנרגי אינטרנשיונל</b><small>בתקציב</small></div>
+        <div class="ans">אין חריגה צפויה בשבועיים הקרובים</div>
+        <div class="bar">
+          <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:68.3%;background:linear-gradient(90deg,#5DBDEA,#39ABE2)"></div></div>
+          <div class="lg"><b class="num" style="color:#2A87BC">82%</b><span class="num">345,000 / 420,000 ₪</span></div>
+        </div>
+        <div class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      </div>
+
+      <div class="co">
+        <span class="st g"></span>
+        <div class="cn"><b>רימון יצחק</b><small>בתקציב</small></div>
+        <div class="ans">אין חריגה צפויה בשבועיים הקרובים</div>
+        <div class="bar">
+          <div class="tr"><div class="tk" style="inset-inline-start:83.3%"></div><div class="fl" style="width:52.5%;background:linear-gradient(90deg,#5DBDEA,#39ABE2)"></div></div>
+          <div class="lg"><b class="num" style="color:#2A87BC">63%</b><span class="num">214,000 / 340,000 ₪</span></div>
+        </div>
+        <div class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        <h2>הקבוצה מול התקציב החודשי</h2>
+        <span class="hint">עמידה בתקציב <span class="num">60%</span> · 3 בתקציב · 1 קרובה לגבול · 1 בחריגה</span>
+      </div>
+      <div class="row">
+        <div class="lb">תקציב תזרים חודשי</div>
+        <div class="bd">התקציב המצרפי של חמש החברות</div>
+        <div class="vl num">2,400,000 ₪</div>
+      </div>
+      <div class="row">
+        <div class="lb">ביצוע מתחילת החודש</div>
+        <div class="bd">מה שבאמת זז בחשבונות עד היום</div>
+        <div class="vl num">1,932,400 ₪</div>
+      </div>
+      <div class="row">
+        <div class="lb">פער מול התקציב</div>
+        <div class="bd">כל הפער מגיע משתי החברות שדורשות הכרעה</div>
+        <div class="vl dn num">-289,161 ₪</div>
+      </div>
+      <div class="row">
+        <div class="lb">צפי סוף החודש</div>
+        <div class="bd">אם שתי החברות יטופלו בזמן, הקבוצה מסיימת בפלוס</div>
+        <div class="vl up num">+118,000 ₪</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== what HK did + files ==================== -->
+  <div class="cols" style="margin-bottom:20px">
+    <div class="card">
+      <div class="ch">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <h2 class="s-only">מה HK עשתה בשבילך</h2>
+        <button class="upl ask" onclick="clhToast('הבקשה נשלחה למנהל התזרים שלך ב-HK')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          בקשה ל-HK
+        </button>
+        <h2 class="m-only">מה HK עשתה בקבוצה</h2>
+        <span class="hint ok">אין מה לעשות מצידך</span>
+      </div>
+      <div class="feed">
+        <div class="fi">
+          <span class="bul"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="tx">
+            <div class="t1">כל הבדיקות עברו — התזרים תקין ומעודכן</div>
+            <div class="t2 s-only">אנרגי אינטרנשיונל</div>
+            <div class="t2 m-only">כל חמש החברות עברו תפעול מלא</div>
+          </div>
+          <div class="tm">אתמול 09:40</div>
+        </div>
+        <div class="fi">
+          <span class="bul s"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M3 7h18M3 12h18M3 17h10"/></svg></span>
+          <div class="tx">
+            <div class="t1">קוטלגו 4 תנועות חדשות</div>
+            <div class="t2">נבדקו ואושרו לפני הרישום בתזרים</div>
+          </div>
+          <div class="tm">אתמול 09:12</div>
+        </div>
+        <div class="fi">
+          <span class="bul p"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+          <div class="tx">
+            <div class="t1">טופלה חשבונית ספק — סונול <em>· <span class="num">4,820 ₪</span></em></div>
+            <div class="t2">שויכה להוצאות דלק ונרשמה בתזרים <span class="cotag m-only">· אנרגי אינטרנשיונל</span></div>
+          </div>
+          <div class="tm">30.06</div>
+        </div>
+        <div class="fi">
+          <span class="bul s"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <div class="tx">
+            <div class="t1">נשלח אליך עדכון תזרים שבועי בוואטסאפ</div>
+            <div class="t2">כולל צפי לסוף החודש</div>
+          </div>
+          <div class="tm">28.06</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card s-only">
+      <div class="ch">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <h2>המסמכים והדוחות שלך</h2>
+        <button class="upl" onclick="clhToast('בוחר קובץ — הוא יישלח לקיטלוג ב-HK')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          העלאת מסמך
+        </button>
+      </div>
+      <div class="fl-row">
+        <div class="fl-ic pdf">PDF</div>
+        <div class="n">חשבונית ספק סונול<small>30.06</small></div>
+        <div class="ok-t"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>קוטלג</div>
+      </div>
+      <div class="fl-row">
+        <div class="fl-ic xls">XLS</div>
+        <div class="n">דוח סליקה יוני<small>28.06</small></div>
+        <div class="ok-t"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>קוטלג</div>
+      </div>
+      <div class="fl-row">
+        <div class="fl-ic rep"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div>
+        <div class="n">תזרים חודשי · יוני 2026<small>מוכן להורדה</small></div>
+        <button class="dl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button>
+      </div>
+      <div class="fl-row">
+        <div class="fl-ic rep"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/></svg></div>
+        <div class="n">תזרים עתידי · 6 חודשים קדימה<small>מוכן להורדה</small></div>
+        <button class="dl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== closer ==================== -->
+  <div class="calmbar" style="margin-bottom:0">
+    <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+    <div>
+      <b>זה כל מה שמחכה לך השבוע</b>
+      <span class="s-only">כל השאר סגור — HK עדכנה את התזרים אתמול ב־09:40, וארבע פעולות בוצעו מאז 28.06.</span>
+      <span class="m-only">כל השאר סגור — חמש החברות תופעלו, ושלוש מהן לא דורשות ממך כלום.</span>
+    </div>
+    <button class="btn g s">כל הפעילות</button>
+  </div>
+
+</main>
+
+<script>
+function setMode(m){document.body.dataset.mode=m;window.scrollTo({top:0,behavior:'instant'});}
+var _clhT;
+function clhToast(msg){
+  var e=document.getElementById('clhToast');
+  if(!e){ e=document.createElement('div'); e.id='clhToast'; e.className='clh-toast'; document.body.appendChild(e); }
+  e.textContent=msg; e.classList.add('on');
+  clearTimeout(_clhT); _clhT=setTimeout(function(){ e.classList.remove('on'); },2400);
+}
+
+/* ===== הטמעה: מסתירים מעטפת, קוראים את המצב מה-URL, ומדווחים גובה ===== */
+(function(){
+  var q=location.search;
+  if(/[?&]m=group/.test(q)) setMode('multi');
+  if(!/[?&]embed=1/.test(q)) return;
+  document.body.classList.add('is-embedded');
+  var last=0;
+  function report(){
+    var h=Math.ceil(document.documentElement.scrollHeight);
+    if(Math.abs(h-last)>2){ last=h; parent.postMessage({hkHome:1,h:h},'*'); }
+  }
+  window.addEventListener('load',report);
+  setInterval(report,400);
+  new MutationObserver(report).observe(document.body,{childList:true,subtree:true,attributes:true});
+})();
+</script>
+</body>
+</html>
