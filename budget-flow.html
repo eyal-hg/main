@@ -365,10 +365,17 @@ button{font-family:inherit;cursor:pointer}
 body.is-embedded{background:transparent}
 body.is-embedded .app{max-width:none;padding:4px 2px 26px}
 body.is-embedded .page-head{display:none}
+
+/* בעל העסק צופה בתכנון, לא עורך אותו */
+body.is-client .fbtn.ghost{display:none}
 </style>
 </head>
 <body>
-<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');</script>
+<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');
+/* r=cli — בעל העסק. סיווג הפערים, ההצעות מזיכרון הלקוח וההסברים שנרשמים
+   לזיכרון הם עבודה של היועץ והמתפעל. הוא רואה את המספרים, לא את המנגנון. */
+var IS_CLI=/[?&]r=cli/.test(location.search);
+if(IS_CLI)document.body.classList.add('is-client');</script>
 <div class="app">
 
   <div class="page-head">
@@ -467,7 +474,7 @@ const GROUPS=[
    {label:'הכנסות ממכירות - סליקה',  target:77010, act:48000, flow:25000, src:'avg', gt:['wait'], pend:2, parties:['ישראכרט סליקה','ויזה כאל סליקה']},
    {label:'הכנסות מסליקה - דיירקט',  target:23501, act:22000, flow:6000, src:'avg', parties:['סליקה דיירקט']},
    {label:'הכנסות ממכירות - אלקטרה', target:80583, act:40000, flow:18000, bl:22583, blDays:[5,15,25], src:'manual', pend:3, parties:['אלקטרה מוצרי צריכה','אלקטרה — חשבונית 4471']},
-   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000, src:'avg', gt:['changed'], gn:['הלקוח איבד את מוסך רם — ההסכם לא יחודש החודש'], parties:['וולט תקבולים','תן ביס']},
+   {label:'הכנסות - חברות שילוח',    target:29553, act:18000, flow:9000, src:'avg', gt:['changed'], gn:['מוסך רם עזב — ההסכם לא יחודש החודש'], parties:['וולט תקבולים','תן ביס']},
  ]},
  {label:'עלות המכר', kind:'exp', color:'#c98404', rows:[
    {label:'קניות מלאי',  target:155000, act:90000, flow:40000, src:'goal', parties:['בז״ן — דלקים','פז חברת נפט','ספקי משנה']},
@@ -518,8 +525,8 @@ function blOf(r){
    אם זה רק עניין של זמן, זה צבוע. את היעד לא מתקנים באמצע חודש —
    הוא נקבע בבניית שלושת החודשים עם הלקוח, והפער מודד כמה דייקנו. */
 const GAP_TYPES={
-  wait:    {lbl:'מחכה לחומר מהלקוח', chip:'מחכה לחומר',   cls:'gt-wait', note:false,
-            hint:'הידיעה קיימת אצל הלקוח — אי אפשר לצבוע עד שהחומר יגיע',
+  wait:    {lbl:'מחכה לחומר', chip:'מחכה לחומר',   cls:'gt-wait', note:false,
+            hint:'הידיעה קיימת, אי אפשר לצבוע עד שהחומר יגיע',
             act:'תזכורת הבוט בקבוצה + פריט בתור · מטופל יום-יום'},
   changed: {lbl:'המציאות השתנתה',     chip:'המציאות השתנתה', cls:'gt-bad', note:true,
             hint:'התוכנית הייתה נכונה כשנבנתה — העולם זז: לקוח אבד, מחיר עלה, עונה חלשה',
@@ -610,7 +617,7 @@ const AI_SUG={
    note:'חשבונית אלקטרה תוגש ביולי — התקבול זז חודש קדימה'},
  'הכנסות - חברות שילוח':{k:'changed',
    why:'בזיכרון הלקוח (פגישת מאי): מוסך רם מתנתק — צפויה ירידה בהכנסות השילוח',
-   note:'הלקוח איבד את מוסך רם — ההסכם לא יחודש'},
+   note:'מוסך רם עזב — ההסכם לא יחודש'},
 };
 function gtAdopt(){
   const r=GROUPS[GTP.gi].rows[GTP.ri], s=AI_SUG[r.label]; if(!s) return;
@@ -979,6 +986,7 @@ function srcTag(r,kind){
 function blChip(r,gi,ri){
   if(blOf(r)) return `<button class="bl-on" onclick="event.stopPropagation();blOpen(${gi},${ri})" title="בעקומה כשורות דמה בימים ${(r.blDays||[]).join(' · ')} בחודש · לחיצה לעריכה">שורה תקציבית פעילה ✎</button>`;
   /* זמין בכל קטגוריה — גם כשאין פער כרגע, כדי שאפשר יהיה להגדיר מראש */
+  if(IS_CLI) return '';
   return `<button class="bl-set" onclick="event.stopPropagation();blOpen(${gi},${ri})">＋ שורה תקציבית</button>`;
 }
 function gapHtml(r,kind,gi,ri){
@@ -993,9 +1001,11 @@ function gapHtml(r,kind,gi,ri){
     let tail='';
     if(!mat) tail='';
     else if(T){ const note=gnOf(r);
-      tail=`<button class="gt-chip ${T.cls}" onclick="openGtPop(${gi},${ri})" title="לחיצה לשינוי הסיווג">${T.chip}<span class="cx">✎</span></button>`
+      tail=(IS_CLI
+          ? `<span class="gt-chip ${T.cls}">${T.chip}</span>`
+          : `<button class="gt-chip ${T.cls}" onclick="openGtPop(${gi},${ri})" title="לחיצה לשינוי הסיווג">${T.chip}<span class="cx">✎</span></button>`)
          + (note?`<span class="gt-note">${note}</span>`:''); }
-    else tail=`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת החריגה</button>`;
+    else tail=IS_CLI?'':`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת החריגה</button>`;
     return `<div class="bl-gap ${c}">${lbl}<b>${nfs(g)}</b>${tail}</div>`; }
 
   /* פער חיובי — הצבע נגזר מהמהותיות ומהסוג, לא מהגודל.
@@ -1008,10 +1018,12 @@ function gapHtml(r,kind,gi,ri){
     return `<div class="bl-gap"></div>`;
   }else if(T){
     const note=gnOf(r);
-    tail=`<button class="gt-chip ${T.cls}" onclick="openGtPop(${gi},${ri})" title="לחיצה לשינוי הסיווג">${T.chip}<span class="cx">✎</span></button>`
+    tail=(IS_CLI
+        ? `<span class="gt-chip ${T.cls}">${T.chip}</span>`
+        : `<button class="gt-chip ${T.cls}" onclick="openGtPop(${gi},${ri})" title="לחיצה לשינוי הסיווג">${T.chip}<span class="cx">✎</span></button>`)
        + (note?`<span class="gt-note">${note}</span>`:'');
   }else{
-    tail=`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת הפער</button>`;
+    tail=IS_CLI?'':`<button class="gt-chip gt-set" onclick="openGtPop(${gi},${ri})">+ הגדרת הפער</button>`;
   }
   const lbl='פער';
   const blNote='';
@@ -1107,6 +1119,7 @@ function render(){
 let GTP=null;
 function openGtPop(gi,ri){
   const r=GROUPS[gi].rows[ri];
+  if(IS_CLI) return;                       /* סיווג פערים אינו עבודה של בעל העסק */
   GTP={gi,ri,k:gtOf(r)||gtSuggest(r)||'built',n:gnOf(r)};
   document.getElementById('gtTitle').textContent=r.label;
   document.getElementById('gtSub').textContent='הגדרת הפער · '+MONTHS[mi].label;

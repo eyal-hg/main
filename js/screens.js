@@ -227,7 +227,10 @@
     else if(t==='budget'){
       document.getElementById('viewBudget').style.display='';
       const bf=document.getElementById('budgetFrame');
-      if(!bf.src) bf.src=bf.dataset.src;
+      /* המסך נטען עם התפקיד: לבעל העסק לא מוצגים בלוקים שנשענים על זיכרון הלקוח
+         או מנוסחים עליו בגוף שלישי. החלפת תפקיד טוענת מחדש. */
+      const want=bf.dataset.src+((ROLE==='client1'||ROLE==='clientN')?'&r=cli':'');
+      if(bf.dataset.cur!==want){ bf.dataset.cur=want; bf.src=want; }
     }
     else if(t==='past'){
       document.getElementById('viewPast').style.display='';
