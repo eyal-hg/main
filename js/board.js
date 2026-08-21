@@ -147,6 +147,16 @@
     if(d.hkMeet&&d.h>200){ const f=document.getElementById('meetFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkArena&&d.h>200){ const f=document.getElementById('arenaFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkCl&&d.h>200){ const f=document.getElementById('clFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
+    if(d.hkAIReady){ /* מסך העוזר מבקש את מספרי התיק */
+      const f=document.getElementById('aiFrame');
+      const act=CLIENTS.filter(c=>coActive(c)), stp=CLIENTS.filter(c=>coState(c)==='setup');
+      if(f&&f.contentWindow) f.contentWindow.postMessage({hkAICounts:{
+        active: act.length,
+        exc:    act.filter(c=>c.hl&&c.hl.sev==='high').length,
+        late:   act.filter(c=>c.coopDays>14).length,
+        setup:  stp.length
+      }},'*');
+      return; }
     if(d.hkArenaCard&&d.nm){ /* מהזירה לכרטיס הלקוח — אותו מסך, אותו כרטיס */
       window._clCard=d.nm; ADV_PVIEW='clients'; selectPortfolio();
       const f=document.getElementById('clFrame');

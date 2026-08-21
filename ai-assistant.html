@@ -266,6 +266,9 @@ b,strong{font-weight:600}
 .tip{position:absolute;background:#0C4068;color:#fff;font-size:11px;padding:5px 9px;border-radius:7px;
   white-space:nowrap;z-index:70;pointer-events:none;opacity:0;transition:.15s}
 
+body.ai-all .sc-co{display:none}
+body:not(.ai-all) .sc-all{display:none}
+
 /* ===== מצב הטמעה — המסך חי בתוך index.html כ-iframe ===== */
 body.is-embedded{background:transparent}
 body.is-embedded .top{background:var(--bg);border-bottom:0;padding-top:2px}
@@ -288,8 +291,8 @@ body.is-embedded .ftr{padding-bottom:6px}
     </div>
     <div class="spacer"></div>
     <div class="scope">
-      <button class="on">הלקוח הפעיל</button>
-      <button>כל התיק · 80 לקוחות</button>
+      <button id="scCo" class="on" onclick="setScopeAI('co')">הלקוח הפעיל</button>
+      <button id="scAll" onclick="setScopeAI('all')">כל התיק · <b data-cnt="active">80</b> לקוחות</button>
     </div>
     <span class="seglab">תצוגה:</span>
     <div class="seg">
@@ -312,7 +315,7 @@ body.is-embedded .ftr{padding-bottom:6px}
     <div class="bdiv"></div>
     <span class="scanlab">מה נסרק:</span>
     <div class="schips">
-      <span class="schip">80 לקוחות</span>
+      <span class="schip"><b data-cnt="active">80</b> לקוחות</span>
       <span class="schip">הפגישות · תמלול וסיכומים</span>
       <span class="schip">תזרים · יתרות · מסגרות</span>
       <span class="schip">זיכרון הלקוח</span>
@@ -331,7 +334,7 @@ body.is-embedded .ftr{padding-bottom:6px}
           <p>לחיצה על ממצא פותחת שיחה שכבר התחילה — לא תיבה ריקה.</p>
         </div>
 
-        <div class="card find t-link" style="margin-bottom:14px">
+        <div class="card find t-link sc-co" style="margin-bottom:14px">
           <div class="fmeta">
             <span class="tag">חיבור</span>
             <span class="m">זיכרון הלקוח + הפגישה האחרונה</span>
@@ -361,7 +364,7 @@ body.is-embedded .ftr{padding-bottom:6px}
           </div>
         </div>
 
-        <div class="card find t-pattern" style="margin-bottom:14px">
+        <div class="card find t-pattern sc-co" style="margin-bottom:14px">
           <div class="fmeta">
             <span class="tag">דפוס</span>
             <span class="m">חוצה את הפגישות שלך</span>
@@ -385,10 +388,34 @@ body.is-embedded .ftr{padding-bottom:6px}
           </div>
         </div>
 
-        <div class="card find t-scan">
+        <div class="card find t-pattern sc-all" style="margin-bottom:14px">
+          <div class="fmeta">
+            <span class="tag">דפוס</span>
+            <span class="m">כל התיק · <b data-cnt="active">80</b> חברות פעילות</span>
+            <span class="dot">●</span><span class="m">מהתפעול היומי</span>
+          </div>
+          <h4>החומר, לא החריגות, הוא מה שעוצר אותך.</h4>
+          <div class="body">
+            <b data-cnt="late">46</b> מתוך <b data-cnt="active">80</b> החברות הפעילות בתיק לא העבירו חומר במועד,
+            מול <b data-cnt="exc">8</b> עם חריגה פעילה. ההבדל הוא לא בגודל אלא באופי:
+            כל חריגה נפתחת בהתראה, מגיעה אליך, ונסגרת. <b>חומר חסר לא מייצר התראה</b> —
+            הוא פשוט לא מגיע, והדוח החודשי יוצא חלקי בלי שאף אחד עצר.
+          </div>
+          <div class="body" style="margin-top:9px">
+            בנוסף אליהן: <b data-cnt="setup">8</b> חברות בהקמה שטרם התקבל מהן חומר ראשוני בכלל.
+            שם זה לא איחור — זה תהליך שעוד לא התחיל.
+          </div>
+          <div class="fact">
+            <button class="btn p" onclick="setState('b')">הרץ את סריקת החומר החסר ←</button>
+            <button class="btn s" onclick="railAdd('wa')">נסח הודעה אחת לכל מי שמאחר</button>
+            <button class="btn s" onclick="railAdd('tk')">פתח משימה למנהל התזרים</button>
+          </div>
+        </div>
+
+        <div class="card find t-scan sc-all">
           <div class="fmeta">
             <span class="tag">סריקת תיק</span>
-            <span class="m">80 לקוחות</span>
+            <span class="m"><b data-cnt="active">80</b> לקוחות</span>
             <span class="dot">●</span><span class="m">מוכן להרצה — התוצאה תיפתח כרשימה</span>
           </div>
           <h4>שלוש סריקות שאני יכול להריץ על התיק עכשיו.</h4>
@@ -625,6 +652,21 @@ body.is-embedded .ftr{padding-bottom:6px}
 </div>
 
 <script>
+/* ---------- היקף: הלקוח הפעיל מול כל התיק ---------- */
+function setScopeAI(k){
+  const all = k==='all';
+  document.body.classList.toggle('ai-all', all);
+  document.getElementById('scCo').classList.toggle('on', !all);
+  document.getElementById('scAll').classList.toggle('on', all);
+  const n = document.querySelectorAll((all?'.sc-all':'.sc-co')+'.find').length;
+  document.getElementById('bannerTitle').textContent =
+    all ? n+' ממצאים ברמת התיק' : n+' ממצאים שדורשים אותך הבוקר';
+  document.getElementById('bannerSub').textContent =
+    all ? 'אותה סריקה, מבט אחד למעלה — מה חוזר על עצמו על פני כל הלקוחות'
+        : 'הסריקה רצה ב־07:12 — לפני שנכנסת';
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
 /* ---------- state switch ---------- */
 function setState(s){
   var a=document.getElementById('stateA'), b=document.getElementById('stateB');
@@ -719,8 +761,17 @@ document.getElementById('pop').addEventListener('click',function(e){ e.stopPropa
 (function(){
   if(!/[?&]embed=1/.test(location.search)) return;
   document.body.classList.add('is-embedded');
+  parent.postMessage({hkAIReady:1},'*');
+  /* המספרים בממצא ברמת התיק מגיעים מהתיק האמיתי, לא מהקוד כאן */
+  window.addEventListener('message',function(e){
+    const c=(e.data||{}).hkAICounts; if(!c) return;
+    document.querySelectorAll('[data-cnt]').forEach(el=>{
+      if(c[el.dataset.cnt]!=null) el.textContent=c[el.dataset.cnt];
+    });
+  });
 })();
 
+if(/[?&]sc=all/.test(location.search)) setTimeout(()=>setScopeAI('all'),300);
 if(location.hash==='#b') setState('b');
 if(location.hash==='#b2'){ setState('b'); approveBrak(0); }
 if(location.hash==='#tail'){ setState('b'); approveBrak(0); doBrak(); document.querySelectorAll('#stateB > .card')[0].classList.add('hide'); document.querySelector('#stateB .crumb').classList.add('hide'); }
