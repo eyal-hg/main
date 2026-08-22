@@ -1,0 +1,686 @@
+<html dir="rtl" lang="he">
+<meta charset="utf-8">
+<title>HK · הלקוחות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   HK · שפת המסכים v1 — מסך: הלקוחות
+   אותם טוקנים ואותו אוצר רכיבים של מסך "היום". תוספות המסך הזה:
+   .cycle-bar (הפס העליון: מסילת המחזור + קבוצת ההתראות)
+   .thead / .row--cli (טבלת הלקוחות)  ·  .born--row (מגירת השורה)
+   כללי שפה שנשמרים כאן: לכל לקוח בדיוק סטטוס אחד · התראה יושבת ליד
+   הסטטוס ולא משנה אותו · כל מספר התראה מתחלף בשם בתוך משפט הפתיחה ·
+   אין ציון, אין דירוג, אין "בסיכון" · לכל פעולה שהמערכת מציעה יש הכרעה.
+   ========================================================================== */
+:root{
+  --navy:#0C4068; --sky:#39ABE2; --coral:#E8635A;
+  --bg:#F4F7FA; --surface:#fff; --surface-2:#FAFCFE;
+  --bd:#E6ECF4; --bd-soft:#EEF3F9;
+  --ink:#0C4068; --ink-2:#5B7590; --ink-3:#8CA0B6;
+  --ok:#13895b; --ok-bg:#E7F4EE;
+  --alert:#dc4436; --alert-bg:#FCEBE9;
+  --warn:#c98404; --warn-bg:#FBF2DF;
+  --violet:#7557E3; --violet-bg:#F0EDFD;
+  --r-xs:7px; --r-sm:9px; --r-md:11px; --r-lg:14px; --r-xl:17px; --r-pill:999px;
+  --sh-1:0 2px 6px rgba(12,64,104,.05);
+  --sh-2:0 6px 18px rgba(12,64,104,.08);
+  --sh-3:0 14px 34px rgba(12,64,104,.10);
+  --s1:4px; --s2:6px; --s3:8px; --s4:12px; --s5:16px; --s6:20px; --s7:26px;
+  /* צבע שלב במחזור — התקדמות מניטרלי לירוק */
+  --st1:#8CA0B6; --st2:#39ABE2; --st3:#7557E3; --st4:#0C4068; --st5:#13895b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Rubik,-apple-system,"Segoe UI",sans-serif;
+  font-size:13.5px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+.num{font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.sep{color:#C6D4E2}
+
+/* ---------- topbar ---------- */
+.topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:var(--s6);padding:0 30px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .mark{width:32px;height:32px;border-radius:var(--r-sm);background:var(--navy);
+  color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;letter-spacing:.5px}
+.brand b{font-size:14.5px;font-weight:600}
+.nav{display:flex;gap:2px;margin-inline-start:auto}
+.nav a{padding:7px 14px;border-radius:var(--r-sm);font-size:13.5px;font-weight:500;color:var(--ink-2)}
+.nav a:hover{background:var(--bg)}
+.nav a.on{background:#E9F2FA;color:var(--navy);font-weight:600}
+.me{display:flex;align-items:center;gap:9px;padding-inline-start:var(--s6);border-inline-start:1px solid var(--bd)}
+.me .av{width:31px;height:31px;border-radius:var(--r-pill);background:#E9F2FA;color:var(--navy);
+  font-size:11.5px;font-weight:600;display:grid;place-items:center}
+.me .nm{font-size:13px;font-weight:600;line-height:1.25}
+.me .of{font-size:11px;color:var(--ink-3);line-height:1.25}
+
+/* ---------- screen head ---------- */
+.wrap{max-width:1560px;margin:0 auto;padding:24px 30px 40px}
+.screen-head{display:flex;align-items:flex-start;gap:var(--s6);margin-bottom:18px}
+.sh-left{flex:1;min-width:0}
+.h1{font-family:"Frank Ruhl Libre",Rubik,serif;font-size:34px;font-weight:700;line-height:1.2;letter-spacing:-.2px}
+.h1 .date{font-family:Rubik,sans-serif;font-size:13px;font-weight:400;color:var(--ink-3);
+  margin-inline-start:12px;vertical-align:6px}
+.lede{font-family:"Frank Ruhl Libre",Rubik,serif;font-size:23px;font-weight:500;
+  line-height:1.45;color:var(--navy);margin-top:6px;text-wrap:balance}
+.lede em{font-style:normal;color:var(--coral)}
+.sub-lede{font-size:13.5px;color:var(--ink-2);margin-top:7px;max-width:980px;text-wrap:balance}
+.sub-lede a{color:var(--navy);font-weight:500;border-bottom:1.5px solid #BFD9EC;padding-bottom:1px}
+.sub-lede a:hover{border-color:var(--sky)}
+.clock{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--bd);
+  border-radius:var(--r-pill);padding:8px 15px 8px 12px;box-shadow:var(--sh-1);flex:none;margin-top:4px}
+.clock .t{font-size:15px;font-weight:600;letter-spacing:.2px}
+.clock .lb{font-size:11.5px;color:var(--ink-3)}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px rgba(232,99,90,.18)}
+
+/* ---------- chips / buttons (משפת הבסיס) ---------- */
+.chip{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:var(--r-xs);
+  font-size:11px;font-weight:600;letter-spacing:.2px;background:var(--bg);color:var(--ink-2);
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip--ok{background:var(--ok-bg);color:var(--ok)}
+.chip--warn{background:var(--warn-bg);color:var(--warn)}
+.chip--alert{background:var(--alert-bg);color:var(--alert)}
+.chip--info{background:#E9F2FA;color:#1E6A9E}
+.chip--src{background:#EEF3F9;color:#5B7590}
+.chip--src.mtg{background:#F0EDFD;color:#5B45B8}
+.chip--src.hk{background:#E9F2FA;color:#1E6A9E}
+.chip--time{background:#fff;border:1px solid var(--bd);color:var(--ink-2)}
+.chip--cat{background:#fff;border:1px solid var(--bd);color:var(--ink-2);font-weight:500}
+.dot{width:6px;height:6px;border-radius:50%;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:31px;padding:0 14px;
+  border:1px solid transparent;border-radius:var(--r-sm);font-family:inherit;font-size:12.5px;
+  font-weight:500;cursor:pointer;white-space:nowrap}
+.btn--primary{background:var(--navy);color:#fff}
+.btn--danger{background:var(--coral);color:#fff}
+.btn--ghost{background:#fff;border-color:var(--bd);color:var(--ink-2)}
+.btn--ghost:hover{border-color:#CFDEEC;color:var(--navy)}
+.btn--quiet{background:transparent;color:var(--sky);padding:0 4px;height:26px;font-size:12.5px}
+.btn--quiet:hover{color:var(--navy)}
+.btn--sm{height:27px;padding:0 11px;font-size:12px}
+.pick{display:inline-flex;align-items:center;gap:6px;height:27px;padding:0 10px;border:1px solid var(--bd);
+  background:#fff;border-radius:var(--r-sm);font-size:12.5px;color:var(--ink-2);font-family:inherit;cursor:pointer}
+.pick b{color:var(--ink);font-weight:600}
+.pick .cv{color:var(--ink-3);font-size:10px}
+.search{display:flex;align-items:center;gap:7px;height:29px;padding:0 11px;border:1px solid var(--bd);
+  background:#fff;border-radius:var(--r-sm);min-width:190px;color:var(--ink-3)}
+.search input{border:0;outline:none;background:transparent;font-family:inherit;font-size:12.5px;
+  color:var(--ink);width:100%}
+.search input::placeholder{color:var(--ink-3)}
+
+/* ---------- panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-xl);overflow:hidden}
+.panel--lead{box-shadow:var(--sh-2);border-color:#DCE7F3;position:relative}
+.panel--lead:before{content:"";position:absolute;inset-inline:0;top:0;height:3px;
+  background:linear-gradient(90deg,var(--sky),var(--navy));z-index:1}
+.panel__head{display:flex;align-items:center;gap:10px;padding:15px 18px 12px;border-bottom:1px solid var(--bd-soft)}
+.panel--lead .panel__head{padding:18px 20px 13px}
+.panel__head .h2{font-size:16px;font-weight:600;letter-spacing:-.1px}
+.panel--lead .panel__head .h2{font-size:18px}
+.panel__head .sub{font-size:12px;color:var(--ink-3)}
+.panel__head .tools{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+
+/* ---------- הפס העליון: מחזור + התראות ---------- */
+.cycle-bar{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-xl);
+  box-shadow:var(--sh-1);padding:12px 18px;margin-bottom:14px}
+.grp-lb{font-size:11px;font-weight:600;letter-spacing:.4px;color:var(--ink-3);flex:none}
+.rail{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.stg{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;border-radius:var(--r-sm);
+  border:1px solid transparent;background:transparent;font-family:inherit;font-size:12.5px;
+  font-weight:500;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.stg:hover{background:var(--surface-2);border-color:var(--bd)}
+.stg .n{font-size:12.5px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.stg.on{background:#E9F2FA;border-color:#CFE3F3;color:var(--navy);font-weight:600}
+.arw{color:#C6D4E2;font-size:13px;flex:none;padding:0 1px;direction:ltr}
+.stuck-flag{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:var(--r-pill);
+  background:var(--warn-bg);color:var(--warn);font-size:11.5px;font-weight:600;cursor:pointer;
+  font-variant-numeric:tabular-nums;margin-inline-start:2px}
+.vr{width:1px;align-self:stretch;background:var(--bd);margin:0 2px}
+.alerts-grp{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-inline-start:auto}
+.alrt{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:var(--r-sm);
+  border:1px solid var(--bd);background:#fff;font-family:inherit;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.alrt:hover{border-color:#CFDEEC}
+.alrt .n{font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+.alrt.a .dot{background:var(--alert)} .alrt.w .dot{background:var(--warn)} .alrt.i .dot{background:var(--ink-3)}
+
+/* ---------- טבלת הלקוחות ---------- */
+.tgrid{display:grid;
+  grid-template-columns:minmax(186px,.85fr) 96px 150px 116px 132px minmax(180px,1.3fr) 106px 118px 54px 14px;
+  gap:10px;align-items:center}
+.thead{padding:9px 20px;border-bottom:1px solid var(--bd-soft);background:var(--surface-2)}
+.thead span{font-size:10.5px;font-weight:600;letter-spacing:.35px;color:var(--ink-3)}
+.thead .r{text-align:left}
+.group{display:flex;align-items:center;gap:9px;padding:14px 20px 8px}
+.group .sd{width:8px;height:8px;border-radius:50%;flex:none}
+.group .lb{font-size:12.5px;font-weight:600;letter-spacing:.2px;color:var(--ink)}
+.group .n{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.group .ln{flex:1;height:1px;background:var(--bd-soft)}
+.group .nx{font-size:11px;color:var(--ink-3)}
+.row--cli{padding:8px 20px;border-top:1px solid var(--bd-soft);cursor:pointer}
+.group + .row--cli{border-top:0}
+.row--cli:hover{background:var(--surface-2)}
+.row--stuck{background:#FFFCF4}
+.row--stuck:hover{background:#FEF9EC}
+.row--cli:hover .chev{color:var(--sky)}
+.c-nm{min-width:0}
+.c-nm b{font-size:14.5px;font-weight:600;line-height:1.3;letter-spacing:-.1px;display:block;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-nm .sub{font-size:11.5px;color:var(--ink-3);margin-top:1px;font-variant-numeric:tabular-nums}
+.days{font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
+.days .sd{width:7px;height:7px;border-radius:50%;flex:none}
+.stuck{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:var(--r-xs);
+  background:var(--warn-bg);color:var(--warn);font-size:11px;font-weight:600;letter-spacing:.2px;margin-top:3px}
+.nxt{font-size:12.5px;color:var(--ink-2);line-height:1.35}
+.nxt .d{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;display:block}
+.nxt .d.late{color:var(--alert);font-weight:600}
+.mtg{font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.35}
+.mtg .s{display:block;font-size:11px;color:var(--ink-3);font-variant-numeric:normal}
+.mtg.none{color:var(--ink-3)}
+.al{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.al .fact{font-size:10.5px;color:var(--ink-3);line-height:1.35}
+.bal{font-size:13.5px;font-weight:500;text-align:left;font-variant-numeric:tabular-nums}
+.bal.none{color:#C6D4E2;font-weight:400}
+.nil{color:#C6D4E2;font-size:12.5px}
+.mgr{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);min-width:0}
+.mgr .av{width:22px;height:22px;border-radius:50%;background:#EEF3F9;color:#5B7590;font-size:9.5px;
+  font-weight:700;display:grid;place-items:center;flex:none}
+.mgr span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsk{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border:1px solid var(--bd);
+  border-radius:var(--r-xs);background:#fff;font-size:11.5px;font-weight:600;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;cursor:pointer}
+.tsk:hover{border-color:#CFDEEC;color:var(--navy)}
+.tsk.none{border:0;background:transparent;color:#C6D4E2;font-weight:400;padding:0}
+.chev{color:#C6D4E2;font-size:15px;text-align:left;line-height:1;direction:ltr;transition:transform .15s}
+.row--open .chev{transform:rotate(-90deg);color:var(--sky)}
+
+/* שורה פתוחה + מגירה (וריאנט של .born) */
+.row--open{background:#F6FAFD;border-inline-start:3px solid var(--sky);padding-inline-start:17px}
+.born{position:relative;margin:0 20px 14px;padding:13px 15px 13px;background:var(--surface-2);
+  border:1px solid var(--bd);border-radius:var(--r-lg);border-inline-start:3px solid var(--sky)}
+.born--row{background:#fff}
+.born__cols{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,.95fr);gap:26px}
+.born__col + .born__col{border-inline-start:0}
+.mm{padding:6px 0;line-height:1.45}
+.mm + .mm{border-top:1px solid var(--bd-soft)}
+.mm .hd{display:flex;align-items:center;gap:7px}
+.mm .hd .tm{margin-inline-start:auto;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mm .tx{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.mm .ft{display:flex;align-items:center;gap:8px;margin-top:3px}
+.mm .src{font-size:11px;color:var(--ink-3)}
+.mm .ed{margin-inline-start:auto;font-size:11px;color:var(--sky);font-weight:500}
+.born__lb{font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--ink-3);margin-bottom:8px}
+.born__it{display:flex;align-items:center;gap:10px;padding:6px 0}
+.born__it + .born__it{border-top:1px solid var(--bd-soft)}
+.born__it .tx{flex:1;min-width:0;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.born__it .tx b{color:var(--ink);font-weight:600;font-size:13px;display:block;margin-bottom:1px}
+.born__it .due{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left}
+.cbx{width:15px;height:15px;border:1.5px solid #C6D6E5;border-radius:5px;flex:none;background:#fff}
+.out{width:16px;height:16px;border-radius:5px;background:#E1EFFA;color:#1E6A9E;display:grid;place-items:center;flex:none}
+.born__acts{display:flex;gap:8px;margin-top:12px;padding-top:11px;border-top:1px solid var(--bd);align-items:center}
+.born__acts .note{font-size:11.5px;color:var(--ink-3);margin-inline-start:auto}
+
+.foot{display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:14px;
+  border-top:1px solid var(--bd);font-size:11.5px;color:var(--ink-3)}
+.foot .r{margin-inline-start:auto;font-variant-numeric:tabular-nums}
+
+@media(max-width:1460px){
+  .wrap{padding:22px 22px 36px}
+  .h1{font-size:31px} .lede{font-size:21px}
+  .tgrid{grid-template-columns:minmax(164px,.8fr) 86px 132px 104px 120px minmax(158px,1.3fr) 98px 104px 50px 12px;gap:8px}
+  .thead,.row--cli,.group{padding-inline:15px}
+  .row--open{padding-inline-start:12px}
+  .born{margin-inline:15px}
+  .cycle-bar{padding:11px 14px;gap:12px}
+  .stg{padding:0 9px;font-size:12px}
+  .search{min-width:150px}
+}
+</style>
+
+<div class="topbar">
+  <div class="brand"><div class="mark">HK</div><b>חזות קריספין</b></div>
+  <nav class="nav">
+    <a href="today.html">היום</a>
+    <a href="tasks.html">משימות</a>
+    <a class="on" href="clients.html">לקוחות</a>
+    <a href="meetings.html">פגישות</a>
+    <a href="memory.html">זיכרון לקוחות</a>
+  </nav>
+  <div class="me">
+    <div class="av">אא</div>
+    <div><div class="nm">אילון אשכנזי</div><div class="of">אשכנזי ייעוץ עסקי</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="screen-head">
+    <div class="sh-left">
+      <div class="h1">לקוחות <span class="date num">יום חמישי · 02.07.2026</span></div>
+      <div class="lede">שבעה לקוחות מוכנים לפגישה. <em>שניים תקועים בשלב.</em></div>
+      <div class="sub-lede">
+        <a href="#">אנרגי גולני</a> ממתין לדפי הבנק של יוני, והפגישה שלו לא התקיימה — אין פגישה הבאה.
+        <a href="#">נוף טקסטיל</a> נשאר בשלב "הוזן". שתי בעיות תזרימיות פתוחות:
+        <a href="#">אנרגי אינטרנשיונל</a> ו<a href="#">מטעי גבעון</a>.
+      </div>
+    </div>
+    <div class="clock">
+      <span class="pulse"></span>
+      <span class="t num">10:54</span>
+      <span class="lb">עכשיו</span>
+    </div>
+  </div>
+
+  <!-- ==================== הפס העליון ==================== -->
+  <div class="cycle-bar">
+    <span class="grp-lb">המחזור</span>
+    <div class="rail">
+      <button class="stg"><span class="dot" style="background:var(--st1)"></span>ממתין לחומר<span class="n num">5</span></button>
+      <span class="arw">‹</span>
+      <button class="stg"><span class="dot" style="background:var(--st2)"></span>הוזן<span class="n num">3</span></button>
+      <span class="arw">‹</span>
+      <button class="stg"><span class="dot" style="background:var(--st3)"></span>יעדים עודכנו<span class="n num">4</span></button>
+      <span class="arw">‹</span>
+      <button class="stg on"><span class="dot" style="background:var(--st4)"></span>מוכן לפגישה<span class="n num">7</span></button>
+      <span class="arw">‹</span>
+      <button class="stg"><span class="dot" style="background:var(--st5)"></span>סיכום אושר<span class="n num">3</span></button>
+    </div>
+    <button class="stuck-flag">תקועים <span class="num">2</span></button>
+    <span class="vr"></span>
+    <div class="alerts-grp">
+      <span class="grp-lb">התראות</span>
+      <button class="alrt a"><span class="dot"></span>בעיה תזרימית<span class="n num">2</span></button>
+      <button class="alrt w"><span class="dot"></span>חוסר שביעות רצון<span class="n num">1</span></button>
+      <button class="alrt i"><span class="dot"></span>אין פגישה הבאה<span class="n num">3</span></button>
+    </div>
+  </div>
+
+  <!-- ==================== הטבלה ==================== -->
+  <section class="panel panel--lead">
+    <div class="panel__head">
+      <div class="h2">התיק שלי</div>
+      <div class="sub">כל לקוח — שלב אחד במחזור החודשי</div>
+      <div class="tools">
+        <div class="search">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7.2" cy="7.2" r="4.6"/><path d="M10.6 10.6L14 14"/></svg>
+          <input placeholder="חיפוש חברה או ח.פ.">
+        </div>
+        <button class="pick">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5.5" r="2.6"/><path d="M3 13.5c0-2.4 2.2-3.6 5-3.6s5 1.2 5 3.6"/></svg>
+          יועץ · <b>שלי</b><span class="cv">▾</span>
+        </button>
+        <button class="pick">מיון · <b>לפי שלב במחזור</b><span class="cv">▾</span></button>
+      </div>
+    </div>
+
+    <div class="thead tgrid">
+      <span>חברה</span><span>בשלב</span><span>השלב הבא · עד מתי</span><span>פגישה אחרונה</span>
+      <span>פגישה הבאה</span><span>התראות</span><span class="r">יתרת עו״ש · <span class="num">02.07</span></span><span>מנהל תזרים</span><span>משימות</span><span></span>
+    </div>
+
+    <!-- ---------- שלב 1 ---------- -->
+    <div class="group"><span class="sd" style="background:var(--st1)"></span><span class="lb">ממתין לחומר</span><span class="n num">5</span><span class="ln"></span><span class="nx">שלב <span class="num">1</span> מתוך <span class="num">5</span> <span class="sep">·</span> השלב הבא: הוזן</span></div>
+
+    <div class="row--cli tgrid row--stuck">
+      <div class="c-nm"><b>אנרגי גולני</b><div class="sub"><span class="num">511200341</span> <span class="sep">·</span> Meeting</div></div>
+      <div class="days"><span class="sd" style="background:var(--st1)"></span><span><span class="num">12</span> ימים<br><span class="stuck">תקוע</span></span></div>
+      <div class="nxt">הוזן<span class="d late">עבר את הימים הסבירים</span></div>
+      <div class="mtg"><span class="num">24.06</span><span class="s">לא התקיימה</span></div>
+      <div class="mtg none">—</div>
+      <div class="al"><span class="chip">אין פגישה הבאה</span><a class="btn btn--quiet" href="#">שליחת לינק מהיומן ←</a></div>
+      <div class="bal"><span dir="ltr">312,400 ₪</span></div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><button class="tsk">משימות <span class="num">2</span></button></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>אלפא בנייה</b></div>
+      <div class="days"><span class="sd" style="background:var(--st1)"></span><span class="num">3</span> ימים</div>
+      <div class="nxt">הוזן<span class="d">עד <span class="num">05.07</span></span></div>
+      <div class="mtg"><span class="num">10.06</span></div>
+      <div class="mtg"><span class="num">09.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>פלג שיווק</b></div>
+      <div class="days"><span class="sd" style="background:var(--st1)"></span><span class="num">4</span> ימים</div>
+      <div class="nxt">הוזן<span class="d">עד <span class="num">04.07</span></span></div>
+      <div class="mtg"><span class="num">05.06</span></div>
+      <div class="mtg"><span class="num">10.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>טל לוגיסטיקה</b></div>
+      <div class="days"><span class="sd" style="background:var(--st1)"></span><span class="num">2</span> ימים</div>
+      <div class="nxt">הוזן<span class="d">עד <span class="num">06.07</span></span></div>
+      <div class="mtg"><span class="num">17.06</span></div>
+      <div class="mtg"><span class="num">14.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>סהר בנייה</b></div>
+      <div class="days"><span class="sd" style="background:var(--st1)"></span><span class="num">1</span> יום</div>
+      <div class="nxt">הוזן<span class="d">עד <span class="num">07.07</span></span></div>
+      <div class="mtg"><span class="num">23.06</span></div>
+      <div class="mtg"><span class="num">15.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <!-- ---------- שלב 2 ---------- -->
+    <div class="group"><span class="sd" style="background:var(--st2)"></span><span class="lb">הוזן</span><span class="n num">3</span><span class="ln"></span><span class="nx">שלב <span class="num">2</span> מתוך <span class="num">5</span> <span class="sep">·</span> השלב הבא: יעדים עודכנו</span></div>
+
+    <div class="row--cli tgrid row--stuck">
+      <div class="c-nm"><b>נוף טקסטיל</b></div>
+      <div class="days"><span class="sd" style="background:var(--st2)"></span><span><span class="num">9</span> ימים<br><span class="stuck">תקוע</span></span></div>
+      <div class="nxt">יעדים עודכנו<span class="d late">עבר את הימים הסבירים</span></div>
+      <div class="mtg"><span class="num">19.06</span></div>
+      <div class="mtg"><span class="num">08.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>גל תעשיות</b></div>
+      <div class="days"><span class="sd" style="background:var(--st2)"></span><span class="num">2</span> ימים</div>
+      <div class="nxt">יעדים עודכנו<span class="d">עד <span class="num">06.07</span></span></div>
+      <div class="mtg"><span class="num">24.06</span></div>
+      <div class="mtg"><span class="num">13.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>זוהר חשמל</b></div>
+      <div class="days"><span class="sd" style="background:var(--st2)"></span><span class="num">1</span> יום</div>
+      <div class="nxt">יעדים עודכנו<span class="d">עד <span class="num">07.07</span></span></div>
+      <div class="mtg"><span class="num">26.06</span></div>
+      <div class="mtg"><span class="num">16.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <!-- ---------- שלב 3 ---------- -->
+    <div class="group"><span class="sd" style="background:var(--st3)"></span><span class="lb">יעדים עודכנו</span><span class="n num">4</span><span class="ln"></span><span class="nx">שלב <span class="num">3</span> מתוך <span class="num">5</span> <span class="sep">·</span> השלב הבא: מוכן לפגישה</span></div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>מטעי גבעון</b><div class="sub"><span class="num">514778220</span> <span class="sep">·</span> <span class="ltr">Money+</span></div></div>
+      <div class="days"><span class="sd" style="background:var(--st3)"></span><span class="num">5</span> ימים</div>
+      <div class="nxt">מוכן לפגישה<span class="d">עד <span class="num">02.07</span> · היום</span></div>
+      <div class="mtg"><span class="num">12.05</span><span class="s">סיכום אושר ונשלח</span></div>
+      <div class="mtg">היום <span class="num">13:00</span><span class="s">שיחת מעקב</span></div>
+      <div class="al">
+        <span class="chip chip--alert">חריגת תקציב <span class="num">114%</span></span>
+        <span class="fact">קניות מלאי · <span class="num">6</span> ימים לחריגה בעו״ש</span>
+      </div>
+      <div class="bal"><span dir="ltr">568,900 ₪</span></div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><button class="tsk">משימות <span class="num">1</span></button></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>ברק ושות׳ הנדסה</b></div>
+      <div class="days"><span class="sd" style="background:var(--st3)"></span><span class="num">3</span> ימים</div>
+      <div class="nxt">מוכן לפגישה<span class="d">עד <span class="num">05.07</span></span></div>
+      <div class="mtg"><span class="num">18.06</span></div>
+      <div class="mtg"><span class="num">09.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>כרמל אנרגיה</b></div>
+      <div class="days"><span class="sd" style="background:var(--st3)"></span><span class="num">2</span> ימים</div>
+      <div class="nxt">מוכן לפגישה<span class="d">עד <span class="num">06.07</span></span></div>
+      <div class="mtg"><span class="num">20.06</span></div>
+      <div class="mtg"><span class="num">10.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>הדר טכנולוגיות</b></div>
+      <div class="days"><span class="sd" style="background:var(--st3)"></span><span class="num">1</span> יום</div>
+      <div class="nxt">מוכן לפגישה<span class="d">עד <span class="num">07.07</span></span></div>
+      <div class="mtg"><span class="num">25.06</span></div>
+      <div class="mtg"><span class="num">11.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <!-- ---------- שלב 4 ---------- -->
+    <div class="group"><span class="sd" style="background:var(--st4)"></span><span class="lb">מוכן לפגישה</span><span class="n num">7</span><span class="ln"></span><span class="nx">שלב <span class="num">4</span> מתוך <span class="num">5</span> <span class="sep">·</span> השלב הבא: סיכום אושר</span></div>
+
+    <div class="row--cli tgrid row--open">
+      <div class="c-nm"><b>אנרגי אינטרנשיונל</b><div class="sub"><span class="num">511327876</span> <span class="sep">·</span> Money</div></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">6</span> ימים</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">02.07</span> · היום</span></div>
+      <div class="mtg">היום <span class="num">09:00</span><span class="s">הסיכום מחכה לאישור</span></div>
+      <div class="mtg">היום <span class="num">17:00</span><span class="s">ההכנה נפתחה</span></div>
+      <div class="al">
+        <span class="chip chip--alert">חריגה צפויה בעו״ש · <span class="num">9</span> ימים</span>
+        <span class="chip chip--warn">ירידה בשביעות הרצון</span>
+      </div>
+      <div class="bal"><span dir="ltr">1,029,208 ₪</span></div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><button class="tsk">משימות <span class="num">3</span></button></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="born born--row">
+      <div class="born__cols">
+        <div class="born__col">
+          <div class="born__lb">המשימות של הלקוח</div>
+          <div class="born__it"><span class="cbx"></span>
+            <div class="tx"><b>אישור סיכום — פגישה שוטפת</b><span class="chip chip--src mtg">מפגישה</span></div>
+            <span class="due">היום</span></div>
+          <div class="born__it"><span class="out"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.6 6.4V1.6H6.4M1.6 1.6 8.4 8.4"/></svg></span>
+            <div class="tx"><b>בדיקת העברה מפועלים <span class="num">112</span> ללאומי <span class="num">604</span></b><span class="chip chip--src hk">ל-HK</span></div>
+            <span class="due num">03.07</span></div>
+          <div class="born__it"><span class="cbx"></span>
+            <div class="tx"><b>עדכון תקציב שיווק ליולי</b><span class="chip chip--src">שלי</span></div>
+            <span class="due">בלי תאריך</span></div>
+        </div>
+        <div class="born__col">
+          <div class="born__lb">מה מאחורי ההתראות</div>
+          <div class="born__it"><span class="dot" style="background:var(--alert)"></span>
+            <div class="tx"><b>חריגה צפויה בעו״ש בעוד <span class="num">9</span> ימים</b>הצפי עודכן מ־<span class="num">12</span> ימים אחרי דחיית תשלום ספק</div></div>
+          <div class="born__it"><span class="dot" style="background:var(--warn)"></span>
+            <div class="tx"><b>ירידה בשביעות הרצון</b>תסכול מקצב התגובה בוואטסאפ — מפגישת <span class="num">09:00</span> היום</div></div>
+        </div>
+        <div class="born__col">
+          <div class="born__lb">מהזיכרון של הלקוח</div>
+          <div class="mm">
+            <div class="hd"><span class="chip chip--cat">כאבי לקוח</span><span class="tm">היום <span class="num">10:02</span></span></div>
+            <div class="tx">נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה</div>
+            <div class="ft"><span class="src">מפגישה מוקלטת <span class="num">09:00</span></span><a class="ed" href="#">עריכה</a></div>
+          </div>
+          <div class="mm">
+            <div class="hd"><span class="chip chip--cat">אירועים מהותיים</span><span class="tm">אתמול <span class="num">12:44</span></span></div>
+            <div class="tx">צחי: סגרנו את החוזה עם מרכז הבנייה</div>
+            <div class="ft"><span class="src">מקבוצת הוואטסאפ</span><a class="ed" href="#">עריכה</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="born__acts">
+        <button class="btn btn--danger btn--sm">פתיחת הסיכום לאישור</button>
+        <button class="btn btn--ghost btn--sm">העברה לשלב "סיכום אושר"</button>
+        <a class="btn btn--primary btn--sm" href="#">כרטיס הלקוח ←</a>
+        <span class="note">המערכת מעבירה שלב לבד כשהיא יודעת. כאן אתה מעביר.</span>
+      </div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>משה עובד</b><div class="sub"><span class="num">039112774</span> <span class="sep">·</span> Money</div></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">4</span> ימים</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">02.07</span> · היום</span></div>
+      <div class="mtg none">—</div>
+      <div class="mtg">היום <span class="num">16:00</span><span class="s">פגישה חודשית · Zoom</span></div>
+      <div class="al"><span class="chip chip--warn">ההכנה לא נפתחה</span></div>
+      <div class="bal"><span dir="ltr">174,300 ₪</span></div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><button class="tsk">משימות <span class="num">1</span></button></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>יובל מזון</b></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">3</span> ימים</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">05.07</span></span></div>
+      <div class="mtg"><span class="num">12.06</span></div>
+      <div class="mtg"><span class="num">06.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>דלתא אריזות</b></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">2</span> ימים</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">06.07</span></span></div>
+      <div class="mtg"><span class="num">16.06</span></div>
+      <div class="mtg"><span class="num">07.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>לביא ביטחון</b></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">2</span> ימים</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">06.07</span></span></div>
+      <div class="mtg"><span class="num">15.06</span></div>
+      <div class="mtg"><span class="num">07.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>מגן מערכות</b></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">1</span> יום</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">07.07</span></span></div>
+      <div class="mtg"><span class="num">26.06</span></div>
+      <div class="mtg"><span class="num">09.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>חורש תקשורת</b></div>
+      <div class="days"><span class="sd" style="background:var(--st4)"></span><span class="num">1</span> יום</div>
+      <div class="nxt">סיכום אושר<span class="d">עד <span class="num">07.07</span></span></div>
+      <div class="mtg"><span class="num">22.06</span></div>
+      <div class="mtg"><span class="num">08.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <!-- ---------- שלב 5 ---------- -->
+    <div class="group"><span class="sd" style="background:var(--st5)"></span><span class="lb">סיכום אושר</span><span class="n num">3</span><span class="ln"></span><span class="nx">שלב <span class="num">5</span> מתוך <span class="num">5</span> <span class="sep">·</span> המחזור מתחיל מחדש · ממתין לחומר</span></div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>רימון יצחק</b><div class="sub"><span class="num">025664109</span> <span class="sep">·</span> <span class="ltr">Money+</span></div></div>
+      <div class="days"><span class="sd" style="background:var(--st5)"></span><span class="num">8</span> ימים</div>
+      <div class="nxt">ממתין לחומר<span class="d">עד <span class="num">01.08</span></span></div>
+      <div class="mtg"><span class="num">17.03</span><span class="s">סיכום אושר ונשלח</span></div>
+      <div class="mtg none">—</div>
+      <div class="al"><span class="chip">אין פגישה הבאה</span><a class="btn btn--quiet" href="#">שליחת לינק מהיומן ←</a></div>
+      <div class="bal"><span dir="ltr">421,050 ₪</span></div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><button class="tsk">משימות <span class="num">1</span></button></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>ורד מזון</b></div>
+      <div class="days"><span class="sd" style="background:var(--st5)"></span><span class="num">6</span> ימים</div>
+      <div class="nxt">ממתין לחומר<span class="d">עד <span class="num">01.08</span></span></div>
+      <div class="mtg"><span class="num">27.06</span></div>
+      <div class="mtg none">—</div>
+      <div class="al"><span class="chip">אין פגישה הבאה</span><a class="btn btn--quiet" href="#">שליחת לינק מהיומן ←</a></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">לב</span><span>לירון בן כליפא</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+    <div class="row--cli tgrid">
+      <div class="c-nm"><b>עומר רהיטים</b></div>
+      <div class="days"><span class="sd" style="background:var(--st5)"></span><span class="num">2</span> ימים</div>
+      <div class="nxt">ממתין לחומר<span class="d">עד <span class="num">01.08</span></span></div>
+      <div class="mtg"><span class="num">30.06</span></div>
+      <div class="mtg"><span class="num">12.07</span></div>
+      <div class="al"><span class="nil">—</span></div>
+      <div class="bal none">—</div>
+      <div class="mgr"><span class="av">שט</span><span>שמרית טובול</span></div>
+      <div><span class="tsk none">—</span></div>
+      <div class="chev">‹</div>
+    </div>
+
+  </section>
+
+  <div class="foot">
+    <span>HK · חזות קריספין</span>
+    <span class="sep">·</span>
+    <span>אשכנזי ייעוץ עסקי</span>
+    <span class="sep">·</span>
+    <span>המחזור החודשי מוגדר ברמת המשרד</span>
+    <span class="r">עודכן <span class="num">10:54</span></span>
+  </div>
+</div>
+</html>

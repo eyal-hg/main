@@ -1,0 +1,585 @@
+<html dir="rtl" lang="he">
+<meta charset="utf-8">
+<title>HK · משימות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   HK · מסך המשימות — נבנה על שפת המסכים v1 (אותם טוקנים, אותו אוצר רכיבים)
+   ----------------------------------------------------------------------------
+   מה נוסף לאוצר (וריאנטים בלבד, לא רכיבים חדשים):
+     .row--task.is-mine   מקור "שלי"    — צ׳ק־בוקס. הוא סוגר.
+     .row--task.is-mtg    מקור "מפגישה" — פס סגול בתחילת השורה + קישור לסיכום
+                          שממנו נגזרה. מאשר ← ואז סוגר.
+     .row--task.is-hk     מקור "ל-HK"   — אין צ׳ק־בוקס. סמן "יצא ממך" + מי מטפל.
+                          מצב "אצל HK": הוא עוקב, לא סוגר.
+     .filt / .seg         שורות סינון (מצב · מקור · לקוח) — בשפת .row/.pick
+     .compose--lead       פקד הכתיבה כפקד ראשי של המסך
+   כללי השפה נשמרים: אין מונים מצרפיים על התיק · מספר = אורך הרשימה שמתחת ·
+   אין דירוג/ציון · לכל פריט שהמערכת יצרה יש פעולת הכרעה.
+   ========================================================================== */
+
+:root{
+  --navy:#0C4068; --sky:#39ABE2; --coral:#E8635A;
+  --bg:#F4F7FA; --surface:#fff; --surface-2:#FAFCFE;
+  --bd:#E6ECF4; --bd-soft:#EEF3F9;
+  --ink:#0C4068; --ink-2:#5B7590; --ink-3:#8CA0B6;
+  --ok:#13895b; --ok-bg:#E7F4EE;
+  --alert:#dc4436; --alert-bg:#FCEBE9;
+  --warn:#c98404; --warn-bg:#FBF2DF;
+  --violet:#7557E3; --violet-bg:#F0EDFD;
+  --r-xs:7px; --r-sm:9px; --r-md:11px; --r-lg:14px; --r-xl:17px; --r-pill:999px;
+  --sh-1:0 2px 6px rgba(12,64,104,.05);
+  --sh-2:0 6px 18px rgba(12,64,104,.08);
+  --sh-3:0 14px 34px rgba(12,64,104,.10);
+  --s1:4px; --s2:6px; --s3:8px; --s4:12px; --s5:16px; --s6:20px; --s7:26px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Rubik,-apple-system,"Segoe UI",sans-serif;
+  font-size:13.5px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+.num{font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+
+/* ---------- topbar ---------- */
+.topbar{
+  height:60px; background:var(--surface); border-bottom:1px solid var(--bd);
+  display:flex; align-items:center; gap:var(--s6); padding:0 30px;
+  position:sticky; top:0; z-index:20;
+}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .mark{
+  width:32px;height:32px;border-radius:var(--r-sm);background:var(--navy);
+  color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;letter-spacing:.5px;
+}
+.brand b{font-size:14.5px;font-weight:600}
+.nav{display:flex;gap:2px;margin-inline-start:auto}
+.nav a{padding:7px 14px;border-radius:var(--r-sm);font-size:13.5px;font-weight:500;color:var(--ink-2)}
+.nav a:hover{background:var(--bg)}
+.nav a.on{background:#E9F2FA;color:var(--navy);font-weight:600}
+.me{display:flex;align-items:center;gap:9px;padding-inline-start:var(--s6);border-inline-start:1px solid var(--bd)}
+.me .av{width:31px;height:31px;border-radius:var(--r-pill);background:#E9F2FA;color:var(--navy);
+  font-size:11.5px;font-weight:600;display:grid;place-items:center}
+.me .nm{font-size:13px;font-weight:600;line-height:1.25}
+.me .of{font-size:11px;color:var(--ink-3);line-height:1.25}
+
+/* ---------- screen head ---------- */
+.wrap{max-width:1560px;margin:0 auto;padding:24px 30px 40px}
+.screen-head{display:flex;align-items:flex-start;gap:var(--s6);margin-bottom:18px}
+.sh-left{flex:1;min-width:0}
+.h1{font-family:"Frank Ruhl Libre",Rubik,serif;font-size:34px;font-weight:700;line-height:1.2;letter-spacing:-.2px}
+.h1 .date{font-family:Rubik,sans-serif;font-size:13px;font-weight:400;color:var(--ink-3);
+  margin-inline-start:12px;vertical-align:6px}
+.lede{font-family:"Frank Ruhl Libre",Rubik,serif;font-size:23px;font-weight:500;
+  line-height:1.45;color:var(--navy);margin-top:6px;text-wrap:balance}
+.lede em{font-style:normal;color:var(--coral)}
+.sub-lede{font-size:13.5px;color:var(--ink-2);margin-top:7px;max-width:980px;text-wrap:balance}
+.sub-lede a{color:var(--navy);font-weight:500;border-bottom:1.5px solid #BFD9EC;padding-bottom:1px}
+.sub-lede a:hover{border-color:var(--sky)}
+.clock{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--bd);
+  border-radius:var(--r-pill);padding:8px 15px 8px 12px;box-shadow:var(--sh-1);flex:none;margin-top:4px}
+.clock .t{font-size:15px;font-weight:600;letter-spacing:.2px}
+.clock .lb{font-size:11.5px;color:var(--ink-3)}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 3px rgba(232,99,90,.18)}
+
+/* ---------- board ---------- */
+.board{display:grid;grid-template-columns:268px minmax(0,1fr) 344px;gap:18px;align-items:start}
+
+/* ---------- panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r-xl);overflow:hidden}
+.panel + .panel{margin-top:18px}
+.panel--lead{box-shadow:var(--sh-2);border-color:#DCE7F3;position:relative}
+.panel--lead:before{content:"";position:absolute;inset-inline:0;top:0;height:3px;
+  background:linear-gradient(90deg,var(--sky),var(--navy))}
+.panel__head{display:flex;align-items:baseline;gap:10px;padding:15px 18px 12px;border-bottom:1px solid var(--bd-soft)}
+.panel--lead .panel__head{padding:18px 20px 13px}
+.panel__head .h2{font-size:16px;font-weight:600;letter-spacing:-.1px}
+.panel--lead .panel__head .h2{font-size:18px}
+.panel__head .sub{font-size:12px;color:var(--ink-3)}
+.more{margin-inline-start:auto;font-size:12.5px;color:var(--sky);font-weight:500;white-space:nowrap}
+.more:hover{color:var(--navy)}
+.panel__body{padding:6px 0 10px}
+.panel__foot{padding:10px 20px 4px;font-size:11.5px;color:var(--ink-3);border-top:1px solid var(--bd-soft);margin-top:8px}
+
+/* ---------- group header ---------- */
+.group{display:flex;align-items:center;gap:9px;padding:13px 20px 7px}
+.group .lb{font-size:11.5px;font-weight:600;letter-spacing:.3px;color:var(--ink-2)}
+.group .n{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.group .ln{flex:1;height:1px;background:var(--bd-soft)}
+.group .dt{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.group.first{padding-top:6px}
+
+/* ---------- chips ---------- */
+.chip{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:var(--r-xs);
+  font-size:11px;font-weight:600;letter-spacing:.2px;background:var(--bg);color:var(--ink-2);
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip--src{background:#EEF3F9;color:#5B7590}
+.chip--src.mtg{background:#F0EDFD;color:#5B45B8}
+.chip--src.hk{background:#E9F2FA;color:#1E6A9E}
+.chip--time{background:#fff;border:1px solid var(--bd);color:var(--ink-2)}
+.chip--ok{background:var(--ok-bg);color:var(--ok)}
+.chip--warn{background:var(--warn-bg);color:var(--warn)}
+.chip--alert{background:var(--alert-bg);color:var(--alert)}
+.chip--info{background:#E9F2FA;color:#1E6A9E}
+.dot{width:6px;height:6px;border-radius:50%;flex:none}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:31px;padding:0 14px;
+  border:1px solid transparent;border-radius:var(--r-sm);font-family:inherit;font-size:12.5px;
+  font-weight:500;cursor:pointer;white-space:nowrap}
+.btn--primary{background:var(--navy);color:#fff}
+.btn--primary:hover{background:#0a3557}
+.btn--danger{background:var(--coral);color:#fff}
+.btn--ghost{background:#fff;border-color:var(--bd);color:var(--ink-2)}
+.btn--ghost:hover{border-color:#CFDEEC;color:var(--navy)}
+.btn--quiet{background:transparent;color:var(--sky);padding:0 4px;height:26px;font-size:12.5px}
+.btn--quiet:hover{color:var(--navy)}
+.btn--sm{height:27px;padding:0 11px;font-size:12px}
+
+/* ---------- row ---------- */
+.row{display:grid;align-items:start;padding:10px 20px;gap:12px}
+.row:hover{background:var(--surface-2)}
+.row__sub{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.45}
+.cli{font-weight:600;color:var(--navy)}
+.sep{color:#C6D4E2}
+
+/* ---------- compose (הפקד הראשי) ---------- */
+.compose{margin:14px 20px 4px;background:var(--surface-2);border:1.5px solid #DCE7F3;
+  border-radius:var(--r-lg);padding:9px 12px}
+.compose--lead{padding:12px 14px 11px;border-color:#CFE1F1;box-shadow:0 1px 0 rgba(12,64,104,.03) inset}
+.compose__top{display:flex;align-items:center;gap:10px}
+.compose__plus{width:26px;height:26px;border-radius:var(--r-sm);background:#E9F2FA;color:var(--navy);
+  display:grid;place-items:center;font-size:16px;font-weight:400;flex:none;line-height:1}
+.compose--lead .compose__plus{width:29px;height:29px;font-size:18px}
+.compose input{flex:1;border:0;background:transparent;font-family:inherit;font-size:14px;
+  color:var(--ink);outline:none;padding:4px 0;min-width:0}
+.compose--lead input{font-size:15.5px}
+.compose input::placeholder{color:var(--ink-3);font-weight:400}
+.compose__bar{display:flex;align-items:center;gap:7px;margin-top:9px;padding-top:9px;border-top:1px solid var(--bd)}
+.pick{display:inline-flex;align-items:center;gap:6px;height:27px;padding:0 10px;border:1px solid var(--bd);
+  background:#fff;border-radius:var(--r-sm);font-size:12px;color:var(--ink-2);font-family:inherit;cursor:pointer;
+  white-space:nowrap}
+.pick:hover{border-color:#CFDEEC;color:var(--navy)}
+.pick svg{opacity:.6}
+.pick.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pick.on svg{opacity:.9}
+.compose .btn--primary{margin-inline-start:auto}
+.hint{font-size:11.5px;color:var(--ink-3);margin:8px 22px 2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;background:#fff;
+  border:1px solid var(--bd);border-bottom-width:2px;border-radius:5px;font-size:10.5px;font-weight:600;
+  color:var(--ink-2);font-family:inherit}
+
+/* ---------- task row · שלושה מצבים ---------- */
+.row--task{grid-template-columns:18px minmax(0,1fr) auto 60px;gap:12px;align-items:center;
+  padding:11px 17px 11px 20px;border-inline-start:3px solid transparent}
+.row--task + .row--task{border-top:1px solid var(--bd-soft)}
+.cbx{width:16px;height:16px;border:1.5px solid #C6D6E5;border-radius:5px;flex:none;background:#fff;cursor:pointer}
+.row--task:hover .cbx{border-color:var(--sky)}
+.tk-h{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;min-width:0}
+.tk-h .tt{font-size:15px;font-weight:500;line-height:1.4}
+.tk-h .cli{font-size:13px}
+.tk-l{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.tk-sub{margin-top:5px}
+.due{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:left}
+.due.today{color:var(--ink-2);font-weight:500}
+.due .btn--quiet{padding:0;height:auto;font-size:12px}
+
+/* מפגישה */
+.is-mtg{border-inline-start-color:var(--violet);
+  background:linear-gradient(270deg,rgba(117,87,227,.05),rgba(117,87,227,0) 420px)}
+.is-mtg:hover{background:linear-gradient(270deg,rgba(117,87,227,.08),rgba(117,87,227,0) 420px)}
+.is-mtg .cbx{border-color:#C3B6F2}
+.is-mtg:hover .cbx{border-color:var(--violet)}
+.lnk{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2);
+  border-bottom:1px solid #DCD4F7;padding-bottom:1px}
+.lnk:hover{color:var(--violet);border-color:var(--violet)}
+.lnk b{font-weight:500;color:var(--ink)}
+
+/* ל-HK / אצל HK */
+.is-hk{border-inline-start-color:var(--sky);
+  background:linear-gradient(270deg,rgba(57,171,226,.055),rgba(57,171,226,0) 420px)}
+.is-hk:hover{background:linear-gradient(270deg,rgba(57,171,226,.09),rgba(57,171,226,0) 420px)}
+.out{width:17px;height:17px;border-radius:5px;background:#E1EFFA;color:#1E6A9E;display:grid;place-items:center;flex:none}
+.who{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
+.ava{width:19px;height:19px;border-radius:50%;background:#E9F2FA;color:var(--navy);font-size:9.5px;
+  font-weight:600;display:grid;place-items:center;letter-spacing:-.2px}
+
+/* ---------- filters (col a) ---------- */
+.seg{display:flex;gap:6px;padding:2px 20px 4px;flex-wrap:wrap}
+.f-lb{font-size:11px;font-weight:600;letter-spacing:.3px;color:var(--ink-3);padding:12px 20px 6px}
+.filt{display:flex;align-items:center;gap:9px;padding:6px 17px 6px 20px;font-size:13px;color:var(--ink-2);
+  cursor:pointer;border-inline-start:3px solid transparent}
+.filt:hover{background:var(--surface-2)}
+.filt.on{background:#F2F8FD;color:var(--navy);font-weight:600;border-inline-start-color:var(--sky)}
+.filt .n{margin-inline-start:auto;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.filt .sw{width:9px;height:9px;border-radius:3px;flex:none}
+.filt .nmx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search{margin:4px 20px 6px;display:flex;align-items:center;gap:8px;border:1px solid var(--bd);
+  border-radius:var(--r-sm);padding:6px 10px;background:#fff}
+.search input{border:0;background:transparent;outline:none;font-family:inherit;font-size:12.5px;
+  color:var(--ink);width:100%}
+.search input::placeholder{color:var(--ink-3)}
+.rule{height:1px;background:var(--bd-soft);margin:9px 20px 0}
+
+/* ---------- HK queue rows (col c) ---------- */
+.row--q{grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;
+  padding:9px 15px 9px 16px;border-inline-start:3px solid rgba(57,171,226,.4)}
+.row--q + .row--q{border-top:1px solid var(--bd-soft)}
+.row--q .qt{font-size:13.5px;font-weight:500;line-height:1.35}
+.row--q .qc{font-size:12px;color:var(--ink-2);margin-top:2px}
+.q-head{display:flex;align-items:center;gap:8px;padding:12px 18px 6px}
+.q-head .ava{width:22px;height:22px;font-size:10px}
+.q-head .nm{font-size:13px;font-weight:600}
+.q-head .n{margin-inline-start:auto;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* ---------- memo row (col c · מפגישות) ---------- */
+.row--memo{grid-template-columns:minmax(0,1fr);padding:11px 18px;gap:0}
+.row--memo + .row--memo{border-top:1px solid var(--bd-soft)}
+.mm-h{display:flex;align-items:center;gap:8px}
+.mm-h .cli{font-size:13.5px}
+.mm-h .tm{margin-inline-start:auto;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mm-tx{font-size:13px;color:var(--ink-2);line-height:1.5;margin-top:5px}
+.mm-tx b{color:var(--ink);font-weight:500}
+.mm-f{display:flex;align-items:center;gap:8px;margin-top:6px}
+.mm-f .src{font-size:11.5px;color:var(--ink-3)}
+.mm-f .ed{margin-inline-start:auto;font-size:11.5px;color:var(--sky);font-weight:500;white-space:nowrap}
+.mm-f .ed:hover{color:var(--navy)}
+
+.empty{font-size:13px;color:var(--ink-3);text-align:center;padding:14px 20px}
+.foot{display:flex;align-items:center;gap:10px;margin-top:22px;padding-top:14px;
+  border-top:1px solid var(--bd);font-size:11.5px;color:var(--ink-3)}
+.foot .r{margin-inline-start:auto;font-variant-numeric:tabular-nums}
+
+@media(max-width:1460px){
+  .wrap{padding:22px 22px 36px}
+  .board{grid-template-columns:242px minmax(0,1fr) 312px;gap:14px}
+  .h1{font-size:31px} .lede{font-size:21px}
+  .row,.row--task{padding-inline:13px 16px}
+  .group,.f-lb,.seg,.filt{padding-inline:13px 16px}
+  .filt{padding-inline:13px 16px}
+  .compose{margin-inline:16px}
+  .hint{margin-inline:18px}
+  .search,.rule{margin-inline:16px}
+  .row--memo{padding-inline:15px}
+  .row--q{padding-inline:12px 13px}
+  .q-head{padding-inline:15px}
+  .panel__foot{padding-inline:16px}
+  .tk-h .tt{font-size:14px}
+}
+</style>
+
+<div class="topbar">
+  <div class="brand"><div class="mark">HK</div><b>חזות קריספין</b></div>
+  <nav class="nav">
+    <a href="today.html">היום</a>
+    <a class="on" href="tasks.html">משימות</a>
+    <a href="clients.html">לקוחות</a>
+    <a href="meetings.html">פגישות</a>
+    <a href="memory.html">זיכרון לקוחות</a>
+  </nav>
+  <div class="me">
+    <div class="av">אא</div>
+    <div><div class="nm">אילון אשכנזי</div><div class="of">אשכנזי ייעוץ עסקי</div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="screen-head">
+    <div class="sh-left">
+      <div class="h1">משימות <span class="date num">יום חמישי · 02.07.2026</span></div>
+      <div class="lede">ארבע משימות להיום. <em>אחת מהן ממתינה להכרעה שלך.</em></div>
+      <div class="sub-lede">
+        שתיים נגזרו מפגישות — לחיצה עליהן <a href="#">פותחת את הסיכום שממנו נולדו</a>.
+        שלוש נמצאות <a href="#">אצל HK</a>: ביקשת, ואתה עוקב — לא סוגר. כל השאר זה מה שכתבת לעצמך.
+      </div>
+    </div>
+    <div class="clock">
+      <span class="pulse"></span>
+      <span class="t num">10:54</span>
+      <span class="lb">עכשיו</span>
+    </div>
+  </div>
+
+  <div class="board">
+
+    <!-- ==================== A · סינון ==================== -->
+    <section class="panel">
+      <div class="panel__head">
+        <div class="h2">סינון</div>
+        <a class="more" href="#">ניקוי</a>
+      </div>
+      <div class="panel__body">
+
+        <div class="f-lb">מצב</div>
+        <div class="seg">
+          <button class="pick on">פתוחות</button>
+          <button class="pick">סגורות</button>
+          <button class="pick">הכל</button>
+        </div>
+
+        <div class="rule"></div>
+        <div class="f-lb">מקור</div>
+        <div class="filt on"><span class="nmx">כל המקורות</span><span class="n">10</span></div>
+        <div class="filt"><span class="sw" style="background:#C3CEDB"></span><span class="nmx">שלי</span><span class="n">5</span></div>
+        <div class="filt"><span class="sw" style="background:var(--violet)"></span><span class="nmx">מפגישה</span><span class="n">2</span></div>
+        <div class="filt"><span class="sw" style="background:var(--sky)"></span><span class="nmx">ל-HK</span><span class="n">3</span></div>
+
+        <div class="rule"></div>
+        <div class="f-lb">לקוח</div>
+        <div class="search">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#8CA0B6" stroke-width="1.6"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
+          <input placeholder="חיפוש לקוח">
+        </div>
+        <div class="filt on"><span class="nmx">כל הלקוחות</span><span class="n">10</span></div>
+        <div class="filt"><span class="nmx">אנרגי אינטרנשיונל</span><span class="n">3</span></div>
+        <div class="filt"><span class="nmx">אנרגי גולני</span><span class="n">2</span></div>
+        <div class="filt"><span class="nmx">מטעי גבעון</span><span class="n">1</span></div>
+        <div class="filt"><span class="nmx">משה עובד</span><span class="n">1</span></div>
+        <div class="filt"><span class="nmx">רימון יצחק</span><span class="n">1</span></div>
+        <div class="filt"><span class="nmx">בלי לקוח יחיד</span><span class="n">2</span></div>
+
+        <div class="panel__foot">
+          <b style="color:var(--ink-2);font-weight:600">שלי</b> — אתה סוגר.<br>
+          <b style="color:#5B45B8;font-weight:600">מפגישה</b> — מאשר את הסיכום, ואז סוגר.<br>
+          <b style="color:#1E6A9E;font-weight:600">ל-HK</b> — לא אתה סוגר. אתה עוקב.
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== B · כל המשימות ==================== -->
+    <section class="panel panel--lead">
+      <div class="panel__head">
+        <div class="h2">כל המשימות</div>
+        <div class="sub">פתוחות · ממוינות לפי יעד</div>
+        <a class="more" href="#">מיון · יעד ←</a>
+      </div>
+      <div class="panel__body">
+
+        <div class="compose compose--lead">
+          <div class="compose__top">
+            <span class="compose__plus">+</span>
+            <input placeholder="מה צריך לעשות?">
+          </div>
+          <div class="compose__bar">
+            <button class="pick">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5.5" r="2.6"/><path d="M3 13.5c0-2.4 2.2-3.6 5-3.6s5 1.2 5 3.6"/></svg>
+              לקוח
+            </button>
+            <button class="pick">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.2" y="3.2" width="11.6" height="10.6" rx="2"/><path d="M2.2 6.4h11.6M5.4 1.8v2.6M10.6 1.8v2.6"/></svg>
+              היום
+            </button>
+            <button class="btn btn--primary">הוספה</button>
+          </div>
+        </div>
+        <div class="hint">
+          <span class="kbd">N</span> פותח שדה מכל מקום במסך
+          <span class="sep">·</span> <span class="kbd">↵</span> להוספה
+          <span class="sep">·</span> <span class="kbd">@</span> לבחירת לקוח
+          <span class="sep">·</span> תאריך בתוך הטקסט מזוהה לבד
+        </div>
+
+        <div class="group"><span class="lb">היום</span><span class="n">4</span><span class="ln"></span><span class="dt">חמישי, 02.07</span></div>
+
+        <div class="row row--task is-mtg">
+          <span class="cbx"></span>
+          <div>
+            <div class="tk-h"><span class="tt">אישור סיכום — פגישה שוטפת</span><span class="sep">·</span><span class="cli">אנרגי אינטרנשיונל</span></div>
+            <div class="tk-sub"><a class="lnk" href="#">מהסיכום של <b>פגישה שוטפת — סקירת תזרים</b> <span class="num">02.07 · 09:00</span> ←</a></div>
+          </div>
+          <div class="tk-l">
+            <span class="chip chip--alert">מחכה לאישור שלך</span>
+            <span class="chip chip--src mtg">מפגישה</span>
+          </div>
+          <span class="due today">היום</span>
+        </div>
+
+        <div class="row row--task is-mine">
+          <span class="cbx"></span>
+          <div><div class="tk-h"><span class="tt">לחזור לרו״ח על המע״מ</span><span class="sep">·</span><span class="cli">מטעי גבעון</span></div></div>
+          <div class="tk-l">
+            <span class="chip chip--time">לפני השיחה ב־<span class="num">13:00</span></span>
+            <span class="chip chip--src">שלי</span>
+          </div>
+          <span class="due today">היום</span>
+        </div>
+
+        <div class="row row--task is-mtg">
+          <span class="cbx"></span>
+          <div>
+            <div class="tk-h"><span class="tt">תיאום מחדש — הפגישה לא התקיימה</span><span class="sep">·</span><span class="cli">אנרגי גולני</span></div>
+            <div class="tk-sub"><a class="lnk" href="#">מהפגישה <b>פ.ע — חודש יוני</b> <span class="num">24.06 · 10:30</span> ←</a></div>
+          </div>
+          <div class="tk-l">
+            <span class="chip chip--warn">לא התקיימה</span>
+            <span class="chip chip--src mtg">מפגישה</span>
+          </div>
+          <span class="due today">היום</span>
+        </div>
+
+        <div class="row row--task is-mine">
+          <span class="cbx"></span>
+          <div><div class="tk-h"><span class="tt">עדכוני וואטסאפ ללקוחות — סיכום יום</span><span class="sep">·</span><span class="cli" style="color:var(--ink-3);font-weight:400">4 חברות</span></div></div>
+          <div class="tk-l"><span class="chip chip--src">שלי</span></div>
+          <span class="due today">היום</span>
+        </div>
+
+        <div class="group"><span class="lb">מחר</span><span class="n">2</span><span class="ln"></span><span class="dt">שישי, 03.07</span></div>
+
+        <div class="row row--task is-hk">
+          <span class="out"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.6 6.4V1.6H6.4M1.6 1.6 8.4 8.4"/></svg></span>
+          <div><div class="tk-h"><span class="tt">בדיקת העברה מפועלים <span class="num">112</span> ללאומי <span class="num">604</span></span><span class="sep">·</span><span class="cli">אנרגי אינטרנשיונל</span></div></div>
+          <div class="tk-l">
+            <span class="who"><span class="ava">לב</span> לירון בן כליפא</span>
+            <a class="btn btn--quiet" href="#">תזכורת</a>
+            <span class="chip chip--src hk">ל-HK</span>
+          </div>
+          <span class="due num">03.07</span>
+        </div>
+
+        <div class="row row--task is-mine">
+          <span class="cbx"></span>
+          <div><div class="tk-h"><span class="tt">שליחת זמנים לפגישה חודשית</span><span class="sep">·</span><span class="cli" style="color:var(--ink-3);font-weight:400">3 לקוחות <span class="ltr">Money+</span></span></div></div>
+          <div class="tk-l"><span class="chip chip--src">שלי</span></div>
+          <span class="due num">03.07</span>
+        </div>
+
+        <div class="group"><span class="lb">בהמשך</span><span class="n">3</span><span class="ln"></span></div>
+
+        <div class="row row--task is-hk">
+          <span class="out"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.6 6.4V1.6H6.4M1.6 1.6 8.4 8.4"/></svg></span>
+          <div><div class="tk-h"><span class="tt">פילוח עלות המכר לפי ספקים</span><span class="sep">·</span><span class="cli">רימון יצחק</span></div></div>
+          <div class="tk-l">
+            <span class="who"><span class="ava">שט</span> שמרית טובול</span>
+            <a class="btn btn--quiet" href="#">תזכורת</a>
+            <span class="chip chip--src hk">ל-HK</span>
+          </div>
+          <span class="due num">05.07</span>
+        </div>
+
+        <div class="row row--task is-hk">
+          <span class="out"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1.6 6.4V1.6H6.4M1.6 1.6 8.4 8.4"/></svg></span>
+          <div><div class="tk-h"><span class="tt">קבלת דפי בנק של יוני</span><span class="sep">·</span><span class="cli">אנרגי גולני</span></div></div>
+          <div class="tk-l">
+            <span class="who"><span class="ava">לב</span> לירון בן כליפא</span>
+            <a class="btn btn--quiet" href="#">תזכורת</a>
+            <span class="chip chip--src hk">ל-HK</span>
+          </div>
+          <span class="due num">06.07</span>
+        </div>
+
+        <div class="row row--task is-mine">
+          <span class="cbx"></span>
+          <div><div class="tk-h"><span class="tt">הכנה לפגישת רבעון</span><span class="sep">·</span><span class="cli">משה עובד</span></div></div>
+          <div class="tk-l"><span class="chip chip--src">שלי</span></div>
+          <span class="due num">08.07</span>
+        </div>
+
+        <div class="group"><span class="lb">בלי תאריך</span><span class="n">1</span><span class="ln"></span></div>
+
+        <div class="row row--task is-mine">
+          <span class="cbx"></span>
+          <div><div class="tk-h"><span class="tt">עדכון תקציב שיווק ליולי</span><span class="sep">·</span><span class="cli">אנרגי אינטרנשיונל</span></div></div>
+          <div class="tk-l"><span class="chip chip--src">שלי</span></div>
+          <span class="due"><a class="btn btn--quiet" href="#">קביעת מועד</a></span>
+        </div>
+
+        <div class="empty">זה הכל. אין עוד משימות פתוחות.</div>
+      </div>
+    </section>
+
+    <!-- ==================== C · אצל HK + מפגישות ==================== -->
+    <div>
+      <section class="panel">
+        <div class="panel__head">
+          <div class="h2">אצל HK</div>
+          <div class="sub">לפי מי שמטפל</div>
+          <a class="more" href="#">לרשימה ←</a>
+        </div>
+        <div class="panel__body">
+
+          <div class="q-head"><span class="ava">לב</span><span class="nm">לירון בן כליפא</span><span class="n">2</span></div>
+          <div class="row row--q">
+            <div>
+              <div class="qt">בדיקת העברה מפועלים <span class="num">112</span> ללאומי <span class="num">604</span></div>
+              <div class="qc"><span class="cli">אנרגי אינטרנשיונל</span></div>
+            </div>
+            <span class="due num">03.07</span>
+          </div>
+          <div class="row row--q">
+            <div>
+              <div class="qt">קבלת דפי בנק של יוני</div>
+              <div class="qc"><span class="cli">אנרגי גולני</span></div>
+            </div>
+            <span class="due num">06.07</span>
+          </div>
+
+          <div class="q-head"><span class="ava">שט</span><span class="nm">שמרית טובול</span><span class="n">1</span></div>
+          <div class="row row--q">
+            <div>
+              <div class="qt">פילוח עלות המכר לפי ספקים</div>
+              <div class="qc"><span class="cli">רימון יצחק</span></div>
+            </div>
+            <span class="due num">05.07</span>
+          </div>
+
+          <div class="panel__foot">אלה שלוש הבקשות שלך — הן נסגרות אצל HK, לא אצלך. כאן רואים אצל מי הן יושבות.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__head">
+          <div class="h2">מפגישות</div>
+          <div class="sub">מה נגזר מסיכומים</div>
+          <a class="more" href="#">כל הפגישות ←</a>
+        </div>
+        <div class="panel__body">
+
+          <div class="row row--memo">
+            <div class="mm-h"><span class="cli">אנרגי אינטרנשיונל</span>
+              <span class="chip chip--alert">מחכה לאישור</span><span class="tm num">02.07</span></div>
+            <div class="mm-tx"><b>פגישה שוטפת — סקירת תזרים</b><br>נגזרה משימה אחת: אישור הסיכום. עד שתאשר אותו, לא נגזרות ממנו משימות נוספות.</div>
+            <div class="mm-f"><span class="src"><span class="num">09:00</span> · הוקלטה <span class="num">46</span> דק׳</span><a class="ed" href="#">פתיחת הסיכום ←</a></div>
+          </div>
+
+          <div class="row row--memo">
+            <div class="mm-h"><span class="cli">אנרגי גולני</span>
+              <span class="chip chip--warn">לא התקיימה</span><span class="tm num">24.06</span></div>
+            <div class="mm-tx"><b>פ.ע — חודש יוני</b><br>נגזרה משימה אחת: תיאום מחדש. פתוחה — היעד היום.</div>
+            <div class="mm-f"><span class="src"><span class="num">10:30</span></span><a class="ed" href="#">פתיחת הפגישה ←</a></div>
+          </div>
+
+          <div class="row row--memo">
+            <div class="mm-h"><span class="cli">אנרגי אינטרנשיונל</span>
+              <span class="chip chip--ok">הכל נסגר</span><span class="tm num">05.05</span></div>
+            <div class="mm-tx"><b>פ.ע — חודש מאי</b><br>ארבעה סעיפי סיכום · ארבע משימות, כולן נסגרו.</div>
+            <div class="mm-f"><span class="src"><span class="num">11:00</span> · הוקלטה <span class="num">49</span> דק׳</span><a class="ed" href="#">פתיחת הסיכום ←</a></div>
+          </div>
+
+          <div class="row row--memo">
+            <div class="mm-h"><span class="cli">מטעי גבעון</span>
+              <span class="chip chip--ok">הכל נסגר</span><span class="tm num">12.05</span></div>
+            <div class="mm-tx"><b>פגישת עבודה — קורס מנחות</b><br>הסיכום אושר ונשלח ללקוח. אין משימות פתוחות.</div>
+            <div class="mm-f"><span class="src"><span class="num">10:00</span> · הוקלטה <span class="num">52</span> דק׳</span><a class="ed" href="#">פתיחת הסיכום ←</a></div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <span>HK · חזות קריספין</span>
+    <span class="sep">·</span>
+    <span>אשכנזי ייעוץ עסקי</span>
+    <span class="r">עודכן <span class="num">10:54</span></span>
+  </div>
+</div>
+</html>
