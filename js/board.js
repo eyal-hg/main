@@ -147,7 +147,6 @@
     if(d.hkMeet&&d.h>200){ const f=document.getElementById('meetFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkArena&&d.h>200){ const f=document.getElementById('arenaFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkCl&&d.h>200){ const f=document.getElementById('clFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
-    if(d.hkHome&&d.h>200){ const f=document.getElementById('homeFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkAIReady){ /* מסך העוזר מבקש את מספרי התיק */
       const f=document.getElementById('aiFrame');
       const act=CLIENTS.filter(c=>coActive(c)), stp=CLIENTS.filter(c=>coState(c)==='setup');

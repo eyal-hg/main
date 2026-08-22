@@ -88,12 +88,7 @@
       /* למסך יש כותרת משלו — בלי כותרת עמוד כפולה */
       const _c=document.querySelector('.client-head'), _s=document.querySelector('.sub-line');
       if(_c)_c.style.display='none'; if(_s)_s.style.display='none'; }
-    /* מסך הבית של בעל העסק: תשובה אחת, ההחלטות שמחכות לו, ואז המצב.
-       החברה הבודדת ורמת הקבוצה — אותה מכניקה, שני מצבים באותו קובץ. */
-    const cliHome = showBoard && (
-        (ROLE==='client1') ||
-        (ROLE==='clientN' && inPortfolio && pView==='board'));
-    document.getElementById('wboard').style.display=(showBoard&&!cliHome)?'':'none';
+    document.getElementById('wboard').style.display=showBoard?'':'none';
     // שורת ה-KPI העליונה שייכת למסך חברה — מוסתרת בכל תצוגת פורטפוליו אחרת
     const _wt=document.getElementById('wboardTop'); if(_wt&&!showBoard) _wt.style.display='none';
     // ללקוחות אין עריכת לוח — HK מגדירה את הלוח עבורם
@@ -114,18 +109,6 @@
     renderCoAlerts();
     if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();
-    /* המסך החדש מחליף את לוח הווידג'טים של בעל העסק — כולל שורת ה-KPI
-       וכרטיסי הלקוח, שכל אחד מהם מרנדר את עצמו ומחזיר display משלו. */
-    const _hf=document.getElementById('homeFrame');
-    if(_hf){
-      _hf.style.display=cliHome?'block':'none';
-      if(cliHome){
-        ['wboardTop','clientRow','wboard'].forEach(id=>{
-          const e=document.getElementById(id); if(e) e.style.display='none'; });
-        const want=_hf.dataset.src+((ROLE==='clientN')?'&m=group':'&m=one');
-        if(_hf.dataset.cur!==want){ _hf.dataset.cur=want; _hf.src=want; }
-      }
-    }
     // כדור ה-AI — ללקוחות בלבד, ורק כשנבחרה חברה ספציפית (הצ'אט הוא פר-חברה)
     const aiOn=(ROLE==='client1'||ROLE==='clientN')&&SCOPE==='client';
     const orb=document.getElementById('aiOrb');
