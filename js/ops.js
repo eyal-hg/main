@@ -2598,11 +2598,15 @@
         <div class="mw-t">${grpChip(sel)}${taskTitle(sel)}</div>
         <div class="mw-s">${sel.who||''} · ${sel.time||''} · ${sel.src||''}</div>
         <div class="mw-nav">
+          ${(sel.type==='msg'&&sel.entry)?`<button class="mt-btn view sm" onclick="msgEntryBack(${i})">→ חזרה למענה</button>`:''}
           <span class="mw-n">${openIx.indexOf(i)+1} מתוך ${openIx.length}</span>
           <button class="mt-btn view sm" onclick="msgNext()">הבא ←</button>
         </div>
       </div>`;
-      work=head+`<div class="mw-body">${sel.type==='doc'?fileMsgBody(sel,i,1):textMsgBody(sel,i)}</div>`;
+      /* "הזנה לתזרים" בהודעת מלל — אותה פריסה בדיוק כמו מסמך:
+         טופס מימין, ובמקום תצוגת המסמך — ההודעה עצמה משמאל. */
+      const asEntry=(sel.type==='msg'&&sel.entry);
+      work=head+`<div class="mw-body">${(sel.type==='doc'||asEntry)?fileMsgBody(sel,i,sel.type==='doc'?1:0):textMsgBody(sel,i)}</div>`;
     }
     /* ההודעה שמטופלת עכשיו נגללת לתצוגה בצד שמאל */
     if(_msgSel!=null) setTimeout(()=>{
@@ -2626,9 +2630,8 @@
         <button class="oqs-send" onclick="msgReplySend(${i})">שליחה</button>
       </div>
       <div class="chk-actions"><button class="ot-btn done" onclick="otHandle(${i},'טופל · ✓ נענה ללקוח',1)">סימון כטופל</button>
-      <button class="ot-btn ghost" onclick="msgEntryOpen(${i})" id="msgEntryBtn_${i}">הזנה לתזרים</button>
+      <button class="ot-btn ghost" onclick="msgEntryOpen(${i})">הזנה לתזרים</button>
       ${skipBtn(i)}</div>
-      <div class="msg-entry" id="msgEntry_${i}"></div>
     </div>`;
   }
   function msgReplySend(i){
@@ -2668,7 +2671,9 @@
       :'';
     const ocr=f.rows
       ?`<span>זוהו ${f.rows.length} שורות להזנה</span>`
-      :`${f.payee?`<span>מוטב: ${f.payee}</span>`:'<span class="miss">מוטב לא זוהה — להזנה ידנית</span>'}<span>סכום ${f.amount||''} ₪</span><span>תאריך ${f.date||''}</span>`;
+      :(t.type==='msg'
+        ?'<span>אין מסמך — הזנה ידנית מתוך ההודעה</span>'
+        :`${f.payee?`<span>מוטב: ${f.payee}</span>`:'<span class="miss">מוטב לא זוהה — להזנה ידנית</span>'}<span>סכום ${f.amount||''} ₪</span><span>תאריך ${f.date||''}</span>`);
     const dir=_bizDir[i]||(_bizDir[i]='exp');   /* ברירת מחדל: הוצאה */
     return `<div class="pay-cols">
       <div class="biz-form dir-${dir}" id="bizForm_${i}">
@@ -2719,14 +2724,14 @@
   /* הודעת מלל שדורשת הזנה — המערכת לא זיהתה מסמך, אבל יש מה להזין.
      נפתח אותו טופס, בלי תצוגת מסמך. */
   function msgEntryOpen(i){
-    const w=document.getElementById('msgEntry_'+i); if(!w) return;
-    const b=document.getElementById('msgEntryBtn_'+i);
-    if(w.classList.contains('show')){ w.classList.remove('show'); w.innerHTML=''; if(b)b.classList.remove('on'); return; }
     const t=curTasks()[i]; if(!t) return;
     if(!t.file) t.file={date:'',ref:'',desc:'',amount:''};   /* שורה ריקה להזנה ידנית */
-    w.innerHTML=fileMsgBody(t,i,1);
-    w.classList.add('show'); if(b)b.classList.add('on');
+    if(!t.ctx||!t.ctx.length)                                 /* ההודעה עצמה תוצג בצד */
+      t.ctx=(t.thread||[]).map(x=>'['+(t.who||'הלקוח')+'] '+x);
+    t.entry=true; renderOps();
   }
+  /* חזרה מהטופס למענה */
+  function msgEntryBack(i){ const t=curTasks()[i]; if(!t) return; t.entry=false; renderOps(); }
   /* הוצאה או הכנסה — קובע את צבע הרקע של הטופס ואת מה שנרשם בתזרים */
   const _bizDir={};
   function bizDir(i,d){
