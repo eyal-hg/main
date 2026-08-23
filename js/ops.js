@@ -2643,11 +2643,8 @@
     const txt=inp.value.trim();
     /* התשובה נשלחה ⇒ האירוע נסגר והמערכת עוברת לבא. אחרת המונה לא זז
        והמתפעל לא מבין שהוא התקדם. */
-    const T=curTasks();
-    const nxt=T.map((x,k)=>k).filter(k=>(T[k].type==='msg'||T[k].type==='doc')&&!T[k].done&&k!==i)[0];
     otHandle(i,'טופל · ✓ נשלחה תשובה: "'+txt+'"',1);
-    if(nxt!=null){ _msgSel=nxt; renderOps(); msgFlash(nxt); }
-    toast(nxt!=null?'התשובה נשלחה · עוברים לאירוע הבא':'התשובה נשלחה · זה היה האחרון ✓');
+    msgAdvance(i,'התשובה נשלחה ללקוח בוואטסאפ');
   }
   /* הדגשה קצרה על האירוע החדש — כדי שיהיה ברור שעברנו */
   function msgFlash(i){
@@ -2656,6 +2653,31 @@
       el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),900);
       const w=document.querySelector('.mw-h'); if(w){ w.classList.add('flash'); setTimeout(()=>w.classList.remove('flash'),900); }
     },80);
+  }
+  /* ===== מעבר לאירוע הבא =====
+     כרטיס אישור מכסה את חלון העבודה למשך רגע ואומר מה נסגר ומה הבא —
+     אחרת המתפעל לא מבחין שהוא התקדם. */
+  function msgAdvance(i,what){
+    const T=curTasks();
+    const nxtIx=T.map((x,k)=>k).filter(k=>(T[k].type==='msg'||T[k].type==='doc')&&!T[k].done&&k!==i)[0];
+    const nxt=nxtIx!=null?T[nxtIx]:null;
+    const done=T.filter(x=>(x.type==='msg'||x.type==='doc')&&x.done).length+1;
+    const all=T.filter(x=>x.type==='msg'||x.type==='doc').length;
+    const nxtName=nxt?(nxt.type==='doc'?nxt.name:((nxt.who?nxt.who+': ':'')+((nxt.thread||[])[0]||'הודעה'))):'';
+    const host=document.querySelector('.ms-work'); if(!host) return advNow();
+    const c=document.createElement('div'); c.className='adv-card';
+    c.innerHTML=`<div class="adv-in">
+        <div class="adv-ck">✓</div>
+        <div class="adv-what">${what}</div>
+        ${nxt?`<div class="adv-next"><span class="adv-lbl">עובר לאירוע הבא</span><b>${nxtName}</b></div>
+               <div class="adv-prog"><i style="width:${Math.round(done/all*100)}%"></i></div>
+               <div class="adv-cnt">${done} מתוך ${all} בשלב הזה</div>`
+             :`<div class="adv-next"><b>זה היה האחרון — כל ההודעות טופלו</b></div>`}
+      </div>`;
+    host.appendChild(c);
+    requestAnimationFrame(()=>c.classList.add('on'));
+    setTimeout(()=>{ c.classList.remove('on'); setTimeout(()=>c.remove(),200); advNow(); },1150);
+    function advNow(){ if(nxtIx!=null){ _msgSel=nxtIx; } renderOps(); if(nxtIx!=null) msgFlash(nxtIx); }
   }
   /* הודעת קובץ — המסמך מול טופס הזנה בסגנון Bizibox */
   function fileMsgBody(t,i,noCtx){
@@ -2710,7 +2732,7 @@
         <div id="bizRows_${i}">${rows.map(bizRow).join('')}</div>
         <div class="biz-addrow"><button type="button" class="biz-add" onclick="bizAddRow(${i})">＋ הוספת תשלומים</button></div>
         <div class="chk-actions">
-          <button class="ot-btn done" onclick="bizSave(${i})">שמירה וסגירה</button>
+          <button class="ot-btn done" onclick="bizSave(${i})">שמירה והמשך</button>
           <button class="ot-btn ghost" onclick="docReplyOpen(${i})">שלח תגובה ללקוח</button>
           ${skipBtn(i)}
         </div>
@@ -2755,10 +2777,12 @@
         '<span class="lvl" id="dzoLvl">100%</span>'+
         '<button onclick="dzoStep(1)" title="הגדלה">+</button>'+
         '<button onclick="dzoStep(0)">התאמה</button>'+
+        '<a class="dl" id="dzoDl" download title="הורדת התמונה"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>הורדה</a>'+
         '<button class="x" onclick="dzoClose()">✕ סגירה</button>';
       document.body.appendChild(ov); document.body.appendChild(bar);
     }
     const img=document.getElementById('dzoImg'); img.src=src; img.alt=alt||'';
+    const dl=document.getElementById('dzoDl'); if(dl){ dl.href=src; dl.download=(alt||'מסמך').replace(/[\/:*?"<>|]/g,'-')+'.'+(src.split('.').pop()||'jpg'); }
     _dzo=1; dzoApply(); ov.classList.add('show');
     document.getElementById('dzoBar').style.display='flex';
   }
@@ -2808,6 +2832,7 @@
     otHandle(i,t.type==='sheet'
       ?(t.kind==='edit'?('עודכן בתזרים: '+t.old+' ← '+t.new+' ₪ · ✓ סומן בגיליון'):('הוזן לתזרים — '+rows+' שורות · ✓ סומן בגיליון'))
       :('הוזן לתזרים כ'+dirLbl+' — '+payee+' · '+rows+' שורות · ✓ נשלח ללקוח "טופל"'), t.type!=='sheet');
+    if(t.type!=='sheet') msgAdvance(i,'הוזן לתזרים כ'+dirLbl+' · '+rows+' שורות · נשלח ללקוח "טופל"');
   }
 
   /* ===== התעלם — תפריט קטן, לא פופאפ ===== */
@@ -2839,7 +2864,7 @@
     if(typeof docClose==='function') docClose();
     t.later=true;
     otHandle(i,'נדחה — אטפל מאוחר יותר');
-    toastUndo('נדחה לטיפול מאוחר יותר',()=>{t.later=false;t.done=false;t.result=null;OPS_DONE--;renderOps();});
+    msgAdvance(i,'נדחה לטיפול מאוחר יותר');
   }
   document.addEventListener('click',e=>{ if(!e.target.closest('.skip-dd,.skip-btn')) skipClose(); });
   window.addEventListener('scroll',()=>skipClose(),true);
