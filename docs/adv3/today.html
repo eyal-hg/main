@@ -70,13 +70,16 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
-.alerts{display:flex;align-items:center;gap:26px;font-size:13.5px}
-.alerts .g{display:flex;align-items:center;gap:8px}
-.alerts .k{color:#F3A39C;font-weight:500}
-.alerts .k::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--coral);margin-left:7px;vertical-align:1px}
-.alerts a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
-.alerts a:hover{border-color:#fff}
-.alerts .c{color:#7FA6C2;margin:0 2px}
+.next{display:flex;align-items:center;gap:14px;font-size:14px}
+.next .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px;text-transform:uppercase}
+.next .tm{font-size:22px;font-weight:600;line-height:1}
+.next .who{display:flex;align-items:center;gap:8px;color:#fff}
+.next .who a{color:#fff;font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.next .who a:hover{border-color:#fff}
+.next .c{color:#7FA6C2}
+.next .hint{color:#B9D3E6;font-size:13px}
+.next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 11px;font-size:12.5px;color:#DCEBF5}
+.next .btn.rec{padding:5px 12px;font-size:12.5px}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
@@ -254,14 +257,15 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
   </div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="alerts">
-    <div class="g"><span class="k">בעיה תזרימית</span>
-      <a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="c">,</span><a href="clients.html?c=514778220">מטעי גבעון</a></div>
-    <div class="g"><span class="k">חוסר שביעות רצון</span>
-      <a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a></div>
+  <div class="next">
+    <span class="cap">האירוע הבא</span>
+    <span class="tm num">13:00</span>
+    <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
+    <span class="in num">בעוד 2:06</span>
+    <button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
   </div>
   <div class="spacer"></div>
-  <div class="now num"><b>10:54</b> · בין הפגישה של 09:00 ל-13:00</div>
+  <div class="now num"><b>10:54</b></div>
 </header>
 
 <main class="wrap">
@@ -297,7 +301,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
         <div class="b">
           <div class="ttl"><a class="name" href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><a class="what" href="meetings.html">שיחת מעקב</a></div>
           <div class="meta"><span>אחרי חריגת התקציב</span><span class="dot">·</span><span>פגישה אחרונה <span class="num">12.05</span></span><span class="dot">·</span><span>לפני השיחה: <a href="#t2" style="color:var(--navy);font-weight:500">לחזור לרו״ח על המע״מ</a></span></div>
-          <div class="act" style="margin-top:8px"><button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button><span class="stage">במחזור החודשי: <b>יעדים עודכנו</b> · Money+ · לירון בן כליפא</span></div>
+          <div class="act" style="margin-top:8px"><span class="stage">במחזור החודשי: <b>יעדים עודכנו</b> · Money+ · לירון בן כליפא</span></div>
         </div>
       </div>
 
@@ -306,7 +310,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
         <div class="b">
           <div class="ttl"><a class="name" href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><a class="what" href="meetings.html">פגישה חודשית — יולי</a></div>
           <div class="meta"><span>Zoom</span><span class="dot">·</span><span class="warn">ההכנה לא נפתחה</span></div>
-          <div class="act"><button class="btn rec" onclick="toast('ההקלטה התחילה — משה עובד')"><i></i>הקלטה</button><button class="btn" onclick="toast('ההכנה לפגישה נפתחת — משה עובד, יולי')">פתיחת ההכנה</button><span class="stage">במחזור החודשי: <b>מוכן לפגישה</b> · Money · פגישה ראשונה</span></div>
+          <div class="act"><button class="btn pri" onclick="toast('ההכנה לפגישה נפתחת — משה עובד, יולי')">פתיחת ההכנה</button><span class="stage">במחזור החודשי: <b>מוכן לפגישה</b> · Money · פגישה ראשונה</span></div>
         </div>
       </div>
 
@@ -315,7 +319,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
         <div class="b">
           <div class="ttl"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><a class="what" href="meetings.html">המשך סקירה — החלטות תקציב</a></div>
           <div class="meta"><span>המשך לפגישת 09:00</span><span class="dot">·</span><span class="ok">ההכנה נפתחה</span></div>
-          <div class="act"><button class="btn rec" onclick="toast('ההקלטה התחילה — אנרגי אינטרנשיונל')"><i></i>הקלטה</button><button class="btn" onclick="toast('ההכנה נפתחת — אנרגי אינטרנשיונל, 17:00')">להכנה</button><span class="stage">במחזור החודשי: <b>מוכן לפגישה</b></span></div>
+          <div class="act"><button class="btn" onclick="toast('ההכנה נפתחת — אנרגי אינטרנשיונל, 17:00')">להכנה</button><span class="stage">במחזור החודשי: <b>מוכן לפגישה</b></span></div>
         </div>
       </div>
 
