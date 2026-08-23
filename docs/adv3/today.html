@@ -97,16 +97,25 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .ph .more:hover{text-decoration:underline}
 
 /* ---------- meetings ---------- */
-.day{padding:6px 20px 12px}
-.mt{display:grid;grid-template-columns:92px 1fr;position:relative}
-.mt + .mt{border-top:1px solid var(--bd)}
-.mt .t{padding:18px 0 18px 12px;position:relative}
-.mt .t b{display:block;font-size:16px;font-weight:600;color:var(--navy)}
-.mt .t span{display:block;font-size:12px;color:var(--ink3);margin-top:1px}
-.mt .t::after{content:"";position:absolute;left:0;top:18px;width:10px;height:10px;border-radius:50%;border:2px solid var(--sky);background:#fff;transform:translateX(50%)}
-.mt.done .t::after{background:var(--green);border-color:var(--green)}
+.day{padding:10px 20px 14px;position:relative}
+/* הרכבת: פס רציף אחד מימין, תחנות עליו */
+.day::before{content:"";position:absolute;top:14px;bottom:14px;right:calc(20px + 92px + 5px);width:2px;background:linear-gradient(180deg,var(--green) 0,var(--green) 120px,var(--bd) 200px,var(--bd) 100%)}
+.mt{display:grid;grid-template-columns:92px 1fr;position:relative;gap:0 6px}
+.mt .t{padding:16px 0 16px 0;position:relative;text-align:right;padding-right:0}
+.mt .t b{display:inline-block;font-size:17px;font-weight:700;color:var(--navy);letter-spacing:-.2px;line-height:1}
+.mt .t span{display:block;font-size:11.5px;color:var(--ink3);margin-top:4px}
+/* התחנה על הפס */
+.mt .t::after{content:"";position:absolute;left:-1px;top:17px;width:12px;height:12px;border-radius:50%;border:2.5px solid var(--sky);background:#fff;transform:translateX(50%);box-shadow:0 0 0 3px #fff;z-index:1}
+.mt.done .t::after{background:var(--green);border-color:var(--green);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");background-size:8px;background-repeat:no-repeat;background-position:center;width:14px;height:14px;top:16px}
 .mt.done .t b{color:var(--green)}
-.mt .b{padding:18px 18px 18px 0;border-right:2px solid var(--bd);margin-right:-5px}
+.mt.next .t::after{background:var(--sky);box-shadow:0 0 0 3px #fff,0 0 0 7px rgba(57,171,226,.18);animation:stn 2s ease-in-out infinite}
+@keyframes stn{50%{box-shadow:0 0 0 3px #fff,0 0 0 11px rgba(57,171,226,.05)}}
+.mt.next .t b{color:var(--sky)}
+/* הכרטיס */
+.mt .b{margin:8px 0;padding:14px 18px 14px 16px;border:1px solid var(--bd);border-radius:10px;background:#fff;transition:box-shadow .15s,transform .15s}
+.mt .b:hover{box-shadow:0 6px 18px rgba(12,64,104,.08);transform:translateY(-1px)}
+.mt.done .b{background:#FAFCFB;border-color:#DCEFE5}
+.mt.next .b{border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.12)}
 .mt .b .ttl{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .mt .b .ttl a.name{font-size:15px;font-weight:600;color:var(--navy)}
 .mt .b .ttl a.name:hover{text-decoration:underline}
@@ -115,10 +124,11 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .mt .meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);margin-top:4px;flex-wrap:wrap}
 .mt .meta .dot{color:#C4CED8}
 .mt .meta .ok{color:var(--green);font-weight:500}
-.mt .meta .warn{color:var(--orange);font-weight:500}
+.mt .meta .warn{color:var(--orange);font-weight:500;background:#FFF6E5;border-radius:4px;padding:0 6px}
 .mt .act{margin-top:10px;display:flex;gap:8px;align-items:center}
 .mt .stage{font-size:12.5px;color:var(--ink3)}
 .mt .stage b{font-weight:500;color:var(--ink2)}
+.mt + .mt{border-top:0}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:#fff;color:var(--navy)}
 .btn:hover{background:var(--bg)}
 .btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
@@ -129,12 +139,14 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .btn.rec:hover{filter:brightness(.95)}
 .btn.rec i{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:recdot 1.6s ease-in-out infinite}
 @keyframes recdot{50%{opacity:.35}}
-.nowline{display:grid;grid-template-columns:92px 1fr;align-items:center}
-.nowline .t{padding:4px 0 4px 12px;font-size:12.5px;color:var(--coral);font-weight:600}
-.nowline .l{height:0;border-top:1.5px dashed var(--coral);opacity:.6;margin-right:-5px}
+.nowline{display:grid;grid-template-columns:92px 1fr;align-items:center;position:relative;gap:0 6px;margin:2px 0}
+.nowline .t{padding:2px 0;font-size:12px;color:var(--coral);font-weight:700;text-align:right;position:relative}
+.nowline .t::after{content:"";position:absolute;left:-1px;top:50%;width:8px;height:8px;border-radius:50%;background:var(--coral);transform:translate(50%,-50%);box-shadow:0 0 0 3px #fff;z-index:1}
+.nowline .l{height:0;border-top:1.5px dashed var(--coral);opacity:.55}
+.nowline.end .t{color:var(--ink3);font-weight:500}.nowline.end .t::after{background:#C4CED8}.nowline.end .l{border-color:#C4CED8}
 
 /* born-from block (dark) */
-.born{margin:12px 0 4px;background:var(--navy);color:#fff;border-radius:8px;padding:14px 18px 14px;display:grid;grid-template-columns:1fr;gap:10px}
+.born{margin:12px -6px 0;background:var(--navy);color:#fff;border-radius:8px;padding:14px 18px 14px;display:grid;grid-template-columns:1fr;gap:10px}
 .born .cap{grid-column:1/-1;font-size:12px;color:#9FC0DA;letter-spacing:.2px;margin-bottom:-2px}
 .born .sum{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.12)}
 .born .sum b{font-size:15px;font-weight:600}
@@ -296,7 +308,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
       <div class="nowline"><div class="t num">10:54 · עכשיו</div><div class="l"></div></div>
 
-      <div class="mt">
+      <div class="mt next">
         <div class="t"><b class="num">13:00</b></div>
         <div class="b">
           <div class="ttl"><a class="name" href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><a class="what" href="meetings.html">שיחת מעקב</a></div>
