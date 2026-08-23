@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>משימות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך היועץ · סבב 3 — משימות. אותה שפה כמו today.html:
+   רצועה 68 navy (כותרת 28 פרנק-רוהל + תאריך | מה הבא על השולחן | עכשיו),
+   כותרת אזור 17 · גוף 14 · מטא 12.5 · מיקרו 12. בלוק כהה אחד בגוף
+   ("עד הפגישה הבאה"). פאנלים: גבול 1px, צל 4%, רדיוס 10.
+   גריד 1fr | 470 (430 ב-≤1450). טאבים מעל הרשימה: המשימות שלי | ביקשתי מ-HK.
+   שתי אנטומיות: "שלי" = תיבה + טקסט + לקוח. "מפגישה" = פס סגול, שורת מקור
+   (איזו פגישה, מתי) ופעולה. כתיבה = פקד ראשי, תמיד נגיש מעל הרשימה.
+   ===================================================================== */
+:root{
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bg:#F4F7FA;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#7557E3;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+select,input{font:inherit;color:var(--ink)}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- top nav ---------- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:#fff;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px;margin-right:12px}
+.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13.5px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:#EAF3FA;color:var(--navy);font-weight:600}
+.nav .me{margin-right:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:left}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
+
+/* ---------- navy strip ---------- */
+.strip{background:var(--navy);color:#fff;height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
+.strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
+.strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
+.strip .next{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.strip .next .k{color:#9FC0DA}
+.strip .next a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.strip .next a:hover{border-color:#fff}
+.strip .next .c{color:#7FA6C2}
+.strip .spacer{margin-right:auto}
+.strip .now{font-size:13px;color:#B9D3E6}
+.strip .now b{color:#fff;font-weight:500}
+
+/* ---------- body grid ---------- */
+.wrap{max-width:1620px;margin:0 auto;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:start}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
+.ph h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ph .hint{font-size:12.5px;color:var(--ink3)}
+.ph .more{margin-right:auto;font-size:12.5px;color:var(--sky);font-weight:500}
+.ph .more:hover{text-decoration:underline}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;align-items:flex-end;gap:4px;padding:8px 20px 0;border-bottom:1px solid var(--bd);background:#FAFCFE;border-radius:10px 10px 0 0}
+.tabs button{padding:10px 14px 11px;font-size:15px;font-weight:500;color:var(--ink2);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:8px}
+.tabs button:hover{color:var(--navy)}
+.tabs button.on{color:var(--navy);font-weight:600;border-color:var(--navy)}
+.tabs button i{font-style:normal;font-size:12px;color:var(--ink3);background:#fff;border:1px solid var(--bd);border-radius:10px;padding:0 7px;line-height:18px;font-weight:500}
+.tabs button.on i{color:var(--navy);border-color:#C7DCEC;background:#EAF3FA}
+.tabs .note{margin-right:auto;font-size:12.5px;color:var(--ink3);padding-bottom:12px}
+
+/* ---------- compose ---------- */
+.add{display:grid;grid-template-columns:1fr 190px 150px auto;gap:8px;padding:12px 20px;border-bottom:1px solid var(--bd)}
+.add input,.add select{height:38px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font-size:13.5px;background:#fff}
+.add select{padding-left:28px;appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%237A8898' stroke-width='1.5'/></svg>") no-repeat left 10px center;color:var(--ink2)}
+.add input:focus,.add select:focus,.flt select:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.add input[type=date]{display:none;width:150px}
+.add input[type=date].on{display:block}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:#fff;color:var(--navy);white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.pri:hover{background:var(--navy2)}
+.btn.sky{background:var(--sky);border-color:var(--sky);color:#fff}
+.btn.sky:hover{filter:brightness(.95)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.add .btn{height:38px}
+
+/* ---------- filters ---------- */
+.flt{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink3)}
+.flt select{height:30px;border:1px solid var(--bd);border-radius:6px;padding:0 28px 0 10px;font-size:13px;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%237A8898' stroke-width='1.5'/></svg>") no-repeat left 10px center;appearance:none;-webkit-appearance:none;color:var(--ink2);padding-left:26px;padding-right:10px}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden;background:#fff}
+.seg button{padding:5px 11px;font-size:12.5px;color:var(--ink2);border-left:1px solid var(--bd)}
+.seg button:last-child{border-left:0}
+.seg button.on{background:#EAF3FA;color:var(--navy);font-weight:600}
+.flt .sp{margin-right:auto}
+.flt .clr{color:var(--sky);font-weight:500;font-size:12.5px;display:none}
+.flt .clr.on{display:inline}
+.flt .clr:hover{text-decoration:underline}
+
+/* ---------- task list ---------- */
+.list{padding:4px 20px 10px}
+.grp{display:flex;align-items:baseline;gap:10px;padding:14px 0 6px;font-size:13px;font-weight:600;color:var(--navy)}
+.grp small{font-weight:400;color:var(--ink3);font-size:12px}
+.grp.today{color:var(--coral)}
+.grp::after{content:"";flex:1;height:1px;background:var(--bd);align-self:center}
+.tk{display:grid;grid-template-columns:18px 1fr auto;gap:12px;align-items:start;padding:10px 0;border-bottom:1px solid var(--bd)}
+.tk:last-child{border-bottom:0}
+.tk .cb{width:17px;height:17px;border:1.5px solid #B7C3CF;border-radius:4px;margin-top:3px;display:grid;place-items:center;color:#fff;font-size:11px;cursor:pointer;flex:none}
+.tk.done .cb{background:var(--green);border-color:var(--green)}
+.tk.done .tx{text-decoration:line-through;color:var(--ink3)}
+.tk .tx{font-size:14px;font-weight:500;color:var(--ink)}
+.tk .sub{font-size:12.5px;color:var(--ink3);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tk .sub a{color:var(--navy);font-weight:500}
+.tk .sub a:hover{text-decoration:underline}
+.tk .sub .dot{color:#C4CED8}
+.tk .side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;color:var(--ink3);white-space:nowrap;margin-top:3px}
+.tk .side .due{color:var(--ink2)}
+.tk .side .due.late{color:var(--red);font-weight:500}
+/* מפגישה — אנטומיה שנייה: פס סגול, שורת מקור, פעולה */
+.tk.m{grid-template-columns:18px 1fr auto;border-right:3px solid var(--purple);padding-right:12px;margin-right:-15px;background:linear-gradient(270deg,#FAF8FF,transparent 60%)}
+.tk.m .src{font-size:12px;color:var(--purple);font-weight:500;margin-bottom:2px;display:flex;gap:6px;align-items:center}
+.tk.m .src a{color:var(--purple)}
+.tk.m .src a:hover{text-decoration:underline}
+.tk.m .src::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--purple)}
+.tk.m .act{margin-top:7px;display:flex;gap:8px;align-items:center}
+.tk.m .act .st{font-size:12.5px;color:var(--orange);font-weight:500}
+.empty{display:none;padding:36px 0;text-align:center;color:var(--ink3);font-size:13.5px}
+.empty.on{display:block}
+.list.hide{display:none}
+
+/* ---------- HK tab ---------- */
+.hkv{display:none}
+.hkv.on{display:block}
+.hkv table{width:100%;border-collapse:collapse;font-size:13.5px}
+.hkv th{font-weight:400;font-size:12px;color:var(--ink3);text-align:right;padding:12px 0 8px;border-bottom:1px solid var(--bd)}
+.hkv td{padding:12px 0;border-top:1px solid var(--bd);vertical-align:top}
+.hkv tbody tr:first-child td{border-top:0}
+.hkv td.w{font-weight:500;color:var(--ink)}
+.hkv td.w small{display:block;font-size:12.5px;color:var(--ink3);font-weight:400;margin-top:2px}
+.hkv td a{color:var(--navy);font-weight:500}
+.hkv td a:hover{text-decoration:underline}
+.hkv .st{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)}
+.hkv .st::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sky)}
+.hkv .st.done{color:var(--green)}.hkv .st.done::before{background:var(--green)}
+.hkv td.l{text-align:left;white-space:nowrap}
+.hkv .body{padding:0 20px 10px}
+.hkv .mg{display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:center;font-size:13px;color:var(--ink3)}
+.hkv .mg i{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:14px}
+.hkv .mg b{display:block;color:var(--ink);font-weight:600;font-size:14px}
+.hkv .note{font-size:12.5px;color:var(--ink3);padding:10px 0 2px}
+
+/* ---------- left column ---------- */
+.left{display:flex;flex-direction:column;gap:18px}
+.panel.main{min-height:calc(100vh - 52px - 68px - 38px)}
+.dark{background:var(--navy);color:#fff;border-radius:10px;padding:16px 20px 14px}
+.dark .cap{font-size:12px;color:#9FC0DA;letter-spacing:.2px}
+.dark h3{font-size:15px;font-weight:600;margin-top:2px;margin-bottom:10px}
+.dark h3 .num{color:#B9D3E6;font-weight:400;font-size:13px}
+.dark .row{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,.1);align-items:start}
+.dark .row:first-of-type{border-top:0}
+.dark .row .t{font-size:14px;font-weight:600;color:#fff}
+.dark .row .w{font-size:13.5px}
+.dark .row .w a{font-weight:600}
+.dark .row .w a:hover{text-decoration:underline}
+.dark .row .w .what{color:#B9D3E6}
+.dark .row .w .what{margin-right:6px}.dark .row .w .what::before{content:"· ";color:#7FA6C2;margin-left:2px}
+.dark .row .l{font-size:12.5px;color:#B9D3E6;margin-top:2px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dark .row .l .cb{width:13px;height:13px;border:1.5px solid #9FC0DA;border-radius:3px;display:inline-block;flex:none}
+.dark .row .l .cb.d{background:var(--green);border-color:var(--green)}
+.dark .row .l .warn{color:#F3C98A}
+.dark .row .l .ok{color:#8FD9B6}
+.dark .row .l a{color:#fff}
+.dark .row .l a:hover{text-decoration:underline}
+.dark .row .l .btn{padding:2px 9px;font-size:12px;background:transparent;border-color:rgba(255,255,255,.3);color:#fff;margin-right:2px}
+.dark .row .l .btn:hover{background:rgba(255,255,255,.08)}
+
+.cl .body{padding:2px 20px 6px}
+.cl table{width:100%;border-collapse:collapse;font-size:13px}
+.cl th{font-weight:400;font-size:12px;color:var(--ink3);text-align:right;padding:8px 0 6px;border-bottom:1px solid var(--bd);padding-left:10px}
+.cl td{padding:8px 10px 8px 0;border-top:1px solid var(--bd);white-space:nowrap;color:var(--ink2);vertical-align:middle}
+.cl td:last-child,.cl th:last-child{padding-left:0}
+.cl tbody tr:first-child td{border-top:0}
+.cl td.n a{font-weight:600;color:var(--navy);cursor:pointer}
+.cl td.n a:hover{text-decoration:underline}
+.cl td.n small{color:var(--ink3);font-size:12px;margin-right:6px}
+.cl td.c{text-align:center;width:60px}
+.cl td.c b{font-weight:600;color:var(--ink)}
+.cl td.c span{color:#B7C3CF}
+.cl tr.on td{background:#F6FAFD}
+.cl tr.on td.n a{text-decoration:underline}
+.cl td.l{text-align:left}
+.cl td.l .no{color:var(--red);font-weight:500}
+.cl td.l a:hover{text-decoration:underline}
+.cl .foot{padding:10px 20px 12px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3);display:flex;gap:14px}
+.cl .foot a{color:var(--sky);font-weight:500}
+.cl .foot a:hover{text-decoration:underline}
+
+/* ---------- modal + toast ---------- */
+.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
+.ov.on{display:grid}
+.md{width:640px;max-width:92vw;background:#fff;border-radius:12px;padding:22px 26px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.md h3{font-size:18px;color:var(--navy);font-weight:600}
+.md .s{font-size:13px;color:var(--ink3);margin-top:3px}
+.md ol{margin:14px 0 0 0;padding-right:20px;font-size:14px;line-height:1.6}
+.md ol li{padding:4px 0;border-bottom:1px dashed var(--bd)}
+.md .f{display:flex;gap:8px;margin-top:18px;justify-content:flex-start}
+.md .fld{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.md .fld label{font-size:12.5px;color:var(--ink3);display:block;margin-bottom:4px}
+.md .fld input,.md .fld select,.md .fld textarea{width:100%;height:36px;border:1px solid var(--bd);border-radius:6px;padding:0 10px;font-size:13.5px;background:#fff}
+.md .fld textarea{height:74px;padding:8px 10px;resize:none;grid-column:1/-1}
+.md .fld .full{grid-column:1/-1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (min-width:1451px){.tk{padding:12px 0}.grp{padding:16px 0 8px}.hkv td{padding:14px 0}}
+@media (max-width:1450px){
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px}
+  .panel.main{min-height:calc(100vh - 52px - 68px - 30px)}
+  .left{gap:14px}
+  .nav,.strip{padding-left:24px;padding-right:24px}
+  .ph{padding:11px 18px 8px}
+  .ph h2{font-size:16px}
+  .add{padding:10px 18px;grid-template-columns:1fr 170px 140px auto}
+  .add input,.add select,.add .btn{height:34px}
+  .flt{padding:8px 18px}
+  .list{padding:2px 18px 8px}
+  .tk{padding:8px 0}
+  .tk.m{margin-right:-13px;padding-right:10px}
+  .grp{padding:11px 0 4px}
+  .dark{padding:13px 18px 11px}
+  .dark .row{padding:7px 0}
+  .cl td{padding:6px 10px 6px 0}
+  .cl .foot{display:none}
+  .hkv td{padding:10px 0}
+  .strip .next .what{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="today.html"><i>HK</i>חזות קריספין</a>
+  <ul>
+    <li><a href="today.html">היום</a></li>
+    <li><a class="on" href="tasks.html">משימות</a></li>
+    <li><a href="clients.html">לקוחות</a></li>
+    <li><a href="meetings.html">פגישות</a></li>
+    <li><a href="memory.html">זיכרון לקוחות</a></li>
+  </ul>
+  <div class="me"><div><b>אילון אשכנזי</b>אשכנזי ייעוץ עסקי</div><i>אא</i></div>
+</nav>
+
+<header class="strip">
+  <div><h1>משימות</h1></div>
+  <div class="date num">יום חמישי · 02.07.2026</div>
+  <div class="sep"></div>
+  <div class="next">
+    <span class="k">הבא על השולחן</span>
+    <a href="#t2" onclick="flash('t2')">לחזור לרו״ח על המע״מ</a>
+    <span class="c">·</span><span>מטעי גבעון</span>
+    <span class="c what">·</span><span class="what num">לפני השיחה ב-13:00</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="now num"><b>10:54</b> · בין הפגישה של 09:00 ל-13:00</div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== main: tasks ===== -->
+  <section class="panel main">
+    <div class="tabs">
+      <button class="on" id="tabMine" onclick="setTab('mine')">המשימות שלי <i id="cMine">7</i></button>
+      <button id="tabHk" onclick="setTab('hk')">ביקשתי מ-HK <i>3</i></button>
+      <span class="note" id="tabNote">לפי תאריך יעד · היום, 03.07, 08.07, בלי תאריך</span>
+    </div>
+
+    <!-- ---- my tasks ---- -->
+    <div id="mine">
+      <form class="add" onsubmit="addTask(event)">
+        <input id="nt" type="text" placeholder="משימה חדשה…" autocomplete="off">
+        <select id="nc">
+          <option value="">בלי לקוח</option>
+          <option value="511327876">אנרגי אינטרנשיונל</option>
+          <option value="514778220">מטעי גבעון</option>
+          <option value="025664109">רימון יצחק</option>
+          <option value="511200341">אנרגי גולני</option>
+          <option value="039112774">משה עובד</option>
+          <option value="x">לקוח אחר…</option>
+        </select>
+        <select id="nd" onchange="document.getElementById('ndx').classList.toggle('on',this.value==='custom')">
+          <option value="today">היום</option>
+          <option value="0307">מחר · 03.07</option>
+          <option value="0807">08.07</option>
+          <option value="none">בלי תאריך</option>
+          <option value="custom">תאריך אחר…</option>
+        </select>
+        <input id="ndx" type="date" min="2026-07-02">
+        <button class="btn pri" type="submit">הוספה</button>
+      </form>
+
+      <div class="flt">
+        <select id="fc" onchange="applyF()">
+          <option value="">כל הלקוחות</option>
+          <option value="511327876">אנרגי אינטרנשיונל</option>
+          <option value="514778220">מטעי גבעון</option>
+          <option value="025664109">רימון יצחק</option>
+          <option value="511200341">אנרגי גולני</option>
+          <option value="039112774">משה עובד</option>
+          <option value="none">בלי לקוח</option>
+        </select>
+        <div class="seg" id="fs">
+          <button class="on" data-v="open" onclick="seg(this)">פתוח</button>
+          <button data-v="done" onclick="seg(this)">בוצע</button>
+          <button data-v="all" onclick="seg(this)">הכל</button>
+        </div>
+        <div class="seg" id="fo">
+          <button class="on" data-v="" onclick="seg(this)">כל המקורות</button>
+          <button data-v="me" onclick="seg(this)">שלי</button>
+          <button data-v="m" onclick="seg(this)">מפגישה</button>
+        </div>
+        <span class="sp"></span>
+        <span id="fcount"></span>
+        <a class="clr" id="fclr" href="#" onclick="event.preventDefault();clearF()">ניקוי הסינון</a>
+      </div>
+
+      <div class="list" id="list">
+        <div class="grp today" data-g="today">היום <small class="num">חמישי · 02.07</small></div>
+
+        <div class="tk m" data-c="511327876" data-o="m" data-g="today" id="t1">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="src">מפגישה <a href="meetings.html?m=020709">פגישה שוטפת — סקירת תזרים · 02.07 09:00</a></div>
+            <div class="tx">אישור סיכום — פגישה שוטפת</div>
+            <div class="sub"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span>הוקלטה 46 דק׳<span class="dot">·</span>עם צחי עובד</div>
+            <div class="act"><button class="btn sky sm" onclick="openSum()">אישור הסיכום</button><button class="btn sm" onclick="toast('ההקלטה נפתחת — 46 דק׳')">האזנה</button><span class="st">הסיכום מחכה לאישור</span></div>
+          </div>
+          <div class="side"><span class="due">היום</span></div>
+        </div>
+
+        <div class="tk" data-c="514778220" data-o="me" data-g="today" id="t2">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="tx">לחזור לרו״ח על המע״מ</div>
+            <div class="sub"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span>לפני <a href="meetings.html">השיחה ב-13:00</a></div>
+          </div>
+          <div class="side"><span class="due">היום</span><span>שלי</span></div>
+        </div>
+
+        <div class="tk m" data-c="511200341" data-o="m" data-g="today" id="t3">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="src">מפגישה <a href="meetings.html?m=240610">פ.ע — חודש יוני · 24.06 10:30 · לא התקיימה</a></div>
+            <div class="tx">תיאום מחדש — הפגישה לא התקיימה</div>
+            <div class="sub"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span>פגישה הבאה לא נקבעה</div>
+            <div class="act"><button class="btn sm" onclick="toast('קביעת פגישה — אנרגי גולני')">קביעת מועד</button></div>
+          </div>
+          <div class="side"><span class="due">היום</span></div>
+        </div>
+
+        <div class="tk" data-c="none" data-o="me" data-g="today" id="t4">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="tx">עדכוני וואטסאפ ללקוחות</div>
+            <div class="sub">4 חברות</div>
+          </div>
+          <div class="side"><span class="due">היום</span><span>שלי</span></div>
+        </div>
+
+        <div class="grp" data-g="0307">03.07 <small>מחר · שישי</small></div>
+        <div class="tk" data-c="none" data-o="me" data-g="0307" id="t5">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="tx">שליחת זמנים לפגישה חודשית</div>
+            <div class="sub">3 לקוחות Money+</div>
+          </div>
+          <div class="side"><span class="due num">03.07</span><span>שלי</span></div>
+        </div>
+
+        <div class="grp" data-g="0807">08.07 <small>רביעי</small></div>
+        <div class="tk" data-c="039112774" data-o="me" data-g="0807" id="t6">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="tx">הכנה לפגישת רבעון</div>
+            <div class="sub"><a href="clients.html?c=039112774">משה עובד</a></div>
+          </div>
+          <div class="side"><span class="due num">08.07</span><span>שלי</span></div>
+        </div>
+
+        <div class="grp" data-g="none">בלי תאריך</div>
+        <div class="tk" data-c="511327876" data-o="me" data-g="none" id="t7">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="tx">עדכון תקציב שיווק ליולי</div>
+            <div class="sub"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a></div>
+          </div>
+          <div class="side"><span class="due"><a href="#" onclick="event.preventDefault();toast('קביעת תאריך יעד — עדכון תקציב שיווק')" style="color:var(--sky)">קביעת מועד</a></span><span>שלי</span></div>
+        </div>
+
+        <div class="empty" id="empty">אין משימות שמתאימות לסינון.</div>
+      </div>
+    </div>
+
+    <!-- ---- requested from HK ---- -->
+    <div class="hkv" id="hk">
+      <div class="add" style="grid-template-columns:1fr 190px auto">
+        <input id="ht" type="text" placeholder="בקשה חדשה ממנהל התזרים…" autocomplete="off">
+        <select id="hc">
+          <option value="">לאיזה לקוח</option>
+          <option>אנרגי אינטרנשיונל</option><option>מטעי גבעון</option><option>רימון יצחק</option><option>אנרגי גולני</option><option>משה עובד</option>
+        </select>
+        <button class="btn pri" onclick="askHk()">שליחה ל-HK</button>
+      </div>
+      <div class="body">
+        <table>
+          <thead><tr><th>מה ביקשתי</th><th>לקוח</th><th>מנהל תזרים</th><th>יעד</th><th style="text-align:left">מצב</th></tr></thead>
+          <tbody id="hkt">
+            <tr><td class="w">בדיקת העברה מפועלים 112 ללאומי 604</td><td><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a></td><td>לירון בן כליפא</td><td class="num">03.07 <span style="color:var(--ink3);font-size:12px">מחר</span></td><td class="l"><span class="st">פתוח</span></td></tr>
+            <tr><td class="w">פילוח עלות המכר לפי ספקים</td><td><a href="clients.html?c=025664109">רימון יצחק</a></td><td>שמרית טובול</td><td class="num">05.07</td><td class="l"><span class="st">פתוח</span></td></tr>
+            <tr><td class="w">קבלת דפי בנק של יוני<small>ממתין לחומר — חומר אחרון 30.6</small></td><td><a href="clients.html?c=511200341">אנרגי גולני</a></td><td>לירון בן כליפא</td><td class="num">06.07</td><td class="l"><span class="st">פתוח</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note">הבקשות האלה פתוחות אצל מנהלי התזרים ב-HK. כשהן נסגרות — תראה את זה כאן וב"היום".</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== left column ===== -->
+  <aside class="left">
+    <section class="dark">
+      <div class="cap">עד סוף היום</div>
+      <h3>שלוש פגישות, ומה שצריך להיות מוכן לפניהן</h3>
+      <div class="row">
+        <div class="t num">13:00</div>
+        <div class="w"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="what">שיחת מעקב</span>
+          <div class="l"><span class="cb" id="d2"></span><a href="#t2" onclick="flash('t2')">לחזור לרו״ח על המע״מ</a></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="t num">16:00</div>
+        <div class="w"><a href="clients.html?c=039112774">משה עובד</a><span class="what">פגישה חודשית — יולי · Zoom</span>
+          <div class="l"><span class="warn">ההכנה לא נפתחה</span><button class="btn" onclick="toast('ההכנה לפגישה נפתחת — משה עובד, יולי')">פתיחת ההכנה</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="t num">17:00</div>
+        <div class="w"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="what">המשך סקירה — החלטות תקציב</span>
+          <div class="l"><span class="cb" id="d1"></span><a href="#t1" onclick="flash('t1')">אישור סיכום — פגישה שוטפת</a><span class="ok">· ההכנה נפתחה</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel cl">
+      <div class="ph"><h2>לפי לקוח</h2><span class="hint">לחיצה מסננת את הרשימה</span><a class="more" href="clients.html">כל הלקוחות</a></div>
+      <div class="body">
+        <table>
+          <thead><tr><th>חברה</th><th style="text-align:center">שלי</th><th style="text-align:center">מ-HK</th><th style="text-align:left">פגישה הבאה</th></tr></thead>
+          <tbody id="bc">
+          <tr data-c="511327876"><td class="n"><a onclick="pick('511327876')">אנרגי אינטרנשיונל</a><small>לירון בן כליפא</small></td><td class="c"><b>2</b></td><td class="c"><b>1</b></td><td class="l num"><a href="meetings.html">היום 17:00</a></td></tr>
+          <tr data-c="514778220"><td class="n"><a onclick="pick('514778220')">מטעי גבעון</a><small>לירון בן כליפא</small></td><td class="c"><b>1</b></td><td class="c"><span>—</span></td><td class="l num"><a href="meetings.html">היום 13:00</a></td></tr>
+          <tr data-c="039112774"><td class="n"><a onclick="pick('039112774')">משה עובד</a><small>שמרית טובול</small></td><td class="c"><b>1</b></td><td class="c"><span>—</span></td><td class="l num"><a href="meetings.html">היום 16:00</a></td></tr>
+          <tr data-c="511200341"><td class="n"><a onclick="pick('511200341')">אנרגי גולני</a><small>לירון בן כליפא</small></td><td class="c"><b>1</b></td><td class="c"><b>1</b></td><td class="l"><a class="no" href="#" onclick="event.preventDefault();toast('קביעת פגישה — אנרגי גולני')">לא נקבעה</a></td></tr>
+          <tr data-c="025664109"><td class="n"><a onclick="pick('025664109')">רימון יצחק</a><small>שמרית טובול</small></td><td class="c"><span>—</span></td><td class="c"><b>1</b></td><td class="l"><a class="no" href="#" onclick="event.preventDefault();toast('קביעת פגישה — רימון יצחק')">לא נקבעה</a></td></tr>
+          <tr data-c="none"><td class="n"><a onclick="pick('none')">בלי לקוח</a><small>וואטסאפ · זמנים</small></td><td class="c"><b>2</b></td><td class="c"><span>—</span></td><td class="l"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="foot"><span>ל-17 החברות האחרות אין משימות פתוחות.</span><a href="clients.html">לרשימת הלקוחות</a></div>
+    </section>
+  </aside>
+
+</main>
+
+<!-- summary modal -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeSum()">
+  <div class="md">
+    <h3>סיכום — פגישה שוטפת, סקירת תזרים</h3>
+    <div class="s">אנרגי אינטרנשיונל · 02.07 09:00 · עם צחי עובד · הוקלטה 46 דק׳</div>
+    <ol>
+      <li>נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה</li>
+      <li>שביעות רצון — ירידה: תסכול מקצב התגובה בוואטסאפ</li>
+      <li>צפי החריגה עודכן אחרי דחיית תשלום ספק</li>
+      <li>המשך סקירה — החלטות תקציב, היום 17:00</li>
+    </ol>
+    <div class="f"><button class="btn pri" onclick="approve()">אישור ושליחה ללקוח</button><button class="btn" onclick="approve(true)">אישור בלי שליחה</button><button class="btn" onclick="closeSum()">לעריכה במסך הפגישות</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let tt;
+const names={'511327876':'אנרגי אינטרנשיונל','514778220':'מטעי גבעון','025664109':'רימון יצחק','511200341':'אנרגי גולני','039112774':'משה עובד','none':'בלי לקוח','':''};
+const gl={today:'היום','0307':'03.07','0807':'08.07',none:'בלי תאריך'};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2400)}
+function openSum(){document.getElementById('ov').classList.add('on')}
+function closeSum(){document.getElementById('ov').classList.remove('on')}
+function approve(noSend){closeSum();toast(noSend?'הסיכום אושר':'הסיכום אושר ונשלח לצחי עובד');
+  const t=document.getElementById('t1');t.classList.add('done');const a=t.querySelector('.act');if(a)a.innerHTML='<span class="st" style="color:var(--green)">הסיכום אושר</span>';
+  document.getElementById('d1').classList.add('d');applyF()}
+function tog(cb){const tk=cb.closest('.tk');tk.classList.toggle('done');const d=tk.classList.contains('done');
+  toast(d?'סומן כבוצע':'הוחזר לפתוח');
+  if(tk.id==='t2')document.getElementById('d2').classList.toggle('d',d);
+  if(tk.id==='t1')document.getElementById('d1').classList.toggle('d',d);
+  applyF()}
+function setTab(t){document.getElementById('tabMine').classList.toggle('on',t==='mine');document.getElementById('tabHk').classList.toggle('on',t==='hk');
+  document.getElementById('mine').style.display=t==='mine'?'':'none';document.getElementById('hk').classList.toggle('on',t==='hk');
+  document.getElementById('tabNote').textContent=t==='mine'?'לפי תאריך יעד · היום, 03.07, 08.07, בלי תאריך':'בקשות פתוחות אצל מנהלי התזרים · זה לא ברשימת המשימות שלך'}
+function seg(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');applyF()}
+function segV(id){return document.querySelector('#'+id+' .on').dataset.v}
+function pick(c){const s=document.getElementById('fc');s.value=(s.value===c?'':c);applyF();
+  if(s.value)toast('מסונן: '+names[c]);document.getElementById('list').scrollIntoView({block:'nearest'})}
+function clearF(){document.getElementById('fc').value='';['fs','fo'].forEach(id=>{const s=document.getElementById(id);[...s.children].forEach((x,i)=>x.classList.toggle('on',i===0))});applyF()}
+function applyF(){const c=document.getElementById('fc').value,st=segV('fs'),o=segV('fo');let n=0,openAll=0;const seen={};
+  document.querySelectorAll('#list .tk').forEach(t=>{const d=t.classList.contains('done');if(!d)openAll++;
+    const ok=(!c||t.dataset.c===c)&&(st==='all'||(st==='done')===d)&&(!o||t.dataset.o===o);
+    t.style.display=ok?'':'none';if(ok){n++;seen[t.dataset.g]=1}});
+  document.querySelectorAll('#list .grp').forEach(g=>g.style.display=seen[g.dataset.g]?'':'none');
+  document.getElementById('empty').classList.toggle('on',n===0);
+  const f=c||st!=='open'||o;document.getElementById('fclr').classList.toggle('on',!!f);
+  document.getElementById('fcount').textContent=f?(n+' מתוך '+document.querySelectorAll('#list .tk').length):'';
+  document.getElementById('cMine').textContent=openAll;
+  document.querySelectorAll('#bc tr').forEach(r=>r.classList.toggle('on',!!c&&r.dataset.c===c))}
+function addTask(e){e.preventDefault();const i=document.getElementById('nt');const v=i.value.trim();if(!v){i.focus();return}
+  const c=document.getElementById('nc').value||'none';let g=document.getElementById('nd').value;let due=gl[g]||'';
+  if(g==='custom'){const d=document.getElementById('ndx').value;if(d){const p=d.split('-');due=p[2]+'.'+p[1];g=p[2]+p[1]}else g='none',due=''}
+  const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+g+'"]');
+  if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=g;grp.innerHTML=due;const last=list.querySelector('.grp[data-g="none"]');list.insertBefore(grp,last)}
+  const t=document.createElement('div');t.className='tk';t.dataset.c=c==='x'?'none':c;t.dataset.o='me';t.dataset.g=g;
+  t.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span><span>שלי</span></div>';
+  t.querySelector('.tx').textContent=v;
+  t.querySelector('.sub').innerHTML=c==='none'||c==='x'?'':'<a href="clients.html?c='+c+'">'+names[c]+'</a>';
+  t.querySelector('.due').innerHTML=due||'<a href="#" style="color:var(--sky)" onclick="event.preventDefault();toast(\'קביעת תאריך יעד\')">קביעת מועד</a>';
+  grp.after(t);i.value='';applyF();toast('נוסף: '+v+(due?' · '+due:''))}
+function askHk(){const i=document.getElementById('ht');const v=i.value.trim();const c=document.getElementById('hc').value;if(!v||!c){toast('מה לבקש ולאיזה לקוח');return}
+  const mgr={'אנרגי אינטרנשיונל':'לירון בן כליפא','מטעי גבעון':'לירון בן כליפא','אנרגי גולני':'לירון בן כליפא','רימון יצחק':'שמרית טובול','משה עובד':'שמרית טובול'}[c];
+  const tr=document.createElement('tr');tr.innerHTML='<td class="w"></td><td><a href="clients.html">'+c+'</a></td><td>'+mgr+'</td><td>—</td><td class="l"><span class="st">נשלח</span></td>';
+  tr.querySelector('.w').textContent=v;document.getElementById('hkt').prepend(tr);i.value='';
+  document.querySelector('#tabHk i').textContent=document.querySelectorAll('#hkt tr').length;toast('נשלח ל'+mgr)}
+function flash(id){setTab('mine');const t=document.getElementById(id);if(!t)return;t.style.transition='background .2s';t.style.background='#EAF3FA';setTimeout(()=>t.style.background='',1400)}
+applyF();
+if(location.hash==='#hk')setTab('hk');
+</script>
+</body>
+</html>

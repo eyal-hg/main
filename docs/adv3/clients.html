@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>לקוחות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך היועץ · סבב 3 — לקוחות. אותה שפה כמו today.html:
+   רצועה 68px navy (כותרת 28 פרנק-רוהל + תאריך | התראות בשמות | עכשיו)
+   כותרת אזור 17 · גוף 14 · מטא 12.5 · מיקרו 12 · פאנל: גבול 1px, צל 4%, רדיוס 10
+   בלוק כהה אחד בגוף: ציר המחזור (לחיץ, מסנן). טבלה: שורות 44px, 22 חברות.
+   ===================================================================== */
+:root{
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bg:#F4F7FA;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#7557E3;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- top nav ---------- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:#fff;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px;margin-right:12px}
+.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13.5px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:#EAF3FA;color:var(--navy);font-weight:600}
+.nav .me{margin-right:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:left}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
+
+/* ---------- navy strip ---------- */
+.strip{background:var(--navy);color:#fff;height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
+.strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
+.strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
+.alerts{display:flex;align-items:center;gap:26px;font-size:13.5px}
+.alerts .g{display:flex;align-items:center;gap:8px}
+.alerts .k{color:#F3A39C;font-weight:500}
+.alerts .k::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--coral);margin-left:7px;vertical-align:1px}
+.alerts a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.alerts a:hover{border-color:#fff}
+.alerts .c{color:#7FA6C2;margin:0 2px}
+.strip .spacer{margin-right:auto}
+.strip .now{font-size:13px;color:#B9D3E6}
+.strip .now b{color:#fff;font-weight:500}
+
+/* ---------- body ---------- */
+.wrap{max-width:1620px;margin:0 auto;padding:16px 32px 16px;display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 120px)}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+
+/* ---------- cycle timeline (the one dark block) ---------- */
+.cycle{background:var(--navy);color:#fff;border-radius:10px;padding:10px 28px 12px;display:grid;grid-template-columns:170px 1fr;gap:24px;align-items:center}
+.cycle .cap h2{font-size:17px;font-weight:600}
+.cycle .cap p{font-size:12.5px;color:#9FC0DA;margin-top:3px}
+.cycle .cap a{display:inline-block;margin-top:6px;font-size:12.5px;color:#fff;border-bottom:1px solid rgba(255,255,255,.35);visibility:hidden}
+.cycle .cap a.on{visibility:visible}
+.tl{display:grid;grid-template-columns:repeat(5,1fr);position:relative;padding-top:4px}
+.tl::before{content:"";position:absolute;right:10%;left:10%;top:40px;height:2px;background:rgba(255,255,255,.22)}
+.tl .st{position:relative;text-align:center;padding:0 6px 0;cursor:pointer;border-radius:8px;transition:.15s}
+.tl .st b{display:block;font-size:24px;font-weight:600;line-height:1.15;color:#fff;font-variant-numeric:tabular-nums}
+.tl .st i{display:block;width:12px;height:12px;border-radius:50%;border:2px solid #9FC0DA;background:var(--navy);margin:5px auto 6px;position:relative;z-index:1;font-style:normal;transition:.15s}
+.tl .st span{display:block;font-size:13px;color:#D7E6F1}
+.tl .st:hover i{border-color:#fff}
+.tl .st:hover span{color:#fff}
+.tl .st.on i{background:var(--sky);border-color:var(--sky);box-shadow:0 0 0 4px rgba(57,171,226,.25)}
+.tl .st.on span{color:#fff;font-weight:500}
+.tl .st.dim b{color:#7FA6C2}
+.tl .st.dim span{color:#7FA6C2}
+
+/* ---------- clients table ---------- */
+.ph{display:flex;align-items:center;gap:12px;padding:8px 20px 8px;border-bottom:1px solid var(--bd)}
+.ph h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ph .hint{font-size:12.5px;color:var(--ink3)}
+.ph .hint b{font-weight:500;color:var(--ink2)}
+.ph .tools{margin-right:auto;display:flex;align-items:center;gap:8px}
+.ph input{height:32px;width:240px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font:inherit;font-size:13px;background:#fff;color:var(--ink)}
+.ph input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.seg{display:flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden;height:32px}
+.seg button{padding:0 12px;font-size:12.5px;color:var(--ink2);border-right:1px solid var(--bd)}
+.seg button:first-child{border-right:0}
+.seg button.on{background:#EAF3FA;color:var(--navy);font-weight:500}
+.seg button:hover:not(.on){background:var(--bg)}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{font-weight:400;font-size:12px;color:var(--ink3);text-align:right;padding:7px 20px 6px 10px;border-bottom:1px solid var(--bd);white-space:nowrap;background:#FAFCFE}
+thead th:first-child{padding-right:20px}
+thead th:last-child{padding-left:20px}
+tbody td{height:44px;padding:0 20px 0 10px;border-top:1px solid var(--bd);white-space:nowrap;vertical-align:middle;color:var(--ink2)}
+tbody td:last-child{padding-left:20px}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:#F8FBFD}
+tbody tr.hl td{background:#EEF6FC}
+tbody tr.dim td{opacity:.32}
+tbody tr.dim td .tag{visibility:hidden}
+tbody tr.first td{border-top:2px solid var(--bd)}
+td.n{color:var(--ink);font-weight:600}
+td.n small{font-weight:400;font-size:12px;color:var(--ink3);margin-right:8px}
+td.n .num{color:var(--ink3)}
+td.pk{color:var(--ink2)}
+.stg::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:8px;vertical-align:0;background:#C4CED8}
+.stg.s1::before{background:#C4CED8}.stg.s2::before{background:var(--sky)}.stg.s3::before{background:var(--purple)}.stg.s4::before{background:var(--green)}.stg.s5::before{background:var(--navy)}
+td .sub{font-size:12px;color:var(--ink3);margin-right:6px}
+td .today{color:var(--navy);font-weight:600}
+td .no{color:var(--red);font-weight:500}
+td .lnk{font-size:12.5px;color:var(--sky);font-weight:500;margin-right:8px;border-bottom:1px solid transparent}
+td .lnk:hover{border-color:var(--sky)}
+td.al{width:260px}
+.als{display:grid;grid-template-columns:118px 128px;gap:6px}
+.tag{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:5px;font-size:12px;font-weight:500;visibility:hidden}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.tag.on{visibility:visible}
+.tag.cf{background:#FCEBE9;color:#B9382C}
+.tag.sat{background:#FFF4DF;color:#9A6300}
+td.mg{color:var(--ink2)}
+.empty{padding:28px 20px;text-align:center;color:var(--ink3);font-size:13.5px;display:none}
+.empty.on{display:block}
+
+/* ---------- modal + toast ---------- */
+.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
+.ov.on{display:grid}
+.md{width:600px;max-width:92vw;background:#fff;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden}
+.md .hd{background:var(--navy);color:#fff;padding:16px 22px;display:flex;align-items:flex-start;gap:14px}
+.md .hd h3{font-size:19px;font-weight:600;line-height:1.2}
+.md .hd .s{font-size:12.5px;color:#B9D3E6;margin-top:3px}
+.md .hd .x{margin-right:auto;font-size:20px;color:#B9D3E6;line-height:1}
+.md .hd .x:hover{color:#fff}
+.md .bd{padding:6px 22px 18px}
+.md .row{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:14px;align-items:start}
+.md .row:last-child{border-bottom:0}
+.md .row .k{font-size:12.5px;color:var(--ink3);padding-top:2px}
+.md .row .v{color:var(--ink)}
+.md .row .v .m{font-size:12px;color:var(--ink3)}
+.md .mu{display:grid;grid-template-columns:92px 1fr auto;gap:10px;align-items:baseline}
+.md .mu .m:first-child{color:var(--ink2);font-size:12.5px}
+.md .mu .m:last-child{white-space:nowrap}
+.md .row .v div+div{margin-top:5px}
+.md .row .v .none{color:var(--ink3)}
+.md .als{grid-template-columns:auto auto;justify-content:start}
+.md .tag{visibility:visible}
+.md .ft{display:flex;gap:8px;padding:0 22px 18px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:#fff;color:var(--navy)}
+.btn:hover{background:var(--bg)}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.pri:hover{background:var(--navy2)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1450px){
+  .nav,.strip{padding-left:24px;padding-right:24px}
+  .wrap{padding:14px 24px 16px;gap:14px}
+  .cycle{padding:12px 22px 14px;grid-template-columns:150px 1fr}
+  thead th,tbody td{padding-right:14px}
+  tbody td{height:38px}
+  .ph input{width:200px}
+  td.al{width:230px}
+  .als{grid-template-columns:108px 118px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="today.html"><i>HK</i>חזות קריספין</a>
+  <ul>
+    <li><a href="today.html">היום</a></li>
+    <li><a href="tasks.html">משימות</a></li>
+    <li><a class="on" href="clients.html">לקוחות</a></li>
+    <li><a href="meetings.html">פגישות</a></li>
+    <li><a href="memory.html">זיכרון לקוחות</a></li>
+  </ul>
+  <div class="me"><div><b>אילון אשכנזי</b>אשכנזי ייעוץ עסקי</div><i>אא</i></div>
+</nav>
+
+<header class="strip">
+  <div><h1>לקוחות</h1></div>
+  <div class="date num">יום חמישי · 02.07.2026</div>
+  <div class="sep"></div>
+  <div class="alerts">
+    <div class="g"><span class="k">בעיה תזרימית</span>
+      <a href="#" onclick="return openCard('511327876')">אנרגי אינטרנשיונל</a><span class="c">,</span><a href="#" onclick="return openCard('514778220')">מטעי גבעון</a></div>
+    <div class="g"><span class="k">חוסר שביעות רצון</span>
+      <a href="#" onclick="return openCard('511327876')">אנרגי אינטרנשיונל</a></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="now num"><b>10:54</b> · הפגישה הבאה 13:00 · מטעי גבעון</div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== cycle timeline ===== -->
+  <section class="cycle">
+    <div class="cap">
+      <h2>המחזור החודשי</h2>
+      <p>יולי 2026 · לחיצה מסננת</p>
+      <a id="clr" href="#" onclick="return setStage(0)">הצגת כל הלקוחות</a>
+    </div>
+    <div class="tl" id="tl">
+      <div class="st" data-s="1" onclick="setStage(1)"><b class="num">5</b><i></i><span>ממתין לחומר</span></div>
+      <div class="st" data-s="2" onclick="setStage(2)"><b class="num">3</b><i></i><span>הוזן</span></div>
+      <div class="st" data-s="3" onclick="setStage(3)"><b class="num">4</b><i></i><span>יעדים עודכנו</span></div>
+      <div class="st" data-s="4" onclick="setStage(4)"><b class="num">7</b><i></i><span>מוכן לפגישה</span></div>
+      <div class="st" data-s="5" onclick="setStage(5)"><b class="num">3</b><i></i><span>סיכום אושר</span></div>
+    </div>
+  </section>
+
+  <!-- ===== table ===== -->
+  <section class="panel">
+    <div class="ph">
+      <h2>התיק שלי</h2>
+      <span class="hint" id="hint">לפי פעילות היום</span>
+      <div class="tools">
+        <div class="seg">
+          <button class="on" data-sort="act" onclick="setSort('act')">לפי פעילות</button>
+          <button data-sort="stage" onclick="setSort('stage')">לפי שלב</button>
+          <button data-sort="name" onclick="setSort('name')">א״ב</button>
+        </div>
+        <input id="q" type="search" placeholder="חיפוש חברה או ח.פ" autocomplete="off" oninput="applyFilter()">
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>חברה</th><th>חבילה</th><th>שלב במחזור</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th>התראות</th><th>מנהל תזרים</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+    <div class="empty" id="empty">אין חברה שתואמת</div>
+  </section>
+
+</main>
+
+<div class="ov" id="ov" onclick="if(event.target===this)closeCard()">
+  <div class="md" id="md"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STAGES=['','ממתין לחומר','הוזן','יעדים עודכנו','מוכן לפגישה','סיכום אושר'];
+const C=[
+ {id:'511327876',n:'אנרגי אינטרנשיונל',pk:'Money',s:4,last:'02.07',next:{t:'היום 17:00'},al:{cf:1,sat:1},mg:'לירון בן כליפא',
+  tasks:['אישור סיכום — פגישה שוטפת · היום','עדכון תקציב שיווק ליולי · בלי תאריך'],
+  mem:[['כאבי לקוח','נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה','היום 10:02'],['שביעות רצון','ירידה: תסכול מקצב התגובה בוואטסאפ','היום 10:03']]},
+ {id:'514778220',n:'מטעי גבעון',pk:'Money+',s:3,last:'12.05',next:{t:'היום 13:00'},al:{cf:1},mg:'לירון בן כליפא',
+  tasks:['לחזור לרו״ח על המע״מ · היום'],
+  mem:[['יעדים והסכמות','יעד קניות מלאי סומן בסיכון','אתמול 16:40']]},
+ {id:'025664109',n:'רימון יצחק',pk:'Money+',s:2,last:'17.03',next:{none:1},al:{},mg:'שמרית טובול',
+  tasks:[],
+  mem:[['סגנון תקשורת','מבקש פילוחים, לא סכומים','29.06']]},
+ {id:'511200341',n:'אנרגי גולני',pk:'Meeting',s:1,last:'24.06',lastSub:'לא התקיימה',next:{none:1},al:{},mg:'לירון בן כליפא',
+  tasks:['תיאום מחדש — הפגישה לא התקיימה · היום'],
+  mem:[['שיתוף פעולה','חומר אחרון לתזרים: 30.6 · דפי בנק התקבלו בוואטסאפ','אתמול 11:15']]},
+ {id:'039112774',n:'משה עובד',pk:'Money',s:4,last:'—',next:{t:'היום 16:00'},al:{},mg:'שמרית טובול',
+  tasks:['הכנה לפגישת רבעון · 08.07'],
+  mem:[]},
+ ...[['אלפא בנייה',1],['ברק ושות׳ הנדסה',3],['גל תעשיות',1],['דלתא אריזות',2],['הדר טכנולוגיות',4],['ורד מזון',4],['זוהר חשמל',3],['חורש תקשורת',5],['טל לוגיסטיקה',1],['יובל מזון',4],['כרמל אנרגיה',1],['לביא ביטחון',2],['מגן מערכות',4],['נוף טקסטיל',3],['סהר בנייה',5],['עומר רהיטים',4],['פלג שיווק',5]]
+   .map(([n,s],i)=>({id:'x'+i,n,s,pk:'',last:'',next:{},al:{},mg:'',tasks:[],mem:[],thin:1}))
+];
+let stage=0,sort='act';
+const $=s=>document.querySelector(s);
+
+function row(c){
+  const last=c.last?`<span class="num">${c.last}</span>${c.lastSub?`<span class="sub">${c.lastSub}</span>`:''}`:'';
+  let next='';
+  if(c.next.t)next=`<span class="today num">${c.next.t}</span>`;
+  else if(c.next.none)next=`<span class="no">לא נקבעה</span><a class="lnk" href="#" onclick="event.stopPropagation();toast('לינק לקביעת פגישה נשלח — ${c.n}');return false">שליחת לינק</a>`;
+  const name=c.thin?c.n:`${c.n}<small class="num">${c.id}</small>`;
+  return `<tr data-id="${c.id}" data-s="${c.s}" data-n="${c.n}" onclick="openCard('${c.id}')">
+    <td class="n">${name}</td>
+    <td class="pk">${c.pk}</td>
+    <td><span class="stg s${c.s}">${STAGES[c.s]}</span></td>
+    <td class="num">${last}</td>
+    <td>${next}</td>
+    <td class="al"><div class="als"><span class="tag cf ${c.al.cf?'on':''}">בעיה תזרימית</span><span class="tag sat ${c.al.sat?'on':''}">חוסר שביעות רצון</span></div></td>
+    <td class="mg">${c.mg}</td>
+  </tr>`;
+}
+function render(){
+  let list=C.slice();
+  if(sort==='stage')list.sort((a,b)=>a.s-b.s||(b.thin?0:1)-(a.thin?0:1)||a.n.localeCompare(b.n,'he'));
+  else if(sort==='name')list.sort((a,b)=>a.n.localeCompare(b.n,'he'));
+  $('#tb').innerHTML=list.map(row).join('');
+  applyFilter();
+}
+function applyFilter(){
+  const q=$('#q').value.trim(), tb=$('#tb');
+  const rows=[...tb.querySelectorAll('tr')]; let n=0; const out=[],dim=[];
+  rows.forEach(tr=>{
+    const ok=(!stage||+tr.dataset.s===stage)&&(!q||tr.dataset.n.includes(q)||tr.dataset.id.includes(q));
+    tr.classList.toggle('dim',!ok); tr.classList.remove('first'); (ok?out:dim).push(tr); if(ok)n++;
+  });
+  if(stage||q){ out.concat(dim).forEach(tr=>tb.appendChild(tr)); if(dim.length&&out.length)dim[0].classList.add('first'); }
+  else rows.forEach(tr=>tb.appendChild(tr));
+  $('#empty').classList.toggle('on',n===0);
+  const h=$('#hint');
+  if(stage)h.innerHTML=`<b>${STAGES[stage]}</b> · ${n} חברות · השאר מעומעמות`;
+  else if(q)h.textContent=`${n} תוצאות`;
+  else h.textContent=sort==='act'?'לפי פעילות היום':sort==='stage'?'לפי שלב במחזור':'לפי א״ב';
+}
+function setStage(s){
+  stage=(stage===s)?0:s;
+  document.querySelectorAll('.tl .st').forEach(el=>{const k=+el.dataset.s;el.classList.toggle('on',k===stage);el.classList.toggle('dim',stage&&k!==stage)});
+  $('#clr').classList.toggle('on',!!stage);
+  applyFilter();
+  return false;
+}
+function setSort(s){
+  sort=s;
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.sort===s));
+  render();
+}
+function openCard(id){
+  const c=C.find(x=>x.id===id); if(!c)return false;
+  const al=(c.al.cf||c.al.sat)?`<div class="als"><span class="tag cf" style="${c.al.cf?'':'display:none'}">בעיה תזרימית</span><span class="tag sat" style="${c.al.sat?'':'display:none'}">חוסר שביעות רצון</span></div>`:'<span class="none">אין</span>';
+  const tasks=c.tasks.length?c.tasks.map(t=>`<div>${t}</div>`).join(''):'<span class="none">אין משימות פתוחות</span>';
+  const mem=c.mem.length?c.mem.map(m=>`<div class="mu"><span class="m">${m[0]}</span><span>${m[1]}</span><span class="m num">${m[2]}</span></div>`).join(''):'<span class="none">אין עדכונים</span>';
+  let next='—';
+  if(c.next.t)next=`<span class="today num">${c.next.t}</span>`;
+  else if(c.next.none)next=`<span class="no">לא נקבעה</span>`;
+  $('#md').innerHTML=`
+    <div class="hd"><div><h3>${c.n}</h3><div class="s num">${c.thin?'':`ח.פ ${c.id} · ${c.pk} · ${c.mg}`}</div></div><button class="x" onclick="closeCard()">×</button></div>
+    <div class="bd">
+      <div class="row"><span class="k">שלב במחזור</span><div class="v"><span class="stg s${c.s}">${STAGES[c.s]}</span></div></div>
+      ${c.thin?'':`<div class="row"><span class="k">פגישה הבאה</span><div class="v">${next}</div></div>`}
+      <div class="row"><span class="k">התראות</span><div class="v">${al}</div></div>
+      <div class="row"><span class="k">משימות פתוחות</span><div class="v">${tasks}</div></div>
+      <div class="row"><span class="k">זיכרון · אחרונים</span><div class="v">${mem}</div></div>
+    </div>
+    <div class="ft"><a class="btn pri" href="memory.html?c=${c.id}">לזיכרון הלקוח</a><a class="btn" href="meetings.html?c=${c.id}">פגישות</a><a class="btn" href="tasks.html?c=${c.id}">משימות</a></div>`;
+  $('#ov').classList.add('on');
+  document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.toggle('hl',tr.dataset.id===id));
+  return false;
+}
+function closeCard(){$('#ov').classList.remove('on')}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
+render();
+const pc=new URLSearchParams(location.search).get('c'); if(pc)openCard(pc);
+</script>
+</body>
+</html>

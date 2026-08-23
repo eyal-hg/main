@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פגישות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* HK · מסך פגישות · סבב 3 — אותה שפה כמו today.html
+   רצועה 68 navy: כותרת 28 + תאריך | היום בקצרה | עכשיו
+   גוף: בלוק כהה אחד = "מה חסר" (ארבעה מונים, לחיצה מסננת) · חיפוש · רשימת כל הפגישות · לוח קרובות בצד
+   סקאלה: 28 / 17 / 14 / 12.5 / 12 · פאנל: גבול 1px, צל 4%, רדיוס 10 · גריד 1fr | 470 (430 ב-≤1450) */
+:root{
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bg:#F4F7FA;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#7557E3;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.num{font-variant-numeric:tabular-nums}
+
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:#fff;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px;margin-right:12px}
+.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13.5px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:#EAF3FA;color:var(--navy);font-weight:600}
+.nav .me{margin-right:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:left}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
+
+.strip{background:var(--navy);color:#fff;height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
+.strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
+.strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
+.strip .today{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#B9D3E6}
+.strip .today b{color:#fff;font-weight:500}
+.strip .today a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35)}
+.strip .today a:hover{border-color:#fff}
+.strip .today .c{color:#7FA6C2}
+.strip .spacer{margin-right:auto}
+.strip .now{font-size:13px;color:#B9D3E6}
+.strip .now b{color:#fff;font-weight:500}
+
+.wrap{max-width:1620px;margin:0 auto;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;grid-template-rows:auto 1fr;gap:18px;min-height:calc(100vh - 120px)}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
+.ph h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ph .hint{font-size:12.5px;color:var(--ink3)}
+.ph .more{margin-right:auto;font-size:12.5px;color:var(--sky);font-weight:500}
+.ph .more:hover{text-decoration:underline}
+
+/* ---- missing (dark block, one) ---- */
+.miss{grid-column:1/-1;background:var(--navy);color:#fff;border-radius:10px;display:grid;grid-template-columns:150px repeat(4,1fr);align-items:stretch;overflow:hidden}
+.miss .cap{padding:16px 20px;border-left:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;justify-content:center}
+.miss .cap b{font-size:15px;font-weight:600}
+.miss .cap span{font-size:12.5px;color:#9FC0DA;margin-top:2px}
+.miss .cap a{color:#fff;font-size:12.5px;margin-top:6px;display:none;border-bottom:1px solid rgba(255,255,255,.35);align-self:flex-start}
+.miss.f .cap a{display:inline}
+.miss .cap a:hover{color:#fff}
+.miss .q{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;padding:12px 20px;text-align:right;border-left:1px solid rgba(255,255,255,.12);transition:background .15s;position:relative}
+.miss .q:last-child{border-left:0}
+.miss .q:hover{background:rgba(255,255,255,.06)}
+.miss .q.on{background:var(--navy2)}
+.miss .q.on::after{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;background:var(--coral)}
+.miss .q .n{font-size:24px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+.miss .q.zero .n{color:#7FA6C2}
+.miss .q .l{font-size:14px;font-weight:500;color:#fff;line-height:1.25}
+.miss .q .w{font-size:12.5px;color:#B9D3E6;margin-top:3px;line-height:1.3}
+.miss .q.zero .w{color:#7FA6C2}
+
+/* ---- list ---- */
+.list{display:flex;flex-direction:column;min-width:0}
+.search{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--bd);background:#FAFCFE}
+.search .in{flex:1;position:relative}
+.search input{width:100%;height:38px;border:1px solid var(--bd);border-radius:6px;padding:0 36px 0 12px;font:inherit;font-size:13.5px;background:#fff;color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.search svg{position:absolute;right:12px;top:11px;width:16px;height:16px;color:var(--ink3)}
+.search .res{font-size:12.5px;color:var(--ink3);white-space:nowrap}
+.search .res b{color:var(--navy);font-weight:500}
+.search .clr{font-size:12.5px;color:var(--sky);font-weight:500;display:none}
+.search .clr.on{display:inline}
+table.ml{width:100%;border-collapse:collapse;font-size:14px}
+.ml th{font-weight:400;font-size:12px;color:var(--ink3);text-align:right;padding:9px 0 7px;border-bottom:1px solid var(--bd);white-space:nowrap}
+.ml th:first-child{padding-right:20px}.ml th:last-child{padding-left:20px}
+.tw{flex:1;display:flex;flex-direction:column;min-height:0}
+.tw table{height:100%}
+.ml thead tr{height:1px}
+.ml tr.fill{height:100%}
+.ml tr.fill td{border:0;padding:0}
+.ml td{padding:12px 0;border-bottom:1px solid var(--bd);vertical-align:middle;color:var(--ink2)}
+
+.ml td:first-child{padding-right:20px}.ml td:last-child{padding-left:20px}
+.ml tr.m:hover td{background:#FAFCFE}
+.ml tr.hid{display:none}
+.ml .d{white-space:nowrap;width:86px;color:var(--ink);font-weight:500}
+.ml .d small{display:block;font-size:12px;color:var(--ink3);font-weight:400}
+.ml .who a{font-weight:600;color:var(--navy)}
+.ml .who a:hover{text-decoration:underline}
+.ml .who .nm{color:var(--ink)}
+.ml .who .dot{color:#B7C3CF;margin:0 6px}
+.ml .who .hit{display:block;font-size:13px;color:var(--ink2);margin-top:4px;padding-right:10px;border-right:2px solid var(--sky)}
+.ml .who .hit mark{background:#FFF0B8;color:var(--ink);padding:0 2px;border-radius:2px}
+.ml .who .hit i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:6px}
+.ml .len{white-space:nowrap;width:70px;color:var(--ink2)}
+.ml .st{white-space:nowrap;width:215px}
+.ml .st span{display:inline-block;font-size:12.5px;color:var(--ink2)}
+.ml .st span.dot{color:#C4CED8;margin:0 5px}
+.ml .st .bad{color:var(--red);font-weight:500}
+.ml .st .warn{color:var(--orange);font-weight:500}
+.ml .fb{white-space:nowrap;width:72px}
+.ml .fb a{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--navy);font-weight:500;border:1px solid var(--bd);border-radius:5px;padding:3px 9px;background:#fff}
+.ml .fb a::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+.ml .fb a:hover{background:var(--bg)}
+.ml .fb .none{font-size:12.5px;color:var(--ink3)}
+.ml .ac{white-space:nowrap;width:128px;text-align:left}
+.ml .ok{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#E5F4ED;color:var(--green);font-size:12px;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:#fff;color:var(--navy);white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.pri:hover{background:var(--navy2)}
+.btn.sky{background:var(--sky);border-color:var(--sky);color:#fff}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.empty{display:none;padding:30px 20px;color:var(--ink3);font-size:13.5px;text-align:center}
+.empty.on{display:block}
+.lfoot{margin-top:auto;padding:11px 20px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3);display:flex;gap:16px}
+.lfoot b{color:var(--ink2);font-weight:500}
+
+/* ---- upcoming ---- */
+.up{display:flex;flex-direction:column}
+.tlw{padding:8px 20px 6px;flex:1;display:flex;flex-direction:column}
+.tlw .ut .b{min-height:100%}
+.ut{display:grid;grid-template-columns:92px 1fr;position:relative}
+.ut + .ut{border-top:1px solid var(--bd)}
+.ut .t{padding:14px 0 14px 12px;position:relative}
+.ut .t b{display:block;font-size:16px;font-weight:600;color:var(--navy)}
+.ut .t span{display:block;font-size:12px;color:var(--ink3);margin-top:1px}
+.ut .t::after{content:"";position:absolute;left:0;top:16px;width:10px;height:10px;border-radius:50%;border:2px solid var(--sky);background:#fff;transform:translateX(50%)}
+.ut.done .t::after{background:var(--green);border-color:var(--green)}
+.ut.done .t b{color:var(--green)}
+.ut .b{padding:14px 16px 14px 0;border-right:2px solid var(--bd);margin-right:-5px}
+.ut .b a.name{font-size:14.5px;font-weight:600;color:var(--navy)}
+.ut .b a.name:hover{text-decoration:underline}
+.ut .b .what{font-size:14px;color:var(--ink);margin-top:1px}
+.ut .meta{font-size:12.5px;color:var(--ink2);margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ut .meta .dot{color:#C4CED8}
+.ut .meta .ok{color:var(--green);font-weight:500}
+.ut .meta .warn{color:var(--orange);font-weight:500}
+.ut .act{margin-top:8px}
+.nowline{display:grid;grid-template-columns:92px 1fr;align-items:center}
+.nowline .t{padding:4px 0 4px 12px;font-size:12.5px;color:var(--coral);font-weight:600;white-space:nowrap}
+.nowline .l{height:0;border-top:1.5px dashed var(--coral);opacity:.6;margin-right:-5px}
+.noset{margin-top:auto;padding:12px 0 6px;border-top:1px solid var(--bd)}
+.noset h4{font-size:12.5px;color:var(--ink3);font-weight:500;margin-bottom:6px}
+.noset .r{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px}
+.noset .r + .r{border-top:1px solid var(--bd)}
+.noset .r a.name{font-weight:600;color:var(--navy)}
+.noset .r a.name:hover{text-decoration:underline}
+.noset .r .s{font-size:12.5px;color:var(--ink3)}
+.noset .r .no{color:var(--red);font-weight:500;font-size:12.5px}
+.noset .r .btn{margin-right:auto}
+
+/* ---- modal + toast ---- */
+.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
+.ov.on{display:grid}
+.md{width:560px;max-width:92vw;background:#fff;border-radius:12px;padding:22px 26px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.md h3{font-size:18px;color:var(--navy);font-weight:600}
+.md .s{font-size:13px;color:var(--ink3);margin-top:3px}
+.md .body{margin-top:14px;font-size:14px;line-height:1.6}
+.md .body .row{display:grid;grid-template-columns:110px 1fr;gap:8px;padding:7px 0;border-bottom:1px dashed var(--bd)}
+.md .body .row span:first-child{color:var(--ink3);font-size:13px}
+.md .f{display:flex;gap:8px;margin-top:18px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (min-height:1200px){
+  .ml td{padding:17px 0}
+  .ut .t,.ut .b{padding-top:18px;padding-bottom:18px}
+  .noset .r{padding:10px 0}
+}
+@media (max-width:1450px){
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px;min-height:calc(100vh - 112px)}
+  .nav,.strip{padding-left:24px;padding-right:24px}
+  .ph{padding:11px 18px 8px}
+  .ph h2{font-size:16px}
+  .miss{grid-template-columns:130px repeat(4,1fr)}
+  .miss .q{padding:10px 16px}
+  .miss .q .n{font-size:22px}
+  .ml td{padding:8px 0}
+  .ml .st{width:190px}
+  .ml .ac{width:118px}
+  .ut .t,.ut .b{padding-top:11px;padding-bottom:11px}
+  .search{padding:10px 18px}
+  .search input{height:34px}
+  .lfoot{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="today.html"><i>HK</i>חזות קריספין</a>
+  <ul>
+    <li><a href="today.html">היום</a></li>
+    <li><a href="tasks.html">משימות</a></li>
+    <li><a href="clients.html">לקוחות</a></li>
+    <li><a class="on" href="meetings.html">פגישות</a></li>
+    <li><a href="memory.html">זיכרון לקוחות</a></li>
+  </ul>
+  <div class="me"><div><b>אילון אשכנזי</b>אשכנזי ייעוץ עסקי</div><i>אא</i></div>
+</nav>
+
+<header class="strip">
+  <div><h1>פגישות</h1></div>
+  <div class="date num">יום חמישי · 02.07.2026</div>
+  <div class="sep"></div>
+  <div class="today num">
+    <span>היום <b>ארבע</b></span><span class="c">·</span>
+    <span>09:00 <a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a> הסתיימה</span><span class="c">·</span>
+    <span>הבאה <b>13:00</b> <a href="clients.html?c=514778220">מטעי גבעון</a></span>
+  </div>
+  <div class="spacer"></div>
+  <div class="now num"><b>10:54</b> · עכשיו</div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== what is missing — counters ===== -->
+  <section class="miss" id="miss">
+    <div class="cap"><b>מה חסר</b><span>לחיצה מסננת</span><a href="#" id="missAll">הצגת הכל</a></div>
+    <button class="q" data-q="rec" id="q-rec"><span class="n num">1</span><span><div class="l">לא הוקלטה</div><div class="w">אנרגי גולני · לימוד בנדל · 05.05</div></span></button>
+    <button class="q" data-q="appr" id="q-appr"><span class="n num">1</span><span><div class="l">סיכום לא אושר</div><div class="w">אנרגי אינטרנשיונל · היום 09:00</div></span></button>
+    <button class="q" data-q="sent" id="q-sent"><span class="n num">1</span><span><div class="l">סיכום לא נשלח</div><div class="w">אנרגי אינטרנשיונל · 01.06</div></span></button>
+    <button class="q" data-q="prep" id="q-prep"><span class="n num">1</span><span><div class="l">הכנה לא נפתחה</div><div class="w">משה עובד · היום 16:00 · Zoom</div></span></button>
+  </section>
+
+  <!-- ===== all meetings ===== -->
+  <section class="panel list">
+    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint">שמונה · מהחדשה לישנה</span><a class="more" href="clients.html">לפי לקוח</a></div>
+    <div class="search">
+      <div class="in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="חיפוש בסיכומי הפגישות — נושא, החלטה, יעד">
+      </div>
+      <span class="res" id="res"></span>
+      <a href="#" class="clr" id="clr">ניקוי</a>
+    </div>
+    <div class="tw">
+    <table class="ml" id="ml">
+      <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>משך</th><th>מצב</th><th>משוב</th><th></th></tr></thead>
+      <tbody>
+        <tr class="m" data-tags="appr" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207">
+          <td class="d num">02.07<small class="num">09:00</small></td>
+          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
+          <td class="len num">46 דק׳</td>
+          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span class="bad">סיכום מחכה לאישור</span></td>
+          <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 02.07 09:00 · פגישה שוטפת — סקירת תזרים">משוב</a></td>
+          <td class="ac"><button class="btn pri sm" data-act="appr">אישור הסיכום</button></td>
+        </tr>
+        <tr class="m" data-tags="held" data-k="אנרגי גולני פ.ע חודש יוני" id="r2406">
+          <td class="d num">24.06<small class="num">10:30</small></td>
+          <td class="who"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
+          <td class="len">—</td>
+          <td class="st"><span class="bad">לא התקיימה</span></td>
+          <td class="fb"><span class="none">—</span></td>
+          <td class="ac"><button class="btn sm" data-act="resch">תיאום מחדש</button></td>
+        </tr>
+        <tr class="m" data-tags="sent" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106">
+          <td class="d num">01.06<small class="num">11:00</small></td>
+          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
+          <td class="len num">58 דק׳</td>
+          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>אושר</span><span class="dot">·</span><span class="warn">לא נשלח ללקוח</span></td>
+          <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 01.06 11:00 · פ.ע — חודש יוני">משוב</a></td>
+          <td class="ac"><button class="btn sm" data-act="send">שליחה ללקוח</button></td>
+        </tr>
+        <tr class="m" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות">
+          <td class="d num">12.05<small class="num">10:00</small></td>
+          <td class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
+          <td class="len num">52 דק׳</td>
+          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>אושר ונשלח</span></td>
+          <td class="fb"><a href="#" data-fb="מטעי גבעון · 12.05 10:00 · פגישת עבודה — קורס מנחות">משוב</a></td>
+          <td class="ac"><span class="ok">✓</span></td>
+        </tr>
+        <tr class="m" data-tags="ok" data-k="אנרגי אינטרנשיונל פ.ע חודש מאי" id="r0505a"
+            data-items='["ניתוח רבעון מרץ–מאי: הכנסות 116/140/120 אש״ח","זוהה פער: כרטיס ״מקס״ אינו מחובר ל-Bizibox","הוחלט: החלפת פונקציית שירות הלקוחות","הוגדר יעד: מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.7"]'>
+          <td class="d num">05.05<small class="num">11:00</small></td>
+          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש מאי</span><span class="hit"></span></td>
+          <td class="len num">49 דק׳</td>
+          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>4 סעיפים</span><span class="dot">·</span><span class="num">4/4 משימות</span></td>
+          <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 05.05 11:00 · פ.ע — חודש מאי">משוב</a></td>
+          <td class="ac"><span class="ok">✓</span></td>
+        </tr>
+        <tr class="m" data-tags="rec" data-k="אנרגי גולני לימוד בנדל" id="r0505b">
+          <td class="d num">05.05<small class="num">09:00</small></td>
+          <td class="who"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">לימוד בנדל</span><span class="hit"></span></td>
+          <td class="len num">55 דק׳</td>
+          <td class="st"><span class="bad">לא הוקלטה</span></td>
+          <td class="fb"><span class="none">—</span></td>
+          <td class="ac"><button class="btn sm" data-act="upload">העלאת הקלטה</button></td>
+        </tr>
+        <tr class="m" data-tags="ok" data-k="אנרגי אינטרנשיונל פגישה חודשית אפריל">
+          <td class="d num">03.04<small class="num">10:00</small></td>
+          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה חודשית — אפריל</span><span class="hit"></span></td>
+          <td class="len num">57 דק׳</td>
+          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>3 סעיפים</span><span class="dot">·</span><span class="num">2/3 משימות</span></td>
+          <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 03.04 10:00 · פגישה חודשית — אפריל">משוב</a></td>
+          <td class="ac"><span class="ok">✓</span></td>
+        </tr>
+        <tr class="m" data-tags="ok" data-k="רימון יצחק פגישה חודשית מרץ">
+          <td class="d num">17.03<small class="num">12:00</small></td>
+          <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
+          <td class="len num">61 דק׳</td>
+          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>אושר ונשלח</span></td>
+          <td class="fb"><a href="#" data-fb="רימון יצחק · 17.03 12:00 · פגישה חודשית — מרץ">משוב</a></td>
+          <td class="ac"><span class="ok">✓</span></td>
+        </tr>
+        <!-- future row, shown only under "הכנה לא נפתחה" -->
+        <tr class="m hid fut" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
+          <td class="d num">היום<small class="num">16:00</small></td>
+          <td class="who"><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="hit"></span></td>
+          <td class="len">Zoom</td>
+          <td class="st"><span class="warn">ההכנה לא נפתחה</span></td>
+          <td class="fb"><span class="none">—</span></td>
+          <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></td>
+        </tr>
+        <tr class="fill"><td colspan="6"></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="empty" id="empty">אין פגישה שמתאימה לחיפוש.</div>
+    <div class="lfoot"><span>משוב מהלקוח: <b>6 מתוך 8</b></span><span>הוקלטו: <b>6</b></span><span>הפגישה האחרונה שנשלחה ללקוח: <b class="num">12.05 מטעי גבעון</b></span></div>
+  </section>
+
+  <!-- ===== upcoming ===== -->
+  <aside class="panel up">
+    <div class="ph"><h2>הקרובות</h2><span class="hint">היום</span><a class="more" href="today.html">היום</a></div>
+    <div class="tlw">
+      <div class="ut done">
+        <div class="t"><b class="num">09:00</b><span class="num">עד 10:00</span></div>
+        <div class="b"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><div class="what">פגישה שוטפת — סקירת תזרים</div>
+          <div class="meta"><span>עם צחי עובד</span><span class="dot">·</span><span>הוקלטה 46 דק׳</span><span class="dot">·</span><span class="ok">הסתיימה</span></div></div>
+      </div>
+      <div class="nowline"><div class="t num">10:54 · עכשיו</div><div class="l"></div></div>
+      <div class="ut">
+        <div class="t"><b class="num">13:00</b></div>
+        <div class="b"><a class="name" href="clients.html?c=514778220">מטעי גבעון</a><div class="what">שיחת מעקב</div>
+          <div class="meta"><span>אחרי חריגת התקציב</span><span class="dot">·</span><span>פגישה אחרונה 12.05</span></div></div>
+      </div>
+      <div class="ut">
+        <div class="t"><b class="num">16:00</b><span class="num">עד 17:00</span></div>
+        <div class="b"><a class="name" href="clients.html?c=039112774">משה עובד</a><div class="what">פגישה חודשית — יולי</div>
+          <div class="meta"><span>Zoom</span><span class="dot">·</span><span class="warn">ההכנה לא נפתחה</span></div>
+          <div class="act"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></div></div>
+      </div>
+      <div class="ut">
+        <div class="t"><b class="num">17:00</b><span class="num">עד 17:30</span></div>
+        <div class="b"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><div class="what">המשך סקירה — החלטות תקציב</div>
+          <div class="meta"><span>המשך לפגישת 09:00</span><span class="dot">·</span><span class="ok">ההכנה נפתחה</span></div>
+          <div class="act"><button class="btn sm" data-act="prepopen">להכנה</button></div></div>
+      </div>
+
+      <div class="noset">
+        <h4>בלי פגישה הבאה</h4>
+        <div class="r"><a class="name" href="clients.html?c=511200341">אנרגי גולני</a><span class="s num">אחרונה 24.06 · לא התקיימה</span><span class="no">לא נקבעה</span><button class="btn sm" data-act="resch">תיאום</button></div>
+        <div class="r"><a class="name" href="clients.html?c=025664109">רימון יצחק</a><span class="s num">אחרונה 17.03</span><span class="no">לא נקבעה</span><button class="btn sm" data-act="sched">קביעה</button></div>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<div class="ov" id="ov"><div class="md">
+  <h3 id="mdT">משוב</h3><div class="s" id="mdS"></div>
+  <div class="body" id="mdB"></div>
+  <div class="f"><button class="btn pri" id="mdClose">סגירה</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)};
+  let filter=null, query='';
+  const rows=$$('#ml tbody tr.m');
+  const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
+  function apply(){
+    let shown=0;
+    rows.forEach(r=>{
+      const tags=r.dataset.tags.split(' ');
+      let ok = filter ? tags.includes(filter) : !r.classList.contains('fut');
+      const hit=r.querySelector('.hit'); hit.innerHTML='';
+      if(ok && query){
+        const items=r.dataset.items?JSON.parse(r.dataset.items):[];
+        const m=items.findIndex(s=>s.includes(query));
+        const kOk=r.dataset.k.includes(query);
+        if(m>=0){hit.innerHTML='<i>סעיף '+(m+1)+'</i>'+items[m].replace(query,'<mark>'+query+'</mark>')}
+        else if(!kOk) ok=false;
+      }
+      r.classList.toggle('hid',!ok); if(ok) shown++;
+    });
+    $('#empty').classList.toggle('on',shown===0);
+    $$('.miss .q').forEach(q=>q.classList.toggle('on',q.dataset.q===filter));
+    $('#miss').classList.toggle('f',!!filter);
+    const names={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
+    $('#hint').textContent = filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : 'שמונה · מהחדשה לישנה';
+    $('#res').innerHTML = query ? '<b>'+shown+'</b> תוצאות ל-״'+query+'״' : '';
+    $('#clr').classList.toggle('on',!!query);
+  }
+  $$('.miss .q').forEach(q=>q.addEventListener('click',()=>{filter=(filter===q.dataset.q)?null:q.dataset.q;apply()}));
+  $('#missAll').addEventListener('click',e=>{e.preventDefault();filter=null;apply()});
+  $('#q').addEventListener('input',e=>{query=e.target.value.trim();apply()});
+  $('#clr').addEventListener('click',e=>{e.preventDefault();$('#q').value='';query='';apply()});
+
+  // feedback modal
+  const ov=$('#ov');
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('[data-fb]'); if(!a) return; e.preventDefault();
+    const [c,d,n]=a.dataset.fb.split(' · ');
+    $('#mdT').textContent='משוב מהלקוח · '+c; $('#mdS').textContent=d+' · '+n;
+    $('#mdB').innerHTML='<div class="row"><span>לקוח</span><span>'+c+'</span></div><div class="row"><span>פגישה</span><span>'+n+'</span></div><div class="row"><span>מועד</span><span class="num">'+d+'</span></div><div class="row"><span>תוכן המשוב</span><span>מוצג מתוך טופס המשוב של הלקוח</span></div>';
+    ov.classList.add('on');
+  });
+  $('#mdClose').addEventListener('click',()=>ov.classList.remove('on'));
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('on')});
+
+  // actions
+  const setCount=(id,n)=>{const q=$('#'+id);q.querySelector('.n').textContent=n;q.classList.toggle('zero',n===0);if(n===0)q.querySelector('.w').textContent='הכל בסדר'};
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act;
+    if(act==='appr'){const r=$('#r0207');r.dataset.tags='ok';r.querySelector('.st').innerHTML='<span>הוקלטה</span><span class="dot">·</span><span>אושר</span>';r.querySelector('.ac').innerHTML='<span class="ok">✓</span>';setCount('q-appr',0);toast('הסיכום של אנרגי אינטרנשיונל אושר');apply()}
+    else if(act==='send'){const r=$('#r0106');r.dataset.tags='ok';r.querySelector('.st').innerHTML='<span>הוקלטה</span><span class="dot">·</span><span>אושר ונשלח</span>';r.querySelector('.ac').innerHTML='<span class="ok">✓</span>';setCount('q-sent',0);toast('הסיכום נשלח ללקוח');apply()}
+    else if(act==='upload'){toast('בחירת קובץ הקלטה — לימוד בנדל 05.05')}
+    else if(act==='resch'){toast('תיאום מחדש עם אנרגי גולני — נפתח ביומן')}
+    else if(act==='sched'){toast('קביעת פגישה עם רימון יצחק — נפתח ביומן')}
+    else if(act==='prep'){location.href='today.html?prep=039112774'}
+    else if(act==='prepopen'){location.href='today.html?prep=511327876'}
+  });
+  const u=new URLSearchParams(location.search);
+  if(u.get('f')) filter=u.get('f'); if(u.get('q')){query=u.get('q');$('#q').value=query}
+  apply();
+})();
+</script>
+</body>
+</html>
