@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>משימות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך משימות — נבנה על שפת today.html
+   הכחול: (א) MASTHEAD בלבד. זה מסך רשימה — בגוף אין ולו משטח כהה אחד.
+   כדי שהרצועה תישא תוכן אמיתי (ולא כותרת לבדה), פקד הכתיבה יושב בתוכה.
+   אוצר רכיבים מושאל: .band .topline nav .brand .who .slot .hour .mbody
+   .btn-sky .linkish .chk .tt .toast · .hkhead טבלת הבקשות ל-HK
+   ===================================================================== */
+:root{
+  --navy:#0C4068; --navy2:#0A3557; --sky:#39ABE2; --coral:#E8635A;
+  --bg:#F4F7FA; --bd:#E6ECF4;
+  --green:#13895b; --red:#dc4436; --orange:#c98404; --purple:#7557E3;
+  --ink:#123049; --mute:#5F7A93; --mute2:#8AA0B4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#fff; color:var(--ink);
+  font-family:Rubik,"Helvetica Neue",Arial,sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1560px;margin:0 auto;padding:0 56px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.serif{font-family:"Frank Ruhl Libre",Rubik,serif}
+
+/* ============ MASTHEAD ============ */
+.band{background:var(--navy);color:#fff;position:relative}
+.band::after{content:"";position:absolute;inset-inline:0;bottom:0;height:3px;
+  background:linear-gradient(to left,var(--sky),var(--sky) 26%,rgba(57,171,226,0) 26%)}
+.topline{display:flex;align-items:center;gap:44px;padding:20px 0 0}
+.brand{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.brand b{font-size:21px;font-weight:700;letter-spacing:.14em;color:#fff}
+.brand span{font-size:12px;color:#7FB4D8;letter-spacing:.04em}
+nav{display:flex;gap:4px;flex:1}
+nav a{padding:8px 14px 10px;font-size:14.5px;font-weight:400;color:rgba(255,255,255,.60);
+  border-bottom:2px solid transparent;transition:color .15s}
+nav a:hover{color:#fff}
+nav a[aria-current]{color:#fff;font-weight:500;border-bottom-color:var(--sky)}
+.who{font-size:13px;color:#8FBBDB;white-space:nowrap}
+.who b{color:#fff;font-weight:500}
+
+.bandmain{display:flex;align-items:flex-end;justify-content:space-between;gap:60px;
+  padding:38px 0 42px}
+.title{display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+.title h1{margin:0;font-size:78px;line-height:.82;font-weight:700;letter-spacing:-.015em}
+.title .date{font-size:15.5px;color:#9CCBEA;letter-spacing:.03em;padding-bottom:7px}
+.title .date i{font-style:normal;color:#6C9EC4;padding:0 6px}
+
+/* --- פקד הכתיבה, בתוך הכחול --- */
+.compose{width:min(660px,52%);flex:none}
+.compose-h{font-size:11px;font-weight:600;letter-spacing:.16em;color:#7FA9C8;margin-bottom:12px}
+.compose input[type=text]{width:100%;background:transparent;border:0;
+  border-bottom:1px solid rgba(255,255,255,.30);color:#fff;font:inherit;font-size:18px;
+  font-weight:400;padding:8px 2px 12px;outline:none;transition:border-color .15s}
+.compose input[type=text]::placeholder{color:rgba(255,255,255,.42)}
+.compose input[type=text]:focus{border-bottom-color:var(--sky)}
+.crow{display:flex;align-items:center;gap:10px;margin-top:14px}
+.crow select{appearance:none;background:rgba(255,255,255,.09);border:0;color:#fff;
+  font:inherit;font-size:13.5px;padding:9px 14px 9px 30px;border-radius:2px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,#8FBBDB 50%),linear-gradient(135deg,#8FBBDB 50%,transparent 50%);
+  background-position:calc(12px) calc(50% - 1px),calc(17px) calc(50% - 1px);
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.crow select:hover{background-color:rgba(255,255,255,.16)}
+.crow option{color:var(--ink);background:#fff}
+.btn-sky{background:var(--sky);color:#06283F;font-size:13.5px;font-weight:600;
+  padding:10px 22px;border-radius:2px;transition:background .15s}
+.btn-sky:hover{background:#63C2F0}
+
+/* ============ שורת המתג והסינון ============ */
+main{padding:0 0 70px}
+.bar{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;
+  border-bottom:1px solid var(--bd);padding:30px 0 0}
+.seg{display:flex;gap:30px}
+.seg button{font-family:"Frank Ruhl Libre",Rubik,serif;font-size:26px;font-weight:700;
+  letter-spacing:-.01em;color:#A9BCCC;padding-bottom:14px;border-bottom:2px solid transparent;
+  transition:color .15s}
+.seg button:hover{color:var(--navy)}
+.seg button[aria-current]{color:var(--navy);border-bottom-color:var(--navy)}
+.filters{display:flex;align-items:center;gap:8px;padding-bottom:13px}
+.filters select{appearance:none;background:var(--bg);border:0;color:var(--ink);font:inherit;
+  font-size:13.5px;padding:8px 14px 8px 30px;border-radius:2px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,#7E97AC 50%),linear-gradient(135deg,#7E97AC 50%,transparent 50%);
+  background-position:calc(12px) calc(50% - 1px),calc(17px) calc(50% - 1px);
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.filters select:hover{background-color:#E9EFF6}
+.filters .clr{font-size:13px;color:var(--mute);border-bottom:1px solid var(--bd);
+  padding:0 0 2px;margin-inline-start:6px;display:none}
+.filters .clr:hover{color:var(--navy);border-bottom-color:var(--navy)}
+.filters .clr.on{display:inline-block}
+
+/* ============ הרשימה ============ */
+.list{padding-top:40px;min-height:calc(100vh - 470px)}
+.slot{display:grid;grid-template-columns:126px minmax(0,1fr)}
+.hour{padding-top:1px;font-size:16px;font-weight:600;color:var(--navy);letter-spacing:.01em}
+.hour small{display:block;font-size:12px;font-weight:400;color:var(--mute2);margin-top:3px}
+.mbody{position:relative;border-inline-start:1px solid var(--bd);padding-inline-start:34px;
+  padding-bottom:40px}
+.railtail{display:grid;grid-template-columns:126px minmax(0,1fr);height:66px}
+.railtail span{grid-column:2;border-inline-start:1px solid var(--bd)}
+.mbody::before{content:"";position:absolute;inset-inline-start:-5.5px;top:5px;
+  width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid #C6D5E4}
+.slot.today .mbody::before{background:var(--navy);border-color:var(--navy)}
+.slot.none .mbody::before{border-style:dashed;border-color:#C6D5E4}
+
+ul.tasks{list-style:none;margin:0;padding:0}
+.tasks li{position:relative;display:grid;grid-template-columns:19px minmax(0,560px) 208px 104px minmax(0,1fr);
+  column-gap:17px;align-items:center;padding:16px 0;padding-inline-start:19px;
+  border-bottom:1px solid var(--bd);transition:background .25s}
+.tasks li:first-child{padding-top:0}
+.mk{position:absolute;inset-block:0;inset-inline-start:0;width:2px;background:transparent}
+.tasks li:first-child .mk{inset-block-start:-4px}
+.tasks li.frm .mk{background:var(--sky)}
+.chk{width:19px;height:19px;border:1.5px solid #B9CBDB;
+  border-radius:2px;position:relative;transition:.15s}
+.chk:hover{border-color:var(--navy)}
+.chk::after{content:"";position:absolute;inset-inline-start:5px;top:1.5px;width:5px;height:10px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);opacity:0}
+.tasks li.on .chk{background:var(--green);border-color:var(--green)}
+.tasks li.on .chk::after{opacity:1}
+.tasks li.on .tt{color:var(--mute2);text-decoration:line-through}
+.tt{font-size:16.5px;font-weight:500;color:var(--ink);line-height:1.35}
+.tasks .c{font-size:14px;justify-self:start}
+.tasks .src{font-size:13px;color:var(--mute)}
+.tasks li.frm .src{color:var(--sky);font-weight:500}
+.linkish{color:var(--navy);font-weight:500;border-bottom:1px solid #BFD3E4}
+.linkish:hover{color:var(--sky);border-bottom-color:var(--sky)}
+.tasks li.flash{background:#FFF7E4}
+
+/* --- מה שביקשתי מ-HK: אנטומיה אחרת, בלי צ׳קבוקס --- */
+.hk{list-style:none;margin:0;padding:0}
+.hk li{display:grid;grid-template-columns:minmax(0,560px) 208px 150px 72px 96px minmax(0,1fr);
+  column-gap:17px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--bd)}
+.hk li:first-child{border-top:1px solid var(--bd)}
+.hk li:first-child .w,.hk li:first-child .c{padding-top:0}
+.hk .w{font-size:16.5px;font-weight:500;color:var(--ink)}
+.hk .c{font-size:14px;justify-self:start}
+.hk .m{font-size:13.5px;color:var(--mute)}
+.hk .d{font-size:13.5px;color:var(--mute)}
+.hk .s{font-size:13px;color:var(--mute);justify-self:start}
+.hk .s::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--sky);margin-inline-end:8px;vertical-align:1px}
+.hk li.done .s{color:var(--green)}
+.hk li.done .s::before{background:var(--green)}
+.hk li.done .w{color:var(--mute2)}
+.hkhead{display:grid;grid-template-columns:minmax(0,560px) 208px 150px 72px 96px minmax(0,1fr);
+  column-gap:17px;padding-bottom:12px;font-size:11px;font-weight:600;letter-spacing:.16em;
+  color:var(--mute2)}
+
+.empty{padding:4px 0 0;font-size:16px;color:var(--mute)}
+#emp-mine{padding-inline-start:160px}
+.empty button{margin-inline-start:14px;color:var(--navy);font-weight:500;
+  border-bottom:1px solid #BFD3E4}
+.empty button:hover{color:var(--sky);border-bottom-color:var(--sky)}
+.hidden{display:none !important}
+
+.toast{position:fixed;bottom:34px;inset-inline-start:50%;transform:translateX(50%) translateY(14px);
+  background:var(--navy2);color:#fff;font-size:14px;padding:13px 26px;opacity:0;
+  transition:.22s;pointer-events:none;z-index:60}
+.toast.show{opacity:1;transform:translateX(50%) translateY(0)}
+
+@media (max-width:1440px){
+  .wrap{padding:0 36px}
+  .title h1{font-size:58px}
+  .bandmain{padding:32px 0 36px}
+  .compose{width:min(600px,50%)}
+  .slot,.railtail{grid-template-columns:108px minmax(0,1fr)}
+  .mbody{padding-inline-start:28px}
+  .tasks li{grid-template-columns:19px minmax(0,520px) 180px 96px minmax(0,1fr);column-gap:14px}
+  .hk li,.hkhead{grid-template-columns:minmax(0,520px) 180px 140px 68px 92px minmax(0,1fr);column-gap:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="wrap">
+    <div class="topline">
+      <div class="brand"><b>HK</b><span>חזות קריספין</span></div>
+      <nav>
+        <a href="today.html">היום</a>
+        <a href="tasks.html">משימות</a>
+        <a href="clients.html">לקוחות</a>
+        <a href="meetings.html" aria-current="page">פגישות</a>
+        <a href="memory.html">זיכרון לקוחות</a>
+      </nav>
+      <div class="who"><b>אילון אשכנזי</b> · אשכנזי ייעוץ עסקי</div>
+    </div>
+
+    <div class="bandmain">
+      <div class="title">
+        <h1 class="serif">פגישות</h1>
+        <div class="date num">יום חמישי<i>·</i>02.07.2026<i>·</i>10:54</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" style="padding-top:64px;padding-bottom:120px">
+  <div style="max-width:52ch">
+    <div style="font-size:12px;letter-spacing:.08em;color:#8CA0B6;margin-bottom:14px">בתכנון</div>
+    <h2 class="serif" style="font-size:31px;font-weight:700;line-height:1.25;margin:0 0 16px">
+      המסך הזה נבנה מחדש.
+    </h2>
+    <p style="font-size:15px;line-height:1.8;color:#5B7590;margin:0 0 10px">
+      התצוגה הקודמת נפסלה — ארבעה תורים בארבע עמודות שעבדו רק כי בדמו הייתה בדיוק פגישה אחת בכל תור,
+      וחיפוש שלא היה ברור אם הוא מסנן או עונה.
+    </p>
+    <p style="font-size:15px;line-height:1.8;color:#5B7590;margin:0 0 26px">
+      שלוש שאלות פתוחות לפני הבנייה: איך נראים התורים כשיש בהם חמש פגישות או אפס ·
+      מה הנוכחות של המשוב במסך · והאם רשימת הפגישות שהיו היא ארכיון או תור עבודה.
+    </p>
+    <a href="today.html" style="display:inline-block;background:#0C4068;color:#fff;text-decoration:none;
+       font-size:13.5px;font-weight:500;padding:11px 20px;border-radius:10px">חזרה להיום</a>
+  </div>
+</main>
+
+</body>
+</html>

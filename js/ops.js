@@ -213,6 +213,8 @@
   let refDups=[];
   function opsRefreshClick(){
     if(finPaused){finishOps();return;}
+    /* הצ'יפ במצב "נכשל" — הרענון החוזר ממשיך את מה שנכשל (שער או ידני) */
+    if(_refFailed[opsActiveKey]&&window._refPassed!==opsActiveKey){openRefresh(_refMode);return;}
     openRefresh('manual');
   }
   function finishOps(){
@@ -222,14 +224,52 @@
   }
   /* רענון נתוני ה-raw data — זמין תמיד, וגם השער בין חלק 1 לחלק 2 */
   let _refMode='manual';
+  /* דמו: הרענון הראשון לכל חברה נכשל (Bizibox לא החזיר נתונים) — הניסיון החוזר מצליח.
+     OPS_REF_FAIL=false מבטל. */
+  const OPS_REF_FAIL=true;
+  const _refFailed={};
+  let _refBusy=false;
   function openRefresh(mode){
+    /* שתי קריאות מקבילות (דילוג הדמו + סיום אוטומטי) לא פותחות שני רענונים */
+    if(_refBusy) return;
+    _refBusy=true;
     _refMode=mode||'manual';
     document.getElementById('refOv').classList.add('show');
     document.getElementById('refBody').innerHTML='<div class="ref-spin"><div class="ref-spinner"></div><div>מרענן נתוני raw data מ-Bizibox'+(OPS_REF_DUPS?' · סורק כפילויות בתזרים ובאשראי':'')+'…</div></div>';
+    refBarState('busy');
     setTimeout(()=>{
+      _refBusy=false;
+      if(OPS_REF_FAIL&&!_refFailed[opsActiveKey]&&window._refPassed!==opsActiveKey){
+        _refFailed[opsActiveKey]=true; renderRefFail(); return;
+      }
       refDups=(OPS_REF_DUPS&&CUR===0&&window._refPassed!==opsActiveKey)?REF_DUPS_DEMO.map(d=>({...d,res:null})):[];
       renderRefDups();
     },1100);
+  }
+  /* הרענון נכשל — המצב נשאר גם בפס התפעול עד שרענון חוזר מצליח */
+  function renderRefFail(){
+    refBarState('fail');
+    document.getElementById('refBody').innerHTML=`
+      <div class="ref-fail">
+        <div class="ref-fail-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></div>
+        <div class="ref-fail-b">
+          <div class="ref-fail-t">הרענון נכשל</div>
+          <div class="ref-fail-d">Bizibox לא החזיר נתונים. התזרים לא עודכן${_refMode==='gate'?' — אי אפשר לעבור לבדיקות בלי רענון תקין':''}.</div>
+        </div>
+      </div>
+      <div class="ref-fail-acts">
+        <button class="ref-retry" onclick="openRefresh(_refMode)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg> רענון חוזר</button>
+        <button class="ref-later" onclick="refClose()">${_refMode==='gate'?'חזרה לתפעול':'סגירה'}</button>
+      </div>`;
+  }
+  /* הצ'יפ בפס התפעול משקף את מצב הרענון: רגיל · מרענן · נכשל */
+  function refBarState(s){
+    const b=document.getElementById('opsFinBtn'); if(!b) return;
+    b.classList.remove('busy','fail');
+    const ico='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg>';
+    if(s==='busy'){ b.classList.add('busy'); b.innerHTML=ico+' מרענן…'; }
+    else if(s==='fail'){ b.classList.add('fail'); b.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg> הרענון נכשל · רענון חוזר'; }
+    else b.innerHTML=ico+' רענון נתונים';
   }
   function refClose(){ document.getElementById('refOv').classList.remove('show'); }
   function renderRefDups(){
@@ -259,6 +299,7 @@
   function refContinue(){
     document.getElementById('refOv').classList.remove('show');
     window._refPassed=opsActiveKey;
+    refBarState('ok');
     if(_refMode==='gate') finishOps2();
     else toast('נתוני ה-raw data עודכנו ✓');
   }

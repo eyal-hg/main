@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>זיכרון לקוחות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* HK · אותה שפה כמו today.html — טוקנים, MASTHEAD, בגוף אין משטח כהה */
+:root{
+  --navy:#0C4068; --navy2:#0A3557; --sky:#39ABE2; --coral:#E8635A;
+  --bg:#F4F7FA; --bd:#E6ECF4;
+  --green:#13895b; --red:#dc4436; --orange:#c98404; --purple:#7557E3;
+  --ink:#123049; --mute:#5F7A93; --mute2:#8AA0B4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:#fff;color:var(--ink);font-family:Rubik,"Helvetica Neue",Arial,sans-serif;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1560px;margin:0 auto;padding:0 56px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.serif{font-family:"Frank Ruhl Libre",Rubik,serif}
+
+/* ============ MASTHEAD ============ */
+.band{background:var(--navy);color:#fff;position:relative}
+.band::after{content:"";position:absolute;inset-inline:0;bottom:0;height:3px;
+  background:linear-gradient(to left,var(--sky),var(--sky) 26%,rgba(57,171,226,0) 26%)}
+.topline{display:flex;align-items:center;gap:44px;padding:20px 0 0}
+.brand{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.brand b{font-size:21px;font-weight:700;letter-spacing:.14em;color:#fff}
+.brand span{font-size:12px;color:#7FB4D8;letter-spacing:.04em}
+nav{display:flex;gap:4px;flex:1}
+nav a{padding:8px 14px 10px;font-size:14.5px;font-weight:400;color:rgba(255,255,255,.60);
+  border-bottom:2px solid transparent;transition:color .15s}
+nav a:hover{color:#fff}
+nav a[aria-current]{color:#fff;font-weight:500;border-bottom-color:var(--sky)}
+.who{font-size:13px;color:#8FBBDB;white-space:nowrap}
+.who b{color:#fff;font-weight:500}
+
+.bandmain{display:flex;align-items:flex-end;justify-content:space-between;gap:60px;
+  padding:38px 0 44px}
+.title{display:flex;align-items:baseline;gap:20px;flex-wrap:wrap}
+.title h1{margin:0;font-size:78px;line-height:.82;font-weight:700;letter-spacing:-.015em}
+.title .date{font-size:15.5px;color:#9CCBEA;letter-spacing:.03em;padding-bottom:7px}
+.title .date i{font-style:normal;color:#6C9EC4;padding:0 6px}
+
+.bandside{display:flex;align-items:flex-end;gap:20px;padding-bottom:5px}
+.search{display:flex;align-items:center;gap:12px;border-bottom:1.5px solid rgba(255,255,255,.35);
+  padding:0 2px 10px;min-width:392px;transition:border-color .15s}
+.search:focus-within{border-bottom-color:var(--sky)}
+.search svg{flex:none;opacity:.75}
+.search input{flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:16px;
+  color:#fff;padding:0}
+.search input::placeholder{color:#7FA9C8}
+.search .x{color:#9CCBEA;font-size:13px;display:none}
+.search .x:hover{color:#fff}
+.search.on .x{display:block}
+.howbtn{white-space:nowrap;font-size:13.5px;font-weight:500;color:#fff;
+  border:1px solid rgba(255,255,255,.32);padding:10px 20px;border-radius:2px;transition:.15s}
+.howbtn:hover{border-color:var(--sky);color:var(--sky)}
+
+/* ============ גוף — לבן, קווי שיער בלבד ============ */
+main{padding:52px 0 64px}
+.cols{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(316px,.62fr);gap:0;
+  min-height:calc(100vh - 300px)}
+.col-flow{padding-inline-end:56px}
+.col-list{border-inline-start:1px solid var(--bd);padding-inline-start:52px}
+h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em;color:var(--navy)}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  margin-bottom:30px}
+.sechead .side{font-size:12.5px;color:var(--mute2);letter-spacing:.03em}
+.sechead .side button{color:var(--navy);font-weight:500;border-bottom:1px solid #BFD3E4;font-size:13px}
+.sechead .side button:hover{color:var(--sky);border-bottom-color:var(--sky)}
+
+/* --- הזרם --- */
+.day{font-size:11px;font-weight:600;letter-spacing:.16em;color:var(--mute2);
+  padding:26px 0 12px;border-bottom:1px solid var(--bd)}
+.day:first-of-type{padding-top:0}
+.row{position:relative;display:grid;grid-template-columns:212px 128px minmax(0,1fr) 150px;gap:22px;
+  align-items:baseline;padding:21px 0;border-bottom:1px solid var(--bd);width:100%;text-align:start}
+.row::before{content:"";position:absolute;top:0;bottom:-1px;inset-inline-start:223px;
+  width:1px;background:var(--bd)}
+.row:hover{background:#FAFCFE}
+.row .cl{font-size:18.5px;font-weight:600;color:var(--navy);letter-spacing:-.008em;
+  border-bottom:1px solid transparent}
+.row:hover .cl{border-bottom-color:#C9DAE8}
+.row .cat{font-size:12.5px;font-weight:500;color:var(--purple);letter-spacing:.01em}
+.row .q{font-size:16px;color:var(--ink);line-height:1.4}
+.row .src{font-size:13px;color:var(--mute);text-align:start}
+.row .src b{display:block;font-weight:400;color:var(--mute2);font-size:12.5px;margin-top:3px}
+mark{background:#FFF1BF;color:inherit;padding:1px 2px}
+.empty{padding:44px 0;font-size:16px;color:var(--mute)}
+.empty button{color:var(--navy);font-weight:500;border-bottom:1px solid #BFD3E4}
+
+/* --- רשימת הלקוחות --- */
+.clients{list-style:none;margin:0;padding:0}
+.clients li{border-bottom:1px solid var(--bd)}
+.clients button{display:flex;width:100%;align-items:baseline;justify-content:space-between;
+  gap:14px;padding:13px 2px;text-align:start;transition:.15s}
+.clients button:hover{background:#FAFCFE;padding-inline-start:8px}
+.clients .n{font-size:15.5px;font-weight:500;color:var(--ink)}
+.clients button:hover .n{color:var(--navy)}
+.clients .u{font-size:12px;color:var(--mute2);white-space:nowrap}
+.clients .u b{font-weight:500;color:var(--navy)}
+
+/* --- מודאלים --- */
+.ov{position:fixed;inset:0;background:rgba(5,26,45,.74);display:none;
+  align-items:center;justify-content:center;z-index:50;padding:32px}
+.ov.open{display:flex}
+.dlg{background:#fff;width:660px;max-width:94vw;max-height:88vh;overflow:auto;
+  border-top:3px solid var(--sky)}
+.dlg-h{padding:28px 34px 22px;border-bottom:1px solid var(--bd);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.dlg-h h3{margin:0 0 6px;font-size:27px;font-weight:700;color:var(--navy)}
+.facts{font-size:13px;color:var(--mute);line-height:1.75}
+.facts i{font-style:normal;color:#C2CFDB;padding:0 6px}
+.facts span.k{color:var(--mute2)}
+.close{font-size:22px;color:var(--mute2);line-height:1;padding:2px 6px}
+.close:hover{color:var(--navy)}
+.dlg-b{padding:8px 34px 30px}
+.catblock{padding:20px 0;border-bottom:1px solid var(--bd)}
+.catblock .ch{font-size:12.5px;font-weight:600;color:var(--purple);margin-bottom:9px}
+.catblock .ci{font-size:16px;line-height:1.45}
+.catblock .cm{margin-top:5px;font-size:12.5px;color:var(--mute2)}
+.catblock .cm i{font-style:normal;color:#C2CFDB;padding:0 6px}
+.addbox{margin-top:24px}
+.addbox .lab{font-size:13.5px;color:var(--mute);margin-bottom:9px}
+.newtask{display:flex;align-items:center;gap:10px;background:var(--bg);padding:6px}
+.newtask input{flex:1;border:0;background:transparent;font:inherit;font-size:15.5px;
+  padding:14px 16px;color:var(--ink);outline:none}
+.newtask input::placeholder{color:#93A9BC}
+.btn-navy{background:var(--navy);color:#fff;font-size:13.5px;font-weight:500;
+  padding:10px 20px;border-radius:2px;transition:background .15s}
+.btn-navy:hover{background:var(--sky)}
+.mine{padding:18px 0 0;font-size:16px;line-height:1.45}
+.mine .cm{margin-top:5px;font-size:12.5px;color:var(--mute2)}
+.mine .cm i{font-style:normal;color:#C2CFDB;padding:0 6px}
+
+/* --- "איך זה עובד" — משטח navy2 --- */
+.dlg.deep{background:var(--navy2);color:#fff;width:940px;border-top-color:var(--sky)}
+.deep .dh{padding:32px 40px 4px;display:flex;align-items:flex-start;justify-content:space-between}
+.deep .dh h3{margin:0;font-size:30px;font-weight:700;color:#fff}
+.deep .dh .close{color:#7FA9C8}
+.deep .dh .close:hover{color:#fff}
+.deep .sub{padding:0 40px;font-size:11px;font-weight:600;letter-spacing:.16em;color:#7FA9C8}
+.flow{display:grid;grid-template-columns:.88fr 36px 1.32fr 36px 1fr;align-items:center;
+  gap:0;padding:34px 40px 40px}
+.srcs{display:flex;flex-direction:column;gap:11px}
+.srcs div{font-size:16.5px;font-weight:500;color:#EAF3FA;
+  border-inline-start:2px solid rgba(57,171,226,.6);padding:8px 16px 8px 0}
+.arw{color:#5D839F;font-size:24px;text-align:center;line-height:1}
+.hub{background:rgba(57,171,226,.12);border:1px solid rgba(57,171,226,.45);
+  padding:30px 26px;text-align:center}
+.hub b{display:block;font-size:23px;font-weight:700;color:#fff;margin-bottom:8px}
+.hub span{display:block;font-size:13px;color:#9FD2F2;line-height:2}
+.out b{display:block;font-size:20px;font-weight:600;color:#fff;margin-bottom:8px}
+.out span{display:block;font-size:13.5px;color:#8FB2CC;line-height:1.65}
+.deepfoot{padding:0 40px 34px;border-top:1px solid rgba(255,255,255,.10);margin:0 40px;padding-inline:0;padding-top:20px;font-size:13.5px;color:#8FB2CC}
+
+.toast{position:fixed;bottom:34px;inset-inline-start:50%;transform:translateX(50%) translateY(14px);
+  background:var(--navy2);color:#fff;font-size:14px;padding:13px 26px;opacity:0;
+  transition:.22s;pointer-events:none;z-index:60}
+.toast.show{opacity:1;transform:translateX(50%) translateY(0)}
+
+@media (max-width:1440px){
+  .wrap{padding:0 36px}
+  .title h1{font-size:58px}
+  .bandmain{padding:32px 0 38px}
+  .search{min-width:250px}
+  .col-flow{padding-inline-end:40px}
+  .col-list{padding-inline-start:36px}
+  .row{grid-template-columns:168px 104px minmax(0,1fr) 152px;gap:16px}
+  .row::before{inset-inline-start:176px}
+  .flow{padding:28px 30px 34px}
+}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="wrap">
+    <div class="topline">
+      <div class="brand"><b>HK</b><span>חזות קריספין</span></div>
+      <nav>
+        <a href="today.html">היום</a>
+        <a href="tasks.html">משימות</a>
+        <a href="clients.html">לקוחות</a>
+        <a href="meetings.html">פגישות</a>
+        <a href="memory.html" aria-current="page">זיכרון לקוחות</a>
+      </nav>
+      <div class="who"><b>אילון אשכנזי</b> · אשכנזי ייעוץ עסקי</div>
+    </div>
+
+    <div class="bandmain">
+      <div class="title">
+        <h1 class="serif">זיכרון לקוחות</h1>
+        <div class="date num">יום חמישי<i>·</i>02.07.2026<i>·</i>10:54</div>
+      </div>
+
+      <div class="bandside">
+        <div class="search" id="sw">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#9CCBEA" stroke-width="1.8">
+            <circle cx="8.5" cy="8.5" r="6"></circle><path d="M13 13l5 5"></path>
+          </svg>
+          <input id="q" type="search" placeholder="חיפוש בזיכרון" oninput="filt()">
+          <button class="x" onclick="clr()">ניקוי</button>
+        </div>
+        <button class="howbtn" onclick="op('how')">איך זה עובד</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="cols">
+
+    <section class="col-flow">
+      <div class="sechead">
+        <h2 class="serif">מה נלמד</h2>
+        <span class="side" id="side"></span>
+      </div>
+
+      <div id="flow">
+        <div class="day">היום</div>
+
+        <button class="row" data-c="energy" onclick="op('energy')">
+          <span class="cl">אנרגי אינטרנשיונל</span>
+          <span class="cat">שביעות רצון</span>
+          <span class="q">ירידה: תסכול מקצב התגובה בוואטסאפ</span>
+          <span class="src">מפגישה מוקלטת<b class="num">היום 10:03</b></span>
+        </button>
+
+        <button class="row" data-c="energy" onclick="op('energy')">
+          <span class="cl">אנרגי אינטרנשיונל</span>
+          <span class="cat">כאבי לקוח</span>
+          <span class="q">נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה</span>
+          <span class="src">מפגישה מוקלטת<b class="num">היום 10:02</b></span>
+        </button>
+
+        <button class="row" data-c="energy" onclick="op('energy')">
+          <span class="cl">אנרגי אינטרנשיונל</span>
+          <span class="cat">מצב תזרימי</span>
+          <span class="q">צפי החריגה עודכן אחרי דחיית תשלום ספק</span>
+          <span class="src">מפגישה מוקלטת<b class="num">היום 10:02</b></span>
+        </button>
+
+        <div class="day">אתמול</div>
+
+        <button class="row" data-c="givon" onclick="op('givon')">
+          <span class="cl">מטעי גבעון</span>
+          <span class="cat">יעדים והסכמות</span>
+          <span class="q">יעד קניות מלאי סומן בסיכון</span>
+          <span class="src">מתפעול שוטף<b class="num">אתמול 16:40</b></span>
+        </button>
+
+        <button class="row" data-c="energy" onclick="op('energy')">
+          <span class="cl">אנרגי אינטרנשיונל</span>
+          <span class="cat">אירועים מהותיים</span>
+          <span class="q">צחי: סגרנו את החוזה עם מרכז הבנייה</span>
+          <span class="src">מקבוצת הוואטסאפ<b class="num">אתמול 12:44</b></span>
+        </button>
+
+        <button class="row" data-c="golani" onclick="op('golani')">
+          <span class="cl">אנרגי גולני</span>
+          <span class="cat">שיתוף פעולה</span>
+          <span class="q">חומר אחרון לתזרים: 30.6 · דפי בנק התקבלו בוואטסאפ</span>
+          <span class="src">משיחת טלפון מוקלטת (SIM)<b class="num">אתמול 11:15</b></span>
+        </button>
+
+        <div class="day num">29.06</div>
+
+        <button class="row" data-c="rimon" onclick="op('rimon')">
+          <span class="cl">רימון יצחק</span>
+          <span class="cat">סגנון תקשורת</span>
+          <span class="q">מבקש פילוחים, לא סכומים</span>
+          <span class="src">מפגישה 17.03<b class="num">29.06</b></span>
+        </button>
+      </div>
+
+      <div class="empty" id="nores" style="display:none">
+        לא נמצא רישום שמתאים ל<b id="qterm"></b>.
+        <button onclick="clr()">ניקוי החיפוש</button>
+      </div>
+    </section>
+
+    <section class="col-list">
+      <div class="sechead"><h2 class="serif">הלקוחות שלי</h2></div>
+      <ul class="clients">
+        <li><button onclick="op('energy')"><span class="n">אנרגי אינטרנשיונל</span><span class="u">עודכן <b>היום</b></span></button></li>
+        <li><button onclick="op('givon')"><span class="n">מטעי גבעון</span><span class="u">עודכן <b>אתמול</b></span></button></li>
+        <li><button onclick="op('golani')"><span class="n">אנרגי גולני</span><span class="u">עודכן <b>אתמול</b></span></button></li>
+        <li><button onclick="op('rimon')"><span class="n">רימון יצחק</span><span class="u num">29.06</span></button></li>
+        <li><button onclick="op('moshe')"><span class="n">משה עובד</span></button></li>
+        <li><button onclick="op('x','אלפא בנייה')"><span class="n">אלפא בנייה</span></button></li>
+        <li><button onclick="op('x','ברק ושות׳ הנדסה')"><span class="n">ברק ושות׳ הנדסה</span></button></li>
+        <li><button onclick="op('x','גל תעשיות')"><span class="n">גל תעשיות</span></button></li>
+        <li><button onclick="op('x','דלתא אריזות')"><span class="n">דלתא אריזות</span></button></li>
+        <li><button onclick="op('x','הדר טכנולוגיות')"><span class="n">הדר טכנולוגיות</span></button></li>
+        <li><button onclick="op('x','ורד מזון')"><span class="n">ורד מזון</span></button></li>
+        <li><button onclick="op('x','זוהר חשמל')"><span class="n">זוהר חשמל</span></button></li>
+        <li><button onclick="op('x','חורש תקשורת')"><span class="n">חורש תקשורת</span></button></li>
+        <li><button onclick="op('x','טל לוגיסטיקה')"><span class="n">טל לוגיסטיקה</span></button></li>
+        <li><button onclick="op('x','יובל מזון')"><span class="n">יובל מזון</span></button></li>
+        <li><button onclick="op('x','כרמל אנרגיה')"><span class="n">כרמל אנרגיה</span></button></li>
+        <li><button onclick="op('x','לביא ביטחון')"><span class="n">לביא ביטחון</span></button></li>
+        <li><button onclick="op('x','מגן מערכות')"><span class="n">מגן מערכות</span></button></li>
+        <li><button onclick="op('x','נוף טקסטיל')"><span class="n">נוף טקסטיל</span></button></li>
+        <li><button onclick="op('x','סהר בנייה')"><span class="n">סהר בנייה</span></button></li>
+        <li><button onclick="op('x','עומר רהיטים')"><span class="n">עומר רהיטים</span></button></li>
+        <li><button onclick="op('x','פלג שיווק')"><span class="n">פלג שיווק</span></button></li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+<!-- פופאפ לקוח -->
+<div class="ov" id="ov-c" onclick="if(event.target===this)cl('ov-c')">
+  <div class="dlg">
+    <div class="dlg-h">
+      <div>
+        <h3 class="serif" id="c-name"></h3>
+        <div class="facts" id="c-facts"></div>
+      </div>
+      <button class="close" onclick="cl('ov-c')" aria-label="סגירה">✕</button>
+    </div>
+    <div class="dlg-b">
+      <div id="c-mem"></div>
+      <div class="addbox">
+        <div class="lab">מה אתה יודע שלא נאמר?</div>
+        <div class="newtask">
+          <input id="mi" type="text" placeholder="הוספה לזיכרון…" onkeydown="if(event.key==='Enter')addMem()">
+          <button class="btn-navy" onclick="addMem()">הוספה</button>
+        </div>
+        <div id="mine"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- איך זה עובד -->
+<div class="ov" id="ov-how" onclick="if(event.target===this)cl('ov-how')">
+  <div class="dlg deep">
+    <div class="dh">
+      <h3 class="serif">איך נבנה הזיכרון</h3>
+      <button class="close" onclick="cl('ov-how')" aria-label="סגירה">✕</button>
+    </div>
+    <div class="sub">כל מה שנאמר על הלקוח, במקום אחד</div>
+    <div class="flow">
+      <div class="srcs">
+        <div>פגישות מוקלטות</div>
+        <div>שיחות טלפון (SIM)</div>
+        <div>קבוצת הוואטסאפ</div>
+        <div>נתוני התזרים</div>
+      </div>
+      <div class="arw">←</div>
+      <div class="hub">
+        <b>זיכרון אחד חי</b>
+        <span>מצב תזרימי · כאבי לקוח · יעדים והסכמות<br>שביעות רצון · סגנון תקשורת · אירועים מהותיים<br>מערכת יחסים · שיתוף פעולה</span>
+      </div>
+      <div class="arw">←</div>
+      <div class="out">
+        <b>ההכנה לפגישה הבאה</b>
+        <span>נפתחת עם מה שנלמד מאז הפגישה הקודמת — בלי לקרוא תמלולים.</span>
+      </div>
+    </div>
+    <div class="deepfoot">גם מה שאתה מוסיף בעצמך נכנס לאותו זיכרון.</div>
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+var DB={
+ energy:{n:'אנרגי אינטרנשיונל',f:'ח.פ. <span class="num">511327876</span><i>·</i>Money<i>·</i><span class="k">מנהלת תזרים</span> לירון בן כליפא<i>·</i><span class="k">איש קשר</span> צחי עובד<i>·</i><span class="k">רו״ח חיצוני</span> לא הוזן',
+  m:[['כאבי לקוח','נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה','מפגישה מוקלטת 09:00','היום 10:02'],
+     ['שביעות רצון','ירידה: תסכול מקצב התגובה בוואטסאפ','מפגישה מוקלטת 09:00','היום 10:03'],
+     ['מצב תזרימי','צפי החריגה עודכן אחרי דחיית תשלום ספק','מפגישה מוקלטת 09:00','היום 10:02'],
+     ['אירועים מהותיים','צחי: סגרנו את החוזה עם מרכז הבנייה','מקבוצת הוואטסאפ','אתמול 12:44']]},
+ givon:{n:'מטעי גבעון',f:'ח.פ. <span class="num">514778220</span><i>·</i><span dir="ltr">Money+</span><i>·</i><span class="k">מנהלת תזרים</span> לירון בן כליפא<i>·</i><span class="k">איש קשר</span> לא הוזן<i>·</i><span class="k">רו״ח חיצוני</span> לא הוזן',
+  m:[['יעדים והסכמות','יעד קניות מלאי סומן בסיכון','מתפעול שוטף','אתמול 16:40']]},
+ golani:{n:'אנרגי גולני',f:'ח.פ. <span class="num">511200341</span><i>·</i>Meeting<i>·</i><span class="k">מנהלת תזרים</span> לירון בן כליפא<i>·</i><span class="k">איש קשר</span> לא הוזן<i>·</i><span class="k">רו״ח חיצוני</span> לא הוזן',
+  m:[['שיתוף פעולה','חומר אחרון לתזרים: 30.6 · דפי בנק התקבלו בוואטסאפ','משיחת טלפון מוקלטת (SIM)','אתמול 11:15']]},
+ rimon:{n:'רימון יצחק',f:'ח.פ. <span class="num">025664109</span><i>·</i><span dir="ltr">Money+</span><i>·</i><span class="k">מנהלת תזרים</span> שמרית טובול<i>·</i><span class="k">איש קשר</span> לא הוזן<i>·</i><span class="k">רו״ח חיצוני</span> לא הוזן',
+  m:[['סגנון תקשורת','מבקש פילוחים, לא סכומים','מפגישה 17.03','29.06']]},
+ moshe:{n:'משה עובד',f:'ח.פ. <span class="num">039112774</span><i>·</i>Money<i>·</i><span class="k">מנהלת תזרים</span> שמרית טובול<i>·</i><span class="k">איש קשר</span> לא הוזן<i>·</i><span class="k">רו״ח חיצוני</span> לא הוזן',m:[]}
+};
+var added={},cur=null,tt;
+function toast(m){var e=document.getElementById('tst');e.textContent=m;e.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('show')},2600);}
+function op(k,nm){
+  if(k==='how'){document.getElementById('ov-how').classList.add('open');return;}
+  cur=(k==='x')?nm:k;
+  var d=(k==='x')?{n:nm,f:'הפרטים טרם הוזנו',m:[]}:DB[k];
+  document.getElementById('c-name').textContent=d.n;
+  document.getElementById('c-facts').innerHTML=d.f;
+  var h='';
+  if(d.m.length){for(var i=0;i<d.m.length;i++){var r=d.m[i];
+    h+='<div class="catblock"><div class="ch">'+r[0]+'</div><div class="ci">'+r[1]+
+       '</div><div class="cm">'+r[2]+'<i>·</i>'+r[3]+'</div></div>';}}
+  else{h='<div class="catblock" style="border:0;color:#5F7A93;font-size:15.5px">עדיין לא נלמד כאן דבר.</div>';}
+  document.getElementById('c-mem').innerHTML=h;
+  var mn='';var a=added[cur]||[];
+  for(var j=0;j<a.length;j++)mn+='<div class="mine">'+a[j]+'<div class="cm">ממני<i>·</i>היום</div></div>';
+  document.getElementById('mine').innerHTML=mn;
+  document.getElementById('mi').value='';
+  document.getElementById('ov-c').classList.add('open');
+}
+function cl(id){document.getElementById(id).classList.remove('open');}
+function addMem(){var i=document.getElementById('mi'),v=i.value.trim();if(!v)return;
+  if(!added[cur])added[cur]=[];added[cur].push(v);
+  var d=document.createElement('div');d.className='mine';d.textContent=v;
+  var m=document.createElement('div');m.className='cm';m.innerHTML='ממני<i>·</i>היום';
+  d.appendChild(m);document.getElementById('mine').appendChild(d);
+  i.value='';toast('נוסף לזיכרון של '+document.getElementById('c-name').textContent);}
+function hl(el,v){
+  if(el.dataset.o===undefined)el.dataset.o=el.innerHTML;
+  el.innerHTML=el.dataset.o;
+  if(!v)return;
+  var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null),tn=[],n;
+  while(n=w.nextNode())tn.push(n);
+  for(var i=0;i<tn.length;i++){
+    var t=tn[i],txt=t.nodeValue,at=txt.indexOf(v);
+    if(at<0)continue;
+    var frag=document.createDocumentFragment(),pos=0;
+    while(at>-1){
+      if(at>pos)frag.appendChild(document.createTextNode(txt.slice(pos,at)));
+      var m=document.createElement('mark');m.textContent=v;frag.appendChild(m);
+      pos=at+v.length;at=txt.indexOf(v,pos);
+    }
+    if(pos<txt.length)frag.appendChild(document.createTextNode(txt.slice(pos)));
+    t.parentNode.replaceChild(frag,t);
+  }
+}
+function filt(){
+  var v=document.getElementById('q').value.trim();
+  document.getElementById('sw').classList.toggle('on',!!v);
+  var rows=document.querySelectorAll('#flow .row'),shown=0;
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i],hit=!v;
+    var cells=r.querySelectorAll('.cl,.cat,.q,.src');
+    for(var j=0;j<cells.length;j++){
+      if(v&&cells[j].textContent.indexOf(v)>-1)hit=true;
+      hl(cells[j],v);
+    }
+    r.style.display=hit?'':'none';
+    if(hit)shown++;
+  }
+  var days=document.querySelectorAll('#flow .day');
+  for(var d=0;d<days.length;d++){
+    var el=days[d].nextElementSibling,any=false;
+    while(el&&el.classList.contains('row')){if(el.style.display!=='none')any=true;el=el.nextElementSibling;}
+    days[d].style.display=any?'':'none';
+  }
+  document.getElementById('nores').style.display=(v&&!shown)?'':'none';
+  document.getElementById('qterm').textContent='"'+v+'"';
+  document.getElementById('side').innerHTML=v?'<button onclick="clr()">ניקוי החיפוש</button>':'';
+}
+function clr(){document.getElementById('q').value='';filt();document.getElementById('q').focus();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){cl('ov-c');cl('ov-how');}});
+</script>
+</body>
+</html>
