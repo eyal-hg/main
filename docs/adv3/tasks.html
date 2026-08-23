@@ -47,17 +47,17 @@ select,input{font:inherit;color:var(--ink)}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
-.strip .next{display:flex;align-items:center;gap:10px;font-size:13.5px}
-.strip .next .k{color:#9FC0DA}
-.strip .next a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
-.strip .next a:hover{border-color:#fff}
-.strip .next .c{color:#7FA6C2}
+.strip .sum{display:flex;align-items:center;gap:26px}
+.strip .sum .n{display:flex;align-items:baseline;gap:7px;font-size:13px;color:#B9D3E6}
+.strip .sum .n b{font-size:22px;font-weight:600;color:#fff;line-height:1}
+.strip .sum .n.late b{color:#F3A39C}
+.strip .sum .n.late{color:#F3A39C}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
 
 /* ---------- body grid ---------- */
-.wrap{max-width:1620px;margin:0 auto;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:start}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
@@ -93,6 +93,11 @@ select,input{font:inherit;color:var(--ink)}
 /* ---------- filters ---------- */
 .flt{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink3)}
 .flt select{height:30px;border:1px solid var(--bd);border-radius:6px;padding:0 28px 0 10px;font-size:13px;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%237A8898' stroke-width='1.5'/></svg>") no-repeat left 10px center;appearance:none;-webkit-appearance:none;color:var(--ink2);padding-left:26px;padding-right:10px}
+.grp.late{color:var(--coral)}
+.tk.late{background:linear-gradient(270deg,#FFF6F0,transparent 55%);border-right:3px solid var(--coral);padding-right:12px;margin-right:-15px}
+.tk.late.m{border-right-color:var(--coral)}
+.tk.late.done{background:none;border-right-color:transparent}
+.tk .ovd,.tk .due.ovd{font-style:normal;color:var(--coral);font-weight:500}
 .seg{display:inline-flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden;background:#fff}
 .seg button{padding:5px 11px;font-size:12.5px;color:var(--ink2);border-left:1px solid var(--bd)}
 .seg button:last-child{border-left:0}
@@ -219,7 +224,7 @@ select,input{font:inherit;color:var(--ink)}
 
 @media (min-width:1451px){.tk{padding:12px 0}.grp{padding:16px 0 8px}.hkv td{padding:14px 0}}
 @media (max-width:1450px){
-  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px}
+  .wrap{padding:14px 24px 16px;gap:14px}
   .panel.main{min-height:calc(100vh - 52px - 68px - 30px)}
   .left{gap:14px}
   .nav,.strip{padding-left:24px;padding-right:24px}
@@ -259,14 +264,13 @@ select,input{font:inherit;color:var(--ink)}
   <div><h1>משימות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="next">
-    <span class="k">הבא על השולחן</span>
-    <a href="#t2" onclick="flash('t2')">לחזור לרו״ח על המע״מ</a>
-    <span class="c">·</span><span>מטעי גבעון</span>
-    <span class="c what">·</span><span class="what num">לפני השיחה ב-13:00</span>
+  <div class="sum">
+    <span class="n"><b id="sOpen">7</b>פתוחות</span>
+    <span class="n late"><b id="sLate">2</b>עבר זמנן</span>
+    <span class="n"><b id="sToday">4</b>להיום</span>
   </div>
   <div class="spacer"></div>
-  <div class="now num"><b>10:54</b> · בין הפגישה של 09:00 ל-13:00</div>
+  <div class="now num"><b>10:54</b></div>
 </header>
 
 <main class="wrap">
@@ -318,17 +322,30 @@ select,input{font:inherit;color:var(--ink)}
           <button data-v="done" onclick="seg(this)">בוצע</button>
           <button data-v="all" onclick="seg(this)">הכל</button>
         </div>
-        <div class="seg" id="fo">
-          <button class="on" data-v="" onclick="seg(this)">כל המקורות</button>
-          <button data-v="me" onclick="seg(this)">שלי</button>
-          <button data-v="m" onclick="seg(this)">מפגישה</button>
-        </div>
         <span class="sp"></span>
         <span id="fcount"></span>
         <a class="clr" id="fclr" href="#" onclick="event.preventDefault();clearF()">ניקוי הסינון</a>
       </div>
 
       <div class="list" id="list">
+        <div class="grp late" data-g="late">עבר זמנן <small>שתיים</small></div>
+        <div class="tk late" data-c="025664109" data-o="me" data-g="late">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="tx">לשלוח לרימון את הצעת המסגרת</div>
+            <div class="sub"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><i class="ovd">היה ל-30.06</i></div>
+          </div>
+          <div class="side"><span class="due ovd num">30.06</span><span>שלי</span></div>
+        </div>
+        <div class="tk late m" data-c="511200341" data-o="m" data-g="late">
+          <span class="cb" onclick="tog(this)">✓</span>
+          <div>
+            <div class="src">מפגישה <a href="meetings.html">פ.ע — חודש יוני · 24.06</a></div>
+            <div class="tx">לבדוק עם הבנק את מסגרת האשראי</div>
+            <div class="sub"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><i class="ovd">היה לאתמול</i></div>
+          </div>
+          <div class="side"><span class="due ovd num">01.07</span></div>
+        </div>
         <div class="grp today" data-g="today">היום <small class="num">חמישי · 02.07</small></div>
 
         <div class="tk m" data-c="511327876" data-o="m" data-g="today" id="t1">
@@ -337,7 +354,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="src">מפגישה <a href="meetings.html?m=020709">פגישה שוטפת — סקירת תזרים · 02.07 09:00</a></div>
             <div class="tx">אישור סיכום — פגישה שוטפת</div>
             <div class="sub"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span>הוקלטה 46 דק׳<span class="dot">·</span>עם צחי עובד</div>
-            <div class="act"><button class="btn sky sm" onclick="openSum()">אישור הסיכום</button><button class="btn sm" onclick="toast('ההקלטה נפתחת — 46 דק׳')">האזנה</button><span class="st">הסיכום מחכה לאישור</span></div>
+            <div class="act"><button class="btn sky sm" onclick="openSum()">אישור הסיכום</button><span class="st">הסיכום מחכה לאישור</span></div>
           </div>
           <div class="side"><span class="due">היום</span></div>
         </div>
@@ -429,49 +446,6 @@ select,input{font:inherit;color:var(--ink)}
     </div>
   </section>
 
-  <!-- ===== left column ===== -->
-  <aside class="left">
-    <section class="dark">
-      <div class="cap">עד סוף היום</div>
-      <h3>שלוש פגישות, ומה שצריך להיות מוכן לפניהן</h3>
-      <div class="row">
-        <div class="t num">13:00</div>
-        <div class="w"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="what">שיחת מעקב</span>
-          <div class="l"><span class="cb" id="d2"></span><a href="#t2" onclick="flash('t2')">לחזור לרו״ח על המע״מ</a></div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="t num">16:00</div>
-        <div class="w"><a href="clients.html?c=039112774">משה עובד</a><span class="what">פגישה חודשית — יולי · Zoom</span>
-          <div class="l"><span class="warn">ההכנה לא נפתחה</span><button class="btn" onclick="toast('ההכנה לפגישה נפתחת — משה עובד, יולי')">פתיחת ההכנה</button></div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="t num">17:00</div>
-        <div class="w"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="what">המשך סקירה — החלטות תקציב</span>
-          <div class="l"><span class="cb" id="d1"></span><a href="#t1" onclick="flash('t1')">אישור סיכום — פגישה שוטפת</a><span class="ok">· ההכנה נפתחה</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel cl">
-      <div class="ph"><h2>לפי לקוח</h2><span class="hint">לחיצה מסננת את הרשימה</span><a class="more" href="clients.html">כל הלקוחות</a></div>
-      <div class="body">
-        <table>
-          <thead><tr><th>חברה</th><th style="text-align:center">שלי</th><th style="text-align:center">מ-HK</th><th style="text-align:left">פגישה הבאה</th></tr></thead>
-          <tbody id="bc">
-          <tr data-c="511327876"><td class="n"><a onclick="pick('511327876')">אנרגי אינטרנשיונל</a><small>לירון בן כליפא</small></td><td class="c"><b>2</b></td><td class="c"><b>1</b></td><td class="l num"><a href="meetings.html">היום 17:00</a></td></tr>
-          <tr data-c="514778220"><td class="n"><a onclick="pick('514778220')">מטעי גבעון</a><small>לירון בן כליפא</small></td><td class="c"><b>1</b></td><td class="c"><span>—</span></td><td class="l num"><a href="meetings.html">היום 13:00</a></td></tr>
-          <tr data-c="039112774"><td class="n"><a onclick="pick('039112774')">משה עובד</a><small>שמרית טובול</small></td><td class="c"><b>1</b></td><td class="c"><span>—</span></td><td class="l num"><a href="meetings.html">היום 16:00</a></td></tr>
-          <tr data-c="511200341"><td class="n"><a onclick="pick('511200341')">אנרגי גולני</a><small>לירון בן כליפא</small></td><td class="c"><b>1</b></td><td class="c"><b>1</b></td><td class="l"><a class="no" href="#" onclick="event.preventDefault();toast('קביעת פגישה — אנרגי גולני')">לא נקבעה</a></td></tr>
-          <tr data-c="025664109"><td class="n"><a onclick="pick('025664109')">רימון יצחק</a><small>שמרית טובול</small></td><td class="c"><span>—</span></td><td class="c"><b>1</b></td><td class="l"><a class="no" href="#" onclick="event.preventDefault();toast('קביעת פגישה — רימון יצחק')">לא נקבעה</a></td></tr>
-          <tr data-c="none"><td class="n"><a onclick="pick('none')">בלי לקוח</a><small>וואטסאפ · זמנים</small></td><td class="c"><b>2</b></td><td class="c"><span>—</span></td><td class="l"></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="foot"><span>ל-17 החברות האחרות אין משימות פתוחות.</span><a href="clients.html">לרשימת הלקוחות</a></div>
-    </section>
-  </aside>
 
 </main>
 
@@ -510,10 +484,10 @@ function setTab(t){document.getElementById('tabMine').classList.toggle('on',t===
   document.getElementById('mine').style.display=t==='mine'?'':'none';document.getElementById('hk').classList.toggle('on',t==='hk');
   document.getElementById('tabNote').textContent=t==='mine'?'לפי תאריך יעד · היום, 03.07, 08.07, בלי תאריך':'בקשות פתוחות אצל מנהלי התזרים · זה לא ברשימת המשימות שלך'}
 function seg(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');applyF()}
-function segV(id){return document.querySelector('#'+id+' .on').dataset.v}
+function segV(id){const el=document.querySelector('#'+id+' .on');return el?el.dataset.v:''}
 function pick(c){const s=document.getElementById('fc');s.value=(s.value===c?'':c);applyF();
   if(s.value)toast('מסונן: '+names[c]);document.getElementById('list').scrollIntoView({block:'nearest'})}
-function clearF(){document.getElementById('fc').value='';['fs','fo'].forEach(id=>{const s=document.getElementById(id);[...s.children].forEach((x,i)=>x.classList.toggle('on',i===0))});applyF()}
+function clearF(){document.getElementById('fc').value='';['fs'].forEach(id=>{const s=document.getElementById(id);[...s.children].forEach((x,i)=>x.classList.toggle('on',i===0))});applyF()}
 function applyF(){const c=document.getElementById('fc').value,st=segV('fs'),o=segV('fo');let n=0,openAll=0;const seen={};
   document.querySelectorAll('#list .tk').forEach(t=>{const d=t.classList.contains('done');if(!d)openAll++;
     const ok=(!c||t.dataset.c===c)&&(st==='all'||(st==='done')===d)&&(!o||t.dataset.o===o);
@@ -522,8 +496,10 @@ function applyF(){const c=document.getElementById('fc').value,st=segV('fs'),o=se
   document.getElementById('empty').classList.toggle('on',n===0);
   const f=c||st!=='open'||o;document.getElementById('fclr').classList.toggle('on',!!f);
   document.getElementById('fcount').textContent=f?(n+' מתוך '+document.querySelectorAll('#list .tk').length):'';
-  document.getElementById('cMine').textContent=openAll;
-  document.querySelectorAll('#bc tr').forEach(r=>r.classList.toggle('on',!!c&&r.dataset.c===c))}
+  const cm=document.getElementById('cMine');if(cm)cm.textContent=openAll;
+  const q=s=>document.querySelectorAll('#list .tk:not(.done)'+s).length;
+  document.getElementById('sOpen').textContent=openAll;document.getElementById('sLate').textContent=q('[data-g="late"]');document.getElementById('sToday').textContent=q('[data-g="today"]');
+  }
 function addTask(e){e.preventDefault();const i=document.getElementById('nt');const v=i.value.trim();if(!v){i.focus();return}
   const c=document.getElementById('nc').value||'none';let g=document.getElementById('nd').value;let due=gl[g]||'';
   if(g==='custom'){const d=document.getElementById('ndx').value;if(d){const p=d.split('-');due=p[2]+'.'+p[1];g=p[2]+p[1]}else g='none',due=''}
