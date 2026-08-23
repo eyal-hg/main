@@ -95,6 +95,17 @@ select,input{font:inherit;color:var(--ink)}
 .panel.det .chips button:hover{border-color:#fff;color:#fff}
 .panel.det .chips button.on{background:var(--sky);border-color:var(--sky);color:#fff;font-weight:600}
 .panel.det .chips input[type=date]{font:inherit;font-size:12.5px;border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:3px 10px;background:rgba(255,255,255,.07);color:#fff;color-scheme:dark}
+.panel.det .cs{position:relative;flex:1;display:flex;align-items:center}
+.panel.det .cs input{font:inherit;font-size:13px;width:100%;border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:5px 12px;background:rgba(255,255,255,.06);color:#fff}
+.panel.det .cs input::placeholder{color:#7FA6C2}
+.panel.det .cs input:focus{outline:0;border-color:var(--sky)}
+.panel.det .cs .pick{display:inline-flex;align-items:center;gap:8px;background:var(--sky);border-radius:20px;padding:4px 12px;font-size:13px;color:#fff}
+.panel.det .cs .pick i{font-style:normal;cursor:pointer;opacity:.8}.panel.det .cs .pick i:hover{opacity:1}
+.panel.det .cs .dd{position:absolute;top:calc(100% + 4px);right:0;left:0;background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(12,38,58,.25);display:none;z-index:5;overflow:hidden}
+.panel.det .cs .dd.on{display:block}
+.panel.det .cs .dd div{padding:8px 12px;font-size:13px;color:var(--ink);cursor:pointer}
+.panel.det .cs .dd div:hover,.panel.det .cs .dd div.hl{background:#EAF3FA;color:var(--navy)}
+.panel.det .cs .dd div small{color:var(--ink3);margin-right:6px}
 .panel.det .smart{min-height:18px;font-size:12.5px;color:#9FC0DA;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .panel.det .smart b{color:#fff;font-weight:500;background:rgba(255,255,255,.1);border-radius:4px;padding:1px 7px}
 .panel.det.edit .add-only,.panel.det.edit .smart{display:none}
@@ -480,7 +491,8 @@ select,input{font:inherit;color:var(--ink)}
         <div class="smart" id="dSmart"></div>
         <div class="chips add-only" id="cC">
           <span class="lbl">לקוח</span>
-          <button data-v="none" class="on">בלי</button><button data-v="511327876">אנרגי</button><button data-v="514778220">מטעי גבעון</button><button data-v="025664109">רימון</button><button data-v="511200341">גולני</button><button data-v="039112774">משה עובד</button>
+          <span class="cs" id="cs"><input id="csIn" placeholder="חיפוש לקוח…" autocomplete="off"><span class="pick" id="csPick" style="display:none"><b id="csName"></b><i onclick="csClear()">✕</i></span>
+            <div class="dd" id="csDd"></div></span>
         </div>
         <div class="chips add-only" id="cG">
           <span class="lbl">מתי</span>
@@ -555,7 +567,7 @@ function detNew(){if(SEL)SEL.classList.remove('sel');SEL=null;document.getElemen
   document.getElementById('detTitle').textContent='משימה חדשה';document.getElementById('detHint').textContent='';document.getElementById('detX').style.display='none';
   document.getElementById('dTx').value='';document.getElementById('dC').value='none';const sel=document.getElementById('dG');const o=sel.querySelector('option[data-late]');if(o)o.remove();sel.value='today';document.getElementById('dNote').value='';
   document.getElementById('dGo').textContent='הוספה';
-  document.querySelectorAll('#cC button').forEach((b,i)=>b.classList.toggle('on',i===0));document.querySelectorAll('#cG button').forEach((b,i)=>b.classList.toggle('on',i===0));
+  csSet('none');document.querySelectorAll('#cG button').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.getElementById('dPick').style.display='none';document.querySelector('#cG .cal').textContent='📅 תאריך';smart()}
 function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');document.getElementById('det').classList.add('edit');
   document.getElementById('detTitle').textContent='המשימה';document.getElementById('detX').style.display='';
@@ -591,7 +603,17 @@ function rowActs(){document.querySelectorAll('#list .tk').forEach(tk=>{if(!tk.qu
 function rowDone(b){const tk=b.closest('.tk');tog(tk.querySelector('.cb'));if(SEL===tk)detNew()}
 function rowMove(b,k){const tk=b.closest('.tk');const g=k==='week'?'0907':'0307';unlate(tk);tk.querySelector('.side .due').textContent=GL2[g];placeIn(tk,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');if(SEL===tk)openDet(tk)}
 /* צ'יפים במצב הוספה — מסנכרנים את ה-select הנסתר */
-document.querySelectorAll('#cC button').forEach(b=>b.onclick=()=>{[...b.parentNode.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('dC').value=b.dataset.v;smart()});
+const CLIST=[['511327876','אנרגי אינטרנשיונל','לירון בן כליפא'],['514778220','מטעי גבעון','לירון בן כליפא'],['025664109','רימון יצחק','שמרית טובול'],['511200341','אנרגי גולני','לירון בן כליפא'],['039112774','משה עובד','שמרית טובול']];
+function csSet(id){document.getElementById('dC').value=id;const p=document.getElementById('csPick'),i=document.getElementById('csIn');
+  if(id&&id!=='none'){document.getElementById('csName').textContent=CN[id];p.style.display='';i.style.display='none'}else{p.style.display='none';i.style.display='';i.value=''}
+  document.getElementById('csDd').classList.remove('on');smart()}
+function csClear(){csSet('none');document.getElementById('csIn').focus()}
+(function(){const i=document.getElementById('csIn'),dd=document.getElementById('csDd');let hl=0;
+  const render=q=>{const hits=CLIST.filter(c=>!q||c[1].includes(q));hl=0;dd.innerHTML=hits.map((c,k)=>'<div data-id="'+c[0]+'" class="'+(k===0?'hl':'')+'">'+c[1]+'<small>'+c[2]+'</small></div>').join('')||'<div style="color:var(--ink3);cursor:default">לא נמצא</div>';dd.classList.toggle('on',true)};
+  i.addEventListener('focus',()=>render(i.value.trim()));i.addEventListener('input',()=>render(i.value.trim()));
+  i.addEventListener('keydown',e=>{const rows=[...dd.querySelectorAll('div[data-id]')];if(e.key==='ArrowDown'){hl=Math.min(rows.length-1,hl+1)}else if(e.key==='ArrowUp'){hl=Math.max(0,hl-1)}else if(e.key==='Enter'){e.preventDefault();if(rows[hl])csSet(rows[hl].dataset.id);return}else if(e.key==='Escape'){dd.classList.remove('on');return}else return;rows.forEach((r,k)=>r.classList.toggle('hl',k===hl))});
+  dd.addEventListener('mousedown',e=>{const r=e.target.closest('div[data-id]');if(r){e.preventDefault();csSet(r.dataset.id)}});
+  i.addEventListener('blur',()=>setTimeout(()=>dd.classList.remove('on'),120))})();
 document.querySelectorAll('#cG button').forEach(b=>b.onclick=()=>{[...b.parentNode.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));b.classList.add('on');
   const pk=document.getElementById('dPick');if(b.dataset.v==='pick'){pk.style.display='';pk.focus();pk.showPicker&&pk.showPicker()}else{pk.style.display='none';document.getElementById('dG').value=b.dataset.v}smart()});
 document.getElementById('dPick').addEventListener('change',function(){if(!this.value)return;const p=this.value.split('-');const g=p[2]+p[1];GL2[g]=p[2]+'.'+p[1];GLBL[g]=p[2]+'.'+p[1];
@@ -600,7 +622,7 @@ document.getElementById('dPick').addEventListener('change',function(){if(!this.v
 /* הקלדה חכמה: @לקוח · מחר/בשבוע/היום · "לפני הפגישה" */
 const ALIAS=[['511327876',/אנרגי אינטר|@אנרגי(?! גולני)/],['511200341',/גולני/],['514778220',/גבעון|מטעי/],['025664109',/רימון/],['039112774',/משה|עובד/]];
 function smart(){const v=document.getElementById('dTx').value;const out=[];
-  if(!SEL){const m=v.match(/@(\S+)/);if(m){const hit=ALIAS.find(a=>a[1].test(v));if(hit){document.getElementById('dC').value=hit[0];document.querySelectorAll('#cC button').forEach(b=>b.classList.toggle('on',b.dataset.v===hit[0]))}}
+  if(!SEL){const m=v.match(/@(\S+)/);if(m){const hit=ALIAS.find(a=>a[1].test(v));if(hit&&document.getElementById('dC').value!==hit[0]){document.getElementById('dC').value=hit[0];const p=document.getElementById('csPick');document.getElementById('csName').textContent=CN[hit[0]];p.style.display='';document.getElementById('csIn').style.display='none'}}
     const d=/(^|\s)מחר(\s|$)/.test(v)?'0307':/(^|\s)בשבוע(\s|$)|שבוע הבא/.test(v)?'0907':/(^|\s)היום(\s|$)/.test(v)?'today':null;
     if(d){document.getElementById('dG').value=d;document.querySelectorAll('#cG button').forEach(b=>b.classList.toggle('on',b.dataset.v===d))}}
   const c=document.getElementById('dC').value,g=document.getElementById('dG').value;
