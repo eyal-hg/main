@@ -2869,7 +2869,7 @@
   }
   function skipPick(i,kind){
     skipClose();
-    if(kind==='nr'){ openNR(i); return; }
+    if(kind==='nr'){ otHandle(i,'לא רלוונטי — ירד מהרשימה'); msgAdvance(i,'סומן כלא רלוונטי'); return; }
     const t=curTasks()[i]; if(!t) return;
     if(typeof docClose==='function') docClose();
     t.later=true;
