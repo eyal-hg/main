@@ -2626,7 +2626,9 @@
         <button class="oqs-send" onclick="msgReplySend(${i})">שליחה</button>
       </div>
       <div class="chk-actions"><button class="ot-btn done" onclick="otHandle(${i},'טופל · ✓ נענה ללקוח',1)">סימון כטופל</button>
+      <button class="ot-btn ghost" onclick="msgEntryOpen(${i})" id="msgEntryBtn_${i}">הזנה לתזרים</button>
       ${skipBtn(i)}</div>
+      <div class="msg-entry" id="msgEntry_${i}"></div>
     </div>`;
   }
   function msgReplySend(i){
@@ -2667,16 +2669,20 @@
     const ocr=f.rows
       ?`<span>זוהו ${f.rows.length} שורות להזנה</span>`
       :`${f.payee?`<span>מוטב: ${f.payee}</span>`:'<span class="miss">מוטב לא זוהה — להזנה ידנית</span>'}<span>סכום ${f.amount||''} ₪</span><span>תאריך ${f.date||''}</span>`;
+    const dir=_bizDir[i]||(_bizDir[i]='exp');   /* ברירת מחדל: הוצאה */
     return `<div class="pay-cols">
-      <div class="biz-form">
+      <div class="biz-form dir-${dir}" id="bizForm_${i}">
         <div class="biz-selrow">
+          <div class="biz-dir" role="group" aria-label="הוצאה או הכנסה">
+            <button type="button" class="bd exp ${dir==='exp'?'on':''}" onclick="bizDir(${i},'exp')">הוצאה</button>
+            <button type="button" class="bd inc ${dir==='inc'?'on':''}" onclick="bizDir(${i},'inc')">הכנסה</button>
+          </div>
           <label>ח-ן <select class="mx2-inp"><option>מזרחי 295199</option><option>מרכנתיל 69855155</option></select></label>
-          <label>סוג תשלום <select class="mx2-inp"><option>בחירה</option><option selected>העברה בנקאית</option><option>שיק</option><option>כרטיס אשראי</option><option>מזומן</option></select></label>
-          <label>מוטב <input class="mx2-inp" id="bizPayee_${i}" value="${f.payee||''}" placeholder="${f.payee?'':'לא זוהה — להקליד מהמסמך'}"></label>
+          <label>סוג תשלום <select class="mx2-inp"><option selected>העברה</option><option>שיק</option><option>אחר</option></select></label>
         </div>
         <div class="biz-thead"><span>תאריך</span><span>אסמכתא (אם קיים)</span><span>קטגוריה</span><span>תיאור</span><span>סכום</span></div>
         <div id="bizRows_${i}">${rows.map(bizRow).join('')}</div>
-        <div class="biz-add" onclick="bizAddRow(${i})">＋ הוספת תשלומים</div>
+        <div class="biz-addrow"><button type="button" class="biz-add" onclick="bizAddRow(${i})">＋ הוספת תשלומים</button></div>
         <div class="chk-actions">
           <button class="ot-btn done" onclick="bizSave(${i})">שמירה וסגירה</button>
           <button class="ot-btn ghost" onclick="docReplyOpen(${i})">שלח תגובה ללקוח</button>
@@ -2710,15 +2716,35 @@
     d.innerHTML=`<input class="mx2-inp" placeholder="תאריך"><input class="mx2-inp" placeholder="אסמכתא"><select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="mx2-inp" placeholder="תיאור"><input class="mx2-inp biz-amt" placeholder="0" dir="ltr">`;
     w.appendChild(d);
   }
+  /* הודעת מלל שדורשת הזנה — המערכת לא זיהתה מסמך, אבל יש מה להזין.
+     נפתח אותו טופס, בלי תצוגת מסמך. */
+  function msgEntryOpen(i){
+    const w=document.getElementById('msgEntry_'+i); if(!w) return;
+    const b=document.getElementById('msgEntryBtn_'+i);
+    if(w.classList.contains('show')){ w.classList.remove('show'); w.innerHTML=''; if(b)b.classList.remove('on'); return; }
+    const t=curTasks()[i]; if(!t) return;
+    if(!t.file) t.file={date:'',ref:'',desc:'',amount:''};   /* שורה ריקה להזנה ידנית */
+    w.innerHTML=fileMsgBody(t,i,1);
+    w.classList.add('show'); if(b)b.classList.add('on');
+  }
+  /* הוצאה או הכנסה — קובע את צבע הרקע של הטופס ואת מה שנרשם בתזרים */
+  const _bizDir={};
+  function bizDir(i,d){
+    _bizDir[i]=d;
+    const f=document.getElementById('bizForm_'+i); if(!f) return;
+    f.classList.toggle('dir-exp',d==='exp'); f.classList.toggle('dir-inc',d==='inc');
+    f.querySelectorAll('.biz-dir .bd').forEach(b=>b.classList.toggle('on',b.classList.contains(d==='exp'?'exp':'inc')));
+  }
   /* שמירה וסגירה — מזין לתזרים ומודיע ללקוח שטופל */
   function bizSave(i){
     const t=curTasks()[i]; if(!t) return;
-    const payee=(document.getElementById('bizPayee_'+i)||{}).value||'';
+    const payee=((t.file||{}).payee)||'';
     const rows=document.querySelectorAll('#bizRows_'+i+' .biz-row').length;
     docClose();
+    const dirLbl=(_bizDir[i]||'exp')==='inc'?'הכנסה':'הוצאה';
     otHandle(i,t.type==='sheet'
       ?(t.kind==='edit'?('עודכן בתזרים: '+t.old+' ← '+t.new+' ₪ · ✓ סומן בגיליון'):('הוזן לתזרים — '+rows+' שורות · ✓ סומן בגיליון'))
-      :('הוזן לתזרים — '+payee+' · '+rows+' שורות · ✓ נשלח ללקוח "טופל"'), t.type!=='sheet');
+      :('הוזן לתזרים כ'+dirLbl+' — '+payee+' · '+rows+' שורות · ✓ נשלח ללקוח "טופל"'), t.type!=='sheet');
   }
 
   /* ===== התעלם — תפריט קטן, לא פופאפ ===== */
