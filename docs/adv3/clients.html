@@ -39,7 +39,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
 
 /* ---------- navy strip ---------- */
-.strip{background:var(--navy);color:#fff;height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip{background:var(--navy);color:#fff;height:84px;display:flex;align-items:center;padding:0 32px;gap:28px}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
@@ -60,7 +60,6 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
 /* ---------- body ---------- */
 .wrap{width:100%;padding:16px 32px 16px;display:grid;grid-template-columns:minmax(0,1fr) 480px;gap:14px;align-items:start}
-.wrap .cycle{grid-column:1/-1}
 .left{position:sticky;top:14px}
 /* כרטיס הלקוח הנבחר */
 .card{background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
@@ -121,28 +120,27 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);min-width:0;overflow-x:auto}
 
 /* ---------- cycle timeline (the one dark block) ---------- */
-.cycle{background:var(--navy);color:#fff;border-radius:10px;padding:10px 28px 12px;display:grid;grid-template-columns:170px 1fr;gap:24px;align-items:center}
-.cycle .cap h2{font-size:17px;font-weight:600}
-.cycle .cap p{font-size:12.5px;color:#9FC0DA;margin-top:3px}
-.cycle .cap a{display:inline-block;margin-top:6px;font-size:12.5px;color:#fff;border-bottom:1px solid rgba(255,255,255,.35);visibility:hidden}
-.cycle .cap a.on{visibility:visible}
-.tl{display:grid;grid-template-columns:repeat(5,1fr);position:relative;padding-top:4px}
-.tl::before{content:"";position:absolute;right:10%;left:10%;top:40px;height:2px;background:rgba(255,255,255,.22)}
-.tl .st{position:relative;text-align:center;padding:0 6px 0;cursor:pointer;border-radius:8px;transition:.15s}
-.tl .st b{display:block;font-size:24px;font-weight:600;line-height:1.15;color:#fff;font-variant-numeric:tabular-nums}
-.tl .st i{display:block;width:12px;height:12px;border-radius:50%;border:2px solid #9FC0DA;background:var(--navy);margin:5px auto 6px;position:relative;z-index:1;font-style:normal;transition:.15s}
-.tl .st span{display:block;font-size:13px;color:#D7E6F1}
+.strip .cyc{display:flex;align-items:center;gap:22px}
+.strip .cyc .cap{font-size:12px;color:#9FC0DA;display:flex;flex-direction:column;gap:2px;white-space:nowrap}
+.strip .cyc .cap small{font-size:11px;color:#7FA6C2}
+.strip .cyc #clr{font-size:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,.35);visibility:hidden;white-space:nowrap}
+.strip .cyc #clr.on{visibility:visible}
+.tl{display:grid;grid-template-columns:repeat(5,118px);position:relative}
+.tl::before{content:"";position:absolute;right:59px;left:59px;top:31px;height:1.5px;background:rgba(255,255,255,.22)}
+.tl .st{position:relative;text-align:center;cursor:pointer;display:grid;grid-template-rows:auto auto auto;justify-items:center}
+.tl .st b{font-size:20px;font-weight:600;line-height:1.1;color:#fff;font-variant-numeric:tabular-nums}
+.tl .st i{display:block;width:9px;height:9px;border-radius:50%;border:1.5px solid #9FC0DA;background:var(--navy);margin:5px auto 5px;position:relative;z-index:1;transition:.15s}
+.tl .st span{font-size:12px;color:#D7E6F1;white-space:nowrap}
 .tl .st:hover i{border-color:#fff}
-.tl .st:hover span{color:#fff}
-.tl .st.on i{background:var(--sky);border-color:var(--sky);box-shadow:0 0 0 4px rgba(57,171,226,.25)}
-.tl .st.on span{color:#fff;font-weight:500}
-.tl .st.dim b{color:#7FA6C2}
-.tl .st.dim span{color:#7FA6C2}
+.tl .st.on i{background:var(--sky);border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.25)}
+.tl .st.on span{color:#fff;font-weight:600}
+.tl .st.dim b,.tl .st.dim span{color:#7FA6C2}
 
 /* ---------- clients table ---------- */
 .ph{display:flex;align-items:center;gap:12px;padding:8px 20px 8px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
 .ph .hint{font-size:12.5px;color:var(--ink3)}
+.ph .hint b{color:var(--coral);font-weight:600}
 .ph .hint b{font-weight:500;color:var(--ink2)}
 .ph .tools{margin-right:auto;display:flex;align-items:center;gap:8px}
 .ph input{height:32px;width:240px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font:inherit;font-size:13px;background:#fff;color:var(--ink)}
@@ -248,20 +246,8 @@ td.mg{color:var(--ink2)}
   <div><h1>לקוחות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="sum" id="sum"></div>
-  <div class="spacer"></div>
-  <div class="now num"><b>10:54</b></div>
-</header>
-
-<main class="wrap">
-
-  <!-- ===== cycle timeline ===== -->
-  <section class="cycle">
-    <div class="cap">
-      <h2>המחזור החודשי</h2>
-      <p>יולי 2026 · לחיצה מסננת</p>
-      <a id="clr" href="#" onclick="return setStage(0)">הצגת כל הלקוחות</a>
-    </div>
+  <div class="cyc">
+    <span class="cap">המחזור החודשי<small>יולי · לחיצה מסננת</small></span>
     <div class="tl" id="tl">
       <div class="st" data-s="1" onclick="setStage(1)"><b class="num">5</b><i></i><span>ממתין לחומר</span></div>
       <div class="st" data-s="2" onclick="setStage(2)"><b class="num">3</b><i></i><span>הוזן</span></div>
@@ -269,7 +255,13 @@ td.mg{color:var(--ink2)}
       <div class="st" data-s="4" onclick="setStage(4)"><b class="num">7</b><i></i><span>מוכן לפגישה</span></div>
       <div class="st" data-s="5" onclick="setStage(5)"><b class="num">3</b><i></i><span>סיכום אושר</span></div>
     </div>
-  </section>
+    <a id="clr" href="#" onclick="return setStage(0)">הצגת כולם</a>
+  </div>
+  <div class="spacer"></div>
+  <div class="now num"><b>10:54</b></div>
+</header>
+
+<main class="wrap">
 
   <!-- ===== table ===== -->
   <section class="panel">
@@ -366,9 +358,8 @@ function applyFilter(){
   const h=$('#hint');
   if(stage)h.innerHTML=`<b>${STAGES[stage]}</b> · ${n} חברות · השאר מעומעמות`;
   else if(q)h.textContent=`${n} תוצאות`;
-  else h.textContent=C.length+' חברות';
-  const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
-  $('#sum').innerHTML=`<span class="n"><b>${C.length}</b>לקוחות</span><span class="n bad"><b>${bad}</b>עם התראה</span><span class="n bad"><b>${nom}</b>בלי פגישה קרובה</span><span class="n bad"><b>${lt}</b>עברו את היעד לשלב</span>`;
+  else{const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
+    h.innerHTML=`${C.length} חברות · <b>${bad}</b> עם התראה · <b>${nom}</b> בלי פגישה קרובה · <b>${lt}</b> עברו את היעד לשלב`}
 }
 function setStage(s){
   stage=(stage===s)?0:s;
