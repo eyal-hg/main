@@ -39,7 +39,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
 
 /* ---------- navy strip ---------- */
-.strip{background:var(--navy);color:#fff;height:84px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip{background:var(--navy);color:#fff;height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
@@ -120,21 +120,18 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);min-width:0;overflow-x:auto}
 
 /* ---------- cycle timeline (the one dark block) ---------- */
-.strip .cyc{display:flex;align-items:center;gap:22px}
-.strip .cyc .cap{font-size:12px;color:#9FC0DA;display:flex;flex-direction:column;gap:2px;white-space:nowrap}
-.strip .cyc .cap small{font-size:11px;color:#7FA6C2}
-.strip .cyc #clr{font-size:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,.35);visibility:hidden;white-space:nowrap}
-.strip .cyc #clr.on{visibility:visible}
-.tl{display:grid;grid-template-columns:repeat(5,118px);position:relative}
-.tl::before{content:"";position:absolute;right:59px;left:59px;top:31px;height:1.5px;background:rgba(255,255,255,.22)}
-.tl .st{position:relative;text-align:center;cursor:pointer;display:grid;grid-template-rows:auto auto auto;justify-items:center}
-.tl .st b{font-size:20px;font-weight:600;line-height:1.1;color:#fff;font-variant-numeric:tabular-nums}
-.tl .st i{display:block;width:9px;height:9px;border-radius:50%;border:1.5px solid #9FC0DA;background:var(--navy);margin:5px auto 5px;position:relative;z-index:1;transition:.15s}
-.tl .st span{font-size:12px;color:#D7E6F1;white-space:nowrap}
-.tl .st:hover i{border-color:#fff}
-.tl .st.on i{background:var(--sky);border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.25)}
-.tl .st.on span{color:#fff;font-weight:600}
-.tl .st.dim b,.tl .st.dim span{color:#7FA6C2}
+.stages{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);background:#FAFCFE;flex-wrap:wrap}
+.stages .lbl{font-size:12.5px;color:var(--ink3);margin-left:8px}
+.stages .st{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 8px;border-radius:20px;border:1px solid var(--bd);background:#fff;color:var(--ink2);cursor:pointer}
+.stages .st i{width:8px;height:8px;border-radius:50%;background:#C4CED8}
+.stages .st i.s2{background:var(--sky)}.stages .st i.s3{background:var(--purple)}.stages .st i.s4{background:var(--green)}.stages .st i.s5{background:var(--navy)}
+.stages .st b{font-weight:600;color:var(--navy);background:var(--bg);border-radius:10px;padding:0 7px;font-size:12px;line-height:18px}
+.stages .st:hover{border-color:var(--navy)}
+.stages .st.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.stages .st.on b{background:rgba(255,255,255,.18);color:#fff}
+.stages .st.dim{opacity:.55}
+.stages #clr{font-size:12.5px;color:var(--sky);font-weight:500;visibility:hidden;margin-right:4px}
+.stages #clr.on{visibility:visible}
 
 /* ---------- clients table ---------- */
 .ph{display:flex;align-items:center;gap:12px;padding:8px 20px 8px;border-bottom:1px solid var(--bd)}
@@ -246,17 +243,7 @@ td.mg{color:var(--ink2)}
   <div><h1>לקוחות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="cyc">
-    <span class="cap">המחזור החודשי<small>יולי · לחיצה מסננת</small></span>
-    <div class="tl" id="tl">
-      <div class="st" data-s="1" onclick="setStage(1)"><b class="num">5</b><i></i><span>ממתין לחומר</span></div>
-      <div class="st" data-s="2" onclick="setStage(2)"><b class="num">3</b><i></i><span>הוזן</span></div>
-      <div class="st" data-s="3" onclick="setStage(3)"><b class="num">4</b><i></i><span>יעדים עודכנו</span></div>
-      <div class="st" data-s="4" onclick="setStage(4)"><b class="num">7</b><i></i><span>מוכן לפגישה</span></div>
-      <div class="st" data-s="5" onclick="setStage(5)"><b class="num">3</b><i></i><span>סיכום אושר</span></div>
-    </div>
-    <a id="clr" href="#" onclick="return setStage(0)">הצגת כולם</a>
-  </div>
+  <div class="sum" id="sum"></div>
   <div class="spacer"></div>
   <div class="now num"><b>10:54</b></div>
 </header>
@@ -271,6 +258,15 @@ td.mg{color:var(--ink2)}
       <div class="tools">
         <input id="q" type="search" placeholder="חיפוש חברה או ח.פ" autocomplete="off" oninput="applyFilter()">
       </div>
+    </div>
+    <div class="stages" id="tl">
+      <span class="lbl">המחזור החודשי · יולי</span>
+      <button class="st" data-s="1" onclick="setStage(1)"><i class="s1"></i>ממתין לחומר<b>5</b></button>
+      <button class="st" data-s="2" onclick="setStage(2)"><i class="s2"></i>הוזן<b>3</b></button>
+      <button class="st" data-s="3" onclick="setStage(3)"><i class="s3"></i>יעדים עודכנו<b>4</b></button>
+      <button class="st" data-s="4" onclick="setStage(4)"><i class="s4"></i>מוכן לפגישה<b>7</b></button>
+      <button class="st" data-s="5" onclick="setStage(5)"><i class="s5"></i>סיכום אושר<b>3</b></button>
+      <a id="clr" href="#" onclick="return setStage(0)">הצגת כולם</a>
     </div>
     <table>
       <thead><tr>
@@ -358,12 +354,13 @@ function applyFilter(){
   const h=$('#hint');
   if(stage)h.innerHTML=`<b>${STAGES[stage]}</b> · ${n} חברות · השאר מעומעמות`;
   else if(q)h.textContent=`${n} תוצאות`;
-  else{const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
-    h.innerHTML=`${C.length} חברות · <b>${bad}</b> עם התראה · <b>${nom}</b> בלי פגישה קרובה · <b>${lt}</b> עברו את היעד לשלב`}
+  else h.textContent=C.length+' חברות';
+  const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
+  $('#sum').innerHTML=`<span class="n"><b>${C.length}</b>לקוחות</span><span class="n bad"><b>${bad}</b>עם התראה</span><span class="n bad"><b>${nom}</b>בלי פגישה קרובה</span><span class="n bad"><b>${lt}</b>עברו את היעד לשלב</span>`;
 }
 function setStage(s){
   stage=(stage===s)?0:s;
-  document.querySelectorAll('.tl .st').forEach(el=>{const k=+el.dataset.s;el.classList.toggle('on',k===stage);el.classList.toggle('dim',stage&&k!==stage)});
+  document.querySelectorAll('#tl .st').forEach(el=>{const k=+el.dataset.s;el.classList.toggle('on',k===stage);el.classList.toggle('dim',stage&&k!==stage)});
   $('#clr').classList.toggle('on',!!stage);
   applyFilter();
   return false;
