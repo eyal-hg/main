@@ -50,13 +50,50 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .alerts a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
 .alerts a:hover{border-color:#fff}
 .alerts .c{color:#7FA6C2;margin:0 2px}
+.strip .sum{display:flex;align-items:center;gap:26px}
+.strip .sum .n{display:flex;align-items:baseline;gap:7px;font-size:13px;color:#B9D3E6}
+.strip .sum .n b{font-size:22px;font-weight:600;color:#fff;line-height:1}
+.strip .sum .n.bad b{color:#F3A39C}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
 
 /* ---------- body ---------- */
-.wrap{max-width:1620px;margin:0 auto;padding:16px 32px 16px;display:flex;flex-direction:column;gap:14px;min-height:calc(100vh - 120px)}
-.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.wrap{width:100%;padding:16px 32px 16px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;align-items:start}
+.wrap .cycle{grid-column:1/-1}
+.left{position:sticky;top:14px}
+/* כרטיס הלקוח הנבחר */
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.card .hd{background:var(--navy);color:#fff;padding:16px 20px 14px}
+.card .hd h3{font-size:19px;font-weight:600;line-height:1.2}
+.card .hd .s{font-size:12.5px;color:#B9D3E6;margin-top:4px}
+.card .hd .x{float:left;color:#B9D3E6;font-size:18px;line-height:1;cursor:pointer}
+.card .hd .x:hover{color:#fff}
+.card .bd{padding:6px 20px 14px}
+.card .row{display:grid;grid-template-columns:88px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--bd);font-size:13.5px;align-items:start}
+.card .row:last-child{border-bottom:0}
+.card .row .k{color:var(--ink3);font-size:12.5px;padding-top:2px}
+.card .row .v{color:var(--ink)}
+.card .row .v .none{color:var(--ink3)}
+.card .mu{display:grid;grid-template-columns:84px 1fr auto;gap:8px;align-items:baseline;padding:4px 0;font-size:13px}
+.card .mu .m{color:var(--ink3);font-size:12px}
+.card .tk{display:flex;gap:8px;align-items:center;padding:3px 0;font-size:13px}
+.card .tk i{width:13px;height:13px;border:1.5px solid #B7C3CF;border-radius:3px;flex:none}
+.card .ft{display:flex;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.card .btn{display:inline-flex;align-items:center;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:#fff;color:var(--navy)}
+.card .btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.card .empty2{padding:34px 20px;color:var(--ink3);font-size:13.5px;text-align:center}
+/* תאריך יעד לשלב — לחיץ */
+.due{display:inline-flex;align-items:center;gap:5px;margin-right:8px;font-size:12px;color:var(--ink3);border:1px dashed transparent;border-radius:5px;padding:1px 6px;cursor:pointer}
+.due:hover{border-color:var(--sky);color:var(--navy)}
+.due.late{color:var(--red);font-weight:500}
+.due input{font:inherit;font-size:12px;border:1px solid var(--sky);border-radius:4px;padding:0 4px;width:108px}
+.card .stage-ed{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.card .stage-ed button{font:inherit;font-size:12px;padding:3px 9px;border-radius:14px;border:1px solid var(--bd);background:#fff;color:var(--ink2);cursor:pointer}
+.card .stage-ed button.on{background:#EAF3FA;border-color:var(--navy);color:var(--navy);font-weight:600}
+.card .duerow{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:var(--ink3)}
+.card .duerow input{font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:3px 8px}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);min-width:0;overflow-x:auto}
 
 /* ---------- cycle timeline (the one dark block) ---------- */
 .cycle{background:var(--navy);color:#fff;border-radius:10px;padding:10px 28px 12px;display:grid;grid-template-columns:170px 1fr;gap:24px;align-items:center}
@@ -95,7 +132,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 thead th{font-weight:400;font-size:12px;color:var(--ink3);text-align:right;padding:7px 20px 6px 10px;border-bottom:1px solid var(--bd);white-space:nowrap;background:#FAFCFE}
 thead th:first-child{padding-right:20px}
 thead th:last-child{padding-left:20px}
-tbody td{height:44px;padding:0 20px 0 10px;border-top:1px solid var(--bd);white-space:nowrap;vertical-align:middle;color:var(--ink2)}
+tbody td{height:44px;padding:0 14px 0 8px;border-top:1px solid var(--bd);white-space:nowrap;vertical-align:middle;color:var(--ink2);font-size:13.5px}
 tbody td:last-child{padding-left:20px}
 tbody tr{cursor:pointer}
 tbody tr:hover td{background:#F8FBFD}
@@ -114,8 +151,9 @@ td .today{color:var(--navy);font-weight:600}
 td .no{color:var(--red);font-weight:500}
 td .lnk{font-size:12.5px;color:var(--sky);font-weight:500;margin-right:8px;border-bottom:1px solid transparent}
 td .lnk:hover{border-color:var(--sky)}
-td.al{width:260px}
-.als{display:grid;grid-template-columns:118px 128px;gap:6px}
+td.al{width:auto}
+.als{display:flex;gap:6px}
+.als .tag:not(.on){display:none}
 .tag{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:5px;font-size:12px;font-weight:500;visibility:hidden}
 .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .tag.on{visibility:visible}
@@ -185,14 +223,9 @@ td.mg{color:var(--ink2)}
   <div><h1>לקוחות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="alerts">
-    <div class="g"><span class="k">בעיה תזרימית</span>
-      <a href="#" onclick="return openCard('511327876')">אנרגי אינטרנשיונל</a><span class="c">,</span><a href="#" onclick="return openCard('514778220')">מטעי גבעון</a></div>
-    <div class="g"><span class="k">חוסר שביעות רצון</span>
-      <a href="#" onclick="return openCard('511327876')">אנרגי אינטרנשיונל</a></div>
-  </div>
+  <div class="sum" id="sum"></div>
   <div class="spacer"></div>
-  <div class="now num"><b>10:54</b> · הפגישה הבאה 13:00 · מטעי גבעון</div>
+  <div class="now num"><b>10:54</b></div>
 </header>
 
 <main class="wrap">
@@ -217,13 +250,8 @@ td.mg{color:var(--ink2)}
   <section class="panel">
     <div class="ph">
       <h2>התיק שלי</h2>
-      <span class="hint" id="hint">לפי פעילות היום</span>
+      <span class="hint" id="hint"></span>
       <div class="tools">
-        <div class="seg">
-          <button class="on" data-sort="act" onclick="setSort('act')">לפי פעילות</button>
-          <button data-sort="stage" onclick="setSort('stage')">לפי שלב</button>
-          <button data-sort="name" onclick="setSort('name')">א״ב</button>
-        </div>
         <input id="q" type="search" placeholder="חיפוש חברה או ח.פ" autocomplete="off" oninput="applyFilter()">
       </div>
     </div>
@@ -236,11 +264,8 @@ td.mg{color:var(--ink2)}
     <div class="empty" id="empty">אין חברה שתואמת</div>
   </section>
 
+  <aside class="left"><div class="card" id="card"><div class="empty2">לחיצה על חברה פותחת אותה כאן — שלב ותאריך יעד, התראות, פגישות, משימות, זיכרון.</div></div></aside>
 </main>
-
-<div class="ov" id="ov" onclick="if(event.target===this)closeCard()">
-  <div class="md" id="md"></div>
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -261,22 +286,28 @@ const C=[
  {id:'039112774',n:'משה עובד',pk:'Money',s:4,last:'—',next:{t:'היום 16:00'},al:{},mg:'שמרית טובול',
   tasks:['הכנה לפגישת רבעון · 08.07'],
   mem:[]},
- ...[['אלפא בנייה',1],['ברק ושות׳ הנדסה',3],['גל תעשיות',1],['דלתא אריזות',2],['הדר טכנולוגיות',4],['ורד מזון',4],['זוהר חשמל',3],['חורש תקשורת',5],['טל לוגיסטיקה',1],['יובל מזון',4],['כרמל אנרגיה',1],['לביא ביטחון',2],['מגן מערכות',4],['נוף טקסטיל',3],['סהר בנייה',5],['עומר רהיטים',4],['פלג שיווק',5]]
-   .map(([n,s],i)=>({id:'x'+i,n,s,pk:'',last:'',next:{},al:{},mg:'',tasks:[],mem:[],thin:1}))
+ ...[['אלפא בנייה',1,'Money','לירון בן כליפא','18.06','','ממתין לחומר מ-25.06',1,'05.07'],['ברק ושות׳ הנדסה',3,'Money+','שמרית טובול','26.06','09.07 10:00','',0,'08.07'],['גל תעשיות',1,'Meeting','לירון בן כליפא','05.06','','',0,'03.07'],['דלתא אריזות',2,'Money','שמרית טובול','24.06','','',0,'06.07'],['הדר טכנולוגיות',4,'Money+','לירון בן כליפא','30.06','06.07 14:00','',0,'06.07'],['ורד מזון',4,'Money','שמרית טובול','29.06','07.07 09:30','',0,'07.07'],['זוהר חשמל',3,'Money','לירון בן כליפא','23.06','','',0,'05.07'],['חורש תקשורת',5,'Money+','שמרית טובול','01.07','','',0,'—'],['טל לוגיסטיקה',1,'Money','לירון בן כליפא','11.06','','',1,'01.07'],['יובל מזון',4,'Money','שמרית טובול','28.06','08.07 11:00','',0,'08.07'],['כרמל אנרגיה',1,'Meeting','לירון בן כליפא','15.06','','',0,'04.07'],['לביא ביטחון',2,'Money+','שמרית טובול','25.06','','',0,'07.07'],['מגן מערכות',4,'Money','לירון בן כליפא','30.06','05.07 16:00','',0,'05.07'],['נוף טקסטיל',3,'Money','שמרית טובול','22.06','','',0,'04.07'],['סהר בנייה',5,'Money+','לירון בן כליפא','01.07','','',0,'—'],['עומר רהיטים',4,'Money','שמרית טובול','27.06','10.07 10:00','',0,'10.07'],['פלג שיווק',5,'Money','לירון בן כליפא','30.06','','',0,'—']]
+   .map(([n,s,pk,mg,last,nt,sub,late,due],i)=>({id:'5'+String(11000000+i*7919).slice(0,8),n,s,pk,mg,last,next:nt?{t:nt}:{none:1},lastSub:sub,al:late?{cf:1}:{},tasks:[],mem:[],due}))
 ];
-let stage=0,sort='act';
+C[0].due='03.07';C[1].due='04.07';C[2].due='30.06';C[3].due='28.06';C[4].due='02.07';
+let stage=0;
 const $=s=>document.querySelector(s);
 
+function cmpD(a,b){const [d1,m1]=a.split('.').map(Number),[d2,m2]=b.split('.').map(Number);return (m1-m2)||(d1-d2)}
+function dueEdit(el,id){const c=C.find(x=>x.id===id);if(el.querySelector('input'))return;el.innerHTML=`<input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter'){this.blur()}if(event.key==='Escape'){this.value='__';this.blur()}" onblur="dueSet('${id}',this.value)">`;el.querySelector('input').focus()}
+function dueSet(id,v){const c=C.find(x=>x.id===id);if(v!=='__'&&/^\d{2}\.\d{2}$/.test(v.trim())){c.due=v.trim();toast('תאריך היעד עודכן — '+c.n+' · '+c.due)}render();if(SELID===id)openCard(id)}
 function row(c){
   const last=c.last?`<span class="num">${c.last}</span>${c.lastSub?`<span class="sub">${c.lastSub}</span>`:''}`:'';
   let next='';
   if(c.next.t)next=`<span class="today num">${c.next.t}</span>`;
   else if(c.next.none)next=`<span class="no">לא נקבעה</span><a class="lnk" href="#" onclick="event.stopPropagation();toast('לינק לקביעת פגישה נשלח — ${c.n}');return false">שליחת לינק</a>`;
-  const name=c.thin?c.n:`${c.n}<small class="num">${c.id}</small>`;
+  const name=`${c.n}<small class="num">${c.id}</small>`;
+  const late=c.due&&c.due!=='—'&&cmpD(c.due,'02.07')<0;
+  const due=c.s===5?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לשלב הבא — לחיצה לעריכה">${late?'עבר':'עד'} <span class="num">${c.due||'—'}</span></span>`;
   return `<tr data-id="${c.id}" data-s="${c.s}" data-n="${c.n}" onclick="openCard('${c.id}')">
     <td class="n">${name}</td>
     <td class="pk">${c.pk}</td>
-    <td><span class="stg s${c.s}">${STAGES[c.s]}</span></td>
+    <td><span class="stg s${c.s}">${STAGES[c.s]}</span>${due}</td>
     <td class="num">${last}</td>
     <td>${next}</td>
     <td class="al"><div class="als"><span class="tag cf ${c.al.cf?'on':''}">בעיה תזרימית</span><span class="tag sat ${c.al.sat?'on':''}">חוסר שביעות רצון</span></div></td>
@@ -285,8 +316,6 @@ function row(c){
 }
 function render(){
   let list=C.slice();
-  if(sort==='stage')list.sort((a,b)=>a.s-b.s||(b.thin?0:1)-(a.thin?0:1)||a.n.localeCompare(b.n,'he'));
-  else if(sort==='name')list.sort((a,b)=>a.n.localeCompare(b.n,'he'));
   $('#tb').innerHTML=list.map(row).join('');
   applyFilter();
 }
@@ -303,7 +332,9 @@ function applyFilter(){
   const h=$('#hint');
   if(stage)h.innerHTML=`<b>${STAGES[stage]}</b> · ${n} חברות · השאר מעומעמות`;
   else if(q)h.textContent=`${n} תוצאות`;
-  else h.textContent=sort==='act'?'לפי פעילות היום':sort==='stage'?'לפי שלב במחזור':'לפי א״ב';
+  else h.textContent=C.length+' חברות';
+  const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
+  $('#sum').innerHTML=`<span class="n"><b>${C.length}</b>לקוחות</span><span class="n bad"><b>${bad}</b>עם התראה</span><span class="n bad"><b>${nom}</b>בלי פגישה קרובה</span><span class="n bad"><b>${lt}</b>עברו את היעד לשלב</span>`;
 }
 function setStage(s){
   stage=(stage===s)?0:s;
@@ -312,34 +343,34 @@ function setStage(s){
   applyFilter();
   return false;
 }
-function setSort(s){
-  sort=s;
-  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.sort===s));
-  render();
-}
+let SELID=null;
 function openCard(id){
-  const c=C.find(x=>x.id===id); if(!c)return false;
-  const al=(c.al.cf||c.al.sat)?`<div class="als"><span class="tag cf" style="${c.al.cf?'':'display:none'}">בעיה תזרימית</span><span class="tag sat" style="${c.al.sat?'':'display:none'}">חוסר שביעות רצון</span></div>`:'<span class="none">אין</span>';
-  const tasks=c.tasks.length?c.tasks.map(t=>`<div>${t}</div>`).join(''):'<span class="none">אין משימות פתוחות</span>';
-  const mem=c.mem.length?c.mem.map(m=>`<div class="mu"><span class="m">${m[0]}</span><span>${m[1]}</span><span class="m num">${m[2]}</span></div>`).join(''):'<span class="none">אין עדכונים</span>';
+  const c=C.find(x=>x.id===id); if(!c)return false; SELID=id;
+  const al=(c.al.cf||c.al.sat)?`<div class="als" style="grid-template-columns:auto auto;justify-content:start"><span class="tag cf on" style="${c.al.cf?'':'display:none'}">בעיה תזרימית</span><span class="tag sat on" style="${c.al.sat?'':'display:none'}">חוסר שביעות רצון</span></div>`:'<span class="none">אין</span>';
+  const tasks=c.tasks.length?c.tasks.map(t=>`<div class="tk"><i></i>${t}</div>`).join(''):'<span class="none">אין משימות פתוחות</span>';
+  const mem=c.mem.length?c.mem.map(m=>`<div class="mu"><span class="m">${m[0]}</span><span>${m[1]}</span><span class="m num">${m[2]}</span></div>`).join(''):'<span class="none">אין עדכונים אחרונים</span>';
   let next='—';
   if(c.next.t)next=`<span class="today num">${c.next.t}</span>`;
-  else if(c.next.none)next=`<span class="no">לא נקבעה</span>`;
-  $('#md').innerHTML=`
-    <div class="hd"><div><h3>${c.n}</h3><div class="s num">${c.thin?'':`ח.פ ${c.id} · ${c.pk} · ${c.mg}`}</div></div><button class="x" onclick="closeCard()">×</button></div>
+  else if(c.next.none)next=`<span class="no">לא נקבעה</span> <a class="lnk" href="#" onclick="toast('לינק לקביעת פגישה נשלח — ${c.n}');return false">שליחת לינק</a>`;
+  const stg=`<span class="stg s${c.s}">${STAGES[c.s]}</span>
+    <div class="stage-ed">${STAGES.slice(1).map((s,i)=>`<button class="${i+1===c.s?'on':''}" onclick="stageSet('${c.id}',${i+1})">${s}</button>`).join('')}</div>
+    ${c.s<5?`<div class="duerow">יעד לשלב הבא <input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onchange="dueSet('${c.id}',this.value)"><span title="ברירת המחדל נקבעת בהגדרות המשרד">ברירת מחדל: 5 ימים</span></div>`:''}`;
+  $('#card').innerHTML=`
+    <div class="hd"><span class="x" onclick="closeCard()">✕</span><h3>${c.n}</h3><div class="s num">ח.פ ${c.id} · ${c.pk} · ${c.mg}</div></div>
     <div class="bd">
-      <div class="row"><span class="k">שלב במחזור</span><div class="v"><span class="stg s${c.s}">${STAGES[c.s]}</span></div></div>
-      ${c.thin?'':`<div class="row"><span class="k">פגישה הבאה</span><div class="v">${next}</div></div>`}
+      <div class="row"><span class="k">שלב במחזור</span><div class="v">${stg}</div></div>
+      <div class="row"><span class="k">פגישה אחרונה</span><div class="v num">${c.last||'—'}${c.lastSub?' <span class="sub">'+c.lastSub+'</span>':''}</div></div>
+      <div class="row"><span class="k">פגישה הבאה</span><div class="v">${next}</div></div>
       <div class="row"><span class="k">התראות</span><div class="v">${al}</div></div>
-      <div class="row"><span class="k">משימות פתוחות</span><div class="v">${tasks}</div></div>
-      <div class="row"><span class="k">זיכרון · אחרונים</span><div class="v">${mem}</div></div>
+      <div class="row"><span class="k">משימות</span><div class="v">${tasks}</div></div>
+      <div class="row"><span class="k">מהזיכרון</span><div class="v">${mem}</div></div>
     </div>
-    <div class="ft"><a class="btn pri" href="memory.html?c=${c.id}">לזיכרון הלקוח</a><a class="btn" href="meetings.html?c=${c.id}">פגישות</a><a class="btn" href="tasks.html?c=${c.id}">משימות</a></div>`;
-  $('#ov').classList.add('on');
+    <div class="ft"><a class="btn pri" href="memory.html?c=${c.id}">הזיכרון המלא</a><a class="btn" href="meetings.html?c=${c.id}">פגישות</a><a class="btn" href="tasks.html?c=${c.id}">משימות</a></div>`;
   document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.toggle('hl',tr.dataset.id===id));
   return false;
 }
-function closeCard(){$('#ov').classList.remove('on')}
+function stageSet(id,s){const c=C.find(x=>x.id===id);c.s=s;toast(c.n+' — '+STAGES[s]);render();openCard(id)}
+function closeCard(){SELID=null;$('#card').innerHTML='<div class="empty2">לחיצה על חברה פותחת אותה כאן — שלב ותאריך יעד, התראות, פגישות, משימות, זיכרון.</div>';document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.remove('hl'))}
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
 render();
