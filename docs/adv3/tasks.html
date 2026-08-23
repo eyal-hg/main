@@ -84,6 +84,9 @@ select,input{font:inherit;color:var(--ink)}
 .panel.panel.det #dSrc{color:#DCEBF5}.panel.det #dSrc a{color:#fff}
 .panel.det textarea{width:100%;font:inherit;font-size:13px;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 10px;margin-top:12px;min-height:60px;resize:vertical;color:#fff;background:rgba(255,255,255,.07)}
 .panel.det textarea::placeholder{color:#7FA6C2}
+.panel.det .ph .x{color:#B9D3E6;font-size:12.5px}.panel.det .ph .x:hover{color:#fff}
+.panel.det:not(.edit) .ed,.panel.det:not(.edit) #dSrcL,.panel.det:not(.edit) #dSrc{display:none}
+.panel.det .acts .ed{display:contents}
 .panel.det .acts{display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap}
 .panel.det .acts .btn{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
 .panel.det .acts .btn.pri{background:var(--sky);border-color:var(--sky)}
@@ -318,38 +321,9 @@ select,input{font:inherit;color:var(--ink)}
 
     <!-- ---- my tasks ---- -->
     <div id="mine">
-      <form class="add" onsubmit="addTask(event)">
-        <input id="nt" type="text" placeholder="משימה חדשה…" autocomplete="off">
-        <select id="nc">
-          <option value="">בלי לקוח</option>
-          <option value="511327876">אנרגי אינטרנשיונל</option>
-          <option value="514778220">מטעי גבעון</option>
-          <option value="025664109">רימון יצחק</option>
-          <option value="511200341">אנרגי גולני</option>
-          <option value="039112774">משה עובד</option>
-          <option value="x">לקוח אחר…</option>
-        </select>
-        <select id="nd" onchange="document.getElementById('ndx').classList.toggle('on',this.value==='custom')">
-          <option value="today">היום</option>
-          <option value="0307">מחר · 03.07</option>
-          <option value="0807">08.07</option>
-          <option value="none">בלי תאריך</option>
-          <option value="custom">תאריך אחר…</option>
-        </select>
-        <input id="ndx" type="date" min="2026-07-02">
-        <button class="btn pri" type="submit">הוספה</button>
-      </form>
 
+      <input type="hidden" id="fc" value="">
       <div class="flt">
-        <select id="fc" onchange="applyF()">
-          <option value="">כל הלקוחות</option>
-          <option value="511327876">אנרגי אינטרנשיונל</option>
-          <option value="514778220">מטעי גבעון</option>
-          <option value="025664109">רימון יצחק</option>
-          <option value="511200341">אנרגי גולני</option>
-          <option value="039112774">משה עובד</option>
-          <option value="none">בלי לקוח</option>
-        </select>
         <div class="seg" id="fs">
           <button class="on" data-v="all" onclick="seg(this)">הכל</button>
           <button data-v="open" onclick="seg(this)">רק פתוחות</button>
@@ -368,7 +342,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="tx">לשלוח לרימון את הצעת המסגרת</div>
             <div class="sub"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><i class="ovd">היה ל-30.06</i></div>
           </div>
-          <div class="side"><span class="due ovd num">30.06</span><span>שלי</span></div>
+          <div class="side"><span class="due ovd num">30.06</span></div>
         </div>
         <div class="tk late m" data-c="511200341" data-o="m" data-g="late">
           <span class="cb" onclick="tog(this)">✓</span>
@@ -398,7 +372,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="tx">לחזור לרו״ח על המע״מ</div>
             <div class="sub"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span>לפני <a href="meetings.html">השיחה ב-13:00</a></div>
           </div>
-          <div class="side"><span class="due">היום</span><span>שלי</span></div>
+          <div class="side"><span class="due">היום</span></div>
         </div>
 
         <div class="tk m" data-c="511200341" data-o="m" data-g="today" id="t3">
@@ -418,7 +392,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="tx">עדכוני וואטסאפ ללקוחות</div>
             <div class="sub">4 חברות</div>
           </div>
-          <div class="side"><span class="due">היום</span><span>שלי</span></div>
+          <div class="side"><span class="due">היום</span></div>
         </div>
 
         <div class="grp" data-g="0307">03.07 <small>מחר · שישי</small></div>
@@ -428,7 +402,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="tx">שליחת זמנים לפגישה חודשית</div>
             <div class="sub">3 לקוחות Money+</div>
           </div>
-          <div class="side"><span class="due num">03.07</span><span>שלי</span></div>
+          <div class="side"><span class="due num">03.07</span></div>
         </div>
 
         <div class="grp" data-g="0807">08.07 <small>רביעי</small></div>
@@ -438,7 +412,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="tx">הכנה לפגישת רבעון</div>
             <div class="sub"><a href="clients.html?c=039112774">משה עובד</a></div>
           </div>
-          <div class="side"><span class="due num">08.07</span><span>שלי</span></div>
+          <div class="side"><span class="due num">08.07</span></div>
         </div>
 
         <div class="grp" data-g="none">בלי תאריך</div>
@@ -448,7 +422,7 @@ select,input{font:inherit;color:var(--ink)}
             <div class="tx">עדכון תקציב שיווק ליולי</div>
             <div class="sub"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a></div>
           </div>
-          <div class="side"><span class="due"><a href="#" onclick="event.preventDefault();toast('קביעת תאריך יעד — עדכון תקציב שיווק')" style="color:var(--sky)">קביעת מועד</a></span><span>שלי</span></div>
+          <div class="side"><span class="due"><a href="#" onclick="event.preventDefault();toast('קביעת תאריך יעד — עדכון תקציב שיווק')" style="color:var(--sky)">קביעת מועד</a></span></div>
         </div>
 
         <div class="empty" id="empty">אין משימות שמתאימות לסינון.</div>
@@ -482,21 +456,20 @@ select,input{font:inherit;color:var(--ink)}
 
   <aside class="left">
     <section class="panel det on" id="det">
-      <div class="ph"><h2>המשימה</h2><span class="hint" id="detHint">הבאה בתור</span></div>
-      <div class="empty" id="detEmpty">בחרו משימה ברשימה — כאן עורכים: לקוח, תאריך, הערות, תת-משימות.</div>
-      <div class="body" id="detBody" style="display:none">
-        <input class="tx" id="dTx" value="">
+      <div class="ph"><h2 id="detTitle">משימה חדשה</h2><span class="hint" id="detHint"></span><a class="more x" id="detX" href="#" onclick="event.preventDefault();detNew()" style="display:none">✕ חדשה</a></div>
+      <div class="body" id="detBody">
+        <input class="tx" id="dTx" placeholder="מה צריך לעשות?" autocomplete="off" onkeydown="if(event.key==='Enter')detSave()">
         <div class="f">
           <label>לקוח</label><select id="dC"><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
-          <label>תאריך יעד</label><input id="dD" type="date" value="2026-07-02">
-          <label>מקור</label><span id="dSrc">שלי</span>
+          <label>תאריך יעד</label><select id="dG"><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
+          <label id="dSrcL">מקור</label><span id="dSrc">שלי</span>
         </div>
         <textarea id="dNote" placeholder="הערה לעצמי…"></textarea>
         <div class="acts">
-          <button class="btn pri sm" onclick="detSave()">שמירה</button>
-          <button class="btn sm" onclick="detDone()">סימון כבוצע</button>
+          <button class="btn pri sm" id="dGo" onclick="detSave()">הוספה</button>
+          <span class="ed"><button class="btn sm" onclick="detDone()">סימון כבוצע</button>
           <button class="btn sm" onclick="detMove('day')">הזז למחר</button>
-          <button class="btn sm" onclick="detMove('week')">הזז בשבוע</button>
+          <button class="btn sm" onclick="detMove('week')">הזז בשבוע</button></span>
         </div>
       </div>
     </section>
@@ -551,24 +524,43 @@ const CN={'511327876':'אנרגי אינטרנשיונל','514778220':'מטעי 
 function pickC(li){[...li.parentNode.children].forEach(x=>x.classList.remove('on'));li.classList.add('on');document.getElementById('fc').value=li.dataset.c==='none'?'none':li.dataset.c;applyF()}
 function bycCount(){document.querySelectorAll('#byc li').forEach(li=>{const c=li.dataset.c;const n=[...document.querySelectorAll('#list .tk:not(.done)')].filter(t=>!c||t.dataset.c===c).length;const s=li.querySelector('.n');s.textContent=n;s.classList.toggle('z',!n)})}
 let SEL=null;
-function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');
-  document.getElementById('detEmpty').style.display='none';document.getElementById('detBody').style.display='';
+const GL2={today:'היום','0307':'03.07','0807':'08.07','0907':'09.07',none:''};
+const GLBL={today:'היום <small class="num">חמישי · 02.07</small>','0307':'03.07 <small>מחר · שישי</small>','0807':'08.07 <small>רביעי</small>','0907':'09.07 <small>חמישי</small>',none:'בלי תאריך'};
+function detNew(){if(SEL)SEL.classList.remove('sel');SEL=null;document.getElementById('det').classList.remove('edit');
+  document.getElementById('detTitle').textContent='משימה חדשה';document.getElementById('detHint').textContent='';document.getElementById('detX').style.display='none';
+  document.getElementById('dTx').value='';document.getElementById('dC').value='none';const sel=document.getElementById('dG');const o=sel.querySelector('option[data-late]');if(o)o.remove();sel.value='today';document.getElementById('dNote').value='';
+  document.getElementById('dGo').textContent='הוספה'}
+function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');document.getElementById('det').classList.add('edit');
+  document.getElementById('detTitle').textContent='המשימה';document.getElementById('detX').style.display='';
   document.getElementById('dTx').value=t.querySelector('.tx').textContent;
   document.getElementById('dC').value=t.dataset.c||'none';
+  const sel=document.getElementById('dG');
+  if(t.dataset.g==='late'){const due=t.querySelector('.side .due').textContent.trim();let o=sel.querySelector('option[data-late]');if(!o){o=document.createElement('option');o.dataset.late=1;sel.prepend(o)}o.value='late';o.textContent=due+' · עבר';sel.value='late'}
+  else{const o=sel.querySelector('option[data-late]');if(o)o.remove();sel.value=GL2[t.dataset.g]!=null?t.dataset.g:'none'}
   const src=t.querySelector('.src');document.getElementById('dSrc').innerHTML=src?src.innerHTML:'שלי';
-  const first=document.querySelector('#list .tk:not(.done)')===t;
-  document.getElementById('detHint').textContent=t.classList.contains('done')?'בוצעה':(first?'הבאה בתור'+(t.dataset.g==='late'?' · עבר זמנה':''):(t.dataset.g==='late'?'עבר זמנה':''));}
-function detSave(){if(!SEL)return;SEL.querySelector('.tx').textContent=document.getElementById('dTx').value;const c=document.getElementById('dC').value;SEL.dataset.c=c;const a=SEL.querySelector('.sub a');if(a)a.textContent=CN[c]||'';bycCount();applyF();toast('נשמר')}
-function detDone(){if(!SEL)return;if(!SEL.classList.contains('done'))tog(SEL.querySelector('.cb'));detNext()}
-/* הזזה: למחר (03.07) או בשבוע (09.07) — הקבוצה נוצרת אם אין */
-function detMove(k){if(!SEL)return;const G=k==='week'?{g:'0907',d:'09.07',lbl:'09.07 <small>חמישי</small>',msg:'הוזז בשבוע'}:{g:'0307',d:'03.07',lbl:'03.07 <small>מחר · שישי</small>',msg:'הוזז למחר'};
-  const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+G.g+'"]');
-  if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=G.g;grp.innerHTML=G.lbl;const none=list.querySelector('.grp[data-g="none"]');list.insertBefore(grp,none)}
-  SEL.dataset.g=G.g;SEL.classList.remove('late');const d=SEL.querySelector('.side .due');if(d){d.textContent=G.d;d.classList.remove('ovd')}
-  const o=SEL.querySelector('.sub .ovd');if(o){const dot=o.previousElementSibling;if(dot&&dot.classList.contains('dot'))dot.remove();o.remove()}
-  grp.after(SEL);applyF();bycCount();openDet(SEL);toast(G.msg)}
-function detNext(){const t=document.querySelector('#list .tk:not(.done)');if(t)openDet(t)}
-window.addEventListener('load',()=>{bycCount();detNext()});
+  document.getElementById('dNote').value=t.dataset.note||'';
+  document.getElementById('dGo').textContent='שמירה';
+  document.getElementById('detHint').textContent=t.classList.contains('done')?'בוצעה':(t.dataset.g==='late'?'עבר זמנה':'')}
+function placeIn(tk,g){const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+g+'"]');
+  if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=g;grp.innerHTML=GLBL[g]||g;
+    const order=['late','today','0307','0807','0907','none'];let after=null;for(const k of order){if(k===g)break;const x=list.querySelector('.grp[data-g="'+k+'"]');if(x)after=x}
+    if(after){let n=after.nextElementSibling;while(n&&!n.classList.contains('grp'))n=n.nextElementSibling;n?list.insertBefore(grp,n):list.appendChild(grp)}else list.prepend(grp)}
+  tk.dataset.g=g;grp.after(tk)}
+function unlate(tk){tk.classList.remove('late');const d=tk.querySelector('.side .due');if(d)d.classList.remove('ovd');const o=tk.querySelector('.sub .ovd');if(o){const dot=o.previousElementSibling;if(dot&&dot.classList.contains('dot'))dot.remove();o.remove()}}
+function detSave(){const v=document.getElementById('dTx').value.trim();if(!v){document.getElementById('dTx').focus();return}
+  const c=document.getElementById('dC').value,g=document.getElementById('dG').value,note=document.getElementById('dNote').value;
+  if(!SEL){const tk=document.createElement('div');tk.className='tk';tk.dataset.c=c;tk.dataset.o='me';tk.dataset.note=note;
+    tk.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span></div>';
+    tk.querySelector('.tx').textContent=v;tk.querySelector('.sub').innerHTML=c==='none'?'':'<a href="clients.html?c='+c+'">'+CN[c]+'</a>';
+    tk.querySelector('.due').textContent=GL2[g]||'';placeIn(tk,g);applyF();bycCount();toast('נוסף: '+v);detNew();document.getElementById('dTx').focus();return}
+  SEL.querySelector('.tx').textContent=v;SEL.dataset.c=c;SEL.dataset.note=note;
+  const sub=SEL.querySelector('.sub');const a=sub.querySelector('a');if(c==='none'){if(a)a.remove()}else if(a)a.textContent=CN[c];else sub.insertAdjacentHTML('afterbegin','<a href="clients.html?c='+c+'">'+CN[c]+'</a>');
+  if(g!=='late'&&g!==SEL.dataset.g){unlate(SEL);SEL.querySelector('.side .due').textContent=GL2[g]||'';placeIn(SEL,g)}
+  applyF();bycCount();openDet(SEL);toast('נשמר')}
+function detDone(){if(!SEL)return;if(!SEL.classList.contains('done'))tog(SEL.querySelector('.cb'));detNew()}
+/* הזזה: למחר (03.07) או בשבוע (09.07) */
+function detMove(k){if(!SEL)return;const g=k==='week'?'0907':'0307';unlate(SEL);SEL.querySelector('.side .due').textContent=GL2[g];placeIn(SEL,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');detNew()}
+window.addEventListener('load',()=>{bycCount();detNew()});
 document.addEventListener('click',e=>{const t=e.target.closest('#list .tk');if(!t||e.target.closest('.cb,a,button'))return;openDet(t)});
 function seg(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');applyF()}
 function segV(id){const el=document.querySelector('#'+id+' .on');return el?el.dataset.v:''}
@@ -587,17 +579,6 @@ function applyF(){const c=document.getElementById('fc').value,st=segV('fs'),o=se
   const q=s=>document.querySelectorAll('#list .tk:not(.done)'+s).length;
   document.getElementById('sOpen').textContent=openAll;document.getElementById('sLate').textContent=q('[data-g="late"]');document.getElementById('sToday').textContent=q('[data-g="today"]');
   }
-function addTask(e){e.preventDefault();const i=document.getElementById('nt');const v=i.value.trim();if(!v){i.focus();return}
-  const c=document.getElementById('nc').value||'none';let g=document.getElementById('nd').value;let due=gl[g]||'';
-  if(g==='custom'){const d=document.getElementById('ndx').value;if(d){const p=d.split('-');due=p[2]+'.'+p[1];g=p[2]+p[1]}else g='none',due=''}
-  const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+g+'"]');
-  if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=g;grp.innerHTML=due;const last=list.querySelector('.grp[data-g="none"]');list.insertBefore(grp,last)}
-  const t=document.createElement('div');t.className='tk';t.dataset.c=c==='x'?'none':c;t.dataset.o='me';t.dataset.g=g;
-  t.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span><span>שלי</span></div>';
-  t.querySelector('.tx').textContent=v;
-  t.querySelector('.sub').innerHTML=c==='none'||c==='x'?'':'<a href="clients.html?c='+c+'">'+names[c]+'</a>';
-  t.querySelector('.due').innerHTML=due||'<a href="#" style="color:var(--sky)" onclick="event.preventDefault();toast(\'קביעת תאריך יעד\')">קביעת מועד</a>';
-  grp.after(t);i.value='';applyF();toast('נוסף: '+v+(due?' · '+due:''))}
 function askHk(){const i=document.getElementById('ht');const v=i.value.trim();const c=document.getElementById('hc').value;if(!v||!c){toast('מה לבקש ולאיזה לקוח');return}
   const mgr={'אנרגי אינטרנשיונל':'לירון בן כליפא','מטעי גבעון':'לירון בן כליפא','אנרגי גולני':'לירון בן כליפא','רימון יצחק':'שמרית טובול','משה עובד':'שמרית טובול'}[c];
   const tr=document.createElement('tr');tr.innerHTML='<td class="w"></td><td><a href="clients.html">'+c+'</a></td><td>'+mgr+'</td><td>—</td><td class="l"><span class="st">נשלח</span></td>';
