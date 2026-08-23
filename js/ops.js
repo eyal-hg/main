@@ -1245,6 +1245,10 @@
         ctx:['[יועץ] נדבר על זה בפגישה החודשית','[תומר] סבבה. ובנתיים —','[תומר] האם עדכנת את כל התשלומים?']},
       {type:'msg', who:'תומר לוי', thread:['מה הצפי סה"כ בשלוש החשבונות?'], time:'לפני 11 דק׳', grp:true,
         ctx:['[תומר] האם עדכנת את כל התשלומים?','[תומר] מה הצפי סה"כ בשלוש החשבונות?']},
+      {type:'msg', who:'תומר לוי', time:'לפני 9 דק׳', grp:true, reply:true,
+        orig:'מה עם ההעברה לאלקטרה מיזוג — יצאה?', ours:'תומר, ההעברה לאלקטרה מיזוג לא מופיעה בבנק. יצאה? מאיזה חשבון?',
+        thread:['יצאה אתמול מפועלים, 3,660. אשלח אישור'],
+        ctx:['[תומר] מה עם ההעברה לאלקטרה מיזוג — יצאה?','[מנהל תזרים] תומר, ההעברה לאלקטרה מיזוג לא מופיעה בבנק. יצאה? מאיזה חשבון?','[תומר] יצאה אתמול מפועלים, 3,660. אשלח אישור']},
       {type:'doc', name:'אישור העברה — דיסקונט · 1,381 ₪', who:'צחי עובד', note:'העברתי עכשיו ללדובק, מצרף אישור 🙏', time:'לפני 10 דק׳', src:'קבוצת וואטסאפ', grp:true,
         ctx:['[מנהל תזרים] צחי, חסר לי אישור על ההעברה ללדובק','[צחי] שניה עליי','[צחי] העברתי עכשיו ללדובק, מצרף אישור 🙏 + קובץ'], img:'m3.jpeg',
         file:{payee:'לדובק הפצה בע״מ', amount:'1,381', date:'28.07.2026', ref:'745851', desc:'העברה בנקאית — תשלום לספק'}},
@@ -1359,6 +1363,7 @@
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
   const grpChip=t=>t.grp?'<span class="grp-tag">מהקבוצה</span> ':'';
   function taskTitle(t){
+    if(t.type==='msg'&&t.reply) return (t.who||'הלקוח')+' ענה: '+((t.thread||[])[0]||'');
     if(t.type==='msg') return (t.who?t.who+': ':'')+(t.thread?t.thread[t.thread.length-1]:'הודעה');
     if(t.type==='doc') return t.name;
     if(t.type==='payee') return 'שיק יוצא מס׳ '+t.chk+' · '+t.amount+' ₪ · '+t.bank+(t.ocrName?'':' · המוטב לא זוהה');
@@ -2581,7 +2586,7 @@
       }).join('');
       const tag=t.type==='doc'
         ?`<span class="msgc-att">${t.img?'📎':'📊'} ${t.name}</span>`
-        :'<span class="msgc-att q">שאלה — דורשת מענה</span>';
+        :(t.reply?'<span class="msgc-att r">↩ הלקוח ענה לשאלה שלנו</span>':'<span class="msgc-att q">שאלה — דורשת מענה</span>');
       const st=t.done?(t.later?'<span class="msgc-ok later">◷ מאוחר יותר</span>'
                               :'<span class="msgc-ok">✓ טופל</span>')
                      :(t.await?'<span class="msgc-ok await">◷ ממתין למענה</span>':'');
@@ -2604,7 +2609,6 @@
         <div class="mw-nav">
           ${(sel.type==='msg'&&sel.entry)?`<button class="mt-btn view sm" onclick="msgEntryBack(${i})">→ חזרה למענה</button>`:''}
           <span class="mw-n"><b>${allItems.length-openIx.length+1}</b> מתוך ${allItems.length}</span>
-          <button class="mt-btn view sm" onclick="msgNext()">הבא ←</button>
         </div>
       </div>`;
       /* "הזנה לתזרים" בהודעת מלל — אותה פריסה בדיוק כמו מסמך:
@@ -2627,8 +2631,13 @@
   }
   /* הודעת מלל — שיחה ומענה */
   function textMsgBody(t,i){
+    /* הלקוח ענה לשאלה שלנו: ההודעה המקורית, מה ששלחנו, והתשובה — התשובה מודגשת */
+    const exch=t.reply?`
+      <div class="oqs-bub dim"><div class="oqs-bub-h">${t.who||'הלקוח'} · ההודעה המקורית</div>${t.orig||''}</div>
+      <div class="oqs-bub me"><div class="oqs-bub-h">מנהל תזרים · מה ששלחנו</div>${t.ours||''}</div>`:'';
     return `<div class="msg-thread">
-      ${(t.thread||[]).map(m=>`<div class="oqs-bub"><div class="oqs-bub-h">${t.who||'הלקוח'} · ${t.time||''}</div>${m}</div>`).join('')}
+      ${exch}
+      ${(t.thread||[]).map(m=>`<div class="oqs-bub ${t.reply?'ans':''}"><div class="oqs-bub-h">${t.who||'הלקוח'} · ${t.time||''}${t.reply?' · <b>התשובה</b>':''}</div>${m}</div>`).join('')}
       <div class="oqs-reply" style="margin-top:12px">
         <input id="msgReply_${i}" placeholder="תגובה ללקוח בוואטסאפ…" onkeydown="if(event.key==='Enter')msgReplySend(${i})">
         <button class="oqs-send" onclick="msgReplySend(${i})">שליחה</button>
