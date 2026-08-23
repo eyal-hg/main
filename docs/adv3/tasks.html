@@ -47,11 +47,17 @@ select,input{font:inherit;color:var(--ink)}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
-.strip .sum{display:flex;align-items:center;gap:26px}
-.strip .sum .n{display:flex;align-items:baseline;gap:7px;font-size:13px;color:#B9D3E6}
-.strip .sum .n b{font-size:22px;font-weight:600;color:#fff;line-height:1}
-.strip .sum .n.late b{color:#F3A39C}
-.strip .sum .n.late{color:#F3A39C}
+.strip .next{display:flex;align-items:center;gap:14px;font-size:14px}
+.strip .next .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
+.strip .next .t{font-weight:600;color:#fff;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.strip .next .t:hover{border-color:#fff}
+.strip .next .c{color:#7FA6C2}
+.strip .next .cl{color:#DCEBF5}
+.strip .next .lt{background:rgba(232,99,90,.22);border:1px solid rgba(232,99,90,.5);color:#FFD3CF;border-radius:20px;padding:3px 11px;font-size:12.5px}
+.strip .next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 11px;font-size:12.5px;color:#DCEBF5}
+.strip .next .ok{font:inherit;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;cursor:pointer}
+.strip .next .ok:hover{background:rgba(255,255,255,.12)}
+.strip .next .none{color:#B9D3E6}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
@@ -85,9 +91,6 @@ select,input{font:inherit;color:var(--ink)}
 .panel.det textarea{width:100%;font:inherit;font-size:13px;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 10px;margin-top:12px;min-height:60px;resize:vertical;color:#fff;background:rgba(255,255,255,.07)}
 .panel.det textarea::placeholder{color:#7FA6C2}
 .panel.det .ph .x{color:#B9D3E6;font-size:12.5px}.panel.det .ph .x:hover{color:#fff}
-.panel.det.edit #dGo{display:none}
-.panel.det.edit .acts{display:none}
-.panel.det:not(.edit) .ed,.panel.det:not(.edit) #dSrcL,.panel.det:not(.edit) #dSrc{display:none}
 .panel.det .acts .ed{display:contents}
 .panel.det .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
 .panel.det .chips .lbl{font-size:12px;color:#9FC0DA;min-width:34px}
@@ -108,8 +111,17 @@ select,input{font:inherit;color:var(--ink)}
 .panel.det .cs .dd div small{color:var(--ink3);margin-right:6px}
 .panel.det .smart{min-height:18px;font-size:12.5px;color:#9FC0DA;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .panel.det .smart b{color:#fff;font-weight:500;background:rgba(255,255,255,.1);border-radius:4px;padding:1px 7px}
-.panel.det.edit .add-only,.panel.det.edit .smart{display:none}
-.panel.det:not(.edit) .f{display:none}
+.panel.edit{display:none}
+.panel.edit.on{display:block}
+.panel.edit .body{padding:12px 20px 14px}
+.panel.edit .tx{width:100%;font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:0;border-bottom:1px dashed transparent;padding:2px 0;background:none;line-height:1.4}
+.panel.edit .tx:focus{outline:0;border-color:var(--sky)}
+.panel.edit .f{display:grid;grid-template-columns:84px 1fr;gap:7px 12px;margin-top:12px;font-size:13px;align-items:center}
+.panel.edit .f label{color:var(--ink3);font-size:12.5px}
+.panel.edit .f select{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:5px 8px;background:#fff;color:var(--ink);width:100%}
+.panel.edit #eSrc a{color:var(--purple);font-weight:500}
+.panel.edit textarea{width:100%;font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:8px 10px;margin-top:10px;min-height:56px;resize:vertical;color:var(--ink)}
+.panel.edit .saved{font-size:11.5px;color:var(--ink3);margin-top:8px}
 .panel.det .acts{display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap}
 .panel.det .acts .btn{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
 .panel.det .acts .btn.pri{background:var(--sky);border-color:var(--sky)}
@@ -134,6 +146,7 @@ select,input{font:inherit;color:var(--ink)}
 .tabs button{padding:10px 14px 11px;font-size:15px;font-weight:500;color:var(--ink2);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:8px}
 .tabs button:hover{color:var(--navy)}
 .tabs button.on{color:var(--navy);font-weight:600;border-color:var(--navy)}
+.tabs button i s{text-decoration:none;color:var(--coral)}
 .tabs button i{font-style:normal;font-size:12px;color:var(--ink3);background:#fff;border:1px solid var(--bd);border-radius:10px;padding:0 7px;line-height:18px;font-weight:500}
 .tabs button.on i{color:var(--navy);border-color:#C7DCEC;background:#EAF3FA}
 .tabs .note{margin-right:auto;font-size:12.5px;color:var(--ink3);padding-bottom:12px}
@@ -329,11 +342,7 @@ select,input{font:inherit;color:var(--ink)}
   <div><h1>משימות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="sum">
-    <span class="n"><b id="sOpen">7</b>פתוחות</span>
-    <span class="n late"><b id="sLate">2</b>עבר זמנן</span>
-    <span class="n"><b id="sToday">4</b>להיום</span>
-  </div>
+  <div class="next" id="nxt"></div>
   <div class="spacer"></div>
   <div class="now num"><b>10:54</b></div>
 </header>
@@ -485,7 +494,7 @@ select,input{font:inherit;color:var(--ink)}
 
   <aside class="left">
     <section class="panel det on" id="det">
-      <div class="ph"><h2 id="detTitle">משימה חדשה</h2><span class="hint" id="detHint"></span><a class="more x" id="detX" href="#" onclick="event.preventDefault();detNew()" style="display:none">✕ חדשה</a></div>
+      <div class="ph"><h2>משימה חדשה</h2><span class="hint">Enter מוסיף</span></div>
       <div class="body" id="detBody">
         <input class="tx" id="dTx" placeholder="מה צריך לעשות?" autocomplete="off" onkeydown="if(event.key==='Enter'){detSave();this.blur()}">
         <div class="smart" id="dSmart"></div>
@@ -499,15 +508,25 @@ select,input{font:inherit;color:var(--ink)}
           <button data-v="today" class="on">היום</button><button data-v="0307">מחר</button><button data-v="0907">בשבוע</button><button data-v="none">בלי</button><button data-v="pick" class="cal">📅 תאריך</button>
           <input type="date" id="dPick" min="2026-07-02" style="display:none">
         </div>
-        <div class="f">
-          <label>לקוח</label><select id="dC"><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
-          <label>תאריך יעד</label><select id="dG"><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
-          <label id="dSrcL">מקור</label><span id="dSrc">שלי</span>
-        </div>
+        <select id="dC" hidden><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
+        <select id="dG" hidden><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
         <textarea id="dNote" placeholder="הערה לעצמי…"></textarea>
         <div class="acts">
           <button class="btn pri sm" id="dGo" onclick="detSave()">הוספה</button>
         </div>
+      </div>
+    </section>
+    <section class="panel edit" id="edit">
+      <div class="ph"><h2>המשימה</h2><span class="hint" id="eHint"></span><a class="more" href="#" onclick="event.preventDefault();editClose()">✕ סגירה</a></div>
+      <div class="body">
+        <input class="tx" id="eTx" autocomplete="off">
+        <div class="f">
+          <label>לקוח</label><select id="eC"><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
+          <label>תאריך יעד</label><select id="eG"><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
+          <label>מקור</label><span id="eSrc">שלי</span>
+        </div>
+        <textarea id="eNote" placeholder="הערה לעצמי…"></textarea>
+        <div class="saved" id="eSaved">השינויים נשמרים אוטומטית</div>
       </div>
     </section>
     <section class="panel">
@@ -563,44 +582,42 @@ function bycCount(){document.querySelectorAll('#byc li').forEach(li=>{const c=li
 let SEL=null;
 const GL2={today:'היום','0307':'03.07','0807':'08.07','0907':'09.07',none:''};
 const GLBL={today:'היום <small class="num">חמישי · 02.07</small>','0307':'03.07 <small>מחר · שישי</small>','0807':'08.07 <small>רביעי</small>','0907':'09.07 <small>חמישי</small>',none:'בלי תאריך'};
-function detNew(){if(SEL)SEL.classList.remove('sel');SEL=null;document.getElementById('det').classList.remove('edit');
-  document.getElementById('detTitle').textContent='משימה חדשה';document.getElementById('detHint').textContent='';document.getElementById('detX').style.display='none';
-  document.getElementById('dTx').value='';document.getElementById('dC').value='none';const sel=document.getElementById('dG');const o=sel.querySelector('option[data-late]');if(o)o.remove();sel.value='today';document.getElementById('dNote').value='';
-  document.getElementById('dGo').textContent='הוספה';
+function detNew(){document.getElementById('dTx').value='';document.getElementById('dC').value='none';const sel=document.getElementById('dG');sel.value='today';document.getElementById('dNote').value='';
   csSet('none');document.querySelectorAll('#cG button').forEach((b,i)=>b.classList.toggle('on',i===0));
   document.getElementById('dPick').style.display='none';document.querySelector('#cG .cal').textContent='📅 תאריך';smart()}
-function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');document.getElementById('det').classList.add('edit');
-  document.getElementById('detTitle').textContent='המשימה';document.getElementById('detX').style.display='';
-  document.getElementById('dTx').value=t.querySelector('.tx').textContent;
-  document.getElementById('dC').value=t.dataset.c||'none';
-  const sel=document.getElementById('dG');
+function editClose(){if(SEL)SEL.classList.remove('sel');SEL=null;document.getElementById('edit').classList.remove('on')}
+function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');document.getElementById('edit').classList.add('on');
+  document.getElementById('eTx').value=t.querySelector('.tx').textContent;
+  document.getElementById('eC').value=t.dataset.c||'none';
+  const sel=document.getElementById('eG');
   if(t.dataset.g==='late'){const due=t.querySelector('.side .due').textContent.trim();let o=sel.querySelector('option[data-late]');if(!o){o=document.createElement('option');o.dataset.late=1;sel.prepend(o)}o.value='late';o.textContent=due+' · עבר';sel.value='late'}
-  else{const o=sel.querySelector('option[data-late]');if(o)o.remove();sel.value=GL2[t.dataset.g]!=null?t.dataset.g:'none'}
-  const src=t.querySelector('.src');document.getElementById('dSrc').innerHTML=src?src.innerHTML:'שלי';
-  document.getElementById('dNote').value=t.dataset.note||'';
-  document.getElementById('detHint').textContent=t.classList.contains('done')?'בוצעה':(t.dataset.g==='late'?'עבר זמנה':'')}
+  else{const o=sel.querySelector('option[data-late]');if(o)o.remove();if(!sel.querySelector('option[value="'+t.dataset.g+'"]')&&GL2[t.dataset.g]){const o2=document.createElement('option');o2.value=t.dataset.g;o2.textContent=GL2[t.dataset.g];sel.insertBefore(o2,sel.querySelector('option[value="none"]'))}sel.value=GL2[t.dataset.g]!=null?t.dataset.g:'none'}
+  const src=t.querySelector('.src');document.getElementById('eSrc').innerHTML=src?src.innerHTML:'שלי';
+  document.getElementById('eNote').value=t.dataset.note||'';
+  document.getElementById('eHint').textContent=t.classList.contains('done')?'בוצעה':(t.dataset.g==='late'?'עבר זמנה':'');
+  document.getElementById('edit').scrollIntoView({block:'nearest',behavior:'smooth'})}
 function placeIn(tk,g){const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+g+'"]');
   if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=g;grp.innerHTML=GLBL[g]||g;
     const order=['late','today','0307','0807','0907','none'];let after=null;for(const k of order){if(k===g)break;const x=list.querySelector('.grp[data-g="'+k+'"]');if(x)after=x}
     if(after){let n=after.nextElementSibling;while(n&&!n.classList.contains('grp'))n=n.nextElementSibling;n?list.insertBefore(grp,n):list.appendChild(grp)}else list.prepend(grp)}
   tk.dataset.g=g;grp.after(tk)}
 function unlate(tk){tk.classList.remove('late');const d=tk.querySelector('.side .due');if(d)d.classList.remove('ovd');const o=tk.querySelector('.sub .ovd');if(o){const dot=o.previousElementSibling;if(dot&&dot.classList.contains('dot'))dot.remove();o.remove()}}
-function detSave(){let v=document.getElementById('dTx').value.trim();if(!SEL)v=v.replace(/@\S+\s?/,'').replace(/\s+(מחר|בשבוע|היום)\s*$/,'').trim();if(!v){document.getElementById('dTx').focus();return}
+function detSave(){let v=document.getElementById('dTx').value.trim();v=v.replace(/@\S+\s?/,'').replace(/\s+(מחר|בשבוע|היום)\s*$/,'').trim();if(!v){document.getElementById('dTx').focus();return}
   const c=document.getElementById('dC').value,g=document.getElementById('dG').value,note=document.getElementById('dNote').value;
-  if(!SEL){const tk=document.createElement('div');tk.className='tk';tk.dataset.c=c;tk.dataset.o='me';tk.dataset.note=note;
-    tk.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span></div>';
-    tk.querySelector('.tx').textContent=v;tk.querySelector('.sub').innerHTML=c==='none'?'':'<a href="clients.html?c='+c+'">'+CN[c]+'</a>';
-    tk.querySelector('.due').textContent=GL2[g]||'';placeIn(tk,g);rowActs();applyF();bycCount();toast('נוסף: '+v);detNew();document.getElementById('dTx').focus();return}
-  SEL.querySelector('.tx').textContent=v;SEL.dataset.c=c;SEL.dataset.note=note;
+  const tk=document.createElement('div');tk.className='tk';tk.dataset.c=c;tk.dataset.o='me';tk.dataset.note=note;
+  tk.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span></div>';
+  tk.querySelector('.tx').textContent=v;tk.querySelector('.sub').innerHTML=c==='none'?'':'<a href="clients.html?c='+c+'">'+CN[c]+'</a>';
+  tk.querySelector('.due').textContent=GL2[g]||'';placeIn(tk,g);rowActs();applyF();bycCount();toast('נוסף: '+v);detNew();document.getElementById('dTx').focus()}
+function editSave(){if(!SEL)return;const v=document.getElementById('eTx').value.trim();if(v)SEL.querySelector('.tx').textContent=v;
+  const c=document.getElementById('eC').value,g=document.getElementById('eG').value;SEL.dataset.c=c;SEL.dataset.note=document.getElementById('eNote').value;
   const sub=SEL.querySelector('.sub');const a=sub.querySelector('a');if(c==='none'){if(a)a.remove()}else if(a)a.textContent=CN[c];else sub.insertAdjacentHTML('afterbegin','<a href="clients.html?c='+c+'">'+CN[c]+'</a>');
   if(g!=='late'&&g!==SEL.dataset.g){unlate(SEL);SEL.querySelector('.side .due').textContent=GL2[g]||'';placeIn(SEL,g)}
-  applyF();bycCount();openDet(SEL)}
-function detDone(){if(!SEL)return;if(!SEL.classList.contains('done'))tog(SEL.querySelector('.cb'));detNew()}
+  applyF();bycCount();const s=document.getElementById('eSaved');s.textContent='✓ נשמר';setTimeout(()=>s.textContent='השינויים נשמרים אוטומטית',1500)}
 /* הזזה: למחר (03.07) או בשבוע (09.07) */
 function detMove(k){if(!SEL)return;const g=k==='week'?'0907':'0307';unlate(SEL);SEL.querySelector('.side .due').textContent=GL2[g];placeIn(SEL,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');detNew()}
 const ROWACT='<span class="ra"><button title="סימון כבוצע" onclick="rowDone(this)">✓</button><button onclick="rowMove(this,\'day\')">מחר</button><button onclick="rowMove(this,\'week\')">בשבוע</button></span>';
 function rowActs(){document.querySelectorAll('#list .tk').forEach(tk=>{if(!tk.querySelector('.ra'))tk.querySelector('.side').insertAdjacentHTML('beforeend',ROWACT)})}
-function rowDone(b){const tk=b.closest('.tk');tog(tk.querySelector('.cb'));if(SEL===tk)detNew()}
+function rowDone(b){const tk=b.closest('.tk');tog(tk.querySelector('.cb'));if(SEL===tk)editClose()}
 function rowMove(b,k){const tk=b.closest('.tk');const g=k==='week'?'0907':'0307';unlate(tk);tk.querySelector('.side .due').textContent=GL2[g];placeIn(tk,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');if(SEL===tk)openDet(tk)}
 /* צ'יפים במצב הוספה — מסנכרנים את ה-select הנסתר */
 const CLIST=[['511327876','אנרגי אינטרנשיונל','לירון בן כליפא'],['514778220','מטעי גבעון','לירון בן כליפא'],['025664109','רימון יצחק','שמרית טובול'],['511200341','אנרגי גולני','לירון בן כליפא'],['039112774','משה עובד','שמרית טובול']];
@@ -622,7 +639,7 @@ document.getElementById('dPick').addEventListener('change',function(){if(!this.v
 /* הקלדה חכמה: @לקוח · מחר/בשבוע/היום · "לפני הפגישה" */
 const ALIAS=[['511327876',/אנרגי אינטר|@אנרגי(?! גולני)/],['511200341',/גולני/],['514778220',/גבעון|מטעי/],['025664109',/רימון/],['039112774',/משה|עובד/]];
 function smart(){const v=document.getElementById('dTx').value;const out=[];
-  if(!SEL){const m=v.match(/@(\S+)/);if(m){const hit=ALIAS.find(a=>a[1].test(v));if(hit&&document.getElementById('dC').value!==hit[0]){document.getElementById('dC').value=hit[0];const p=document.getElementById('csPick');document.getElementById('csName').textContent=CN[hit[0]];p.style.display='';document.getElementById('csIn').style.display='none'}}
+  {const m=v.match(/@(\S+)/);if(m){const hit=ALIAS.find(a=>a[1].test(v));if(hit&&document.getElementById('dC').value!==hit[0]){document.getElementById('dC').value=hit[0];const p=document.getElementById('csPick');document.getElementById('csName').textContent=CN[hit[0]];p.style.display='';document.getElementById('csIn').style.display='none'}}
     const d=/(^|\s)מחר(\s|$)/.test(v)?'0307':/(^|\s)בשבוע(\s|$)|שבוע הבא/.test(v)?'0907':/(^|\s)היום(\s|$)/.test(v)?'today':null;
     if(d){document.getElementById('dG').value=d;document.querySelectorAll('#cG button').forEach(b=>b.classList.toggle('on',b.dataset.v===d))}}
   const c=document.getElementById('dC').value,g=document.getElementById('dG').value;
@@ -630,7 +647,8 @@ function smart(){const v=document.getElementById('dTx').value;const out=[];
   const tm=v.match(/\b(\d{1,2}:\d{2})\b/);if(tm)out.push('<span>לפני '+tm[1]+'</span>');
   document.getElementById('dSmart').innerHTML=v.trim()?'<span>→</span>'+out.join('<span>·</span>'):'<span>אפשר להקליד @לקוח, "מחר", "בשבוע"</span>'}
 document.getElementById('dTx').addEventListener('input',smart);
-['dTx','dC','dG','dNote'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(SEL)detSave()}));
+['eTx','eC','eG','eNote'].forEach(id=>document.getElementById(id).addEventListener('change',editSave));
+document.getElementById('eTx').addEventListener('keydown',e=>{if(e.key==='Enter'){editSave();e.target.blur()}});
 window.addEventListener('load',()=>{rowActs();bycCount();detNew()});
 document.addEventListener('click',e=>{const t=e.target.closest('#list .tk');if(!t||e.target.closest('.cb,a,button'))return;openDet(t)});
 function seg(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');applyF()}
@@ -648,7 +666,13 @@ function applyF(){const c=document.getElementById('fc').value,st=segV('fs'),o=se
   document.getElementById('fcount').textContent=f?(n+' מתוך '+document.querySelectorAll('#list .tk').length):'';
   const cm=document.getElementById('cMine');if(cm)cm.textContent=openAll;
   const q=s=>document.querySelectorAll('#list .tk:not(.done)'+s).length;
-  document.getElementById('sOpen').textContent=openAll;document.getElementById('sLate').textContent=q('[data-g="late"]');document.getElementById('sToday').textContent=q('[data-g="today"]');
+  const late=q('[data-g="late"]');const cm2=document.getElementById('cMine');if(cm2)cm2.innerHTML=openAll+(late?' <s>· '+late+' באיחור</s>':'');
+  const nx=document.querySelector('#list .tk:not(.done)');const box=document.getElementById('nxt');
+  if(!nx){box.innerHTML='<span class="none">אין משימות פתוחות ✓</span>'}else{const cl=nx.querySelector('.sub a');const g=nx.dataset.g;
+    box.innerHTML='<span class="cap">הבאה בתור</span><span class="t" onclick="openDet(this._tk)">'+nx.querySelector('.tx').textContent+'</span>'+(cl?'<span class="c">·</span><span class="cl">'+cl.textContent+'</span>':'')
+      +(g==='late'?'<span class="lt">עבר זמנה · '+nx.querySelector('.side .due').textContent.trim()+'</span>':'<span class="in">'+(GL2[g]||'בלי תאריך')+'</span>')
+      +'<button class="ok" onclick="rowDone(this._tk.querySelector(\'.ra button\'))">✓ בוצע</button>';
+    box.querySelectorAll('.t,.ok').forEach(x=>x._tk=nx)}
   }
 function askHk(){const i=document.getElementById('ht');const v=i.value.trim();const c=document.getElementById('hc').value;if(!v||!c){toast('מה לבקש ולאיזה לקוח');return}
   const mgr={'אנרגי אינטרנשיונל':'לירון בן כליפא','מטעי גבעון':'לירון בן כליפא','אנרגי גולני':'לירון בן כליפא','רימון יצחק':'שמרית טובול','משה עובד':'שמרית טובול'}[c];
