@@ -504,7 +504,8 @@ select,input{font:inherit;color:var(--ink)}
         <div class="acts">
           <button class="btn pri sm" onclick="detSave()">שמירה</button>
           <button class="btn sm" onclick="detDone()">סימון כבוצע</button>
-          <button class="btn sm" onclick="detMove()">הזז למחר</button>
+          <button class="btn sm" onclick="detMove('day')">הזז למחר</button>
+          <button class="btn sm" onclick="detMove('week')">הזז בשבוע</button>
         </div>
       </div>
     </section>
@@ -568,7 +569,13 @@ function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('se
   document.getElementById('detHint').textContent=t.classList.contains('done')?'בוצעה':(first?'הבאה בתור'+(t.dataset.g==='late'?' · עבר זמנה':''):(t.dataset.g==='late'?'עבר זמנה':''));}
 function detSave(){if(!SEL)return;SEL.querySelector('.tx').textContent=document.getElementById('dTx').value;const c=document.getElementById('dC').value;SEL.dataset.c=c;const a=SEL.querySelector('.sub a');if(a)a.textContent=CN[c]||'';bycCount();applyF();toast('נשמר')}
 function detDone(){if(!SEL)return;if(!SEL.classList.contains('done'))tog(SEL.querySelector('.cb'));detNext()}
-function detMove(){if(!SEL)return;const list=document.getElementById('list');let g=list.querySelector('.grp[data-g="0307"]');SEL.dataset.g='0307';SEL.classList.remove('late');const d=SEL.querySelector('.side .due');if(d){d.textContent='03.07';d.classList.remove('ovd')}const o=SEL.querySelector('.sub .ovd');if(o)o.remove();g.after(SEL);applyF();bycCount();toast('הוזז למחר')}
+/* הזזה: למחר (03.07) או בשבוע (09.07) — הקבוצה נוצרת אם אין */
+function detMove(k){if(!SEL)return;const G=k==='week'?{g:'0907',d:'09.07',lbl:'09.07 <small>חמישי</small>',msg:'הוזז בשבוע'}:{g:'0307',d:'03.07',lbl:'03.07 <small>מחר · שישי</small>',msg:'הוזז למחר'};
+  const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+G.g+'"]');
+  if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=G.g;grp.innerHTML=G.lbl;const none=list.querySelector('.grp[data-g="none"]');list.insertBefore(grp,none)}
+  SEL.dataset.g=G.g;SEL.classList.remove('late');const d=SEL.querySelector('.side .due');if(d){d.textContent=G.d;d.classList.remove('ovd')}
+  const o=SEL.querySelector('.sub .ovd');if(o){const dot=o.previousElementSibling;if(dot&&dot.classList.contains('dot'))dot.remove();o.remove()}
+  grp.after(SEL);applyF();bycCount();openDet(SEL);toast(G.msg)}
 function addSub(inp){const v=inp.value.trim();if(!v)return;const li=inp.parentNode;const n=li.cloneNode(true);n.querySelector('input').value='';li.querySelector('input').replaceWith(Object.assign(document.createElement('span'),{textContent:v}));li.parentNode.appendChild(n);n.querySelector('input').focus()}
 function detNext(){const t=document.querySelector('#list .tk:not(.done)');if(t)openDet(t)}
 window.addEventListener('load',()=>{bycCount();detNext()});
