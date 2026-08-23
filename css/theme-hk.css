@@ -3518,12 +3518,9 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .msgc-ok.later{background:#FEF4E2;color:#c98404}
 .msgc-ok.await{background:#EEF3F8;color:#5B7590}
 
-/* התעלם — תפריט קטן צמוד לכפתור */
-.skip-wrap{position:relative;display:inline-flex}
-.skip-dd{display:none;position:absolute;bottom:calc(100% + 6px);inset-inline-start:0;z-index:40;
-  background:#fff;border:1px solid #E6ECF4;border-radius:12px;padding:5px;min-width:210px;
-  box-shadow:0 10px 28px rgba(12,64,104,.16)}
-.skip-dd.show{display:block}
+/* התעלם — תפריט על ה-body עם מיקום מחושב, כדי שלא ייחתך בתחתית הפאנל */
+.skip-dd{position:fixed;z-index:140;background:#fff;border:1px solid #E6ECF4;border-radius:12px;
+  padding:5px;min-width:210px;box-shadow:0 12px 32px rgba(12,64,104,.2)}
 .skip-dd button{display:block;width:100%;text-align:start;font-family:inherit;font-size:13px;
   font-weight:500;color:#12303F;background:none;border:0;border-radius:8px;padding:8px 11px;cursor:pointer}
 .skip-dd button:hover{background:#F4F7FA}
@@ -3535,8 +3532,6 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .doc-reply input{flex:1;font-family:inherit;font-size:13px;border:1px solid #DCE6EF;border-radius:10px;
   padding:9px 12px;background:#fff;color:#12303F}
 .doc-reply input:focus{outline:0;border-color:#7FB6DC;box-shadow:0 0 0 3px rgba(57,171,226,.14)}
-/* התפריט נפתח כלפי מטה — למעלה הוא דורס את טבלת ההזנה */
-.skip-dd{bottom:auto;top:calc(100% + 6px)}
 
 /* "הוספת תשלומים" — כפתור ברוחב הטקסט בלבד; קודם היה div ברוחב מלא וכל השורה הייתה לחיצה */
 .biz-addrow{padding:4px 10px 10px}
@@ -3547,15 +3542,20 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .biz-add:focus-visible{outline:2px solid #39ABE2;outline-offset:1px}
 
 /* ===== הוצאה / הכנסה — בורר, והרקע נצבע לפיו ===== */
-.biz-dir{display:inline-flex;background:#fff;border:1px solid #DCE6EF;border-radius:10px;padding:3px;gap:2px;align-self:flex-end}
+.biz-dir{display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid #DCE6EF;
+  border-radius:9px;padding:3px;gap:3px}
 .biz-dir .bd{font-family:inherit;font-size:12.5px;font-weight:600;color:#7A8FA0;background:none;border:0;
-  border-radius:7px;padding:6px 15px;cursor:pointer;transition:.14s}
-.biz-dir .bd:hover{color:#12303F}
+  border-radius:6px;padding:6px 0;cursor:pointer;transition:.14s;text-align:center}
+.biz-dir .bd:hover{color:#12303F;background:#F4F7FA}
 .biz-dir .bd.exp.on{background:#FDECEA;color:#C7554B}
 .biz-dir .bd.inc.on{background:#E6F5EE;color:#13895b}
-/* רקע הטופס — אדום להוצאה, ירוק להכנסה */
-.biz-form.dir-exp{background:#FEF7F6;border-color:#F5DEDA}
-.biz-form.dir-inc{background:#F4FBF7;border-color:#D8EDE2}
+/* הטופס הוא כרטיס — מסגרת, פינות וכותרת. הצבע מבדיל הוצאה/הכנסה */
+.biz-form{border:1px solid #E1E9F0;border-radius:14px;padding:16px 18px 14px;background:#fff;
+  box-shadow:0 2px 10px rgba(12,64,104,.05)}
+.biz-form.dir-exp{background:#FEFAF9;border-color:#F0D7D2}
+.biz-form.dir-inc{background:#F8FCFA;border-color:#D5E9DE}
+.biz-form.dir-exp .biz-selrow{border-bottom-color:#F3E1DD}
+.biz-form.dir-inc .biz-selrow{border-bottom-color:#DBEDE3}
 .biz-form.dir-exp .biz-thead{background:#FCEDEA;color:#9C4C44}
 .biz-form.dir-inc .biz-thead{background:#E9F5EF;color:#1A6B4A}
 .biz-form.dir-exp .biz-row .biz-amt,.biz-form.dir-exp .biz-row input[inputmode="numeric"]{color:#C7554B;font-weight:600}
@@ -3563,3 +3563,36 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 
 /* הזנה לתזרים מתוך הודעת מלל — אותה פריסה כמו מסמך, ובמקום המסמך ההודעה */
 .ot-btn.ghost.on{background:#EAF6FD;border-color:#9EC7E3;color:#0C4068}
+
+/* הפרדה פנימית בין שורת הבחירה לטבלה */
+.biz-selrow{padding-bottom:13px;border-bottom:1px solid #EAF0F5}
+.biz-form .chk-actions{margin-top:14px;padding-top:13px;border-top:1px solid #EAF0F5}
+.biz-form.dir-exp .chk-actions{border-top-color:#F3E1DD}
+.biz-form.dir-inc .chk-actions{border-top-color:#DBEDE3}
+
+/* ===== זום על המסמך ===== */
+.doc-zoomable{position:relative;cursor:zoom-in}
+.doc-zoomable::after{content:"לחצו להגדלה";position:absolute;bottom:10px;inset-inline-start:10px;
+  font-size:10.5px;font-weight:500;color:#fff;background:rgba(12,64,104,.72);border-radius:7px;
+  padding:4px 9px;opacity:0;transition:.16s;pointer-events:none}
+.doc-zoomable:hover::after{opacity:1}
+.dzo{position:fixed;inset:0;z-index:120;background:rgba(6,26,44,.82);display:none;
+  align-items:center;justify-content:center;padding:32px}
+.dzo.show{display:flex}
+.dzo-in{max-width:min(1100px,92vw);max-height:88vh;overflow:auto;background:#fff;border-radius:14px;
+  padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.dzo-in img{display:block;max-width:100%;height:auto;transform-origin:top center;transition:transform .18s}
+.dzo-bar{position:fixed;top:18px;inset-inline-start:50%;transform:translateX(-50%);z-index:121;
+  display:none;align-items:center;gap:6px;background:#fff;border-radius:12px;padding:6px;
+  box-shadow:0 10px 28px rgba(0,0,0,.28)}
+.dzo-bar button{font-family:inherit;font-size:13px;font-weight:600;color:#12303F;background:none;
+  border:0;border-radius:8px;padding:7px 13px;cursor:pointer;min-width:38px}
+.dzo-bar button:hover{background:#F4F7FA}
+.dzo-bar .lvl{font-size:12px;color:#7A8FA0;min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
+.dzo-bar .x{color:#C7554B}
+
+/* מעבר לאירוע הבא — הדגשה קצרה כדי שיהיה ברור שהתקדמנו */
+@keyframes msgflash{0%{background:#DFF1FC}60%{background:#EAF6FD}100%{background:transparent}}
+.msgc-item.flash{animation:msgflash .9s ease-out}
+.mw-h.flash{animation:msgflash .9s ease-out}
+.mw-n b{color:#0C4068;font-weight:700}

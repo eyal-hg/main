@@ -1845,7 +1845,7 @@
             </div>
           </div>
           <div class="chk-imgwrap">
-            <img src="${sel.img||'check.jpeg'}" class="chk-photo" alt="צילום השיק">
+            <img src="${sel.img||'check.jpeg'}" class="chk-photo doc-zoomable" alt="צילום השיק" onclick="dzoOpen(this.src,'צילום השיק')">
             <div class="chk-ocr-chips">📎 Bizibox · <span>תאריך ${sel.date}</span><span>סכום ${sel.amount} ₪</span>${sel.ocrName?`<span>מוטב: ${sel.ocrName}</span>`:'<span class="miss">מוטב לא זוהה</span>'}</div>
           </div>
         </div>
@@ -2560,10 +2560,12 @@
     const open=T.map((t,k)=>k).filter(k=>(T[k].type==='doc'||T[k].type==='msg')&&!T[k].done);
     if(!open.length){ _msgSel=null; return renderOps(); }
     const cur=open.indexOf(_msgSel);
-    _msgSel=open[(cur+1)%open.length]; renderOps();
+    _msgSel=open[(cur+1)%open.length]; renderOps(); msgFlash(_msgSel);
   }
   function msgStage(rows,T){
     const items=rows.filter(t=>t.type==='msg'||t.type==='doc');
+    /* המונה סופר התקדמות בשלב כולו, כולל מה שכבר טופל */
+    const allItems=T.filter(t=>t.type==='msg'||t.type==='doc');
     const openIx=items.filter(t=>!t.done).map(t=>T.indexOf(t));
     if(_msgSel==null||!items.some(t=>T.indexOf(t)===_msgSel)) _msgSel=openIx[0];
     const sel=_msgSel!=null?T[_msgSel]:null;
@@ -2601,7 +2603,7 @@
         <div class="mw-s">${sel.who||''} · ${sel.time||''} · ${sel.src||''}</div>
         <div class="mw-nav">
           ${(sel.type==='msg'&&sel.entry)?`<button class="mt-btn view sm" onclick="msgEntryBack(${i})">→ חזרה למענה</button>`:''}
-          <span class="mw-n">${openIx.indexOf(i)+1} מתוך ${openIx.length}</span>
+          <span class="mw-n"><b>${allItems.length-openIx.length+1}</b> מתוך ${allItems.length}</span>
           <button class="mt-btn view sm" onclick="msgNext()">הבא ←</button>
         </div>
       </div>`;
@@ -2638,7 +2640,22 @@
   }
   function msgReplySend(i){
     const inp=document.getElementById('msgReply_'+i); if(!inp||!inp.value.trim()) return;
-    otHandle(i,'טופל · ✓ נשלחה תשובה: "'+inp.value.trim()+'"',1);
+    const txt=inp.value.trim();
+    /* התשובה נשלחה ⇒ האירוע נסגר והמערכת עוברת לבא. אחרת המונה לא זז
+       והמתפעל לא מבין שהוא התקדם. */
+    const T=curTasks();
+    const nxt=T.map((x,k)=>k).filter(k=>(T[k].type==='msg'||T[k].type==='doc')&&!T[k].done&&k!==i)[0];
+    otHandle(i,'טופל · ✓ נשלחה תשובה: "'+txt+'"',1);
+    if(nxt!=null){ _msgSel=nxt; renderOps(); msgFlash(nxt); }
+    toast(nxt!=null?'התשובה נשלחה · עוברים לאירוע הבא':'התשובה נשלחה · זה היה האחרון ✓');
+  }
+  /* הדגשה קצרה על האירוע החדש — כדי שיהיה ברור שעברנו */
+  function msgFlash(i){
+    setTimeout(()=>{
+      const el=document.getElementById('msgc_'+i); if(!el) return;
+      el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),900);
+      const w=document.querySelector('.mw-h'); if(w){ w.classList.add('flash'); setTimeout(()=>w.classList.remove('flash'),900); }
+    },80);
   }
   /* הודעת קובץ — המסמך מול טופס הזנה בסגנון Bizibox */
   function fileMsgBody(t,i,noCtx){
@@ -2663,7 +2680,7 @@
     const docSide=t.changeCard
       ?t.changeCard
       :t.img
-      ?`<img src="${t.img}" class="chk-photo doc-photo" alt="המסמך שהתקבל">`
+      ?`<img src="${t.img}" class="chk-photo doc-photo doc-zoomable" alt="המסמך שהתקבל" onclick="dzoOpen(this.src,'${(t.name||'').replace(/'/g,"")}')">`
       :f.rows
       ?`<div class="xls-paper"><div class="xls-top">📊 ${t.name}</div>
           <div class="xls-h"><span>תאריך</span><span>פירוט</span><span>סכום</span></div>
@@ -2680,10 +2697,12 @@
     return `<div class="pay-cols">
       <div class="biz-form dir-${dir}" id="bizForm_${i}">
         <div class="biz-selrow">
-          <div class="biz-dir" role="group" aria-label="הוצאה או הכנסה">
-            <button type="button" class="bd exp ${dir==='exp'?'on':''}" onclick="bizDir(${i},'exp')">הוצאה</button>
-            <button type="button" class="bd inc ${dir==='inc'?'on':''}" onclick="bizDir(${i},'inc')">הכנסה</button>
-          </div>
+          <label>סוג תנועה
+            <span class="biz-dir" role="group" aria-label="הוצאה או הכנסה">
+              <button type="button" class="bd exp ${dir==='exp'?'on':''}" onclick="bizDir(${i},'exp')">הוצאה</button>
+              <button type="button" class="bd inc ${dir==='inc'?'on':''}" onclick="bizDir(${i},'inc')">הכנסה</button>
+            </span>
+          </label>
           <label>ח-ן <select class="mx2-inp"><option>מזרחי 295199</option><option>מרכנתיל 69855155</option></select></label>
           <label>סוג תשלום <select class="mx2-inp"><option selected>העברה</option><option>שיק</option><option>אחר</option></select></label>
         </div>
@@ -2723,6 +2742,43 @@
     d.innerHTML=`<input class="mx2-inp" placeholder="תאריך"><input class="mx2-inp" placeholder="אסמכתא"><select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="mx2-inp" placeholder="תיאור"><input class="mx2-inp biz-amt" placeholder="0" dir="ltr">`;
     w.appendChild(d);
   }
+  /* ===== זום על מסמך — פתיחה במסך מלא עם הגדלה/הקטנה ===== */
+  let _dzo=1;
+  function dzoOpen(src,alt){
+    let ov=document.getElementById('dzoOv');
+    if(!ov){
+      ov=document.createElement('div'); ov.id='dzoOv'; ov.className='dzo';
+      ov.innerHTML='<div class="dzo-in"><img id="dzoImg" alt=""></div>';
+      ov.addEventListener('click',e=>{ if(e.target===ov||e.target.className==='dzo-in') dzoClose(); });
+      const bar=document.createElement('div'); bar.className='dzo-bar'; bar.id='dzoBar';
+      bar.innerHTML='<button onclick="dzoStep(-1)" title="הקטנה">−</button>'+
+        '<span class="lvl" id="dzoLvl">100%</span>'+
+        '<button onclick="dzoStep(1)" title="הגדלה">+</button>'+
+        '<button onclick="dzoStep(0)">התאמה</button>'+
+        '<button class="x" onclick="dzoClose()">✕ סגירה</button>';
+      document.body.appendChild(ov); document.body.appendChild(bar);
+    }
+    const img=document.getElementById('dzoImg'); img.src=src; img.alt=alt||'';
+    _dzo=1; dzoApply(); ov.classList.add('show');
+    document.getElementById('dzoBar').style.display='flex';
+  }
+  function dzoStep(d){ _dzo=d===0?1:Math.min(4,Math.max(.5,+(_dzo+d*.25).toFixed(2))); dzoApply(); }
+  function dzoApply(){
+    const img=document.getElementById('dzoImg'), l=document.getElementById('dzoLvl');
+    if(img) img.style.transform='scale('+_dzo+')';
+    if(l) l.textContent=Math.round(_dzo*100)+'%';
+  }
+  function dzoClose(){
+    const ov=document.getElementById('dzoOv'), bar=document.getElementById('dzoBar');
+    if(ov) ov.classList.remove('show'); if(bar) bar.style.display='none';
+  }
+  document.addEventListener('keydown',e=>{
+    if(!document.getElementById('dzoOv')||!document.getElementById('dzoOv').classList.contains('show')) return;
+    if(e.key==='Escape') dzoClose();
+    if(e.key==='+'||e.key==='=') dzoStep(1);
+    if(e.key==='-') dzoStep(-1);
+  });
+
   /* הודעת מלל שדורשת הזנה — המערכת לא זיהתה מסמך, אבל יש מה להזין.
      נפתח אותו טופס, בלי תצוגת מסמך. */
   function msgEntryOpen(i){
@@ -2756,19 +2812,26 @@
 
   /* ===== התעלם — תפריט קטן, לא פופאפ ===== */
   let _skipIx=null;
-  const skipBtn=i=>`<span class="skip-wrap">
-      <button class="ot-btn ghost" onclick="event.stopPropagation();skipOpen(${i})">התעלם</button>
-      <span class="skip-dd" id="skipDd_${i}">
-        <button onclick="skipPick(${i},'later')">אטפל מאוחר יותר<small>נשאר ברשימה, יורד מהתור של היום</small></button>
-        <button onclick="skipPick(${i},'nr')">לא רלוונטי<small>יורד מהרשימה</small></button>
-      </span>
-    </span>`;
-  function skipOpen(i){
-    document.querySelectorAll('.skip-dd.show').forEach(e=>e.classList.remove('show'));
-    const d=document.getElementById('skipDd_'+i); if(!d) return;
-    _skipIx=i; d.classList.add('show');
+  const skipBtn=i=>`<button class="ot-btn ghost skip-btn" onclick="event.stopPropagation();skipOpen(${i},this)">התעלם</button>`;
+  /* התפריט חי על ה-body ומקבל מיקום מחושב — אחרת הוא נחתך בתחתית הפאנל */
+  function skipOpen(i,btn){
+    skipClose(); _skipIx=i;
+    const d=document.createElement('div'); d.className='skip-dd show'; d.id='skipDd';
+    d.innerHTML=`<button onclick="skipPick(${i},'later')">אטפל מאוחר יותר<small>נשאר ברשימה, יורד מהתור של היום</small></button>
+      <button onclick="skipPick(${i},'nr')">לא רלוונטי<small>יורד מהרשימה</small></button>`;
+    document.body.appendChild(d);
+    const r=btn.getBoundingClientRect(), h=d.offsetHeight, gap=6;
+    const below=window.innerHeight-r.bottom;
+    d.style.top=(below>h+gap ? r.bottom+gap : Math.max(gap,r.top-h-gap))+'px';
+    /* יישור RTL לקצה הימני של הכפתור, בלי לגלוש מהמסך */
+    d.style.left=Math.max(gap,Math.min(r.right-d.offsetWidth,window.innerWidth-d.offsetWidth-gap))+'px';
+    btn.classList.add('on');
   }
-  function skipClose(){ document.querySelectorAll('.skip-dd.show').forEach(e=>e.classList.remove('show')); _skipIx=null; }
+  function skipClose(){
+    const d=document.getElementById('skipDd'); if(d) d.remove();
+    document.querySelectorAll('.skip-btn.on').forEach(b=>b.classList.remove('on'));
+    _skipIx=null;
+  }
   function skipPick(i,kind){
     skipClose();
     if(kind==='nr'){ openNR(i); return; }
@@ -2778,7 +2841,8 @@
     otHandle(i,'נדחה — אטפל מאוחר יותר');
     toastUndo('נדחה לטיפול מאוחר יותר',()=>{t.later=false;t.done=false;t.result=null;OPS_DONE--;renderOps();});
   }
-  document.addEventListener('click',e=>{ if(!e.target.closest('.skip-wrap')) skipClose(); });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.skip-dd,.skip-btn')) skipClose(); });
+  window.addEventListener('scroll',()=>skipClose(),true);
 
   /* ===== תגובה ללקוח מתוך טופס המסמך — כשמשהו לא ברור ===== */
   function docReplyOpen(i){
