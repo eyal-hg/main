@@ -25,7 +25,7 @@ Vanilla JS/CSS, סקריפטים קלאסיים בסקופ גלובלי, בלי 
 | `js/screens.js` | ניווט: `setRole`, `selectPortfolio/Client`, `showTab`, `gnavGo`, rail גלובלי + rail חברה, `renderClientsView` (כרטיסי יועץ) |
 | `js/alerts.js` | דשבורד היועץ: `renderAdvisorHome`, `advTopCards` (4 קוביות + `ADV_RADAR`), הפיד המאוחד `FEED`, `advPop` (status/risk/tasks/mem/radar), יומן `ADV_AGENDA`+`ADV_TODO`+`ADV_DOFF`, `ADV_PREPS` |
 | `js/queue.js` | מסך מנהל תזרים: יומן `renderMgrCal` + `MGR_TODO`, מודל משימה `mtkOv` (משותף — `window._mtkTarget='adv'`), מודל אירוע `evQuick`, רדאר נטישה `cRad`, הודעות `msgCol` |
-| `js/ops.js` | תור התפעול: שלבים `OPS_STAGES`, קיטלוג AI, מוטבים, נגררות/לא-צפויות (`dir` inc/exp, גבייה מלקוחות, בדיקות התאמה), הודעות לקוח + ראוטינג קבוצת וואטסאפ (`OPS_REQS`, `grpCtx`, תגי `grp`) |
+| `js/ops.js` | תור התפעול: שלבים `OPS_STAGES`, קיטלוג AI, מוטבים, נגררות/לא-צפויות (`dir` inc/exp, גבייה מלקוחות, בדיקות התאמה), הודעות לקוח (`msgStage` — אירוע = הודעה אחת; מצב "הלקוח ענה לשאלה שלנו" `reply/orig/ours`; בלי כפתור "הבא"; "לא רלוונטי" סוגר בלי פופאפ תגים). **קבוצת הוואטסאפ משמשת כרגע רק לזיכרון לקוח** — לא מזינה את התפעול; הצ׳יפ `grp` נשאר בקוד אך כבוי בדמו |
 | `js/meetings.js` | הכל על פגישות: `MEETINGS`, `renderMeetings` (2 עמודות), `openMeeting` (עמוד + 5 טאבים), הקלטה (`startMeetRec` בר גלובלי, `showPreMeetBar`, `recSrcOv`), `renderMeetsArena` (זירה גלובלית), `renderPrepView` (הכנה), `meetNew`, `whoPicker` |
 | `js/memory.js` | זיכרון: `MEM_CATS` (קטגוריות+פרומפטים), `MEM_USERS/MEM_UDATA/MEM_NUMS`, `MEM_UPDATES` (דלתאות), `openMemCard`/`renderMemCard` (+`MEM_HOST` לרנדור בטאב), `renderMemAdminScreen` (ניהול באדמין) |
 | `js/cosettings.js` | הגדרות חברה — 5 טאבים (פרטי לקוח/אנשי קשר/תפעולי/פיננסים/זיכרון) |
