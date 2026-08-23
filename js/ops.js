@@ -2578,10 +2578,14 @@
       const tag=t.type==='doc'
         ?`<span class="msgc-att">${t.img?'📎':'📊'} ${t.name}</span>`
         :'<span class="msgc-att q">שאלה — דורשת מענה</span>';
-      return `<div class="msgc-item ${on?'on':''} ${t.done?'done':''}" onclick="msgPick(${i})">
+      const st=t.done?(t.later?'<span class="msgc-ok later">◷ מאוחר יותר</span>'
+                              :'<span class="msgc-ok">✓ טופל</span>')
+                     :(t.await?'<span class="msgc-ok await">◷ ממתין למענה</span>':'');
+      return `<div class="msgc-item ${on?'on':''} ${t.done?'done':''}" id="msgc_${i}" onclick="msgPick(${i})">
+        ${on?'<span class="msgc-cur">מטופל עכשיו</span>':''}
         <div class="msgc-time">${t.who||''} · ${t.time||''}</div>
         ${body}
-        <div class="msgc-foot">${tag}${t.done?'<span class="msgc-ok">✓ טופל</span>':''}</div>
+        <div class="msgc-foot">${tag}${st}</div>
       </div>`;}).join('');
 
     /* ---- ימין: חלון העבודה של הפריט הנבחר ---- */
@@ -2600,6 +2604,11 @@
       </div>`;
       work=head+`<div class="mw-body">${sel.type==='doc'?fileMsgBody(sel,i,1):textMsgBody(sel,i)}</div>`;
     }
+    /* ההודעה שמטופלת עכשיו נגללת לתצוגה בצד שמאל */
+    if(_msgSel!=null) setTimeout(()=>{
+      const el=document.getElementById('msgc_'+_msgSel);
+      if(el&&el.scrollIntoView) el.scrollIntoView({block:'nearest',behavior:'smooth'});
+    },60);
     return `<div class="ms-split">
       <div class="ms-work">${work}</div>
       <aside class="ms-chat">
@@ -2617,7 +2626,7 @@
         <button class="oqs-send" onclick="msgReplySend(${i})">שליחה</button>
       </div>
       <div class="chk-actions"><button class="ot-btn done" onclick="otHandle(${i},'טופל · ✓ נענה ללקוח',1)">סימון כטופל</button>
-      <button class="ot-btn ghost" onclick="openNR(${i})">לא רלוונטי</button></div>
+      ${skipBtn(i)}</div>
     </div>`;
   }
   function msgReplySend(i){
@@ -2669,9 +2678,14 @@
         <div id="bizRows_${i}">${rows.map(bizRow).join('')}</div>
         <div class="biz-add" onclick="bizAddRow(${i})">＋ הוספת תשלומים</div>
         <div class="chk-actions">
-          <button class="ot-btn done" onclick="bizSave(${i},false)">שמירה וסגירה</button>
-          <button class="ot-btn ghost" onclick="bizSave(${i},true)">שמירה והוספת הוצאה חדשה</button>
-          <span class="chk-ruleslink" onclick="openNR(${i})">לא רלוונטי</span>
+          <button class="ot-btn done" onclick="bizSave(${i})">שמירה וסגירה</button>
+          <button class="ot-btn ghost" onclick="docReplyOpen(${i})">שלח תגובה ללקוח</button>
+          ${skipBtn(i)}
+        </div>
+        <div class="doc-reply" id="docReply_${i}">
+          <input placeholder="מה לא ברור במסמך? — התגובה תישלח ללקוח בוואטסאפ"
+                 onkeydown="if(event.key==='Enter')docReplySend(${i})">
+          <button class="oqs-send" onclick="docReplySend(${i})">שליחה</button>
         </div>
       </div>
       <div class="chk-imgwrap">
@@ -2696,19 +2710,55 @@
     d.innerHTML=`<input class="mx2-inp" placeholder="תאריך"><input class="mx2-inp" placeholder="אסמכתא"><select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="mx2-inp" placeholder="תיאור"><input class="mx2-inp biz-amt" placeholder="0" dir="ltr">`;
     w.appendChild(d);
   }
-  function bizSave(i,another){
+  /* שמירה וסגירה — מזין לתזרים ומודיע ללקוח שטופל */
+  function bizSave(i){
     const t=curTasks()[i]; if(!t) return;
     const payee=(document.getElementById('bizPayee_'+i)||{}).value||'';
     const rows=document.querySelectorAll('#bizRows_'+i+' .biz-row').length;
     docClose();
     otHandle(i,t.type==='sheet'
       ?(t.kind==='edit'?('עודכן בתזרים: '+t.old+' ← '+t.new+' ₪ · ✓ סומן בגיליון'):('הוזן לתזרים — '+rows+' שורות · ✓ סומן בגיליון'))
-      :('הוזן לתזרים — '+payee+' · '+rows+' שורות'));
-    if(another){
-      // ממשיכים ישר למסמך הפתוח הבא — בלי לחזור לרשימה
-      const T=curTasks(), nxt=T.findIndex(x=>x.type==='doc'&&!x.done);
-      if(nxt>=0) openDocEntry(nxt); else toast('כל המסמכים הוזנו ✓');
-    }
+      :('הוזן לתזרים — '+payee+' · '+rows+' שורות · ✓ נשלח ללקוח "טופל"'), t.type!=='sheet');
+  }
+
+  /* ===== התעלם — תפריט קטן, לא פופאפ ===== */
+  let _skipIx=null;
+  const skipBtn=i=>`<span class="skip-wrap">
+      <button class="ot-btn ghost" onclick="event.stopPropagation();skipOpen(${i})">התעלם</button>
+      <span class="skip-dd" id="skipDd_${i}">
+        <button onclick="skipPick(${i},'later')">אטפל מאוחר יותר<small>נשאר ברשימה, יורד מהתור של היום</small></button>
+        <button onclick="skipPick(${i},'nr')">לא רלוונטי<small>יורד מהרשימה</small></button>
+      </span>
+    </span>`;
+  function skipOpen(i){
+    document.querySelectorAll('.skip-dd.show').forEach(e=>e.classList.remove('show'));
+    const d=document.getElementById('skipDd_'+i); if(!d) return;
+    _skipIx=i; d.classList.add('show');
+  }
+  function skipClose(){ document.querySelectorAll('.skip-dd.show').forEach(e=>e.classList.remove('show')); _skipIx=null; }
+  function skipPick(i,kind){
+    skipClose();
+    if(kind==='nr'){ openNR(i); return; }
+    const t=curTasks()[i]; if(!t) return;
+    if(typeof docClose==='function') docClose();
+    t.later=true;
+    otHandle(i,'נדחה — אטפל מאוחר יותר');
+    toastUndo('נדחה לטיפול מאוחר יותר',()=>{t.later=false;t.done=false;t.result=null;OPS_DONE--;renderOps();});
+  }
+  document.addEventListener('click',e=>{ if(!e.target.closest('.skip-wrap')) skipClose(); });
+
+  /* ===== תגובה ללקוח מתוך טופס המסמך — כשמשהו לא ברור ===== */
+  function docReplyOpen(i){
+    const w=document.getElementById('docReply_'+i);
+    if(w){ w.classList.toggle('show'); const inp=w.querySelector('input'); if(inp) inp.focus(); }
+  }
+  function docReplySend(i){
+    const w=document.getElementById('docReply_'+i); if(!w) return;
+    const inp=w.querySelector('input'); const v=(inp.value||'').trim(); if(!v) return;
+    inp.value=''; w.classList.remove('show');
+    const t=curTasks()[i];
+    if(t){ (t.ctx=t.ctx||[]).push('[מנהל תזרים] '+v); t.await=true; renderOps(); }
+    toast('נשלחה תגובה ללקוח בוואטסאפ — הפריט ממתין למענה');
   }
   /* דרופדאון קטגוריות עם חיפוש — טופס השיק */
   function chkCatOpen(i){document.getElementById('chkCatDd_'+i).classList.add('show');chkCatFilter(i);}
