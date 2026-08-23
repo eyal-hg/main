@@ -2604,8 +2604,8 @@
     }else{
       const i=_msgSel;
       const head=`<div class="mw-h">
-        <div class="mw-t">${grpChip(sel)}${taskTitle(sel)}</div>
-        <div class="mw-s">${sel.who||''} · ${sel.time||''} · ${sel.src||''}</div>
+        <div class="mw-t">${grpChip(sel)}${sel.type==='doc'?taskTitle(sel):(sel.reply?'הלקוח ענה לשאלה שלנו':'הודעה מ'+(sel.who||'הלקוח'))}</div>
+        <div class="mw-s">${sel.who||''} · ${sel.time||''}${sel.src?' · '+sel.src:''}</div>
         <div class="mw-nav">
           ${(sel.type==='msg'&&sel.entry)?`<button class="mt-btn view sm" onclick="msgEntryBack(${i})">→ חזרה למענה</button>`:''}
           <span class="mw-n"><b>${allItems.length-openIx.length+1}</b> מתוך ${allItems.length}</span>
