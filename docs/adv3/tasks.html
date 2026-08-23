@@ -57,7 +57,45 @@ select,input{font:inherit;color:var(--ink)}
 .strip .now b{color:#fff;font-weight:500}
 
 /* ---------- body grid ---------- */
-.wrap{max-width:1180px;margin:0 auto;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
+.wrap{max-width:1480px;margin:0 auto;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+.left{display:flex;flex-direction:column;gap:14px;position:sticky;top:14px}
+/* לפי לקוח — סינון */
+.byc{list-style:none;padding:6px 10px 8px}
+.byc li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13.5px;color:var(--ink)}
+.byc li:hover{background:var(--bg)}
+.byc li.on{background:#EAF3FA;color:var(--navy);font-weight:600}
+.byc li .n{margin-right:auto;min-width:22px;height:22px;border-radius:11px;background:var(--bg);display:grid;place-items:center;font-size:12px;color:var(--ink2);font-weight:500}
+.byc li.on .n{background:var(--navy);color:#fff}
+.byc li .n.z{opacity:.4}
+.byc li .l{width:4px;height:4px;border-radius:50%;background:var(--coral)}
+/* המשימה שנבחרה */
+.panel.det{display:none;background:var(--navy);border-color:var(--navy);color:#fff}
+.panel.det.on{display:block}
+.panel.det .ph{border-bottom-color:rgba(255,255,255,.12)}
+.panel.det .ph h2{color:#fff}
+.panel.det .ph .hint{color:#9FC0DA}
+.panel.det .body{padding:14px 20px 16px}
+.panel.det .tx{width:100%;font:inherit;font-size:16px;font-weight:600;color:#fff;border:0;border-bottom:1px dashed transparent;padding:2px 0;background:none;line-height:1.4}
+.panel.det .tx:focus{outline:0;border-color:var(--sky)}
+.panel.det .f{display:grid;grid-template-columns:84px 1fr;gap:7px 12px;margin-top:14px;font-size:13px;align-items:center}
+.panel.det .f label{color:#9FC0DA;font-size:12.5px}
+.panel.det .f select,.det .f input{font:inherit;font-size:13px;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:5px 8px;background:rgba(255,255,255,.07);color:#fff;width:100%;color-scheme:dark}
+.panel.det .f a{color:#B9D3E6;font-weight:500}
+.panel.panel.det #dSrc{color:#DCEBF5}.panel.det #dSrc a{color:#fff}
+.panel.det textarea{width:100%;font:inherit;font-size:13px;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 10px;margin-top:12px;min-height:60px;resize:vertical;color:#fff;background:rgba(255,255,255,.07)}
+.panel.det textarea::placeholder,.det .sub-l input::placeholder{color:#7FA6C2}
+.panel.det .sub-l{margin-top:12px;list-style:none}
+.panel.det .sub-l li{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0;color:#DCEBF5}
+.panel.det .sub-l li .cb{width:14px;height:14px;border:1.5px solid #9FC0DA;border-radius:3px;display:grid;place-items:center;font-size:9px;color:#fff;cursor:pointer}
+.panel.det .sub-l li.d .cb{background:var(--green);border-color:var(--green)}
+.panel.det .sub-l li.d{text-decoration:line-through;color:#7FA6C2}
+.panel.det .sub-l input{font:inherit;font-size:13px;border:0;border-bottom:1px dashed rgba(255,255,255,.25);padding:3px 0;background:none;width:100%;color:#fff}
+.panel.det .acts{display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap}
+.panel.det .acts .btn{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
+.panel.det .acts .btn.pri{background:var(--sky);border-color:var(--sky)}
+.panel.det .empty{padding:26px 20px;color:#B9D3E6;font-size:13px;text-align:center}
+.tk.sel{background:#F3F8FC;margin:0 -20px;padding-inline:20px;box-shadow:inset 3px 0 0 var(--sky)}
+.tk{cursor:pointer}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
@@ -117,7 +155,8 @@ select,input{font:inherit;color:var(--ink)}
 .tk:last-child{border-bottom:0}
 .tk .cb{width:17px;height:17px;border:1.5px solid #B7C3CF;border-radius:4px;margin-top:3px;display:grid;place-items:center;color:#fff;font-size:11px;cursor:pointer;flex:none}
 .tk.done .cb{background:var(--green);border-color:var(--green)}
-.tk.done .tx{text-decoration:line-through;color:var(--ink3)}
+.tk.done .tx,.tk.m.done .tx{text-decoration:line-through;color:var(--ink3)}
+.tk.done .src,.tk.done .sub{opacity:.55}
 .tk .tx{font-size:14px;font-weight:500;color:var(--ink)}
 .tk .sub{font-size:12.5px;color:var(--ink3);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .tk .sub a{color:var(--navy);font-weight:500}
@@ -224,7 +263,7 @@ select,input{font:inherit;color:var(--ink)}
 
 @media (min-width:1451px){.tk{padding:12px 0}.grp{padding:16px 0 8px}.hkv td{padding:14px 0}}
 @media (max-width:1450px){
-  .wrap{padding:14px 24px 16px;gap:14px}
+  .wrap{grid-template-columns:minmax(0,1fr) 340px;padding:14px 24px 16px;gap:14px}
   .panel.main{min-height:calc(100vh - 52px - 68px - 30px)}
   .left{gap:14px}
   .nav,.strip{padding-left:24px;padding-right:24px}
@@ -318,9 +357,9 @@ select,input{font:inherit;color:var(--ink)}
           <option value="none">בלי לקוח</option>
         </select>
         <div class="seg" id="fs">
-          <button class="on" data-v="open" onclick="seg(this)">פתוח</button>
-          <button data-v="done" onclick="seg(this)">בוצע</button>
-          <button data-v="all" onclick="seg(this)">הכל</button>
+          <button class="on" data-v="all" onclick="seg(this)">הכל</button>
+          <button data-v="open" onclick="seg(this)">רק פתוחות</button>
+          <button data-v="done" onclick="seg(this)">רק בוצעו</button>
         </div>
         <span class="sp"></span>
         <span id="fcount"></span>
@@ -447,6 +486,41 @@ select,input{font:inherit;color:var(--ink)}
   </section>
 
 
+  <aside class="left">
+    <section class="panel det on" id="det">
+      <div class="ph"><h2>המשימה</h2><span class="hint" id="detHint">הבאה בתור</span></div>
+      <div class="empty" id="detEmpty">בחרו משימה ברשימה — כאן עורכים: לקוח, תאריך, הערות, תת-משימות.</div>
+      <div class="body" id="detBody" style="display:none">
+        <input class="tx" id="dTx" value="">
+        <div class="f">
+          <label>לקוח</label><select id="dC"><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
+          <label>תאריך יעד</label><input id="dD" type="date" value="2026-07-02">
+          <label>מקור</label><span id="dSrc">שלי</span>
+        </div>
+        <textarea id="dNote" placeholder="הערה לעצמי…"></textarea>
+        <ul class="sub-l" id="dSub">
+          <li><span class="cb" onclick="this.parentNode.classList.toggle('d')">✓</span><input placeholder="תת-משימה…" onkeydown="if(event.key==='Enter'){addSub(this)}"></li>
+        </ul>
+        <div class="acts">
+          <button class="btn pri sm" onclick="detSave()">שמירה</button>
+          <button class="btn sm" onclick="detDone()">סימון כבוצע</button>
+          <button class="btn sm" onclick="detMove()">הזז למחר</button>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="ph"><h2>לפי לקוח</h2><span class="hint">לחיצה מסננת</span></div>
+      <ul class="byc" id="byc">
+        <li class="on" data-c="" onclick="pickC(this)">כל הלקוחות<span class="n">9</span></li>
+        <li data-c="511327876" onclick="pickC(this)">אנרגי אינטרנשיונל<span class="n">2</span></li>
+        <li data-c="511200341" onclick="pickC(this)"><i class="l"></i>אנרגי גולני<span class="n">2</span></li>
+        <li data-c="025664109" onclick="pickC(this)"><i class="l"></i>רימון יצחק<span class="n">1</span></li>
+        <li data-c="514778220" onclick="pickC(this)">מטעי גבעון<span class="n">1</span></li>
+        <li data-c="039112774" onclick="pickC(this)">משה עובד<span class="n">1</span></li>
+        <li data-c="none" onclick="pickC(this)">בלי לקוח<span class="n">2</span></li>
+      </ul>
+    </section>
+  </aside>
 </main>
 
 <!-- summary modal -->
@@ -477,24 +551,40 @@ function approve(noSend){closeSum();toast(noSend?'הסיכום אושר':'הסי
   document.getElementById('d1').classList.add('d');applyF()}
 function tog(cb){const tk=cb.closest('.tk');tk.classList.toggle('done');const d=tk.classList.contains('done');
   toast(d?'סומן כבוצע':'הוחזר לפתוח');
-  if(tk.id==='t2')document.getElementById('d2').classList.toggle('d',d);
-  if(tk.id==='t1')document.getElementById('d1').classList.toggle('d',d);
-  applyF()}
+  applyF();bycCount()}
 function setTab(t){document.getElementById('tabMine').classList.toggle('on',t==='mine');document.getElementById('tabHk').classList.toggle('on',t==='hk');
   document.getElementById('mine').style.display=t==='mine'?'':'none';document.getElementById('hk').classList.toggle('on',t==='hk');
   document.getElementById('tabNote').textContent=t==='mine'?'לפי תאריך יעד · היום, 03.07, 08.07, בלי תאריך':'בקשות פתוחות אצל מנהלי התזרים · זה לא ברשימת המשימות שלך'}
+const CN={'511327876':'אנרגי אינטרנשיונל','514778220':'מטעי גבעון','025664109':'רימון יצחק','511200341':'אנרגי גולני','039112774':'משה עובד','none':'בלי לקוח'};
+function pickC(li){[...li.parentNode.children].forEach(x=>x.classList.remove('on'));li.classList.add('on');document.getElementById('fc').value=li.dataset.c==='none'?'none':li.dataset.c;applyF()}
+function bycCount(){document.querySelectorAll('#byc li').forEach(li=>{const c=li.dataset.c;const n=[...document.querySelectorAll('#list .tk:not(.done)')].filter(t=>!c||t.dataset.c===c).length;const s=li.querySelector('.n');s.textContent=n;s.classList.toggle('z',!n)})}
+let SEL=null;
+function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');
+  document.getElementById('detEmpty').style.display='none';document.getElementById('detBody').style.display='';
+  document.getElementById('dTx').value=t.querySelector('.tx').textContent;
+  document.getElementById('dC').value=t.dataset.c||'none';
+  const src=t.querySelector('.src');document.getElementById('dSrc').innerHTML=src?src.innerHTML:'שלי';
+  const first=document.querySelector('#list .tk:not(.done)')===t;
+  document.getElementById('detHint').textContent=t.classList.contains('done')?'בוצעה':(first?'הבאה בתור'+(t.dataset.g==='late'?' · עבר זמנה':''):(t.dataset.g==='late'?'עבר זמנה':''));}
+function detSave(){if(!SEL)return;SEL.querySelector('.tx').textContent=document.getElementById('dTx').value;const c=document.getElementById('dC').value;SEL.dataset.c=c;const a=SEL.querySelector('.sub a');if(a)a.textContent=CN[c]||'';bycCount();applyF();toast('נשמר')}
+function detDone(){if(!SEL)return;if(!SEL.classList.contains('done'))tog(SEL.querySelector('.cb'));detNext()}
+function detMove(){if(!SEL)return;const list=document.getElementById('list');let g=list.querySelector('.grp[data-g="0307"]');SEL.dataset.g='0307';SEL.classList.remove('late');const d=SEL.querySelector('.side .due');if(d){d.textContent='03.07';d.classList.remove('ovd')}const o=SEL.querySelector('.sub .ovd');if(o)o.remove();g.after(SEL);applyF();bycCount();toast('הוזז למחר')}
+function addSub(inp){const v=inp.value.trim();if(!v)return;const li=inp.parentNode;const n=li.cloneNode(true);n.querySelector('input').value='';li.querySelector('input').replaceWith(Object.assign(document.createElement('span'),{textContent:v}));li.parentNode.appendChild(n);n.querySelector('input').focus()}
+function detNext(){const t=document.querySelector('#list .tk:not(.done)');if(t)openDet(t)}
+window.addEventListener('load',()=>{bycCount();detNext()});
+document.addEventListener('click',e=>{const t=e.target.closest('#list .tk');if(!t||e.target.closest('.cb,a,button'))return;openDet(t)});
 function seg(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');applyF()}
 function segV(id){const el=document.querySelector('#'+id+' .on');return el?el.dataset.v:''}
 function pick(c){const s=document.getElementById('fc');s.value=(s.value===c?'':c);applyF();
   if(s.value)toast('מסונן: '+names[c]);document.getElementById('list').scrollIntoView({block:'nearest'})}
-function clearF(){document.getElementById('fc').value='';['fs'].forEach(id=>{const s=document.getElementById(id);[...s.children].forEach((x,i)=>x.classList.toggle('on',i===0))});applyF()}
+function clearF(){document.getElementById('fc').value='';['fs'].forEach(id=>{const s=document.getElementById(id);[...s.children].forEach((x,i)=>x.classList.toggle('on',i===0))});document.querySelectorAll('#byc li').forEach((x,i)=>x.classList.toggle('on',i===0));applyF()}
 function applyF(){const c=document.getElementById('fc').value,st=segV('fs'),o=segV('fo');let n=0,openAll=0;const seen={};
   document.querySelectorAll('#list .tk').forEach(t=>{const d=t.classList.contains('done');if(!d)openAll++;
     const ok=(!c||t.dataset.c===c)&&(st==='all'||(st==='done')===d)&&(!o||t.dataset.o===o);
     t.style.display=ok?'':'none';if(ok){n++;seen[t.dataset.g]=1}});
   document.querySelectorAll('#list .grp').forEach(g=>g.style.display=seen[g.dataset.g]?'':'none');
   document.getElementById('empty').classList.toggle('on',n===0);
-  const f=c||st!=='open'||o;document.getElementById('fclr').classList.toggle('on',!!f);
+  const f=c||st!=='all';document.getElementById('fclr').classList.toggle('on',!!f);
   document.getElementById('fcount').textContent=f?(n+' מתוך '+document.querySelectorAll('#list .tk').length):'';
   const cm=document.getElementById('cMine');if(cm)cm.textContent=openAll;
   const q=s=>document.querySelectorAll('#list .tk:not(.done)'+s).length;
