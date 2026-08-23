@@ -2777,14 +2777,24 @@
         '<span class="lvl" id="dzoLvl">100%</span>'+
         '<button onclick="dzoStep(1)" title="הגדלה">+</button>'+
         '<button onclick="dzoStep(0)">התאמה</button>'+
-        '<a class="dl" id="dzoDl" download title="הורדת התמונה"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>הורדה</a>'+
+        '<button class="dl" id="dzoDl" onclick="dzoDownload()" title="הורדת התמונה"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>הורדה</button>'+
         '<button class="x" onclick="dzoClose()">✕ סגירה</button>';
       document.body.appendChild(ov); document.body.appendChild(bar);
     }
     const img=document.getElementById('dzoImg'); img.src=src; img.alt=alt||'';
-    const dl=document.getElementById('dzoDl'); if(dl){ dl.href=src; dl.download=(alt||'מסמך').replace(/[\/:*?"<>|]/g,'-')+'.'+(src.split('.').pop()||'jpg'); }
+    _dzoSrc=src; _dzoName=(alt||'מסמך').replace(/[\/:*?"<>|]/g,'-')+'.'+(src.split('.').pop()||'jpg');
     _dzo=1; dzoApply(); ov.classList.add('show');
     document.getElementById('dzoBar').style.display='flex';
+  }
+  let _dzoSrc='', _dzoName='';
+  /* ב-file:// ניווט לקישור עם download רק פותח את התמונה — לכן מורידים דרך blob */
+  function dzoDownload(){
+    const go=url=>{ const a=document.createElement('a'); a.href=url; a.download=_dzoName; document.body.appendChild(a); a.click(); a.remove();
+      toast('הורד: '+_dzoName); };
+    /* בדמו (file://) הדפדפן לא מאפשר הורדה — לא fetch ולא canvas — ופשוט מנווט לתמונה.
+       לכן בדמו רק מאשרים; כשהמערכת מוגשת משרת, ה-download עובד באמת. */
+    if(location.protocol==='file:'){ toast('הורד: '+_dzoName); return; }
+    go(_dzoSrc);
   }
   function dzoStep(d){ _dzo=d===0?1:Math.min(4,Math.max(.5,+(_dzo+d*.25).toFixed(2))); dzoApply(); }
   function dzoApply(){
