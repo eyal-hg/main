@@ -109,27 +109,34 @@ select,input{font:inherit;color:var(--ink)}
 .panel.det .cs .dd div{padding:8px 12px;font-size:13px;color:var(--ink);cursor:pointer}
 .panel.det .cs .dd div:hover,.panel.det .cs .dd div.hl{background:#EAF3FA;color:var(--navy)}
 .panel.det .cs .dd div small{color:var(--ink3);margin-right:6px}
+.panel.det .rsub{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#DCEBF5}
+.panel.det .rsub select{font:inherit;font-size:12.5px;border:1px solid rgba(255,255,255,.22);border-radius:6px;padding:3px 6px;background:rgba(255,255,255,.07);color:#fff;color-scheme:dark}
+.panel.det .send{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;margin-top:14px;cursor:pointer;font-size:13px;color:#DCEBF5}
+.panel.det .send input{display:none}
+.panel.det .send .sw{grid-row:1/3;width:34px;height:20px;border-radius:10px;background:rgba(255,255,255,.18);position:relative;transition:background .15s}
+.panel.det .send .sw::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+.panel.det .send input:checked+.sw{background:var(--sky)}
+.panel.det .send input:checked+.sw::after{transform:translateX(-14px)}
+.panel.det .send small{font-size:11.5px;color:#9FC0DA;display:none}
+.panel.det .send input:checked~small{display:block}
+.tk .rep{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink3);background:var(--bg);border-radius:10px;padding:1px 8px}
+.tk .sent{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--green);background:#E7F6EE;border-radius:10px;padding:1px 8px}
 .panel.det .smart{min-height:18px;font-size:12.5px;color:#9FC0DA;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
 .panel.det .smart b{color:#fff;font-weight:500;background:rgba(255,255,255,.1);border-radius:4px;padding:1px 7px}
-.panel.edit{display:none}
-.panel.edit.on{display:block}
-.panel.edit .body{padding:12px 20px 14px}
-.panel.edit .tx{width:100%;font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:0;border-bottom:1px dashed transparent;padding:2px 0;background:none;line-height:1.4}
-.panel.edit .tx:focus{outline:0;border-color:var(--sky)}
-.panel.edit .f{display:grid;grid-template-columns:84px 1fr;gap:7px 12px;margin-top:12px;font-size:13px;align-items:center}
-.panel.edit .f label{color:var(--ink3);font-size:12.5px}
-.panel.edit .f select{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:5px 8px;background:#fff;color:var(--ink);width:100%}
-.panel.edit #eSrc a{color:var(--purple);font-weight:500}
-.panel.edit textarea{width:100%;font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:8px 10px;margin-top:10px;min-height:56px;resize:vertical;color:var(--ink)}
-.panel.edit .saved{font-size:11.5px;color:var(--ink3);margin-top:8px}
 .panel.det .acts{display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap}
 .panel.det .acts .btn{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
 .panel.det .acts .btn.pri{background:var(--sky);border-color:var(--sky)}
 .panel.det .empty{padding:26px 20px;color:#B9D3E6;font-size:13px;text-align:center}
-.tk.sel{background:#F3F8FC;margin:0 -20px;padding-inline:20px;box-shadow:inset 3px 0 0 var(--sky)}
+.tk.open{background:#F3F8FC;margin:0 -20px;padding-inline:20px;box-shadow:inset 3px 0 0 var(--sky)}
+.tk .ie{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;padding:10px 0 4px 0;align-items:center;font-size:13px}
+.tk .ie label{display:grid;gap:3px;font-size:11.5px;color:var(--ink3)}
+.tk .ie select,.tk .ie input,.tk .ie textarea{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:5px 8px;background:#fff;color:var(--ink);width:100%}
+.tk .ie .full{grid-column:1/-1}
+.tk .ie .ieacts{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tk .ie .ieacts .hint{font-size:11.5px;color:var(--ink3);margin-right:auto}
 .tk{cursor:pointer}
 .tk .side .ra{display:flex;gap:4px;opacity:0;transition:opacity .12s}
-.tk:hover .side .ra,.tk.sel .side .ra{opacity:1}
+.tk:hover .side .ra,.tk.open .side .ra{opacity:1}
 .tk .side .ra button{font:inherit;font-size:11.5px;padding:2px 8px;border:1px solid var(--bd);border-radius:5px;background:#fff;color:var(--ink2);cursor:pointer}
 .tk .side .ra button:hover{border-color:var(--navy);color:var(--navy)}
 .tk .side .ra button:first-child{color:var(--green);font-weight:700}
@@ -424,11 +431,11 @@ select,input{font:inherit;color:var(--ink)}
           <div class="side"><span class="due">היום</span></div>
         </div>
 
-        <div class="tk" data-c="none" data-o="me" data-g="today" id="t4">
+        <div class="tk" data-c="none" data-o="me" data-g="today" data-rep="כל יום חמישי" id="t4">
           <span class="cb" onclick="tog(this)">✓</span>
           <div>
             <div class="tx">עדכוני וואטסאפ ללקוחות</div>
-            <div class="sub">4 חברות</div>
+            <div class="sub">4 חברות<span class="rep">↻ כל יום חמישי</span></div>
           </div>
           <div class="side"><span class="due">היום</span></div>
         </div>
@@ -508,25 +515,19 @@ select,input{font:inherit;color:var(--ink)}
           <button data-v="today" class="on">היום</button><button data-v="0307">מחר</button><button data-v="0907">בשבוע</button><button data-v="none">בלי</button><button data-v="pick" class="cal">📅 תאריך</button>
           <input type="date" id="dPick" min="2026-07-02" style="display:none">
         </div>
+        <div class="chips add-only" id="cR">
+          <span class="lbl">חוזרת</span>
+          <button data-v="" class="on">לא</button><button data-v="w">כל שבוע</button><button data-v="m">כל חודש</button>
+          <span class="rsub" id="rW" style="display:none">ביום <select id="rDay"><option>ראשון</option><option>שני</option><option>שלישי</option><option>רביעי</option><option selected>חמישי</option><option>שישי</option></select></span>
+          <span class="rsub" id="rM" style="display:none">ב-<select id="rDate"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option></select> בחודש</span>
+        </div>
+        <label class="send add-only"><input type="checkbox" id="dSend"><span class="sw"></span><span>לשלוח ללקוח בוואטסאפ</span><small>הלקוח יראה אותה אצלו ב"מה מחכה ממני"</small></label>
         <select id="dC" hidden><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
         <select id="dG" hidden><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
         <textarea id="dNote" placeholder="הערה לעצמי…"></textarea>
         <div class="acts">
           <button class="btn pri sm" id="dGo" onclick="detSave()">הוספה</button>
         </div>
-      </div>
-    </section>
-    <section class="panel edit" id="edit">
-      <div class="ph"><h2>המשימה</h2><span class="hint" id="eHint"></span><a class="more" href="#" onclick="event.preventDefault();editClose()">✕ סגירה</a></div>
-      <div class="body">
-        <input class="tx" id="eTx" autocomplete="off">
-        <div class="f">
-          <label>לקוח</label><select id="eC"><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
-          <label>תאריך יעד</label><select id="eG"><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
-          <label>מקור</label><span id="eSrc">שלי</span>
-        </div>
-        <textarea id="eNote" placeholder="הערה לעצמי…"></textarea>
-        <div class="saved" id="eSaved">השינויים נשמרים אוטומטית</div>
       </div>
     </section>
     <section class="panel">
@@ -571,6 +572,7 @@ function approve(noSend){closeSum();toast(noSend?'הסיכום אושר':'הסי
   const t=document.getElementById('t1');t.classList.add('done');const a=t.querySelector('.act');if(a)a.innerHTML='<span class="st" style="color:var(--green)">הסיכום אושר</span>';
   document.getElementById('d1').classList.add('d');applyF()}
 function tog(cb){const tk=cb.closest('.tk');tk.classList.toggle('done');const d=tk.classList.contains('done');
+  if(d&&tk.dataset.rep&&!tk.dataset.spawned){tk.dataset.spawned=1;const n=tk.cloneNode(true);n.classList.remove('done','sel','open');delete n.dataset.spawned;const ed=n.querySelector('.ie');if(ed)ed.remove();const g=tk.dataset.rep.startsWith('כל יום')?'0907':'none';n.querySelector('.side .due').textContent=GL2[g]||'';placeIn(n,g);toast('בוצע · המופע הבא נוצר — '+(GL2[g]||'החודש הבא'));bycCount();applyF();return}
   toast(d?'סומן כבוצע':'הוחזר לפתוח');
   applyF();bycCount()}
 function setTab(t){document.getElementById('tabMine').classList.toggle('on',t==='mine');document.getElementById('tabHk').classList.toggle('on',t==='hk');
@@ -584,18 +586,25 @@ const GL2={today:'היום','0307':'03.07','0807':'08.07','0907':'09.07',none:''
 const GLBL={today:'היום <small class="num">חמישי · 02.07</small>','0307':'03.07 <small>מחר · שישי</small>','0807':'08.07 <small>רביעי</small>','0907':'09.07 <small>חמישי</small>',none:'בלי תאריך'};
 function detNew(){document.getElementById('dTx').value='';document.getElementById('dC').value='none';const sel=document.getElementById('dG');sel.value='today';document.getElementById('dNote').value='';
   csSet('none');document.querySelectorAll('#cG button').forEach((b,i)=>b.classList.toggle('on',i===0));
-  document.getElementById('dPick').style.display='none';document.querySelector('#cG .cal').textContent='📅 תאריך';smart()}
-function editClose(){if(SEL)SEL.classList.remove('sel');SEL=null;document.getElementById('edit').classList.remove('on')}
-function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');document.getElementById('edit').classList.add('on');
-  document.getElementById('eTx').value=t.querySelector('.tx').textContent;
-  document.getElementById('eC').value=t.dataset.c||'none';
-  const sel=document.getElementById('eG');
-  if(t.dataset.g==='late'){const due=t.querySelector('.side .due').textContent.trim();let o=sel.querySelector('option[data-late]');if(!o){o=document.createElement('option');o.dataset.late=1;sel.prepend(o)}o.value='late';o.textContent=due+' · עבר';sel.value='late'}
-  else{const o=sel.querySelector('option[data-late]');if(o)o.remove();if(!sel.querySelector('option[value="'+t.dataset.g+'"]')&&GL2[t.dataset.g]){const o2=document.createElement('option');o2.value=t.dataset.g;o2.textContent=GL2[t.dataset.g];sel.insertBefore(o2,sel.querySelector('option[value="none"]'))}sel.value=GL2[t.dataset.g]!=null?t.dataset.g:'none'}
-  const src=t.querySelector('.src');document.getElementById('eSrc').innerHTML=src?src.innerHTML:'שלי';
-  document.getElementById('eNote').value=t.dataset.note||'';
-  document.getElementById('eHint').textContent=t.classList.contains('done')?'בוצעה':(t.dataset.g==='late'?'עבר זמנה':'');
-  document.getElementById('edit').scrollIntoView({block:'nearest',behavior:'smooth'})}
+  document.getElementById('dPick').style.display='none';document.querySelector('#cG .cal').textContent='📅 תאריך';
+  document.querySelectorAll('#cR button').forEach((b,i)=>b.classList.toggle('on',i===0));document.getElementById('rW').style.display='none';document.getElementById('rM').style.display='none';document.getElementById('dSend').checked=false;smart()}
+function editClose(){if(SEL){SEL.classList.remove('open');const ed=SEL.querySelector('.ie');if(ed)ed.remove()}SEL=null}
+function openDet(tk){if(SEL===tk){editClose();return}editClose();SEL=tk;tk.classList.add('open');
+  const c=tk.dataset.c||'none',g=tk.dataset.g,late=g==='late',due=late?tk.querySelector('.side .due').textContent.trim():'';
+  const gOpts=Object.keys(GL2).map(k=>'<option value="'+k+'"'+(k===g?' selected':'')+'>'+(GL2[k]||'בלי תאריך')+'</option>').join('');
+  const cOpts=Object.keys(CN).filter(k=>k).map(k=>'<option value="'+k+'"'+(k===c?' selected':'')+'>'+CN[k]+'</option>').join('');
+  tk.insertAdjacentHTML('beforeend','<div class="ie" onclick="event.stopPropagation()">'
+    +'<label>לקוח<select data-f="c">'+cOpts+'</select></label>'
+    +'<label>תאריך יעד<select data-f="g">'+(late?'<option value="late" selected>'+due+' · עבר</option>':'')+gOpts+'</select></label>'
+    +'<label class="full">הערה<input data-f="note" value="'+(tk.dataset.note||'').replace(/"/g,'&quot;')+'" placeholder="הערה לעצמי…"></label>'
+    +'<div class="ieacts">'+(c!=='none'?'<button class="btn sm" onclick="rowSend(this)">'+(tk.dataset.sent?'✓ נשלח ללקוח · שליחה שוב':'שליחה ללקוח בוואטסאפ')+'</button>':'')
+    +(tk.dataset.rep?'<span class="rep">↻ '+tk.dataset.rep+'</span>':'')+'<span class="hint">נשמר אוטומטית</span><a href="#" onclick="event.preventDefault();editClose()">סגירה</a></div></div>');
+  tk.querySelectorAll('.ie [data-f]').forEach(el=>el.addEventListener('change',()=>editSave(tk)))}
+function editSave(tk){const q=f=>tk.querySelector('.ie [data-f="'+f+'"]');const c=q('c').value,g=q('g').value;tk.dataset.c=c;tk.dataset.note=q('note').value;
+  const sub=tk.querySelector('.sub');const a=sub.querySelector('a');if(c==='none'){if(a)a.remove()}else if(a)a.textContent=CN[c];else sub.insertAdjacentHTML('afterbegin','<a href="clients.html?c='+c+'">'+CN[c]+'</a>');
+  if(g!=='late'&&g!==tk.dataset.g){unlate(tk);tk.querySelector('.side .due').textContent=GL2[g]||'';placeIn(tk,g)}
+  applyF();bycCount();toast('נשמר')}
+function rowSend(b){const tk=b.closest('.tk');const c=tk.dataset.c;if(!c||c==='none')return;if(!tk.dataset.sent){tk.dataset.sent=1;tk.querySelector('.sub').insertAdjacentHTML('beforeend','<span class="sent">✓ נשלח ל'+CN[c]+'</span>')}b.textContent='✓ נשלח ללקוח · שליחה שוב';toast('המשימה נשלחה ל'+CN[c]+' בוואטסאפ')}
 function placeIn(tk,g){const list=document.getElementById('list');let grp=list.querySelector('.grp[data-g="'+g+'"]');
   if(!grp){grp=document.createElement('div');grp.className='grp';grp.dataset.g=g;grp.innerHTML=GLBL[g]||g;
     const order=['late','today','0307','0807','0907','none'];let after=null;for(const k of order){if(k===g)break;const x=list.querySelector('.grp[data-g="'+k+'"]');if(x)after=x}
@@ -607,18 +616,17 @@ function detSave(){let v=document.getElementById('dTx').value.trim();v=v.replace
   const tk=document.createElement('div');tk.className='tk';tk.dataset.c=c;tk.dataset.o='me';tk.dataset.note=note;
   tk.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span></div>';
   tk.querySelector('.tx').textContent=v;tk.querySelector('.sub').innerHTML=c==='none'?'':'<a href="clients.html?c='+c+'">'+CN[c]+'</a>';
-  tk.querySelector('.due').textContent=GL2[g]||'';placeIn(tk,g);rowActs();applyF();bycCount();toast('נוסף: '+v);detNew();document.getElementById('dTx').focus()}
-function editSave(){if(!SEL)return;const v=document.getElementById('eTx').value.trim();if(v)SEL.querySelector('.tx').textContent=v;
-  const c=document.getElementById('eC').value,g=document.getElementById('eG').value;SEL.dataset.c=c;SEL.dataset.note=document.getElementById('eNote').value;
-  const sub=SEL.querySelector('.sub');const a=sub.querySelector('a');if(c==='none'){if(a)a.remove()}else if(a)a.textContent=CN[c];else sub.insertAdjacentHTML('afterbegin','<a href="clients.html?c='+c+'">'+CN[c]+'</a>');
-  if(g!=='late'&&g!==SEL.dataset.g){unlate(SEL);SEL.querySelector('.side .due').textContent=GL2[g]||'';placeIn(SEL,g)}
-  applyF();bycCount();const s=document.getElementById('eSaved');s.textContent='✓ נשמר';setTimeout(()=>s.textContent='השינויים נשמרים אוטומטית',1500)}
+  const r=recTxt(),send=document.getElementById('dSend').checked;
+  if(send&&c==='none'){toast('כדי לשלוח ללקוח צריך לבחור לקוח');document.getElementById('csIn').focus();return}
+  if(r){tk.dataset.rep=r;tk.querySelector('.sub').insertAdjacentHTML('beforeend','<span class="rep">↻ '+r+'</span>')}
+  if(send){tk.dataset.sent=1;tk.querySelector('.sub').insertAdjacentHTML('beforeend','<span class="sent">✓ נשלח ל'+CN[c]+'</span>')}
+  tk.querySelector('.due').textContent=GL2[g]||'';placeIn(tk,g);rowActs();applyF();bycCount();toast('נוסף: '+v+(send?' · נשלח ללקוח בוואטסאפ':''));detNew();document.getElementById('dTx').focus()}
 /* הזזה: למחר (03.07) או בשבוע (09.07) */
 function detMove(k){if(!SEL)return;const g=k==='week'?'0907':'0307';unlate(SEL);SEL.querySelector('.side .due').textContent=GL2[g];placeIn(SEL,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');detNew()}
 const ROWACT='<span class="ra"><button title="סימון כבוצע" onclick="rowDone(this)">✓</button><button onclick="rowMove(this,\'day\')">מחר</button><button onclick="rowMove(this,\'week\')">בשבוע</button></span>';
 function rowActs(){document.querySelectorAll('#list .tk').forEach(tk=>{if(!tk.querySelector('.ra'))tk.querySelector('.side').insertAdjacentHTML('beforeend',ROWACT)})}
 function rowDone(b){const tk=b.closest('.tk');tog(tk.querySelector('.cb'));if(SEL===tk)editClose()}
-function rowMove(b,k){const tk=b.closest('.tk');const g=k==='week'?'0907':'0307';unlate(tk);tk.querySelector('.side .due').textContent=GL2[g];placeIn(tk,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');if(SEL===tk)openDet(tk)}
+function rowMove(b,k){const tk=b.closest('.tk');const g=k==='week'?'0907':'0307';unlate(tk);tk.querySelector('.side .due').textContent=GL2[g];placeIn(tk,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');if(SEL===tk)editClose()}
 /* צ'יפים במצב הוספה — מסנכרנים את ה-select הנסתר */
 const CLIST=[['511327876','אנרגי אינטרנשיונל','לירון בן כליפא'],['514778220','מטעי גבעון','לירון בן כליפא'],['025664109','רימון יצחק','שמרית טובול'],['511200341','אנרגי גולני','לירון בן כליפא'],['039112774','משה עובד','שמרית טובול']];
 function csSet(id){document.getElementById('dC').value=id;const p=document.getElementById('csPick'),i=document.getElementById('csIn');
@@ -631,6 +639,10 @@ function csClear(){csSet('none');document.getElementById('csIn').focus()}
   i.addEventListener('keydown',e=>{const rows=[...dd.querySelectorAll('div[data-id]')];if(e.key==='ArrowDown'){hl=Math.min(rows.length-1,hl+1)}else if(e.key==='ArrowUp'){hl=Math.max(0,hl-1)}else if(e.key==='Enter'){e.preventDefault();if(rows[hl])csSet(rows[hl].dataset.id);return}else if(e.key==='Escape'){dd.classList.remove('on');return}else return;rows.forEach((r,k)=>r.classList.toggle('hl',k===hl))});
   dd.addEventListener('mousedown',e=>{const r=e.target.closest('div[data-id]');if(r){e.preventDefault();csSet(r.dataset.id)}});
   i.addEventListener('blur',()=>setTimeout(()=>dd.classList.remove('on'),120))})();
+document.querySelectorAll('#cR button').forEach(b=>b.onclick=()=>{[...b.parentNode.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  document.getElementById('rW').style.display=b.dataset.v==='w'?'':'none';document.getElementById('rM').style.display=b.dataset.v==='m'?'':'none';smart()});
+['rDay','rDate','dSend'].forEach(id=>document.getElementById(id).addEventListener('change',smart));
+function recTxt(){const r=document.querySelector('#cR button.on').dataset.v;if(r==='w')return 'כל יום '+document.getElementById('rDay').value;if(r==='m')return 'כל '+document.getElementById('rDate').value+' בחודש';return ''}
 document.querySelectorAll('#cG button').forEach(b=>b.onclick=()=>{[...b.parentNode.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));b.classList.add('on');
   const pk=document.getElementById('dPick');if(b.dataset.v==='pick'){pk.style.display='';pk.focus();pk.showPicker&&pk.showPicker()}else{pk.style.display='none';document.getElementById('dG').value=b.dataset.v}smart()});
 document.getElementById('dPick').addEventListener('change',function(){if(!this.value)return;const p=this.value.split('-');const g=p[2]+p[1];GL2[g]=p[2]+'.'+p[1];GLBL[g]=p[2]+'.'+p[1];
@@ -645,10 +657,10 @@ function smart(){const v=document.getElementById('dTx').value;const out=[];
   const c=document.getElementById('dC').value,g=document.getElementById('dG').value;
   if(c!=='none')out.push('<b>'+CN[c]+'</b>');out.push('<b>'+(GL2[g]||'בלי תאריך')+'</b>');
   const tm=v.match(/\b(\d{1,2}:\d{2})\b/);if(tm)out.push('<span>לפני '+tm[1]+'</span>');
+  const r=recTxt();if(r)out.push('<b>↻ '+r+'</b>');if(document.getElementById('dSend').checked)out.push('<b>→ ללקוח</b>');
   document.getElementById('dSmart').innerHTML=v.trim()?'<span>→</span>'+out.join('<span>·</span>'):'<span>אפשר להקליד @לקוח, "מחר", "בשבוע"</span>'}
 document.getElementById('dTx').addEventListener('input',smart);
-['eTx','eC','eG','eNote'].forEach(id=>document.getElementById(id).addEventListener('change',editSave));
-document.getElementById('eTx').addEventListener('keydown',e=>{if(e.key==='Enter'){editSave();e.target.blur()}});
+
 window.addEventListener('load',()=>{rowActs();bycCount();detNew()});
 document.addEventListener('click',e=>{const t=e.target.closest('#list .tk');if(!t||e.target.closest('.cb,a,button'))return;openDet(t)});
 function seg(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');applyF()}
