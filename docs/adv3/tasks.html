@@ -83,13 +83,7 @@ select,input{font:inherit;color:var(--ink)}
 .panel.det .f a{color:#B9D3E6;font-weight:500}
 .panel.panel.det #dSrc{color:#DCEBF5}.panel.det #dSrc a{color:#fff}
 .panel.det textarea{width:100%;font:inherit;font-size:13px;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 10px;margin-top:12px;min-height:60px;resize:vertical;color:#fff;background:rgba(255,255,255,.07)}
-.panel.det textarea::placeholder,.det .sub-l input::placeholder{color:#7FA6C2}
-.panel.det .sub-l{margin-top:12px;list-style:none}
-.panel.det .sub-l li{display:flex;align-items:center;gap:8px;font-size:13px;padding:5px 0;color:#DCEBF5}
-.panel.det .sub-l li .cb{width:14px;height:14px;border:1.5px solid #9FC0DA;border-radius:3px;display:grid;place-items:center;font-size:9px;color:#fff;cursor:pointer}
-.panel.det .sub-l li.d .cb{background:var(--green);border-color:var(--green)}
-.panel.det .sub-l li.d{text-decoration:line-through;color:#7FA6C2}
-.panel.det .sub-l input{font:inherit;font-size:13px;border:0;border-bottom:1px dashed rgba(255,255,255,.25);padding:3px 0;background:none;width:100%;color:#fff}
+.panel.det textarea::placeholder{color:#7FA6C2}
 .panel.det .acts{display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap}
 .panel.det .acts .btn{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
 .panel.det .acts .btn.pri{background:var(--sky);border-color:var(--sky)}
@@ -498,9 +492,6 @@ select,input{font:inherit;color:var(--ink)}
           <label>מקור</label><span id="dSrc">שלי</span>
         </div>
         <textarea id="dNote" placeholder="הערה לעצמי…"></textarea>
-        <ul class="sub-l" id="dSub">
-          <li><span class="cb" onclick="this.parentNode.classList.toggle('d')">✓</span><input placeholder="תת-משימה…" onkeydown="if(event.key==='Enter'){addSub(this)}"></li>
-        </ul>
         <div class="acts">
           <button class="btn pri sm" onclick="detSave()">שמירה</button>
           <button class="btn sm" onclick="detDone()">סימון כבוצע</button>
@@ -576,7 +567,6 @@ function detMove(k){if(!SEL)return;const G=k==='week'?{g:'0907',d:'09.07',lbl:'0
   SEL.dataset.g=G.g;SEL.classList.remove('late');const d=SEL.querySelector('.side .due');if(d){d.textContent=G.d;d.classList.remove('ovd')}
   const o=SEL.querySelector('.sub .ovd');if(o){const dot=o.previousElementSibling;if(dot&&dot.classList.contains('dot'))dot.remove();o.remove()}
   grp.after(SEL);applyF();bycCount();openDet(SEL);toast(G.msg)}
-function addSub(inp){const v=inp.value.trim();if(!v)return;const li=inp.parentNode;const n=li.cloneNode(true);n.querySelector('input').value='';li.querySelector('input').replaceWith(Object.assign(document.createElement('span'),{textContent:v}));li.parentNode.appendChild(n);n.querySelector('input').focus()}
 function detNext(){const t=document.querySelector('#list .tk:not(.done)');if(t)openDet(t)}
 window.addEventListener('load',()=>{bycCount();detNext()});
 document.addEventListener('click',e=>{const t=e.target.closest('#list .tk');if(!t||e.target.closest('.cb,a,button'))return;openDet(t)});
