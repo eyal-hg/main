@@ -89,6 +89,16 @@ select,input{font:inherit;color:var(--ink)}
 .panel.det.edit .acts{display:none}
 .panel.det:not(.edit) .ed,.panel.det:not(.edit) #dSrcL,.panel.det:not(.edit) #dSrc{display:none}
 .panel.det .acts .ed{display:contents}
+.panel.det .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
+.panel.det .chips .lbl{font-size:12px;color:#9FC0DA;min-width:34px}
+.panel.det .chips button{font:inherit;font-size:12.5px;padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#DCEBF5;cursor:pointer}
+.panel.det .chips button:hover{border-color:#fff;color:#fff}
+.panel.det .chips button.on{background:var(--sky);border-color:var(--sky);color:#fff;font-weight:600}
+.panel.det .chips input[type=date]{font:inherit;font-size:12.5px;border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:3px 10px;background:rgba(255,255,255,.07);color:#fff;color-scheme:dark}
+.panel.det .smart{min-height:18px;font-size:12.5px;color:#9FC0DA;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.panel.det .smart b{color:#fff;font-weight:500;background:rgba(255,255,255,.1);border-radius:4px;padding:1px 7px}
+.panel.det.edit .add-only,.panel.det.edit .smart{display:none}
+.panel.det:not(.edit) .f{display:none}
 .panel.det .acts{display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);flex-wrap:wrap}
 .panel.det .acts .btn{background:transparent;border-color:rgba(255,255,255,.3);color:#fff}
 .panel.det .acts .btn.pri{background:var(--sky);border-color:var(--sky)}
@@ -467,6 +477,16 @@ select,input{font:inherit;color:var(--ink)}
       <div class="ph"><h2 id="detTitle">משימה חדשה</h2><span class="hint" id="detHint"></span><a class="more x" id="detX" href="#" onclick="event.preventDefault();detNew()" style="display:none">✕ חדשה</a></div>
       <div class="body" id="detBody">
         <input class="tx" id="dTx" placeholder="מה צריך לעשות?" autocomplete="off" onkeydown="if(event.key==='Enter'){detSave();this.blur()}">
+        <div class="smart" id="dSmart"></div>
+        <div class="chips add-only" id="cC">
+          <span class="lbl">לקוח</span>
+          <button data-v="none" class="on">בלי</button><button data-v="511327876">אנרגי</button><button data-v="514778220">מטעי גבעון</button><button data-v="025664109">רימון</button><button data-v="511200341">גולני</button><button data-v="039112774">משה עובד</button>
+        </div>
+        <div class="chips add-only" id="cG">
+          <span class="lbl">מתי</span>
+          <button data-v="today" class="on">היום</button><button data-v="0307">מחר</button><button data-v="0907">בשבוע</button><button data-v="none">בלי</button><button data-v="pick" class="cal">📅 תאריך</button>
+          <input type="date" id="dPick" min="2026-07-02" style="display:none">
+        </div>
         <div class="f">
           <label>לקוח</label><select id="dC"><option value="none">בלי לקוח</option><option value="511327876">אנרגי אינטרנשיונל</option><option value="514778220">מטעי גבעון</option><option value="025664109">רימון יצחק</option><option value="511200341">אנרגי גולני</option><option value="039112774">משה עובד</option></select>
           <label>תאריך יעד</label><select id="dG"><option value="today">היום</option><option value="0307">מחר · 03.07</option><option value="0807">08.07</option><option value="0907">09.07</option><option value="none">בלי תאריך</option></select>
@@ -534,7 +554,9 @@ const GLBL={today:'היום <small class="num">חמישי · 02.07</small>','030
 function detNew(){if(SEL)SEL.classList.remove('sel');SEL=null;document.getElementById('det').classList.remove('edit');
   document.getElementById('detTitle').textContent='משימה חדשה';document.getElementById('detHint').textContent='';document.getElementById('detX').style.display='none';
   document.getElementById('dTx').value='';document.getElementById('dC').value='none';const sel=document.getElementById('dG');const o=sel.querySelector('option[data-late]');if(o)o.remove();sel.value='today';document.getElementById('dNote').value='';
-  document.getElementById('dGo').textContent='הוספה'}
+  document.getElementById('dGo').textContent='הוספה';
+  document.querySelectorAll('#cC button').forEach((b,i)=>b.classList.toggle('on',i===0));document.querySelectorAll('#cG button').forEach((b,i)=>b.classList.toggle('on',i===0));
+  document.getElementById('dPick').style.display='none';document.querySelector('#cG .cal').textContent='📅 תאריך';smart()}
 function openDet(t){if(SEL)SEL.classList.remove('sel');SEL=t;t.classList.add('sel');document.getElementById('det').classList.add('edit');
   document.getElementById('detTitle').textContent='המשימה';document.getElementById('detX').style.display='';
   document.getElementById('dTx').value=t.querySelector('.tx').textContent;
@@ -551,7 +573,7 @@ function placeIn(tk,g){const list=document.getElementById('list');let grp=list.q
     if(after){let n=after.nextElementSibling;while(n&&!n.classList.contains('grp'))n=n.nextElementSibling;n?list.insertBefore(grp,n):list.appendChild(grp)}else list.prepend(grp)}
   tk.dataset.g=g;grp.after(tk)}
 function unlate(tk){tk.classList.remove('late');const d=tk.querySelector('.side .due');if(d)d.classList.remove('ovd');const o=tk.querySelector('.sub .ovd');if(o){const dot=o.previousElementSibling;if(dot&&dot.classList.contains('dot'))dot.remove();o.remove()}}
-function detSave(){const v=document.getElementById('dTx').value.trim();if(!v){document.getElementById('dTx').focus();return}
+function detSave(){let v=document.getElementById('dTx').value.trim();if(!SEL)v=v.replace(/@\S+\s?/,'').replace(/\s+(מחר|בשבוע|היום)\s*$/,'').trim();if(!v){document.getElementById('dTx').focus();return}
   const c=document.getElementById('dC').value,g=document.getElementById('dG').value,note=document.getElementById('dNote').value;
   if(!SEL){const tk=document.createElement('div');tk.className='tk';tk.dataset.c=c;tk.dataset.o='me';tk.dataset.note=note;
     tk.innerHTML='<span class="cb" onclick="tog(this)">✓</span><div><div class="tx"></div><div class="sub"></div></div><div class="side"><span class="due num"></span></div>';
@@ -568,6 +590,24 @@ const ROWACT='<span class="ra"><button title="סימון כבוצע" onclick="ro
 function rowActs(){document.querySelectorAll('#list .tk').forEach(tk=>{if(!tk.querySelector('.ra'))tk.querySelector('.side').insertAdjacentHTML('beforeend',ROWACT)})}
 function rowDone(b){const tk=b.closest('.tk');tog(tk.querySelector('.cb'));if(SEL===tk)detNew()}
 function rowMove(b,k){const tk=b.closest('.tk');const g=k==='week'?'0907':'0307';unlate(tk);tk.querySelector('.side .due').textContent=GL2[g];placeIn(tk,g);applyF();bycCount();toast(k==='week'?'הוזז בשבוע':'הוזז למחר');if(SEL===tk)openDet(tk)}
+/* צ'יפים במצב הוספה — מסנכרנים את ה-select הנסתר */
+document.querySelectorAll('#cC button').forEach(b=>b.onclick=()=>{[...b.parentNode.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('dC').value=b.dataset.v;smart()});
+document.querySelectorAll('#cG button').forEach(b=>b.onclick=()=>{[...b.parentNode.querySelectorAll('button')].forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  const pk=document.getElementById('dPick');if(b.dataset.v==='pick'){pk.style.display='';pk.focus();pk.showPicker&&pk.showPicker()}else{pk.style.display='none';document.getElementById('dG').value=b.dataset.v}smart()});
+document.getElementById('dPick').addEventListener('change',function(){if(!this.value)return;const p=this.value.split('-');const g=p[2]+p[1];GL2[g]=p[2]+'.'+p[1];GLBL[g]=p[2]+'.'+p[1];
+  const sel=document.getElementById('dG');if(!sel.querySelector('option[value="'+g+'"]')){const o=document.createElement('option');o.value=g;o.textContent=GL2[g];sel.insertBefore(o,sel.querySelector('option[value="none"]'))}sel.value=g;
+  const cal=document.querySelector('#cG .cal');cal.textContent='📅 '+GL2[g];smart()});
+/* הקלדה חכמה: @לקוח · מחר/בשבוע/היום · "לפני הפגישה" */
+const ALIAS=[['511327876',/אנרגי אינטר|@אנרגי(?! גולני)/],['511200341',/גולני/],['514778220',/גבעון|מטעי/],['025664109',/רימון/],['039112774',/משה|עובד/]];
+function smart(){const v=document.getElementById('dTx').value;const out=[];
+  if(!SEL){const m=v.match(/@(\S+)/);if(m){const hit=ALIAS.find(a=>a[1].test(v));if(hit){document.getElementById('dC').value=hit[0];document.querySelectorAll('#cC button').forEach(b=>b.classList.toggle('on',b.dataset.v===hit[0]))}}
+    const d=/(^|\s)מחר(\s|$)/.test(v)?'0307':/(^|\s)בשבוע(\s|$)|שבוע הבא/.test(v)?'0907':/(^|\s)היום(\s|$)/.test(v)?'today':null;
+    if(d){document.getElementById('dG').value=d;document.querySelectorAll('#cG button').forEach(b=>b.classList.toggle('on',b.dataset.v===d))}}
+  const c=document.getElementById('dC').value,g=document.getElementById('dG').value;
+  if(c!=='none')out.push('<b>'+CN[c]+'</b>');out.push('<b>'+(GL2[g]||'בלי תאריך')+'</b>');
+  const tm=v.match(/\b(\d{1,2}:\d{2})\b/);if(tm)out.push('<span>לפני '+tm[1]+'</span>');
+  document.getElementById('dSmart').innerHTML=v.trim()?'<span>→</span>'+out.join('<span>·</span>'):'<span>אפשר להקליד @לקוח, "מחר", "בשבוע"</span>'}
+document.getElementById('dTx').addEventListener('input',smart);
 ['dTx','dC','dG','dNote'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(SEL)detSave()}));
 window.addEventListener('load',()=>{rowActs();bycCount();detNew()});
 document.addEventListener('click',e=>{const t=e.target.closest('#list .tk');if(!t||e.target.closest('.cb,a,button'))return;openDet(t)});
