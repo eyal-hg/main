@@ -2692,7 +2692,7 @@
   function fileMsgBody(t,i,noCtx){
     const f=t.file||{};
     const rows=f.rows||[{date:f.date||'', ref:f.ref||'', desc:f.desc||'', amount:f.amount||''}];
-    const bizRow=r=>`<div class="biz-row">
+    const bizRow=r=>`<div class="biz-row" oninput="event.target.classList.remove('req-miss')" onchange="event.target.classList.remove('req-miss')">
         <input class="mx2-inp" value="${r.date||''}" placeholder="תאריך">
         <input class="mx2-inp" value="${r.ref||''}" placeholder="אסמכתא">
         <select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
@@ -2842,8 +2842,23 @@
     f.querySelectorAll('.biz-dir .bd').forEach(b=>b.classList.toggle('on',b.classList.contains(d==='exp'?'exp':'inc')));
   }
   /* שמירה וסגירה — מזין לתזרים ומודיע ללקוח שטופל */
+  /* כל השדות חובה (חוץ מאסמכתא — "אם קיים"). שדה ריק נצבע, ולא שומרים. */
+  function bizValidate(i){
+    const bad=[];
+    document.querySelectorAll('#bizRows_'+i+' .biz-row').forEach(r=>{
+      const [date,ref,cat,desc,amt]=r.children;
+      const chk=(el,ok)=>{ el.classList.toggle('req-miss',!ok); if(!ok) bad.push(el); };
+      chk(date,!!date.value.trim());
+      chk(cat,cat.selectedIndex>0);
+      chk(desc,!!desc.value.trim());
+      chk(amt,(+String(amt.value).replace(/[^\d]/g,''))>0);
+    });
+    if(bad.length){ bad[0].focus(); toast('חסרים '+bad.length+' שדות — כל השדות חובה (אסמכתא רק אם קיימת)'); }
+    return !bad.length;
+  }
   function bizSave(i){
     const t=curTasks()[i]; if(!t) return;
+    if(t.type!=='sheet'&&!bizValidate(i)) return;
     const payee=((t.file||{}).payee)||'';
     const rows=document.querySelectorAll('#bizRows_'+i+' .biz-row').length;
     docClose();
