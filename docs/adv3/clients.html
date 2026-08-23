@@ -264,7 +264,7 @@ td.mg{color:var(--ink2)}
     <div class="empty" id="empty">אין חברה שתואמת</div>
   </section>
 
-  <aside class="left"><div class="card" id="card"><div class="empty2">לחיצה על חברה פותחת אותה כאן — שלב ותאריך יעד, התראות, פגישות, משימות, זיכרון.</div></div></aside>
+  <aside class="left"><div class="card" id="card"></div></aside>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -356,7 +356,7 @@ function openCard(id){
     <div class="stage-ed">${STAGES.slice(1).map((s,i)=>`<button class="${i+1===c.s?'on':''}" onclick="stageSet('${c.id}',${i+1})">${s}</button>`).join('')}</div>
     ${c.s<5?`<div class="duerow">יעד לשלב הבא <input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onchange="dueSet('${c.id}',this.value)"><span title="ברירת המחדל נקבעת בהגדרות המשרד">ברירת מחדל: 5 ימים</span></div>`:''}`;
   $('#card').innerHTML=`
-    <div class="hd"><span class="x" onclick="closeCard()">✕</span><h3>${c.n}</h3><div class="s num">ח.פ ${c.id} · ${c.pk} · ${c.mg}</div></div>
+    <div class="hd"><h3>${c.n}</h3><div class="s num">ח.פ ${c.id} · ${c.pk} · ${c.mg}</div></div>
     <div class="bd">
       <div class="row"><span class="k">שלב במחזור</span><div class="v">${stg}</div></div>
       <div class="row"><span class="k">פגישה אחרונה</span><div class="v num">${c.last||'—'}${c.lastSub?' <span class="sub">'+c.lastSub+'</span>':''}</div></div>
@@ -370,11 +370,12 @@ function openCard(id){
   return false;
 }
 function stageSet(id,s){const c=C.find(x=>x.id===id);c.s=s;toast(c.n+' — '+STAGES[s]);render();openCard(id)}
-function closeCard(){SELID=null;$('#card').innerHTML='<div class="empty2">לחיצה על חברה פותחת אותה כאן — שלב ותאריך יעד, התראות, פגישות, משימות, זיכרון.</div>';document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.remove('hl'))}
+function closeCard(){openCard(C[0].id)}
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
 render();
-const pc=new URLSearchParams(location.search).get('c'); if(pc)openCard(pc);
+/* ברירת מחדל: הלקוח הראשון ברשימה — הכרטיס אף פעם לא ריק */
+const pc=new URLSearchParams(location.search).get('c'); openCard(pc&&C.some(c=>c.id===pc)?pc:C[0].id);
 </script>
 </body>
 </html>
