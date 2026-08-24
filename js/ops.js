@@ -1095,7 +1095,6 @@
      inst:[['29.07',1800],['31.07',2000]], hist:[['10.06',14000],['20.06',15500],['30.06',13000]], pacePrev:66, paceNow:92},
     {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  flow:0,     done:[['01.07',12000]], inst:[], hist:[['01.06',12000]], pacePrev:100, paceNow:100},
   ];
-  let _blEd=null;   /* {i,j} — מופע שנפתח לעריכה */
   /* טבלה: חודש שעבר מול החודש — הפעולות זו מול זו. המתוכנן לחיץ לעריכה. */
   function blSimpleTl(b,i){
     const fmt=n=>n.toLocaleString();
@@ -1108,7 +1107,7 @@
       const l=june[r], x=july[r];
       body+=`<div class="blc-r">
         <span class="c1">${l?`<i>${l[0]}</i><b>${fmt(l[1])}</b>`:''}</span>
-        <span class="c2 ${x?x.k:''}" ${x&&x.k!=='done'?`onclick="blEdOpen(${i},${x.j})" title="מתוכנן — לחיצה לעריכה"`:''}>
+        <span class="c2 ${x?x.k:''}">
           ${x?`<i>${x.d}</i><b>${fmt(x.a)}</b>${x.k==='done'?'':`<em>${x.k==='next'?'הקרוב · מתוכנן':'מתוכנן'}</em>`}`:''}</span>
       </div>`;
     }
@@ -1119,34 +1118,7 @@
       ${body}
       <div class="blc-r sum"><span class="c1"><i>סה״כ</i><b>${fmt(sumJ)}</b></span><span class="c2"><i>סה״כ</i><b>${fmt(sumL)}</b></span></div>
       <div class="bl-pace ${slow?'slow':''}">${slow?'⚠ ':''}עד היום־בחודש: שעבר <b>${b.pacePrev}%</b> מהיעד · החודש <b>${b.paceNow}%</b></div>
-      ${blEdHtml(b,i)}
     </div>`;
-  }
-  /* עריכת מופע — פשוט: תאריך וסכום, בגבול היעד */
-  function blEdOpen(i,j){ _blEd=(_blEd&&_blEd.i===i&&_blEd.j===j)?null:{i,j}; renderBLReview(); }
-  function blEdHtml(b,i){
-    if(!_blEd||_blEd.i!==i) return '';
-    const x=b.inst[_blEd.j];
-    return `<div class="bl-ed" onclick="event.stopPropagation()">
-      <span>המופע של <b>${x[0]}</b>:</span>
-      יום <input id="blEdD" type="number" min="27" max="31" value="${+x[0].slice(0,2)}">
-      סכום <input id="blEdA" type="number" step="100" value="${x[1]}">
-      <button class="ot-btn done sm" onclick="blEdSave(${i})">שמירה</button>
-      <button class="ot-btn ghost sm" onclick="_blEd=null;renderBLReview()">ביטול</button>
-    </div>`;
-  }
-  function blEdSave(i){
-    const b=BL_SIMPLE[i], x=b.inst[_blEd.j];
-    const d=Math.min(31,Math.max(27,parseInt(document.getElementById('blEdD').value,10)||+x[0].slice(0,2)));
-    let a=Math.max(0,parseInt(document.getElementById('blEdA').value,10)||x[1]);
-    const others=b.inst.reduce((s,y,k)=>s+(k===_blEd.j?0:y[1]),0);
-    const cap=b.budget-b.actual-b.flow-others;    /* היעד חוסם */
-    if(a>cap){ a=cap; toast('הסכום נחתך ל-'+cap.toLocaleString()+' ₪ — היעד חוסם'); }
-    x[0]=String(d).padStart(2,'0')+'.07'; x[1]=a;
-    b.inst.sort((p,q)=>+p[0].slice(0,2)-+q[0].slice(0,2));
-    b.st='הפריסה תוקנה'; _blEd=null;
-    toast('המופע עודכן — '+x[0]+' · '+a.toLocaleString()+' ₪');
-    renderBLReview();
   }
   function renderBLReview(){
     const box=document.getElementById('finFindings');
@@ -1162,32 +1134,32 @@
         const remain=b.budget-b.actual-b.flow-bl;   /* היעד חוסם — לא יורד מתחת ל-0 */
         const full=remain===0;
         const stat=(l,v,cls)=>`<div class="fb-s ${cls||''}"><span>${l}</span><b>${v}</b></div>`;
-        return `<div class="ffind bl-line ledger ${b.st?'ba-ok':(full?'':'ba-ch')}">
-        <div class="bl-c-name"><b>${b.cat}</b>
-          ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(full?`<span class="ba-same">✓ הפער סגור</span>`:`<span class="ba-chip">פער חשוף — ${fmt(remain)} ₪</span>`)}
+        return `<div class="ffind bl-line simple ${b.st?'ba-ok':(full?'':'ba-ch')}">
+        <div class="bls-head">
+          <div class="bl-c-name"><b>${b.cat}</b>
+            ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(full?`<span class="ba-same">✓ הפער סגור</span>`:`<span class="ba-chip">פער חשוף — ${fmt(remain)} ₪</span>`)}
+          </div>
+          <span class="bls-tgt">יעד <b>${fmt(b.budget)}</b></span>
+          <div class="ffind-act">
+            ${b.st?`<button class="ot-btn ghost sm" onclick="blUndo(${i})">ביטול</button>`
+                 :`<button class="ot-btn done sm" onclick="blOk(${i})">מאשר</button>
+                   <button class="ot-btn ghost sm" onclick="blCall(${i})">מתאם שיחה עם הלקוח</button>`}
+          </div>
         </div>
-        <div class="blx">
-          <div class="blx-t"><span>יעד</span><b>${fmt(b.budget)}</b></div>
-          <div class="blx-m">
-            <span class="blx-track">
-              <i class="sg act" style="width:${(b.actual/b.budget*100).toFixed(1)}%"></i>
-              <i class="sg flow" style="width:${(b.flow/b.budget*100).toFixed(1)}%"></i>
-              ${bl?`<i class="sg blrow" style="width:${(bl/b.budget*100).toFixed(1)}%"></i>`:''}
-            </span>
-            <div class="blx-nums">
-              <span class="na">בפועל <b>${fmt(b.actual)}</b></span>
-              ${b.flow?`<span class="nf">בתזרים <b>${fmt(b.flow)}</b></span>`:''}
-              ${bl?`<span class="nb">שורה תקציבית <b>${fmt(bl)}</b></span>`:''}
-              ${remain?`<span class="nr">פער <b>${fmt(remain)}</b></span>`:''}
-            </div>
+        <div class="blx wide">
+          <span class="blx-track">
+            <i class="sg act" style="width:${(b.actual/b.budget*100).toFixed(1)}%"></i>
+            <i class="sg flow" style="width:${(b.flow/b.budget*100).toFixed(1)}%"></i>
+            ${bl?`<i class="sg blrow" style="width:${(bl/b.budget*100).toFixed(1)}%"></i>`:''}
+          </span>
+          <div class="blx-nums">
+            <span class="na">בפועל <b>${fmt(b.actual)}</b></span>
+            ${b.flow?`<span class="nf">בתזרים <b>${fmt(b.flow)}</b></span>`:''}
+            ${bl?`<span class="nb">שורה תקציבית <b>${fmt(bl)}</b></span>`:''}
+            ${remain?`<span class="nr">פער <b>${fmt(remain)}</b></span>`:''}
           </div>
         </div>
         ${blSimpleTl(b,i)}
-        <div class="ffind-act">
-          ${b.st?`<button class="ot-btn ghost sm" onclick="blUndo(${i})">ביטול</button>`
-               :`<button class="ot-btn done sm" onclick="blOk(${i})">מאשר</button>
-                 <button class="ot-btn ghost sm" onclick="blCall(${i})">מתאם שיחה עם הלקוח</button>`}
-        </div>
       </div>`;}).join('');
   }
   function blOk(i){ BL_SIMPLE[i].st='אושר'; toast('"'+BL_SIMPLE[i].cat+'" אושרה — השורה ממשיכה להתנהל'); renderBLReview(); }
