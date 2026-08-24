@@ -777,12 +777,12 @@
           <div class="catm-sub" style="margin:2px 4px 8px">קטגוריה עם שורה תקציבית לא מופיעה כאן — הפער שלה כבר מנוהל בשלב 1.</div>
           ${missRows||'<div class="ops-empty" style="padding:14px">אין חסרים מעל הסף</div>'}
           ${missSub.length?`<div class="br-sub-foot">${missSub.length} מתחת לסף · <b>${fmt(missSub.reduce((s,x)=>s+brGapOf(x),0))} ₪</b>
-            <span>${missSub.map(x=>x.cat).join(' · ')}</span></div>`:''}</div>
+            <span>${missSub.map(x=>x.cat).join(' · ')}</span></div>`:''}
+          ${matHtml()}</div>
         <div><div class="pay-grp">🔴 חריגות בתקציב <em>${overAll.length}</em></div>${overRows||'<div class="ops-empty" style="padding:14px">אין חריגות מעל הסף</div>'}
           ${overSub.length?`<div class="br-sub-foot">${overSub.length} מתחת לסף · <b>${fmt(overSub.reduce((s,x)=>s+brOverOf(x),0))} ₪</b>
             <span>${overSub.map(x=>x.cat).join(' · ')}</span></div>`:''}</div>
-      </div>
-      ${matHtml()}`;
+      </div>`;
   }
   function brOpenLine(cat){
     const x=BR_DATA.find(v=>v.cat===cat&&v.kind==='miss'); if(!x) return;
@@ -1017,6 +1017,7 @@
         : '';
       return `<div class="mat-row${st?' ok':(hot?' hot':'')}">
         <div class="mat-h"><b>${m.cat}</b><span class="mat-amt">${m.amt.toLocaleString()} ₪</span>
+          <span class="gt-chip2 gt-wait" title="פער שהוגדר — הידיעה אצל הלקוח, נרדף עד שהחומר מגיע">פער מנוהל · מחכה לחומר</span>
           <span class="mat-src">${m.src}</span></div>
         ${badge}
         ${hot&&!st?`<div class="mat-esc">4 תזכורות בלי מענה אחד — כדאי להתקשר במקום להודיע, או להעלות ליועץ
@@ -1024,8 +1025,8 @@
         ${doneTag}${form}
         <details class="mat-hist"><summary>היסטוריית הרדיפה</summary>${m.hist.map(h=>`<div>${h}</div>`).join('')}</details>
       </div>`;};
-    return `<div class="pay-grp" style="margin-top:16px">🟠 חומר מהלקוח <em>${matDue().length}</em>
-        <span class="br-rule">ימי החומר של החברה: <b>${days}</b> בחודש
+    return `<div class="pay-grp" style="margin-top:18px">🟠 חומר מהלקוח — פערים שהוגדרו "מחכה לחומר" <em>${matDue().length}</em>
+        <span class="br-rule">ימי החומר: <b>${days}</b> בחודש
         <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="showTab('coset')">⚙ שינוי</button></span></div>
       ${late==null
         ? `<div class="mat-quiet">✓ יום החומר הבא עוד לא הגיע — אין מה לרדוף היום. הפריטים הפתוחים ממתינים בשקט.</div>`
