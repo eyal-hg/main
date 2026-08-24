@@ -814,18 +814,6 @@
       const el=document.querySelector('.br-row.need'); if(el) el.scrollIntoView({block:'center',behavior:'smooth'});
       return;
     }
-    const gg=gapGate();
-    if(gg.n>0){
-      const box=document.getElementById('finFindings');
-      box.insertAdjacentHTML('afterbegin',
-        `<div class="br-row" style="border:1px solid #EFB48D;background:#FFF7F2;margin-bottom:10px">
-          <div class="br-h"><b style="color:#8A3D14">${gg.n} פערים מהותיים במעקב ופערים עדיין ללא הגדרה · ${gg.sum.toLocaleString()} ₪</b></div>
-          <div class="catm-sub" style="margin:2px 4px 9px">אי אפשר לסגור את הבדיקה עם פער שלא ברור מאיפה הוא. רק אתם יודעים אם חסר חומר מהלקוח, אם זה פשוט טרם התגבש, או שהיעד לא ריאלי.</div>
-          <div class="br-acts"><button class="ot-btn done sm" onclick="gapGateGo()">פתיחת מעקב ופערים ←</button></div>
-        </div>`);
-      toast('נותרו '+gg.n+' פערים ללא הגדרה');
-      return;
-    }
     const el=document.getElementById('fstep2');
     if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
     document.getElementById('ftag2').textContent='נבדק ✓';
