@@ -163,6 +163,8 @@ tbody tr.first td{border-top:2px solid var(--bd)}
 td.n{color:var(--ink);font-weight:600}
 td.n small{font-weight:400;font-size:12px;color:var(--ink3);margin-right:8px}
 td.n .num{color:var(--ink3)}
+td.n .dash{margin-right:8px;color:var(--sky);opacity:0;font-weight:700;transition:opacity .12s}
+tbody tr:hover td.n .dash{opacity:1}
 td.pk{color:var(--ink2)}
 .stg::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:8px;vertical-align:0;background:#C4CED8}
 .stg.s1::before{background:#C4CED8}.stg.s2::before{background:var(--sky)}.stg.s3::before{background:var(--purple)}.stg.s4::before{background:var(--green)}.stg.s5::before{background:var(--navy)}
@@ -327,7 +329,7 @@ function row(c){
   const late=c.due&&c.due!=='—'&&cmpD(c.due,'02.07')<0;
   const due=c.s===5?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לשלב הבא — לחיצה לעריכה">${late?'עבר':'עד'} <span class="num">${c.due||'—'}</span></span>`;
   return `<tr data-id="${c.id}" data-s="${c.s}" data-n="${c.n}" onclick="openCard('${c.id}')">
-    <td class="n">${name}</td>
+    <td class="n">${name}<a class="dash" href="../../index.html?hp=${c.id}" target="_blank" onclick="event.stopPropagation()" title="הדשבורד של החברה">↗</a></td>
     <td class="pk">${c.pk}</td>
     <td><span class="stg s${c.s}">${STAGES[c.s]}</span>${due}</td>
     <td class="num">${last}</td>
@@ -390,7 +392,7 @@ function openCard(id){
     <div class="bd tab" data-t="tk">${c.tasks.length?c.tasks.map(t=>`<div class="tk"><i></i>${t}</div>`).join(''):'<div class="none pad">אין משימות פתוחות</div>'}<a class="addlnk" href="tasks.html?c=${c.id}">+ משימה לחברה</a></div>
     <div class="bd tab" data-t="mt">${(c.meets||[]).length?c.meets.map(m=>`<div class="mt"><span class="num d">${m[0]}</span><div><b>${m[1]}</b><span>${m[2]}</span></div></div>`).join(''):'<div class="none pad">אין פגישות</div>'}</div>
     <div class="bd tab" data-t="mm">${(c.memAll||c.mem).length?(c.memAll||c.mem).map(m=>`<div class="mu"><span class="m">${m[0]}</span><span>${m[1]}</span><span class="m num">${m[2]}</span></div>`).join(''):'<div class="none pad">עוד לא נלמד כלום</div>'}</div>
-    <div class="ft"><a class="btn pri" href="memory.html?c=${c.id}">הזיכרון המלא</a><a class="btn" href="meetings.html?c=${c.id}">כל הפגישות</a></div>`;
+    <div class="ft"><a class="btn pri" href="../../index.html?hp=${c.id}" target="_blank">הדשבורד של החברה ↗</a><a class="btn" href="memory.html?c=${c.id}">הזיכרון המלא</a><a class="btn" href="meetings.html?c=${c.id}">כל הפגישות</a></div>`;
   document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.toggle('hl',tr.dataset.id===id));
   return false;
 }
