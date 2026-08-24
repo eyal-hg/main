@@ -7,7 +7,7 @@
      כרגע false — נוחתים על שלב 4 "הודעות לקוח" (ראו OPS_PREDONE). */
   const OPS_SKIP_STAGES=false;
   /* דילוג נוסף: גם על חמשת שלבי הבדיקה — נוחתים ישר על מסך סיום התפעול */
-  const OPS_SKIP_CHECKS=true;
+  const OPS_SKIP_CHECKS=false;
   /* דמו: מסך הסיום עם חריגות. false ⇒ "אין חריגות — מוכן לשליחה" */
   const OPS_DEMO_EXC=true;
   /* בדיקת הכפילויות ברענון — כבויה כרגע. הרענון עצמו נשאר. */
@@ -51,7 +51,7 @@
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג.
      כרגע: קטגוריות · מוטבים · נגררות ולא צפויות ⇒ נוחתים על "הודעות לקוח".
      להוסיף 'msg','doc' ⇒ נוחתים על "הזנות ואוטומציה" · להוסיף גם 'sheet' ⇒ ישר לסיום. */
-  const OPS_PREDONE=['ai','payee','carry','unexpected'];
+  const OPS_PREDONE=['ai','payee','carry','unexpected','msg','doc','sheet'];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   const OPS_STAGES=[
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
@@ -228,7 +228,7 @@
   let _refMode='manual';
   /* דמו: הרענון הראשון לכל חברה נכשל (Bizibox לא החזיר נתונים) — הניסיון החוזר מצליח.
      OPS_REF_FAIL=false מבטל. */
-  const OPS_REF_FAIL=true;
+  const OPS_REF_FAIL=false;
   const _refFailed={};
   let _refBusy=false;
   function openRefresh(mode){
@@ -344,9 +344,9 @@
         el.className='fin-step warn';el.querySelector('.fs-ico').innerHTML='👁';
         const ico=document.getElementById('finIco'); ico.className='fin-ico';
         ico.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
-        document.getElementById('ftag'+i).textContent=BL_OK.length+' שורות';
-        document.getElementById('finTitle').textContent='שלב 1: שורות תקציביות';
-        document.getElementById('finSub').textContent='סקירה — כל השורות של החברה · עברו ובדקו, ואז המשיכו';
+        document.getElementById('ftag'+i).textContent=BL_SIMPLE.filter(b=>!b.st).length+' לטיפול';
+        document.getElementById('finTitle').textContent='שלב 1: שורה תקציבית';
+        document.getElementById('finSub').textContent='תקציב מול ביצוע וצפי — מאשר, או מתאם שיחה עם הלקוח';
         renderBLReview();
       },900));
       return;
@@ -1075,49 +1075,51 @@
     document.getElementById('ftag1').textContent='נבדק ✓';
     runFinStep(2);
   }
+  /* ===== שלב 1 — שורה תקציבית, פשוט =====
+     קטגוריה שהוגדרה למעקב ונפתחה לטיפול מציגה חמישה מספרים:
+     תקציב · ביצוע · נותר · צפי סוף חודש · חריגה צפויה.
+     שתי פעולות בלבד: מאשר | מתאם שיחה עם הלקוח. אין הודעה ללקוח מכאן. */
+  const BL_SIMPLE=[
+    {cat:'הכנסות ממכירות',        budget:200000, actual:185000, fcast:225000},
+    {cat:'קניות מלאי',             budget:80000,  actual:31000,  fcast:86000},
+    {cat:'שכר עבודה',              budget:60000,  actual:55000,  fcast:60000},
+    {cat:'ספקים',                  budget:45000,  actual:41200,  fcast:44000},
+    {cat:'שכירות ותפעול משרד',    budget:12000,  actual:12000,  fcast:12000},
+  ];
   function renderBLReview(){
     const box=document.getElementById('finFindings');
     box.classList.add('bl-mode');
-    const changed=BL_OK.filter(blChanged), pending=changed.filter(b=>!b.approved).length;
     const fmt=n=>n.toLocaleString();
+    const open=BL_SIMPLE.filter(b=>!b.st).length;
     box.innerHTML=`<div class="bl-top">
-        <span>השורות התקציביות — מצב לפני התפעול מול אחרי</span>
-        <span class="bl-top-acts">
-          <button class="ot-btn ghost sm" onclick="blOpenAdd()">+ שורה תקציבית לקטגוריה</button>
-          <button class="ot-btn done" ${pending?'disabled':''} onclick="blReviewGo()">${pending?'בצעו את השינויים ('+pending+') כדי להמשיך':'המשך לשלב הבא'}</button>
-        </span>
+        <span>שורות תקציביות שנפתחו לטיפול — קטגוריות שהוגדרו למעקב</span>
+        <button class="ot-btn done" ${open?'disabled':''} onclick="blReviewGo()">${open?'נותרו '+open+' שורות':'המשך לשלב הבא'}</button>
       </div>`+
-      BL_OK.map(b=>{
-        const rb=blRest(b,b.before), ra=blRest(b,b.after), ch=blChanged(b);
-        const inst=blInstOf(b);
+      BL_SIMPLE.map((b,i)=>{
+        const remain=b.budget-b.actual, over=Math.max(0,b.fcast-b.budget);
         const stat=(l,v,cls)=>`<div class="fb-s ${cls||''}"><span>${l}</span><b>${v}</b></div>`;
-        return `<div class="ffind bl-line ledger ${ch?(b.approved?'ba-ok':'ba-ch'):''}">
-        <div class="bl-c-name">
-          <b>${b.cat}</b>
-          ${ch?(b.approved?'<span class="bl-okchip">✓ בוצע</span>':'<span class="ba-chip">שינוי — ממתין</span>'):'<span class="ba-same">אין שינוי</span>'}
-          ${ch?`<i>לפני: ${fmt(rb)} · Δ ${fmt(Math.abs(ra-rb))}</i>`:''}
+        return `<div class="ffind bl-line ledger ${b.st?'ba-ok':(over?'ba-ch':'')}">
+        <div class="bl-c-name"><b>${b.cat}</b>
+          ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(over?`<span class="ba-chip">חריגה צפויה</span>`:'')}
         </div>
         <div class="fb-stats ledger">
-          ${stat('יעד חודשי',fmt(b.target))}
-          ${stat('בפועל',fmt(b.after.actual))}
-          ${stat('צבוע',b.after.future?fmt(b.after.future):'—')}
-          ${stat('יתרה בשורה',fmt(ra),ra<0?'neg':'')}
-          ${stat('המופע הקרוב',inst[0]?inst[0].d.slice(0,5):'—','first')}
+          ${stat('תקציב',fmt(b.budget))}
+          ${stat('ביצוע',fmt(b.actual))}
+          ${stat('נותר',fmt(remain),remain<0?'neg':'')}
+          ${stat('צפי סוף חודש',fmt(b.fcast))}
+          ${stat('חריגה צפויה',over?fmt(over):'—',over?'neg':'')}
         </div>
-        ${blTimelineHtml(b,inst)}
+        <span></span>
         <div class="ffind-act">
-          ${ch&&!b.approved?`<button class="ot-btn done sm" onclick="blApprove('${b.cat}')">בצע שינויים</button>`:''}
-          <button class="ot-btn ghost sm" onclick="blInstOpenPop('${b.cat}')">⚙ ניהול השורה (${inst.length})</button>
+          ${b.st?`<button class="ot-btn ghost sm" onclick="blUndo(${i})">ביטול</button>`
+               :`<button class="ot-btn done sm" onclick="blOk(${i})">מאשר</button>
+                 <button class="ot-btn ghost sm" onclick="blCall(${i})">מתאם שיחה עם הלקוח</button>`}
         </div>
       </div>`;}).join('');
   }
-  function blApprove(cat){
-    const b=BL_OK.find(x=>x.cat===cat); if(!b) return;
-    b.approved=true;
-    const n=blInstOf(b).length;
-    toast('השינויים בוצעו — '+(n?n+' שורות נבנו ב-Bizibox':'השורה אופסה ב-Bizibox'));
-    renderBLReview();
-  }
+  function blOk(i){ BL_SIMPLE[i].st='אושר'; toast('"'+BL_SIMPLE[i].cat+'" אושרה — השורה ממשיכה להתנהל'); renderBLReview(); }
+  function blCall(i){ BL_SIMPLE[i].st='שיחה תואמה'; toast('נשלח לינק תיאום שיחה ללקוח — '+BL_SIMPLE[i].cat); renderBLReview(); }
+  function blUndo(i){ BL_SIMPLE[i].st=null; renderBLReview(); }
     function blReviewGo(){
     const el=document.getElementById('fstep0');
     if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
