@@ -1082,27 +1082,63 @@
   /* השפה של מסך הפערים: יעד · בפועל · בתזרים · שורה תקציבית · נותר.
      היעד חוסם — בפועל + בתזרים + שורה תקציבית ≤ יעד, נותר ≥ 0 תמיד.
      inst = שורות הדמה של השורה התקציבית (המופעים על הציר). */
+  /* hist = מה קרה בפועל ביוני (חודש אחד אחורה) · pace = כמה מהיעד נכנס עד היום־בחודש, שעבר מול החודש */
   const BL_SIMPLE=[
-    {cat:'הכנסות ממכירות',      budget:200000, actual:172400, flow:20000, inst:[['28.07',3000],['29.07',2600],['31.07',2000]]},
-    {cat:'קניות מלאי',           budget:80000,  actual:31000,  flow:18000, inst:[['28.07',12000],['31.07',8000]]},
-    {cat:'שכר עבודה',            budget:60000,  actual:55000,  flow:0,     inst:[['31.07',5000]]},
-    {cat:'ספקים',                budget:45000,  actual:38200,  flow:3000,  inst:[['29.07',1800],['31.07',2000]]},
-    {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  flow:0,     inst:[]},
+    {cat:'הכנסות ממכירות',      budget:200000, actual:172400, flow:20000, inst:[['28.07',3000],['29.07',2600],['31.07',2000]],
+     hist:[['12.06',48000],['25.06',96000],['30.06',51000]], pacePrev:74, paceNow:86},
+    {cat:'קניות מלאי',           budget:80000,  actual:31000,  flow:18000, inst:[['28.07',12000],['31.07',8000]],
+     hist:[['05.06',22000],['18.06',31000],['28.06',24000]], pacePrev:69, paceNow:61},
+    {cat:'שכר עבודה',            budget:60000,  actual:55000,  flow:0,     inst:[['31.07',5000]],
+     hist:[['01.06',58000]], pacePrev:100, paceNow:92},
+    {cat:'ספקים',                budget:45000,  actual:38200,  flow:3000,  inst:[['29.07',1800],['31.07',2000]],
+     hist:[['10.06',14000],['20.06',15500],['30.06',13000]], pacePrev:66, paceNow:92},
+    {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  flow:0,     inst:[], hist:[['01.06',12000]], pacePrev:100, paceNow:100},
   ];
-  /* הציר ממוקד על מה שנשאר מהחודש: מהיום (27.07) עד 31.07 — המופעים מתפרסים */
-  function blSimpleTl(b){
-    if(!b.inst.length) return '<span></span>';
-    const fmt=n=>(n>=1000?(n%1000?(n/1000).toFixed(1):(n/1000))+'K':n);
-    const T=27, E=31.6;
-    const pos=d=>Math.round(8+(d-T)/(E-T)*88);
-    const dots=b.inst.map(x=>{const day=+x[0].slice(0,2);
-      return `<span class="bl-tl-dot" style="inset-inline-start:${pos(day)}%" title="${x[0]} · ${x[1].toLocaleString()} ₪"><i>${day}.7</i><em>${fmt(x[1])}</em></span>`}).join('');
-    return `<div class="bl-tl amts">
-      <span class="bl-tl-axis"></span>
-      <span class="bl-tl-today" style="inset-inline-start:8%" title="היום · 27.07"></span>
-      <span class="bl-tl-now">היום</span>
-      ${dots}
+  let _blEd=null;   /* {i,j} — מופע שנפתח לעריכה */
+  /* שני צירים פשוטים: יולי (מה מתוכנן, לחיץ לעריכה) ומעליו יוני באפור (מה קרה באמת).
+     ציר יולי מלא — 1 עד 31 — כדי שההשוואה ליוני תהיה עין מול עין. */
+  const kfmt=n=>(n>=1000?(n%1000?(n/1000).toFixed(1):(n/1000))+'K':n);
+  function blSimpleTl(b,i){
+    const pos=d=>Math.round(4+(d/31)*92);
+    const nextDay=b.inst.length?Math.min(...b.inst.map(x=>+x[0].slice(0,2))):null;
+    const july=b.inst.map((x,j)=>{const day=+x[0].slice(0,2);
+      return `<span class="bl-tl-dot ${day===nextDay?'next':''}" style="inset-inline-start:${pos(day)}%" title="לחיצה לעריכה — ${x[0]} · ${x[1].toLocaleString()} ₪" onclick="blEdOpen(${i},${j})"><i>${day}.7</i><em>${kfmt(x[1])}</em></span>`}).join('');
+    const june=(b.hist||[]).map(x=>{const day=+x[0].slice(0,2);
+      return `<span class="bl-tl-dot ghost" style="inset-inline-start:${pos(day)}%" title="${x[0]} · ${x[1].toLocaleString()} ₪"><i>${day}.6</i><em>${kfmt(x[1])}</em></span>`}).join('');
+    const slow=b.paceNow<b.pacePrev-5;
+    return `<div class="bl-2tl">
+      <div class="bl-pace ${slow?'slow':''}">${slow?'⚠ ':''}עד היום ביוני נכנסו <b>${b.pacePrev}%</b> מהיעד · החודש <b>${b.paceNow}%</b></div>
+      <div class="bl-tl amts ghostrow"><span class="bl-tl-cap">יוני · בפועל</span><span class="bl-tl-axis"></span>${june}</div>
+      <div class="bl-tl amts"><span class="bl-tl-cap now">יולי · מתוכנן</span><span class="bl-tl-axis"></span>
+        <span class="bl-tl-today" style="inset-inline-start:${pos(27)}%" title="היום · 27.07"></span>${july}</div>
+      ${blEdHtml(b,i)}
     </div>`;
+  }
+  /* עריכת מופע — פשוט: תאריך וסכום, בגבול היעד */
+  function blEdOpen(i,j){ _blEd=(_blEd&&_blEd.i===i&&_blEd.j===j)?null:{i,j}; renderBLReview(); }
+  function blEdHtml(b,i){
+    if(!_blEd||_blEd.i!==i) return '';
+    const x=b.inst[_blEd.j];
+    return `<div class="bl-ed" onclick="event.stopPropagation()">
+      <span>המופע של <b>${x[0]}</b>:</span>
+      יום <input id="blEdD" type="number" min="27" max="31" value="${+x[0].slice(0,2)}">
+      סכום <input id="blEdA" type="number" step="100" value="${x[1]}">
+      <button class="ot-btn done sm" onclick="blEdSave(${i})">שמירה</button>
+      <button class="ot-btn ghost sm" onclick="_blEd=null;renderBLReview()">ביטול</button>
+    </div>`;
+  }
+  function blEdSave(i){
+    const b=BL_SIMPLE[i], x=b.inst[_blEd.j];
+    const d=Math.min(31,Math.max(27,parseInt(document.getElementById('blEdD').value,10)||+x[0].slice(0,2)));
+    let a=Math.max(0,parseInt(document.getElementById('blEdA').value,10)||x[1]);
+    const others=b.inst.reduce((s,y,k)=>s+(k===_blEd.j?0:y[1]),0);
+    const cap=b.budget-b.actual-b.flow-others;    /* היעד חוסם */
+    if(a>cap){ a=cap; toast('הסכום נחתך ל-'+cap.toLocaleString()+' ₪ — היעד חוסם'); }
+    x[0]=String(d).padStart(2,'0')+'.07'; x[1]=a;
+    b.inst.sort((p,q)=>+p[0].slice(0,2)-+q[0].slice(0,2));
+    b.st='הפריסה תוקנה'; _blEd=null;
+    toast('המופע עודכן — '+x[0]+' · '+a.toLocaleString()+' ₪');
+    renderBLReview();
   }
   function renderBLReview(){
     const box=document.getElementById('finFindings');
@@ -1138,7 +1174,7 @@
             </div>
           </div>
         </div>
-        ${blSimpleTl(b)}
+        ${blSimpleTl(b,i)}
         <div class="ffind-act">
           ${b.st?`<button class="ot-btn ghost sm" onclick="blUndo(${i})">ביטול</button>`
                :`<button class="ot-btn done sm" onclick="blOk(${i})">מאשר</button>
