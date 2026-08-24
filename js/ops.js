@@ -685,8 +685,10 @@
   }
   /* ===== דוח תקציבי: חסרים בתזרימים / חריגות בתקציב — מהותיים בלבד ===== */
   const BR_DATA=[
-    {kind:'miss', cat:'ביטוחים',        typical:24000, actual:8000,  future:0},
-    {kind:'miss', cat:'מיסים ואגרות',   typical:42000, actual:14000, future:10000},
+    {kind:'miss', cat:'ביטוחים',        typical:24000, actual:8000,  future:0,
+     hist:[['08.06',8200],['15.06',7900],['28.06',7700]], tx:[['10.07',8000]]},
+    {kind:'miss', cat:'מיסים ואגרות',   typical:42000, actual:14000, future:10000,
+     hist:[['15.06',21000],['30.06',20500]], tx:[['15.07',14000],['30.07',10000,'צבוע']]},
     {kind:'over', cat:'שיווק ופרסום',   budget:15000,  actual:22400, fore:0,
       tx:[{d:'03.07',t:'קמפיין גוגל — יולי',a:'6,200'},{d:'09.07',t:'פייסבוק אדס',a:'5,400'},{d:'15.07',t:'הדפסות ושילוט',a:'4,300'},{d:'22.07',t:'משרד יח"צ — ריטיינר',a:'6,500'}]},
     {kind:'over', cat:'רכב ודלק',       budget:8000,   actual:11300, fore:0,
@@ -716,14 +718,35 @@
 
             + (x.gn?`<div class="br-gnote">${x.gn}</div>`:'')
           : `<button class="gt-chip2 gt-set2" onclick="brGtOpen('${x.cat}')">+ הגדרת הפער</button>`;
+      /* אותה שפה כמו מסך הפערים: פס מוערם + חודש שעבר מול החודש */
+      const bar=`<div class="blx wide" style="margin:2px 0 6px">
+          <span class="blx-track">
+            <i class="sg act" style="width:${(x.actual/x.typical*100).toFixed(1)}%"></i>
+            ${x.future?`<i class="sg flow" style="width:${(x.future/x.typical*100).toFixed(1)}%"></i>`:''}
+          </span>
+          <div class="blx-nums">
+            <span class="na">בפועל <b>${fmt(x.actual)}</b></span>
+            ${x.future?`<span class="nf">בתזרים <b>${fmt(x.future)}</b></span>`:''}
+            <span class="nr">פער <b>${fmt(gap)}</b></span>
+            <span style="margin-inline-start:auto">יעד (לפי היסטוריה) <b>${fmt(x.typical)}</b></span>
+          </div>
+        </div>`;
+      const rows2=Math.max((x.hist||[]).length,(x.tx||[]).length);
+      let cmp='';
+      for(let r=0;r<rows2;r++){const l=(x.hist||[])[r],c=(x.tx||[])[r];
+        cmp+=`<div class="blc-r">
+          <span class="c1">${l?`<i>${l[0]}</i><b>${fmt(l[1])}</b>`:''}</span>
+          <span class="c2 ${c&&c[2]?'plan':''}">${c?`<i>${c[0]}</i><b>${fmt(c[1])}</b>${c[2]?`<em>${c[2]}</em>`:''}`:''}</span>
+        </div>`;}
+      const sumH=(x.hist||[]).reduce((s,y)=>s+y[1],0), sumT=(x.tx||[]).reduce((s,y)=>s+y[1],0);
+      const table=`<div class="blc" style="margin-bottom:8px">
+        <div class="blc-h"><span class="c1">חודש שעבר · יוני</span><span class="c2">החודש · יולי</span></div>
+        ${cmp}
+        <div class="blc-r sum"><span class="c1"><i>סה״כ</i><b>${fmt(sumH)}</b></span><span class="c2"><i>סה״כ</i><b>${fmt(sumT)}</b></span></div>
+      </div>`;
       return `<div class="br-row${mat&&!x.gt?' need':''}">
         <div class="br-h"><b>${x.cat}</b></div>
-        <div class="fb-stats" style="margin:0 0 8px">
-          ${stat('יעד (לפי היסטוריה)',fmt(x.typical))}
-          ${stat('בפועל',fmt(x.actual))}
-          ${stat('צבוע',x.future?fmt(x.future):'—')}
-          ${stat('חסר',fmt(gap),gap>0?'neg':'')}
-        </div>
+        ${bar}${table}
         <div class="br-acts">${acts}</div>
       </div>`;}).join('');
     const overRows=overAll.map(x=>{
