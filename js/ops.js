@@ -1079,37 +1079,55 @@
      קטגוריה שהוגדרה למעקב ונפתחה לטיפול מציגה חמישה מספרים:
      תקציב · ביצוע · נותר · צפי סוף חודש · חריגה צפויה.
      שתי פעולות בלבד: מאשר | מתאם שיחה עם הלקוח. אין הודעה ללקוח מכאן. */
+  /* היעד חוסם: הצבוע קדימה לעולם לא עובר את התקציב — נותר ≥ 0 תמיד */
   const BL_SIMPLE=[
-    {cat:'הכנסות ממכירות',        budget:200000, actual:185000, fcast:225000},
-    {cat:'קניות מלאי',             budget:80000,  actual:31000,  fcast:86000},
-    {cat:'שכר עבודה',              budget:60000,  actual:55000,  fcast:60000},
-    {cat:'ספקים',                  budget:45000,  actual:41200,  fcast:44000},
-    {cat:'שכירות ותפעול משרד',    budget:12000,  actual:12000,  fcast:12000},
+    {cat:'הכנסות ממכירות',      budget:200000, actual:172400, inst:[['28.07',10000],['29.07',9000],['30.07',5000],['31.07',3600]]},
+    {cat:'קניות מלאי',           budget:80000,  actual:31000,  inst:[['28.07',20000],['31.07',18000]]},
+    {cat:'שכר עבודה',            budget:60000,  actual:55000,  inst:[['31.07',5000]]},
+    {cat:'ספקים',                budget:45000,  actual:38200,  inst:[['29.07',3000],['31.07',3800]]},
+    {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  inst:[]},
   ];
+  /* הציר ממוקד על מה שנשאר מהחודש: מהיום (27.07) עד 31.07 — המופעים מתפרסים */
+  function blSimpleTl(b){
+    if(!b.inst.length) return '<span></span>';
+    const fmt=n=>(n>=1000?(n%1000?(n/1000).toFixed(1):(n/1000))+'K':n);
+    const T=27, E=31.6;
+    const pos=d=>Math.round(8+(d-T)/(E-T)*88);
+    const dots=b.inst.map(x=>{const day=+x[0].slice(0,2);
+      return `<span class="bl-tl-dot" style="inset-inline-start:${pos(day)}%" title="${x[0]} · ${x[1].toLocaleString()} ₪"><i>${day}.7</i><em>${fmt(x[1])}</em></span>`}).join('');
+    return `<div class="bl-tl amts">
+      <span class="bl-tl-axis"></span>
+      <span class="bl-tl-today" style="inset-inline-start:8%" title="היום · 27.07"></span>
+      <span class="bl-tl-now">היום</span>
+      ${dots}
+    </div>`;
+  }
   function renderBLReview(){
     const box=document.getElementById('finFindings');
     box.classList.add('bl-mode');
     const fmt=n=>n.toLocaleString();
     const open=BL_SIMPLE.filter(b=>!b.st).length;
     box.innerHTML=`<div class="bl-top">
-        <span>שורות תקציביות שנפתחו לטיפול — קטגוריות שהוגדרו למעקב</span>
+        <span><b>${BL_SIMPLE.length} שורות תקציביות</b> · ${open?open+' לטיפול':'כולן טופלו ✓'} — קטגוריות שהוגדרו למעקב</span>
         <button class="ot-btn done" ${open?'disabled':''} onclick="blReviewGo()">${open?'נותרו '+open+' שורות':'המשך לשלב הבא'}</button>
       </div>`+
       BL_SIMPLE.map((b,i)=>{
-        const remain=b.budget-b.actual, over=Math.max(0,b.fcast-b.budget);
+        const painted=b.inst.reduce((s,x)=>s+x[1],0);
+        const remain=b.budget-b.actual-painted;   /* היעד חוסם — לא יורד מתחת ל-0 */
+        const full=remain===0;
         const stat=(l,v,cls)=>`<div class="fb-s ${cls||''}"><span>${l}</span><b>${v}</b></div>`;
-        return `<div class="ffind bl-line ledger ${b.st?'ba-ok':(over?'ba-ch':'')}">
+        return `<div class="ffind bl-line ledger ${b.st?'ba-ok':(full?'':'ba-ch')}">
         <div class="bl-c-name"><b>${b.cat}</b>
-          ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(over?`<span class="ba-chip">חריגה צפויה</span>`:'')}
+          ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(full?`<span class="ba-same">✓ הכל צבוע עד היעד</span>`:`<span class="ba-chip">נותר ${fmt(remain)} ₪ לצביעה</span>`)}
         </div>
         <div class="fb-stats ledger">
-          ${stat('תקציב',fmt(b.budget))}
+          ${stat('תקציב (היעד)',fmt(b.budget))}
           ${stat('ביצוע',fmt(b.actual))}
-          ${stat('נותר',fmt(remain),remain<0?'neg':'')}
-          ${stat('צפי סוף חודש',fmt(b.fcast))}
-          ${stat('חריגה צפויה',over?fmt(over):'—',over?'neg':'')}
+          ${stat('צבוע קדימה',painted?fmt(painted):'—')}
+          ${stat('נותר עד היעד',fmt(remain),remain?'':'ok')}
+          ${stat('מופעים קדימה',b.inst.length||'—')}
         </div>
-        <span></span>
+        ${blSimpleTl(b)}
         <div class="ffind-act">
           ${b.st?`<button class="ot-btn ghost sm" onclick="blUndo(${i})">ביטול</button>`
                :`<button class="ot-btn done sm" onclick="blOk(${i})">מאשר</button>
