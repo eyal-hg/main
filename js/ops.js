@@ -1079,13 +1079,15 @@
      קטגוריה שהוגדרה למעקב ונפתחה לטיפול מציגה חמישה מספרים:
      תקציב · ביצוע · נותר · צפי סוף חודש · חריגה צפויה.
      שתי פעולות בלבד: מאשר | מתאם שיחה עם הלקוח. אין הודעה ללקוח מכאן. */
-  /* היעד חוסם: הצבוע קדימה לעולם לא עובר את התקציב — נותר ≥ 0 תמיד */
+  /* השפה של מסך הפערים: יעד · בפועל · בתזרים · שורה תקציבית · נותר.
+     היעד חוסם — בפועל + בתזרים + שורה תקציבית ≤ יעד, נותר ≥ 0 תמיד.
+     inst = שורות הדמה של השורה התקציבית (המופעים על הציר). */
   const BL_SIMPLE=[
-    {cat:'הכנסות ממכירות',      budget:200000, actual:172400, inst:[['28.07',10000],['29.07',9000],['30.07',5000],['31.07',3600]]},
-    {cat:'קניות מלאי',           budget:80000,  actual:31000,  inst:[['28.07',20000],['31.07',18000]]},
-    {cat:'שכר עבודה',            budget:60000,  actual:55000,  inst:[['31.07',5000]]},
-    {cat:'ספקים',                budget:45000,  actual:38200,  inst:[['29.07',3000],['31.07',3800]]},
-    {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  inst:[]},
+    {cat:'הכנסות ממכירות',      budget:200000, actual:172400, flow:20000, inst:[['28.07',3000],['29.07',2600],['31.07',2000]]},
+    {cat:'קניות מלאי',           budget:80000,  actual:31000,  flow:18000, inst:[['28.07',12000],['31.07',8000]]},
+    {cat:'שכר עבודה',            budget:60000,  actual:55000,  flow:0,     inst:[['31.07',5000]]},
+    {cat:'ספקים',                budget:45000,  actual:38200,  flow:3000,  inst:[['29.07',1800],['31.07',2000]]},
+    {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  flow:0,     inst:[]},
   ];
   /* הציר ממוקד על מה שנשאר מהחודש: מהיום (27.07) עד 31.07 — המופעים מתפרסים */
   function blSimpleTl(b){
@@ -1112,20 +1114,29 @@
         <button class="ot-btn done" ${open?'disabled':''} onclick="blReviewGo()">${open?'נותרו '+open+' שורות':'המשך לשלב הבא'}</button>
       </div>`+
       BL_SIMPLE.map((b,i)=>{
-        const painted=b.inst.reduce((s,x)=>s+x[1],0);
-        const remain=b.budget-b.actual-painted;   /* היעד חוסם — לא יורד מתחת ל-0 */
+        const bl=b.inst.reduce((s,x)=>s+x[1],0);
+        const remain=b.budget-b.actual-b.flow-bl;   /* היעד חוסם — לא יורד מתחת ל-0 */
         const full=remain===0;
         const stat=(l,v,cls)=>`<div class="fb-s ${cls||''}"><span>${l}</span><b>${v}</b></div>`;
         return `<div class="ffind bl-line ledger ${b.st?'ba-ok':(full?'':'ba-ch')}">
         <div class="bl-c-name"><b>${b.cat}</b>
-          ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(full?`<span class="ba-same">✓ הכל צבוע עד היעד</span>`:`<span class="ba-chip">נותר ${fmt(remain)} ₪ לצביעה</span>`)}
+          ${b.st?`<span class="bl-okchip">✓ ${b.st}</span>`:(full?`<span class="ba-same">✓ הפער סגור</span>`:`<span class="ba-chip">פער חשוף — ${fmt(remain)} ₪</span>`)}
         </div>
-        <div class="fb-stats ledger">
-          ${stat('תקציב (היעד)',fmt(b.budget))}
-          ${stat('ביצוע',fmt(b.actual))}
-          ${stat('צבוע קדימה',painted?fmt(painted):'—')}
-          ${stat('נותר עד היעד',fmt(remain),remain?'':'ok')}
-          ${stat('מופעים קדימה',b.inst.length||'—')}
+        <div class="blx">
+          <div class="blx-t"><span>יעד</span><b>${fmt(b.budget)}</b></div>
+          <div class="blx-m">
+            <span class="blx-track">
+              <i class="sg act" style="width:${(b.actual/b.budget*100).toFixed(1)}%"></i>
+              <i class="sg flow" style="width:${(b.flow/b.budget*100).toFixed(1)}%"></i>
+              ${bl?`<i class="sg blrow" style="width:${(bl/b.budget*100).toFixed(1)}%"></i>`:''}
+            </span>
+            <div class="blx-nums">
+              <span class="na">בפועל <b>${fmt(b.actual)}</b></span>
+              ${b.flow?`<span class="nf">בתזרים <b>${fmt(b.flow)}</b></span>`:''}
+              ${bl?`<span class="nb">שורה תקציבית <b>${fmt(bl)}</b></span>`:''}
+              ${remain?`<span class="nr">פער <b>${fmt(remain)}</b></span>`:''}
+            </div>
+          </div>
         </div>
         ${blSimpleTl(b)}
         <div class="ffind-act">
