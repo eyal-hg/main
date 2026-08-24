@@ -184,8 +184,8 @@
   const FIN_STEPS=[
     'בדיקת שורה תקציבית',
     'בדיקת דוח חודשי',
-    'בדיקת דוח תקציבי',
-    'חומר מהלקוח',
+    'דוח תקציבי וחומר מהלקוח',
+    'בדיקת כפילויות',
     'שינויים מהותיים בתזרים',
   ];
   // findings from the Bizibox validation — each maps to the step that found it.
@@ -354,11 +354,11 @@
     if(i===2){
       // דוח תקציבי: חסרים בתזרימים מול חריגות בתקציב — רק קטגוריות מהותיות
       finTimers.push(setTimeout(()=>{
-        const nOver=BR_DATA.filter(x=>x.kind==='over'&&brMatOver(x)).length, nMiss=BR_DATA.filter(x=>x.kind==='miss'&&brMat(x)).length;
+        const nOver=BR_DATA.filter(x=>x.kind==='over'&&brMatOver(x)).length, nMiss=BR_DATA.filter(x=>x.kind==='miss'&&brMat(x)).length, due=matDue().length;
         el.className='fin-step warn';el.querySelector('.fs-ico').innerHTML='!';
-        document.getElementById('ftag'+i).textContent=nOver+' חריגות · '+nMiss+' חסרים';
-        document.getElementById('finTitle').textContent='שלב 3: בדיקת דוח תקציבי';
-        document.getElementById('finSub').textContent='קטגוריות מהותיות בלבד · בפועל מול חזוי מול תקציב';
+        document.getElementById('ftag'+i).textContent=nOver+' חריגות · '+nMiss+' חסרים · '+due+' חומר';
+        document.getElementById('finTitle').textContent='שלב 3: דוח תקציבי וחומר מהלקוח';
+        document.getElementById('finSub').textContent='קטגוריות מהותיות · והחומר שעוד לא הגיע — באותו מקום';
         renderBReport();
       },900));
       return;
@@ -390,15 +390,15 @@
       return;
     }
     if(i===3){
-      // חומר מהלקוח: סגירת יום על כל פריט שעבר את יום החומר שלו
+      // כפילויות: אותו גורם בסבירות גבוהה — שם דומה, אותו כיוון, סכום ±100, תאריך עד 3 ימים
       finTimers.push(setTimeout(()=>{
-        const due=matDue();
-        el.className='fin-step '+(due.length?'warn':'done');
-        el.querySelector('.fs-ico').innerHTML=due.length?'!':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
-        document.getElementById('ftag'+i).textContent=due.length?due.length+' ממתינים':'אין חומר פתוח';
-        document.getElementById('finTitle').textContent='שלב 4: חומר מהלקוח';
-        document.getElementById('finSub').textContent='כל פריט שעבר את יום החומר שלו — מה קרה איתו היום';
-        renderMat();
+        const open=DUPS.filter(d=>!d.st).length;
+        el.className='fin-step '+(open?'warn':'done');
+        el.querySelector('.fs-ico').innerHTML=open?'!':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+        document.getElementById('ftag'+i).textContent=open?open+' חשודות':'אין כפילויות';
+        document.getElementById('finTitle').textContent='שלב 4: בדיקת כפילויות';
+        document.getElementById('finSub').textContent='אותו גורם בסבירות גבוהה — לא רק שם זהה';
+        renderDups();
       },900));
       return;
     }
@@ -681,7 +681,8 @@
   }
   /* פערים בדוח התקציבי שעדיין ללא סוג — נספרים לאותו גייט של התקציב */
   function brUntyped(){
-    return BR_DATA.filter(x=>x.kind==='miss'&&!BL_OK.some(b=>b.cat===x.cat)&&brMat(x)&&!x.gt);
+    return BR_DATA.filter(x=>(x.kind==='miss'&&!BL_OK.some(b=>b.cat===x.cat)&&brMat(x)&&!x.gt)
+                        ||(x.kind==='over'&&brMatOver(x)&&!x.gt));
   }
   /* ===== דוח תקציבי: חסרים בתזרימים / חריגות בתקציב — מהותיים בלבד ===== */
   const BR_DATA=[
@@ -751,13 +752,15 @@
       </div>`;}).join('');
     const overRows=overAll.map(x=>{
       const pct=Math.round(x.actual/x.budget*100);
-      return `<div class="br-row">
+      return `<div class="br-row${x.gt?'':' need'}">
         <div class="br-h"><b>${x.cat}</b><span class="br-nums">בפועל ${fmt(x.actual)} · תקציב ${fmt(x.budget)}</span></div>
         <div class="br-bar over" onclick="brTx('${x.cat}')" title="לחיצה — התנועות של הקטגוריה">
           <i class="red" style="width:100%"></i><em style="inset-inline-start:${Math.round(x.budget/x.actual*100)}%" title="גבול התקציב"></em>
         </div>
         <div class="br-acts">
           <span class="br-pct neg">${pct}% מהתקציב</span>
+          ${x.gt?`<button class="gt-chip2 gt-${x.gt}" onclick="brGtOpen('${x.cat}')">${GAP_TYPES[x.gt].chip} <i>✎</i></button>`
+               :`<button class="gt-chip2 gt-set2" onclick="brGtOpen('${x.cat}')">+ הגדרת הפער</button>`}
           <button class="ot-btn ghost sm" onclick="brTx('${x.cat}')">תנועות</button>
           <button class="ot-btn ghost sm" onclick="brBudget('${x.cat}')">שינוי תקציב</button>
           <button class="ot-btn sm" onclick="brMsg('${x.cat}','over')">שליחת הודעה ללקוח</button>
@@ -778,7 +781,8 @@
         <div><div class="pay-grp">🔴 חריגות בתקציב <em>${overAll.length}</em></div>${overRows||'<div class="ops-empty" style="padding:14px">אין חריגות מעל הסף</div>'}
           ${overSub.length?`<div class="br-sub-foot">${overSub.length} מתחת לסף · <b>${fmt(overSub.reduce((s,x)=>s+brOverOf(x),0))} ₪</b>
             <span>${overSub.map(x=>x.cat).join(' · ')}</span></div>`:''}</div>
-      </div>`;
+      </div>
+      ${matHtml()}`;
   }
   function brOpenLine(cat){
     const x=BR_DATA.find(v=>v.cat===cat&&v.kind==='miss'); if(!x) return;
@@ -802,6 +806,8 @@
     toast('הגדירו את הפערים במעקב ופערים — ואז "סיום תפעול" יחזיר אתכם לשלב הבדיקה');
   }
   function brGo(){
+    const due=matDue();
+    if(due.length){ toast(due.length+' פריטי חומר עוד ללא התייחסות היום'); return; }
     const bu=brUntyped();
     if(bu.length){
       toast('נותרו '+bu.length+' חסרים ללא הגדרה');
@@ -824,6 +830,62 @@
     if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
     document.getElementById('ftag2').textContent='נבדק ✓';
     runFinStep(3);
+  }
+  /* ===== שלב 4 — כפילויות =====
+     המפתח: "אותו גורם בסבירות גבוהה" — שם מנורמל (בלי בע"מ, ניקוד, מקפים,
+     רווחים, סדר מילים), אותו כיוון, סכום זהה עד ±100 ₪.
+     אותו תאריך ⇒ חשד גבוה. עד 3 ימים ⇒ לבדיקה. */
+  const DUPS=[
+    {lvl:'high', why:'שם דומה · סכום זהה · אותו תאריך',
+     a:{n:'לדובק הפצה בע״מ', d:'28.07', amt:1381, dir:'exp', src:'הזנה ידנית'},
+     b:{n:'לדובק הפצה',       d:'28.07', amt:1381, dir:'exp', src:'Bizibox'}},
+    {lvl:'high', why:'שם דומה (סדר מילים) · סכום זהה · אותו תאריך',
+     a:{n:'א. ובניו בע״מ',    d:'25.07', amt:4800, dir:'exp', src:'Bizibox'},
+     b:{n:'ובניו א׳',          d:'25.07', amt:4800, dir:'exp', src:'הזנה ידנית'}},
+    {lvl:'maybe', why:'שם דומה · הפרש 60 ₪ · הפרש יומיים',
+     a:{n:'א.מ קירור ומיזוג',      d:'15.07', amt:3660, dir:'exp', src:'Bizibox'},
+     b:{n:'אמ קירור-מיזוג בע"מ',   d:'17.07', amt:3720, dir:'exp', src:'הזנה ידנית'}},
+    {lvl:'maybe', why:'שם דומה · סכום זהה · הפרש יומיים',
+     a:{n:'מרכז הבנייה',          d:'12.07', amt:18600, dir:'inc', src:'צפי'},
+     b:{n:'מרכז הבניה בע"מ',      d:'14.07', amt:18600, dir:'inc', src:'Bizibox'}},
+  ];
+  function renderDups(){
+    const box=document.getElementById('finFindings');
+    box.classList.add('bl-mode');
+    const fmt=n=>n.toLocaleString();
+    const open=DUPS.filter(d=>!d.st).length;
+    const tx=(x,drop)=>`<div class="dup-tx ${drop?'drop':''}">
+        <b>${x.n}</b><span class="num">${x.d}</span>
+        <span class="num ${x.dir==='inc'?'inc':''}">${fmt(x.amt)} ₪${x.dir==='inc'?'+':'-'}</span>
+        <i>${x.src}</i>${drop?'<em>תימחק</em>':''}</div>`;
+    box.innerHTML=`<div class="bl-top">
+        <span>כפילויות — <b>אותו גורם בסבירות גבוהה</b>: שם דומה (בלי בע״מ, מקפים, סדר מילים) · אותו כיוון · סכום עד ±100 ₪ · תאריך עד 3 ימים</span>
+        <button class="ot-btn done" ${open?'disabled':''} onclick="dupGo()">${open?'נותרו '+open+' חשודות':'הבדיקה הושלמה — סיום'}</button>
+      </div>`+
+      DUPS.map((d,i)=>`<div class="ffind bl-line simple ${d.st?'ba-ok':(d.lvl==='high'?'ba-ch':'')}">
+        <div class="bls-head">
+          <div class="bl-c-name"><b>${d.a.n}</b>
+            ${d.st?`<span class="bl-okchip">✓ ${d.st}</span>`
+                 :`<span class="${d.lvl==='high'?'ba-chip':'dup-maybe'}">${d.lvl==='high'?'חשד גבוה — אותו תאריך':'כפילות אפשרית'}</span>`}
+          </div>
+          <span class="dup-why">${d.why}</span>
+          <div class="ffind-act">
+            ${d.st?`<button class="ot-btn ghost sm" onclick="DUPS[${i}].st=null;renderDups()">ביטול</button>`
+                 :`<button class="ot-btn done sm" onclick="dupDel(${i})">מחיקת הכפולה</button>
+                   <button class="ot-btn ghost sm" onclick="dupKeep(${i})">לא כפילות</button>`}
+          </div>
+        </div>
+        <div class="dup-pair">${tx(d.a)}${tx(d.b,!d.st)}</div>
+      </div>`).join('');
+  }
+  function dupDel(i){ DUPS[i].st='הכפולה נמחקה'; toast('נמחקה: '+DUPS[i].b.n+' · '+DUPS[i].b.d); renderDups(); }
+  function dupKeep(i){ DUPS[i].st='לא כפילות — שתי תנועות אמיתיות'; renderDups(); }
+  function dupGo(){
+    if(DUPS.some(d=>!d.st)) return;
+    const el=document.getElementById('fstep3');
+    if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
+    document.getElementById('ftag3').textContent='נבדק ✓';
+    runFinStep(4);
   }
   /* תנועות הקטגוריה — שינוי קטגוריה פר תנועה בתוך הפופאפ */
   function brTx(cat){
@@ -865,7 +927,9 @@
     const x=BR_DATA.find(v=>v.cat===cat); if(!x) return;
     BRGT={cat, k:x.gt||'built', n:x.gn||''};
     document.getElementById('brGtTitle').textContent=cat;
-    document.getElementById('brGtSub').textContent='הגדרת הפער · חסר '+brGapOf(x).toLocaleString()+' ₪ מתוך יעד '+x.typical.toLocaleString()+' ₪ (לפי היסטוריה)';
+    document.getElementById('brGtSub').textContent=x.kind==='over'
+    ?'הגדרת הפער · חריגה של '+brOverOf(x).toLocaleString()+' ₪ מעל תקציב '+x.budget.toLocaleString()+' ₪'
+    :'הגדרת הפער · חסר '+brGapOf(x).toLocaleString()+' ₪ מתוך יעד '+x.typical.toLocaleString()+' ₪ (לפי היסטוריה)';
     brGtRender();
     document.getElementById('brGtOv').classList.add('show');
   }
@@ -925,9 +989,8 @@
   const matDue=()=>MAT_ITEMS.filter(m=>!m.st&&matLate()!=null);
   let MAT_OPEN=null;
   function matRender(){ renderMat(); }
-  function renderMat(){
-    const box=document.getElementById('finFindings');
-    box.classList.add('bl-mode');
+  function renderMat(){ renderBReport2(); }
+  function matHtml(){
     const late=matLate(), days=matDays().join(' · ');
     const done=MAT_ITEMS.filter(m=>m.st).length, due=matDue().length;
     const row=(m,ix)=>{
@@ -961,16 +1024,15 @@
         ${doneTag}${form}
         <details class="mat-hist"><summary>היסטוריית הרדיפה</summary>${m.hist.map(h=>`<div>${h}</div>`).join('')}</details>
       </div>`;};
-    box.innerHTML=`<div class="bl-top">
-        <span>חומר מהלקוח — ימי החומר של החברה: <b>${days}</b> בחודש
-          <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="showTab('coset')">⚙ שינוי</button></span>
-        <button class="ot-btn done" onclick="matGo()">הבדיקה הושלמה — סיום</button>
-      </div>
+    return `<div class="pay-grp" style="margin-top:16px">🟠 חומר מהלקוח <em>${matDue().length}</em>
+        <span class="br-rule">ימי החומר של החברה: <b>${days}</b> בחודש
+        <button class="chk-ruleslink" style="border:none;background:none;cursor:pointer" onclick="showTab('coset')">⚙ שינוי</button></span></div>
       ${late==null
         ? `<div class="mat-quiet">✓ יום החומר הבא עוד לא הגיע — אין מה לרדוף היום. הפריטים הפתוחים ממתינים בשקט.</div>`
         : `<div class="mat-note">עברו <b>${late} ימים</b> מיום החומר האחרון. ${due?`<b>${due}</b> פריטים עוד לא קיבלו התייחסות היום.`:'כל הפריטים קיבלו התייחסות היום ✓'}</div>`}
       <div class="mat-list">${MAT_ITEMS.map(row).join('')}</div>`;
   }
+  function renderBReport2(){ renderBReport(); }
   function matOpen(ix,mode){ MAT_OPEN={ix,mode}; renderMat(); setTimeout(()=>{const e=document.getElementById('matInp'); if(e)e.focus();},0); }
   function matCancel(){ MAT_OPEN=null; renderMat(); }
   function matSet(ix,kind){
@@ -989,14 +1051,7 @@
   }
   function matUndo(ix){ const m=MAT_ITEMS[ix]; if(m.st&&m.st.icon==='↻')m.pings--; m.st=null; renderMat(); }
   function matEsc(ix){ toast('"'+MAT_ITEMS[ix].cat+'" הועלה ליועץ — יופיע אצלו כחיכוך מול הלקוח'); }
-  function matGo(){
-    const due=matDue();
-    if(due.length){ toast(due.length+' פריטים עוד ללא התייחסות היום'); return; }
-    const el=document.getElementById('fstep3');
-    if(el){el.className='fin-step done';el.querySelector('.fs-ico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';}
-    document.getElementById('ftag3').textContent='נסגר ✓';
-    runFinStep(4);
-  }
+
 
   /* ===== שלב 5: שינויים מהותיים בתזרים =====
      נשען על לוג השינויים (docs/FLOW_CHANGE_LOG_SPEC.md): הדלתא היא עקומה,
