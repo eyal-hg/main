@@ -458,6 +458,16 @@ if(IS_CLI)document.body.classList.add('is-client');</script>
 </div>
 <div id="toast"></div>
 
+<style>
+.ble-managed{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#F6F9FC;border:1px solid #E1EAF2;border-radius:10px;margin-bottom:12px;cursor:pointer}
+.ble-managed input{display:none}
+.ble-managed .sw{width:36px;height:21px;border-radius:11px;background:#C9D5DF;position:relative;flex:none;margin-top:1px;transition:background .15s}
+.ble-managed .sw::after{content:"";position:absolute;top:3px;right:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.ble-managed input:checked+.sw{background:#1668A0}
+.ble-managed input:checked+.sw::after{transform:translateX(-15px)}
+.ble-managed b{font-size:13px;color:#12263A;display:block}
+.ble-managed small{font-size:11.5px;color:#7A8898;display:block;margin-top:2px}
+</style>
 <script>
 const nf=new Intl.NumberFormat('he-IL');
 /* מספר עם סימן: המינוס תמיד בצד שמאל, וסימן ה-₪ מיד אחריו.
@@ -632,6 +642,7 @@ let BLE=null;
 function blOpen(gi,ri){
   const r=GROUPS[gi].rows[ri];
   BLE={gi,ri, mode:r.blMode||'dates', wd:(r.blWd!=null?r.blWd:null), days:(r.blDays||[]).slice(),
+       managed:(r.blManaged!==false),   /* מנוהלת = עולה לבדיקת התפעול; ברירת מחדל: כן */
        w:Object.assign({},r.blW||{}),      // משקל פר תאריך באחוזים
        acc:Object.assign({mz295:100,mz139:0,pl112:0}, r.blAcc||{})};   // חלוקה בין חשבונות
   if(BLE.days.length&&!BLE.days.every(d=>BLE.w[d]!=null)) blEven();
@@ -687,7 +698,9 @@ function blRender(focusless){
   const r=GROUPS[BLE.gi].rows[BLE.ri], g=gapOf(r);
   const DAYS=[1,5,10,15,20,25,28];
   const MODES=[['daily','כל יום'],['weekly','פעם בשבוע'],['dates','לפי תאריכים']];
-  let body=`<div class="ble-fwd">הפיזור חל מהחודש הזה ולכל החודשים קדימה — עד שישונה כאן.</div><div class="ble-modes">${MODES.map(([k,l])=>`<button class="${BLE.mode===k?'on':''}" onclick="blMode('${k}')">${l}</button>`).join('')}</div>`;
+  let body=`<label class="ble-managed"><input type="checkbox" ${BLE.managed?'checked':''} onchange="BLE.managed=this.checked;blRender()"><span class="sw"></span>
+      <span><b>שורה מנוהלת</b><small>${BLE.managed?'תעלה לבדיקת "שורה תקציבית" בסיום התפעול — עם המספרים והמופעים':'לא תופיע בבדיקות התפעול — רק כאן, במסך הפערים'}</small></span></label>
+    <div class="ble-fwd">הפיזור חל מהחודש הזה ולכל החודשים קדימה — עד שישונה כאן.</div><div class="ble-modes">${MODES.map(([k,l])=>`<button class="${BLE.mode===k?'on':''}" onclick="blMode('${k}')">${l}</button>`).join('')}</div>`;
   if(BLE.mode==='daily'){
     body+=`<div class="ble-sum">הפער <b>${nf.format(g)} ₪</b> יתפזר שווה על <b>כל יום עסקים</b> שנותר — <b>${nf.format(Math.round(g/18))} ₪</b> ליום (נותרו 18).</div>`;
   }else if(BLE.mode==='weekly'){
@@ -730,7 +743,7 @@ function blSave(){
   const r=GROUPS[BLE.gi].rows[BLE.ri];
   if(BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
   else{
-    r.blMode=BLE.mode; r.blAcc=Object.assign({},BLE.acc);
+    r.blMode=BLE.mode; r.blAcc=Object.assign({},BLE.acc); r.blManaged=BLE.managed;
     if(BLE.mode==='weekly') r.blWd=(BLE.wd==null?0:BLE.wd);
     if(BLE.mode==='dates'){ r.blDays=BLE.days.slice(); r.blW=Object.assign({},BLE.w); }
     if(!r.bl) r.bl=rawGap(r);
