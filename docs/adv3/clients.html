@@ -50,11 +50,11 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .alerts a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
 .alerts a:hover{border-color:#fff}
 .alerts .c{color:#7FA6C2;margin:0 2px}
-.strip .sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.strip .sum .n{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#DCEBF5;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 13px;white-space:nowrap}
+.strip .sum{display:flex;align-items:center;gap:24px}
+.strip .sum .n{font:inherit;font-size:13.5px;color:#DCEBF5;background:none;border:none;cursor:pointer;padding:0;border-bottom:1px solid transparent;white-space:nowrap}
 .strip .sum .n b{font-weight:700;color:#fff}
-.strip .sum .n.bad{background:rgba(232,99,90,.2);border-color:rgba(232,99,90,.45);color:#FFD9D4}
-.strip .sum .n.bad b{color:#fff}
+.strip .sum .n:hover{border-bottom-color:rgba(255,255,255,.5)}
+.strip .sum .n.on{color:#fff;border-bottom-color:#fff;font-weight:600}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
@@ -352,7 +352,9 @@ C[1].memAll=[['יעדים והסכמות','יעד קניות מלאי סומן �
 C[2].ppl=[['דורון יצחק','בעלים']];C[2].since='06.2025';C[2].meets=[['17.03','פגישה חודשית — מרץ','סיכום נשלח ✓']];C[2].memAll=[['סגנון תקשורת','מבקש פילוחים, לא סכומים','29.06'],['כאבי לקוח','שאל על מסגרת נוספת — "אם נגדיל ייצור"','29.06']];
 C[3].ppl=[['יעל גולני','בעלים · בקבוצה']];C[3].since='01.2026';C[3].meets=[['24.06 10:30','פ.ע — חודש יוני','לא התקיימה'],['20.05','פ.ע — חודש מאי','סיכום נשלח ✓']];C[3].memAll=[['שיתוף פעולה','חומר אחרון לתזרים: 30.6 · דפי בנק בוואטסאפ','אתמול 11:15'],['שביעות רצון','ביטלה פגישה שנייה ברצף','אתמול']];
 C[4].ppl=[['משה עובד','בעלים']];C[4].since='06.2026';C[4].meets=[['02.07 16:00','פגישה חודשית — יולי · ראשונה','היום · ההכנה לא נפתחה']];C[4].memAll=[];
-let stage=0;
+let stage=0, alertF=null;
+function alertGo(k){ alertF=(alertF===k)?null:k; applyFilter(); renderSum(); }
+function renderSum(){ const ev=document.getElementById('sum'); if(!ev) return; /* מתרענן בתוך applyFilter */ }
 const $=s=>document.querySelector(s);
 
 function cmpD(a,b){const [d1,m1]=a.split('.').map(Number),[d2,m2]=b.split('.').map(Number);return (m1-m2)||(d1-d2)}
@@ -393,18 +395,23 @@ function applyFilter(){
   const q=$('#q').value.trim(), tb=$('#tb');
   const rows=[...tb.querySelectorAll('tr')]; let n=0; const out=[],dim=[];
   rows.forEach(tr=>{
-    const ok=(!stage||+tr.dataset.s===stage)&&(!q||tr.dataset.n.includes(q)||tr.dataset.id.includes(q));
+    const c=C.find(x=>x.id===tr.dataset.id);
+    const aok=!alertF||(c&&c.al&&c.al[alertF]);
+    const ok=aok&&(!stage||+tr.dataset.s===stage)&&(!q||tr.dataset.n.includes(q)||tr.dataset.id.includes(q));
     tr.classList.toggle('dim',!ok); tr.classList.remove('first'); (ok?out:dim).push(tr); if(ok)n++;
   });
   if(stage||q){ out.concat(dim).forEach(tr=>tb.appendChild(tr)); if(dim.length&&out.length)dim[0].classList.add('first'); }
   else rows.forEach(tr=>tb.appendChild(tr));
   $('#empty').classList.toggle('on',n===0);
   const h=$('#hint');
-  if(stage)h.innerHTML=`<b>${stName(stage)}</b> · ${n} חברות · השאר מעומעמות`;
+  if(alertF)h.innerHTML=`<b>${alertF==='cf'?'בעיה תזרימית':'אי שביעות רצון'}</b> · ${n} חברות · השאר מעומעמות`;
+  else if(stage)h.innerHTML=`<b>${stName(stage)}</b> · ${n} חברות · השאר מעומעמות`;
   else if(q)h.textContent=`${n} תוצאות`;
   else h.textContent=C.length+' חברות';
   const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
-  $('#sum').innerHTML=`<span class="n bad"><b>${bad}</b> לקוחות עם התראת תזרים</span><span class="n"><b>${nom}</b> בלי פגישה קרובה</span><span class="n"><b>${lt}</b> עברו את היעד לסטטוס</span>`;
+  const cf=C.filter(c=>c.al.cf).length, sat=C.filter(c=>c.al.sat).length;
+  $('#sum').innerHTML=`<button class="n ${alertF==='cf'?'on':''}" onclick="alertGo('cf')"><b>${cf}</b> לקוחות עם בעיה תזרימית</button>
+    <button class="n ${alertF==='sat'?'on':''}" onclick="alertGo('sat')"><b>${sat}</b> לקוחות באי שביעות רצון</button>`;
 }
 function setStage(s){
   stage=(stage===s)?0:s;
