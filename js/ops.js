@@ -1507,7 +1507,7 @@
   /* צפי התזרים לפאנל הצד — ימים קדימה עם יתרה רצה */
   window._opsSideTab=window._opsSideTab||'chat';
   if(window._opsSideOpen==null) window._opsSideOpen=true;
-  function opsSideToggle(){ window._opsSideOpen=!window._opsSideOpen; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
+  function opsSideToggle(){ window._opsSideOpen=!window._opsSideOpen; window._opsSideUser=1; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
   function opsSideTab(v){ window._opsSideTab=v; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
   const SIDE_FLOW={
     accts:[['מזרחי 295199',41200],['מרכנתיל 69855155',-42445]],
@@ -1649,6 +1649,8 @@
         const [ty,label,sub]=STAGES[showIx];
         const rows=pool.filter(t=>stTypes(ty).includes(t.type));
         const isPeek=showIx!==curIx;
+        /* שלב עם שתי עמודות (נגררות/לא צפויות) — הפאנל נפתח מכווץ כדי לא לדחוס */
+        if(window._opsChatTy!==ty&&ty==='carry'&&window._opsSideUser!==1) window._opsSideOpen=false;
         window._opsChatTy=ty;
         cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
