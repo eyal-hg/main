@@ -356,6 +356,10 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-addfrm #arTkIn{flex:1;min-width:0}
 .ar-addfrm #arTkWho{width:110px}
 .ar-addfrm input:focus{outline:none;border-color:#2E9BD6}
+.ar-warnrow{display:flex;align-items:center;gap:10px;font-size:13px;color:#8A3D14;background:#FFF7F2;border:1px solid #EFB48D;border-radius:8px;padding:8px 12px;flex:1;flex-wrap:wrap}
+.ar-warnrow b{color:#8A3D14}
+.btn.sm2{padding:6px 12px !important;font-size:12.5px !important}
+.ar-addfrm button.ar-ok{flex:none}
 </style>
 </head>
 <body>
@@ -538,7 +542,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       prev:{d:'12.05', rows:['יעד קניות מלאי סומן בסיכון — סוכם מעקב חודשי','קורס מנחות יצא לדרך · 4/4 משימות נסגרו']},
       changed:[{w:1,tx:'חריגת תקציב קניות מלאי — 61% מהיעד בלבד · נפתח פער 11,000 ₪'},{tx:'"סגרנו חוזה עם מרכז הבנייה — התחלה בספטמבר" (קבוצה, אתמול)'}],
       talk:'"תמונה גדולה, לא פירוט. שאלות ישירות. עונה מהר בקבוצה — פחות במייל."'},
-    r0207:{co:'אנרגי אינטרנשיונל', name:'פגישה שוטפת — סקירת תזרים', meta:'02.07 · 09:00–10:00 · 46 דק׳', st:'ממתין לאישור', stc:'wait',
+    r0207:{co:'אנרגי אינטרנשיונל', contact:'צחי', name:'פגישה שוטפת — סקירת תזרים', meta:'02.07 · 09:00–10:00 · 46 דק׳', st:'ממתין לאישור', stc:'wait',
       base:['סקירת המזומנים בחשבונות: מזרחי 295199 בעודף, מרכנתיל בחריגה 42,445 ₪.','זוהה ריכוז מסוכן: רימון מוצרי אנרגיה ≈ 70% מהמחזור.','שביעות רצון — ירידה: תסכול מקצב התגובה בוואטסאפ.'],
       insights:[{t:'תלות בלקוח מרכזי — סיכון מבני',d:'כ-70% מהמחזור מרימון מוצרי אנרגיה. סוכם לבחון פיזור לקוחות ויעד: לקוח חדש עד ספטמבר.'},{t:'צפי החריגה עודכן',d:'אחרי דחיית תשלום ספק — החריגה הצפויה ב-24.08 קטנה ב-8,000 ₪.'}],
       tasks:[{t:'בדיקת מסגרת אשראי נוספת מול הבנק',who:'צחי'},{t:'רשימת 5 לקוחות פוטנציאליים לפיזור',who:'צחי'},{t:'עדכון יעדי הגבייה במערכת',who:'צוות הייעוץ'}],
@@ -663,13 +667,44 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
     }
     const acts=a.acts==='pending'
-      ?`<button class="btn rec2" data-act="appr" style="background:var(--coral)">אישור ושליחת סיכום</button><button class="btn full" data-act="apprq">אישור ללא שליחה</button>`
-      :a.acts==='send'?`<button class="btn rec2" data-act="send" style="background:#fff;color:var(--navy)">שליחה ללקוח</button>`
+      ?`<button class="btn rec2" style="background:var(--coral)" onclick="arApprove(true)">אישור ושליחה ל${a.contact||'לקוח'}</button><button class="btn full" onclick="arApprove(false)">אישור ללא שליחה</button>`
+      :a.acts==='send'?`<button class="btn rec2" style="background:var(--coral)" onclick="arSend()">שליחת הסיכום ללקוח</button>`
       :`<a class="btn full" href="../../meeting-room.html">הזירה המלאה ↗</a>`;
     host.innerHTML=head
       +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
       +body+`<div class="ar-acts">${acts}</div>`;
   }
+  /* ===== אישור ושליחה — הזרימה המלאה =====
+     שליחה עם משימות שלא אושרו ⇒ עצירה ושאלה. אחרי הפעולה — הסטטוס,
+     הטאבים, הכפתורים ושורת הטבלה מתעדכנים. */
+  function arApprove(send){
+    const a=ARENA[window._arSel];
+    const open=(a.tasks||[]).filter(k=>!k.ok).length;
+    if(send&&open&&!window._arForce){
+      window._arForce=true;
+      const f=document.querySelector('#arena .ar-acts');
+      f.innerHTML=`<div class="ar-warnrow"><b>${open} משימות טרם אושרו</b> — יישלחו רק המאושרות.
+        <button class="btn rec2 sm2" onclick="arApprove(true)">שליחה בכל זאת</button>
+        <button class="btn full sm2" onclick="window._arForce=false;arTab('tasks')">חזרה למשימות</button></div>`;
+      return;
+    }
+    window._arForce=false;
+    (a.tasks||[]).forEach(k=>{ if(k.ok||send===false) return; });
+    if(send){ a.st='נסגרה ✓'; a.stc='ok'; a.acts=null; toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ · המשימות המאושרות נוצרו'); arRowClose(); }
+    else{ a.st='אושר — לא נשלח'; a.stc='wait'; a.acts='send'; toast('הסיכום אושר · לא נשלח ללקוח'); arRowSendBtn(); }
+    arenaShow(window._arSel);
+  }
+  function arSend(){
+    const a=ARENA[window._arSel];
+    a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
+    toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ');
+    arRowClose(); arenaShow(window._arSel);
+  }
+  function arRowClose(){ const tr=document.getElementById(window._arSel); if(!tr) return;
+    const ac=tr.querySelector('.ac'); if(ac) ac.innerHTML='<span class="ok">✓</span>'; }
+  function arRowSendBtn(){ const tr=document.getElementById(window._arSel); if(!tr) return;
+    const ac=tr.querySelector('.ac'); if(ac) ac.innerHTML='<button class="btn sm" onclick="event.stopPropagation();arenaShow(\''+window._arSel+'\');arSend()">שליחה ללקוח</button>'; }
+  window.arApprove=arApprove; window.arSend=arSend;
   function arTkNew(){
     const v=document.getElementById('arTkIn').value.trim(); if(!v) return;
     const who=document.getElementById('arTkWho').value.trim()||'צוות הייעוץ';
