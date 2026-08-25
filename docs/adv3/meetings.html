@@ -349,6 +349,13 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-tkacts .ar-ok:hover{background:#F0F8FD}
 .ar-tk.done .ar-tkacts .ar-ok{visibility:hidden}
 .ar-tksub b{font-weight:700;color:var(--ink)}
+.ar-tkadd .ar-addfrm{display:none;gap:7px;margin-top:8px}
+.ar-tkadd.on .ar-addfrm{display:flex}
+.ar-tkadd.on .ar-addtk{display:none}
+.ar-addfrm input{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:8px;padding:7px 11px}
+.ar-addfrm #arTkIn{flex:1;min-width:0}
+.ar-addfrm #arTkWho{width:110px}
+.ar-addfrm input:focus{outline:none;border-color:#2E9BD6}
 </style>
 </head>
 <body>
@@ -630,7 +637,15 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
             <button class="ari" title="מחיקה" onclick="this.closest('.ar-tk').remove();toast('המשימה נמחקה')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
             <button class="ar-ok" onclick="const r=this.closest('.ar-tk');r.classList.add('done');toast('המשימה אושרה')">אישור</button>
           </span>
-        </div>`).join('')}</div>`;
+        </div>`).join('')}
+        <div class="ar-tkadd" id="arTkAdd">
+          <button class="ar-addtk" onclick="document.getElementById('arTkAdd').classList.add('on');document.getElementById('arTkIn').focus()">+ הוספת משימה</button>
+          <form class="ar-addfrm" onsubmit="event.preventDefault();arTkNew()">
+            <input id="arTkIn" placeholder="משימה חדשה ללקוח…" autocomplete="off">
+            <input id="arTkWho" placeholder="באחריות…" autocomplete="off">
+            <button class="ar-ok" type="submit">הוספה</button>
+          </form>
+        </div></div>`;
     }else if(_arTab==='fb'){
       const F=a.fbTab;
       body=F.sections
@@ -655,6 +670,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
       +body+`<div class="ar-acts">${acts}</div>`;
   }
+  function arTkNew(){
+    const v=document.getElementById('arTkIn').value.trim(); if(!v) return;
+    const who=document.getElementById('arTkWho').value.trim()||'צוות הייעוץ';
+    (ARENA[window._arSel].tasks=ARENA[window._arSel].tasks||[]).push({t:v, who});
+    toast('המשימה נוספה — מחכה לאישור'); arenaShow(window._arSel);
+    setTimeout(()=>{const d=document.getElementById('arTkAdd'); if(d){d.classList.add('on');document.getElementById('arTkIn').focus();}},40);
+  }
+  window.arTkNew=arTkNew;
   function arPlay(b){ b.classList.toggle('playing'); toast(b.classList.contains('playing')?'ההקלטה מתנגנת…':'ההשמעה הופסקה'); }
   window.arTab=arTab; window.arPlay=arPlay;
   document.addEventListener('click',e=>{
