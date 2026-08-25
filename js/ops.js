@@ -131,7 +131,7 @@
     dt.style.display=wasDone?'':'none';
     const ttl=document.querySelector('.ops-title');
     if(ttl) ttl.firstChild.nodeValue=wasDone?'תפעול נוסף — ':'מצב תפעול — ';
-    if(wasDone) dt.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> תפעול נוסף · המחזור החודשי הושלם ב-'+fmtDur(opsDur[opsActiveKey]||opsAccum[opsActiveKey]||0);
+    if(wasDone) dt.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> המחזור החודשי הושלם';
     /* אותו כפתור סיום תפעול — גם בתפעול נוסף */
     const _end=document.getElementById('opsEndBtn');
     if(_end){ _end.style.display='';
