@@ -360,6 +360,9 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-warnrow b{color:#8A3D14}
 .btn.sm2{padding:6px 12px !important;font-size:12.5px !important}
 .ar-addfrm button.ar-ok{flex:none}
+.ar-mem{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:9px 2px;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ink);align-items:start}
+.ar-mem .k{font-size:12px;color:#6B4FA0;background:#F6F1FB;border:1px solid #E3D8F2;border-radius:12px;padding:2px 10px;text-align:center;white-space:nowrap}
+.ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:#2E9BD6;font-weight:600}
 </style>
 </head>
 <body>
@@ -554,6 +557,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
         {t:'עבודת עומק ברובד הסמוי', strong:'', improve:'הדאגה של צחי מהתלות ברימון נגעה גם בביטחון האישי — שווה מגע עדין יותר.'},
         {t:'הובלה סמכותית, העצמה והנעה לפעולה', strong:'סיכם כל נושא בפעולה ובעלים ("רשימת חמישה עד סוף השבוע").', improve:''},
       ]},
+      mem:[['כאבי לקוח','נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה ≈ 70% מהמחזור'],['שביעות רצון','ירידה: תסכול מקצב התגובה בוואטסאפ'],['מצב תזרימי','צפי החריגה ב-24.08 עודכן — קטנה ב-8,000 ₪'],['יעדים והסכמות','יעד חדש: לקוח משמעותי נוסף עד ספטמבר']],
       tx:[['יועץ','בוקר טוב צחי, בוא נסתכל על שלושת החשבונות ביחד.'],['לקוח','המרכנתיל שוב בחריגה?'],['יועץ','כן, 42 אלף. יש לנו שתי דרכים לטפל בזה — העברה מהמזרחי או תזמון מול התקבול של מרכז הבנייה.'],['לקוח','בסדר, נעשה את ההעברה.'],['יועץ','עכשיו לנושא שרציתי להרים — רימון מוצרי אנרגיה זה בערך 70% מהמחזור שלך.'],['לקוח','אני יודע, זה מטריד גם אותי.'],['יועץ','בוא נגדיר יעד: לקוח חדש משמעותי עד ספטמבר. נבנה רשימה של חמישה פוטנציאליים.'],['לקוח','צריך שאשב על זה עם תומר.'],['יועץ','מעולה. ומה עם המענה בוואטסאפ? תומר העלה תסכול.'],['לקוח','נדבר על זה בפגישה החודשית.'],['יועץ','טוב, נסכם: העברה היום, רשימת לקוחות עד סוף השבוע, ומסגרת מול הבנק.'],['לקוח','סגור. תודה.']],
       acts:'pending'},
     r2406:{co:'אנרגי גולני', name:'פ.ע — חודש יוני', meta:'24.06 · 10:30', st:'לא התקיימה', stc:'bad',
@@ -561,6 +565,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     r0106:{co:'אנרגי אינטרנשיונל', name:'פ.ע — חודש יוני', meta:'01.06 · 11:00 · 58 דק׳', st:'אושר — לא נשלח', stc:'wait',
       base:['סוכם: מעבר לדיווח שבועי.','נקבע יעד גבייה 95%.'],
       tasks:[{t:'שליחת דוח שבועי ראשון',who:'צוות הייעוץ',ok:1}],
+      mem:[['יעדים והסכמות','מעבר לדיווח שבועי · יעד גבייה 95%']],
       fbTab:{d:'01.06.2026', strong:'פגישה טובה וממוקדת.', improve:'ארוכה מדי — אפשר לוותר על חלק מהגרפים.'},
       tx:[['יועץ','נתחיל מהגבייה.'],['לקוח','יש שיפור החודש.']],
       acts:'send'},
@@ -619,7 +624,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       return;
     }
     /* --- הזירה: טאבים כמו במערכת — סיכום פגישה · משימות · משוב · תמלול --- */
-    const tabs=[['sum','סיכום פגישה',!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx]].filter(x=>x[2]);
+    const tabs=[['sum','סיכום פגישה',!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['mem','זיכרון',!!(a.mem&&a.mem.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx]].filter(x=>x[2]);
     if(!tabs.some(x=>x[0]===_arTab)) _arTab=tabs[0][0];
     let body='';
     if(_arTab==='sum'){
@@ -650,6 +655,10 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
             <button class="ar-ok" type="submit">הוספה</button>
           </form>
         </div></div>`;
+    }else if(_arTab==='mem'){
+      body=`<div class="ar-sec"><h4 class="ar-sky">מה נכנס לזיכרון הלקוח מהפגישה</h4>
+        ${a.mem.map(m=>`<div class="ar-mem"><span class="k">${m[0]}</span><span>${m[1]}</span></div>`).join('')}
+        <a class="ar-memfull" href="memory.html">זיכרון הלקוח המלא ←</a></div>`;
     }else if(_arTab==='fb'){
       const F=a.fbTab;
       body=F.sections
