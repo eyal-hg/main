@@ -42,3 +42,42 @@
   function openCR(){const fr=document.getElementById('crFrame');if(!fr.getAttribute('src'))fr.setAttribute('src','widgets/widget-cashflow-portfolio.html#embed');document.getElementById('crOv').classList.add('show');}
   function closeCR(){document.getElementById('crOv').classList.remove('show');}
 
+
+/* ===== אנשי קשר — פופאפ עם שליחת וואטסאפ חופשית ===== */
+let _ctsWa=null;
+function ctsList(){
+  const base=(typeof MEM_USERS!=='undefined'&&MEM_USERS[CUR])?MEM_USERS[CUR].map(u=>({n:u.n,role:u.role||'איש קשר'})):[];
+  if(!base.length) base.push({n:'בעל העסק',role:'איש קשר ראשי'});
+  return base.map((u,i)=>Object.assign({phone:'05'+(2+i)+'-'+(2340000+CUR*7+i*111).toString().slice(0,3)+'-'+(4520+i*17)},u));
+}
+function ctsOpen(){
+  _ctsWa=null;
+  document.getElementById('ctsCo').textContent=(CLIENTS[CUR]||{}).name||'';
+  ctsRender();
+  document.getElementById('ctsOv').classList.add('show');
+}
+function ctsClose(){document.getElementById('ctsOv').classList.remove('show');}
+function ctsRender(){
+  document.getElementById('ctsBody').innerHTML=ctsList().map((u,i)=>`
+    <div class="cts-row">
+      <div class="cts-av">${u.n.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+      <div class="cts-info"><b>${u.n}</b><span>${u.role} · <bdo dir="ltr">${u.phone}</bdo></span></div>
+      <button class="cts-wa ${_ctsWa===i?'on':''}" onclick="ctsWa(${i})">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
+        וואטסאפ</button>
+    </div>
+    ${_ctsWa===i?`<div class="cts-comp">
+      <textarea id="ctsTxt" placeholder="הודעה ל${u.n}…" rows="2"></textarea>
+      <button class="cts-send" onclick="ctsSend(${i})">שליחה</button>
+    </div>`:''}`).join('');
+  if(_ctsWa!=null){const e=document.getElementById('ctsTxt'); if(e)e.focus();}
+}
+function ctsWa(i){_ctsWa=(_ctsWa===i)?null:i; ctsRender();}
+function ctsSend(i){
+  const e=document.getElementById('ctsTxt'); const v=(e&&e.value.trim())||'';
+  if(!v){e&&e.focus();return;}
+  const u=ctsList()[i];
+  _ctsWa=null; ctsRender();
+  toast('נשלח בוואטסאפ ל'+u.n+' — "'+(v.length>40?v.slice(0,40)+'…':v)+'"');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')ctsClose();});
