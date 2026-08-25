@@ -315,6 +315,7 @@
     document.getElementById('finFoot').innerHTML='';
     document.getElementById('finFindings').innerHTML='';
     finOpen=FIN_FINDINGS.map((f,ix)=>ix); // all findings open at start of each run
+    const fc=document.getElementById('finChat'); if(fc)fc.innerHTML='';
     document.getElementById('finTitle').textContent=opsDoneSet.has(opsActiveKey)?'מרענן נתונים…':'מסיים תפעול…';
     document.getElementById('finSub').textContent='מרענן נתונים מ-Bizibox ובודק את תקינות התזרים מול התקציב';
     const ico=document.getElementById('finIco'); ico.className='fin-ico'; ico.innerHTML='<div class="spin"></div>';
@@ -332,8 +333,12 @@
   }
   /* מכונת שלבים: כל שלב רץ, ואם יש ממצאים — עוצרים בו עד שמטפלים, ואז ממשיכים */
   let finCurStep=0;
+  function finChatFill(){
+    const el=document.getElementById('finChat');
+    if(el) el.innerHTML=opsChatSide(curTasks());
+  }
   function runFinStep(i){
-    finCurStep=i;
+    finCurStep=i; finChatFill();
     if(i>=FIN_STEPS.length){finAllDone();return;}
     const el=document.getElementById('fstep'+i);
     if(el){el.className='fin-step run';el.querySelector('.fs-ico').innerHTML='<span class="mini-spin"></span>';}
