@@ -1506,8 +1506,6 @@
      אותה שיחה של שלב 4, לקריאה: מה הלקוח שלח, מה נענה, ומה עוד מחכה. */
   /* צפי התזרים לפאנל הצד — ימים קדימה עם יתרה רצה */
   window._opsSideTab=window._opsSideTab||'chat';
-  if(window._opsSideOpen==null) window._opsSideOpen=true;
-  function opsSideToggle(){ window._opsSideOpen=!window._opsSideOpen; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
   function opsSideTab(v){ window._opsSideTab=v; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
   const SIDE_FLOW={
     accts:[['מזרחי 295199',41200],['מרכנתיל 69855155',-42445]],
@@ -1583,16 +1581,8 @@
         <div class="msgc-foot">${tag}${st}</div>
       </div>`;}).join('');
     const tab=window._opsSideTab;
-    if(!window._opsSideOpen){
-      return `<div class="ops-wdg ops-chatside closed" onclick="opsSideToggle()" title="פתיחת הפאנל">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
-        <span class="cl-ic" title="הודעות">💬${openN?`<em>${openN}</em>`:''}</span>
-        <span class="cl-lbl">הודעות · תזרים · אנשי קשר</span>
-      </div>`;
-    }
     return `<div class="ops-wdg ops-chatside">
       <div class="ost-head side-tabs">
-        <button class="sf-hide" onclick="opsSideToggle()" title="כיווץ הפאנל"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
