@@ -51,7 +51,7 @@
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג.
      כרגע: קטגוריות · מוטבים · נגררות ולא צפויות ⇒ נוחתים על "הודעות לקוח".
      להוסיף 'msg','doc' ⇒ נוחתים על "הזנות ואוטומציה" · להוסיף גם 'sheet' ⇒ ישר לסיום. */
-  const OPS_PREDONE=['ai','payee'];
+  const OPS_PREDONE=['ai','payee','carry','unexpected'];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   const OPS_STAGES=[
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
@@ -1661,7 +1661,7 @@
     }else{
       cards=pool.length?`<div class="ops-wdg"><div class="ost-head"><div class="ost-b"><b>טופלו</b></div></div>`+pool.map(t=>opsRow(t,T.indexOf(t))).join('')+'</div>':'';
     }
-    const chat=(OPS_VIEW==='open'&&cards&&window._opsChatTy!=='msg')?opsChatSide(T):'';
+    const chat=(OPS_VIEW==='open'&&cards)?opsChatSide(T):'';
     document.getElementById('opsGrid').innerHTML =
       '<div class="ops-rows" style="margin-bottom:14px">'+head+flow+'</div>'+
       (cards?'<div class="ops-wgrid flow"><div class="ops-split'+(chat?' with-chat':'')+'">'+cards+chat+'</div></div>'
@@ -2842,13 +2842,8 @@
       const el=document.getElementById('msgc_'+_msgSel);
       if(el&&el.scrollIntoView) el.scrollIntoView({block:'nearest',behavior:'smooth'});
     },60);
-    return `<div class="ms-split">
-      <div class="ms-work">${work}</div>
-      <aside class="ms-chat">
-        <div class="msgc-h">ההתכתבות עם ${CLIENTS[CUR].name} <span>${openIx.length} פתוחות</span></div>
-        <div class="msgc-list">${chat}</div>
-      </aside>
-    </div>`;
+    /* ההתכתבות חיה בפאנל הצד המשותף — כאן רק חלון העבודה */
+    return `<div class="ms-split solo"><div class="ms-work">${work}</div></div>`;
   }
   /* הודעת מלל — שיחה ומענה */
   function textMsgBody(t,i){
@@ -2919,6 +2914,7 @@
         <select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select>
         <input class="mx2-inp" value="${r.desc||''}" placeholder="תיאור">
         <input class="mx2-inp biz-amt" value="${r.amount||''}" placeholder="0" dir="ltr">
+        <button type="button" class="biz-del" onclick="bizDelRow(this)" title="הורדת השורה">✕</button>
       </div>`;
     /* תצוגה מקדימה של ההתכתבות עם הלקוח — ההקשר שממנו הגיע המסמך */
     const ctx=(t.ctx||[]).map(l=>{
@@ -2958,7 +2954,7 @@
           <label>ח-ן <select class="mx2-inp"><option>מזרחי 295199</option><option>מרכנתיל 69855155</option></select></label>
           <label>סוג תשלום <select class="mx2-inp"><option selected>העברה</option><option>שיק</option><option>אחר</option></select></label>
         </div>
-        <div class="biz-thead"><span>תאריך</span><span>אסמכתא (אם קיים)</span><span>קטגוריה</span><span>תיאור</span><span>סכום</span></div>
+        <div class="biz-thead"><span>תאריך</span><span>אסמכתא (אם קיים)</span><span>קטגוריה</span><span>תיאור</span><span>סכום</span><span></span></div>
         <div id="bizRows_${i}">${rows.map(bizRow).join('')}</div>
         <div class="biz-addrow"><button type="button" class="biz-add" onclick="bizAddRow(${i})">＋ הוספת תשלומים</button></div>
         <div class="chk-actions">
@@ -2991,8 +2987,14 @@
   function bizAddRow(i){
     const w=document.getElementById('bizRows_'+i); if(!w) return;
     const d=document.createElement('div'); d.className='biz-row';
-    d.innerHTML=`<input class="mx2-inp" placeholder="תאריך"><input class="mx2-inp" placeholder="אסמכתא"><select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="mx2-inp" placeholder="תיאור"><input class="mx2-inp biz-amt" placeholder="0" dir="ltr">`;
+    d.innerHTML=`<input class="mx2-inp" placeholder="תאריך"><input class="mx2-inp" placeholder="אסמכתא"><select class="mx2-inp"><option>ללא קטגוריה</option>${COMPANY_CATS.map(c=>`<option>${c}</option>`).join('')}</select><input class="mx2-inp" placeholder="תיאור"><input class="mx2-inp biz-amt" placeholder="0" dir="ltr"><button type="button" class="biz-del" onclick="bizDelRow(this)" title="הורדת השורה">✕</button>`;
     w.appendChild(d);
+  }
+  /* הורדת שורה — תמיד נשארת אחת */
+  function bizDelRow(btn){
+    const row=btn.closest('.biz-row'), w=row.parentNode;
+    if(w.querySelectorAll('.biz-row').length<=1){ row.querySelectorAll('input').forEach(x=>x.value=''); const s=row.querySelector('select'); if(s)s.selectedIndex=0; toast('השורה רוקנה — חייבת להישאר שורה אחת'); return; }
+    row.remove(); toast('השורה הוסרה');
   }
   /* ===== זום על מסמך — פתיחה במסך מלא עם הגדלה/הקטנה ===== */
   let _dzo=1;
