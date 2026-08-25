@@ -366,8 +366,10 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 /* נושאים חוזרים — הצעות מתחת לחיפוש */
 .topics{display:flex;align-items:center;gap:7px;padding:0 20px 12px;flex-wrap:wrap;margin-top:-2px}
 .topics .lbl{font-size:12px;color:var(--ink3)}
-.topics button{font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:18px;border:1px solid var(--bd);background:#fff;color:var(--ink2);cursor:pointer}
-.topics button b{font-weight:600;color:var(--navy);background:var(--bg);border-radius:9px;padding:0 6px;font-size:11px;line-height:16px}
+.topics button{font:inherit;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:8px;padding:5px 13px;border-radius:18px;border:1px solid #B9C6D2;background:#fff;color:var(--ink);cursor:pointer}
+.topics button b{font-weight:700;color:#fff;background:var(--sky);border-radius:10px;padding:0 7px;font-size:11.5px;line-height:18px}
+.topics.fbt button b{background:var(--purple)}
+.topics .lbl{font-weight:600}
 .topics button:hover{border-color:var(--navy)}
 .topics button.on{background:var(--navy);border-color:var(--navy);color:#fff}
 .topics button.on b{background:rgba(255,255,255,.2);color:#fff}
@@ -407,7 +409,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 
   <!-- ===== all meetings ===== -->
   <section class="panel list">
-    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint">שמונה · מהחדשה לישנה</span>
+    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint"></span>
       <select class="cfil" id="cfil" onchange="apply()">
         <option value="">כל הלקוחות</option>
         <option>אנרגי אינטרנשיונל</option><option>אנרגי גולני</option><option>מטעי גבעון</option><option>משה עובד</option><option>רימון יצחק</option>
@@ -427,11 +429,17 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       <button onclick="topicGo(this,'קורס')">קורס המנחות <b>1</b></button>
       <button onclick="topicGo(this,'רימון מוצרי')">התלות ברימון <b>1</b></button>
     </div>
+    <div class="topics fbt">
+      <span class="lbl">נקודות שעלו במשוב לאחרונה</span>
+      <button onclick="fbtGo(this,'why')">חיבור חזק ל"למה" <b>2</b></button>
+      <button onclick="fbtGo(this,'nums')">פתיחה במספרים בלי הקשר <b>2</b></button>
+      <button onclick="fbtGo(this,'deep')">צלילה לפרטים טכניים <b>1</b></button>
+    </div>
     <div class="tw">
     <table class="ml" id="ml">
       <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>משך</th><th></th></tr></thead>
       <tbody>
-        <tr class="m" data-tags="appr" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207"
+        <tr class="m" data-tags="appr" data-fbt="why" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207"
             data-items='["סקירת המזומנים בשלושת החשבונות — מרכנתיל בחריגה","סיכון ריכוזיות: רימון מוצרי אנרגיה ≈ 70% מהמחזור","נבחן קידום מסגרת אשראי מול הבנק","יעד: לקוח משמעותי חדש עד ספטמבר"]'>
           <td class="d num">02.07<small class="num">09:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
@@ -444,7 +452,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="len">—</td>
           <td class="ac"><button class="btn sm" data-act="resch">תיאום מחדש</button></td>
         </tr>
-        <tr class="m" data-tags="sent" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106"
+        <tr class="m" data-tags="sent" data-fbt="why" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106"
             data-items='["מעבר לדיווח שבועי","יעד גבייה 95% — טיפול בחובות פתוחים","עדכון על מסגרת אשראי — ממתינים לבנק"]'>
           <td class="d num">01.06<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
@@ -458,7 +466,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="len num">52 דק׳</td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="אנרגי אינטרנשיונל פ.ע חודש מאי" id="r0505a"
+        <tr class="m" data-tags="ok" data-fbt="deep nums" data-k="אנרגי אינטרנשיונל פ.ע חודש מאי" id="r0505a"
             data-items='["ניתוח רבעון מרץ–מאי: הכנסות 116/140/120 אש״ח","זוהה פער: כרטיס ״מקס״ אינו מחובר ל-Bizibox","הוחלט: החלפת פונקציית שירות הלקוחות","הוגדר יעד: מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.7"]'>
           <td class="d num">05.05<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש מאי</span><span class="hit"></span></td>
@@ -477,7 +485,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="len num">57 דק׳</td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703"
+        <tr class="m" data-tags="ok" data-fbt="nums" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703"
             data-items='["פילוח הוצאות לפי ספקים","יעד רווחיות Q2","נדונה מסגרת אשראי לגישור העונתיות"]'>
           <td class="d num">17.03<small class="num">12:00</small></td>
           <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
@@ -527,6 +535,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     apply();
   }
   window.topicGo=topicGo;
+  let fbtFilter=null;
+  function fbtGo(btn,k){
+    const on=btn.classList.contains('on');
+    document.querySelectorAll('.topics.fbt button').forEach(b=>b.classList.remove('on'));
+    fbtFilter=on?null:k; if(!on) btn.classList.add('on');
+    apply();
+  }
+  window.fbtGo=fbtGo;
   function apply(){
     let shown=0;
     const cf=document.getElementById('cfil').value;
@@ -534,6 +550,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       const tags=r.dataset.tags.split(' ');
       let ok = filter ? tags.includes(filter) : !r.classList.contains('fut');
       if(ok&&cf&&!r.dataset.k.includes(cf)) ok=false;
+      if(ok&&fbtFilter&&!(r.dataset.fbt||'').split(' ').includes(fbtFilter)) ok=false;
       const hit=r.querySelector('.hit'); hit.innerHTML='';
       if(ok && query){
         const items=r.dataset.items?JSON.parse(r.dataset.items):[];
@@ -548,7 +565,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 
     const names={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
     const cf2=document.getElementById('cfil').value;
-    $('#hint').textContent = filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : cf2 ? cf2+' · '+hebCount[shown] : 'שמונה · מהחדשה לישנה';
+    $('#hint').textContent = filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : cf2 ? cf2+' · '+hebCount[shown] : '';
     $('#res').innerHTML = query ? '<b>'+shown+'</b> תוצאות ל-״'+query+'״' : '';
     $('#clr').classList.toggle('on',!!query);
   }
