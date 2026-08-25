@@ -285,10 +285,10 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-st.wait{background:#FFF4DF;color:#9A6300}
 .ar-st.ok{background:rgba(19,137,91,.25);color:#9FE8C5}
 .ar-st.bad{background:rgba(232,99,90,.3);color:#FFD3CF}
-.ar-tabs{display:flex;gap:2px;padding:0 14px;border-bottom:1px solid var(--bd);flex:none}
-.ar-tabs button{font:inherit;font-size:13.5px;font-weight:600;color:var(--ink2);background:none;border:none;border-bottom:2px solid transparent;padding:11px 13px;cursor:pointer;margin-bottom:-1px}
-.ar-tabs button:hover{color:var(--navy)}
-.ar-tabs button.on{color:var(--navy);border-color:var(--navy)}
+.ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--navy);flex:none}
+.ar-tabs button{font:inherit;font-size:13.5px;font-weight:600;color:#9FC0DA;background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
+.ar-tabs button:hover{color:#fff}
+.ar-tabs button.on{color:#fff;border-color:var(--coral)}
 .ar-ins{background:#F0F7FC;border:1px solid #D8EAF5;border-radius:8px;padding:10px 14px;margin-bottom:8px}
 .ar-ins b{display:block;font-size:13px;color:var(--ink);margin-bottom:3px}
 .ar-ins span{font-size:12.5px;color:var(--ink2);line-height:1.5}
@@ -320,6 +320,35 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-ins2 p.open{-webkit-line-clamp:unset}
 .ar-more{font-size:12.5px;color:#2E9BD6;border-bottom:1px solid #2E9BD6}
 .ar-who2{color:var(--ink3);font-size:12px}
+/* משוב — אקורדיון כמו במערכת */
+.ar-fbs{border-bottom:1px solid var(--bd)}
+.ar-fbh{width:100%;display:flex;align-items:center;justify-content:space-between;font:inherit;background:none;border:none;padding:11px 2px;cursor:pointer}
+.ar-fbh b{font-size:14.5px;color:var(--navy);font-weight:700}
+.ar-fbh span{color:var(--ink3);transition:transform .15s}
+.ar-fbs.open .ar-fbh span{transform:rotate(180deg)}
+.ar-fbb{display:none;padding:0 2px 12px}
+.ar-fbs.open .ar-fbb{display:block}
+.ar-fbp{margin-bottom:10px}
+.ar-fbp b{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:4px}
+.ar-fbp b.g{color:#13895b}
+.ar-fbp b.o{color:#C77B18}
+.ar-fbp p{font-size:13px;color:var(--ink2);line-height:1.6;margin:0}
+/* טאב המשימות — כמו במערכת */
+.ar-tksub{font-size:12.5px;color:var(--ink3);margin-bottom:6px}
+.ar-tk{display:flex;align-items:flex-start;gap:12px;padding:11px 2px;border-bottom:1px solid var(--bd)}
+.ar-cb{width:19px;height:19px;border:1.5px solid #B7C3CF;border-radius:5px;display:grid;place-items:center;color:#fff;font-size:11px;cursor:pointer;flex:none;margin-top:2px}
+.ar-tk.done .ar-cb{background:var(--green);border-color:var(--green)}
+.ar-tk .ar-tkb b{display:block;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.45}
+.ar-tk.done .ar-tkb b{text-decoration:line-through;color:var(--ink3)}
+.ar-tk .ar-tkb span{font-size:12px;color:var(--ink3)}
+.ar-addtk{font:inherit;font-size:13px;font-weight:600;color:#2E9BD6;background:none;border:none;padding:10px 0 4px;cursor:pointer}
+.ar-tk .ar-tkacts{display:flex;align-items:center;gap:8px;margin-inline-start:auto;flex:none}
+.ar-tkacts .ari{display:grid;place-items:center;width:26px;height:26px;border:none;background:none;color:var(--navy);cursor:pointer;border-radius:6px}
+.ar-tkacts .ari:hover{background:var(--bg)}
+.ar-tkacts .ar-ok{font:inherit;font-size:12.5px;font-weight:600;color:#2E9BD6;background:#fff;border:1px solid #BFE0F2;border-radius:16px;padding:4px 16px;cursor:pointer}
+.ar-tkacts .ar-ok:hover{background:#F0F8FD}
+.ar-tk.done .ar-tkacts .ar-ok{visibility:hidden}
+.ar-tksub b{font-weight:700;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -340,7 +369,6 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   <div><h1>פגישות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="spacer"></div>
   <div class="next">
     <span class="cap">האירוע הבא</span>
     <span class="tm num">13:00</span>
@@ -349,6 +377,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     <button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
     <button class="btn prep2" onclick="arenaShow('prep');document.getElementById('arena').scrollIntoView({behavior:'smooth',block:'start'})">הכנה לפגישה</button>
   </div>
+  <div class="spacer"></div>
   <div class="now num"><b>10:54</b> · עכשיו</div>
 </header>
 
@@ -506,7 +535,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       base:['סקירת המזומנים בחשבונות: מזרחי 295199 בעודף, מרכנתיל בחריגה 42,445 ₪.','זוהה ריכוז מסוכן: רימון מוצרי אנרגיה ≈ 70% מהמחזור.','שביעות רצון — ירידה: תסכול מקצב התגובה בוואטסאפ.'],
       insights:[{t:'תלות בלקוח מרכזי — סיכון מבני',d:'כ-70% מהמחזור מרימון מוצרי אנרגיה. סוכם לבחון פיזור לקוחות ויעד: לקוח חדש עד ספטמבר.'},{t:'צפי החריגה עודכן',d:'אחרי דחיית תשלום ספק — החריגה הצפויה ב-24.08 קטנה ב-8,000 ₪.'}],
       tasks:[{t:'בדיקת מסגרת אשראי נוספת מול הבנק',who:'צחי'},{t:'רשימת 5 לקוחות פוטנציאליים לפיזור',who:'צחי'},{t:'עדכון יעדי הגבייה במערכת',who:'צוות הייעוץ'}],
-      fbTab:{d:'02.07.2026', strong:'היועץ מיקד את השיחה בסיכון הריכוזיות וחיבר כל החלטה לתזרים. מראה מיקוד ברור.', improve:'אפשר היה לחבר את היעדים לחזון הצמיחה של צחי — מעבר למספרים.'},
+      fbTab:{d:'02.07.2026', sections:[
+        {t:'מיקוד, תכליתיות וחיבור ללמה', open:1,
+         strong:'היועץ הדגיש באופן עקבי את ה"למה" שמאחורי ההחלטות, וחיבר את סקירת התזרים לבריאות הפיננסית של העסק. ההסבר על סיכון הריכוזיות השפיע ישירות על קבלת ההחלטה.',
+         improve:'אפשר היה לחבר את היעדים לחזון הצמיחה של צחי — מעבר למספרים.'},
+        {t:'קשר אישי, הקשבה ומרחב', strong:'נתן מקום לתסכול של הלקוח מהמענה בוואטסאפ בלי להתגונן.', improve:''},
+        {t:'עבודת עומק ברובד הסמוי', strong:'', improve:'הדאגה של צחי מהתלות ברימון נגעה גם בביטחון האישי — שווה מגע עדין יותר.'},
+        {t:'הובלה סמכותית, העצמה והנעה לפעולה', strong:'סיכם כל נושא בפעולה ובעלים ("רשימת חמישה עד סוף השבוע").', improve:''},
+      ]},
       tx:[['יועץ','בוקר טוב צחי, בוא נסתכל על שלושת החשבונות ביחד.'],['לקוח','המרכנתיל שוב בחריגה?'],['יועץ','כן, 42 אלף. יש לנו שתי דרכים לטפל בזה — העברה מהמזרחי או תזמון מול התקבול של מרכז הבנייה.'],['לקוח','בסדר, נעשה את ההעברה.'],['יועץ','עכשיו לנושא שרציתי להרים — רימון מוצרי אנרגיה זה בערך 70% מהמחזור שלך.'],['לקוח','אני יודע, זה מטריד גם אותי.'],['יועץ','בוא נגדיר יעד: לקוח חדש משמעותי עד ספטמבר. נבנה רשימה של חמישה פוטנציאליים.'],['לקוח','צריך שאשב על זה עם תומר.'],['יועץ','מעולה. ומה עם המענה בוואטסאפ? תומר העלה תסכול.'],['לקוח','נדבר על זה בפגישה החודשית.'],['יועץ','טוב, נסכם: העברה היום, רשימת לקוחות עד סוף השבוע, ומסגרת מול הבנק.'],['לקוח','סגור. תודה.']],
       acts:'pending'},
     r2406:{co:'אנרגי גולני', name:'פ.ע — חודש יוני', meta:'24.06 · 10:30', st:'לא התקיימה', stc:'bad',
@@ -585,12 +621,29 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <ol class="ar-ol">${a.tasks.map(k=>`<li>${k.t} <span class="ar-who2">— ${k.who}</span></li>`).join('')}</ol>`:''}
       </div>`;
     }else if(_arTab==='tasks'){
-      body=`<div class="ar-sec"><h4>המשימות המוצעות — לאישור לפני יצירה</h4>
-        ${a.tasks.map(k=>`<div class="ar-r"><i>${k.ok?'✓':'◻'}</i>${k.t}<em class="ar-who">באחריות: ${k.who}</em></div>`).join('')}</div>`;
+      body=`<div class="ar-sec"><div class="ar-tksub"><b>להלן המשימות המוצעות ללקוח, יש לאשרן, ורק לאחר מכן ליצור את המשימות.</b></div>
+        ${a.tasks.map((k,i)=>`<div class="ar-tk ${k.ok?'done':''}">
+          <span class="ar-cb" onclick="this.parentNode.classList.toggle('done')">✓</span>
+          <div class="ar-tkb"><b>${k.t}</b><span>באחריות: ${k.who}</span></div>
+          <span class="ar-tkacts">
+            <button class="ari" title="קובץ מצורף" onclick="toast('צירוף קובץ למשימה')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+            <button class="ari" title="מחיקה" onclick="this.closest('.ar-tk').remove();toast('המשימה נמחקה')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+            <button class="ar-ok" onclick="const r=this.closest('.ar-tk');r.classList.add('done');toast('המשימה אושרה')">אישור</button>
+          </span>
+        </div>`).join('')}</div>`;
     }else if(_arTab==='fb'){
-      body=`<div class="ar-sec"><h4>משוב · ${a.fbTab.d}</h4>
-        ${a.fbTab.strong?`<div class="ar-ins good"><b>✓ נקודת חוזק</b><span>${a.fbTab.strong}</span></div>`:''}
-        ${a.fbTab.improve?`<div class="ar-ins imp"><b>↗ נקודה לשיפור</b><span>${a.fbTab.improve}</span></div>`:''}</div>`;
+      const F=a.fbTab;
+      body=F.sections
+        ?`<div class="ar-sec"><h4>משוב על היועץ · ${F.d}</h4>
+            ${F.sections.map((s,i)=>`<div class="ar-fbs ${s.open?'open':''}">
+              <button class="ar-fbh" onclick="this.parentNode.classList.toggle('open')"><b>${i+1}. ${s.t}</b><span>▾</span></button>
+              <div class="ar-fbb">
+                ${s.strong?`<div class="ar-fbp"><b class="g">✓ נקודת חוזק</b><p>${s.strong}</p></div>`:''}
+                ${s.improve?`<div class="ar-fbp"><b class="o">↗ נקודה לשיפור</b><p>${s.improve}</p></div>`:''}
+              </div></div>`).join('')}</div>`
+        :`<div class="ar-sec"><h4>משוב · ${F.d}</h4>
+            ${F.strong?`<div class="ar-ins good"><b>✓ נקודת חוזק</b><span>${F.strong}</span></div>`:''}
+            ${F.improve?`<div class="ar-ins imp"><b>↗ נקודה לשיפור</b><span>${F.improve}</span></div>`:''}</div>`;
     }else{
       body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
     }
