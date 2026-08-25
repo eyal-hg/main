@@ -247,6 +247,9 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
   .nav,.strip{padding-left:24px;padding-right:24px}
   .born .mu{grid-template-columns:80px 1fr 40px}
 }
+.btn.rec .rd{display:none;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:recdot 1.6s ease-in-out infinite}
+.btn.rec.recording .rd{display:inline-block}
+.btn.rec.recording svg{display:none}
 </style>
 </head>
 <body>
@@ -274,7 +277,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
     <span class="tm num">13:00</span>
     <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
     <span class="in num">בעוד 2:06</span>
-    <button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
+    <button class="btn rec" onclick="recTg(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button>
     <button class="btn prep2" onclick="toast('ההכנה לפגישה נפתחת — מטעי גבעון')">הכנה לפגישה</button>
   </div>
   <div class="spacer"></div>
@@ -404,6 +407,8 @@ function addTask(e){e.preventDefault();const i=document.getElementById('newTask'
   li.innerHTML='<span class="cb">✓</span><div><div class="tx"></div><div class="sub"></div></div><span class="src">שלי</span>';
   li.querySelector('.tx').textContent=txt;li.querySelector('.sub').textContent=client||'היום';
   document.getElementById('tl').prepend(li);i.value='';toast('המשימה נוספה להיום')}
+function recTg(b){b.classList.toggle('recording');const on=b.classList.contains('recording');b.querySelector('.rl').textContent=on?'מקליט…':'הקלטה';toast(on?'ההקלטה התחילה — מטעי גבעון':'ההקלטה נעצרה');}
+window.recTg=recTg;
 </script>
 </body>
 </html>

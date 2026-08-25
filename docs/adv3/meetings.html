@@ -364,20 +364,26 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-mem .k{font-size:12px;color:#6B4FA0;background:#F6F1FB;border:1px solid #E3D8F2;border-radius:12px;padding:2px 10px;text-align:center;white-space:nowrap}
 .ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:#2E9BD6;font-weight:600}
 /* נושאים חוזרים — הצעות מתחת לחיפוש */
-.topics{display:flex;align-items:baseline;gap:4px 14px;padding:0 20px 6px;flex-wrap:wrap;margin-top:-4px;font-size:13px}
-.topics:last-of-type{padding-bottom:12px}
-.topics .lbl{font-size:12px;color:var(--ink3);min-width:150px}
-.topics button{font:inherit;font-size:13px;background:none;border:none;padding:2px 0;color:var(--navy);cursor:pointer;border-bottom:1px dashed #B9C6D2}
-.topics button:hover{border-bottom-style:solid;border-color:var(--navy)}
-.topics button.on{color:#fff;background:var(--navy);border:none;border-radius:5px;padding:2px 8px}
-.topics button b{font-weight:400;color:var(--ink3);font-size:12px;margin-inline-start:3px}
+.topics{display:flex;align-items:center;gap:6px 8px;padding:0 20px 8px;flex-wrap:wrap;margin-top:-4px;font-size:13px}
+.topics:last-of-type{padding-bottom:14px}
+.topics .lbl{font-size:12px;color:var(--ink3);min-width:150px;font-weight:500}
+.topics button{font:inherit;font-size:12.5px;font-weight:500;background:#F0F4F8;border:none;border-radius:7px;padding:5px 11px;color:var(--ink2);cursor:pointer;transition:background .12s,color .12s}
+.topics button:hover{background:#E2EBF2;color:var(--navy)}
+.topics button.on{background:var(--navy);color:#fff}
+.topics button b{font-weight:600;color:var(--ink3);font-size:11.5px;margin-inline-start:4px}
 .topics button.on b{color:rgba(255,255,255,.75)}
+.topics.fbt button{background:#F4F1FA;color:#4A3580}
+.topics.fbt button:hover{background:#EAE3F5}
+.topics.fbt button.on{background:#6B4FA0;color:#fff}
 .topics button:hover{border-color:var(--navy)}
 .topics button.on{background:var(--navy);border-color:var(--navy);color:#fff}
 .topics button.on b{background:rgba(255,255,255,.2);color:#fff}
 .tclr{display:none;font-size:12.5px;color:var(--red);font-weight:600;margin-inline-start:10px}
 .tclr.on{display:inline}
-.topics .tmore{color:var(--sky);border-bottom:none;font-weight:600}
+.topics .tmore{background:none !important;color:var(--sky) !important;font-weight:600}
+.btn.rec .rd{display:none;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:recdot 1.6s ease-in-out infinite}
+.btn.rec.recording .rd{display:inline-block}
+.btn.rec.recording svg{display:none}
 </style>
 </head>
 <body>
@@ -403,7 +409,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     <span class="tm num">13:00</span>
     <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
     <span class="in num">בעוד 2:06</span>
-    <button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
+    <button class="btn rec" onclick="recTg(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button>
     <button class="btn prep2" onclick="arenaShow('prep');document.getElementById('arena').scrollIntoView({behavior:'smooth',block:'start'})">הכנה לפגישה</button>
   </div>
   <div class="spacer"></div>
@@ -661,7 +667,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
         <div class="ar-sec"><h4>מהפגישה הקודמת · ${a.prev.d}</h4>${a.prev.rows.map((r,i)=>`<div class="ar-r"><i>${i+1}</i>${r}</div>`).join('')}</div>
         <div class="ar-sec"><h4>מה השתנה מאז</h4>${a.changed.map(c=>`<div class="ar-r ${c.w?'warn':''}"><i>${c.w?'!':'+'}</i>${c.tx}</div>`).join('')}</div>
         <div class="ar-sec"><h4>איך לדבר עם תומר</h4><div class="ar-q">${a.talk}</div></div>
-        <div class="ar-acts"><button class="btn rec2" onclick="toast('ההקלטה התחילה — ${a.co}')"><i></i>הקלטה</button></div>`;
+        <div class="ar-acts"><button class="btn rec2" onclick="recTg2(this,'${a.co}')"><span class="rl">הקלטה</span></button></div>`;
       return;
     }
     /* --- פגישה בלי תוצרים --- */
@@ -779,6 +785,8 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     setTimeout(()=>{const d=document.getElementById('arTkAdd'); if(d){d.classList.add('on');document.getElementById('arTkIn').focus();}},40);
   }
   window.arTkNew=arTkNew;
+  function recTg2(b,co){b.classList.toggle('recording');b.querySelector('.rl').textContent=b.classList.contains('recording')?'● מקליט…':'הקלטה';toast(b.classList.contains('recording')?'ההקלטה התחילה — '+co:'ההקלטה נעצרה');}
+  window.recTg2=recTg2;
   function arPlay(b){ b.classList.toggle('playing'); toast(b.classList.contains('playing')?'ההקלטה מתנגנת…':'ההשמעה הופסקה'); }
   window.arTab=arTab; window.arPlay=arPlay;
   document.addEventListener('click',e=>{
@@ -830,6 +838,8 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   if(u.get('f')) filter=u.get('f'); if(u.get('q')){query=u.get('q');$('#q').value=query}
   apply();
 })();
+function recTg(b){b.classList.toggle('recording');const on=b.classList.contains('recording');b.querySelector('.rl').textContent=on?'מקליט…':'הקלטה';toast(on?'ההקלטה התחילה — מטעי גבעון':'ההקלטה נעצרה');}
+window.recTg=recTg;
 </script>
 </body>
 </html>
