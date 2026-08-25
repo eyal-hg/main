@@ -51,10 +51,13 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .alerts a:hover{border-color:#fff}
 .alerts .c{color:#7FA6C2;margin:0 2px}
 .strip .sum{display:flex;align-items:center;gap:24px}
-.strip .sum .n{font:inherit;font-size:13.5px;color:#DCEBF5;background:none;border:none;cursor:pointer;padding:0;border-bottom:1px solid transparent;white-space:nowrap}
+.strip .sum .n{font-size:13.5px;color:#DCEBF5;white-space:nowrap}
 .strip .sum .n b{font-weight:700;color:#fff}
-.strip .sum .n:hover{border-bottom-color:rgba(255,255,255,.5)}
-.strip .sum .n.on{color:#fff;border-bottom-color:#fff;font-weight:600}
+.strip .sum .aw{font:inherit;font-size:13.5px;background:none;border:none;padding:0;cursor:pointer;border-bottom:1px solid transparent;font-weight:600}
+.strip .sum .aw.cf{color:#F3A39C}
+.strip .sum .aw.sat{color:#F5D287}
+.strip .sum .aw:hover{border-bottom-color:currentColor}
+.strip .sum .aw.on{border-bottom-color:currentColor}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
@@ -410,8 +413,8 @@ function applyFilter(){
   else h.textContent=C.length+' חברות';
   const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
   const cf=C.filter(c=>c.al.cf).length, sat=C.filter(c=>c.al.sat).length;
-  $('#sum').innerHTML=`<button class="n ${alertF==='cf'?'on':''}" onclick="alertGo('cf')"><b>${cf}</b> לקוחות עם בעיה תזרימית</button>
-    <button class="n ${alertF==='sat'?'on':''}" onclick="alertGo('sat')"><b>${sat}</b> לקוחות באי שביעות רצון</button>`;
+  $('#sum').innerHTML=`<span class="n"><b>${cf}</b> לקוחות עם <button class="aw cf ${alertF==='cf'?'on':''}" onclick="alertGo('cf')">בעיה תזרימית</button></span>
+    <span class="n"><b>${sat}</b> לקוחות ב<button class="aw sat ${alertF==='sat'?'on':''}" onclick="alertGo('sat')">אי שביעות רצון</button></span>`;
 }
 function setStage(s){
   stage=(stage===s)?0:s;
