@@ -3750,16 +3750,17 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .ops-cts:hover{background:rgba(255,255,255,.28)}
 /* ההתכתבות עם הלקוח — פאנל קבוע לאורך התפעול */
 .ops-split{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-.ops-split.with-chat{grid-template-columns:minmax(0,1fr) clamp(260px,20vw,320px)}
+.ops-split.with-chat{grid-template-columns:minmax(0,1fr) clamp(320px,24vw,380px)}
 .ops-chatside{position:sticky;top:12px}
 .ops-chatbody{max-height:calc(100vh - 210px);overflow:auto;padding:10px 14px 14px}
 .msgc-item.chatside{cursor:default}
 /* ההתכתבות — גם בשלבי הבדיקה */
 .fin-split{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-.fin-split:has(#finChat .ops-chatside){grid-template-columns:minmax(0,1fr) clamp(260px,20vw,320px)}
+.fin-split:has(#finChat .ops-chatside){grid-template-columns:minmax(0,1fr) clamp(320px,24vw,380px)}
 #finChat .ops-chatside{position:sticky;top:12px;background:#fff;border:1px solid #E6ECF4;border-radius:14px}
 /* פאנל הצד — טאבים הודעות/תזרים + טבלת צפי */
-.ost-head.side-tabs{gap:6px}
+.ost-head.side-tabs{gap:4px;flex-wrap:nowrap}
+.side-tabs .stb{white-space:nowrap;padding:2px 6px 6px}
 .side-tabs .stb{font:inherit;font-size:13px;font-weight:600;color:#44566A;background:none;border:none;border-bottom:2px solid transparent;padding:2px 4px 6px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
 .side-tabs .stb.on{color:#0C4068;border-color:#0C4068}
 .side-tabs .stb em{font-style:normal;font-size:11px;background:#FDEDEB;color:#B9382C;border-radius:9px;padding:0 6px;line-height:16px}
@@ -3779,7 +3780,7 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .ops-chatside .ops-chatbody{flex:1;max-height:none}
 .ops-chatside .ops-flow-frame{flex:1;height:auto;min-height:0}
 /* רענון התזרים בפאנל */
-.side-tabs .sf-ref{margin-inline-start:auto;display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:12px;font-weight:600;color:#1668A0;background:#EAF3FA;border:1px solid #CFE4F2;border-radius:16px;padding:4px 12px;cursor:pointer}
+.side-tabs .sf-ref{margin-inline-start:auto;display:inline-grid;place-items:center;width:26px;height:26px;color:#1668A0;background:#EAF3FA;border:1px solid #CFE4F2;border-radius:50%;padding:0;cursor:pointer;flex:none}
 .side-tabs .sf-ref:hover{background:#DDEEF9}
 .side-tabs .sf-ref.spin svg{animation:sfspin .9s linear infinite}
 @keyframes sfspin{to{transform:rotate(360deg)}}

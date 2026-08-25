@@ -1596,8 +1596,6 @@
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
-        ${tab==='flow'?`<button class="sf-ref" onclick="opsFlowRefresh(this)" title="רענון התזרים">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg> רענון</button>`:''}
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
         :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תחזית תזרים"></iframe>`
@@ -1649,8 +1647,6 @@
         const [ty,label,sub]=STAGES[showIx];
         const rows=pool.filter(t=>stTypes(ty).includes(t.type));
         const isPeek=showIx!==curIx;
-        /* שלב עם שתי עמודות (נגררות/לא צפויות) — הפאנל נפתח מכווץ כדי לא לדחוס */
-        if(window._opsChatTy!==ty&&ty==='carry'&&window._opsSideUser!==1) window._opsSideOpen=false;
         window._opsChatTy=ty;
         cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
