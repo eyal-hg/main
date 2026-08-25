@@ -1716,7 +1716,7 @@
         cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}" style="grid-column:1/-1">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
             <div class="ost-b"><b>${label}</b><i>${sub}</i></div>
-            ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length} לטיפול</span>`}
+            ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length+(ty==='msg'?advTasksOf().length:0)} לטיפול</span>`}
             ${ty==='ai'&&!isPeek?'<button class="mt-btn view" onclick="openCatRules()">⚙ כללי קיטלוג</button>':''}
           </div>
 
@@ -2863,6 +2863,28 @@
     const cur=open.indexOf(_msgSel);
     _msgSel=open[(cur+1)%open.length]; renderOps(); msgFlash(_msgSel);
   }
+  /* ===== משימות שהיועץ ביקש מ-HK על החברה =====
+     מוצגות בשלב ההודעות — אותו סוג חוב: מישהו ביקש ועדיין לא קיבל.
+     רק מה שהיעד שלו היום או עבר; מה שרחוק יותר נשאר במסך המשימות. */
+  const ADV_TASKS={
+    0:[{t:'בדיקת העברה מפועלים 112 ללאומי 604 — 42,000 ₪', by:'לירון בן כליפא', due:'היום', late:false},
+       {t:'פילוח עלות המכר לפי ספקים — לקראת הפגישה', by:'לירון בן כליפא', due:'30.06', late:true}],
+    2:[{t:'לוודא שהתקבול ממרכז הבנייה נכנס', by:'לירון בן כליפא', due:'היום', late:false}],
+  };
+  function advTasksOf(){ return (ADV_TASKS[CUR]||[]).filter(x=>!x.done); }
+  function advDone(k){ const a=advTasksOf()[k]; if(!a) return; a.done=true; toast('בוצע · '+a.by+' עודכן'); renderOps(); }
+  function advReply(k){ const a=advTasksOf()[k]; if(!a) return; toast('נשלחה תגובה ל'+a.by); }
+  function advTasksHtml(){
+    const list=advTasksOf(); if(!list.length) return '';
+    return `<div class="adv-tasks">
+      <div class="at-h">משימות להיום · מהיועץ <em>${list.length}</em></div>
+      ${list.map((a,k)=>`<div class="at-row${a.late?' late':''}">
+        <span class="at-cb" onclick="advDone(${k})" title="סימון כבוצע">✓</span>
+        <div class="at-b"><b>${a.t}</b><span>${a.by} · ${a.late?'<i>עבר · '+a.due+'</i>':'להיום'}</span></div>
+        <button class="ot-btn ghost sm" onclick="advReply(${k})">תגובה ליועץ</button>
+      </div>`).join('')}
+    </div>`;
+  }
   function msgStage(rows,T){
     const items=rows.filter(t=>t.type==='msg'||t.type==='doc');
     /* המונה סופר התקדמות בשלב כולו, כולל מה שכבר טופל */
@@ -2917,8 +2939,8 @@
       const el=document.getElementById('msgc_'+_msgSel);
       if(el&&el.scrollIntoView) el.scrollIntoView({block:'nearest',behavior:'smooth'});
     },60);
-    /* ההתכתבות חיה בפאנל הצד המשותף — כאן רק חלון העבודה */
-    return `<div class="ms-split solo"><div class="ms-work">${work}</div></div>`;
+    /* ההתכתבות חיה בפאנל הצד המשותף — כאן משימות היועץ ואז חלון העבודה */
+    return `${advTasksHtml()}<div class="ms-split solo"><div class="ms-work">${work}</div></div>`;
   }
   /* הודעת מלל — שיחה ומענה */
   function textMsgBody(t,i){
