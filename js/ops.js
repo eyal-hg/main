@@ -74,7 +74,11 @@
   const OPS_ICO_CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
   const OPS_ICO_CLOCK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const fmtDur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
-  function startOpsTimer(){opsStart=Date.now();const base=opsAccum[opsActiveKey]||0;const el=document.getElementById('opsClock');
+  function startOpsTimer(){
+    /* חברה שסיימה ואין לה עבודה חדשה — השעון עומד, אין מה לספור */
+    if(window._opsDoneScreen){ stopOpsTimer(); const c=document.getElementById('opsClock');
+      if(c) c.textContent=' '+fmtDur(opsDur[opsActiveKey]||opsAccum[opsActiveKey]||0); return; }
+    opsStart=Date.now();const base=opsAccum[opsActiveKey]||0;const el=document.getElementById('opsClock');
     const tick=()=>{el.innerHTML=OPS_ICO_CLOCK+' '+fmtDur(base+Math.floor((Date.now()-opsStart)/1000));};
     tick();clearInterval(opsTimer);opsTimer=setInterval(tick,1000);}
   function stopOpsTimer(){clearInterval(opsTimer);opsTimer=null;}
@@ -122,7 +126,7 @@
     document.querySelector('.sub-line').style.display='none';
     document.getElementById('shell').classList.add('no-rail');
     // re-entry after completed finish: keep counting from the recorded duration, button becomes refresh
-    window._opsDoneScreen=false;
+    window._opsDoneScreen=false; window._opsForce=null;
     const wasDone=opsDoneSet.has(opsActiveKey);
     if(wasDone && opsAccum[opsActiveKey]==null) opsAccum[opsActiveKey]=opsDur[opsActiveKey]||0;
     /* חברה שכבר סיימה את המחזור — אותו פס, עם התג "התפעול הושלם".
@@ -142,7 +146,7 @@
       const openNow=curTasks().filter(x=>!x.done);
       const msgs=openNow.filter(x=>x.type==='msg'||x.type==='doc');
       if(msgs.length) window._opsForce=0;
-      else if(!openNow.length) window._opsDoneScreen=true;
+      else if(!openNow.length){ window._opsDoneScreen=true; }
     }
     OPS_VIEW='open'; renderOps();
     // אין בכלל מה לתפעל? — עוברים אוטומטית לרענון ולבדיקות
@@ -193,11 +197,13 @@
   function opsEndBtnMode(){
     const b=document.getElementById('opsEndBtn'); if(!b) return;
     const inFin=document.getElementById('finView').style.display!=='none';
+    const still=!inFin&&window._opsDoneScreen;
     b.style.display='';
-    b.onclick=inFin?ctsOpen:finishOps;
-    b.classList.toggle('as-msg',inFin);
-    b.innerHTML=inFin
-      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> שליחת הודעה'
+    const WA='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> ';
+    b.onclick=(inFin||still)?ctsOpen:finishOps;
+    b.classList.toggle('as-msg',inFin||still);
+    b.innerHTML=still ? WA+'שלח הודעת תזרים'
+      : inFin ? WA+'שליחת הודעה'
       : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול';
   }
   /* הסיכום נפתח רק בבקשה מפורשת */
@@ -1729,11 +1735,12 @@
               <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#3FAF4B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
               <b>התפעול הושלם</b>
               <span>אין הודעות חדשות מאז התפעול האחרון · הושלם ב-${fmtDur(opsDur[opsActiveKey]||opsAccum[opsActiveKey]||0)}</span>
-              <div class="ofs-acts"><button class="ot-btn done" onclick="opsShowRecap()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> שליחת הודעה</button></div>
+              <div class="ofs-acts"><button class="ot-btn done" onclick="opsShowRecap()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> שלח הודעת תזרים</button></div>
             </div></div>`
           :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>'));
     document.getElementById('opsGrid').innerHTML =
       '<div class="ops-split'+(chat?' with-chat':'')+'"><div class="ops-main">'+main+'</div>'+chat+'</div>';
+    if(OPSMODE) opsEndBtnMode();
   }
   /* ===== כללי קיטלוג אוטומטי — פעולות שעונות על כלל מקוטלגות בלי אישור ===== */
   const CAT_KIND={source:'קטגוריית מקור (Bizibox)', desc:'תיאור מכיל'};
