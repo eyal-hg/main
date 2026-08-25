@@ -377,6 +377,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .topics button.on b{background:rgba(255,255,255,.2);color:#fff}
 .tclr{display:none;font-size:12.5px;color:var(--red);font-weight:600;margin-inline-start:10px}
 .tclr.on{display:inline}
+.topics .tmore{color:var(--sky);border-bottom:none;font-weight:600}
 </style>
 </head>
 <body>
@@ -426,20 +427,8 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       <span class="res" id="res"></span>
       <a href="#" class="clr" id="clr">ניקוי</a>
     </div>
-    <div class="topics">
-      <span class="lbl">נושאים שחזרו לאחרונה</span>
-      <button onclick="topicGo(this,'מסגרת אשראי')">מסגרת אשראי<b>·4</b></button>
-      <button onclick="topicGo(this,'גבייה')">גבייה<b>·2</b></button>
-      <button onclick="topicGo(this,'קורס')">קורס המנחות<b>·1</b></button>
-      <button onclick="topicGo(this,'רימון מוצרי')">התלות ברימון<b>·1</b></button>
-    </div>
-    <div class="topics fbt">
-      <span class="lbl">מה חוזר במשובים על היועץ</span>
-      <button onclick="fbtGo(this,'why')">חיבור חזק ל"למה"<b>·2</b></button>
-      <button onclick="fbtGo(this,'nums')">פתיחה במספרים בלי הקשר<b>·2</b></button>
-      <button onclick="fbtGo(this,'deep')">צלילה לפרטים טכניים<b>·1</b></button>
-      <a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>
-    </div>
+    <div class="topics" id="topRow"></div>
+    <div class="topics fbt" id="fbtRow"></div>
     <div class="tw">
     <table class="ml" id="ml">
       <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>משך</th><th></th></tr></thead>
@@ -554,6 +543,25 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     apply();
   }
   window.tClear=tClear;
+  /* הנושאים מהג'וב היומי — מוצגים 4, השאר מאחורי "עוד" */
+  const TOPICS=[['מסגרת אשראי','מסגרת אשראי',4],['גבייה','גבייה',2],['קורס המנחות','קורס',1],['התלות ברימון','רימון מוצרי',1],['תמחור','תמחור',1],['גיוס עובדים','גיוס',1]];
+  const FBTS=[['חיבור חזק ל"למה"','why',2],['פתיחה במספרים בלי הקשר','nums',2],['צלילה לפרטים טכניים','deep',1],['הקשבה והכלה','listen',1],['סיכום פעולות חד','actions',1]];
+  const T_CAP=4;
+  window._topMore=false; window._fbtMore=false;
+  function renderTopics(){
+    const row=(items,host,go,moreKey,extra)=>{
+      const open=window[moreKey];
+      const list=open?items:items.slice(0,T_CAP);
+      document.getElementById(host).innerHTML=
+        `<span class="lbl">${host==='topRow'?'נושאים שחזרו לאחרונה':'מה חוזר במשובים על היועץ'}</span>`
+        +list.map(x=>`<button onclick="${go}(this,'${x[1]}')">${x[0]}<b>·${x[2]}</b></button>`).join('')
+        +(items.length>T_CAP?`<button class="tmore" onclick="window.${moreKey}=!window.${moreKey};renderTopics()">${open?'פחות':'עוד '+(items.length-T_CAP)+' ▾'}</button>`:'')
+        +(extra||'');
+    };
+    row(TOPICS,'topRow','topicGo','_topMore');
+    row(FBTS,'fbtRow','fbtGo','_fbtMore','<a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>');
+  }
+  renderTopics(); window.renderTopics=renderTopics;
   function apply(){
     let shown=0;
     const cf=document.getElementById('cfil').value;
