@@ -132,8 +132,14 @@
     const ttl=document.querySelector('.ops-title');
     if(ttl) ttl.firstChild.nodeValue=wasDone?'תפעול נוסף — ':'מצב תפעול — ';
     if(wasDone) dt.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> תפעול נוסף · המחזור החודשי הושלם ב-'+fmtDur(opsDur[opsActiveKey]||opsAccum[opsActiveKey]||0);
+    /* אותו כפתור סיום תפעול — גם בתפעול נוסף */
     const _end=document.getElementById('opsEndBtn');
-    if(_end) _end.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> '+(wasDone?'סיכום התפעול':'סיום תפעול');
+    if(_end){ _end.style.display='';
+      _end.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול'; }
+    const _cls=document.querySelector('.ops-close');
+    if(_cls){ _cls.innerHTML=wasDone
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> סגירה · הזמן נשמר'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> השהיה · הזמן נשמר'; }
     document.getElementById('opsFinBtn').innerHTML =
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg> רענון נתונים';
     OPS_VIEW='open'; renderOps();
@@ -1639,22 +1645,24 @@
         window._stgIx=curIx;window._stgT0=Date.now();
       }
     }
-    // פס הזרימה
+    /* שלב כפוי (הודעה שנותבה מהדשבורד) — הוא הפעיל בציר, לא הנוכחי בזרימה */
+    const forcedIx=(window._opsForce!=null&&STAGES[window._opsForce])?window._opsForce:null;
+    const actIx=forcedIx!=null?forcedIx:curIx;
     // פס הזרימה — עם מונה "כמה מחכה" בכל שלב, ולחיצה לתצוגה מקדימה
     const flow='<div class="ofl">'+STAGES.map((st,i)=>{
-      const state=i<curIx?'done':i===curIx?'cur':'lock';
+      const state=i===actIx?'cur':(i<curIx?'done':'lock');
       const n=openBy(st[0]);
       const clk=(state==='lock'&&n>0);   // לחיץ רק אם באמת מחכה שם משהו
       return (i?'<span class="ofl-ln '+(i<=curIx?'done':'')+'"></span>':'')+
         `<span class="ofl-nd ${state} ${clk?'clk':''} ${window._opsPeek===i?'peek':''}" ${clk?`onclick="opsPeek(${i})"`:''} title="${st[1]}${clk?' — תצוגה מקדימה':''}">
-          <b>${i<curIx?'✓':i+1}</b><i>${st[1]}</i>${n&&i>curIx?`<em>${n}</em>`:''}</span>`;
+          <b>${(i<curIx&&i!==actIx)?'✓':i+1}</b><i>${st[1]}</i>${n&&i!==actIx?`<em>${n}</em>`:''}</span>`;
     }).join('')+'</div>';
     let cards='';
     if(OPS_VIEW==='open'){
       // מסך מלא לשלב אחד: הנוכחי — או שלב בתצוגה מקדימה (נעול למגע)
       /* _opsForce — קפיצה לשלב מסוים (למשל הודעה שנותבה מהדשבורד): פעיל, לא נעול */
-      const forced=(window._opsForce!=null&&STAGES[window._opsForce]);
-      const showIx=forced?window._opsForce:((window._opsPeek!=null&&window._opsPeek!==curIx)?window._opsPeek:curIx);
+      const forced=forcedIx!=null;
+      const showIx=forced?forcedIx:((window._opsPeek!=null&&window._opsPeek!==curIx)?window._opsPeek:curIx);
       if(showIx<STAGES.length){
         const [ty,label,sub]=STAGES[showIx];
         const rows=pool.filter(t=>stTypes(ty).includes(t.type));
