@@ -121,17 +121,10 @@
     // re-entry after completed finish: keep counting from the recorded duration, button becomes refresh
     const wasDone=opsDoneSet.has(opsActiveKey);
     if(wasDone && opsAccum[opsActiveKey]==null) opsAccum[opsActiveKey]=opsDur[opsActiveKey]||0;
-    /* ===== תפעול נוסף =====
-       החברה כבר סיימה את התפעול החודשי, ובכל זאת הגיעה עבודה (הודעה שנותבה
-       מהדשבורד). הפס משנה מראה: כתום-כהה, "תפעול נוסף", והשעון ממשיך
-       מהזמן שנצבר — כדי שיהיה ברור שזה זמן מעבר למחזור שנסגר. */
-    const bar=document.querySelector('.ops-banner');
-    if(bar) bar.classList.toggle('extra',wasDone);
+    /* חברה שכבר סיימה את המחזור — אותו פס, עם התג "התפעול הושלם".
+       השעון ממשיך מהזמן שנצבר; אין הפרדה בין הזמנים. */
     const dt=document.getElementById('opsDoneTag');
     dt.style.display=wasDone?'':'none';
-    const ttl=document.querySelector('.ops-title');
-    if(ttl) ttl.firstChild.nodeValue=wasDone?'תפעול נוסף — ':'מצב תפעול — ';
-    if(wasDone) dt.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> המחזור החודשי הושלם';
     /* אותו כפתור סיום תפעול — גם בתפעול נוסף */
     const _end=document.getElementById('opsEndBtn');
     if(_end){ _end.style.display='';
@@ -1465,6 +1458,8 @@
     CLIENTS[1].debt=1200; CLIENTS[3].debt=480;
     CLIENTS[0].ccDown=true; CLIENTS[2].clearDown=true;
     opsDoneSet.add('c4'); opsDur['c4']=320;
+    /* דמו: אנרגי כבר סיימה את המחזור — כדי לראות את מצב "תפעול נוסף" */
+    opsDoneSet.add('c0'); opsDur['c0']=505;
     CLIENTS[0].preview='תחזרו אליי היום · צפייה בתזרים';
     CLIENTS[2].preview='האם היתרה שלי מספיקה?';
     CLIENTS[4].preview='אפשר דוח תזרים מעודכן?';

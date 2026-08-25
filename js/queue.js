@@ -188,6 +188,19 @@
   function chatFrom(i){OQS_OPEN=null;selectClient(i);showTab('msgs');} // מסך ההודעות המאוחד (הדראואר יצא לגמלאות)
   function qReply(inp,i){const v=inp.value.trim();if(!v)return;inp.value='';toast('התגובה נשלחה ל'+CLIENTS[i].name+' בוואטסאפ');}
   /* ההודעות שממתינות לטיפול בחברה — אחרי סינון מה שסומן כטופל */
+  /* קבצים שהלקוח שלח — תמונה / אקסל / PDF. מוצגים בווידגט עם תג הקובץ. */
+  const MSG_DOCS={
+    0:[{name:'אישור העברה — דיסקונט · 1,381 ₪', kind:'img',  who:'צחי עובד', when:'היום 09:12', t:'העברתי עכשיו ללדובק, מצרף אישור 🙏'},
+       {name:'ריכוז קופה קטנה — יולי.xlsx',        kind:'xls',  who:'תומר לוי', when:'היום 08:20', t:'מצרף ריכוז הוצאות קופה קטנה'}],
+    1:[{name:'חשבונית ספק — 4,820 ₪.pdf',          kind:'pdf',  who:'רות אלמוג', when:'אתמול 17:40', t:'החשבונית שביקשת'}],
+    3:[{name:'צילום שיק — הבינלאומי · 6,300 ₪',    kind:'img',  who:'יעל גולני', when:'היום 10:05', t:'השיק שנתתי היום'}],
+  };
+  const DOC_ICO={img:'🖼', xls:'📊', pdf:'📄'};
+  const DOC_LBL={img:'תמונה', xls:'אקסל', pdf:'PDF'};
+  function msgDocsOf(i){
+    window._msgHandled=window._msgHandled||new Set();
+    return (MSG_DOCS[i]||[]).map((d,k)=>({d,gi:'d'+k})).filter(p=>!window._msgHandled.has(i+':'+p.gi));
+  }
   function msgPendOf(c,i){
     const users=(c.thread||[]).filter(m=>m.from==='user');
     const pend=users.slice(-Math.min(c.unread||1,users.length));
@@ -199,15 +212,24 @@
   /* ניתוב הודעה לתפעול — נכנסים למצב תפעול, נוחתים על שלב "הודעות לקוח",
      וההודעה הזאת נבחרת. אם התפעול כבר הושלם — השעון ממשיך לספור מהזמן שנצבר. */
   function msgToOps(i,gi){
-    const users=(CLIENTS[i].thread||[]).filter(m=>m.from==='user');
-    const m=users[gi]||{t:'הודעה מהלקוח', name:'הלקוח', when:'עכשיו'};
     window._msgHandled=window._msgHandled||new Set();
     window._msgHandled.add(i+':'+gi);
     selectClient(i);
-    /* ההודעה נכנסת לתור התפעול כמשימה פתוחה, בראש */
     const T=(CLIENTS[i].tasks=CLIENTS[i].tasks||[]);
-    const task={type:'msg', who:m.name||'הלקוח', thread:[m.t], time:m.when||'עכשיו',
-                ctx:['['+(m.name||'הלקוח')+'] '+m.t], fromBoard:true};
+    let task;
+    if(String(gi).charAt(0)==='d'){          /* קובץ — נכנס כמסמך להזנה */
+      const d=(MSG_DOCS[i]||[])[+String(gi).slice(1)]||{};
+      task={type:'doc', name:d.name, who:d.who, note:d.t, time:d.when, src:'הודעת לקוח', fromBoard:true,
+            img:d.kind==='img'?'m3.jpeg':null,
+            ctx:['['+d.who+'] '+d.t,'['+d.who+'] + '+DOC_LBL[d.kind]],
+            file:d.kind==='xls'?{payee:'קופה קטנה', rows:[{date:'07.07.2026',ref:'',desc:'חניה ודלק',amount:'214'},{date:'15.07.2026',ref:'',desc:'כיבוד לפגישות',amount:'182'}]}
+                : {payee:'', amount:'', date:'', ref:'', desc:''}};
+    }else{
+      const users=(CLIENTS[i].thread||[]).filter(m=>m.from==='user');
+      const m=users[gi]||{t:'הודעה מהלקוח', name:'הלקוח', when:'עכשיו'};
+      task={type:'msg', who:m.name||'הלקוח', thread:[m.t], time:m.when||'עכשיו',
+            ctx:['['+(m.name||'הלקוח')+'] '+m.t], fromBoard:true};
+    }
     T.unshift(task);
     window._opsForce=3;   /* שלב "הודעות לקוח" */
     if(typeof enterOps==='function') enterOps();
@@ -845,9 +867,15 @@
               <button class="oqs-ops" onclick="msgToOps(${i},${p.gi})" title="פתיחת התפעול על ההודעה — השעון ממשיך לספור">טיפול בתפעול ←</button></div>${p.m.t}</div>
             <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
           </div>`).join('');
+        const docs=msgDocsOf(i).map(p=>`<div class="oqs-doc ${p.d.kind}">
+            <span class="od-ic">${DOC_ICO[p.d.kind]}</span>
+            <div class="od-b"><b>${p.d.name}</b><span>${p.d.who} · ${p.d.when} · ${p.d.t}</span></div>
+            <span class="od-tag">${DOC_LBL[p.d.kind]}</span>
+            <button class="oqs-ops" onclick="msgToOps(${i},'${p.gi}')" title="הזנה לתזרים בתוך התפעול">טיפול בתפעול ←</button>
+          </div>`).join('');
         return `<div class="oqs-chat">
-          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length} שלא נענו</span></div>
-          ${bubs}
+          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length} שלא נענו${msgDocsOf(i).length?' · '+msgDocsOf(i).length+' קבצים':''}</span></div>
+          ${docs}${bubs}
         </div>`;}).join('')}</div>
       ${withPend.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
     </div>`;
@@ -864,5 +892,5 @@
         <button class="mt-btn view sm" onclick="selectClient(${r.ci})">פתיחה</button>
         <button class="mt-btn sm" onclick="toast('היועץ עודכן — ${r.c}')">עדכון היועץ</button>
       </div>`).join('')}</div>`;
-    const mEl=document.getElementById('msgCol'); if(mEl) mEl.innerHTML=cRad+c1;
+    const mEl=document.getElementById('msgCol'); if(mEl) mEl.innerHTML=c1;
   }
