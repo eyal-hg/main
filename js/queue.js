@@ -230,7 +230,7 @@
             ctx:['['+(m.name||'הלקוח')+'] '+m.t], fromBoard:true};
     }
     T.unshift(task);
-    window._opsForce=3;   /* שלב "הודעות לקוח" */
+    window._opsForce=0;   /* "הודעות לקוח" — השלב הראשון */
     if(typeof enterOps==='function') enterOps();
     setTimeout(()=>{ if(typeof msgPick==='function') msgPick(CLIENTS[i].tasks.indexOf(task)); },60);
     toast('נפתח בתפעול — שלב הודעות לקוח · השעון ממשיך');
