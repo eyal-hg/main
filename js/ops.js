@@ -1504,6 +1504,34 @@
   let OPS_OPEN=new Set();
   /* ===== ההתכתבות עם הלקוח — פאנל קבוע לאורך כל התפעול =====
      אותה שיחה של שלב 4, לקריאה: מה הלקוח שלח, מה נענה, ומה עוד מחכה. */
+  /* צפי התזרים לפאנל הצד — ימים קדימה עם יתרה רצה */
+  window._opsSideTab=window._opsSideTab||'chat';
+  function opsSideTab(v){ window._opsSideTab=v; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
+  const SIDE_FLOW={
+    accts:[['מזרחי 295199',41200],['מרכנתיל 69855155',-42445]],
+    rows:[
+      ['28.07','תקבול — מרכז הבנייה',18600],
+      ['28.07','שיק 0010814 — ויקה רזניק',-216],
+      ['29.07','הו״ק — הראל (שילוח)',-2049],
+      ['30.07','משכורות יולי',-62100],
+      ['31.07','חיוב ויזה כ.א.ל',-9210],
+      ['01.08','שכירות אוגוסט',-12000],
+      ['03.08','תקבול — רימון מוצרי אנרגיה',24000],
+      ['05.08','מקדמות מס הכנסה',-8400],
+      ['10.08','החזר הלוואה — לאומי',-6500],
+      ['12.08','תקבול — מרכז הבנייה',19800],
+    ]};
+  function opsFlowHtml(){
+    const fmt=n=>Math.abs(n).toLocaleString();
+    let bal=SIDE_FLOW.accts.reduce((s,a)=>s+a[1],0);
+    const rows=SIDE_FLOW.rows.map(r=>{ bal+=r[2];
+      return `<div class="sf-r"><span class="sf-d num">${r[0]}</span>
+        <span class="sf-t">${r[1]}</span>
+        <b class="sf-a num ${r[2]<0?'neg':'pos'}">${r[2]<0?'-':'+'}${fmt(r[2])}</b>
+        <span class="sf-b num ${bal<0?'neg':''}">${bal<0?'-':''}${fmt(bal)}</span></div>`;}).join('');
+    return `<div class="sf-accts">${SIDE_FLOW.accts.map(a=>`<div class="sf-ac"><span>${a[0]}</span><b class="num ${a[1]<0?'neg':''}">${a[1]<0?'-':''}${Math.abs(a[1]).toLocaleString()} ₪</b></div>`).join('')}</div>
+      <div class="sf-h"><span>מועד</span><span>תנועה</span><span>סכום</span><span>יתרה</span></div>${rows}`;
+  }
   function opsChatSide(T){
     const items=T.filter(t=>t.type==='msg'||t.type==='doc');
     if(!items.length) return '';
@@ -1523,10 +1551,14 @@
         ${msgs}
         <div class="msgc-foot">${tag}${st}</div>
       </div>`;}).join('');
+    const tab=window._opsSideTab;
     return `<div class="ops-wdg ops-chatside">
-      <div class="ost-head"><div class="ost-b"><b>ההתכתבות עם הלקוח</b><i>מלווה את כל התפעול</i></div>
-        <span class="ost-cnt">${openN?openN+' מחכות':'הכל נענה ✓'}</span></div>
-      <div class="ops-chatbody">${body}</div>
+      <div class="ost-head side-tabs">
+        <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
+        <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
+        <span class="ost-cnt">${tab==='chat'?(openN?'':'הכל נענה ✓'):'צפי קדימה'}</span>
+      </div>
+      <div class="ops-chatbody">${tab==='chat'?body:opsFlowHtml()}</div>
     </div>`;
   }
   function renderOps(){
