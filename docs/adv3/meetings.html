@@ -266,6 +266,11 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ns-strip .r{display:inline-flex;align-items:center;gap:8px}
 .ns-strip .r a{font-weight:600;color:var(--navy)}
 .ns-strip .r i{font-style:normal;font-size:11.5px;color:var(--ink3)}
+.ar-none{font-size:13.5px;color:#DCEBF5;background:rgba(255,255,255,.07);border-radius:8px;padding:12px 14px;line-height:1.5}
+.ar-back{display:inline-block;font-size:12px;color:#9FC0DA;margin-bottom:6px}
+.ar-back:hover{color:#fff}
+.ar-stars{display:block;color:#E9A93D;letter-spacing:1px;margin-top:6px}
+.ml tr.hl td{background:#EEF6FC}
 </style>
 </head>
 <body>
@@ -293,7 +298,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
     <span class="in num">בעוד 2:06</span>
     <button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
-    <button class="btn prep2" onclick="toast('ההכנה לפגישה נפתחת — מטעי גבעון')">הכנה לפגישה</button>
+    <button class="btn prep2" onclick="arenaShow('prep');document.getElementById('arena').scrollIntoView({behavior:'smooth',block:'start'})">הכנה לפגישה</button>
   </div>
   <div class="now num"><b>10:54</b> · עכשיו</div>
 </header>
@@ -356,7 +361,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 01.06 11:00 · פ.ע — חודש יוני">משוב</a></td>
           <td class="ac"><button class="btn sm" data-act="send">שליחה ללקוח</button></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות">
+        <tr class="m" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות" id="r1205">
           <td class="d num">12.05<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
           <td class="len num">52 דק׳</td>
@@ -381,7 +386,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="fb"><span class="none">—</span></td>
           <td class="ac"><button class="btn sm" data-act="upload">העלאת הקלטה</button></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="אנרגי אינטרנשיונל פגישה חודשית אפריל">
+        <tr class="m" data-tags="ok" data-k="אנרגי אינטרנשיונל פגישה חודשית אפריל" id="r0304">
           <td class="d num">03.04<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה חודשית — אפריל</span><span class="hit"></span></td>
           <td class="len num">57 דק׳</td>
@@ -389,7 +394,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 03.04 10:00 · פגישה חודשית — אפריל">משוב</a></td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="רימון יצחק פגישה חודשית מרץ">
+        <tr class="m" data-tags="ok" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703">
           <td class="d num">17.03<small class="num">12:00</small></td>
           <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
           <td class="len num">61 דק׳</td>
@@ -415,31 +420,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   </section>
 
   <!-- ===== upcoming ===== -->
-  <aside class="arena" id="arena">
-    <div class="ar-h">
-      <span class="ar-cap">זירת הפגישה · הבאה</span>
-      <h2>מטעי גבעון</h2>
-      <div class="ar-meta"><span class="num">היום 13:00</span><span class="c">·</span><span>שיחת מעקב</span><span class="c">·</span><span>תומר לוי</span></div>
-    </div>
-    <div class="ar-sec">
-      <h4>מהפגישה הקודמת · 12.05</h4>
-      <div class="ar-r"><i>1</i>יעד קניות מלאי סומן בסיכון — סוכם מעקב חודשי</div>
-      <div class="ar-r"><i>2</i>קורס מנחות יצא לדרך · 4/4 משימות נסגרו</div>
-    </div>
-    <div class="ar-sec">
-      <h4>מה השתנה מאז</h4>
-      <div class="ar-r warn"><i>!</i>חריגת תקציב קניות מלאי — 61% מהיעד בלבד · נפתח פער 11,000 ₪</div>
-      <div class="ar-r"><i>+</i>"סגרנו חוזה עם מרכז הבנייה — התחלה בספטמבר" (קבוצה, אתמול)</div>
-    </div>
-    <div class="ar-sec">
-      <h4>איך לדבר עם תומר</h4>
-      <div class="ar-q">"תמונה גדולה, לא פירוט. שאלות ישירות. עונה מהר בקבוצה — פחות במייל."</div>
-    </div>
-    <div class="ar-acts">
-      <button class="btn rec2" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
-      <a class="btn full" href="../../meeting-room.html">הזירה המלאה ↗</a>
-    </div>
-  </aside>
+  <aside class="arena" id="arena"></aside>
 
 </main>
 
@@ -484,17 +465,67 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     $('#res').innerHTML = query ? '<b>'+shown+'</b> תוצאות ל-״'+query+'״' : '';
     $('#clr').classList.toggle('on',!!query);
   }
-  $$('.miss .q').forEach(q=>q.addEventListener('click',()=>{filter=(filter===q.dataset.q)?null:q.dataset.q;apply()}));
-  $('#missAll').addEventListener('click',e=>{e.preventDefault();filter=null;apply()});
+  $$('#gq button[data-q]').forEach(q=>{ if(q.dataset.q!=='none') q.addEventListener('click',()=>{filter=(filter===q.dataset.q)?null:q.dataset.q;apply()}); });
   $('#q').addEventListener('input',e=>{query=e.target.value.trim();apply()});
   $('#clr').addEventListener('click',e=>{e.preventDefault();$('#q').value='';query='';apply()});
 
-  // לחיצה על שורה — נכנסים לזירת הפגישה (חדר הפגישה)
+  /* ===== הזירה בפאנל: ברירת מחדל — הפגישה הבאה. לחיצה על שורה טוענת אותה.
+     כל פגישה מציגה רק מה שבאמת יש לה — לא לכל פגישה יש סיכום, משימות, תמלול או משוב. */
+  const ARENA={
+    prep:{cap:'הכנה לפגישה · הבאה', co:'מטעי גבעון', meta:'היום 13:00 · שיחת מעקב · תומר לוי', next:true,
+      prev:{d:'12.05', rows:['יעד קניות מלאי סומן בסיכון — סוכם מעקב חודשי','קורס מנחות יצא לדרך · 4/4 משימות נסגרו']},
+      changed:[{w:1,tx:'חריגת תקציב קניות מלאי — 61% מהיעד בלבד · נפתח פער 11,000 ₪'},{tx:'"סגרנו חוזה עם מרכז הבנייה — התחלה בספטמבר" (קבוצה, אתמול)'}],
+      talk:'"תמונה גדולה, לא פירוט. שאלות ישירות. עונה מהר בקבוצה — פחות במייל."'},
+    r0207:{cap:'זירת הפגישה', co:'אנרגי אינטרנשיונל', meta:'02.07 09:00 · פגישה שוטפת — סקירת תזרים · 46 דק׳',
+      sum:{st:'טיוטה מחכה לאישור', items:['נוסף כאב: תלות בלקוח מרכזי','שביעות רצון — ירידה','צפי החריגה עודכן']}, rec:true, act:['appr','אישור הסיכום'],
+      fb:'02.07 09:00'},
+    r2406:{cap:'זירת הפגישה', co:'אנרגי גולני', meta:'24.06 10:30 · פ.ע — חודש יוני', none:'הפגישה לא התקיימה — אין ממנה תוצרים.', act:['resch','תיאום מחדש']},
+    r0106:{cap:'זירת הפגישה', co:'אנרגי אינטרנשיונל', meta:'01.06 11:00 · פ.ע — חודש יוני · 58 דק׳',
+      sum:{st:'אושר — לא נשלח ללקוח', items:['סוכם: מעבר לדיווח שבועי','נקבע יעד גבייה 95%']}, rec:true, act:['send','שליחה ללקוח'], fb:'01.06 11:00'},
+    r1205:{cap:'זירת הפגישה', co:'מטעי גבעון', meta:'12.05 10:00 · פגישת עבודה — קורס מנחות · 52 דק׳',
+      sum:{st:'אושר ונשלח ✓', items:['הקורס יצא לדרך','נבחרו 4 מנחות']}, rec:true, fb:'12.05 10:00'},
+    r0505a:{cap:'זירת הפגישה', co:'אנרגי אינטרנשיונל', meta:'05.05 11:00 · פ.ע — חודש מאי · 49 דק׳',
+      sum:{st:'אושר ונשלח ✓', items:['ניתוח רבעון מרץ–מאי','זוהה פער: כרטיס מקס לא מחובר','הוחלט: החלפת שירות הלקוחות','יעד: מסגרת 100 א׳ עד 15.7']},
+      tasks:'4/4 נסגרו', rec:true, fb:'05.05 11:00'},
+    r0505b:{cap:'זירת הפגישה', co:'אנרגי גולני', meta:'05.05 09:00 · לימוד בנדל · 55 דק׳',
+      none:'לא הוקלטה — אין תמלול, אין סיכום ואין משימות.', act:['upload','העלאת הקלטה']},
+    r0304:{cap:'זירת הפגישה', co:'אנרגי אינטרנשיונל', meta:'03.04 10:00 · פגישה חודשית — אפריל · 57 דק׳',
+      sum:{st:'אושר ונשלח ✓', items:['3 סעיפים']}, tasks:'2/3 נסגרו · אחת פתוחה', rec:true, fb:'03.04 10:00'},
+    r1703:{cap:'זירת הפגישה', co:'רימון יצחק', meta:'17.03 12:00 · פגישה חודשית — מרץ · 61 דק׳',
+      sum:{st:'אושר ונשלח ✓', items:['פילוח הוצאות לפי ספקים','יעד רווחיות Q2']}, rec:true, fb:'17.03 12:00'},
+  };
+  function arenaShow(id){
+    const a=ARENA[id]||ARENA.r0207; window._arSel=id;
+    let b='';
+    if(a.next){
+      b=`<div class="ar-sec"><h4>מהפגישה הקודמת · ${a.prev.d}</h4>${a.prev.rows.map((r,i)=>`<div class="ar-r"><i>${i+1}</i>${r}</div>`).join('')}</div>
+         <div class="ar-sec"><h4>מה השתנה מאז</h4>${a.changed.map(c=>`<div class="ar-r ${c.w?'warn':''}"><i>${c.w?'!':'+'}</i>${c.tx}</div>`).join('')}</div>
+         <div class="ar-sec"><h4>איך לדבר עם תומר</h4><div class="ar-q">${a.talk}</div></div>
+         <div class="ar-acts"><button class="btn rec2" onclick="toast('ההקלטה התחילה — ${a.co}')"><i></i>הקלטה</button>
+           <a class="btn full" href="../../meeting-room.html">הזירה המלאה ↗</a></div>`;
+    }else if(a.none){
+      b=`<div class="ar-sec"><div class="ar-none">${a.none}</div></div>
+         <div class="ar-acts">${a.act?`<button class="btn rec2" data-act="${a.act[0]}" style="background:#fff;color:var(--navy)">${a.act[1]}</button>`:''}</div>`;
+    }else{
+      b=`<div class="ar-sec"><h4>הסיכום · ${a.sum.st}</h4>${a.sum.items.map((r,i)=>`<div class="ar-r"><i>${i+1}</i>${r}</div>`).join('')}</div>
+         ${a.tasks?`<div class="ar-sec"><h4>משימות</h4><div class="ar-r"><i>✓</i>${a.tasks}</div></div>`:''}
+         ${a.fb?`<div class="ar-sec"><h4>משוב מהלקוח</h4><div class="ar-q">${(FB[a.fb]||{}).tx||'—'}<b class="ar-stars">${'★'.repeat((FB[a.fb]||{r:0}).r)}</b></div></div>`:''}
+         <div class="ar-acts">${a.act?`<button class="btn rec2" data-act="${a.act[0]}" style="background:#fff;color:var(--navy)">${a.act[1]}</button>`:''}
+           ${a.rec?`<a class="btn full" href="../../meeting-room.html">תמלול והזירה המלאה ↗</a>`:''}</div>`;
+    }
+    document.getElementById('arena').innerHTML=`<div class="ar-h">
+        ${id==='prep'?'<a class="ar-back" href="#" onclick="event.preventDefault();arenaShow(\'r0207\')">→ חזרה לזירת הפגישה</a>':''}
+        <span class="ar-cap">${a.cap}</span><h2>${a.co}</h2><div class="ar-meta">${a.meta.split(' · ').map(x=>'<span>'+x+'</span>').join('<span class="c">·</span>')}</div></div>`+b;
+  }
   document.addEventListener('click',e=>{
     const tr=e.target.closest('#ml tbody tr.m');
     if(!tr||e.target.closest('a,button')) return;
-    window.location.href='../../meeting-room.html';
+    document.querySelectorAll('#ml tr.hl').forEach(x=>x.classList.remove('hl'));
+    tr.classList.add('hl');
+    arenaShow(tr.id||'next');
   });
+  window.arenaShow=arenaShow; window.nosetGo=nosetGo;
+  setTimeout(()=>arenaShow('r0207'),0);   /* אחרי הגדרת FB */
   // feedback modal — תוכן המשוב עצמו: ציון + מה הלקוח כתב
   const FB={
     '02.07 09:00':{r:5,who:'צחי עובד',tx:'"פגישה ממוקדת. סוף סוף הבנתי את תמונת התזרים המלאה."'},
