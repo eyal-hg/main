@@ -364,15 +364,19 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-mem .k{font-size:12px;color:#6B4FA0;background:#F6F1FB;border:1px solid #E3D8F2;border-radius:12px;padding:2px 10px;text-align:center;white-space:nowrap}
 .ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:#2E9BD6;font-weight:600}
 /* נושאים חוזרים — הצעות מתחת לחיפוש */
-.topics{display:flex;align-items:center;gap:7px;padding:0 20px 12px;flex-wrap:wrap;margin-top:-2px}
-.topics .lbl{font-size:12px;color:var(--ink3)}
-.topics button{font:inherit;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:8px;padding:5px 13px;border-radius:18px;border:1px solid #B9C6D2;background:#fff;color:var(--ink);cursor:pointer}
-.topics button b{font-weight:700;color:#fff;background:var(--sky);border-radius:10px;padding:0 7px;font-size:11.5px;line-height:18px}
-.topics.fbt button b{background:var(--purple)}
-.topics .lbl{font-weight:600}
+.topics{display:flex;align-items:baseline;gap:4px 14px;padding:0 20px 6px;flex-wrap:wrap;margin-top:-4px;font-size:13px}
+.topics:last-of-type{padding-bottom:12px}
+.topics .lbl{font-size:12px;color:var(--ink3);min-width:150px}
+.topics button{font:inherit;font-size:13px;background:none;border:none;padding:2px 0;color:var(--navy);cursor:pointer;border-bottom:1px dashed #B9C6D2}
+.topics button:hover{border-bottom-style:solid;border-color:var(--navy)}
+.topics button.on{color:#fff;background:var(--navy);border:none;border-radius:5px;padding:2px 8px}
+.topics button b{font-weight:400;color:var(--ink3);font-size:12px;margin-inline-start:3px}
+.topics button.on b{color:rgba(255,255,255,.75)}
 .topics button:hover{border-color:var(--navy)}
 .topics button.on{background:var(--navy);border-color:var(--navy);color:#fff}
 .topics button.on b{background:rgba(255,255,255,.2);color:#fff}
+.tclr{display:none;font-size:12.5px;color:var(--red);font-weight:600;margin-inline-start:10px}
+.tclr.on{display:inline}
 </style>
 </head>
 <body>
@@ -424,16 +428,17 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     </div>
     <div class="topics">
       <span class="lbl">נושאים שחזרו לאחרונה</span>
-      <button onclick="topicGo(this,'מסגרת אשראי')">מסגרת אשראי <b>4</b></button>
-      <button onclick="topicGo(this,'גבייה')">גבייה <b>2</b></button>
-      <button onclick="topicGo(this,'קורס')">קורס המנחות <b>1</b></button>
-      <button onclick="topicGo(this,'רימון מוצרי')">התלות ברימון <b>1</b></button>
+      <button onclick="topicGo(this,'מסגרת אשראי')">מסגרת אשראי<b>·4</b></button>
+      <button onclick="topicGo(this,'גבייה')">גבייה<b>·2</b></button>
+      <button onclick="topicGo(this,'קורס')">קורס המנחות<b>·1</b></button>
+      <button onclick="topicGo(this,'רימון מוצרי')">התלות ברימון<b>·1</b></button>
     </div>
     <div class="topics fbt">
-      <span class="lbl">נקודות שעלו במשוב לאחרונה</span>
-      <button onclick="fbtGo(this,'why')">חיבור חזק ל"למה" <b>2</b></button>
-      <button onclick="fbtGo(this,'nums')">פתיחה במספרים בלי הקשר <b>2</b></button>
-      <button onclick="fbtGo(this,'deep')">צלילה לפרטים טכניים <b>1</b></button>
+      <span class="lbl">מה חוזר במשובים על היועץ</span>
+      <button onclick="fbtGo(this,'why')">חיבור חזק ל"למה"<b>·2</b></button>
+      <button onclick="fbtGo(this,'nums')">פתיחה במספרים בלי הקשר<b>·2</b></button>
+      <button onclick="fbtGo(this,'deep')">צלילה לפרטים טכניים<b>·1</b></button>
+      <a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>
     </div>
     <div class="tw">
     <table class="ml" id="ml">
@@ -543,6 +548,12 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     apply();
   }
   window.fbtGo=fbtGo;
+  function tClear(){
+    fbtFilter=null; query=''; document.getElementById('q').value='';
+    document.querySelectorAll('.topics button').forEach(b=>b.classList.remove('on'));
+    apply();
+  }
+  window.tClear=tClear;
   function apply(){
     let shown=0;
     const cf=document.getElementById('cfil').value;
@@ -565,7 +576,10 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 
     const names={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
     const cf2=document.getElementById('cfil').value;
-    $('#hint').textContent = filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : cf2 ? cf2+' · '+hebCount[shown] : '';
+    const fbtNames={why:'חיבור חזק ל"למה"',nums:'פתיחה במספרים בלי הקשר',deep:'צלילה לפרטים טכניים'};
+    $('#hint').textContent = fbtFilter ? 'מסונן: '+fbtNames[fbtFilter]+' — מתוך המשובים · '+hebCount[shown]
+      : filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : cf2 ? cf2+' · '+hebCount[shown] : '';
+    const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(fbtFilter||query));
     $('#res').innerHTML = query ? '<b>'+shown+'</b> תוצאות ל-״'+query+'״' : '';
     $('#clr').classList.toggle('on',!!query);
   }
