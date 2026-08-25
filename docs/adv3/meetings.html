@@ -39,6 +39,30 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
+.strip .nextm{display:flex;align-items:center;gap:9px;font-size:13.5px;margin-inline-end:18px}
+.strip .nextm .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
+.strip .nextm .tm{font-size:19px;font-weight:600;color:#fff;line-height:1}
+.strip .nextm a{color:#fff;font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.strip .nextm a:hover{border-color:#fff}
+.strip .nextm .c{color:#7FA6C2}
+.strip .nextm .wh{color:#B9D3E6}
+.strip .nextm .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:2px 10px;font-size:12px;color:#DCEBF5}
+.strip .gq{display:flex;align-items:center;gap:6px}
+.strip .gq .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px;margin-inline-end:8px}
+.strip .gq button{font:inherit;display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:18px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#DCEBF5;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.strip .gq button:hover{border-color:#fff;color:#fff}
+.strip .gq button.on{background:#fff;color:var(--navy);border-color:#fff;font-weight:600}
+.strip .gq button b{font-size:16px;font-weight:700;line-height:1}
+.strip .gq button.on b{color:var(--coral)}
+/* בלי פגישה הבאה — העמודה */
+.ns-list{padding:4px 20px 8px}
+.ns-list .r{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}
+.ns-list .r:last-child{border-bottom:0}
+.ns-list .b{flex:1;min-width:0}
+.ns-list .name{font-size:14px;font-weight:600;color:var(--navy)}
+.ns-list .name:hover{text-decoration:underline}
+.ns-list .s{display:block;font-size:12px;color:var(--ink3);margin-top:2px}
+.ns-note{padding:10px 20px 14px;font-size:12px;color:var(--ink3);border-top:1px solid var(--bd)}
 .strip .today{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#B9D3E6}
 .strip .today b{color:#fff;font-weight:500}
 .strip .today a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35)}
@@ -200,6 +224,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   .search input{height:34px}
   .lfoot{display:none}
 }
+.ml .st .okst{color:var(--green);font-weight:500}
+.ml tbody tr.m{cursor:pointer}
+.ml tbody tr.m:hover td{background:#F8FBFD}
+#noset.pulse{box-shadow:0 0 0 3px rgba(57,171,226,.35);transition:box-shadow .3s}
+.ph .cfil{margin-right:auto;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;background:#fff;color:var(--ink)}
+.fbstars{color:#E9A93D;font-size:15px;letter-spacing:1px}
+.fbstars i{font-style:normal;color:#E1E9F1}
+.fbstars b{color:var(--ink2);font-size:12.5px;margin-inline-start:6px}
 </style>
 </head>
 <body>
@@ -220,29 +252,33 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   <div><h1>פגישות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="today num">
-    <span>היום <b>ארבע</b></span><span class="c">·</span>
-    <span>09:00 <a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a> הסתיימה</span><span class="c">·</span>
-    <span>הבאה <b>13:00</b> <a href="clients.html?c=514778220">מטעי גבעון</a></span>
+  <div class="gq" id="gq">
+    <span class="cap">מה חסר</span>
+    <button data-q="rec"><b class="num">1</b>לא הוקלטה</button>
+    <button data-q="appr"><b class="num">1</b>סיכום לא אושר</button>
+    <button data-q="sent"><b class="num">1</b>סיכום לא נשלח</button>
+    <button data-q="prep"><b class="num">1</b>הכנה לא נפתחה</button>
+    <button data-q="none" onclick="nosetGo()"><b class="num">2</b>בלי פגישה הבאה</button>
   </div>
   <div class="spacer"></div>
+  <div class="nextm">
+    <span class="cap">הפגישה הבאה</span>
+    <span class="tm num">13:00</span>
+    <a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span><span class="wh">שיחת מעקב</span>
+    <span class="in num">בעוד 2:06</span>
+  </div>
   <div class="now num"><b>10:54</b> · עכשיו</div>
 </header>
 
 <main class="wrap">
 
-  <!-- ===== what is missing — counters ===== -->
-  <section class="miss" id="miss">
-    <div class="cap"><b>מה חסר</b><span>לחיצה מסננת</span><a href="#" id="missAll">הצגת הכל</a></div>
-    <button class="q" data-q="rec" id="q-rec"><span class="n num">1</span><span><div class="l">לא הוקלטה</div><div class="w">אנרגי גולני · לימוד בנדל · 05.05</div></span></button>
-    <button class="q" data-q="appr" id="q-appr"><span class="n num">1</span><span><div class="l">סיכום לא אושר</div><div class="w">אנרגי אינטרנשיונל · היום 09:00</div></span></button>
-    <button class="q" data-q="sent" id="q-sent"><span class="n num">1</span><span><div class="l">סיכום לא נשלח</div><div class="w">אנרגי אינטרנשיונל · 01.06</div></span></button>
-    <button class="q" data-q="prep" id="q-prep"><span class="n num">1</span><span><div class="l">הכנה לא נפתחה</div><div class="w">משה עובד · היום 16:00 · Zoom</div></span></button>
-  </section>
-
   <!-- ===== all meetings ===== -->
   <section class="panel list">
-    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint">שמונה · מהחדשה לישנה</span><a class="more" href="clients.html">לפי לקוח</a></div>
+    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint">שמונה · מהחדשה לישנה</span>
+      <select class="cfil" id="cfil" onchange="apply()">
+        <option value="">כל הלקוחות</option>
+        <option>אנרגי אינטרנשיונל</option><option>אנרגי גולני</option><option>מטעי גבעון</option><option>משה עובד</option><option>רימון יצחק</option>
+      </select></div>
     <div class="search">
       <div class="in">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -259,7 +295,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="d num">02.07<small class="num">09:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
           <td class="len num">46 דק׳</td>
-          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span class="bad">סיכום מחכה לאישור</span></td>
+          <td class="st"><span class="bad">סיכום מחכה לאישור</span></td>
           <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 02.07 09:00 · פגישה שוטפת — סקירת תזרים">משוב</a></td>
           <td class="ac"><button class="btn pri sm" data-act="appr">אישור הסיכום</button></td>
         </tr>
@@ -275,7 +311,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="d num">01.06<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
           <td class="len num">58 דק׳</td>
-          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>אושר</span><span class="dot">·</span><span class="warn">לא נשלח ללקוח</span></td>
+          <td class="st"><span class="warn">הסיכום לא נשלח ללקוח</span></td>
           <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 01.06 11:00 · פ.ע — חודש יוני">משוב</a></td>
           <td class="ac"><button class="btn sm" data-act="send">שליחה ללקוח</button></td>
         </tr>
@@ -283,7 +319,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="d num">12.05<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
           <td class="len num">52 דק׳</td>
-          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>אושר ונשלח</span></td>
+          <td class="st"><span class="okst">✓ נסגרה</span></td>
           <td class="fb"><a href="#" data-fb="מטעי גבעון · 12.05 10:00 · פגישת עבודה — קורס מנחות">משוב</a></td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
@@ -292,7 +328,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="d num">05.05<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש מאי</span><span class="hit"></span></td>
           <td class="len num">49 דק׳</td>
-          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>4 סעיפים</span><span class="dot">·</span><span class="num">4/4 משימות</span></td>
+          <td class="st"><span class="okst">✓ נסגרה</span><span class="dot">·</span><span class="num">4/4 משימות</span></td>
           <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 05.05 11:00 · פ.ע — חודש מאי">משוב</a></td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
@@ -308,7 +344,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="d num">03.04<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה חודשית — אפריל</span><span class="hit"></span></td>
           <td class="len num">57 דק׳</td>
-          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>3 סעיפים</span><span class="dot">·</span><span class="num">2/3 משימות</span></td>
+          <td class="st"><span class="okst">✓ נסגרה</span><span class="dot">·</span><span class="num">2/3 משימות</span></td>
           <td class="fb"><a href="#" data-fb="אנרגי אינטרנשיונל · 03.04 10:00 · פגישה חודשית — אפריל">משוב</a></td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
@@ -316,7 +352,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="d num">17.03<small class="num">12:00</small></td>
           <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
           <td class="len num">61 דק׳</td>
-          <td class="st"><span>הוקלטה</span><span class="dot">·</span><span>אושר ונשלח</span></td>
+          <td class="st"><span class="okst">✓ נסגרה</span></td>
           <td class="fb"><a href="#" data-fb="רימון יצחק · 17.03 12:00 · פגישה חודשית — מרץ">משוב</a></td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
@@ -338,39 +374,16 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   </section>
 
   <!-- ===== upcoming ===== -->
-  <aside class="panel up">
-    <div class="ph"><h2>הקרובות</h2><span class="hint">היום</span><a class="more" href="today.html">היום</a></div>
-    <div class="tlw">
-      <div class="ut done">
-        <div class="t"><b class="num">09:00</b><span class="num">עד 10:00</span></div>
-        <div class="b"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><div class="what">פגישה שוטפת — סקירת תזרים</div>
-          <div class="meta"><span>עם צחי עובד</span><span class="dot">·</span><span>הוקלטה 46 דק׳</span><span class="dot">·</span><span class="ok">הסתיימה</span></div></div>
-      </div>
-      <div class="nowline"><div class="t num">10:54 · עכשיו</div><div class="l"></div></div>
-      <div class="ut">
-        <div class="t"><b class="num">13:00</b></div>
-        <div class="b"><a class="name" href="clients.html?c=514778220">מטעי גבעון</a><div class="what">שיחת מעקב</div>
-          <div class="meta"><span>אחרי חריגת התקציב</span><span class="dot">·</span><span>פגישה אחרונה 12.05</span></div></div>
-      </div>
-      <div class="ut">
-        <div class="t"><b class="num">16:00</b><span class="num">עד 17:00</span></div>
-        <div class="b"><a class="name" href="clients.html?c=039112774">משה עובד</a><div class="what">פגישה חודשית — יולי</div>
-          <div class="meta"><span>Zoom</span><span class="dot">·</span><span class="warn">ההכנה לא נפתחה</span></div>
-          <div class="act"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></div></div>
-      </div>
-      <div class="ut">
-        <div class="t"><b class="num">17:00</b><span class="num">עד 17:30</span></div>
-        <div class="b"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><div class="what">המשך סקירה — החלטות תקציב</div>
-          <div class="meta"><span>המשך לפגישת 09:00</span><span class="dot">·</span><span class="ok">ההכנה נפתחה</span></div>
-          <div class="act"><button class="btn sm" data-act="prepopen">להכנה</button></div></div>
-      </div>
-
-      <div class="noset">
-        <h4>בלי פגישה הבאה</h4>
-        <div class="r"><a class="name" href="clients.html?c=511200341">אנרגי גולני</a><span class="s num">אחרונה 24.06 · לא התקיימה</span><span class="no">לא נקבעה</span><button class="btn sm" data-act="resch">תיאום</button></div>
-        <div class="r"><a class="name" href="clients.html?c=025664109">רימון יצחק</a><span class="s num">אחרונה 17.03</span><span class="no">לא נקבעה</span><button class="btn sm" data-act="sched">קביעה</button></div>
-      </div>
+  <aside class="panel up" id="noset">
+    <div class="ph"><h2>בלי פגישה הבאה</h2><span class="hint">לתאם</span><a class="more" href="today.html">הפגישות של היום ←</a></div>
+    <div class="ns-list">
+      <div class="r"><div class="b"><a class="name" href="clients.html?c=511200341">אנרגי גולני</a><span class="s num">אחרונה 24.06 · לא התקיימה</span></div><button class="btn pri sm" data-act="resch">שליחת לינק</button></div>
+      <div class="r"><div class="b"><a class="name" href="clients.html?c=025664109">רימון יצחק</a><span class="s num">אחרונה 17.03 · לפני 3.5 חודשים</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
+      <div class="r"><div class="b"><a class="name" href="clients.html?c=511015838">גל תעשיות</a><span class="s num">אחרונה 05.06</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
+      <div class="r"><div class="b"><a class="name" href="clients.html?c=511079190">כרמל אנרגיה</a><span class="s num">אחרונה 15.06</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
+      <div class="r"><div class="b"><a class="name" href="clients.html?c=511063352">טל לוגיסטיקה</a><span class="s num">אחרונה 11.06 · בעיה תזרימית</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
     </div>
+    <div class="ns-note">לינק תיאום נשלח בוואטסאפ — הפגישה נכנסת ליומן וללוח הזה לבד.</div>
   </aside>
 
 </main>
@@ -389,11 +402,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   let filter=null, query='';
   const rows=$$('#ml tbody tr.m');
   const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
+  function nosetGo(){ const el=document.getElementById('noset'); el.scrollIntoView({behavior:'smooth',block:'start'}); el.classList.add('pulse'); setTimeout(()=>el.classList.remove('pulse'),1200); }
   function apply(){
     let shown=0;
+    const cf=document.getElementById('cfil').value;
     rows.forEach(r=>{
       const tags=r.dataset.tags.split(' ');
       let ok = filter ? tags.includes(filter) : !r.classList.contains('fut');
+      if(ok&&cf&&!r.dataset.k.includes(cf)) ok=false;
       const hit=r.querySelector('.hit'); hit.innerHTML='';
       if(ok && query){
         const items=r.dataset.items?JSON.parse(r.dataset.items):[];
@@ -405,10 +421,10 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       r.classList.toggle('hid',!ok); if(ok) shown++;
     });
     $('#empty').classList.toggle('on',shown===0);
-    $$('.miss .q').forEach(q=>q.classList.toggle('on',q.dataset.q===filter));
-    $('#miss').classList.toggle('f',!!filter);
+    $$('#gq button[data-q]').forEach(q=>{ if(q.dataset.q!=='none') q.classList.toggle('on',q.dataset.q===filter); });
     const names={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
-    $('#hint').textContent = filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : 'שמונה · מהחדשה לישנה';
+    const cf2=document.getElementById('cfil').value;
+    $('#hint').textContent = filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : cf2 ? cf2+' · '+hebCount[shown] : 'שמונה · מהחדשה לישנה';
     $('#res').innerHTML = query ? '<b>'+shown+'</b> תוצאות ל-״'+query+'״' : '';
     $('#clr').classList.toggle('on',!!query);
   }
@@ -417,13 +433,30 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   $('#q').addEventListener('input',e=>{query=e.target.value.trim();apply()});
   $('#clr').addEventListener('click',e=>{e.preventDefault();$('#q').value='';query='';apply()});
 
-  // feedback modal
+  // לחיצה על שורה — נכנסים לזירת הפגישה (חדר הפגישה)
+  document.addEventListener('click',e=>{
+    const tr=e.target.closest('#ml tbody tr.m');
+    if(!tr||e.target.closest('a,button')) return;
+    window.location.href='../../meeting-room.html';
+  });
+  // feedback modal — תוכן המשוב עצמו: ציון + מה הלקוח כתב
+  const FB={
+    '02.07 09:00':{r:5,who:'צחי עובד',tx:'"פגישה ממוקדת. סוף סוף הבנתי את תמונת התזרים המלאה."'},
+    '01.06 11:00':{r:4,who:'צחי עובד',tx:'"טובה, קצת ארוכה. הייתי מוותר על חלק מהגרפים."'},
+    '12.05 10:00':{r:5,who:'תומר לוי',tx:'"הקורס נתן למנחות כלים אמיתיים. תודה!"'},
+    '05.05 11:00':{r:4,who:'צחי עובד',tx:'"מועיל. נשאר לי לא ברור נושא המסגרת — נדבר בפעם הבאה."'},
+    '03.04 10:00':{r:5,who:'צחי עובד',tx:'"מצוין כרגיל."'},
+    '17.03 12:00':{r:3,who:'דורון יצחק',tx:'"הרבה מספרים, פחות פילוחים. ביקשתי פירוט לפי ספקים."'},
+  };
   const ov=$('#ov');
   document.addEventListener('click',e=>{
     const a=e.target.closest('[data-fb]'); if(!a) return; e.preventDefault();
     const [c,d,n]=a.dataset.fb.split(' · ');
+    const fb=FB[d]||{r:4,who:'הלקוח',tx:'—'};
     $('#mdT').textContent='משוב מהלקוח · '+c; $('#mdS').textContent=d+' · '+n;
-    $('#mdB').innerHTML='<div class="row"><span>לקוח</span><span>'+c+'</span></div><div class="row"><span>פגישה</span><span>'+n+'</span></div><div class="row"><span>מועד</span><span class="num">'+d+'</span></div><div class="row"><span>תוכן המשוב</span><span>מוצג מתוך טופס המשוב של הלקוח</span></div>';
+    $('#mdB').innerHTML='<div class="row"><span>ציון</span><span class="fbstars">'+'★'.repeat(fb.r)+'<i>'+'★'.repeat(5-fb.r)+'</i><b> '+fb.r+'/5</b></span></div>'
+      +'<div class="row"><span>מי מילא</span><span>'+fb.who+'</span></div>'
+      +'<div class="row"><span>מה נכתב</span><span>'+fb.tx+'</span></div>';
     ov.classList.add('on');
   });
   $('#mdClose').addEventListener('click',()=>ov.classList.remove('on'));
