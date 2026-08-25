@@ -240,6 +240,32 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .fbstars{color:#E9A93D;font-size:15px;letter-spacing:1px}
 .fbstars i{font-style:normal;color:#E1E9F1}
 .fbstars b{color:var(--ink2);font-size:12.5px;margin-inline-start:6px}
+/* זירת הפגישה — הפאנל הכחול */
+.arena{background:var(--navy);color:#fff;border-radius:10px;padding:0 0 16px;align-self:start;position:sticky;top:14px}
+.ar-h{padding:18px 20px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+.ar-cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
+.ar-h h2{font-size:21px;font-weight:700;margin-top:4px}
+.ar-meta{display:flex;gap:7px;font-size:13px;color:#DCEBF5;margin-top:4px}
+.ar-meta .c{color:#7FA6C2}
+.ar-sec{padding:12px 20px 2px}
+.ar-sec h4{font-size:12px;color:#9FC0DA;font-weight:600;margin-bottom:7px}
+.ar-r{display:flex;gap:10px;font-size:13.5px;line-height:1.45;padding:5px 0;color:#ECF4FA}
+.ar-r i{font-style:normal;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:10.5px;margin-top:1px}
+.ar-r.warn i{background:rgba(232,99,90,.35)}
+.ar-r.warn{color:#FFD9D4}
+.ar-q{font-size:13.5px;color:#DCEBF5;background:rgba(255,255,255,.07);border-radius:8px;padding:10px 14px;line-height:1.5}
+.ar-acts{display:flex;gap:8px;padding:16px 20px 0}
+.ar-acts .rec2{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;font-weight:700;background:var(--coral);border:none;color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer}
+.ar-acts .rec2 i{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:mrec 1.6s ease-in-out infinite}
+.ar-acts .full{display:inline-flex;align-items:center;font-size:13px;font-weight:600;color:#fff !important;background:transparent !important;border:1px solid rgba(255,255,255,.35) !important;border-radius:8px;padding:9px 15px}
+.ar-acts .full:hover{background:rgba(255,255,255,.12)}
+/* בלי פגישה הבאה — פס נפתח מתחת לצ'יפ */
+.ns-strip{display:none;padding:10px 20px;border-bottom:1px solid var(--bd);background:#FFF9F4;font-size:13px;align-items:center;gap:16px;flex-wrap:wrap}
+.ns-strip.on{display:flex}
+.ns-strip b{color:#8A3D14;font-size:12.5px}
+.ns-strip .r{display:inline-flex;align-items:center;gap:8px}
+.ns-strip .r a{font-weight:600;color:var(--navy)}
+.ns-strip .r i{font-style:normal;font-size:11.5px;color:var(--ink3)}
 </style>
 </head>
 <body>
@@ -288,6 +314,11 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       <button data-q="sent"><i></i>סיכום לא נשלח<b class="num">1</b></button>
       <button data-q="prep"><i></i>הכנה לא נפתחה<b class="num">1</b></button>
       <button data-q="none" class="ns" onclick="nosetGo()">בלי פגישה הבאה<b class="num">2</b></button>
+    </div>
+    <div class="ns-strip" id="nsStrip">
+      <b>בלי פגישה הבאה — לתאם:</b>
+      <span class="r"><a href="clients.html?c=511200341">אנרגי גולני</a><i>אחרונה 24.06 · לא התקיימה</i><button class="btn sm" data-act="resch">שליחת לינק</button></span>
+      <span class="r"><a href="clients.html?c=025664109">רימון יצחק</a><i>אחרונה 17.03</i><button class="btn sm" data-act="sched">שליחת לינק</button></span>
     </div>
     <div class="search">
       <div class="in">
@@ -384,16 +415,30 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   </section>
 
   <!-- ===== upcoming ===== -->
-  <aside class="panel up" id="noset">
-    <div class="ph"><h2>בלי פגישה הבאה</h2><span class="hint">לתאם</span><a class="more" href="today.html">הפגישות של היום ←</a></div>
-    <div class="ns-list">
-      <div class="r"><div class="b"><a class="name" href="clients.html?c=511200341">אנרגי גולני</a><span class="s num">אחרונה 24.06 · לא התקיימה</span></div><button class="btn pri sm" data-act="resch">שליחת לינק</button></div>
-      <div class="r"><div class="b"><a class="name" href="clients.html?c=025664109">רימון יצחק</a><span class="s num">אחרונה 17.03 · לפני 3.5 חודשים</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
-      <div class="r"><div class="b"><a class="name" href="clients.html?c=511015838">גל תעשיות</a><span class="s num">אחרונה 05.06</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
-      <div class="r"><div class="b"><a class="name" href="clients.html?c=511079190">כרמל אנרגיה</a><span class="s num">אחרונה 15.06</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
-      <div class="r"><div class="b"><a class="name" href="clients.html?c=511063352">טל לוגיסטיקה</a><span class="s num">אחרונה 11.06 · בעיה תזרימית</span></div><button class="btn pri sm" data-act="sched">שליחת לינק</button></div>
+  <aside class="arena" id="arena">
+    <div class="ar-h">
+      <span class="ar-cap">זירת הפגישה · הבאה</span>
+      <h2>מטעי גבעון</h2>
+      <div class="ar-meta"><span class="num">היום 13:00</span><span class="c">·</span><span>שיחת מעקב</span><span class="c">·</span><span>תומר לוי</span></div>
     </div>
-    <div class="ns-note">לינק תיאום נשלח בוואטסאפ — הפגישה נכנסת ליומן וללוח הזה לבד.</div>
+    <div class="ar-sec">
+      <h4>מהפגישה הקודמת · 12.05</h4>
+      <div class="ar-r"><i>1</i>יעד קניות מלאי סומן בסיכון — סוכם מעקב חודשי</div>
+      <div class="ar-r"><i>2</i>קורס מנחות יצא לדרך · 4/4 משימות נסגרו</div>
+    </div>
+    <div class="ar-sec">
+      <h4>מה השתנה מאז</h4>
+      <div class="ar-r warn"><i>!</i>חריגת תקציב קניות מלאי — 61% מהיעד בלבד · נפתח פער 11,000 ₪</div>
+      <div class="ar-r"><i>+</i>"סגרנו חוזה עם מרכז הבנייה — התחלה בספטמבר" (קבוצה, אתמול)</div>
+    </div>
+    <div class="ar-sec">
+      <h4>איך לדבר עם תומר</h4>
+      <div class="ar-q">"תמונה גדולה, לא פירוט. שאלות ישירות. עונה מהר בקבוצה — פחות במייל."</div>
+    </div>
+    <div class="ar-acts">
+      <button class="btn rec2" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
+      <a class="btn full" href="../../meeting-room.html">הזירה המלאה ↗</a>
+    </div>
   </aside>
 
 </main>
@@ -412,7 +457,8 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   let filter=null, query='';
   const rows=$$('#ml tbody tr.m');
   const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
-  function nosetGo(){ const el=document.getElementById('noset'); el.scrollIntoView({behavior:'smooth',block:'start'}); el.classList.add('pulse'); setTimeout(()=>el.classList.remove('pulse'),1200); }
+  function nosetGo(){ const el=document.getElementById('nsStrip'); el.classList.toggle('on');
+    document.querySelector('#gq button[data-q="none"]').classList.toggle('on',el.classList.contains('on')); }
   function apply(){
     let shown=0;
     const cf=document.getElementById('cfil').value;
