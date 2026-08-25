@@ -125,10 +125,7 @@
        השעון ממשיך מהזמן שנצבר; אין הפרדה בין הזמנים. */
     const dt=document.getElementById('opsDoneTag');
     dt.style.display=wasDone?'':'none';
-    /* אותו כפתור סיום תפעול — גם בתפעול נוסף */
-    const _end=document.getElementById('opsEndBtn');
-    if(_end){ _end.style.display='';
-      _end.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול'; }
+    opsEndBtnMode();
     const _cls=document.querySelector('.ops-close');
     if(_cls){ _cls.innerHTML=wasDone
       ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> סגירה · הזמן נשמר'
@@ -144,7 +141,7 @@
     // אם יצאנו באמצע הבדיקות — חוזרים ישר אליהן
     if(finPaused&&FIN_STATE&&FIN_STATE.key===opsActiveKey){
       document.getElementById('opsGrid').style.display='none';
-      document.getElementById('finView').style.display='';
+      document.getElementById('finView').style.display=''; opsEndBtnMode();
       finPaused=false;
     }
     startOpsTimer();
@@ -178,6 +175,18 @@
     }
     restoreDash();
     toast('מצב התפעול הושהה · הזמן נשמר');
+  }
+  /* הכפתור הראשי בפס: בשלבי העבודה — "סיום תפעול"; במסך הסיום — "שליחת הודעה",
+     כי שם כבר סיימנו וכל מה שנשאר הוא לדבר עם הלקוח. */
+  function opsEndBtnMode(){
+    const b=document.getElementById('opsEndBtn'); if(!b) return;
+    const inFin=document.getElementById('finView').style.display!=='none';
+    b.style.display='';
+    b.onclick=inFin?ctsOpen:finishOps;
+    b.classList.toggle('as-msg',inFin);
+    b.innerHTML=inFin
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> שליחת הודעה'
+      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול';
   }
   function exitOps(){   /* לחיצה על "סגירת מצב תפעול" — סוגר וגם מנקה את ה-URL */
     closeOpsTeardown();
@@ -229,7 +238,7 @@
     openRefresh('manual');
   }
   function finishOps(){
-    if(finPaused){opsTotal=(opsAccum[opsActiveKey]||0)+opsSession();stopOpsTimer();finPaused=false;document.getElementById('opsGrid').style.display='none';document.getElementById('finView').style.display='';return;}
+    if(finPaused){opsTotal=(opsAccum[opsActiveKey]||0)+opsSession();stopOpsTimer();finPaused=false;document.getElementById('opsGrid').style.display='none';document.getElementById('finView').style.display='';opsEndBtnMode();return;}
     if(window._refPassed===opsActiveKey){finishOps2();return;}
     openRefresh('gate');
   }
@@ -319,7 +328,7 @@
     if(window._stgIx!=null&&window._stgT0){const secs=Math.round((Date.now()-window._stgT0)/1000);
       OPS_STAGE_LOG.push({n:'שלב אחרון',s:secs});window._stgIx=null;}
     document.getElementById('opsGrid').style.display='none';
-    document.getElementById('finView').style.display='';
+    document.getElementById('finView').style.display=''; opsEndBtnMode();
     document.getElementById('finFoot').classList.remove('show');
     document.getElementById('finFoot').innerHTML='';
     document.getElementById('finFindings').innerHTML='';
@@ -1345,7 +1354,7 @@
   }
   function finishDone(){finPaused=false;FIN_STATE=null;
     opsDur[opsActiveKey]=opsTotal;opsDoneSet.add(opsActiveKey);delete opsAccum[opsActiveKey];
-    document.getElementById('finView').style.display='none';document.getElementById('opsGrid').style.display='';
+    document.getElementById('finView').style.display='none';document.getElementById('opsGrid').style.display='';opsEndBtnMode();
     restoreDash();
     if(location.hash==='#ops') history.back();
     // למה לחזור? — ישר ללקוח הבא לפי סדר התור
