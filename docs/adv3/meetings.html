@@ -363,6 +363,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 .ar-mem{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:9px 2px;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ink);align-items:start}
 .ar-mem .k{font-size:12px;color:#6B4FA0;background:#F6F1FB;border:1px solid #E3D8F2;border-radius:12px;padding:2px 10px;text-align:center;white-space:nowrap}
 .ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:#2E9BD6;font-weight:600}
+/* נושאים חוזרים — הצעות מתחת לחיפוש */
+.topics{display:flex;align-items:center;gap:7px;padding:0 20px 12px;flex-wrap:wrap;margin-top:-2px}
+.topics .lbl{font-size:12px;color:var(--ink3)}
+.topics button{font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:18px;border:1px solid var(--bd);background:#fff;color:var(--ink2);cursor:pointer}
+.topics button b{font-weight:600;color:var(--navy);background:var(--bg);border-radius:9px;padding:0 6px;font-size:11px;line-height:16px}
+.topics button:hover{border-color:var(--navy)}
+.topics button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.topics button.on b{background:rgba(255,255,255,.2);color:#fff}
 </style>
 </head>
 <body>
@@ -412,11 +420,19 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       <span class="res" id="res"></span>
       <a href="#" class="clr" id="clr">ניקוי</a>
     </div>
+    <div class="topics">
+      <span class="lbl">נושאים שחזרו החודש</span>
+      <button onclick="topicGo(this,'מסגרת אשראי')">מסגרת אשראי <b>4</b></button>
+      <button onclick="topicGo(this,'גבייה')">גבייה <b>2</b></button>
+      <button onclick="topicGo(this,'קורס')">קורס המנחות <b>1</b></button>
+      <button onclick="topicGo(this,'רימון מוצרי')">התלות ברימון <b>1</b></button>
+    </div>
     <div class="tw">
     <table class="ml" id="ml">
       <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>משך</th><th></th></tr></thead>
       <tbody>
-        <tr class="m" data-tags="appr" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207">
+        <tr class="m" data-tags="appr" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207"
+            data-items='["סקירת המזומנים בשלושת החשבונות — מרכנתיל בחריגה","סיכון ריכוזיות: רימון מוצרי אנרגיה ≈ 70% מהמחזור","נבחן קידום מסגרת אשראי מול הבנק","יעד: לקוח משמעותי חדש עד ספטמבר"]'>
           <td class="d num">02.07<small class="num">09:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
           <td class="len num">46 דק׳</td>
@@ -428,13 +444,15 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="len">—</td>
           <td class="ac"><button class="btn sm" data-act="resch">תיאום מחדש</button></td>
         </tr>
-        <tr class="m" data-tags="sent" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106">
+        <tr class="m" data-tags="sent" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106"
+            data-items='["מעבר לדיווח שבועי","יעד גבייה 95% — טיפול בחובות פתוחים","עדכון על מסגרת אשראי — ממתינים לבנק"]'>
           <td class="d num">01.06<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
           <td class="len num">58 דק׳</td>
           <td class="ac"></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות" id="r1205">
+        <tr class="m" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות" id="r1205"
+            data-items='["מערך קורס המנחות אושר","תמחור הקורס והגבייה מהמשתתפות"]'>
           <td class="d num">12.05<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
           <td class="len num">52 דק׳</td>
@@ -459,7 +477,8 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           <td class="len num">57 דק׳</td>
           <td class="ac"><span class="ok">✓</span></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703">
+        <tr class="m" data-tags="ok" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703"
+            data-items='["פילוח הוצאות לפי ספקים","יעד רווחיות Q2","נדונה מסגרת אשראי לגישור העונתיות"]'>
           <td class="d num">17.03<small class="num">12:00</small></td>
           <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
           <td class="len num">61 דק׳</td>
@@ -500,6 +519,14 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   const rows=$$('#ml tbody tr.m');
   const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
   function nosetGo(){}
+  function topicGo(btn,q){
+    const on=btn.classList.contains('on');
+    document.querySelectorAll('.topics button').forEach(b=>b.classList.remove('on'));
+    const inp=document.getElementById('q');
+    if(on){ inp.value=''; query=''; } else { btn.classList.add('on'); inp.value=q; query=q; }
+    apply();
+  }
+  window.topicGo=topicGo;
   function apply(){
     let shown=0;
     const cf=document.getElementById('cfil').value;
