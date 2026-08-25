@@ -1555,6 +1555,12 @@
         <button class="cts-send" onclick="opsCtsSend(${i})">שליחה</button>
       </div>`:''}`).join('');
   }
+  function opsFlowRefresh(btn){
+    btn.classList.add('spin');
+    const fr=btn.closest('.ops-chatside').querySelector('.ops-flow-frame');
+    if(fr){ window._sfT=(window._sfT||0)+1; fr.setAttribute('src','widgets/widget-cashflow-full.html?t='+window._sfT+'#embed'); }
+    setTimeout(()=>{ btn.classList.remove('spin'); toast('התזרים רוענן'); },900);
+  }
   function opsChatSide(T){
     const items=T.filter(t=>t.type==='msg'||t.type==='doc');
     if(!items.length) return '';
@@ -1580,9 +1586,11 @@
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
+        ${tab==='flow'?`<button class="sf-ref" onclick="opsFlowRefresh(this)" title="רענון התזרים">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg> רענון</button>`:''}
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
-        :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html#embed" title="תחזית תזרים"></iframe>`
+        :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תחזית תזרים"></iframe>`
         :`<div class="ops-chatbody">${opsCtsHtml()}</div>`}
     </div>`;
   }
