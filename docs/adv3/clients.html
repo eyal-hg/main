@@ -50,10 +50,11 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .alerts a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
 .alerts a:hover{border-color:#fff}
 .alerts .c{color:#7FA6C2;margin:0 2px}
-.strip .sum{display:flex;align-items:center;gap:26px}
-.strip .sum .n{display:flex;align-items:baseline;gap:7px;font-size:13px;color:#B9D3E6}
-.strip .sum .n b{font-size:22px;font-weight:600;color:#fff;line-height:1}
-.strip .sum .n.bad b{color:#F3A39C}
+.strip .sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.strip .sum .n{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#DCEBF5;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 13px;white-space:nowrap}
+.strip .sum .n b{font-weight:700;color:#fff}
+.strip .sum .n.bad{background:rgba(232,99,90,.2);border-color:rgba(232,99,90,.45);color:#FFD9D4}
+.strip .sum .n.bad b{color:#fff}
 .strip .spacer{margin-right:auto}
 .strip .now{font-size:13px;color:#B9D3E6}
 .strip .now b{color:#fff;font-weight:500}
@@ -174,7 +175,7 @@ td .no{color:var(--red);font-weight:500}
 td .lnk{font-size:12.5px;color:var(--sky);font-weight:500;margin-right:8px;border-bottom:1px solid transparent}
 td .lnk:hover{border-color:var(--sky)}
 td.al{width:auto}
-.als{display:flex;gap:6px}
+.als{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .als .tag:not(.on){display:none}
 .tag{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:5px;font-size:12px;font-weight:500;visibility:hidden}
 .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
@@ -403,7 +404,7 @@ function applyFilter(){
   else if(q)h.textContent=`${n} תוצאות`;
   else h.textContent=C.length+' חברות';
   const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
-  $('#sum').innerHTML=`<span class="n"><b>${C.length}</b>לקוחות</span><span class="n bad"><b>${bad}</b>עם התראה</span><span class="n bad"><b>${nom}</b>בלי פגישה קרובה</span><span class="n bad"><b>${lt}</b>עברו את היעד לסטטוס</span>`;
+  $('#sum').innerHTML=`<span class="n bad"><b>${bad}</b> לקוחות עם התראת תזרים</span><span class="n"><b>${nom}</b> בלי פגישה קרובה</span><span class="n"><b>${lt}</b> עברו את היעד לסטטוס</span>`;
 }
 function setStage(s){
   stage=(stage===s)?0:s;
