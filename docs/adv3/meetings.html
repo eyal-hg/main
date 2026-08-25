@@ -39,14 +39,20 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
 .strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
-.strip .nextm{display:flex;align-items:center;gap:9px;font-size:13.5px;margin-inline-end:18px}
-.strip .nextm .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
-.strip .nextm .tm{font-size:19px;font-weight:600;color:#fff;line-height:1}
-.strip .nextm a{color:#fff;font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
-.strip .nextm a:hover{border-color:#fff}
-.strip .nextm .c{color:#7FA6C2}
-.strip .nextm .wh{color:#B9D3E6}
-.strip .nextm .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:2px 10px;font-size:12px;color:#DCEBF5}
+.strip .next{display:flex;align-items:center;gap:14px;font-size:14px;margin-inline-end:16px}
+.strip .next .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
+.strip .next .tm{font-size:22px;font-weight:600;line-height:1;color:#fff}
+.strip .next .who{display:flex;align-items:center;gap:8px;color:#fff}
+.strip .next .who a{color:#fff;font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.strip .next .who a:hover{border-color:#fff}
+.strip .next .c{color:#7FA6C2}
+.strip .next .hint{color:#B9D3E6;font-size:13px}
+.strip .next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 11px;font-size:12.5px;color:#DCEBF5}
+.strip .next .btn.rec{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;font-size:12.5px;font-weight:600;border-radius:6px;border:1px solid var(--coral);background:var(--coral);color:#fff;cursor:pointer;font-family:inherit}
+.strip .next .btn.rec i{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:mrec 1.6s ease-in-out infinite}
+@keyframes mrec{50%{opacity:.35}}
+.strip .next .btn.prep2{display:inline-flex;align-items:center;padding:5px 12px;font-size:12.5px;font-weight:600;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;cursor:pointer;font-family:inherit}
+.strip .next .btn.prep2:hover{background:rgba(255,255,255,.14)}
 .gq-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);background:#FAFCFE;flex-wrap:wrap}
 .gq-row .lbl{font-size:12.5px;color:var(--ink3);margin-inline-end:8px}
 .gq-row button{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;border:1px solid var(--bd);background:#fff;color:var(--ink2);cursor:pointer;white-space:nowrap}
@@ -255,11 +261,13 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
   <div class="spacer"></div>
-  <div class="nextm">
-    <span class="cap">הפגישה הבאה</span>
+  <div class="next">
+    <span class="cap">האירוע הבא</span>
     <span class="tm num">13:00</span>
-    <a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span><span class="wh">שיחת מעקב</span>
+    <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
     <span class="in num">בעוד 2:06</span>
+    <button class="btn rec" onclick="toast('ההקלטה התחילה — מטעי גבעון')"><i></i>הקלטה</button>
+    <button class="btn prep2" onclick="toast('ההכנה לפגישה נפתחת — מטעי גבעון')">הכנה לפגישה</button>
   </div>
   <div class="now num"><b>10:54</b> · עכשיו</div>
 </header>
