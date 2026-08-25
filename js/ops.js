@@ -1558,7 +1558,8 @@
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
         <span class="ost-cnt">${tab==='chat'?(openN?'':'הכל נענה ✓'):'צפי קדימה'}</span>
       </div>
-      <div class="ops-chatbody">${tab==='chat'?body:opsFlowHtml()}</div>
+      ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
+        :`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html#embed" title="תחזית תזרים"></iframe>`}
     </div>`;
   }
   function renderOps(){
