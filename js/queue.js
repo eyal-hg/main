@@ -195,7 +195,6 @@
     1:[{name:'חשבונית ספק — 4,820 ₪.pdf',          kind:'pdf',  who:'רות אלמוג', when:'אתמול 17:40', t:'החשבונית שביקשת'}],
     3:[{name:'צילום שיק — הבינלאומי · 6,300 ₪',    kind:'img',  who:'יעל גולני', when:'היום 10:05', t:'השיק שנתתי היום'}],
   };
-  const DOC_ICO={img:'🖼', xls:'📊', pdf:'📄'};
   const DOC_LBL={img:'תמונה', xls:'אקסל', pdf:'PDF'};
   function msgDocsOf(i){
     window._msgHandled=window._msgHandled||new Set();
@@ -871,7 +870,7 @@
         const docs=msgDocsOf(i).map(p=>`<div class="oqs-msgblock">
             <div class="oqs-bub"><div class="oqs-bub-h">${p.d.who} · ${p.d.when}
               <button class="oqs-ops" onclick="msgToOps(${i},'${p.gi}')" title="הזנה לתזרים בתוך התפעול">טיפול בתפעול ←</button></div>${p.d.t}
-              <span class="od-file">📎 ${p.d.name}</span>
+              <span class="od-file">${p.d.name}</span>
             </div>
             <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},'${p.gi}')"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},'${p.gi}')">שליחה</button><button class="oqs-done" onclick="msgDone(${i},'${p.gi}')" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
           </div>`).join('');
