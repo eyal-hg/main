@@ -1580,7 +1580,6 @@
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
-        ${tab==='chat'&&!openN?'<span class="ost-cnt">הכל נענה ✓</span>':''}
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
         :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html#embed" title="תחזית תזרים"></iframe>`
