@@ -167,7 +167,7 @@ td.n .dash{margin-right:8px;color:var(--sky);opacity:0;font-weight:700;transitio
 tbody tr:hover td.n .dash{opacity:1}
 td.pk{color:var(--ink2)}
 .stg::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:8px;vertical-align:0;background:#C4CED8}
-.stg.s1::before{background:#C4CED8}.stg.s2::before{background:var(--sky)}.stg.s3::before{background:var(--purple)}.stg.s4::before{background:var(--green)}.stg.s5::before{background:var(--navy)}
+.stg::before{background:var(--stc,#C4CED8)}
 td .sub{font-size:12px;color:var(--ink3);margin-right:6px}
 td .today{color:var(--navy);font-weight:600}
 td .no{color:var(--red);font-weight:500}
@@ -187,6 +187,34 @@ td.mg{color:var(--ink2)}
 
 /* ---------- modal + toast ---------- */
 .ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
+/* הגדרת סטטוסים */
+.stages .st-set{margin-inline-start:auto;font:inherit;font-size:12.5px;font-weight:600;color:var(--navy);background:none;border:1px dashed var(--bd);border-radius:16px;padding:5px 12px;cursor:pointer}
+.stages .st-set:hover{border-color:var(--navy)}
+.stmd{width:660px}
+.st-list{display:flex;flex-direction:column}
+.st-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.st-ord{width:18px;font-size:12px;color:var(--ink3);text-align:center}
+.st-dot{width:20px;height:20px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--bd);cursor:pointer;flex:none}
+.st-name{flex:1;min-width:0;font:inherit;font-size:13.5px;font-weight:600;border:1px solid transparent;border-radius:7px;padding:6px 9px;color:var(--ink)}
+.st-name:hover{border-color:var(--bd)}
+.st-name:focus{outline:none;border-color:var(--sky);background:#fff}
+.st-days{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);white-space:nowrap}
+.st-days input{width:46px;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:4px 6px;text-align:center}
+.st-used{font-size:11.5px;color:var(--ink3);min-width:64px;text-align:left}
+.st-mv{display:flex;gap:2px}
+.st-mv button{border:none;background:none;color:var(--ink3);cursor:pointer;font-size:12px;padding:2px 4px}
+.st-mv button:hover:not(:disabled){color:var(--navy)}
+.st-mv button:disabled{opacity:.25;cursor:default}
+.st-del{border:none;background:none;color:#C4CED8;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:5px}
+.st-del:hover:not(:disabled){color:var(--red);background:#FDEDEB}
+.st-del:disabled{opacity:.4;cursor:not-allowed}
+.st-add{margin-top:10px;font:inherit;font-size:13px;font-weight:600;color:var(--sky);background:none;border:none;cursor:pointer;padding:0}
+.st-note{margin-top:10px;font-size:12px;color:var(--ink3)}
+/* הכרטיס נמתח לגובה החלון — בלי רווח מת */
+.left{position:sticky;top:14px;height:calc(100vh - 28px);display:flex}
+.card{display:flex;flex-direction:column;width:100%}
+.card .tab.on{display:block;flex:1;overflow:auto;min-height:0}
+.card .ft{margin-top:auto}
 .ov.on{display:grid}
 .md{width:600px;max-width:92vw;background:#fff;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden}
 .md .hd{background:var(--navy);color:#fff;padding:16px 22px;display:flex;align-items:flex-start;gap:14px}
@@ -261,30 +289,39 @@ td.mg{color:var(--ink2)}
         <input id="q" type="search" placeholder="חיפוש חברה או ח.פ" autocomplete="off" oninput="applyFilter()">
       </div>
     </div>
-    <div class="stages" id="tl">
-      <span class="lbl">המחזור החודשי · יולי</span>
-      <button class="st" data-s="1" onclick="setStage(1)"><i class="s1"></i>ממתין לחומר<b>5</b></button>
-      <button class="st" data-s="2" onclick="setStage(2)"><i class="s2"></i>הוזן<b>3</b></button>
-      <button class="st" data-s="3" onclick="setStage(3)"><i class="s3"></i>יעדים עודכנו<b>4</b></button>
-      <button class="st" data-s="4" onclick="setStage(4)"><i class="s4"></i>מוכן לפגישה<b>7</b></button>
-      <button class="st" data-s="5" onclick="setStage(5)"><i class="s5"></i>סיכום אושר<b>3</b></button>
-      <a id="clr" href="#" onclick="return setStage(0)">הצגת כולם</a>
-    </div>
+    <div class="stages" id="tl"></div>
     <table>
       <thead><tr>
-        <th>חברה</th><th>חבילה</th><th>שלב במחזור</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th>התראות</th><th>מנהל תזרים</th>
+        <th>חברה</th><th>חבילה</th><th>סטטוס</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th>התראות</th><th>מנהל תזרים</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
     <div class="empty" id="empty">אין חברה שתואמת</div>
   </section>
 
+  <div class="ov" id="stOv" onclick="if(event.target===this)stClose()">
+    <div class="md stmd">
+      <div class="hd"><div><h3>הגדרת סטטוסים</h3><div class="s">מוגדר לכל המשרד על ידי יועץ אדמין · תמיד סטטוס אחד לכל לקוח</div></div><button class="x" onclick="stClose()">×</button></div>
+      <div class="bd" id="stBody"></div>
+      <div class="ft"><button class="btn pri" onclick="stSave()">שמירה</button><button class="btn" onclick="stClose()">ביטול</button></div>
+    </div>
+  </div>
   <aside class="left"><div class="card" id="card"></div></aside>
 </main>
 <div class="toast" id="toast"></div>
 
 <script>
-const STAGES=['','ממתין לחומר','הוזן','יעדים עודכנו','מוכן לפגישה','סיכום אושר'];
+/* הסטטוסים מוגדרים ברמת המשרד (יועץ אדמין) — ניתנים לעריכה בפופאפ ההגדרות */
+let STATUSES=[null,
+  {n:'ממתין לחומר', c:'#C4CED8', days:5},
+  {n:'הוזן',         c:'#39ABE2', days:5},
+  {n:'יעדים עודכנו', c:'#7557E3', days:5},
+  {n:'מוכן לפגישה',  c:'#13895b', days:5},
+  {n:'סיכום אושר',   c:'#0C4068', days:5},
+];
+const STAGES={get length(){return STATUSES.length}};   /* תאימות */
+const stName=s=>STATUSES[s]?STATUSES[s].n:'';
+const stColor=s=>STATUSES[s]?STATUSES[s].c:'#C4CED8';
 const C=[
  {id:'511327876',n:'אנרגי אינטרנשיונל',pk:'Money',s:4,last:'02.07',next:{t:'היום 17:00'},al:{cf:1,sat:1},mg:'לירון בן כליפא',
   tasks:['אישור סיכום — פגישה שוטפת · היום','עדכון תקציב שיווק ליולי · בלי תאריך'],
@@ -327,18 +364,26 @@ function row(c){
   else if(c.next.none)next=`<span class="no">לא נקבעה</span><a class="lnk" href="#" onclick="event.stopPropagation();toast('לינק לקביעת פגישה נשלח — ${c.n}');return false">שליחת לינק</a>`;
   const name=`${c.n}<small class="num">${c.id}</small>`;
   const late=c.due&&c.due!=='—'&&cmpD(c.due,'02.07')<0;
-  const due=c.s===5?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לשלב הבא — לחיצה לעריכה">${late?'עבר':'עד'} <span class="num">${c.due||'—'}</span></span>`;
+  const due=c.s===STATUSES.length-1?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לשלב הבא — לחיצה לעריכה">${late?'עבר':'עד'} <span class="num">${c.due||'—'}</span></span>`;
   return `<tr data-id="${c.id}" data-s="${c.s}" data-n="${c.n}" onclick="openCard('${c.id}')">
     <td class="n">${name}<a class="dash" href="../../index.html?hp=${c.id}" target="_blank" onclick="event.stopPropagation()" title="הדשבורד של החברה">↗</a></td>
     <td class="pk">${c.pk}</td>
-    <td><span class="stg s${c.s}">${STAGES[c.s]}</span>${due}</td>
+    <td><span class="stg" style="--stc:${stColor(c.s)}">${stName(c.s)}</span>${due}</td>
     <td class="num">${last}</td>
     <td>${next}</td>
     <td class="al"><div class="als"><span class="tag cf ${c.al.cf?'on':''}">בעיה תזרימית</span><span class="tag sat ${c.al.sat?'on':''}">חוסר שביעות רצון</span></div></td>
     <td class="mg">${c.mg}</td>
   </tr>`;
 }
+function renderStages(){
+  const counts={}; C.forEach(c=>counts[c.s]=(counts[c.s]||0)+1);
+  $('#tl').innerHTML=`<span class="lbl">סטטוס לקוח</span>`
+    +STATUSES.map((s,i)=>s?`<button class="st ${stage===i?'on':''} ${stage&&stage!==i?'dim':''}" data-s="${i}" onclick="setStage(${i})"><i style="background:${s.c}"></i>${s.n}<b>${counts[i]||0}</b></button>`:'').join('')
+    +`<a id="clr" href="#" class="${stage?'on':''}" onclick="return setStage(0)">הצגת כולם</a>
+      <button class="st-set" onclick="stOpen()" title="הגדרת הסטטוסים — לכל המשרד, יועץ אדמין">⚙ הגדרת סטטוסים</button>`;
+}
 function render(){
+  renderStages();
   let list=C.slice();
   $('#tb').innerHTML=list.map(row).join('');
   applyFilter();
@@ -354,17 +399,15 @@ function applyFilter(){
   else rows.forEach(tr=>tb.appendChild(tr));
   $('#empty').classList.toggle('on',n===0);
   const h=$('#hint');
-  if(stage)h.innerHTML=`<b>${STAGES[stage]}</b> · ${n} חברות · השאר מעומעמות`;
+  if(stage)h.innerHTML=`<b>${stName(stage)}</b> · ${n} חברות · השאר מעומעמות`;
   else if(q)h.textContent=`${n} תוצאות`;
   else h.textContent=C.length+' חברות';
   const bad=C.filter(c=>c.al.cf||c.al.sat).length,nom=C.filter(c=>c.next.none).length,lt=C.filter(c=>c.due&&c.due!=='—'&&c.s<5&&cmpD(c.due,'02.07')<0).length;
-  $('#sum').innerHTML=`<span class="n"><b>${C.length}</b>לקוחות</span><span class="n bad"><b>${bad}</b>עם התראה</span><span class="n bad"><b>${nom}</b>בלי פגישה קרובה</span><span class="n bad"><b>${lt}</b>עברו את היעד לשלב</span>`;
+  $('#sum').innerHTML=`<span class="n"><b>${C.length}</b>לקוחות</span><span class="n bad"><b>${bad}</b>עם התראה</span><span class="n bad"><b>${nom}</b>בלי פגישה קרובה</span><span class="n bad"><b>${lt}</b>עברו את היעד לסטטוס</span>`;
 }
 function setStage(s){
   stage=(stage===s)?0:s;
-  document.querySelectorAll('#tl .st').forEach(el=>{const k=+el.dataset.s;el.classList.toggle('on',k===stage);el.classList.toggle('dim',stage&&k!==stage)});
-  $('#clr').classList.toggle('on',!!stage);
-  applyFilter();
+  renderStages(); applyFilter();
   return false;
 }
 let SELID=null;
@@ -376,8 +419,8 @@ function openCard(id){
   let next='—';
   if(c.next.t)next=`<span class="today num">${c.next.t}</span>`;
   else if(c.next.none)next=`<span class="no">לא נקבעה</span> <a class="lnk" href="#" onclick="toast('לינק לקביעת פגישה נשלח — ${c.n}');return false">שליחת לינק</a>`;
-  const stg=`<div class="stage-ed" style="margin-top:0">${STAGES.slice(1).map((s,i)=>`<button class="${i+1===c.s?'on':''}" onclick="stageSet('${c.id}',${i+1})">${s}</button>`).join('')}</div>
-    ${c.s<5?`<div class="duerow">יעד לשלב הבא<input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onchange="dueSet('${c.id}',this.value)"><span title="ברירת המחדל נקבעת בהגדרות המשרד" style="white-space:nowrap">ברירת מחדל · 5 ימים</span></div>`:''}`;
+  const stg=`<div class="stage-ed" style="margin-top:0">${STATUSES.map((s,i)=>s?`<button class="${i===c.s?'on':''}" onclick="stageSet('${c.id}',${i})">${s.n}</button>`:'').join('')}</div>
+    ${c.s<STATUSES.length-1?`<div class="duerow">יעד לסטטוס הבא<input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onchange="dueSet('${c.id}',this.value)"><span title="ברירת המחדל נקבעת בהגדרות המשרד" style="white-space:nowrap">ברירת מחדל · ${(STATUSES[c.s]||{}).days||5} ימים</span></div>`:''}`;
   $('#card').innerHTML=`
     <div class="hd"><h3>${c.n}</h3><div class="s num">ח.פ ${c.id} · ${c.pk} · ${c.mg}</div>
       <div class="stgblk">${stg}</div>
@@ -397,7 +440,39 @@ function openCard(id){
   return false;
 }
 function cardTab(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('#card .tab').forEach(x=>x.classList.toggle('on',x.dataset.t===b.dataset.t))}
-function stageSet(id,s){const c=C.find(x=>x.id===id);c.s=s;toast(c.n+' — '+STAGES[s]);render();openCard(id)}
+/* ===== הגדרת הסטטוסים ===== */
+const ST_PALETTE=['#C4CED8','#39ABE2','#7557E3','#13895b','#0C4068','#E8635A','#c98404','#0FA3A3'];
+let ST_DRAFT=null;
+function stOpen(){ ST_DRAFT=STATUSES.slice(1).map(s=>({...s})); stRender(); $('#stOv').classList.add('on'); }
+function stClose(){ $('#stOv').classList.remove('on'); ST_DRAFT=null; }
+function stRender(){
+  $('#stBody').innerHTML=`<div class="st-list">
+    ${ST_DRAFT.map((s,i)=>{
+      const used=C.filter(c=>c.s===i+1).length;
+      return `<div class="st-row">
+        <span class="st-ord">${i+1}</span>
+        <button class="st-dot" style="background:${s.c}" title="החלפת צבע" onclick="stColorNext(${i})"></button>
+        <input class="st-name" value="${s.n.replace(/"/g,'&quot;')}" oninput="ST_DRAFT[${i}].n=this.value">
+        <label class="st-days">יעד <input type="number" min="1" max="31" value="${s.days}" oninput="ST_DRAFT[${i}].days=+this.value||5"> ימים</label>
+        <span class="st-used">${used?used+' לקוחות':''}</span>
+        <span class="st-mv"><button ${i===0?'disabled':''} onclick="stMove(${i},-1)">↑</button><button ${i===ST_DRAFT.length-1?'disabled':''} onclick="stMove(${i},1)">↓</button></span>
+        <button class="st-del" ${used?'disabled title="יש לקוחות בסטטוס הזה — קודם להעביר אותם"':''} onclick="stDel(${i})">✕</button>
+      </div>`;}).join('')}
+    </div>
+    <button class="st-add" onclick="stAdd()">+ סטטוס חדש</button>
+    <div class="st-note">היעד קובע את ברירת המחדל של "יעד לסטטוס הבא" — היועץ יכול לדרוס פר לקוח.</div>`;
+}
+function stColorNext(i){ const k=ST_PALETTE.indexOf(ST_DRAFT[i].c); ST_DRAFT[i].c=ST_PALETTE[(k+1)%ST_PALETTE.length]; stRender(); }
+function stMove(i,d){ const a=ST_DRAFT.splice(i,1)[0]; ST_DRAFT.splice(i+d,0,a); stRender(); }
+function stDel(i){ ST_DRAFT.splice(i,1); stRender(); }
+function stAdd(){ ST_DRAFT.push({n:'סטטוס חדש', c:ST_PALETTE[ST_DRAFT.length%ST_PALETTE.length], days:5}); stRender(); }
+function stSave(){
+  if(ST_DRAFT.some(s=>!s.n.trim())){ toast('לכל סטטוס צריך שם'); return; }
+  STATUSES=[null,...ST_DRAFT.map(s=>({...s,n:s.n.trim()}))];
+  stClose(); render(); if(SELID)openCard(SELID);
+  toast('הסטטוסים עודכנו — לכל המשרד');
+}
+function stageSet(id,s){const c=C.find(x=>x.id===id);c.s=s;toast(c.n+' — '+stName(s));render();openCard(id)}
 function closeCard(){openCard(C[0].id)}
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
