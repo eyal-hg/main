@@ -658,7 +658,10 @@
     if(MC_WOFF<0){toast('אי אפשר להוסיף לשבוע שעבר');return;}
     mcQuick(time); MC_ADD_DAY=d;
   }
-  function mtkClose(){document.getElementById('mtkOv').classList.remove('show');}
+  function mtkClose(){
+    document.getElementById('mtkOv').classList.remove('show');
+    if(typeof ADV_EDIT_IDX!=='undefined'){ADV_EDIT_IDX=null; ADV_EDIT_CLI=null;}
+  }
   function mtkRepSet(r){
     MTK_REP=r;
     document.querySelectorAll('#mtkRep .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.r===r));
@@ -717,6 +720,14 @@
       repTxt='כל '+(window._mtkMd??1)+' בחודש';
     }
     const extra={pri, client, rep:MTK_REP, detail, remind, owner, due, repTxt};
+    // עריכת משימת לקוח (פאנל אדב)
+    if(typeof ADV_EDIT_IDX!=='undefined' && ADV_EDIT_IDX!=null){
+      const list=(typeof ADV_TASKS!=='undefined'&&ADV_TASKS[ADV_EDIT_CLI])||[];
+      const a=list[ADV_EDIT_IDX]; if(a){a.t=t; a.detail=detail; if(due)a.due=due; a.pushed=null;}
+      ADV_EDIT_IDX=null; ADV_EDIT_CLI=null; mtkClose();
+      if(typeof renderOpsInfo==='function')renderOpsInfo();
+      toast('המשימה עודכנה'); return;
+    }
     if(MTK_EDIT!=null){ // מצב עריכה — עדכון במקום
       Object.assign(MGR_TODO[MTK_EDIT],{t,...extra});
       MTK_EDIT=null; mtkClose(); renderMgrCal();

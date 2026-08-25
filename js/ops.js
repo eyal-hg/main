@@ -2877,17 +2877,30 @@
   function advDone(k){ const a=advTasksOf()[k]; if(!a) return; a.done=true; toast('בוצע · '+a.by+' עודכן');
     if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps(); }
   /* עריכה — במקום, בשורה עצמה */
-  let _advEd=null;
-  function advEdit(k){ _advEd=(_advEd===k)?null:k;
-    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps();
-    setTimeout(()=>{const e=document.getElementById('atEd'); if(e){e.focus();e.select();}},40);
+  let _advEd=null, ADV_EDIT_CLI=null, ADV_EDIT_IDX=null;
+  function advEdit(k){
+    const a=advTasksOf()[k]; if(!a) return;
+    ADV_EDIT_CLI=CUR; ADV_EDIT_IDX=k;
+    if(typeof mcQuick==='function') mcQuick(''); else return;
+    setTimeout(()=>{
+      document.getElementById('mtkTitle').value=a.t||'';
+      document.getElementById('mtkDetail').value=a.detail||'';
+      if(a.pushed||a.due){
+        const rep=document.getElementById('mtkRepSub');
+        if(rep){const d=new Date(); const y=d.getFullYear();
+          const raw=a.pushed||a.due; let iso='';
+          if(raw==='היום'){iso=y+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+          else if(raw==='מחר'){d.setDate(d.getDate()+1);iso=y+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+          const dd=rep.querySelector('#mtkDate'); if(dd&&iso)dd.value=iso;
+        }
+      }
+      document.querySelector('#mtkOv .mx2-title').textContent='עריכת משימה';
+      const sb=document.querySelector('#mtkOv .mx2-btn.primary'); if(sb)sb.textContent='שמירה';
+      const pb=document.getElementById('mtkPostponeBtn'); if(pb)pb.style.display='';
+      const db=document.getElementById('mtkDelBtn'); if(db)db.style.display='';
+    },90);
   }
-  function advEdSave(k){
-    const e=document.getElementById('atEd'); const v=(e&&e.value.trim())||'';
-    const a=advTasksOf()[k]; if(a&&v) a.t=v;
-    _advEd=null; toast('המשימה עודכנה');
-    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps();
-  }
+  function advEdSave(k){ /* legacy inline — no longer used */ }
   /* דחייה — יורדת מהיום, נשארת פתוחה במסך המשימות */
   function advPush(k){
     const a=advTasksOf()[k]; if(!a) return;
@@ -2914,9 +2927,7 @@
       ${add}
       <div class="at-h">להיום ומה שעבר</div>
       ${list.map((a,k)=>`<div class="at-row${a.late?' late':''}">
-        <div class="at-b">${_advEd===k
-          ?`<form class="at-edit" onsubmit="event.preventDefault();advEdSave(${k})"><input id="atEd" value="${a.t.replace(/"/g,'&quot;')}"><button class="ot-btn done xs" type="submit">שמירה</button></form>`
-          :`<b>${a.t}</b>`}<span>${a.by} · ${a.late?'<i>עבר · '+a.due+'</i>':'להיום'}${a.pushed?' · <i>נדחה ל'+a.pushed+'</i>':''}</span></div>
+        <div class="at-b"><b>${a.t}</b><span>${a.by} · ${a.late?'<i>עבר · '+a.due+'</i>':'להיום'}${a.pushed?' · <i>נדחה ל'+a.pushed+'</i>':''}</span></div>
         <div class="at-acts">
           <button class="ot-btn done xs" onclick="advDone(${k})">הושלם</button>
           <button class="ot-btn ghost xs" onclick="advPush(${k})">דחה למחר</button>
