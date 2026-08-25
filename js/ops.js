@@ -2919,7 +2919,7 @@
           :`<b>${a.t}</b>`}<span>${a.by} · ${a.late?'<i>עבר · '+a.due+'</i>':'להיום'}${a.pushed?' · <i>נדחה ל'+a.pushed+'</i>':''}</span></div>
         <div class="at-acts">
           <button class="ot-btn done xs" onclick="advDone(${k})">הושלם</button>
-          <button class="ot-btn ghost xs" onclick="advPush(${k})">דחה</button>
+          <button class="ot-btn ghost xs" onclick="advPush(${k})">דחה למחר</button>
           <button class="ot-btn ghost xs" onclick="advEdit(${k})">ערוך</button>
         </div>
       </div>`).join('')}

@@ -564,6 +564,7 @@
     MTK_EDIT=null;
     const _tt=document.querySelector('#mtkOv .mx2-title'); if(_tt)_tt.textContent=time?('אירוע חדש · '+time):'משימה חדשה';
     const _db=document.getElementById('mtkDelBtn'); if(_db)_db.style.display='none';
+    const _pb=document.getElementById('mtkPostponeBtn'); if(_pb)_pb.style.display='none';
     const _sb=document.querySelector('#mtkOv .mx2-btn.primary'); if(_sb)_sb.textContent=time?'הוספה ליומן':'הוספת המשימה';
     document.getElementById('mtkTitle').placeholder=time?'מה האירוע?':'מה צריך לעשות?';
     MC_ADD_DAY=null; MTK_REP='once';
@@ -577,6 +578,7 @@
     document.getElementById('mtkOwner').innerHTML='<option value="">אחראי: אני</option>'+
       team.map(n=>`<option value="${n}">${n}</option>`).join('');
     document.querySelectorAll('#mtkRep .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.r==='once'));
+    mtkRepSubRender();
     mtkClientChange();
     document.getElementById('mtkOv').classList.add('show');
     setTimeout(()=>document.getElementById('mtkTitle').focus(),60);
@@ -775,7 +777,29 @@
       <div class="mcal-side-hint">גררו משימה למעלה או למטה כדי לשנות את הסדר</div>
       ${tToday.length?tToday.map(trow).join(''):'<div class="advh-ok" style="padding:12px 16px">✓ אין משימות להיום</div>'}
       ${tFut.length?`<div class="mc-fut-toggle" onclick="window._mtFutOpen=!window._mtFutOpen;renderMgrCal()">${window._mtFutOpen?'▾':'◂'} עתידיות (${opnF})</div>`:''}
-      ${window._mtFutOpen?tFut.map(trow).join(''):''}`;
+      ${window._mtFutOpen?tFut.map(trow).join(''):''}
+      <div class="mtk-quick-wrap">
+        <input class="mtk-quick-inp" id="mtkQuickInp" placeholder="+ הוסף משימה" onkeydown="if(event.key==='Enter')mtkQuickAdd()">
+        <button class="mtk-quick-btn" title="הוסף" onclick="mtkQuickAdd()">+</button>
+        <button class="mtk-quick-more" title="פרטים נוספים" onclick="mtkQuickExpand()">⋯</button>
+      </div>`;
+  }
+  function mtkQuickAdd(){
+    const inp=document.getElementById('mtkQuickInp');
+    if(!inp)return;
+    const t=inp.value.trim();
+    if(!t)return;
+    MGR_TODO.push({t,done:false,pri:'mid',client:null,rep:'once',detail:'',remind:false,owner:null,due:null,repTxt:null});
+    inp.value='';
+    toast('נוספה: '+t);
+    renderMgrCal();
+    setTimeout(()=>{const i=document.getElementById('mtkQuickInp');if(i)i.focus();},60);
+  }
+  function mtkQuickExpand(){
+    const inp=document.getElementById('mtkQuickInp');
+    const t=inp?inp.value.trim():'';
+    mcQuick('');
+    if(t) setTimeout(()=>{const f=document.getElementById('mtkTitle');if(f){f.value=t;if(inp)inp.value='';}},80);
   }
   let MTK_EDIT=null;
   function mtkEditOpen(i){
@@ -792,6 +816,7 @@
     if(typeof mtkRepSet==='function')mtkRepSet(x.rep||'once');
     document.querySelector('#mtkOv .mx2-title').textContent='עריכת משימה';
     const db=document.getElementById('mtkDelBtn'); if(db)db.style.display='';
+    const pb=document.getElementById('mtkPostponeBtn'); if(pb)pb.style.display='';
     const sb=document.querySelector('#mtkOv .mx2-btn.primary'); if(sb)sb.textContent='שמירה';
   }
   function mtkDelete(){
@@ -802,6 +827,14 @@
     MTK_EDIT=null; mtkClose(); renderMgrCal();
     if(typeof renderOpsInfo==='function')renderOpsInfo();
     toastUndo('המשימה נמחקה',()=>{MGR_TODO.splice(i,0,x);renderMgrCal();if(typeof renderOpsInfo==='function')renderOpsInfo();});
+  }
+  function mtkPostponeTomorrow(){
+    if(MTK_EDIT==null) return;
+    const tom=new Date(); tom.setDate(tom.getDate()+1);
+    const due=(tom.getDate())+'.'+String(tom.getMonth()+1).padStart(2,'0');
+    Object.assign(MGR_TODO[MTK_EDIT],{due, rep:'once', repTxt:null});
+    MTK_EDIT=null; mtkClose(); renderMgrCal();
+    toast('נדחה למחר — '+due);
   }
   /* סידור ידני — גרירת משימה מעל משימה אחרת ברשימה */
   function mcRowOver(e,el){
