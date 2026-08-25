@@ -841,8 +841,9 @@
       <div class="oi-chats">${withPend.map(o=>{const c=o.c,i=o.i;
         // לכל הודעה תיבת תגובה + כפתור טופל משלה
         const bubs=o.pf.map(p=>`<div class="oqs-msgblock">
-            <div class="oqs-bub"><div class="oqs-bub-h">${p.m.name} · ${p.m.when}</div>${p.m.t}</div>
-            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button><button class="oqs-ops" onclick="msgToOps(${i},${p.gi})" title="פתיחת התפעול על ההודעה — השעון ממשיך לספור">טיפול בתפעול ←</button></div>
+            <div class="oqs-bub"><div class="oqs-bub-h">${p.m.name} · ${p.m.when}
+              <button class="oqs-ops" onclick="msgToOps(${i},${p.gi})" title="פתיחת התפעול על ההודעה — השעון ממשיך לספור">טיפול בתפעול ←</button></div>${p.m.t}</div>
+            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
           </div>`).join('');
         return `<div class="oqs-chat">
           <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length} שלא נענו</span></div>

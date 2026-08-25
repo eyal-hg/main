@@ -121,7 +121,17 @@
     // re-entry after completed finish: keep counting from the recorded duration, button becomes refresh
     const wasDone=opsDoneSet.has(opsActiveKey);
     if(wasDone && opsAccum[opsActiveKey]==null) opsAccum[opsActiveKey]=opsDur[opsActiveKey]||0;
-    document.getElementById('opsDoneTag').style.display=wasDone?'':'none';
+    /* ===== תפעול נוסף =====
+       החברה כבר סיימה את התפעול החודשי, ובכל זאת הגיעה עבודה (הודעה שנותבה
+       מהדשבורד). הפס משנה מראה: כתום-כהה, "תפעול נוסף", והשעון ממשיך
+       מהזמן שנצבר — כדי שיהיה ברור שזה זמן מעבר למחזור שנסגר. */
+    const bar=document.querySelector('.ops-banner');
+    if(bar) bar.classList.toggle('extra',wasDone);
+    const dt=document.getElementById('opsDoneTag');
+    dt.style.display=wasDone?'':'none';
+    const ttl=document.querySelector('.ops-title');
+    if(ttl) ttl.firstChild.nodeValue=wasDone?'תפעול נוסף — ':'מצב תפעול — ';
+    if(wasDone) dt.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg> תפעול נוסף · המחזור החודשי הושלם ב-'+fmtDur(opsDur[opsActiveKey]||opsAccum[opsActiveKey]||0);
     const _end=document.getElementById('opsEndBtn');
     if(_end) _end.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> '+(wasDone?'סיכום התפעול':'סיום תפעול');
     document.getElementById('opsFinBtn').innerHTML =
