@@ -196,6 +196,24 @@
     window._msgHandled=window._msgHandled||new Set();
     return list.filter(p=>!window._msgHandled.has(i+':'+p.gi));
   }
+  /* ניתוב הודעה לתפעול — נכנסים למצב תפעול, נוחתים על שלב "הודעות לקוח",
+     וההודעה הזאת נבחרת. אם התפעול כבר הושלם — השעון ממשיך לספור מהזמן שנצבר. */
+  function msgToOps(i,gi){
+    const users=(CLIENTS[i].thread||[]).filter(m=>m.from==='user');
+    const m=users[gi]||{t:'הודעה מהלקוח', name:'הלקוח', when:'עכשיו'};
+    window._msgHandled=window._msgHandled||new Set();
+    window._msgHandled.add(i+':'+gi);
+    selectClient(i);
+    /* ההודעה נכנסת לתור התפעול כמשימה פתוחה, בראש */
+    const T=(CLIENTS[i].tasks=CLIENTS[i].tasks||[]);
+    const task={type:'msg', who:m.name||'הלקוח', thread:[m.t], time:m.when||'עכשיו',
+                ctx:['['+(m.name||'הלקוח')+'] '+m.t], fromBoard:true};
+    T.unshift(task);
+    window._opsForce=3;   /* שלב "הודעות לקוח" */
+    if(typeof enterOps==='function') enterOps();
+    setTimeout(()=>{ if(typeof msgPick==='function') msgPick(CLIENTS[i].tasks.indexOf(task)); },60);
+    toast('נפתח בתפעול — שלב הודעות לקוח · השעון ממשיך');
+  }
   function msgDone(i,gi){
     window._msgHandled=window._msgHandled||new Set();
     window._msgHandled.add(i+':'+gi);
@@ -824,7 +842,7 @@
         // לכל הודעה תיבת תגובה + כפתור טופל משלה
         const bubs=o.pf.map(p=>`<div class="oqs-msgblock">
             <div class="oqs-bub"><div class="oqs-bub-h">${p.m.name} · ${p.m.when}</div>${p.m.t}</div>
-            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
+            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button><button class="oqs-ops" onclick="msgToOps(${i},${p.gi})" title="פתיחת התפעול על ההודעה — השעון ממשיך לספור">טיפול בתפעול ←</button></div>
           </div>`).join('');
         return `<div class="oqs-chat">
           <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length} שלא נענו</span></div>

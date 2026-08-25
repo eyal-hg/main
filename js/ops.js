@@ -51,7 +51,7 @@
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג.
      כרגע: קטגוריות · מוטבים · נגררות ולא צפויות ⇒ נוחתים על "הודעות לקוח".
      להוסיף 'msg','doc' ⇒ נוחתים על "הזנות ואוטומציה" · להוסיף גם 'sheet' ⇒ ישר לסיום. */
-  const OPS_PREDONE=['ai','payee','carry','unexpected'];
+  const OPS_PREDONE=[];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   const OPS_STAGES=[
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
@@ -1642,11 +1642,14 @@
     let cards='';
     if(OPS_VIEW==='open'){
       // מסך מלא לשלב אחד: הנוכחי — או שלב בתצוגה מקדימה (נעול למגע)
-      const showIx=(window._opsPeek!=null&&window._opsPeek!==curIx)?window._opsPeek:curIx;
+      /* _opsForce — קפיצה לשלב מסוים (למשל הודעה שנותבה מהדשבורד): פעיל, לא נעול */
+      const forced=(window._opsForce!=null&&STAGES[window._opsForce]);
+      const showIx=forced?window._opsForce:((window._opsPeek!=null&&window._opsPeek!==curIx)?window._opsPeek:curIx);
       if(showIx<STAGES.length){
         const [ty,label,sub]=STAGES[showIx];
         const rows=pool.filter(t=>stTypes(ty).includes(t.type));
-        const isPeek=showIx!==curIx;
+        const isPeek=!forced&&showIx!==curIx;
+        if(forced&&!rows.length){ window._opsForce=null; }
         window._opsChatTy=ty;
         cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}" style="grid-column:1/-1">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
