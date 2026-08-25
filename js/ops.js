@@ -119,6 +119,7 @@
     document.querySelector('.sub-line').style.display='none';
     document.getElementById('shell').classList.add('no-rail');
     // re-entry after completed finish: keep counting from the recorded duration, button becomes refresh
+    window._opsDoneScreen=false;
     const wasDone=opsDoneSet.has(opsActiveKey);
     if(wasDone && opsAccum[opsActiveKey]==null) opsAccum[opsActiveKey]=opsDur[opsActiveKey]||0;
     /* חברה שכבר סיימה את המחזור — אותו פס, עם התג "התפעול הושלם".
@@ -132,6 +133,14 @@
       : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg> השהיה · הזמן נשמר'; }
     document.getElementById('opsFinBtn').innerHTML =
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg> רענון נתונים';
+    /* חברה שכבר סיימה: יש הודעות חדשות ⇒ נוחתים עליהן (השלבים בכל מקרה מטפלים בזה).
+       אין הודעות ⇒ מסך "התפעול הושלם" — לא הסיכום מחדש. */
+    if(wasDone){
+      const openNow=curTasks().filter(x=>!x.done);
+      const msgs=openNow.filter(x=>x.type==='msg'||x.type==='doc');
+      if(msgs.length) window._opsForce=3;
+      else if(!openNow.length) window._opsDoneScreen=true;
+    }
     OPS_VIEW='open'; renderOps();
     // אין בכלל מה לתפעל? — עוברים אוטומטית לרענון ולבדיקות
     if(!finPaused&&!wasDone&&window._autoFin!==opsActiveKey&&stageTasksDone()){
@@ -187,6 +196,17 @@
     b.innerHTML=inFin
       ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> שליחת הודעה'
       : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> סיום תפעול';
+  }
+  /* הסיכום נפתח רק בבקשה מפורשת */
+  function opsShowRecap(){
+    document.getElementById('opsGrid').style.display='none';
+    document.getElementById('finView').style.display='';
+    opsTotal=(opsAccum[opsActiveKey]||0);
+    FIN_EXC=OPS_DEMO_EXC?FIN_EXC_DEF():[];
+    document.getElementById('finSteps').innerHTML=FIN_STEPS.map((s,i)=>
+      `<div class="fin-step done" id="fstep${i}"><span class="fs-num">${i+1}</span><span class="fs-ico"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span><span>${s}</span><span class="fs-tag" id="ftag${i}">נבדק</span></div>`).join('');
+    finCurStep=FIN_STEPS.length; finOpen=[];
+    finAllDone(); finChatFill(); opsEndBtnMode();
   }
   function exitOps(){   /* לחיצה על "סגירת מצב תפעול" — סוגר וגם מנקה את ה-URL */
     closeOpsTeardown();
@@ -1467,8 +1487,19 @@
     CLIENTS[1].debt=1200; CLIENTS[3].debt=480;
     CLIENTS[0].ccDown=true; CLIENTS[2].clearDown=true;
     opsDoneSet.add('c4'); opsDur['c4']=320;
-    /* דמו: אנרגי כבר סיימה את המחזור — כדי לראות את מצב "תפעול נוסף" */
-    opsDoneSet.add('c0'); opsDur['c0']=505;
+    /* ===== דמו: שתי חברות שסיימו תפעול, שני מצבים =====
+       מטעי גבעון (c2) — סיימה, אין הודעות חדשות ⇒ מסך "התפעול הושלם".
+       אנרגי גולני (c1) — סיימה, ונכנסה הודעה חדשה ⇒ נוחתים על ההודעות. */
+    opsDoneSet.add('c2'); opsDur['c2']=424; CLIENTS[2].tasks=[];
+    opsDoneSet.add('c1'); opsDur['c1']=618;
+    CLIENTS[1].tasks=[
+      {type:'msg', who:'יעל גולני', time:'לפני 6 דק׳', thread:['שילמתי עכשיו 7,500 לפלסט-גל בשיק 21045'],
+       ctx:['[יעל גולני] שילמתי עכשיו 7,500 לפלסט-גל בשיק 21045']},
+      {type:'doc', name:'אישור העברה — לאומי · 3,660 ₪', who:'יעל גולני', note:'מצרפת אישור על ההעברה לאלקטרה',
+       time:'לפני 3 דק׳', src:'הודעת לקוח', img:'m3.jpeg',
+       ctx:['[יעל גולני] מצרפת אישור על ההעברה לאלקטרה','[יעל גולני] + קובץ'],
+       file:{payee:'אלקטרה מיזוג', amount:'3,660', date:'28.07.2026', ref:'889231', desc:'העברה בנקאית'}},
+    ];
     CLIENTS[0].preview='תחזרו אליי היום · צפייה בתזרים';
     CLIENTS[2].preview='האם היתרה שלי מספיקה?';
     CLIENTS[4].preview='אפשר דוח תזרים מעודכן?';
@@ -1690,7 +1721,14 @@
     /* הפאנל מתחיל מראש המסך — לצד כותרת המשימות והציר, לאורך כל השלב */
     const main='<div class="ops-rows" style="margin-bottom:14px">'+head+flow+'</div>'+
       (cards?'<div class="ops-wgrid flow">'+cards+'</div>'
-        :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>');
+        :(window._opsDoneScreen&&OPS_VIEW==='open'
+          ?`<div class="ops-rows"><div class="ops-fin-still">
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#3FAF4B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <b>התפעול הושלם</b>
+              <span>אין הודעות חדשות מאז התפעול האחרון · הושלם ב-${fmtDur(opsDur[opsActiveKey]||opsAccum[opsActiveKey]||0)}</span>
+              <div class="ofs-acts"><button class="ot-btn done" onclick="opsShowRecap()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg> שליחת הודעה</button></div>
+            </div></div>`
+          :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>'));
     document.getElementById('opsGrid').innerHTML =
       '<div class="ops-split'+(chat?' with-chat':'')+'"><div class="ops-main">'+main+'</div>'+chat+'</div>';
   }
