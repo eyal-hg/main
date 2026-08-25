@@ -867,14 +867,16 @@
               <button class="oqs-ops" onclick="msgToOps(${i},${p.gi})" title="פתיחת התפעול על ההודעה — השעון ממשיך לספור">טיפול בתפעול ←</button></div>${p.m.t}</div>
             <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},${p.gi})"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},${p.gi})">שליחה</button><button class="oqs-done" onclick="msgDone(${i},${p.gi})" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
           </div>`).join('');
-        const docs=msgDocsOf(i).map(p=>`<div class="oqs-doc ${p.d.kind}">
-            <span class="od-ic">${DOC_ICO[p.d.kind]}</span>
-            <div class="od-b"><b>${p.d.name}</b><span>${p.d.who} · ${p.d.when} · ${p.d.t}</span></div>
-            <span class="od-tag">${DOC_LBL[p.d.kind]}</span>
-            <button class="oqs-ops" onclick="msgToOps(${i},'${p.gi}')" title="הזנה לתזרים בתוך התפעול">טיפול בתפעול ←</button>
+        /* קובץ = בועת הודעה רגילה, עם סימן קובץ מתחת */
+        const docs=msgDocsOf(i).map(p=>`<div class="oqs-msgblock">
+            <div class="oqs-bub"><div class="oqs-bub-h">${p.d.who} · ${p.d.when}
+              <button class="oqs-ops" onclick="msgToOps(${i},'${p.gi}')" title="הזנה לתזרים בתוך התפעול">טיפול בתפעול ←</button></div>${p.d.t}
+              <span class="od-file">📎 ${p.d.name}</span>
+            </div>
+            <div class="oqs-reply per"><input placeholder="תגובה…" onkeydown="if(event.key==='Enter')qReplyMsg(this,${i},'${p.gi}')"><button class="oqs-send sm" onclick="qReplyMsg(this.previousElementSibling,${i},'${p.gi}')">שליחה</button><button class="oqs-done" onclick="msgDone(${i},'${p.gi}')" title="סימון כטופל בלי תגובה">✓ טופל</button></div>
           </div>`).join('');
         return `<div class="oqs-chat">
-          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length} שלא נענו${msgDocsOf(i).length?' · '+msgDocsOf(i).length+' קבצים':''}</span></div>
+          <div class="oqs-chat-h"><b class="oqs-name" onclick="chatFrom(${i})" title="פתיחת השיחה המלאה">${c.name}</b><span>${o.pf.length+msgDocsOf(i).length} שלא נענו</span></div>
           ${docs}${bubs}
         </div>`;}).join('')}</div>
       ${withPend.length?'':'<div class="oqs-empty">אין הודעות פתוחות ✓</div>'}
