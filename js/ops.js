@@ -1497,6 +1497,33 @@
     return (t.text||'').replace(/\s+/g,' ').slice(0,70);
   }
   let OPS_OPEN=new Set();
+  /* ===== ההתכתבות עם הלקוח — פאנל קבוע לאורך כל התפעול =====
+     אותה שיחה של שלב 4, לקריאה: מה הלקוח שלח, מה נענה, ומה עוד מחכה. */
+  function opsChatSide(T){
+    const items=T.filter(t=>t.type==='msg'||t.type==='doc');
+    if(!items.length) return '';
+    const openN=items.filter(t=>!t.done).length;
+    const bub=(who,txt,me)=>`<div class="msgc-b ${me?'me':''}"><span class="msgc-w">${who}</span>${txt}</div>`;
+    const body=items.map(t=>{
+      const lines=(t.ctx&&t.ctx.length?t.ctx:(t.thread||[]).map(x=>'['+(t.who||'הלקוח')+'] '+x));
+      const msgs=lines.map(l=>{
+        const m=l.match(/^\[([^\]]+)\]\s*(.*)$/)||[null,t.who||'הלקוח',l];
+        return bub(m[1],m[2],m[1].includes('מנהל תזרים')||m[1].includes('יועץ'));
+      }).join('');
+      const tag=t.type==='doc'?`<span class="msgc-att">${t.img?'📎':'📊'} ${t.name}</span>`:'';
+      const st=t.done?(t.later?'<span class="msgc-ok later">◷ מאוחר יותר</span>':'<span class="msgc-ok">✓ טופל</span>')
+                     :'<span class="msgc-ok await">◷ מחכה לשלב הודעות לקוח</span>';
+      return `<div class="msgc-item chatside">
+        <div class="msgc-time">${t.who||''} · ${t.time||''}</div>
+        ${msgs}
+        <div class="msgc-foot">${tag}${st}</div>
+      </div>`;}).join('');
+    return `<div class="ops-wdg ops-chatside">
+      <div class="ost-head"><div class="ost-b"><b>ההתכתבות עם הלקוח</b><i>מלווה את כל התפעול</i></div>
+        <span class="ost-cnt">${openN?openN+' מחכות':'הכל נענה ✓'}</span></div>
+      <div class="ops-chatbody">${body}</div>
+    </div>`;
+  }
   function renderOps(){
     if(OPSMODE&&typeof applyCatRules==="function") applyCatRules();
     const T=curTasks();
@@ -1542,7 +1569,8 @@
         const [ty,label,sub]=STAGES[showIx];
         const rows=pool.filter(t=>stTypes(ty).includes(t.type));
         const isPeek=showIx!==curIx;
-        cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}" style="grid-column:1/-1">
+        window._opsChatTy=ty;
+        cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
             <div class="ost-b"><b>${label}</b><i>${sub}</i></div>
             ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length} לטיפול</span>`}
@@ -1555,9 +1583,10 @@
     }else{
       cards=pool.length?`<div class="ops-wdg"><div class="ost-head"><div class="ost-b"><b>טופלו</b></div></div>`+pool.map(t=>opsRow(t,T.indexOf(t))).join('')+'</div>':'';
     }
+    const chat=(OPS_VIEW==='open'&&cards&&window._opsChatTy!=='msg')?opsChatSide(T):'';
     document.getElementById('opsGrid').innerHTML =
       '<div class="ops-rows" style="margin-bottom:14px">'+head+flow+'</div>'+
-      (cards?'<div class="ops-wgrid flow">'+cards+'</div>'
+      (cards?'<div class="ops-wgrid flow"><div class="ops-split'+(chat?' with-chat':'')+'">'+cards+chat+'</div></div>'
         :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>');
   }
   /* ===== כללי קיטלוג אוטומטי — פעולות שעונות על כלל מקוטלגות בלי אישור ===== */
