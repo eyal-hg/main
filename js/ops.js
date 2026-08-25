@@ -1655,10 +1655,12 @@
         <button class="sf-hide" onclick="opsSideToggle()" title="כיווץ הפאנל"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
+        <button class="stb ${tab==='adv'?'on':''}" onclick="opsSideTab('adv')">משימות ${advTasksOf().length?`<em>${advTasksOf().length}</em>`:''}</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
         :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תחזית תזרים"></iframe>`
+        :tab==='adv'?`<div class="ops-chatbody">${advTasksHtml()}</div>`
         :`<div class="ops-chatbody">${opsCtsHtml()}</div>`}
     </div>`;
   }
@@ -1716,7 +1718,7 @@
         cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}" style="grid-column:1/-1">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
             <div class="ost-b"><b>${label}</b><i>${sub}</i></div>
-            ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length+(ty==='msg'?advTasksOf().length:0)} לטיפול</span>`}
+            ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length} לטיפול</span>`}
             ${ty==='ai'&&!isPeek?'<button class="mt-btn view" onclick="openCatRules()">⚙ כללי קיטלוג</button>':''}
           </div>
 
@@ -2872,16 +2874,54 @@
     2:[{t:'לוודא שהתקבול ממרכז הבנייה נכנס', by:'לירון בן כליפא', due:'היום', late:false}],
   };
   function advTasksOf(){ return (ADV_TASKS[CUR]||[]).filter(x=>!x.done); }
-  function advDone(k){ const a=advTasksOf()[k]; if(!a) return; a.done=true; toast('בוצע · '+a.by+' עודכן'); renderOps(); }
-  function advReply(k){ const a=advTasksOf()[k]; if(!a) return; toast('נשלחה תגובה ל'+a.by); }
+  function advDone(k){ const a=advTasksOf()[k]; if(!a) return; a.done=true; toast('בוצע · '+a.by+' עודכן');
+    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps(); }
+  /* עריכה — במקום, בשורה עצמה */
+  let _advEd=null;
+  function advEdit(k){ _advEd=(_advEd===k)?null:k;
+    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps();
+    setTimeout(()=>{const e=document.getElementById('atEd'); if(e){e.focus();e.select();}},40);
+  }
+  function advEdSave(k){
+    const e=document.getElementById('atEd'); const v=(e&&e.value.trim())||'';
+    const a=advTasksOf()[k]; if(a&&v) a.t=v;
+    _advEd=null; toast('המשימה עודכנה');
+    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps();
+  }
+  /* דחייה — יורדת מהיום, נשארת פתוחה במסך המשימות */
+  function advPush(k){
+    const a=advTasksOf()[k]; if(!a) return;
+    a.done=true; a.pushed='מחר';
+    toast('נדחה למחר · '+a.by+' עודכן');
+    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps();
+  }
+  function advAdd(){
+    const i=document.getElementById('atNew'); const v=(i&&i.value.trim())||'';
+    if(!v){ i&&i.focus(); return; }
+    (ADV_TASKS[CUR]=ADV_TASKS[CUR]||[]).unshift({t:v, by:'אני · מנהל תזרים', due:'היום', late:false, mine:true});
+    toast('המשימה נוספה');
+    if(document.getElementById('finView').style.display!=='none') finChatFill(); else renderOps();
+    setTimeout(()=>{const e=document.getElementById('atNew'); if(e)e.focus();},40);
+  }
   function advTasksHtml(){
-    const list=advTasksOf(); if(!list.length) return '';
-    return `<div class="adv-tasks">
-      <div class="at-h">משימות להיום · מהיועץ <em>${list.length}</em></div>
+    const list=advTasksOf();
+    const add=`<form class="at-add" onsubmit="event.preventDefault();advAdd()">
+        <input id="atNew" placeholder="משימה חדשה על החברה…" autocomplete="off">
+        <button class="ot-btn done xs" type="submit">הוספה</button>
+      </form>`;
+    if(!list.length) return `<div class="adv-tasks panel">${add}<div class="at-empty">אין משימות פתוחות להיום ✓</div></div>`;
+    return `<div class="adv-tasks panel">
+      ${add}
+      <div class="at-h">להיום ומה שעבר</div>
       ${list.map((a,k)=>`<div class="at-row${a.late?' late':''}">
-        <span class="at-cb" onclick="advDone(${k})" title="סימון כבוצע">✓</span>
-        <div class="at-b"><b>${a.t}</b><span>${a.by} · ${a.late?'<i>עבר · '+a.due+'</i>':'להיום'}</span></div>
-        <button class="ot-btn ghost sm" onclick="advReply(${k})">תגובה ליועץ</button>
+        <div class="at-b">${_advEd===k
+          ?`<form class="at-edit" onsubmit="event.preventDefault();advEdSave(${k})"><input id="atEd" value="${a.t.replace(/"/g,'&quot;')}"><button class="ot-btn done xs" type="submit">שמירה</button></form>`
+          :`<b>${a.t}</b>`}<span>${a.by} · ${a.late?'<i>עבר · '+a.due+'</i>':'להיום'}${a.pushed?' · <i>נדחה ל'+a.pushed+'</i>':''}</span></div>
+        <div class="at-acts">
+          <button class="ot-btn done xs" onclick="advDone(${k})">הושלם</button>
+          <button class="ot-btn ghost xs" onclick="advPush(${k})">דחה</button>
+          <button class="ot-btn ghost xs" onclick="advEdit(${k})">ערוך</button>
+        </div>
       </div>`).join('')}
     </div>`;
   }
@@ -2939,8 +2979,8 @@
       const el=document.getElementById('msgc_'+_msgSel);
       if(el&&el.scrollIntoView) el.scrollIntoView({block:'nearest',behavior:'smooth'});
     },60);
-    /* ההתכתבות חיה בפאנל הצד המשותף — כאן משימות היועץ ואז חלון העבודה */
-    return `${advTasksHtml()}<div class="ms-split solo"><div class="ms-work">${work}</div></div>`;
+    /* ההתכתבות ומשימות היועץ חיות בפאנל הצד — כאן רק חלון העבודה */
+    return `<div class="ms-split solo"><div class="ms-work">${work}</div></div>`;
   }
   /* הודעת מלל — שיחה ומענה */
   function textMsgBody(t,i){
