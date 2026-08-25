@@ -1532,6 +1532,29 @@
     return `<div class="sf-accts">${SIDE_FLOW.accts.map(a=>`<div class="sf-ac"><span>${a[0]}</span><b class="num ${a[1]<0?'neg':''}">${a[1]<0?'-':''}${Math.abs(a[1]).toLocaleString()} ₪</b></div>`).join('')}</div>
       <div class="sf-h"><span>מועד</span><span>תנועה</span><span>סכום</span><span>יתרה</span></div>${rows}`;
   }
+  /* אנשי קשר בפאנל — אותה רשימה של הפופאפ, עם כתיבת וואטסאפ במקום */
+  let _ctsSideWa=null;
+  function opsCtsWa(i){ _ctsSideWa=(_ctsSideWa===i)?null:i; opsSideTab('cts'); }
+  function opsCtsSend(i){
+    const e=document.getElementById('ctsSideTxt'); const v=(e&&e.value.trim())||'';
+    if(!v){e&&e.focus();return;}
+    const u=ctsList()[i]; _ctsSideWa=null; opsSideTab('cts');
+    toast('נשלח בוואטסאפ ל'+u.n+' — "'+(v.length>40?v.slice(0,40)+'…':v)+'"');
+  }
+  function opsCtsHtml(){
+    return ctsList().map((u,i)=>`
+      <div class="cts-row">
+        <div class="cts-av">${u.n.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+        <div class="cts-info"><b>${u.n}</b><span>${u.role} · <bdo dir="ltr">${u.phone}</bdo></span></div>
+        <button class="cts-wa ${_ctsSideWa===i?'on':''}" onclick="opsCtsWa(${i})">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
+          וואטסאפ</button>
+      </div>
+      ${_ctsSideWa===i?`<div class="cts-comp">
+        <textarea id="ctsSideTxt" placeholder="הודעה ל${u.n}…" rows="2"></textarea>
+        <button class="cts-send" onclick="opsCtsSend(${i})">שליחה</button>
+      </div>`:''}`).join('');
+  }
   function opsChatSide(T){
     const items=T.filter(t=>t.type==='msg'||t.type==='doc');
     if(!items.length) return '';
@@ -1556,10 +1579,12 @@
       <div class="ost-head side-tabs">
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
-        <span class="ost-cnt">${tab==='chat'?(openN?'':'הכל נענה ✓'):'צפי קדימה'}</span>
+        <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
+        ${tab==='chat'&&!openN?'<span class="ost-cnt">הכל נענה ✓</span>':''}
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
-        :`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html#embed" title="תחזית תזרים"></iframe>`}
+        :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html#embed" title="תחזית תזרים"></iframe>`
+        :`<div class="ops-chatbody">${opsCtsHtml()}</div>`}
     </div>`;
   }
   function renderOps(){
