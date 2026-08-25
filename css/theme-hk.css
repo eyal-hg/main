@@ -602,8 +602,8 @@
   .biz-form{min-width:0}
   .biz-selrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
   .biz-selrow label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;font-weight:600;color:#0C4068}
-  .biz-thead{display:grid;grid-template-columns:1fr 1fr 1.2fr 1.3fr .8fr 22px;gap:8px;background:#F0F4F7;border-radius:7px;padding:7px 10px;font-size:11px;font-weight:700;color:#0C4068;margin-bottom:6px}
-  .biz-row{display:grid;grid-template-columns:1fr 1fr 1.2fr 1.3fr .8fr 22px;gap:8px;padding:0 10px;margin-bottom:6px}
+  .biz-thead{display:grid;grid-template-columns:1fr 1fr 1.2fr 1.3fr .8fr;gap:8px;background:#F0F4F7;border-radius:7px;padding:7px 24px 7px 10px;font-size:11px;font-weight:700;color:#0C4068;margin-bottom:6px}
+  .biz-row{position:relative;display:grid;grid-template-columns:1fr 1fr 1.2fr 1.3fr .8fr;gap:8px;padding:0 24px 0 10px;margin-bottom:6px}
   .biz-row .mx2-inp{font-size:12px;padding:6px 8px}
   .biz-amt{font-weight:700}
   .biz-add{font-size:12px;font-weight:600;color:#39ABE2;cursor:pointer;padding:4px 10px 10px}
@@ -3749,7 +3749,8 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .ops-cts{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:10px;padding:9px 16px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 .ops-cts:hover{background:rgba(255,255,255,.28)}
 /* ההתכתבות עם הלקוח — פאנל קבוע לאורך התפעול */
-.ops-split{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.ops-split{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+.ops-main{min-width:0}
 .ops-split.with-chat{grid-template-columns:minmax(0,1fr) clamp(320px,24vw,380px)}
 .ops-chatside{position:sticky;top:12px}
 .ops-chatbody{max-height:calc(100vh - 210px);overflow:auto;padding:10px 14px 14px}
@@ -3804,6 +3805,10 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 /* כפתורי הפעולה בשורות הנגררות/לא צפויות — קומפקטיים */
 .orow2-act .ot-btn{font-size:11.5px;padding:5px 10px;border-radius:8px}
 /* הורדת שורה בטופס ההזנה */
-.biz-del{width:22px;height:26px;display:grid;place-items:center;border:none;background:none;color:#B7C3CF;font-size:13px;cursor:pointer;border-radius:6px;align-self:center}
+.biz-del{position:absolute;inset-inline-start:2px;top:50%;transform:translateY(-50%);width:20px;height:20px;display:grid;place-items:center;border:none;background:none;color:#C9D5DF;font-size:12px;cursor:pointer;border-radius:5px;opacity:0;transition:opacity .12s}
 .biz-del:hover{background:#FDEDEB;color:#C43D30}
 .ms-split.solo{display:block}
+.biz-row:hover .biz-del{opacity:1}
+.biz-del:hover{background:#FDEDEB;color:#C43D30}
+/* השורה הראשונה בטופס ההזנה — בלי ✕ */
+.biz-row:first-child .biz-del{display:none}

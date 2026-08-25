@@ -99,7 +99,9 @@
     .w-title{ font-size:14px; font-weight:600; color:var(--navy); }
     .w-subtitle{ font-size:11px; color:var(--gray2); }
     .w-head-controls{ display:flex; align-items:center; gap:8px; }
-    .w-refresh{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;border-radius:16px;border:1px solid #cfe4f2;background:#eaf3fa;color:#1668A0;cursor:pointer;flex:none;font-family:'Rubik',sans-serif;font-size:12px;font-weight:500}
+    .w-title-row{display:flex;align-items:center;gap:10px}
+    .w-head-right{flex:1;min-width:0}
+    .w-refresh{margin-inline-start:auto;display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 12px;border-radius:16px;border:1px solid #cfe4f2;background:#eaf3fa;color:#1668A0;cursor:pointer;flex:none;font-family:'Rubik',sans-serif;font-size:12px;font-weight:500}
     .w-refresh:hover{background:#ddeef9}
     .w-refresh.spin svg{animation:wrspin .9s linear infinite}
     @keyframes wrspin{to{transform:rotate(360deg)}}
@@ -317,8 +319,9 @@
       .w-balance-amount{order:2;font-size:21px}
       .risk-chip{order:3;flex-basis:100%;justify-content:center}
       .w-head{flex-wrap:wrap;row-gap:8px}
+      .w-head-right{flex:1 1 100%}
+      .w-title-row{width:100%}
       .w-head-controls{flex-wrap:wrap;row-gap:6px}
-      .w-refresh{order:-1}
       /* בפאנל הצר ה-iframe גבוה — הכרטיס והרשימה נמתחים עד תחתיתו */
       .widget{display:flex;flex-direction:column;min-height:calc(100vh - 16px)}
       .w-scroll{max-height:none;flex:1}
@@ -375,8 +378,12 @@
 
     <div class="w-head">
       <div class="w-head-right">
-        <div class="w-title">תחזית תזרים</div>
-        <div class="w-subtitle">נכון לבוקר יום ב׳, 27.04.2026</div>
+        <div class="w-title-row">
+          <div class="w-title">תחזית תזרים</div>
+          <button class="w-refresh" onclick="wRefresh(this)" title="רענון התזרים">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg> רענון
+          </button>
+        </div>
       </div>
       <div class="w-head-controls">
         <div class="w-range">
@@ -398,9 +405,6 @@
             <path d="M2 4l3 3 3-3" stroke="#0C4068" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <button class="w-refresh" onclick="wRefresh(this)" title="רענון התזרים">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg> רענון
-        </button>
       </div>
     </div>
 

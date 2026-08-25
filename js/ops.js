@@ -1648,7 +1648,7 @@
         const rows=pool.filter(t=>stTypes(ty).includes(t.type));
         const isPeek=showIx!==curIx;
         window._opsChatTy=ty;
-        cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}">
+        cards=`<div class="ops-wdg st-${ty} ${isPeek?'wlock':''}" style="grid-column:1/-1">
           <div class="ost-head"><span class="ost-num">${showIx+1}</span>
             <div class="ost-b"><b>${label}</b><i>${sub}</i></div>
             ${isPeek?'<span class="ost-cnt">תצוגה מקדימה · נעול</span><button class="mt-btn view" style="pointer-events:auto" onclick="opsPeek(null)">חזרה לשלב הנוכחי</button>':`<span class="ost-cnt">${rows.length} לטיפול</span>`}
@@ -1662,10 +1662,12 @@
       cards=pool.length?`<div class="ops-wdg"><div class="ost-head"><div class="ost-b"><b>טופלו</b></div></div>`+pool.map(t=>opsRow(t,T.indexOf(t))).join('')+'</div>':'';
     }
     const chat=(OPS_VIEW==='open'&&cards)?opsChatSide(T):'';
-    document.getElementById('opsGrid').innerHTML =
-      '<div class="ops-rows" style="margin-bottom:14px">'+head+flow+'</div>'+
-      (cards?'<div class="ops-wgrid flow"><div class="ops-split'+(chat?' with-chat':'')+'">'+cards+chat+'</div></div>'
+    /* הפאנל מתחיל מראש המסך — לצד כותרת המשימות והציר, לאורך כל השלב */
+    const main='<div class="ops-rows" style="margin-bottom:14px">'+head+flow+'</div>'+
+      (cards?'<div class="ops-wgrid flow">'+cards+'</div>'
         :'<div class="ops-rows"><div class="ops-empty" style="padding:50px">'+(OPS_VIEW==='open'?'אין משימות תפעול פתוחות — כל הכבוד':'עדיין לא טופלו משימות')+'</div></div>');
+    document.getElementById('opsGrid').innerHTML =
+      '<div class="ops-split'+(chat?' with-chat':'')+'"><div class="ops-main">'+main+'</div>'+chat+'</div>';
   }
   /* ===== כללי קיטלוג אוטומטי — פעולות שעונות על כלל מקוטלגות בלי אישור ===== */
   const CAT_KIND={source:'קטגוריית מקור (Bizibox)', desc:'תיאור מכיל'};
@@ -2954,7 +2956,7 @@
           <label>ח-ן <select class="mx2-inp"><option>מזרחי 295199</option><option>מרכנתיל 69855155</option></select></label>
           <label>סוג תשלום <select class="mx2-inp"><option selected>העברה</option><option>שיק</option><option>אחר</option></select></label>
         </div>
-        <div class="biz-thead"><span>תאריך</span><span>אסמכתא (אם קיים)</span><span>קטגוריה</span><span>תיאור</span><span>סכום</span><span></span></div>
+        <div class="biz-thead"><span>תאריך</span><span>אסמכתא (אם קיים)</span><span>קטגוריה</span><span>תיאור</span><span>סכום</span></div>
         <div id="bizRows_${i}">${rows.map(bizRow).join('')}</div>
         <div class="biz-addrow"><button type="button" class="biz-add" onclick="bizAddRow(${i})">＋ הוספת תשלומים</button></div>
         <div class="chk-actions">
@@ -2993,7 +2995,7 @@
   /* הורדת שורה — תמיד נשארת אחת */
   function bizDelRow(btn){
     const row=btn.closest('.biz-row'), w=row.parentNode;
-    if(w.querySelectorAll('.biz-row').length<=1){ row.querySelectorAll('input').forEach(x=>x.value=''); const s=row.querySelector('select'); if(s)s.selectedIndex=0; toast('השורה רוקנה — חייבת להישאר שורה אחת'); return; }
+    if(w.querySelector('.biz-row')===row) return;   /* השורה הראשונה לא נמחקת */
     row.remove(); toast('השורה הוסרה');
   }
   /* ===== זום על מסמך — פתיחה במסך מלא עם הגדלה/הקטנה ===== */
