@@ -38,6 +38,28 @@
     if(document.getElementById('clientsView').style.display!=='none'&&typeof renderClientsView==='function')renderClientsView();
   }
   document.addEventListener('click',function(e){const m=document.getElementById('firmMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target)&&e.target.id!=='firmDdl')m.classList.remove('show');});
+  /* ===== סינון לפי סטטוס תפעולי — הדרופדאון בסרגל העליון =====
+     החליף את מתגי המצבים שהיו בתחתית תור התפעול. */
+  let STAT_FILTER='';
+  const statOk=c=>!STAT_FILTER||coState(c)===STAT_FILTER;
+  function toggleStat(e){
+    e.stopPropagation();
+    const m=document.getElementById('statMenu');
+    const n=k=>CLIENTS.filter(c=>firmOk(c)&&coState(c)===k).length;
+    m.innerHTML=`<div class="prod-opt ${STAT_FILTER===''?'on':''}" onclick="pickStat('')">כל הסטטוסים</div>`+
+      CO_STATES.map(([k,l])=>`<div class="prod-opt ${STAT_FILTER===k?'on':''}" onclick="pickStat('${k}')">${l} <span class="mgr-n">${n(k)}</span></div>`).join('')+
+      (n('arch')?`<div class="prod-opt ${STAT_FILTER==='arch'?'on':''}" onclick="pickStat('arch')">ארכיון <span class="mgr-n">${n('arch')}</span></div>`:'');
+    m.classList.toggle('show');
+  }
+  function pickStat(k){
+    STAT_FILTER=k;
+    document.getElementById('statMenu').classList.remove('show');
+    document.getElementById('statDdl').innerHTML=(k?(CO_ST_LBL[k]||k):'כל הסטטוסים')+' <span>▾</span>';
+    if(typeof renderGlobalRail==='function')renderGlobalRail();
+    if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();
+    if(document.getElementById('clientsView').style.display!=='none'&&typeof renderClientsView==='function')renderClientsView();
+  }
+  document.addEventListener('click',function(e){const m=document.getElementById('statMenu');if(m&&m.classList.contains('show')&&!m.contains(e.target)&&e.target.id!=='statDdl')m.classList.remove('show');});
   function toggleMgr(e){
     e.stopPropagation();
     const m=document.getElementById('mgrMenu');
@@ -574,9 +596,8 @@
     document.getElementById('mtkRemind').checked=false;
     document.getElementById('mtkClient').value='';
     document.getElementById('mtkCliDd').classList.remove('show');
-    const team=[...new Set(CLIENTS.map(c=>c.mgr))];
-    document.getElementById('mtkOwner').innerHTML='<option value="">אחראי: אני</option>'+
-      team.map(n=>`<option value="${n}">${n}</option>`).join('');
+    document.getElementById('mtkOwner').value='';
+    document.getElementById('mtkOwnDd').classList.remove('show');
     document.querySelectorAll('#mtkRep .mtk-chip').forEach(c=>c.classList.toggle('on',c.dataset.r==='once'));
     mtkRepSubRender();
     mtkClientChange();
@@ -682,6 +703,20 @@
         Array.from({length:28},(_,ix)=>`<option value="${ix+1}" ${ix+1===md?'selected':''}>${ix+1}</option>`).join('')+'</select><i>בחודש</i>';
     }
   }
+  /* אחראי המשימה — אותו דרופדאון-חיפוש כמו הלקוח, לא select של הדפדפן */
+  function mtkTeam(){ return ['אני',...new Set(CLIENTS.filter(c=>firmOk(c)).map(c=>c.mgr))]; }
+  function mtkOwnOpen(){document.getElementById('mtkOwnDd').classList.add('show');mtkOwnFilter();}
+  function mtkOwnFilter(){
+    const q=document.getElementById('mtkOwner').value.trim();
+    const list=mtkTeam().filter(n=>!q||n.includes(q));
+    document.getElementById('mtkOwnDd').innerHTML=list.length
+      ?list.map(n=>`<div class="ev-dd-row" onmousedown="mtkOwnPick('${n.replace(/'/g,"\\'")}')"><span class="ev-dd-av">${n.charAt(0)}</span><div><b>${n}</b><i>${n==='אני'?'המשימה נשארת אצלך':'מנהל תזרים'}</i></div></div>`).join('')
+      :'<div class="ev-dd-empty">אין איש צוות כזה</div>';
+  }
+  function mtkOwnPick(n){
+    document.getElementById('mtkOwner').value=(n==='אני')?'':n;
+    document.getElementById('mtkOwnDd').classList.remove('show');
+  }
   function mtkCliOpen(){document.getElementById('mtkCliDd').classList.add('show');mtkCliFilter();}
   function mtkCliFilter(){
     const q=document.getElementById('mtkClient').value.trim();
@@ -709,7 +744,7 @@
     const client=document.getElementById('mtkClient').value.trim()||null;
     const detail=document.getElementById('mtkDetail').value.trim();
     const remind=document.getElementById('mtkRemind').checked;
-    const owner=document.getElementById('mtkOwner').value||null;
+    const owner=document.getElementById('mtkOwner').value.trim()||null;
     let due=null, repTxt=null;
     if(MTK_REP==='once'){
       const d=document.getElementById('mtkDate');

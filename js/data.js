@@ -29,9 +29,20 @@
       firm:'ברק ושות׳', unread:0, sync:'—', opsPending:0,
       archOn:'08.01.2026', archWhy:'החברה נסגרה' },
   ];
-  /* מצב החברה — שדה אחד, שלושה מצבים. status הישן היה שדה מת (הכל 'active'). */
-  const coState=c=>c&&c.advStatus==='ארכיון'?'arch':c&&c.advStatus==='בהקמה'?'setup':'active';
-  const coActive=c=>coState(c)==='active';
+  /* מצב החברה — שדה אחד. status הישן היה שדה מת (הכל 'active').
+     חמישה מצבים תפעוליים + ארכיון (סטטוס התקשרות, לא תפעולי). */
+  const CO_STATES=[
+    ['active','פעיל'],
+    ['setup', 'בהקמה'],
+    ['trial', 'חודש ניסיון'],
+    ['off',   'לא פעיל'],
+    ['new',   'חדש'],
+  ];
+  const CO_ST_KEY={'פעיל':'active','בהקמה':'setup','חודש ניסיון':'trial','לא פעיל':'off','חדש':'new','ארכיון':'arch'};
+  const CO_ST_LBL={active:'פעיל',setup:'בהקמה',trial:'חודש ניסיון',off:'לא פעיל',new:'חדש',arch:'ארכיון'};
+  const coState=c=>(c&&CO_ST_KEY[c.advStatus])||'active';
+  /* מי נכנס לתור התפעול היומי — פעיל וחודש ניסיון מתופעלים; השאר לא */
+  const coActive=c=>{const s=coState(c);return s==='active'||s==='trial';};
 
   /* ===== דמו בקנה מידה אמיתי — תיק של ~100 חברות =====
      נוצר דטרמיניסטית (בלי Math.random) כדי שהמסך ייראה אותו דבר בכל טעינה.

@@ -50,7 +50,7 @@
   }
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג.
      ריק ⇒ נוחתים על "הודעות לקוח" (השלב הראשון).
-     'msg','doc' ⇒ קטגוריות · +'ai' ⇒ מוטבים · +'payee' ⇒ נגררות ·
+     'msg','doc' ⇒ מוטבים · +'payee' ⇒ קטגוריות · +'ai' ⇒ נגררות ·
      +'carry','unexpected' ⇒ הזנות · +'sheet' ⇒ ישר לסיום. */
   const OPS_PREDONE=[];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
@@ -58,8 +58,8 @@
      (אישור העברה ⇒ שורה בתזרים · צילום שיק ⇒ מוטב · אקסל ⇒ הזנות). */
   const OPS_STAGES=[
     ['msg','הודעות לקוח','הודעות מלל וקבצים מהלקוח — מענה והזנה לתזרים'],
+    ['payee','מוטבים','שיקים מ-Bizibox — הזנת מוטב וקטגוריה'],
     ['ai','קטגוריות','אישור המלצות הקיטלוג של ה-AI'],
-    ['payee','מוטבים','שיקים יוצאים מ-Bizibox — הזנת מוטב וקטגוריה'],
     ['carry','נגררות ולא צפויות','פעולות שצפינו וטרם הופיעו · פעולות שהופיעו בלי צפי'],
     ['sheet','הזנות ואוטומציה','צפי קדימה: תשלומים לספקים ותקבולים מלקוחות — מהלקוח ומהאוטומציה, אישור וצביעה בתזרים'],
   ];
@@ -1334,6 +1334,39 @@
     }
     renderFinFindings();
   }
+  /* ===== תיעוד שיחה עם הלקוח =====
+     לא פר חריגה — יומן אחד לכל החריגות של אותו תפעול: מתי התקשרנו ומה נאמר. */
+  const FIN_CALLS={};
+  function finClock(){
+    const base=10*60+54+Math.round((typeof opsTotal==='number'?opsTotal:0)/60);
+    const h=Math.floor(base/60)%24, m=base%60;
+    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  }
+  function finCallAdd(){
+    const el=document.getElementById('finCallIn');
+    const v=(el&&el.value.trim())||''; if(!v){ el&&el.focus(); return; }
+    const k='c'+CUR; (FIN_CALLS[k]=FIN_CALLS[k]||[]).push({t:v, at:finClock()});
+    renderFinFoot();
+    toast('התיעוד נשמר · '+finClock());
+  }
+  function finCallDel(i){
+    const k='c'+CUR; if(FIN_CALLS[k]) FIN_CALLS[k].splice(i,1);
+    renderFinFoot();
+  }
+  function finCallHtml(){
+    const list=FIN_CALLS['c'+CUR]||[];
+    return `<div class="fcall">
+      <div class="fcall-h">תיעוד שיחה עם הלקוח<span>לכל החריגות — לא פר שורה</span></div>
+      ${list.length?`<ul class="fcall-l">${list.map((c,i)=>`<li>
+          <span class="fc-at">${c.at}</span><span class="fc-t">${c.t}</span>
+          <button class="fc-x" onclick="finCallDel(${i})" title="מחיקה">✕</button></li>`).join('')}</ul>`:''}
+      <div class="fcall-add">
+        <input id="finCallIn" placeholder="למשל: התקשרתי לצחי — סוכם שיבדוק מול הבנק ויחזור מחר"
+               autocomplete="off" onkeydown="if(event.key==='Enter')finCallAdd()">
+        <button onclick="finCallAdd()">תיעוד ${finClock()}</button>
+      </div>
+    </div>`;
+  }
   function renderFinFoot(){
     const foot=document.getElementById('finFoot');
     if(finOpen.length){foot.classList.remove('show');foot.innerHTML='';return;}
@@ -1355,6 +1388,7 @@
               <button class="fx-ign" onclick="finExcIgn('${e.k}')">התעלם</button>
             </span>`}
       </div>`).join('')}
+      ${finCallHtml()}
     </div>`:'';
     foot.innerHTML=`<div class="fin-2col"><div class="fin-c-exc">`+excHtml+`</div><div class="fin-c-send">`+`
       ${open.length?`<div class="fin-block">⚠ ${open.length===1?'חריגה אחת טרם דווחה':open.length+' חריגות טרם דווחו'} — התזרים לא ייצא ללקוח</div>`:`<div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> ${FIN_EXC.length?'החריגות דווחו — התזרים מוכן לשליחה':'אין חריגות — התזרים מוכן לשליחה'}</div>`}
@@ -1430,28 +1464,29 @@
           {date:'07.07.2026', ref:'', desc:'חניה ודלק', amount:'214'},
           {date:'15.07.2026', ref:'', desc:'כיבוד לפגישות', amount:'182'},
           {date:'22.07.2026', ref:'', desc:'שליחויות', amount:'96'}]}},
-      {type:'ai', op:'חיוב ויזה כ.א.ל · 4,110 ₪-', cur:'חיובים באשראי', rec:'הוצאות אשראי', reason:'חיוב אשראי חודשי.', basis:'history',
+      {type:'ai', acct:'cal77', op:'חיוב ויזה כ.א.ל · 4,110 ₪-', cur:'חיובים באשראי', rec:'הוצאות אשראי', reason:'חיוב אשראי חודשי.', basis:'history',
        hist:'12 חיובים חודשיים זהים מכ.א.ל — כולם בהוצאות אשראי', goog:'לא נדרש חיפוש', aiDec:'דפוס חודשי מובהק — הוצאות אשראי (ביטחון 98%)', src:'HISTORY', time:'לפני 52 דק׳'},
-      {type:'ai', op:'החזר הלוואה — לאומי · 6,500 ₪-', cur:'כללי', payType:'הלוואות', rec:'הלוואות', reason:'החזר חודשי קבוע.', basis:'history',
+      {type:'ai', acct:'pl112', op:'החזר הלוואה — לאומי · 6,500 ₪-', cur:'כללי', payType:'הלוואות', rec:'הלוואות', reason:'החזר חודשי קבוע.', basis:'history',
        hist:'6 החזרים קודמים באותו סכום ב-10 לחודש — כולם בהלוואות', goog:'לא נדרש חיפוש', aiDec:'החזר חודשי קבוע ללאומי — הלוואות (ביטחון 97%)', src:'HISTORY', time:'לפני 51 דק׳'},
-      {type:'ai', op:'רכש חומרי גלם — "פלסט-גל" · 12,400 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק מוכר של חומרי גלם; כל העסקאות הקודמות ממנו קוטלגו כקניות מלאי.', basis:'history',
+      {type:'ai', acct:'mz295', op:'רכש חומרי גלם — "פלסט-גל" · 12,400 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק מוכר של חומרי גלם; כל העסקאות הקודמות ממנו קוטלגו כקניות מלאי.', basis:'history',
        hist:'9 עסקאות קודמות מפלסט-גל — כולן קניות מלאי', goog:'פלסט-גל — יצרן אריזות וחומרי גלם פלסטיים', aiDec:'ספק חוזר עם היסטוריה חד-משמעית — קניות מלאי', src:'HISTORY', time:'לפני 50 דק׳'},
-      {type:'ai', op:'הזמנת אריזות — "קרטון פלוס" · 3,180 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'רכישת אריזות שוטפת לפי דפוס חודשי קבוע.', basis:'history',
+      {type:'ai', acct:'mx482', op:'הזמנת אריזות — "קרטון פלוס" · 3,180 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'רכישת אריזות שוטפת לפי דפוס חודשי קבוע.', basis:'history',
        hist:'הזמנה חודשית קבועה — 5 מופעים בקניות מלאי', goog:'לא נדרש חיפוש', aiDec:'דפוס רכש חודשי — קניות מלאי', src:'HISTORY', time:'לפני 48 דק׳'},
-      {type:'ai', op:'יבוא רכיבים — "אלקטרו סחר" · 7,950 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק רכיבים ליבוא; זוהה לפי שם המוטב והיקף העסקה.', basis:'google',
+      {type:'ai', acct:'mz295', op:'יבוא רכיבים — "אלקטרו סחר" · 7,950 ₪-', cur:'כללי', rec:'קניות מלאי', reason:'ספק רכיבים ליבוא; זוהה לפי שם המוטב והיקף העסקה.', basis:'google',
        hist:'לא נמצאו פעולות קודמות מהמוטב', goog:'אלקטרו סחר בע״מ — יבואן רכיבים אלקטרוניים, ת״א', aiDec:'מוטב חדש; לפי החיפוש מדובר בספק רכיבים — קניות מלאי (ביטחון 88%)', src:'HISTORY, SEARCH', time:'לפני 45 דק׳'},
-      {type:'ai', op:'השלמת מלאי חירום · 1,260 ₪-', cur:'בנקאיות', rec:'קניות מלאי', reason:'רכישה נקודתית מספק משני — תואמת דפוסי קניות מלאי.', src:'SEARCH', time:'לפני 44 דק׳'},
-      {type:'ai', op:'תקבול לקוח — "מרכז הבנייה" · 18,600 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'תקבול מלקוח קבוע כנגד חשבונית פתוחה.', basis:'history',
+      {type:'ai', acct:'mx482', op:'השלמת מלאי חירום · 1,260 ₪-', cur:'בנקאיות', rec:'קניות מלאי', reason:'רכישה נקודתית מספק משני — תואמת דפוסי קניות מלאי.', src:'SEARCH', time:'לפני 44 דק׳'},
+      {type:'ai', acct:'mz139', op:'תקבול לקוח — "מרכז הבנייה" · 18,600 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'תקבול מלקוח קבוע כנגד חשבונית פתוחה.', basis:'history',
        hist:'לקוח קבוע — 14 תקבולים קודמים בהכנסות ממכירות', goog:'לא נדרש חיפוש', aiDec:'תקבול מלקוח מוכר — הכנסות ממכירות', src:'HISTORY', time:'לפני 40 דק׳'},
-      {type:'ai', op:'סליקת אשראי — יומית · 6,320 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'זיכוי סליקה יומי מקארדקום — דפוס קבוע.', basis:'history',
+      {type:'ai', acct:'mz139', op:'סליקת אשראי — יומית · 6,320 ₪+', cur:'כללי', rec:'הכנסות ממכירות', reason:'זיכוי סליקה יומי מקארדקום — דפוס קבוע.', basis:'history',
        hist:'זיכוי יומי קבוע מקארדקום — הכנסות ממכירות', goog:'לא נדרש חיפוש', aiDec:'סליקה יומית — הכנסות ממכירות', src:'HISTORY', time:'לפני 38 דק׳'},
-      {type:'ai', op:'העברה ל"י. אבידן עבודות גמר" · 9,800 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'קבלן משנה מוכר; תשלום חודשי במועד קבוע.', basis:'ai',
+      {type:'ai', acct:'pl112', op:'העברה ל"י. אבידן עבודות גמר" · 9,800 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'קבלן משנה מוכר; תשלום חודשי במועד קבוע.', basis:'ai',
        hist:'2 תשלומים קודמים — קוטלגו ידנית בקטגוריות שונות', goog:'י. אבידן — עבודות גמר ושיפוצים', aiDec:'ההיסטוריה לא עקבית; לפי אופי המוטב והסכום החודשי — שכר קבלני משנה (ביטחון 84%)', src:'HISTORY', time:'לפני 35 דק׳'},
-      {type:'ai', op:'העברה ל"צוות חשמל א.מ" · 5,400 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'תשלום שני ברצף לאותו קבלן — תואם הסכם מסגרת.', basis:'history',
+      {type:'ai', acct:'pl112', op:'העברה ל"צוות חשמל א.מ" · 5,400 ₪-', cur:'כללי', rec:'שכר קבלני משנה', reason:'תשלום שני ברצף לאותו קבלן — תואם הסכם מסגרת.', basis:'history',
        hist:'תשלום קודם לאותו קבלן — שכר קבלני משנה', goog:'צוות חשמל א.מ — קבלן חשמל', aiDec:'רצף תשלומים לקבלן — שכר קבלני משנה', src:'HISTORY', time:'לפני 33 דק׳'},
-      {type:'payee', chk:'0010814', bank:'הפועלים · סניף 736', amount:'216', date:'26.07.2026', ocrName:'ויקה רזניק', img:'check.jpeg', time:'לפני 25 דק׳'},
-      {type:'payee', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
-      {type:'payee', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
+      {type:'payee', dir:'out', chk:'0010814', bank:'הפועלים · סניף 736', amount:'216', date:'26.07.2026', ocrName:'ויקה רזניק', img:'check.jpeg', time:'לפני 25 דק׳'},
+      {type:'payee', dir:'out', chk:'0010676', bank:'הפועלים · סניף 736', amount:'6,995', date:'31.05.2026', ocrName:'אי פרטס בע״מ', img:'c2.jpeg', time:'לפני 24 דק׳'},
+      {type:'payee', dir:'in',  chk:'0027431', bank:'הפועלים · סניף 736', amount:'12,400', date:'05.08.2026', ocrName:'תבל מערכות בע״מ', img:'c2.jpeg', time:'לפני 22 דק׳'},
+      {type:'payee', dir:'out', chk:'0010795', bank:'הפועלים · סניף 736', amount:'4,800', date:'12.07.2026', ocrName:'', img:'c3.jpeg', time:'לפני 20 דק׳'},
       {type:'carry', dir:'exp', acct:'mz295', days:11, txd:'31.05', pay:'הו״ק', text:'צפינו פעולת הוצאה "הראל (שילוח)" ע"ס 2,049 ₪ — טרם הופיעה.', who:'הראל (שילוח)', amt:2049, time:'לפני שעה',
         related:[{d:'15.06.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'},
                  {d:'15.05.2026',t:'הוראת קבע — הראל שילוח · מזרחי 295199',amt:'2,049 ₪-',cat:'ביטוחים'}]},
@@ -1479,15 +1514,15 @@
         field:'מרכז הבנייה · 12.08', desc:'תקבול מרכז הבנייה', old:'17,500', new:'19,800'},
       {type:'overdraft', text:'חשבון מרכנתיל 69855155 נמצא בחריגה ע"ס 42,445 ₪ ממסגרת האשראי. נא טיפול בהקדם.', time:'היום 09:14'},
       {type:'msg', who:'לירון', thread:['תודה על העדכון!'], time:'אתמול', done:true, result:'טופל · ✓ נשלח ללקוח', handledAt:'אתמול 16:20'},
-      {type:'ai', op:'הוצאת ביטוח · 890 ₪-', cur:'כללי', rec:'ביטוחים', reason:'לפי תיאור הספק.', src:'HISTORY', time:'אתמול', done:true, result:'אושר — קוטלג בביטוחים', handledAt:'אתמול 15:05'},
+      {type:'ai', acct:'mz295', op:'הוצאת ביטוח · 890 ₪-', cur:'כללי', rec:'ביטוחים', reason:'לפי תיאור הספק.', src:'HISTORY', time:'אתמול', done:true, result:'אושר — קוטלג בביטוחים', handledAt:'אתמול 15:05'},
     ];
     CLIENTS[1].tasks=[
       {type:'doc', name:'ריכוז הוצאות ידניות · יוני', time:'לפני 20 דק׳', src:'טבלת הזנה'},
-      {type:'ai', op:'תשלום ספקים · 2,100 ₪-', cur:'כללי', rec:'ספקים', reason:'לפי היסטוריית התשלומים לספק זה.', src:'HISTORY', time:'לפני שעה'},
+      {type:'ai', acct:'mz295', op:'תשלום ספקים · 2,100 ₪-', cur:'כללי', rec:'ספקים', reason:'לפי היסטוריית התשלומים לספק זה.', src:'HISTORY', time:'לפני שעה'},
     ];
     CLIENTS[2].tasks=[
       {type:'overdraft', text:'חשבון בחריגה — נדרש טיפול בהקדם.', time:'לפני 30 דק׳'},
-      {type:'ai', op:'6,773 ₪+ ← "קיר זי בע״מ"', cur:'כללי', rec:'הלוואות', reason:'לפי דפוסי ההכנסה מהמקור.', src:'HISTORY, SEARCH', time:'לפני 55 דק׳'},
+      {type:'ai', acct:'mz139', op:'6,773 ₪+ ← "קיר זי בע״מ"', cur:'כללי', rec:'הלוואות', reason:'לפי דפוסי ההכנסה מהמקור.', src:'HISTORY, SEARCH', time:'לפני 55 דק׳'},
       {type:'carry', text:'תשלום צפוי שטרם הופיע — נגררת 4 ימים.', time:'היום 09:14'},
     ];
     CLIENTS[3].tasks=[];
@@ -1541,15 +1576,16 @@
   }
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
   const grpChip=t=>t.grp?'<span class="grp-tag">מהקבוצה</span> ':'';
-  function taskTitle(t){
+  function basisChip(t){
+    const B={history:['היסטוריה','hist'],google:['גוגל','goog'],ai:['AI','aid']}[t.basis||'history'];
+    return `<span class="ai-basis ${B[1]}">לפי ${B[0]}</span>`;
+  }
+  function taskTitle(t,bare){
     if(t.type==='msg'&&t.reply) return (t.who||'הלקוח')+' ענה: '+((t.thread||[])[0]||'');
     if(t.type==='msg') return (t.who?t.who+': ':'')+(t.thread?t.thread[t.thread.length-1]:'הודעה');
     if(t.type==='doc') return t.name;
-    if(t.type==='payee') return 'שיק יוצא מס׳ '+t.chk+' · '+t.amount+' ₪ · '+t.bank+(t.ocrName?'':' · המוטב לא זוהה');
-    if(t.type==='ai'){
-      const B={history:['היסטוריה','hist'],google:['גוגל','goog'],ai:['AI','aid']}[t.basis||'history'];
-      return 'קיטלוג: '+t.op+` <span class="ai-basis ${B[1]}">לפי ${B[0]}</span>`;
-    }
+    if(t.type==='payee') return 'שיק '+(t.dir==='in'?'נכנס':'יוצא')+' מס׳ '+t.chk+' · '+t.amount+' ₪ · '+t.bank+(t.ocrName?'':' · המוטב לא זוהה');
+    if(t.type==='ai') return 'קיטלוג: '+t.op+(bare?'':' '+basisChip(t));
     /* נגררות/לא צפויות: העמודה כבר אומרת "לא צפויה"/"נגררת" —
        אז לא חוזרים על "הופיעה פעולה בשם…". נשאר מה שבאמת מזהה: שם וסכום.
        הסכום בולט כי הוא מפתח ההתאמה הידנית. */
@@ -1617,6 +1653,64 @@
         <button class="cts-send" onclick="opsCtsSend(${i})">שליחה</button>
       </div>`:''}`).join('');
   }
+  /* ===== "כללי" — תיק החברה של מנהלת התזרים =====
+     המידע שהמתפעלת צריכה על הלקוח בזמן העבודה, ואין לו מקום בסרגל: מי החברה,
+     מאיפה מגיע החומר, מה הכללים הקבועים שלה, ומה רלוונטי דווקא לשלב שהיא נמצאת בו. */
+  const OPS_BRIEF={
+    0:{ trade:'ייבוא ושיווק מוצרי אנרגיה', plan:'Money+',
+        src:['Bizibox · 2 חשבונות בנק · 3 כרטיסי אשראי','הנה״ח: חשבשבת · רו״ח מיכל שגב','החומר מגיע מרות אלמוג — לא מצחי'],
+        rules:['שכר משולם ב-10 לחודש — לא לפני','ריטיינר ירוק עז נכנס לקטגוריית שיווק','כרטיס מקס לא מסונכרן — נכנס ידנית','לא לשלוח הודעות אחרי 18:00'],
+        watch:['מסגרת 150K בניצול מלא — מסגרת נוספת בבקשה בבנק','ספק גדול: תשלום נדחה ל-24.08'] },
+    1:{ trade:'קבלנות ביצוע', plan:'Money',
+        src:['Bizibox · חשבון בנק אחד','הנה״ח: ריווחית · הנהלת חשבונות פנימית','החומר מגיע מדורון'],
+        rules:['חשבוניות ספקים מגיעות בסוף חודש בלבד','תשלומי מקדמות — קטגוריה נפרדת'],
+        watch:['96% מתקרת התקציב'] },
+    2:{ trade:'חקלאות ומטעים', plan:'Money+',
+        src:['Bizibox · 2 חשבונות בנק','הנה״ח: חשבשבת','החומר מגיע מיעל'],
+        rules:['עונתיות — רבעון 3 הוא השיא','עובדי עונה: שכר שבועי'],
+        watch:['חריגת תקציב — 114% מהיעד'] }
+  };
+  function opsBrief(){ if(!OPS_BRIEF[CUR]) OPS_BRIEF[CUR]={trade:'',plan:'',src:[],rules:[],watch:[]}; return OPS_BRIEF[CUR]; }
+  /* ===== הכל נערך במקום =====
+     אין טופס הוספה נפרד: כל שורה היא טקסט שנערך בלחיצה, ובסוף כל רשימה
+     יש שורת רפאים שהופכת לשורה אמיתית ברגע שכותבים בה. */
+  function opsGenSet(key,ix,el){
+    const b=opsBrief(), v=el.textContent.trim();
+    if(key==='trade'||key==='plan'){ b[key]=v; opsSideTab('gen'); return; }
+    const a=b[key]||(b[key]=[]);
+    if(ix<0){ if(v) a.push(v); }
+    else if(!v) a.splice(ix,1);
+    else a[ix]=v;
+    opsSideTab('gen');
+  }
+  function opsGenDel(key,ix){ const a=opsBrief()[key]; if(a) a.splice(ix,1); opsSideTab('gen'); }
+  function opsGenKey(e){ if(e.key==='Enter'){ e.preventDefault(); e.target.blur(); } if(e.key==='Escape'){ e.target.blur(); } }
+  function genList(key,cls){
+    const a=opsBrief()[key]||[];
+    return `<ul class="${cls||''}">
+      ${a.map((x,i)=>`<li><span class="ed" contenteditable="true" onblur="opsGenSet('${key}',${i},this)" onkeydown="opsGenKey(event)">${x}</span>
+        <button class="gl-x" onclick="opsGenDel('${key}',${i})" title="מחיקה">✕</button></li>`).join('')}
+      <li class="add"><span class="ed" contenteditable="true" data-ph="שורה חדשה…" onblur="opsGenSet('${key}',-1,this)" onkeydown="opsGenKey(event)"></span></li>
+    </ul>`;
+  }
+  function opsGenHtml(){
+    const c=CLIENTS[CUR]||{}, b=opsBrief();
+    return `
+    <div class="gen">
+      <div class="gen-id">
+        <span class="gen-sub">ח.פ <bdo dir="ltr">${c.hp||''}</bdo> ·
+          <span class="ed inl" contenteditable="true" onblur="opsGenSet('trade',0,this)" onkeydown="opsGenKey(event)">${b.trade||''}</span></span>
+        <div class="gen-tags">
+          <span class="ed tg" contenteditable="true" onblur="opsGenSet('plan',0,this)" onkeydown="opsGenKey(event)">${b.plan||''}</span>
+          <span>${c.mgr||''}</span><span>${c.firm||''}</span></div>
+      </div>
+      <div class="gen-part">
+        <div class="gen-b"><h5>מאיפה מגיע החומר</h5>${genList('src')}</div>
+        <div class="gen-b"><h5>כללי עבודה קבועים</h5>${genList('rules')}</div>
+        <div class="gen-b watch"><h5>שים לב החודש</h5>${genList('watch')}</div>
+      </div>
+    </div>`;
+  }
   function opsFlowRefresh(btn){
     btn.classList.add('spin');
     const fr=btn.closest('.ops-chatside').querySelector('.ops-flow-frame');
@@ -1647,7 +1741,7 @@
       return `<div class="ops-wdg ops-chatside closed" onclick="opsSideToggle()" title="פתיחת הפאנל">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
         <span class="cl-ic" title="הודעות">💬${openN?`<em>${openN}</em>`:''}</span>
-        <span class="cl-lbl">הודעות · תזרים · אנשי קשר</span>
+        <span class="cl-lbl">הודעות · תזרים · אנשי קשר · כללי</span>
       </div>`;
     }
     return `<div class="ops-wdg ops-chatside">
@@ -1657,10 +1751,12 @@
         <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
         <button class="stb ${tab==='adv'?'on':''}" onclick="opsSideTab('adv')">משימות ${advTasksOf().length?`<em>${advTasksOf().length}</em>`:''}</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
+        <button class="stb ${tab==='gen'?'on':''}" onclick="opsSideTab('gen')">כללי</button>
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
         :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תחזית תזרים"></iframe>`
         :tab==='adv'?`<div class="ops-chatbody">${advTasksHtml()}</div>`
+        :tab==='gen'?`<div class="ops-chatbody">${opsGenHtml()}</div>`
         :`<div class="ops-chatbody">${opsCtsHtml()}</div>`}
     </div>`;
   }
@@ -2035,12 +2131,20 @@
      אינה תנועה בבנק (רק החיוב המרוכז הוא). הכרטיס משמש כאן כ**מקור בדיקה**
      בהתאמה (סריקת 30 יום אחורה), לא כמקור שורות. */
   const ACCTS={
-    mz295:{lbl:'מזרחי 295199', short:'מזרחי ‎295199'},
-    mz139:{lbl:'מזרחי 139287', short:'מזרחי ‎139287'},
-    pl112:{lbl:'פועלים 112',   short:'פועלים ‎112'},
+    mz295:{lbl:'מזרחי 295199', short:'מזרחי ‎295199', kind:'bank'},
+    mz139:{lbl:'מזרחי 139287', short:'מזרחי ‎139287', kind:'bank'},
+    pl112:{lbl:'פועלים 112',   short:'פועלים ‎112',   kind:'bank'},
+    /* כרטיסי אשראי — מקור נפרד, ולכן סימון נפרד על השורה */
+    mx482:{lbl:'מקס 4821',     short:'מקס ‎4821',     kind:'card'},
+    cal77:{lbl:'כאל 7712',     short:'כאל ‎7712',     kind:'card'},
   };
   const acctOf=t=>ACCTS[t.acct]||null;
-  const acctChip=t=>{const a=acctOf(t); return a?`<span class="acct-chip">${a.short}</span>`:'';};
+  /* אייקון המקור יושב בתוך שבב החשבון — לא תופס מקום נוסף בשורה */
+  const SRC_ICO={
+    bank:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10h18M12 3 3 8h18L12 3z"/><path d="M6 10v7M10 10v7M14 10v7M18 10v7M3 20h18"/></svg>',
+    card:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg>'
+  };
+  const acctChip=t=>{const a=acctOf(t); return a?`<span class="acct-chip ${a.kind}" title="${a.kind==='bank'?'תנועת בנק':'תנועת אשראי'} · ${a.lbl}">${SRC_ICO[a.kind]}${a.short}</span>`:'';};
 
   /* ביזיבוקס — שם מתבצעות ההתאמות בפועל */
   function openBizibox(){ window.open('https://app.bizibox.biz/','_blank','noopener'); }
@@ -2108,6 +2212,49 @@
     </div>`;
     return bzBar+`<div class="cu-split">${col('לא צפויות',un,'un')}${col('נגררות',ca,'ca')}</div>`;
   }
+  /* ===== היסטוריית מוטב =====
+     לפני שמזינים שיק, המתפעלת רוצה לדעת אם כבר עבדנו עם המוטב הזה,
+     ואיך קוטלגו התשלומים הקודמים — כדי לא להמציא קטגוריה חדשה כל פעם. */
+  const PAYEE_HIST={
+    'ויקה רזניק':[
+      {d:'26.06.2026', chk:'0010742', amt:'216',   cat:'ניקיון ואחזקה', dir:'out'},
+      {d:'26.05.2026', chk:'0010688', amt:'216',   cat:'ניקיון ואחזקה', dir:'out'},
+      {d:'26.04.2026', chk:'0010611', amt:'216',   cat:'ניקיון ואחזקה', dir:'out'}],
+    'אי פרטס בע״מ':[
+      {d:'14.04.2026', chk:'0010598', amt:'8,120', cat:'קניות מלאי', dir:'out'},
+      {d:'02.02.2026', chk:'0010455', amt:'5,340', cat:'קניות מלאי', dir:'out'}],
+    'תבל מערכות בע״מ':[
+      {d:'05.07.2026', chk:'0026980', amt:'12,400', cat:'הכנסות ממכירות', dir:'in'},
+      {d:'05.06.2026', chk:'0026544', amt:'12,400', cat:'הכנסות ממכירות', dir:'in'},
+      {d:'05.05.2026', chk:'0026101', amt:'11,900', cat:'הכנסות ממכירות', dir:'in'}]
+  };
+  function payHist(i){
+    const inp=document.getElementById('chkName_'+i);
+    const nm=((inp&&inp.value)||'').trim();
+    const box=document.getElementById('payHist_'+i); if(!box) return;
+    if(box.classList.contains('show')&&box.dataset.for===nm){ box.classList.remove('show'); return; }
+    box.dataset.for=nm;
+    if(!nm){ box.innerHTML='<div class="ph-none">קודם להזין שם מוטב, ואז לבדוק היסטוריה.</div>'; box.classList.add('show'); return; }
+    const h=PAYEE_HIST[nm];
+    if(!h){ box.innerHTML=`<div class="ph-none"><b>${nm}</b> — אין תנועות קודמות. זו הפעם הראשונה שהמוטב הזה מופיע.</div>`; box.classList.add('show'); return; }
+    const cats=[...new Set(h.map(x=>x.cat))];
+    box.innerHTML=`
+      <div class="ph-head"><b>${nm}</b><span>${h.length} תנועות קודמות${cats.length===1?' · תמיד "'+cats[0]+'"':' · '+cats.length+' קטגוריות'}</span>
+        <button class="ph-x" onclick="document.getElementById('payHist_${i}').classList.remove('show')" title="סגירה">✕</button></div>
+      ${h.map(x=>`<div class="ph-r ${x.dir}">
+        <span class="ph-d">${x.d}</span>
+        <span class="ph-c">${x.chk}</span>
+        <b class="ph-a">${x.dir==='in'?'+':'−'}${x.amt} ₪</b>
+        <span class="ph-cat">${x.cat}</span>
+      </div>`).join('')}
+      ${cats.length===1?`<button class="ph-use" onclick="payHistUse(${i},'${cats[0].replace(/'/g,"\\'")}')">קיטלוג כמו קודם — ${cats[0]}</button>`:''}`;
+    box.classList.add('show');
+  }
+  function payHistUse(i,cat){
+    const c=document.getElementById('chkCat_'+i); if(c){ c.value=cat; }
+    const b=document.getElementById('payHist_'+i); if(b) b.classList.remove('show');
+    toast('הקטגוריה הועתקה מההיסטוריה — '+cat);
+  }
   function payeeSplit(rows,T){
     const openRows=rows.filter(t=>!t.done);
     if(!openRows.length) return '<div class="ops-empty" style="padding:18px">כל השיקים הוזנו ✓</div>';
@@ -2116,17 +2263,29 @@
     const i=window._paySel;
     const list=rows.map(t=>{
       const ti=T.indexOf(t);
-      return `<div class="pay-item ${t.done?'done':''} ${ti===i?'on':''}" onclick="paySel(${ti})">
-        <b>שיק ${t.chk}</b><span class="pay-amt">${t.amount} ₪</span>
+      const isIn=t.dir==='in';
+      return `<div class="pay-item ${isIn?'in':'out'} ${t.done?'done':''} ${ti===i?'on':''}" onclick="paySel(${ti})">
+        <b>שיק ${t.chk}</b><span class="pay-amt">${isIn?'+':'−'}${t.amount} ₪</span>
+        <span class="pay-dir">${isIn?'הכנסה':'הוצאה'}</span>
         <i>${t.done?'✓ הוזן':t.ocrName?('מוטב: '+t.ocrName):'המוטב לא זוהה'}</i>
       </div>`;}).join('');
+    const isIn=sel.dir==='in';
     return `<div class="pay-split">
       <aside class="pay-list">${list}</aside>
       <div class="pay-detail">
+        <div class="pay-dirbar ${isIn?'in':'out'}">
+          <span class="pd-t">${isIn?'שיק נכנס · הכנסה':'שיק יוצא · הוצאה'}</span>
+          <b class="pd-a">${isIn?'+':'−'}${sel.amount} ₪</b>
+          <span class="pd-s">שיק ${sel.chk} · ${sel.bank}</span>
+        </div>
         <div class="pay-cols">
           <div class="chk-form">
             <label class="chk-lbl">שם המוטב ${sel.ocrName?'<span class="ocr-tag">זוהה ב-OCR — לאישור</span>':'<span class="ocr-tag miss">לא זוהה — להזנה</span>'}</label>
-            <input class="mx2-inp" id="chkName_${i}" value="${sel.ocrName||''}" placeholder="כפי שמופיע על השיק">
+            <div class="chk-namerow">
+              <input class="mx2-inp" id="chkName_${i}" value="${sel.ocrName||''}" placeholder="כפי שמופיע על השיק">
+              <button class="ph-btn" onclick="payHist(${i})" title="תנועות קודמות של אותו מוטב">בדוק היסטוריה</button>
+            </div>
+            <div class="pay-hist" id="payHist_${i}"></div>
             <label class="chk-lbl">קטגוריה</label>
             <span style="position:relative;display:block">
               <input class="mx2-inp" id="chkCat_${i}" placeholder="חיפוש קטגוריה…" autocomplete="off" style="width:100%;box-sizing:border-box"
@@ -3551,7 +3710,7 @@
     return `<div class="orow2item ${t.type} ${op?'open':''} ${muOff?'acct-dim':''}">
       <div class="orow2">
         ${muChk}
-        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t)}</div><span class="cu-chips">${acctChip(t)}${t.pay?`<span class="pay-chip">${t.pay}${t.ref?' · אסמ׳ '+t.ref:''}</span>`:''}</span>${recNote}</div>
+        <div class="orow2-body" onclick="opsToggleRow(${i})"><div class="orow2-title">${grpChip(t)}${taskTitle(t,true)}<span class="row-meta">${t.type==='ai'?basisChip(t):''}${acctChip(t)}</span></div><span class="cu-chips">${t.pay?`<span class="pay-chip">${t.pay}${t.ref?' · אסמ׳ '+t.ref:''}</span>`:''}</span>${recNote}</div>
         <div class="orow2-act">${rowBtns(t,i)}</div>
         <svg class="orow2-chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="opsToggleRow(${i})"><path d="m6 9 6 6 6-6"/></svg>
       </div>

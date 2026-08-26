@@ -55,7 +55,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip .now{font-size:13px;color:var(--on-navy2)}
 .strip .now b{color:var(--white);font-weight:500}
 
-.wrap{width:100%;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:stretch;min-height:calc(100vh - 120px);height:calc(100vh - 120px)}
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:stretch;min-height:calc(100vh - 120px);height:calc(100vh - 120px)}
 .wrap>*{min-width:0;min-height:0}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
@@ -190,7 +190,7 @@ mark{background:var(--mark);color:inherit;border-radius:4px;padding:0 1px}
 
 @media (max-width:1450px){
   .nav,.strip{padding-inline:24px}
-  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px;min-height:calc(100vh - 120px);height:calc(100vh - 120px)}
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 0 16px;gap:14px;min-height:calc(100vh - 120px);height:calc(100vh - 120px)}
   .side{gap:14px}
   .ph{padding:11px 18px 8px}
   .ph h2{font-size:16px}
@@ -522,6 +522,38 @@ if(u.get('q')){q=u.get('q').trim();$('#q').value=q}
 apply();
 if(u.get('card')) openCard(u.get('card'));
 if(u.get('how')) openHow();
+</script>
+<style id="hk-embed-css">
+html.embed .nav{display:none !important}
+html.embed body{background:transparent}
+html.embed .strip{border-radius:0}
+/* המסך נעול לגובה החלון (הרשימות גוללות בפנים) — בהטמעה נשאר רק הפס ככרום */
+html.embed .wrap{height:calc(100vh - 68px);min-height:0}
+</style>
+<script id="hk-embed-js">
+/* ===== הטמעה במערכת =====
+   ?embed=1 — הדף נטען בתוך המערכת: הניווט הפנימי מוסתר (הסרגל של המערכת מחליף אותו),
+   והדף מדווח את גובהו כלפי חוץ כדי שהמסגרת תיפתח לכל התוכן. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  var last=0;
+  function report(){
+    var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+    /* מסך נעול-גובה — המערכת מותחת את המסגרת לגובה החלון */
+    parent.postMessage({hkAdvLock:'memory'},'*'); last=h;
+  }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  new MutationObserver(report).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  setInterval(report,1200);
+  /* ניווט פנימי בין המסכים — מבקש מהמערכת להחליף מסך במקום לנווט בתוך המסגרת */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href$=".html"]'); if(!a) return;
+    var f=a.getAttribute('href').split('/').pop().split('?')[0].replace('.html','');
+    e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
+  },true);
+})();
 </script>
 </body>
 </html>

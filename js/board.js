@@ -147,6 +147,15 @@
     if(d.hkMeet&&d.h>200){ const f=document.getElementById('meetFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkArena&&d.h>200){ const f=document.getElementById('arenaFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
     if(d.hkCl&&d.h>200){ const f=document.getElementById('clFrame'); if(f) f.style.minHeight=d.h+'px'; return; }
+    /* מסכי היועץ המוטמעים (docs/adv3) — דיווח גובה וניווט פנימי */
+    if(d.hkAdv&&d.h>200){
+      const MAP={today:'advTodayFrame',tasks:'advTasksFrame',meetings:'advMeetsFrame',memory:'advMemFrame',clients:'clFrame'};
+      const f=document.getElementById(MAP[d.hkAdv]); if(f) f.style.minHeight=d.h+'px'; return; }
+    /* מסך נעול-גובה — נמתח לתחתית החלון במקום לגובה התוכן */
+    if(d.hkAdvLock){ if(typeof advFrameFill==='function') advFrameFill(); return; }
+    if(d.hkAdvGo){
+      const GO={today:'today',tasks:'tasks',clients:'clients',meetings:'meets',memory:'how'};
+      const k=GO[d.hkAdvGo]; if(k&&typeof gnavGo==='function') gnavGo(k); return; }
     if(d.hkAIReady){ /* מסך העוזר מבקש את מספרי התיק */
       const f=document.getElementById('aiFrame');
       const act=CLIENTS.filter(c=>coActive(c)), stp=CLIENTS.filter(c=>coState(c)==='setup');
@@ -215,3 +224,18 @@
   }
 
   /* scope: single client vs whole portfolio */
+
+/* ===== מסגרות היועץ שנעולות לגובה החלון =====
+   מסך הפגישות הוא שלד-אפליקציה: הטבלה והזירה גוללות בפנים, הדף עצמו לא גדל.
+   לכן במקום למתוח את המסגרת לגובה התוכן, מותחים אותה עד תחתית החלון. */
+const ADV_LOCKED=['advMeetsFrame','advMemFrame','clFrame'];
+function advFrameFill(){
+  ADV_LOCKED.forEach(id=>{
+    const f=document.getElementById(id);
+    if(!f||!f.offsetParent) return;
+    const top=f.getBoundingClientRect().top;
+    f.style.minHeight='0';
+    f.style.height=Math.max(560,Math.round(window.innerHeight-top-14))+'px';
+  });
+}
+window.addEventListener('resize',advFrameFill);

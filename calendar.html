@@ -52,10 +52,12 @@
 
   /* ============ Layout ============ */
   .app{display:flex;flex-direction:column;height:100vh}
+  /* הפס העליון כחול — אותה שפה כמו הפס במסכי היועץ */
   .toolbar{
-    background:#fff;
-    border-bottom:1px solid var(--line);
-    padding:10px 18px;
+    background:var(--navy);
+    color:#fff;
+    height:68px;
+    padding:0 20px;
     display:flex;align-items:center;gap:14px;
     flex:none;
   }
@@ -89,50 +91,55 @@
     color:var(--navy);transition:background .14s;
   }
   .btn--icon:hover{background:var(--blue-soft)}
+  /* וריאנטים בתוך הפס הכחול */
+  .toolbar .btn--ghost{background:rgba(255,255,255,.10);color:#fff;border-color:rgba(255,255,255,.22)}
+  .toolbar .btn--ghost:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);color:#fff}
+  .toolbar .btn--icon{color:rgba(255,255,255,.8)}
+  .toolbar .btn--icon:hover{background:rgba(255,255,255,.12);color:#fff}
   .btn--sm{padding:4px 12px;font-size:.8rem}
 
   /* ============ Toolbar bits ============ */
   .today-btn{
     padding:6px 16px;border-radius:60px;
-    background:#fff;border:1px solid var(--divider);color:var(--navy);
+    background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;
     font-weight:500;font-size:.86rem;transition:all .14s;
   }
-  .today-btn:hover{border-color:var(--blue);color:var(--blue)}
+  .today-btn:hover{background:rgba(255,255,255,.12);border-color:#fff}
   .nav-arrow{
     width:30px;height:30px;border-radius:50%;
-    color:var(--navy);font-size:1rem;font-weight:500;
+    color:rgba(255,255,255,.75);font-size:1rem;font-weight:500;
     display:inline-flex;align-items:center;justify-content:center;
-    transition:background .14s;
+    transition:all .14s;
   }
-  .nav-arrow:hover{background:var(--blue-soft);color:var(--blue)}
+  .nav-arrow:hover{background:rgba(255,255,255,.12);color:#fff}
   .range-label{
-    font-size:1.05rem;font-weight:500;color:var(--navy);
+    font-size:1.12rem;font-weight:500;color:#fff;
     letter-spacing:-.2px;margin:0 4px;min-width:230px;
   }
   .views{
-    display:flex;background:var(--off);border:1px solid var(--line);
+    display:flex;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
     border-radius:60px;padding:3px;
   }
   .view-btn{
     padding:6px 14px;border-radius:60px;font-size:.84rem;font-weight:500;
-    color:var(--muted);transition:all .14s;
+    color:rgba(255,255,255,.72);transition:all .14s;
   }
-  .view-btn:hover{color:var(--navy)}
-  .view-btn.is-active{background:var(--navy);color:#fff}
+  .view-btn:hover{color:#fff}
+  .view-btn.is-active{background:#fff;color:var(--navy)}
   .user-pick{
     display:flex;align-items:center;gap:9px;
-    background:#fff;border:1px solid var(--divider);border-radius:60px;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:60px;
     padding:4px 14px 4px 8px;font-size:.86rem;
-    color:var(--navy);transition:all .14s;
+    color:#fff;transition:all .14s;
   }
-  .user-pick:hover{border-color:var(--blue)}
+  .user-pick:hover{background:rgba(255,255,255,.18)}
   .user-pick__avatar{
     width:24px;height:24px;border-radius:50%;
     background:var(--blue);color:#fff;
     display:flex;align-items:center;justify-content:center;
     font-size:.72rem;font-weight:600;
   }
-  .user-pick__caret{font-size:.7rem;color:var(--muted)}
+  .user-pick__caret{font-size:.7rem;color:rgba(255,255,255,.6)}
   .vh__holiday{font-size:.66rem;font-weight:600;color:#8a6d1f;background:#fdf4e3;border:1px solid #f0e2b8;border-radius:20px;padding:1px 8px;margin-top:3px;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .view__head__cell.is-holiday{background:#fffdf6}
   .mcell.is-holiday{background:#fffdf6}
@@ -907,7 +914,7 @@
   @media(max-width:980px){
     .side{display:none}
     .range-label{min-width:auto;font-size:.95rem}
-    .toolbar{gap:8px;padding:8px 12px}
+    .toolbar{gap:8px;padding:0 12px;height:60px}
   }
   *{scrollbar-width:thin;scrollbar-color:#39ABE2 #E9F1F7}
   ::-webkit-scrollbar{width:9px;height:9px}
@@ -950,7 +957,7 @@
         <div class="user-pick-menu" id="userPickMenu"></div>
       </div>
       <button class="btn btn--primary" id="newEventBtn"><span>+</span> פגישה חדשה</button>
-      <button class="btn btn--ghost" id="newTaskBtn" style="color:#8b5cf6;border-color:#ddd0fb">+ משימה</button>
+      <button class="btn btn--ghost" id="newTaskBtn">+ משימה</button>
       <button class="btn--icon" id="settingsBtn" title="הגדרות יומן">⚙</button>
     </div>
   </header>

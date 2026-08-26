@@ -9,7 +9,7 @@
 <style>
 /* HK · מסך פגישות · מפרט אחיד v1
    רצועה 68 navy: כותרת 28 + תאריך | האירוע הבא | עכשיו
-   גוף: בלוק כהה אחד = "מה חסר" (ארבעה מונים, לחיצה מסננת) · חיפוש · כל הפגישות · זירת הפגישה בצד
+   גוף: חיפוש · כל הפגישות · זירת הפגישה קבועה בצד שמאל
    סקאלה: 28 / 22 / 19 / 17 / 14 / 13 / 12.5 / 12 / 11.5 · רדיוסים: 4 6 7 10 50%
    גריד: 1fr | 620 (430 ב-≤1450) · פאנל: גבול 1px, צל 4%, רדיוס 10 */
 :root{
@@ -65,7 +65,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip .now b{color:var(--white);font-weight:500}
 
 /* ---- grid ---- */
-.wrap{width:100%;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 620px;grid-template-rows:auto minmax(0,1fr);gap:18px;align-items:stretch;height:calc(100vh - 120px);overflow:hidden}
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 620px;grid-template-rows:minmax(0,1fr);gap:18px;align-items:stretch;height:calc(100vh - 120px);overflow:hidden}
 .wrap>*{min-width:0;min-height:0}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
@@ -107,21 +107,6 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .al.ok{color:var(--green)}
 .al.info{color:var(--ink3)}
 
-/* ---- "מה חסר" — הבלוק הכהה היחיד בגוף (rule 3) ---- */
-.miss{grid-column:1/-1;background:var(--navy);color:var(--white);border-radius:10px;display:grid;grid-template-columns:190px repeat(4,1fr);align-items:stretch;overflow:hidden}
-.miss .cap{padding:12px 20px;border-inline-end:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;justify-content:center}
-.miss .cap b{font-size:14px;font-weight:600}
-.miss .cap span{font-size:12.5px;color:var(--on-navy3);margin-top:2px}
-.miss .q{font:inherit;color:var(--white);display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;padding:12px 20px;text-align:start;border-inline-end:1px solid rgba(255,255,255,.12);position:relative;cursor:pointer}
-.miss .q:last-child{border-inline-end:0}
-.miss .q:hover{background:rgba(255,255,255,.06)}
-.miss .q.on{background:var(--navy2)}
-.miss .q.on::after{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--coral)}
-.miss .q .n{font-size:22px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;color:var(--white)}
-.miss .q.zero .n{color:var(--on-navy4)}
-.miss .q .l{display:block;font-size:14px;font-weight:500;color:var(--white);line-height:1.25}
-.miss .q .w{display:block;font-size:12.5px;color:var(--on-navy2);margin-top:3px;line-height:1.3}
-.miss .q.zero .w{color:var(--on-navy4)}
 
 /* ---- list ---- */
 .list{display:flex;flex-direction:column;min-width:0;min-height:0}
@@ -283,14 +268,11 @@ table.ml{width:100%;border-collapse:collapse}
   .ml td{padding:15px 14px}
 }
 @media (max-width:1450px){
-  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px;height:calc(100vh - 120px)}
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 0 16px;gap:14px;height:calc(100vh - 120px)}
   .nav,.strip{padding-inline:24px}
   .strip{gap:20px}
   .ph{padding:11px 18px 8px}
   .ph h2{font-size:16px}
-  .miss{grid-template-columns:150px repeat(4,1fr)}
-  .miss .cap{padding:10px 16px}
-  .miss .q{padding:10px 16px}
   .ml td{padding:8px 14px}
   .ml .st{width:180px}
   .ml .ac{width:122px}
@@ -338,15 +320,6 @@ table.ml{width:100%;border-collapse:collapse}
 </header>
 
 <main class="wrap">
-
-  <!-- ===== מה חסר — הבלוק הכהה היחיד בגוף ===== -->
-  <section class="miss dark" id="miss">
-    <div class="cap"><b>מה חסר</b><span>לחיצה מסננת את הרשימה</span></div>
-    <button class="q" data-f="rec" data-w="אין תמלול, סיכום ומשימות"><span class="n num">0</span><span><span class="l">לא הוקלטה</span><span class="w">אין תמלול, סיכום ומשימות</span></span></button>
-    <button class="q" data-f="appr" data-w="מחכה לאישור שלך"><span class="n num">0</span><span><span class="l">סיכום לא אושר</span><span class="w">מחכה לאישור שלך</span></span></button>
-    <button class="q" data-f="sent" data-w="אושר — הלקוח עוד לא קיבל"><span class="n num">0</span><span><span class="l">סיכום לא נשלח</span><span class="w">אושר — הלקוח עוד לא קיבל</span></span></button>
-    <button class="q" data-f="prep" data-w="פגישה קרובה בלי דף הכנה"><span class="n num">0</span><span><span class="l">הכנה לא נפתחה</span><span class="w">פגישה קרובה בלי דף הכנה</span></span></button>
-  </section>
 
   <!-- ===== all meetings ===== -->
   <section class="panel list">
@@ -503,14 +476,6 @@ table.ml{width:100%;border-collapse:collapse}
       }
       r.classList.toggle('hid',!ok); if(ok) shown++;
     });
-    /* המונים בבלוק הכהה — נספרים מהנתונים בכל רינדור */
-    $$('#miss .q').forEach(b=>{
-      const n=tagged(b.dataset.f);
-      b.querySelector('.n').textContent=n;
-      b.querySelector('.w').textContent = n===0?'אין חוסרים':b.dataset.w;
-      b.classList.toggle('zero',n===0);
-      b.classList.toggle('on',S.f===b.dataset.f);
-    });
     const parts=[];
     if(S.f) parts.push(MISS[S.f]);
     const fbl=(FBTS.find(f=>f[1]===S.fbt)||[])[0]; if(fbl) parts.push(fbl);
@@ -533,7 +498,6 @@ table.ml{width:100%;border-collapse:collapse}
   $('#clr').addEventListener('click',e=>{e.preventDefault();S.q='';$('#q').value='';apply()});
   $('#cfil').addEventListener('change',e=>{S.c=e.target.value;apply()});
   $('#emptyR').addEventListener('click',tClear);
-  $$('#miss .q').forEach(b=>b.addEventListener('click',()=>{S.f=(S.f===b.dataset.f)?null:b.dataset.f;apply()}));
 
   function recTg(b,co){
     b.classList.toggle('recording');
@@ -771,6 +735,39 @@ table.ml{width:100%;border-collapse:collapse}
     if([...sel.options].some(o=>(o.value||o.text)===v)){ sel.value=v; S.c=v; } }
   apply();
   arenaShow(u.get('m')||'r0207');
+})();
+</script>
+<style id="hk-embed-css">
+html.embed .nav{display:none !important}
+html.embed body{background:transparent}
+html.embed .strip{border-radius:0}
+/* המסך נעול לגובה החלון (טבלה וזירה גוללות בפנים) — בהטמעה הניווט הפנימי מוסתר,
+   ולכן הכרום היחיד שנשאר הוא הפס. המערכת קובעת את גובה המסגרת. */
+html.embed .wrap{height:calc(100vh - 68px)}
+</style>
+<script id="hk-embed-js">
+/* ===== הטמעה במערכת =====
+   ?embed=1 — הדף נטען בתוך המערכת: הניווט הפנימי מוסתר (הסרגל של המערכת מחליף אותו),
+   והדף מדווח את גובהו כלפי חוץ כדי שהמסגרת תיפתח לכל התוכן. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  var last=0;
+  function report(){
+    var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+    /* מסך נעול-גובה — לא מדווח גובה תוכן; המערכת מותחת את המסגרת לגובה החלון */
+    parent.postMessage({hkAdvLock:'meetings'},'*'); last=h;
+  }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  new MutationObserver(report).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  setInterval(report,1200);
+  /* ניווט פנימי בין המסכים — מבקש מהמערכת להחליף מסך במקום לנווט בתוך המסגרת */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href$=".html"]'); if(!a) return;
+    var f=a.getAttribute('href').split('/').pop().split('?')[0].replace('.html','');
+    e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
+  },true);
 })();
 </script>
 </body>

@@ -150,13 +150,18 @@ function coContacts(d){
 }
 /* ---------- טאב תפעולי ---------- */
 /* ===== מצב החברה — השדה שקובע אם היא בתור, במחליף, במדדים ובחיוב =====
-   שלושה מצבים בלבד (coState): פעיל · בהקמה · ארכיון.
-   ארכיון דורש אישור בתוך המסך — הוא מוציא את החברה מכל מקום. */
+   חמישה מצבים תפעוליים. ארכיון הוא סטטוס התקשרות ונקבע בפרטי לקוח —
+   הוא מוציא את החברה מכל מקום ולכן דורש אישור בתוך המסך. */
 let COSET_ARCH=false;
 const CO_ST=[
-  ['active','פעיל',  'בתור התפעול היומי, במחליף החברות, במדדים ובחיוב.'],
-  ['setup', 'בהקמה', 'ממתינה להרשאות בנק — לא נכנסת לתור ולא נספרת במדדי היום. נשארת במחליף כדי שאפשר יהיה להקים אותה.']];
-function coStTg(k){ coApplySt(k); }
+  ['active','פעיל',        'בתור התפעול היומי, במחליף החברות, במדדים ובחיוב.'],
+  ['setup', 'בהקמה',       'ממתינה להרשאות בנק — לא נכנסת לתור ולא נספרת במדדי היום. נשארת במחליף כדי שאפשר יהיה להקים אותה.'],
+  ['trial', 'חודש ניסיון', 'מתופעלת במלואה כמו חברה פעילה, אבל עדיין לא בחיוב. בסוף החודש מחליטים.'],
+  ['off',   'לא פעיל',     'ההתקשרות הופסקה זמנית — לא בתור, לא במדדים ולא בחיוב. הנתונים נשמרים.'],
+  ['new',   'חדש',         'נקלטה זה עתה — עוד לא הוגדרו לה מנהל תזרים, מוצר או הרשאות.']];
+let CO_ST_OPEN=false;
+function coStTg(k){ CO_ST_OPEN=false; coApplySt(k); }
+function coStDd(e){ if(e)e.stopPropagation(); CO_ST_OPEN=!CO_ST_OPEN; renderCoSet(); }
 /* העברה לארכיון — פעולה של סטטוס ההתקשרות, עם אישור בתוך המערכת */
 function coArchAsk(i){
   const c=CLIENTS[i!=null?i:CUR]; if(!c) return;
@@ -177,7 +182,7 @@ function coRestore(i){
 }
 function coApplySt(k){
   const c=CLIENTS[CUR]; if(!c) return;
-  c.advStatus=k==='active'?'פעיל':'בהקמה'; c.archOn=null; c.archWhy=null;
+  c.advStatus=(CO_ST.find(x=>x[0]===k)||[])[1]||'פעיל'; c.archOn=null; c.archWhy=null;
   coAfterSt(c,k);
 }
 function coAfterSt(c,k){
@@ -197,8 +202,16 @@ function coStHtml(){
   if(cur==='arch') return `<div class="cos-note arch">${c.name} בארכיון${c.archOn?` מאז ${c.archOn}`:''} — אין לה מצב תפעולי.
     סטטוס ההתקשרות נקבע ב<b>פרטי לקוח</b>.</div>`;
   const note=(CO_ST.find(x=>x[0]===cur)||[])[2]||'';
-  return `<div class="cos-st">
-      ${CO_ST.map(([k,l])=>`<button class="cos-stb ${k} ${cur===k?'on':''}" onclick="coStTg('${k}')">${l}</button>`).join('')}
+  const lbl=(CO_ST.find(x=>x[0]===cur)||[])[1]||'פעיל';
+  return `<div class="cos-stdd">
+      <button class="cos-stsel ${cur}" onclick="coStDd(event)">
+        <span class="cos-stdot ${cur}"></span><b>${lbl}</b>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="cos-stmenu ${CO_ST_OPEN?'show':''}">
+        ${CO_ST.map(([k,l,d])=>`<button class="cos-stopt ${cur===k?'on':''}" onclick="coStTg('${k}')">
+          <span class="cos-stdot ${k}"></span><span><b>${l}</b><i>${d}</i></span></button>`).join('')}
+      </div>
     </div>
     <div class="cos-note">${note}</div>`;
 }

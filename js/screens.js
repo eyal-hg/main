@@ -46,7 +46,7 @@
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
     GNAV = (s==='client') ? 'client'
          : isOperator ? (MGR_VIEW==='meets'?'meets':'ops')
-         : ROLE==='advisor' ? (ADV_PVIEW==='clients'?'clients':ADV_PVIEW==='meets'?'meets':ADV_PVIEW==='how'?'how':'today')
+         : ROLE==='advisor' ? (ADV_PVIEW==='clients'?'clients':ADV_PVIEW==='meets'?'meets':ADV_PVIEW==='how'?'how':ADV_PVIEW==='tasks'?'tasks':'today')
          : 'home';
     renderGlobalRail();
     renderCrumb();
@@ -57,13 +57,25 @@
     if(inPortfolio){
       if(isOperator) pView=(MGR_VIEW==='meets')?'meets':'queue';   // הבית של המנהל הוא התפעול; זירת פגישות בבחירה
       else if(ROLE==='clientN') pView='board';
-      else pView=(ADV_PVIEW==='clients')?'clients':(ADV_PVIEW==='meets')?'meets':(ADV_PVIEW==='how')?'how':'alerts';
+      else pView=(ADV_PVIEW==='clients')?'clients':(ADV_PVIEW==='meets')?'meets':(ADV_PVIEW==='how')?'how':(ADV_PVIEW==='tasks')?'tasks':'alerts';
     }
+    /* ===== מסכי היועץ המוטמעים — היום / משימות / פגישות / זיכרון =====
+       ליועץ המסכים האלה מחליפים את התצוגות הישנות; למנהל התפעול שום דבר לא משתנה. */
+    const advScr = inPortfolio && ROLE==='advisor';
+    const ADVMAP = {alerts:['advToday','advTodayFrame'], tasks:['advTasks','advTasksFrame'],
+                    meets:['advMeets','advMeetsFrame'],  how:['advMem','advMemFrame']};
+    Object.keys(ADVMAP).forEach(k=>{
+      const [box,fr]=ADVMAP[k], el=document.getElementById(box); if(!el) return;
+      const on = advScr && pView===k;
+      el.style.display = on?'':'none';
+      if(on){ const f=document.getElementById(fr); if(f&&!f.src) f.src=f.dataset.src; }
+    });
+    const advTakes = advScr && !!ADVMAP[pView];
     const showQueue=inPortfolio && pView==='queue';
-    const showAlerts=inPortfolio && pView==='alerts';
-    const showMeets=inPortfolio && pView==='meets';
+    const showAlerts=inPortfolio && pView==='alerts' && !advTakes;
+    const showMeets=inPortfolio && pView==='meets' && !advTakes;
     const showClients=inPortfolio && pView==='clients';
-    const showHow=inPortfolio && pView==='how';
+    const showHow=inPortfolio && pView==='how' && !advTakes;
     const showBoard = !inPortfolio || pView==='board';
     document.getElementById('clientsView').style.display=showClients?'':'none';
     if(showClients){ const cf=document.getElementById('clFrame'); if(cf&&!cf.src) cf.src=cf.dataset.src;
@@ -76,7 +88,8 @@
       if(_c)_c.style.display='none'; if(_s)_s.style.display='none'; }
     document.getElementById('mgrToggle').style.display='none';   // אין יותר טאבים במסך המנהל
     // מסך המנהל מתחיל ישר בקוביות — בלי כותרת ושורת משנה
-    const slim=(inPortfolio&&isOperator);
+    /* למסכי היועץ המוטמעים יש כותרת משלהם — בלי כותרת עמוד מעליהם */
+    const slim=(inPortfolio&&isOperator)||advTakes;
     if(slim){
       document.querySelector('.client-head').style.display='none';
       document.querySelector('.sub-line').style.display='none';
@@ -273,6 +286,7 @@
   let ADV_PVIEW='home';    // תת-תצוגה של היועץ במבט-על: home (היום) | clients
   const GNAV_ICO={
     today:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>',
+    tasks:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5h10M9 12h10M9 19h10"/><path d="m3 5 1.4 1.4L7 3.8M3 12l1.4 1.4L7 10.8M3 19l1.4 1.4L7 17.8"/></svg>',
     ops:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>',
     how:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
     clients:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
@@ -283,10 +297,11 @@
   function gnavItems(){
     if(typeof ROLE==='undefined'||ROLE==='advisor') return [
       {k:'today',   l:'היום',    go:"gnavGo('today')"},
-      {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
-      {k:'meets',   l:'פגישות',  go:"gnavGo('meets')"},
+      {k:'tasks',   l:'משימות',  go:"gnavGo('tasks')"},
       {k:'clients', l:'לקוחות',  go:"gnavGo('clients')"},
+      {k:'meets',   l:'פגישות',  go:"gnavGo('meets')"},
       {k:'how',     l:'זיכרון לקוחות', go:"gnavGo('how')"},
+      {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
       {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
     if(ROLE==='manager') return [
       {k:'ops',     l:'לקוחות',  go:"gnavGo('ops')"},
@@ -299,6 +314,7 @@
   }
   function gnavGo(k){
     if(k==='today'){ADV_PVIEW='home';selectPortfolio();return;}
+    if(k==='tasks'){ADV_PVIEW='tasks';selectPortfolio();return;}
     if(k==='clients'){ADV_PVIEW='clients';selectPortfolio();return;}
     if(k==='how'){ADV_PVIEW='how';selectPortfolio();return;}
     if(k==='ops'){MGR_VIEW='ops';selectPortfolio();return;}
@@ -384,61 +400,38 @@
     }
     // מנהל תזרים: תור התפעול בסרגל — רק במסך הראשי (בתוך חברה הסרגל שייך לחברה)
     if(typeof ROLE!=='undefined'&&ROLE==='manager'&&GNAV==='ops'&&typeof qRule==='function'){
-      /* תור התפעול — לא "רשימת לקוחות". רק חברות פעילות:
-         בהקמה = אין עדיין הרשאות בנק, אין מה לתפעל · ארכיון = יצאה. */
+      /* רשימה שטוחה של כל החברות — הסינון לפי סטטוס עבר לדרופדאון בסרגל העליון,
+         ולכן אין כאן יותר מתגי מצב, אין קיפול של "הושלמו", ואין קוביה מסביב לכל חברה. */
       const order=CLIENTS.map((c,i)=>i)
-        .filter(i=>typeof firmOk==='undefined'||firmOk(CLIENTS[i]))
-        .filter(i=>typeof coActive!=='function'||coActive(CLIENTS[i]))
+        .filter(i=>typeof firmOk!=='function'||firmOk(CLIENTS[i]))
+        .filter(i=>typeof statOk!=='function'||statOk(CLIENTS[i]))
+        .filter(i=>!MGR_FILTER||CLIENTS[i].mgr===MGR_FILTER)
         .sort((a,b)=>opsqRank(a)-opsqRank(b));
-      const doneIx=order.filter(i=>opsDoneSet.has('c'+i)), liveIx=order.filter(i=>!opsDoneSet.has('c'+i));
-      /* מצבים אחרים — נשלפים רק בבחירה מפורשת, אף פעם לא מעורבבים בתור */
-      const inSt=s=>CLIENTS.map((c,i)=>i).filter(i=>(typeof firmOk!=='function'||firmOk(CLIENTS[i]))&&coState(CLIENTS[i])===s);
-      const setupIx=inSt('setup'), archIx=inSt('arch');
-      const othr=[['active','תור התפעול',liveIx.length],['setup','בהקמה',setupIx.length],['arch','ארכיון',archIx.length]]
-        .filter(x=>x[0]!==GN_QST&&x[2]>0);
-      const stRow=i=>{const c=CLIENTS[i];
-        return `<div class="gn-q flat" onclick="selectClient(${i})" title="${c.name}">
-          <span class="dbq-dot ${GN_QST==='setup'?'setup':'off'}"></span>
-          <div class="gn-qb"><div class="gn-qn"><span class="nm">${c.name}</span></div>
-            <div class="gn-qm"><span class="nm">${GN_QST==='arch'?('בארכיון · '+(c.archOn||'')):(c.mgr||'')}</span></div></div>
-        </div>`;};
       const qrow=i=>{
-        const c=CLIENTS[i], k='c'+i, r=qRule(i);
+        const c=CLIENTS[i], k='c'+i, st0=coState(c);
         const tot=(c.tasks||[]).length, doneT=(c.tasks||[]).filter(t=>t.done).length;
-        // באיזה שלב החברה — עבודה / בדיקות / הושלם
-        let st='wait', line='ממתין', pct=tot?Math.round(doneT/tot*100):0;
-        if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k){
-          st='check'; line='בבדיקות · שלב '+(FIN_STATE.step+1)+'/'+FIN_STEPS.length; pct=85;
-        }else if(opsDoneSet.has(k)){st='done';line='✓ הושלם · '+fmtDur(opsDur[k]||0);pct=100;}
-        else if(opsAccum[k]||doneT>0){
-          const cur=OPS_STAGES.find(sg=>(c.tasks||[]).some(t=>t.type===sg[0]&&!t.done));
-          st='prog'; line=cur?'בשלב: '+cur[1]+' · '+(tot-doneT)+' נותרו':'בתהליך · '+fmtDur(opsAccum[k]||0);
-        }else if(c.opsAlert){st='alert';}
-        return `<div class="gn-q ${c.bankDown?'bank':opsDoneSet.has(k)?'opsdone':''}" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
+        let st='wait';
+        if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k) st='check';
+        else if(opsDoneSet.has(k)) st='done';
+        else if(opsAccum[k]||doneT>0) st='prog';
+        else if(c.opsAlert) st='alert';
+        else if(st0!=='active'&&st0!=='trial') st='off';
+        const sub = (st0==='active'||st0==='trial') ? (c.mgr||'') : (CO_ST_LBL[st0]||'');
+        return `<div class="gn-q flat ${opsDoneSet.has(k)?'is-done':''}" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
           <span class="dbq-dot ${st}"></span>
           <div class="gn-qb">
-            <div class="gn-qn"><span class="nm">${c.name}</span><i class="gn-mr ${c.mReport?'ok':'no'}">${c.mReport?'✓':'דוח'}</i></div>
-            <div class="gn-qm"><span class="nm">${c.mgr}</span>${c.product?prodLogo(c.product,'sm'):''}</div>
+            <div class="gn-qn"><span class="nm">${c.name}</span></div>
+            <div class="gn-qm"><span class="nm">${sub}</span>${c.product?prodLogo(c.product,'sm'):''}</div>
           </div>
           <span class="gn-biz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></span>
         </div>`;};
-      /* הסרגל מתקצר ככל שהיום מתקדם — מי שהושלם נאסף לשורה מקופלת */
-      const stTtl={active:'תור התפעול',setup:'בהקמה',arch:'ארכיון'}[GN_QST];
-      const stN={active:liveIx.length,setup:setupIx.length,arch:archIx.length}[GN_QST];
-      html+=`<div class="gn-qwrap st-${GN_QST}">
-        <div class="gn-qh"><span class="qh-t">${stTtl}</span><b class="qh-n">${stN}</b>
-          ${GN_QST==='active'&&doneIx.length?`<span class="qh-done">${doneIx.length===1?'אחת הושלמה':doneIx.length+' הושלמו'}</span>`:''}
-          ${GN_QST!=='active'?`<span class="qh-note">${GN_QST==='setup'?'לא בתפעול':'יצאו'}</span>`:''}</div>
+      const nDone=order.filter(i=>opsDoneSet.has('c'+i)).length;
+      html+=`<div class="gn-qwrap plain">
+        <div class="gn-qh"><span class="qh-t">${STAT_FILTER?(CO_ST_LBL[STAT_FILTER]||'חברות'):'כל החברות'}</span><b class="qh-n">${order.length}</b>
+          ${nDone?`<span class="qh-done">${nDone===1?'אחת הושלמה':nDone+' הושלמו'}</span>`:''}</div>
         <div class="gn-qlist">
-          ${GN_QST!=='active'?(GN_QST==='setup'?setupIx:archIx).map(stRow).join(''):
-            (liveIx.map(qrow).join('')||'<div class="gn-qempty">✓ אין חברות בתור — סיימת להיום</div>')+
-            (doneIx.length?`<button class="gn-qmore ${GN_QDONE?'on':''}" onclick="gnQDone()">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
-              ${GN_QDONE?'הסתרה':'✓ '+(doneIx.length===1?'הושלמה אחת':'הושלמו '+doneIx.length)}</button>
-            ${GN_QDONE?doneIx.map(qrow).join(''):''}`:'')}
+          ${order.map(qrow).join('')||'<div class="gn-qempty">אין חברות בסינון הזה</div>'}
         </div>
-        ${othr.length?`<div class="gn-qst">${othr.map(([k,l,n])=>
-          `<button class="qst ${GN_QST===k?'on':''} ${k}" onclick="gnQSt('${k}')">${l}<i>${n}</i></button>`).join('')}</div>`:''}
       </div>`;
     }
     list.innerHTML=html;

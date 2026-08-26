@@ -80,7 +80,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip .now b{color:var(--white);font-weight:500}
 
 /* ---------- body grid ---------- */
-.wrap{width:100%;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:stretch;min-height:calc(100vh - 120px)}
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:stretch;min-height:calc(100vh - 120px)}
 .wrap>*{min-width:0;min-height:0}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
 .panel.meet{display:flex;flex-direction:column}
@@ -183,16 +183,30 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .born .mu .tm{color:var(--on-navy4);font-size:12px;text-align:end}
 
 /* ---------- left column ---------- */
-.left{display:flex;flex-direction:column;gap:14px;min-height:0;max-height:calc(100vh - 158px)}
+/* העמודה נמתחת לגובה השורה — "תשומת לב" נגמרת בקו אחד עם ציר הפגישות */
+.left{display:flex;flex-direction:column;gap:14px;min-height:0}
 .left .panel{display:flex;flex-direction:column;min-height:0}
 .left .panel.tasks{flex:none}
-.left .panel.att{flex:1 1 auto;min-height:180px}
-.add{display:flex;gap:8px;padding:12px 20px 10px;border-bottom:1px solid var(--bd);background:var(--surface2)}
-.add input{flex:1;height:38px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
+.left .panel.att{flex:1 1 auto;min-height:180px;overflow:hidden}
+.panel.att>.ph{background:var(--navy);border-bottom:0;padding:12px 20px}
+.panel.att>.ph h2{color:var(--white)}
+.panel.att>.ph .hint{color:var(--on-navy3)}
+.panel.att>.ph .more{color:var(--on-navy)}
+.panel.att>.ph .more:hover{color:var(--white)}
+/* כותרת פאנל המשימות — כחולה, כמו הפס */
+.panel.tasks{overflow:hidden}
+.panel.tasks>.ph{background:var(--navy);border-bottom:0;padding:12px 20px 10px}
+.panel.tasks>.ph h2{color:var(--white)}
+.panel.tasks>.ph .hint{color:var(--on-navy3)}
+.panel.tasks>.ph .more{color:var(--on-navy)}
+.panel.tasks>.ph .more:hover{color:var(--white)}
+.add{display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);background:var(--surface2)}
+.add input{flex:1;height:36px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
 .add input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.add .btn{height:36px}
 .add .btn{height:38px}
-.tl{list-style:none;padding:4px 20px 8px}
-.tl li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:12px;align-items:start;padding:8px 0;border-bottom:1px solid var(--bd);cursor:pointer}
+.tl{list-style:none;padding:2px 20px 6px}
+.tl li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:12px;align-items:start;padding:6px 0;border-bottom:1px solid var(--bd);cursor:pointer}
 .tl li:last-child{border-bottom:0}
 .tl li:hover{background:var(--row-hover)}
 .tl .cb{appearance:none;-webkit-appearance:none;width:17px;height:17px;border:1.5px solid var(--bd2);border-radius:4px;margin-top:2px;background:var(--white);display:grid;place-items:center;cursor:pointer}
@@ -200,8 +214,8 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .tl .cb:checked{background:var(--green);border-color:var(--green)}
 .tl .cb:checked::after{opacity:1}
 .tl li.done .tx{text-decoration:line-through;color:var(--ink3)}
-.tl .tx{font-size:14px;font-weight:500;color:var(--ink)}
-.tl .sub{font-size:12.5px;color:var(--ink3);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tl .tx{font-size:13.5px;font-weight:500;color:var(--ink);line-height:1.3}
+.tl .sub{font-size:12px;color:var(--ink3);margin-top:1px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .tl .sub a{color:var(--navy);font-weight:500}
 .tl .sub a:hover{text-decoration:underline}
 .tl .src{font-size:12px;color:var(--ink3);white-space:nowrap;margin-top:3px}
@@ -235,8 +249,8 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
 @media (max-width:1450px){
   :root{--mtpad:8px;--daypad:18px}
-  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px;min-height:calc(100vh - 120px)}
-  .left{max-height:calc(100vh - 150px)}
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 0 16px;gap:14px;min-height:calc(100vh - 120px)}
+  .left{min-height:0}
   .ph{padding:11px 18px 8px}
   .ph h2{font-size:16px}
   .add{padding:10px 18px 8px}
@@ -523,6 +537,35 @@ window.flashTask=flashTask;window.flashLate=flashLate;
 
 counts();tick();fromUrl();
 setInterval(tick,15000);
+})();
+</script>
+<style id="hk-embed-css">
+html.embed .nav{display:none !important}
+html.embed body{background:transparent}
+html.embed .strip{border-radius:0}
+</style>
+<script id="hk-embed-js">
+/* ===== הטמעה במערכת =====
+   ?embed=1 — הדף נטען בתוך המערכת: הניווט הפנימי מוסתר (הסרגל של המערכת מחליף אותו),
+   והדף מדווח את גובהו כלפי חוץ כדי שהמסגרת תיפתח לכל התוכן. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  var last=0;
+  function report(){
+    var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+    if(Math.abs(h-last)>8){ last=h; parent.postMessage({hkAdv:'today',h:h},'*'); }
+  }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  new MutationObserver(report).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  setInterval(report,1200);
+  /* ניווט פנימי בין המסכים — מבקש מהמערכת להחליף מסך במקום לנווט בתוך המסגרת */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href$=".html"]'); if(!a) return;
+    var f=a.getAttribute('href').split('/').pop().split('?')[0].replace('.html','');
+    e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
+  },true);
 })();
 </script>
 </body>

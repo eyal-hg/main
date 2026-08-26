@@ -45,6 +45,10 @@
       <div class="ddl" id="prodDdl" onclick="toggleProd(event)">מוצרים <span>▾</span></div>
       <div class="prod-menu" id="prodMenu"></div>
     </div>
+    <div class="ddl-wrap">
+      <div class="ddl" id="statDdl" onclick="toggleStat(event)">כל הסטטוסים <span>▾</span></div>
+      <div class="prod-menu" id="statMenu"></div>
+    </div>
   </div>
 
   <div class="top-right">
@@ -146,10 +150,20 @@
       <div class="al-board" id="alBoard"></div>
     </div>
 
+    <!-- ===== מסכי היועץ (docs/adv3) — מוטמעים כמסגרות ===== -->
+    <div id="advToday" class="advscr" style="display:none">
+      <iframe id="advTodayFrame" data-src="docs/adv3/today.html?embed=1" scrolling="no"></iframe></div>
+    <div id="advTasks" class="advscr" style="display:none">
+      <iframe id="advTasksFrame" data-src="docs/adv3/tasks.html?embed=1" scrolling="no"></iframe></div>
+    <div id="advMeets" class="advscr" style="display:none">
+      <iframe id="advMeetsFrame" data-src="docs/adv3/meetings.html?embed=1" scrolling="no"></iframe></div>
+    <div id="advMem" class="advscr" style="display:none">
+      <iframe id="advMemFrame" data-src="docs/adv3/memory.html?embed=1" scrolling="no"></iframe></div>
+
     <!-- לקוחות — רשימת החברות של היועץ (יעד גלובלי) -->
     <div id="howView" style="display:none"></div>
     <div id="clientsView" style="display:none">
-      <iframe id="clFrame" data-src="clients.html?embed=1" style="width:100%;border:0;min-height:calc(100vh - 165px);display:block" scrolling="no"></iframe>
+      <iframe id="clFrame" data-src="docs/adv3/clients.html?embed=1" style="width:100%;border:0;min-height:calc(100vh - 165px);display:block" scrolling="no"></iframe>
       <div class="clv-head" style="display:none" hidden>
         <div class="clv-seg" id="clvSeg"></div>
         <input class="clv-q" id="clvQ" placeholder="חיפוש לקוח / מנהל תזרים…" oninput="renderClientsView()">
@@ -697,7 +711,7 @@
     <div class="mtk-row">
       <input class="mx2-inp" id="mtkTime" type="time" title="בלי שעה — המשימה נשארת במשימות הפתוחות">
       <span style="flex:1;position:relative"><input class="mx2-inp" id="mtkClient" placeholder="חיפוש לקוח — לא חובה" autocomplete="off" style="width:100%;box-sizing:border-box" oninput="mtkClientChange();mtkCliFilter()" onfocus="mtkCliOpen()" onblur="setTimeout(()=>document.getElementById('mtkCliDd').classList.remove('show'),180)"><div class="ev-dd" id="mtkCliDd"></div></span>
-      <select class="mx2-inp" id="mtkOwner" style="flex:1"><option value="">אחראי: אני</option></select>
+      <span style="flex:1;position:relative"><input class="mx2-inp" id="mtkOwner" placeholder="אחראי: אני" autocomplete="off" style="width:100%;box-sizing:border-box" oninput="mtkOwnFilter()" onfocus="mtkOwnOpen()" onblur="setTimeout(()=>document.getElementById('mtkOwnDd').classList.remove('show'),180)"><div class="ev-dd" id="mtkOwnDd"></div></span>
     </div>
     <div class="mtk-rep" id="mtkRep">
       <span class="mtk-chip on" data-r="once" onclick="mtkRepSet('once')">חד פעמי</span>

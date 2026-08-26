@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנרגי אינטרנשיונל · פגישות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך הלקוח · פגישות — גרסה 2
+   ---------------------------------------------------------------------
+   הבסיס: המסך שקיים היום במערכת (js/climeet.js) — אותו סדר, אותם בלוקים,
+   אותו טקסט. מה שהשתנה: הקליפה של דפי הלקוח (ניווט + רצועת זהות),
+   הרדיוס הרך של ניב הלקוח, וצפיפות מעט נמוכה יותר. בלי בלוקים חדשים.
+   ===================================================================== */
+:root{
+  /* --- המשפחה: זהה למסכי היועץ, בלי גוון חדש --- */
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
+  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
+  --row-hover:#F8FBFD;--bd2:#B7C3CF;--line:#C4CED8;
+  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--good-bg:#F1FAF5;
+  /* --- הניב של הלקוח: כל ערך שמבדיל מוגדר כאן, זהה בכל חמשת המסכים --- */
+  --bg:#F7F9FC;
+  --r-panel:14px;--r-card:12px;--r-ctl:8px;
+  --fs:14.5px;--fs-sub:13px;--fs-meta:12.5px;
+  --pad:20px;--sec:20px;
+  --big:30px;--big2:26px;
+  --ok-on-navy:#4FCB92;
+  --shadow:0 1px 2px rgba(12,64,104,.05),0 6px 18px rgba(12,64,104,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.mn{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+/* ---------- ניווט: כאן חיים שמות המסכים ---------- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px}
+.nav li a{display:block;padding:6px 13px;border-radius:var(--r-ctl);color:var(--ink2);font-size:13.5px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:var(--fs-meta);color:var(--ink3);text-align:end}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
+.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+
+/* ---------- רצועת הזהות: מעוגנת לעסק · נושאת את הפגישה הבאה ---------- */
+.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:24px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1.05;letter-spacing:-.3px}
+.strip .id .sub{font-size:var(--fs-meta);color:var(--on-navy3);margin-top:3px}
+.strip .id .sub a{color:var(--on-navy);border-bottom:1px solid rgba(255,255,255,.28)}
+.strip .id .sub a:hover{border-color:var(--white);color:var(--white)}
+.strip .sep{width:1px;height:34px;background:rgba(255,255,255,.16)}
+.strip .live{display:flex;align-items:center;gap:14px;min-width:0}
+.strip .live .cap{font-size:11.5px;letter-spacing:.5px;color:var(--on-navy3);text-transform:uppercase}
+.strip .live .tm{font-size:22px;font-weight:600;line-height:1}
+.strip .live .in{background:rgba(255,255,255,.09);border-radius:7px;padding:4px 10px;font-size:12.5px;color:var(--on-navy)}
+.strip .live .w{font-size:13.5px;color:var(--on-navy2)}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:13px;color:var(--on-navy3);display:flex;align-items:baseline;gap:8px}
+.strip .now b{color:var(--white);font-weight:500;font-size:18px}
+
+/* ---------- כפתורים ---------- */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;border-radius:var(--r-ctl);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn.sm{padding:5px 11px;font-size:12.5px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.btn.pri:hover{background:var(--navy2)}
+.dark .btn{background:transparent;border-color:rgba(255,255,255,.32);color:var(--white)}
+.dark .btn:hover{background:rgba(255,255,255,.12)}
+.dark .btn.pri{background:var(--white);border-color:var(--white);color:var(--navy)}
+.dark .btn.pri:hover{background:var(--on-navy)}
+
+/* ---------- התראות: טקסט צבוע + נקודה, לעולם לא גלולה ---------- */
+.al{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;font-weight:500;font-style:normal;font-size:var(--fs-meta)}
+.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.al.warn{color:var(--orange)}
+.al.ok{color:var(--green)}
+.al.info{color:var(--ink3)}
+.al.sky{color:var(--sky)}
+
+/* ---------- תגית שקטה ---------- */
+.tag{font-size:12px;font-weight:500;background:var(--chip);border-radius:7px;padding:4px 10px;color:var(--ink2);white-space:nowrap}
+
+
+/* ---------- פריסה: עמודה אחת, כמו במסך שקיים ---------- */
+.wrap{width:100%;padding:var(--sec) 32px 28px;display:flex;flex-direction:column;gap:var(--sec)}
+
+/* ---------- כרטיס הפגישה הבאה — הבלוק הכהה היחיד ---------- */
+.next{display:grid;grid-template-columns:minmax(0,1fr) 380px;border-radius:var(--r-panel);overflow:hidden;
+      box-shadow:var(--shadow);border:1px solid var(--bd)}
+.next .l{background:var(--navy);color:var(--white);display:flex;gap:22px;padding:22px var(--pad)}
+.badge{flex:none;width:96px;border-radius:var(--r-card);background:rgba(255,255,255,.08);
+       display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 0;text-align:center}
+.badge b{font-size:34px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.badge span{font-size:12.5px;color:var(--on-navy2);margin-top:3px}
+.badge i{font-style:normal;font-size:12px;color:var(--sky);margin-top:9px;font-weight:500}
+.next .t{min-width:0;display:flex;flex-direction:column;gap:9px}
+.next .tag2{align-self:flex-start;font-size:11.5px;letter-spacing:.4px;background:rgba(255,255,255,.11);
+            border-radius:7px;padding:4px 11px;color:var(--on-navy)}
+.next h2{font-size:23px;font-weight:600;line-height:1.25;letter-spacing:-.2px}
+.next .meta{font-size:13.5px;color:var(--on-navy2);display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.next .meta b{color:var(--white);font-weight:600}
+.next .meta .s{color:var(--on-navy4)}
+.next .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+
+/* ---------- מה מחכה ממני ---------- */
+.next .r{background:var(--white);padding:18px var(--pad)}
+.next .rh{font-size:15px;font-weight:600;color:var(--navy);padding-bottom:11px;border-bottom:1px solid var(--bd)}
+.ot{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--bd)}
+.ot:last-of-type{border-bottom:0}
+.ot i{width:7px;height:7px;border-radius:50%;background:var(--orange);flex:none;margin-top:7px}
+.ot b{display:block;font-size:var(--fs);font-weight:500;color:var(--ink);line-height:1.35}
+.ot span{display:block;font-size:var(--fs-meta);color:var(--ink3);margin-top:2px}
+.okrow{display:flex;align-items:center;gap:9px;padding:14px 0;font-size:13.5px;color:var(--ink2)}
+.okrow span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--good-bg);color:var(--green);font-size:12px}
+.rnote{font-size:var(--fs-meta);color:var(--ink3);margin-top:12px;padding-top:12px;border-top:1px solid var(--bd)}
+
+/* ---------- גם ביומן ---------- */
+.more{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:var(--fs-sub);color:var(--ink3);margin-top:-6px}
+.more .chip{background:var(--white);border:1px solid var(--bd);border-radius:999px;padding:5px 13px;color:var(--ink2);font-size:var(--fs-meta)}
+.more .chip b{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- הפגישות שקיימנו ---------- */
+.sec{display:flex;align-items:baseline;gap:12px;margin-top:2px}
+.sec h3{font-size:17px;font-weight:600;color:var(--navy)}
+.sec .sd{font-size:var(--fs-meta);color:var(--ink3)}
+.list{display:flex;flex-direction:column;gap:10px}
+
+.m{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);overflow:hidden}
+.m .h{display:flex;align-items:center;gap:16px;padding:14px var(--pad);cursor:pointer}
+.m .h:hover{background:var(--row-hover)}
+.m.open{border-color:var(--sky)}
+.m .d{flex:none;width:62px;text-align:center}
+.m .d b{display:block;font-size:17px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1.1}
+.m .d span{font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.m .t{flex:1;min-width:0}
+.m .t b{display:block;font-size:var(--fs);font-weight:600;color:var(--ink)}
+.m .t span{display:block;font-size:var(--fs-meta);color:var(--ink3);margin-top:2px}
+.m .p{font-size:12px;font-weight:500;border-radius:999px;padding:4px 11px;white-space:nowrap;flex:none}
+.m .p.ok{background:var(--good-bg);color:var(--green)}
+.m .p.open{background:var(--warn-bg);color:var(--warn-ink)}
+.m .p.wait{background:var(--chip);color:var(--ink3)}
+.m .p.no{background:var(--chip);color:var(--ink3)}
+.m .cv{color:var(--ink3);flex:none;transition:transform .15s}
+.m.open .cv{transform:rotate(180deg)}
+.m .body{display:none;border-top:1px solid var(--bd);padding:16px var(--pad) 14px;background:var(--surface2)}
+.m.open .body{display:block}
+
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px}
+.bh{font-size:var(--fs-meta);font-weight:600;color:var(--ink3);letter-spacing:.2px;margin-bottom:9px}
+.sr{display:flex;gap:11px;align-items:flex-start;padding:7px 0}
+.sr .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--tint);color:var(--navy);
+       font-size:11.5px;font-weight:600;display:grid;place-items:center;margin-top:2px}
+.sr p{font-size:var(--fs);color:var(--ink2);line-height:1.55}
+.tw{border-inline-start:1px solid var(--bd);padding-inline-start:22px}
+.tk{display:flex;gap:9px;align-items:flex-start;font-size:var(--fs-sub);color:var(--ink2);padding:6px 0}
+.tk .ck{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;
+        background:var(--warn-bg);color:var(--warn-ink)}
+.tk.fin .ck{background:var(--good-bg);color:var(--green)}
+.tk.fin{color:var(--ink3)}
+.tn{font-size:var(--fs-meta);color:var(--ink3);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.foot{display:flex;align-items:center;gap:14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.fn{font-size:var(--fs-meta);color:var(--ink3)}
+.nos{font-size:var(--fs-sub);color:var(--ink2);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+
+#toast{position:fixed;inset-inline-start:50%;transform:translateX(-50%) translateY(16px);bottom:26px;
+       background:var(--navy);color:var(--white);padding:10px 20px;border-radius:999px;font-size:13.5px;
+       opacity:0;pointer-events:none;transition:all .2s;z-index:60}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1220px){
+  .next{grid-template-columns:minmax(0,1fr) 320px}
+  .cols{grid-template-columns:minmax(0,1fr) 260px;gap:18px}
+  .nav,.strip,.wrap{padding-inline:24px}
+}
+@media (max-width:980px){
+  .next{grid-template-columns:minmax(0,1fr)}
+  .cols{grid-template-columns:minmax(0,1fr)}
+  .tw{border-inline-start:0;padding-inline-start:0;border-top:1px solid var(--bd);padding-top:14px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="dashboard.html"><i>HK</i>הצוות הפיננסי שלך</a>
+  <ul>
+    <li><a href="dashboard.html">דשבורד</a></li>
+    <li><a href="messages.html">הודעות</a></li>
+    <li><a class="on" href="meetings2.html">פגישות</a></li>
+    <li><a href="ai.html">עוזר AI</a></li>
+    <li><a href="metrics.html">מדדים</a></li>
+  </ul>
+  <div class="me"><div><b>צחי עובד</b>בעלים</div><i>צע</i></div>
+</nav>
+
+<header class="strip">
+  <div class="id">
+    <h1>אנרגי אינטרנשיונל</h1>
+    <div class="sub num">ח.פ 511327876 · היועץ שלך <a href="messages.html">אילון אשכנזי</a></div>
+  </div>
+  <div class="sep"></div>
+  <div class="live">
+    <span class="cap">הפגישה הבאה שלך</span>
+    <span class="tm mn">17:00</span>
+    <span class="in mn">היום · בעוד 6:06</span>
+    <span class="w">בזום</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="now"><span>השעה</span><b class="mn">10:54</b></div>
+</header>
+
+<main class="wrap" id="wrap"></main>
+<div id="toast"></div>
+
+<script>
+/* ===== הנתונים — בדיוק אותן פגישות שהמסך במערכת מציג לאנרגי אינטרנשיונל ===== */
+const NEXT={date:'02.07.2026', day:'02', mon:'יולי', lbl:'היום',
+  name:'המשך סקירה — החלטות תקציב', time:'17:00-17:30', adv:'אילון אשכנזי'};
+
+const ALSO=[{date:'05.08.2026', name:'פגישה חודשית - אוגוסט'}];
+
+const PAST=[
+  {date:'02.07.2026', name:'פגישה שוטפת - סקירת תזרים', rec:'46 דק׳', adv:'אילון אשכנזי', status:'ai'},
+  {date:'01.06.2026', name:'פ.ע - חודש יוני', rec:'58 דק׳', adv:'אילון אשכנזי', status:'summary'},
+  {date:'05.05.2026', name:'פ.ע - חודש מאי', rec:'49 דק׳', adv:'אילון אשכנזי', status:'done',
+   sum:['ניתוח רבעון מרץ-מאי: הכנסות 116 / 140 / 120 אש״ח — יציבות תזרימית מלאה חרף גידול של 40% בהכנסות',
+        'זוהה פער: כרטיס האשראי החדש של ״מקס״ אינו מחובר ל-Bizibox — מקשה על מעקב הוצאות השיווק',
+        'הוחלט על החלפת פונקציית שירות הלקוחות — חיסכון של כ-2,880 ₪ בחודש',
+        'הוגדר יעד: פתיחת מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.07'],
+   tasks:[{t:'חיבור כרטיס מקס ל-Bizibox',done:true},{t:'גיוס מחליפה לשירות לקוחות',done:true},
+          {t:'פנייה לבנק — מסגרת נוספת',done:true},{t:'עדכון תקציב יוני',done:true}]},
+  {date:'03.04.2026', name:'פגישה חודשית - אפריל', rec:'57 דק׳', adv:'אילון אשכנזי', status:'done',
+   sum:['עודכן תקציב אפריל עם ההוצאות החד-פעמיות לריטריט (ירוק עז 7,500 ₪, קייטרינג 5,000 ₪)',
+        'זוהה חיוב כפול מ-Payment טכנולוגיות — נפתח לבדיקה מול הספק',
+        'רות הציגה את טבלת מעקב המכירות — הוחלט על עדכון שבועי קבוע'],
+   tasks:[{t:'בדיקת החיוב הכפול מול Payment',done:true},{t:'קביעת תזכורת שבועית לטבלת המכירות',done:true},
+          {t:'עדכון קטגוריות הריטריט בתזרים',done:false}]},
+];
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* המשימות הפתוחות של בעל העסק — מה שהוא לקח על עצמו */
+const OPEN=[];
+PAST.forEach(m=>(m.tasks||[]).forEach(t=>{ if(!t.done) OPEN.push({t:t.t, date:m.date}); }));
+
+function render(){
+  document.getElementById('wrap').innerHTML=`
+    <section class="next">
+      <div class="l dark">
+        <div class="badge"><b class="mn">${NEXT.day}</b><span>${NEXT.mon}</span><i>${NEXT.lbl}</i></div>
+        <div class="t">
+          <span class="tag2">הפגישה הבאה</span>
+          <h2>${esc(NEXT.name)}</h2>
+          <div class="meta">
+            <span class="mn">${NEXT.time}</span><span class="s">·</span>
+            <span>זום</span><span class="s">·</span>
+            <span>עם <b>${esc(NEXT.adv)}</b>, היועץ שלך ב-HK</span>
+          </div>
+          <div class="acts">
+            <button class="btn pri" onclick="toast('הקישור נפתח — נתראה בזום')">הצטרפות בזום</button>
+            <button class="btn" onclick="toast('נשלחה בקשה לתיאום מחדש')">תיאום מחדש</button>
+            <button class="btn" onclick="toast('הנושא נשלח ליועץ ויעלה בפגישה')">יש לי נושא לפגישה</button>
+          </div>
+        </div>
+      </div>
+      <div class="r">
+        <div class="rh">מה מחכה ממני</div>
+        ${OPEN.length
+          ? OPEN.map(o=>`<div class="ot"><i></i><div><b>${esc(o.t)}</b><span>מהפגישה ב-${o.date}</span></div></div>`).join('')
+          : `<div class="okrow"><span>✓</span>אין משימות פתוחות מהפגישות הקודמות. הכול נסגר.</div>`}
+        <div class="rnote">הסיכום נשלח אליך בוואטסאפ בסיום כל פגישה.</div>
+      </div>
+    </section>
+
+    ${ALSO.length?`<div class="more"><span class="l">גם ביומן:</span>
+      ${ALSO.map(m=>`<span class="chip"><b class="mn">${m.date}</b> ${esc(m.name)}</span>`).join('')}</div>`:''}
+
+    <div class="sec"><h3>הפגישות שקיימנו</h3>
+      <span class="sd">${PAST.length} פגישות · לחיצה פותחת את מה שסוכם</span></div>
+
+    <div class="list">${PAST.map(row).join('')}</div>`;
+}
+
+function row(m,i){
+  const sum=m.sum||[], tasks=m.tasks||[], done=tasks.filter(t=>t.done).length;
+  const no=(m.status==='noshow');
+  return `
+  <div class="m" id="m${i}">
+    <div class="h" onclick="tog(${i})">
+      <div class="d"><b class="mn">${m.date.slice(0,5)}</b><span>${m.date.slice(6)}</span></div>
+      <div class="t"><b>${esc(m.name)}</b><span>${no?'לא התקיימה':(m.rec?m.rec+' · עם '+esc(m.adv):'עם '+esc(m.adv))}</span></div>
+      ${no?'<span class="p no">לא התקיימה</span>'
+        :sum.length?`<span class="p ok">${sum.length} סעיפי סיכום</span>`
+        :'<span class="p wait">הסיכום בהכנה</span>'}
+      ${tasks.length?`<span class="p ${done===tasks.length?'ok':'open'}">${done}/${tasks.length} משימות</span>`:''}
+      <svg class="cv" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="body">
+      ${no?`<div class="nos">הפגישה לא התקיימה, ולכן אין ממנה סיכום ואין משימות.
+             <button class="btn sm" onclick="toast('נשלחה בקשה לתיאום מועד חדש')">תיאום מועד חדש</button></div>`
+      : sum.length?`
+        <div class="cols">
+          <div>
+            <div class="bh">מה סוכם</div>
+            ${sum.map((s,n)=>`<div class="sr"><span class="n mn">${n+1}</span><p>${esc(s)}</p></div>`).join('')}
+          </div>
+          ${tasks.length?`<div class="tw">
+            <div class="bh">מה יצא מזה</div>
+            ${tasks.map(t=>`<div class="tk ${t.done?'fin':''}"><span class="ck">${t.done?'✓':'◷'}</span>${esc(t.t)}</div>`).join('')}
+            <div class="tn">${done===tasks.length?'הכול נסגר.':(tasks.length-done)+' עדיין פתוחה.'}</div>
+          </div>`:''}
+        </div>
+        <div class="foot">
+          <button class="btn sm" onclick="toast('הסיכום נשלח שוב לוואטסאפ שלך')">שלח לי את הסיכום שוב</button>
+          <span class="fn">הסיכום נשלח אליך ב-${m.date} בוואטסאפ.</span>
+        </div>`
+      :`<div class="nos">הסיכום עדיין בהכנה. הוא יישלח אליך בוואטסאפ ברגע שיהיה מוכן.</div>`}
+    </div>
+  </div>`;
+}
+
+function tog(i){ document.getElementById('m'+i).classList.toggle('open'); }
+let tt; function toast(m){ const t=document.getElementById('toast'); t.textContent=m;
+  t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2200); }
+
+render();
+</script>
+</body>
+</html>

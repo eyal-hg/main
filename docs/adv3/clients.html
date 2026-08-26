@@ -56,17 +56,26 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip button.kpi.on{border-bottom-color:var(--white);color:var(--white)}
 .strip button.kpi:disabled{cursor:default;color:var(--on-navy4)}
 .strip button.kpi:disabled b{color:var(--on-navy2)}
+.strip .vs{width:1px;height:24px;background:rgba(255,255,255,.18);flex:none}
+.strip .sen{font-size:13px;color:var(--on-navy);white-space:nowrap;display:inline-flex;align-items:baseline;gap:6px}
+.strip .sen b{font-size:18px;font-weight:700;color:var(--white);line-height:1}
+.strip .alw{font:inherit;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid transparent;padding-bottom:1px}
+.strip .alw.cf{color:#FF9086}
+.strip .alw.sat{color:#F4C560}
+.strip .alw:hover{border-bottom-color:currentColor}
+.strip .alw.on{border-bottom-color:currentColor}
 .strip .spacer{margin-inline-start:auto}
 .strip .now{font-size:13px;color:var(--on-navy2)}
 .strip .now b{color:var(--white);font-weight:500}
 
 /* ---------- body grid ---------- */
-.wrap{width:100%;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;
-      gap:18px;align-items:stretch;min-height:calc(100vh - 120px)}
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;
+      gap:18px;align-items:stretch;height:calc(100vh - 120px);overflow:hidden}
 .wrap>*{min-width:0;min-height:0}
 
 /* ---------- panel ---------- */
-.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);min-width:0}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);
+        min-width:0;overflow:hidden;display:flex;flex-direction:column;min-height:0}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
 .ph .hint{font-size:12.5px;color:var(--ink3)}
@@ -87,7 +96,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .chip.on b{background:rgba(255,255,255,.2);color:var(--white)}
 .dark .chip{background:rgba(255,255,255,.08);color:var(--on-navy)}
 .dark .chip:hover{background:rgba(255,255,255,.16);color:var(--white)}
-.dark .chip.on{background:var(--sky);color:var(--white)}
+.dark .chip.on{background:var(--white);color:var(--navy);font-weight:600}
 
 /* ---------- filter bar ---------- */
 .fbar{padding:10px 20px 12px;border-bottom:1px solid var(--bd);background:var(--surface2);display:flex;flex-direction:column;gap:8px}
@@ -98,12 +107,16 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .frow .reset.on{display:inline-block}
 #tl2:empty{display:none}
 
+.tw{flex:1;min-height:0;overflow:auto}
+.tb thead th{position:sticky;top:0;z-index:1}
 /* ---------- table (חוק 7) ---------- */
 .tb{width:100%;border-collapse:collapse}
 .tb.none{display:none}
 .tb th{font-size:12px;font-weight:500;color:var(--ink3);background:var(--surface2);padding:7px 14px;
        text-align:start;border-bottom:1px solid var(--bd);white-space:nowrap}
 .tb td{font-size:14px;color:var(--ink2);padding:11px 14px;border-top:1px solid var(--bd);white-space:nowrap;vertical-align:middle}
+.tb td:last-child{white-space:normal}
+td .lnk{white-space:nowrap}
 .tb th:first-child,.tb td:first-child{padding-inline-start:20px}
 .tb th:last-child,.tb td:last-child{padding-inline-end:20px}
 .tb tr{cursor:pointer}
@@ -116,14 +129,47 @@ td.n small{font-weight:400;font-size:12px;color:var(--ink3);margin-inline-start:
 td.n .num{color:var(--ink3)}
 td.n .dash{margin-inline-start:8px;color:var(--sky);opacity:0;font-weight:700;transition:opacity .12s}
 .tb tr:hover td.n .dash{opacity:1}
-.stg{display:inline-flex;align-items:center;gap:8px}
-.stg::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c,var(--line));flex:none}
+/* ===== טוקן סטטוס — זהה בשלושת המקומות: סינון · טבלה · כרטיס החברה =====
+   גלולה בגוון הסטטוס עצמו + נקודה רוויה. הצבע נושא את הזיהוי, לא צבע נייטרלי אחיד. */
+.stg,.chip.stat{--sc:var(--c,#C4CED8);
+  font:inherit;font-size:12px;font-weight:600;letter-spacing:-.1px;line-height:1;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  padding:5px 11px;border-radius:999px;
+  background:color-mix(in srgb,var(--sc) 14%,#fff);
+  border:1px solid color-mix(in srgb,var(--sc) 30%,#fff);
+  color:color-mix(in srgb,var(--sc) 60%,#12293F)}
+.stg::before,.chip.stat .dot{content:"";width:6px;height:6px;border-radius:50%;
+  background:color-mix(in srgb,var(--sc) 85%,#12293F);flex:none}
+.chip.stat{cursor:pointer;transition:box-shadow .12s,background .12s}
+.chip.stat:hover{background:color-mix(in srgb,var(--sc) 22%,#fff)}
+.chip.stat.on{background:color-mix(in srgb,var(--sc) 88%,#12293F);border-color:transparent;color:#fff}
+.chip.stat.on .dot{background:rgba(255,255,255,.9)}
+.chip.stat b{font-weight:600;font-size:11.5px;line-height:16px;border-radius:999px;padding:0 6px;
+  background:color-mix(in srgb,var(--sc) 26%,#fff);color:color-mix(in srgb,var(--sc) 65%,#12293F)}
+.chip.stat.on b{background:rgba(255,255,255,.22);color:#fff}
+/* על רקע כהה — אותה גלולה; הגוון נשאר בנקודה, כדי שגם סטטוס כהה יישאר קריא על הכחול */
+.dark .chip.stat{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20);color:var(--on-navy)}
+.dark .chip.stat:hover{background:rgba(255,255,255,.18);color:var(--white)}
+.dark .chip.stat .dot{background:color-mix(in srgb,var(--sc) 62%,#fff)}
+.dark .chip.stat.on{background:#fff;border-color:#fff;color:var(--navy)}
+.dark .chip.stat.on .dot{background:var(--sc)}
 .sub{font-size:12px;color:var(--ink3);margin-inline-start:6px}
 td .today{color:var(--navy);font-weight:600}
 td .no{color:var(--red);font-weight:500}
 td .lnk{font-size:12.5px;color:var(--sky);font-weight:500;margin-inline-start:8px;border-bottom:1px solid transparent}
 td .lnk:hover{border-color:var(--sky)}
-.als{display:flex;align-items:center;gap:10px}
+.als{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.tb th.alc,.tb td.alc{width:126px}
+/* החלפת סטטוס ישירות מהשורה */
+.tb td.stc{position:relative}
+.stg .cv{width:0;height:0;border:3.5px solid transparent;border-top-color:currentColor;opacity:.55;margin-inline-start:1px;flex:none}
+button.stg{cursor:pointer}
+button.stg:hover{background:color-mix(in srgb,var(--sc) 24%,#fff)}
+.stmenu{position:absolute;top:calc(100% - 2px);inset-inline-start:8px;z-index:5;background:var(--white);
+  border:1px solid var(--bd);border-radius:10px;box-shadow:0 10px 26px rgba(12,64,104,.18);padding:6px;
+  display:flex;flex-direction:column;gap:4px;white-space:nowrap}
+.stmenu .chip.stat{justify-content:flex-start}
+.tb td.duec{white-space:nowrap}
 /* ---------- alerts (חוק 10) ---------- */
 .al{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px}
 .al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
@@ -132,7 +178,7 @@ td .lnk:hover{border-color:var(--sky)}
 .al.ok{color:var(--green)}
 .al.info{color:var(--ink3)}
 /* תאריך יעד לשלב — לחיץ */
-.due{display:inline-flex;align-items:center;gap:5px;margin-inline-start:8px;font-size:12px;color:var(--ink3);border-radius:6px;padding:1px 6px;cursor:pointer}
+.due{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);border-radius:6px;padding:2px 7px;cursor:pointer}
 .due:hover{outline:1px solid var(--sky);color:var(--navy)}
 .due.late{color:var(--red);font-weight:500}
 .due input{font:inherit;font-size:12px;border:1px solid var(--sky);border-radius:6px;padding:0 4px;width:78px}
@@ -143,10 +189,9 @@ td .lnk:hover{border-color:var(--sky)}
 .empty .btn{margin-top:12px}
 
 /* ---------- side column (חוק 5) ---------- */
-aside.left{align-self:start;position:sticky;top:14px;display:flex;flex-direction:column;gap:14px;
-           min-height:0;max-height:calc(100vh - 28px)}
+aside.left{display:flex;flex-direction:column;gap:14px;min-height:0}
 .card{background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;
-      display:flex;flex-direction:column;width:100%;min-height:0;max-height:100%}
+      display:flex;flex-direction:column;width:100%;min-height:0;flex:1}
 .card .hd{background:var(--navy);color:var(--white);padding:16px 20px 14px}
 .card .hd h3{font-size:19px;font-weight:600;line-height:1.2}
 .card .hd .s{font-size:12.5px;color:var(--on-navy2);margin-top:4px}
@@ -216,6 +261,18 @@ aside.left{align-self:start;position:sticky;top:14px;display:flex;flex-direction
 .st-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}
 .st-ord{width:18px;font-size:12px;color:var(--ink3);text-align:center}
 .st-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--white);box-shadow:0 0 0 1px var(--bd);cursor:pointer;flex:none;background:var(--c,var(--line))}
+.st-pick{position:relative;flex:none;display:flex}
+.st-pal{display:none;position:absolute;top:calc(100% + 7px);inset-inline-start:-7px;
+        background:var(--white);border:1px solid var(--bd);border-radius:999px;padding:5px 7px;gap:6px;
+        box-shadow:0 6px 20px rgba(12,64,104,.16);z-index:2}
+.st-pal.on{display:flex}
+.st-pal::before{content:"";position:absolute;top:-5px;inset-inline-start:12px;width:9px;height:9px;
+  background:var(--white);border-inline-start:1px solid var(--bd);border-top:1px solid var(--bd);transform:rotate(45deg)}
+.st-row{position:relative}
+.st-pal .sw{width:18px;height:18px;border-radius:50%;background:var(--c);border:2px solid var(--white);
+        box-shadow:0 0 0 1px var(--bd);cursor:pointer;flex:none}
+.st-pal .sw:hover{transform:scale(1.12)}
+.st-pal .sw.on{box-shadow:0 0 0 2px var(--navy)}
 .st-name{flex:1;min-width:0;font:inherit;font-size:13px;font-weight:600;border:1px solid transparent;border-radius:6px;padding:6px 9px;color:var(--ink)}
 .st-name:hover{border-color:var(--bd)}
 .st-name:focus{outline:none;border-color:var(--sky);background:var(--white)}
@@ -238,17 +295,43 @@ aside.left{align-self:start;position:sticky;top:14px;display:flex;flex-direction
   .nav{padding-inline:24px}
   .strip{padding-inline:24px;gap:20px}
   .strip .sum{gap:18px}
-  .wrap{padding:14px 24px 16px;gap:14px;grid-template-columns:minmax(0,1fr) 430px;min-height:calc(100vh - 120px)}
+  .wrap{padding:14px 0 16px;gap:14px;grid-template-columns:minmax(0,1fr) 430px;height:calc(100vh - 120px)}
   .ph{padding:11px 18px 8px}
   .ph h2{font-size:16px}
   .ph input{width:170px}
   .fbar{padding:8px 18px 10px}
-  .tb td{padding:8px 14px}
+  .tb td,.tb th{padding:8px 9px}
+  /* בחלון צר התאים נשברים לשתי שורות במקום שהעמודות ייחתכו */
+  .tb td{white-space:normal}
+  .tb td .stg,.tb td .due,.tb td .num,.tb td .no,.tb td .today,.tb td .lnk,.tb td .sub{white-space:nowrap}
+  .tb td .sub{display:block;margin-inline-start:0;margin-top:2px}
+  td .lnk{display:block;margin-inline-start:0;margin-top:2px}
+  td.n small{display:none}
   .tb th:first-child,.tb td:first-child{padding-inline-start:18px}
   .tb th:last-child,.tb td:last-child{padding-inline-end:18px}
   td.n small{display:none}
   .al{font-size:12px}
   .als{gap:8px}
+}
+/* חלון צר — כרטיס החברה מצטמצם כדי שכל עמודות הטבלה יישארו על המסך */
+@media (max-width:1080px){
+  .wrap{grid-template-columns:minmax(0,1fr) 300px;gap:10px}
+  .tb td,.tb th{padding:8px 5px}
+  .tb th.alc,.tb td.alc{width:112px}
+  .al{font-size:11px;gap:5px}
+  /* "לפני N ימים" יורד — התאריך עצמו נשאר, והפירוט יושב בכרטיס */
+  .tb td .sub{display:none}
+  /* עמודת החברה נשארת נעוצה כשהטבלה בכל זאת נגללת לרוחב */
+  .tb th:first-child,.tb td:first-child{position:sticky;inset-inline-end:0;background:var(--white);z-index:1}
+  .tb th:first-child{background:var(--surface2);z-index:2}
+  .tb tr.hl td:first-child{background:var(--row-sel)}
+  .tb tr:hover td:first-child{background:var(--row-hover)}
+}
+@media (max-width:1200px){
+  .wrap{grid-template-columns:minmax(0,1fr) 360px;gap:12px}
+  .tb th{white-space:normal}
+  .tb td,.tb th{padding:8px 7px;font-size:13.5px}
+  .card .hd h2{font-size:20px}
 }
 </style>
 </head>
@@ -295,14 +378,15 @@ aside.left{align-self:start;position:sticky;top:14px;display:flex;flex-direction
     </div>
     <div class="fbar">
       <div class="frow" id="tl"></div>
-      <div class="frow" id="tl2"></div>
     </div>
+    <div class="tw">
     <table class="tb">
       <thead><tr>
-        <th>חברה</th><th>סטטוס</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th>התראות</th>
+        <th>חברה</th><th>סטטוס</th><th>יעד</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th class="alc">התראות</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
+    </div>
     <div class="empty" id="empty"></div>
   </section>
 
@@ -407,14 +491,15 @@ function row(c){
   if(c.next.t)next=`<span class="today num">${esc(c.next.t)}</span>`;
   else next=`<span class="no">לא נקבעה</span><a class="lnk" href="#" onclick="event.stopPropagation();return sendLink('${c.id}')">שליחת לינק</a>`;
   const late=isLate(c);
-  const due=c.s===STATUSES.length-1?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לסטטוס הבא — לחיצה לעריכה">${late?'עבר':'עד'} <span class="num">${c.due||'—'}</span></span>`;
+  const due=c.s===STATUSES.length-1?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לסטטוס הבא — לחיצה לעריכה"><span class="num">${c.due||'—'}</span></span>`;
   const al=[c.al.cf?`<span class="al bad">${ALN.cf}</span>`:'',c.al.sat?`<span class="al warn">${ALN.sat}</span>`:''].join('');
   return `<tr data-id="${c.id}" tabindex="0" role="button" onclick="openCard('${c.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCard('${c.id}')}">
     <td class="n">${esc(c.n)}<small class="num">${c.id}</small><a class="dash" href="../../index.html?hp=${c.id}" target="_blank" onclick="event.stopPropagation()" title="הדשבורד של החברה">↗</a></td>
-    <td><span class="stg" data-c="${stColor(c.s)}">${esc(stName(c.s))}</span>${due}</td>
+    <td class="stc"><button class="stg" data-c="${stColor(c.s)}" title="החלפת סטטוס" onclick="event.stopPropagation();rowStat(this,'${c.id}')">${esc(stName(c.s))}<i class="cv"></i></button></td>
+    <td class="duec">${due}</td>
     <td class="num">${last}</td>
     <td>${next}</td>
-    <td><div class="als">${al}</div></td>
+    <td class="alc"><div class="als">${al}</div></td>
   </tr>`;
 }
 function render(){
@@ -453,26 +538,20 @@ function renderEmpty(n){
   if(n===0)e.innerHTML=`<b>אין חברה שתואמת את הסינון</b><div>${qv()?'לא נמצאה חברה או ח.פ שמתאימים ל"'+esc(qv())+'"':'צירוף המסננים הנוכחי לא מחזיר אף חברה'}</div><button class="btn" onclick="resetAll()">ניקוי כל המסננים</button>`;
 }
 function renderStrip(){
-  const nom=C.filter(FLAGS.nom).length, lt=C.filter(FLAGS.lt).length;
-  $('#sum').innerHTML=
-    `<button class="kpi ${F.flag==='nom'?'on':''}" ${nom?'':'disabled'} onclick="flagGo('nom')" title="סינון הטבלה ללקוחות בלי פגישה הבאה"><b class="num">${nom}</b> בלי פגישה הבאה</button>
-     <button class="kpi ${F.flag==='lt'?'on':''}" ${lt?'':'disabled'} onclick="flagGo('lt')" title="סינון הטבלה ללקוחות שעברו את יעד הסטטוס"><b class="num">${lt}</b> עברו יעד לסטטוס</button>`;
+  /* ההתראות כמשפט — רק שתי המילים צבועות ולחיצות (אדום תזרים · צהוב שביעות רצון) */
+  const cf=C.filter(c=>c.al&&c.al.cf).length, sat=C.filter(c=>c.al&&c.al.sat).length;
+  const many=n=>n===1?'לקוח אחד':`<b class="num">${n}</b> לקוחות`;
+  const sent=[];
+  if(cf) sent.push(`<span class="sen">${many(cf)} עם <button class="alw cf ${F.alert==='cf'?'on':''}" onclick="alertGo('cf')">בעיה תזרימית</button></span>`);
+  if(sat) sent.push(`<span class="sen">${many(sat)} <button class="alw sat ${F.alert==='sat'?'on':''}" onclick="alertGo('sat')">באי שביעות רצון</button></span>`);
+  $('#sum').innerHTML=sent.join('<span class="vs"></span>');
 }
 function renderFilters(){
   const cnt={}; C.forEach(c=>{if(match(c,'stage'))cnt[c.s]=(cnt[c.s]||0)+1});
   $('#tl').innerHTML=`<span class="lbl">סטטוס</span>`
-    +STATUSES.map((s,i)=>s?`<button class="chip ${F.stage===i?'on':''}" data-c="${s.c}" onclick="setStage(${i})"><span class="dot"></span>${esc(s.n)}<b class="num">${cnt[i]||0}</b></button>`:'').join('')
+    +STATUSES.map((s,i)=>s?`<button class="chip stat ${F.stage===i?'on':''}" data-c="${s.c}" onclick="setStage(${i})"><span class="dot"></span>${esc(s.n)}<b class="num">${cnt[i]||0}</b></button>`:'').join('')
     +`<a class="reset ${anyF()?'on':''}" href="#" onclick="return resetAll()">ניקוי המסננים</a>`;
   PKS=[...new Set(C.map(c=>c.pk))]; MGS=[...new Set(C.map(c=>c.mg))];
-  const chip=(on,label,cn,fn)=>cn||on?`<button class="chip ${on?'on':''}" onclick="${fn}">${label}<b class="num">${cn}</b></button>`:'';
-  const alC=k=>C.filter(c=>match(c,'alert')&&c.al[k]).length;
-  const pkC=v=>C.filter(c=>match(c,'pk')&&c.pk===v).length;
-  const mgC=v=>C.filter(c=>match(c,'mg')&&c.mg===v).length;
-  const g1=['cf','sat'].map(k=>chip(F.alert===k,esc(ALN[k]),alC(k),`alertGo('${k}')`)).filter(Boolean);
-  const g2=PKS.map((v,i)=>chip(F.pk===v,`<span class="ltr">${esc(v)}</span>`,pkC(v),`pkGo(${i})`)).filter(Boolean);
-  const g3=MGS.map((v,i)=>chip(F.mg===v,esc(v),mgC(v),`mgGo(${i})`)).filter(Boolean);
-  const g=[g1.join(''),g2.join(''),g3.join('')].filter(Boolean);
-  $('#tl2').innerHTML=g.length?`<span class="lbl">סינון</span>`+g.join('<span class="vsep"></span>'):'';
   paint($('#tl'));
 }
 function setStage(s){F.stage=(F.stage===s)?0:s;applyFilter();return false}
@@ -512,7 +591,7 @@ function openCard(id){
   const tk=(list,pad)=>list.length
     ? list.map((t,i)=>`<label class="tk ${c.tdone&&c.tdone[i]?'done':''}"><input type="checkbox" ${c.tdone&&c.tdone[i]?'checked':''} onchange="tkDone('${c.id}',${i},this.checked)">${esc(t)}</label>`).join('')
     : (pad?'<div class="none pad">אין משימות פתוחות</div>':'<span class="none">אין משימות פתוחות</span>');
-  const stg=`<div class="stage-ed">${STATUSES.map((s,i)=>s?`<button class="chip ${i===c.s?'on':''}" onclick="stageSet('${c.id}',${i})">${esc(s.n)}</button>`:'').join('')}</div>
+  const stg=`<div class="stage-ed">${STATUSES.map((s,i)=>s?`<button class="chip stat ${i===c.s?'on':''}" data-c="${s.c}" onclick="stageSet('${c.id}',${i})"><span class="dot"></span>${esc(s.n)}</button>`:'').join('')}</div>
     ${c.s<STATUSES.length-1?`<div class="duerow ${isLate(c)?'late':''}">${isLate(c)?'עבר את היעד':'יעד לסטטוס הבא'}<input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onkeydown="if(event.key==='Enter')this.blur()" onchange="dueSet('${c.id}',this.value)"><span class="df" title="ברירת המחדל נקבעת בהגדרות המשרד">ברירת מחדל · ${(STATUSES[c.s]||{}).days||5} ימים</span></div>`:''}`;
   const tab=t=>t===CARDTAB?'on':'';
   $('#card').innerHTML=`
@@ -532,6 +611,7 @@ function openCard(id){
     <div class="bd tab ${tab('mt')}" data-t="mt">${(c.meets||[]).length?c.meets.map(m=>`<div class="mt"><span class="num d">${esc(m[0])}</span><div><b>${esc(m[1])}</b><span>${esc(m[2])}</span></div></div>`).join(''):'<div class="none pad">אין פגישות</div>'}</div>
     <div class="bd tab ${tab('mm')}" data-t="mm">${(c.memAll||c.mem).length?(c.memAll||c.mem).map(m=>`<div class="mu"><span class="m">${esc(m[0])}</span><span>${esc(m[1])}</span><span class="m num">${esc(m[2])}</span></div>`).join(''):'<div class="none pad">עוד לא נלמד כלום</div>'}</div>
     <div class="ft"><a class="btn pri" href="../../index.html?hp=${c.id}" target="_blank">הדשבורד של החברה ↗</a><a class="btn" href="memory.html?c=${c.id}">הזיכרון המלא</a><a class="btn" href="meetings.html?c=${c.id}">כל הפגישות</a></div>`;
+  paint($('#card'));
   document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.toggle('hl',tr.dataset.id===id));
   return false;
 }
@@ -545,6 +625,19 @@ function tkDone(id,i,on){
   toast(on?'סומן כבוצע — '+c.tasks[i]:'הסימון בוטל');
   openCard(id);
 }
+/* תפריט הסטטוסים על השורה — אותם טוקנים בדיוק כמו בסינון ובכרטיס */
+let STMENU=null;
+function stMenuClose(){ if(STMENU){STMENU.remove();STMENU=null;} }
+function rowStat(btn,id){
+  const open = STMENU && STMENU.dataset.id===id;
+  stMenuClose(); if(open) return;
+  const c=C.find(x=>x.id===id); if(!c) return;
+  const m=document.createElement('div'); m.className='stmenu'; m.dataset.id=id;
+  m.innerHTML=STATUSES.map((s,i)=>s?`<button class="chip stat ${i===c.s?'on':''}" data-c="${s.c}" onclick="event.stopPropagation();stageSet('${id}',${i});stMenuClose()"><span class="dot"></span>${esc(s.n)}</button>`:'').join('');
+  btn.closest('td').appendChild(m); paint(m); STMENU=m;
+}
+document.addEventListener('click',stMenuClose);
+document.addEventListener('scroll',stMenuClose,true);
 function stageSet(id,s){const c=byId(id);c.s=s;toast(c.n+' — '+stName(s));render();openCard(id)}
 
 /* ===== הגדרת הסטטוסים (יועץ אדמין) ===== */
@@ -554,14 +647,17 @@ function stOpen(){
   ST_DRAFT=STATUSES.slice(1).map((s,i)=>({...s,_i:i+1}));
   stRender(); $('#stOv').classList.add('on'); $('#stSaveBtn').focus();
 }
-function stClose(){ $('#stOv').classList.remove('on'); ST_DRAFT=null; }
+function stClose(){ $('#stOv').classList.remove('on'); ST_DRAFT=null; ST_PICK=null; }
 function stRender(){
   $('#stBody').innerHTML=`<div class="st-list">
     ${ST_DRAFT.map((s,i)=>{
       const used=C.filter(c=>c.s===s._i).length;
       return `<div class="st-row">
         <span class="st-ord num">${i+1}</span>
-        <button class="st-dot" data-c="${s.c}" title="החלפת צבע" onclick="stColorNext(${i})"></button>
+        <span class="st-pick">
+          <button class="st-dot" data-c="${s.c}" title="בחירת צבע" onclick="stPick(${i})"></button>
+          <span class="st-pal ${ST_PICK===i?'on':''}">${ST_PALETTE.map(c=>`<button class="sw ${c===s.c?'on':''}" style="--c:${c}" title="${c}" onclick="stColorSet(${i},'${c}')"></button>`).join('')}</span>
+        </span>
         <input class="st-name" value="${esc(s.n)}" oninput="ST_DRAFT[${i}].n=this.value">
         <label class="st-days">יעד <input type="number" min="1" max="31" value="${s.days}" oninput="ST_DRAFT[${i}].days=+this.value||5"> ימים</label>
         <span class="st-used">${used?used+' לקוחות':''}</span>
@@ -573,7 +669,9 @@ function stRender(){
     <div class="st-note">היעד קובע את ברירת המחדל של "יעד לסטטוס הבא" — היועץ יכול לדרוס פר לקוח.</div>`;
   paint($('#stBody'));
 }
-function stColorNext(i){ const k=ST_PALETTE.indexOf(ST_DRAFT[i].c); ST_DRAFT[i].c=ST_PALETTE[(k+1)%ST_PALETTE.length]; stRender(); }
+let ST_PICK=null;
+function stPick(i){ ST_PICK=(ST_PICK===i)?null:i; stRender(); }
+function stColorSet(i,c){ ST_DRAFT[i].c=c; ST_PICK=null; stRender(); }
 function stMove(i,d){ const a=ST_DRAFT.splice(i,1)[0]; ST_DRAFT.splice(i+d,0,a); stRender(); }
 function stDel(i){ ST_DRAFT.splice(i,1); stRender(); }
 function stAdd(){ ST_DRAFT.push({n:'סטטוס חדש', c:ST_PALETTE[ST_DRAFT.length%ST_PALETTE.length], days:5}); stRender(); }
@@ -606,6 +704,37 @@ render();
 /* ברירת מחדל: הלקוח הראשון בסדר התצוגה — הכרטיס אף פעם לא ריק */
 const pc=P.get('c');
 openCard(pc&&C.some(c=>c.id===pc)?pc:SORTED[0]);
+</script>
+<style id="hk-embed-css">
+html.embed .nav{display:none !important}
+html.embed body{background:transparent}
+html.embed .strip{border-radius:0}
+html.embed .wrap{height:calc(100vh - 68px)}
+</style>
+<script id="hk-embed-js">
+/* ===== הטמעה במערכת =====
+   ?embed=1 — הדף נטען בתוך המערכת: הניווט הפנימי מוסתר (הסרגל של המערכת מחליף אותו),
+   והדף מדווח את גובהו כלפי חוץ כדי שהמסגרת תיפתח לכל התוכן. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  var last=0;
+  function report(){
+    var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+    /* מסך נעול-גובה — המערכת מותחת את המסגרת לגובה החלון */
+    parent.postMessage({hkAdvLock:'clients'},'*'); last=h;
+  }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  new MutationObserver(report).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  setInterval(report,1200);
+  /* ניווט פנימי בין המסכים — מבקש מהמערכת להחליף מסך במקום לנווט בתוך המסגרת */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href$=".html"]'); if(!a) return;
+    var f=a.getAttribute('href').split('/').pop().split('?')[0].replace('.html','');
+    e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
+  },true);
+})();
 </script>
 </body>
 </html>
