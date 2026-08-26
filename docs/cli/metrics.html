@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנרגי אינטרנשיונל · מדדים · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך הלקוח · מדדים — אנרגי אינטרנשיונל
+   ---------------------------------------------------------------------
+   אותה משפחה כמו מסכי היועץ, אותו ניב כמו שאר מסכי הלקוח:
+   · הרצועה מעוגנת לעסק (שם החברה), לא למסך. שם המסך יורד לניווט.
+   · צפיפות נמוכה: 14.5px בסיס, כרטיסים במקום טבלאות, ריווח 20.
+   · רדיוס רך: פאנל 14, כרטיס פנימי 12, פקד 8.
+   · תכלת = המבטא המוביל. קורל = אך ורק סכנה כספית (כאן: הכרית בעו״ש).
+   · המספר הוא הגיבור: 30px, tabular-nums, התווית קטנה מעליו.
+   · גוף פנייה שני: "המדדים שלך", "מחכה למספר שלך".
+   · קרקע בהירה וחמימה יותר: #F7F9FC.
+   הדבר החי ברצועה = סגירת יוני: כמה מדדים עוד מחכים למספר ממך, ועד מתי.
+   הבלוק הכהה היחיד בגוף = "מה נשאר ממך לסגירת יוני" — פעולה, לא קריאה.
+   כל מונה במסך נגזר מהנתונים בזמן ריצה. אין style= במארקאפ, אין !important.
+   ===================================================================== */
+:root{
+  /* --- המשפחה: זהה למסכי היועץ, בלי גוון חדש --- */
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
+  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
+  --row-hover:#F8FBFD;--bd2:#B7C3CF;--line:#C4CED8;
+  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--bad-bg:#FDEDEB;--bad-ink:#C43D30;--good-bg:#F1FAF5;
+  /* --- הניב של הלקוח: כל ערך שמבדיל מוגדר כאן --- */
+  --bg:#F7F9FC;
+  --r-panel:14px;--r-card:12px;--r-ctl:8px;
+  --fs:14.5px;--fs-sub:13px;--fs-meta:12.5px;
+  --pad:20px;--sec:20px;
+  --big:30px;--big2:26px;
+  --coral-ink:#C4453C;--coral-bg:#FFF6F4;--coral-bd:#F7DCD7;--coral-on-navy:#FFD3CF;
+  --coral-bd2:#EEC7C1;--coral-tint:#FDEAE7;
+  --ok-on-navy:#4FCB92;--fill-pos:#CDE6F6;--fill-neg:#F8CFCB;--fill-bd:#CDE0EE;
+  --shadow:0 1px 2px rgba(12,64,104,.05),0 6px 18px rgba(12,64,104,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.mn{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+/* ---------- ניווט: כאן חיים שמות המסכים ---------- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px}
+.nav li a{display:block;padding:6px 13px;border-radius:var(--r-ctl);color:var(--ink2);font-size:13.5px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:var(--fs-meta);color:var(--ink3);text-align:end}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
+.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+
+/* ---------- רצועת הזהות: מעוגנת לעסק ---------- */
+.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:24px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1.05;letter-spacing:-.3px}
+.strip .id .sub{font-size:var(--fs-meta);color:var(--on-navy3);margin-top:3px}
+.strip .id .sub a{color:var(--on-navy);border-bottom:1px solid rgba(255,255,255,.28)}
+.strip .id .sub a:hover{border-color:var(--white);color:var(--white)}
+.strip .sep{width:1px;height:34px;background:rgba(255,255,255,.16);flex:none}
+.strip .date{font-size:13.5px;color:var(--on-navy2);white-space:nowrap}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:13px;color:var(--on-navy3);display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.strip .now b{color:var(--white);font-weight:500;font-size:18px}
+/* הדבר החי של המסך הזה: סגירת יוני */
+.live{display:flex;align-items:center;gap:13px;min-width:0}
+.live .cap{font-size:11.5px;letter-spacing:.6px;color:var(--on-navy3);text-transform:uppercase;white-space:nowrap}
+.live .n{font-size:22px;font-weight:600;line-height:1;color:var(--white)}
+.live .tx{font-size:13.5px;color:var(--on-navy);min-width:0}
+.live .tx b{color:var(--white);font-weight:600}
+.live .tx .q{color:var(--on-navy3)}
+.live .btn{padding:5px 12px;font-size:12.5px}
+
+/* ---------- הבלוק הכהה היחיד: מה נשאר ממך ---------- */
+.close{background:var(--navy);color:var(--white);padding:16px 32px 18px;border-top:1px solid rgba(255,255,255,.10)}
+.close .hd{display:flex;align-items:baseline;gap:12px;padding-bottom:11px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.10)}
+.close .hd .cap{font-size:11.5px;letter-spacing:.6px;color:var(--on-navy3);text-transform:uppercase}
+.close .hd h2{font-size:17px;font-weight:600;color:var(--white)}
+.close .hd .cnt{font-size:13px;color:var(--on-navy2)}
+.close .hd .upd{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--on-navy4)}
+.close .in{display:grid;grid-template-columns:minmax(0,1fr) 1px 400px;gap:0 24px;align-items:stretch}
+.close .vr{background:rgba(255,255,255,.12)}
+.lines{display:flex;flex-direction:column;gap:2px}
+.ln{display:grid;grid-template-columns:104px minmax(0,1fr) auto;align-items:center;gap:0 14px;padding:9px 0}
+.ln + .ln{border-top:1px solid rgba(255,255,255,.07)}
+.ln .k{display:flex;align-items:center;gap:8px;font-size:var(--fs-meta);font-weight:500;color:var(--on-navy3);letter-spacing:.2px}
+.ln .k::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sky);flex:none}
+.ln.ok .k::before{background:var(--ok-on-navy)}
+.ln.q .k::before{background:var(--on-navy4)}
+.ln .s{font-size:var(--fs);color:var(--on-navy);min-width:0}
+.ln .s b{color:var(--white);font-weight:600}
+.ln .s .q{color:var(--on-navy3)}
+.ln .act{white-space:nowrap}
+
+/* לוח הציון של החודש — כל פלח מסנן את הרשימה למטה */
+.score{display:flex;flex-direction:column;justify-content:center;gap:9px}
+.score .cap{font-size:11.5px;letter-spacing:.6px;color:var(--on-navy3);text-transform:uppercase}
+.score .n{font-size:var(--big);font-weight:700;line-height:1;letter-spacing:-.6px;color:var(--white)}
+.score .n small{font-size:15px;font-weight:500;color:var(--on-navy2);letter-spacing:0}
+.sbar{display:flex;height:9px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.12);gap:2px}
+.sbar i{display:block;height:100%}
+.sbar i.ok{background:var(--ok-on-navy)}
+.sbar i.near{background:var(--orange)}
+.sbar i.bad{background:var(--coral)}
+.sbar i.wait{background:var(--on-navy4)}
+.sbar i.none{background:rgba(255,255,255,.24)}
+.skeys{display:flex;flex-wrap:wrap;gap:6px}
+.skey{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--on-navy2);background:rgba(255,255,255,.08);border-radius:var(--r-ctl);padding:4px 9px;white-space:nowrap}
+.skey:hover{background:rgba(255,255,255,.16);color:var(--white)}
+.skey.on{background:var(--sky);color:var(--white)}
+.skey b{color:var(--white);font-weight:600}
+.skey::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
+.skey.k-ok::before{background:var(--ok-on-navy)}
+.skey.k-near::before{background:var(--orange)}
+.skey.k-bad::before{background:var(--coral)}
+.skey.k-wait::before{background:var(--on-navy4)}
+.skey.k-none::before{background:rgba(255,255,255,.34)}
+
+/* ---------- כפתורים ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-ctl);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn.sm{padding:4px 11px;font-size:12.5px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.btn.pri:hover{background:var(--navy2)}
+.dark .btn{background:transparent;border-color:rgba(255,255,255,.32);color:var(--white)}
+.dark .btn:hover{background:rgba(255,255,255,.12)}
+.dark .btn.pri{background:var(--white);border-color:var(--white);color:var(--navy)}
+.dark .btn.pri:hover{background:var(--on-navy)}
+.lk{color:var(--sky);font-weight:500;font-size:13px}
+.lk:hover{text-decoration:underline}
+
+/* ---------- צ׳יפים שקטים ---------- */
+.chip{font-size:12.5px;font-weight:500;background:var(--chip);border:0;border-radius:var(--r-ctl);padding:5px 11px;color:var(--ink2)}
+.chip:hover{background:var(--chip-hover);color:var(--navy)}
+.chip.on{background:var(--navy);color:var(--white)}
+.chip s{text-decoration:none;color:var(--ink3);font-variant-numeric:tabular-nums}
+.chip.on s{color:var(--on-navy2)}
+
+/* ---------- גוף המסך ---------- */
+.wrap{padding:var(--sec) 32px 30px;display:flex;flex-direction:column;gap:var(--sec)}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bar .ttl{font-size:var(--fs-sub);color:var(--ink3);margin-inline-end:4px}
+.bar .rest{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--ink3)}
+
+#groups{display:flex;flex-direction:column;gap:24px}
+.grp{display:flex;flex-direction:column;gap:12px}
+.ghd{display:flex;align-items:baseline;gap:12px}
+.ghd h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ghd .sub{font-size:var(--fs-meta);color:var(--ink3);min-width:0}
+.ghd .n{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--ink3);white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:stretch}
+
+/* ---------- כרטיס מדד ---------- */
+.mc{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);
+    padding:15px 18px 13px;display:flex;flex-direction:column;gap:11px;min-width:0;text-align:start;position:relative}
+.mc:hover{border-color:var(--fill-bd);box-shadow:0 1px 2px rgba(12,64,104,.06),0 10px 24px rgba(12,64,104,.07)}
+.mc-t{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.mc-t h3{font-size:15px;font-weight:600;color:var(--navy);line-height:1.3;min-width:0}
+.kind{margin-inline-start:auto;font-size:11.5px;color:var(--ink3);background:var(--chip);border-radius:var(--r-ctl);padding:3px 8px;white-space:nowrap;flex:none}
+.mc-n{display:flex;flex-direction:column;gap:3px}
+.mc-n .l{font-size:12px;color:var(--ink3)}
+.mc-n .v{font-size:var(--big);font-weight:700;color:var(--navy);line-height:1;letter-spacing:-.7px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mc-n .v small{font-size:15px;font-weight:500;color:var(--ink3);letter-spacing:0}
+.mc-n .v.wait{font-size:var(--big2);color:var(--bd2);letter-spacing:-.3px}
+.mc.s-bad .mc-n .v{color:var(--red)}
+.mc.s-money{background:var(--coral-bg);border-color:var(--coral-bd)}
+.mc.s-money .mc-n .v{color:var(--coral-ink)}
+.mc.s-money .kind{background:var(--white)}
+.mc.s-money:hover{border-color:var(--coral-bd2)}
+
+.trk{position:relative;height:8px;background:var(--chip);border-radius:99px;overflow:hidden}
+.trk i{position:absolute;inset-block:0;inset-inline-start:0;background:var(--sky);border-radius:99px}
+.mc.s-ok .trk i{background:var(--green)}
+.mc.s-near .trk i{background:var(--orange)}
+.mc.s-bad .trk i{background:var(--red)}
+.mc.s-money .trk i{background:var(--coral)}
+.mc.s-money .trk{background:var(--white)}
+.tl{display:flex;align-items:baseline;gap:8px;margin-top:6px;font-size:12.5px;color:var(--ink3)}
+.tl .pct{margin-inline-start:auto;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
+.tl b{color:var(--ink2);font-weight:500}
+.notgt{font-size:12.5px;color:var(--ink3);padding:4px 0 2px;border-top:1px solid var(--bd)}
+
+svg.sp{display:block;width:100%;height:44px}
+.sp .a{fill:var(--tint);stroke:none}
+.sp .l{fill:none;stroke:var(--sky);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.sp .t{stroke:var(--bd2);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke;fill:none}
+.sp .m{stroke:var(--sky);stroke-width:2;vector-effect:non-scaling-stroke}
+.s-ok .sp .m{stroke:var(--green)}
+.s-near .sp .m{stroke:var(--orange)}
+.s-bad .sp .m{stroke:var(--red)}
+.s-money .sp .m{stroke:var(--coral)}
+.s-money .sp .a{fill:var(--coral-tint)}
+.s-money .sp .l{stroke:var(--coral)}
+.sp .g{stroke:var(--bd2);stroke-width:1.5;stroke-dasharray:3 3;vector-effect:non-scaling-stroke;fill:none}
+.spf{display:flex;align-items:baseline;gap:8px;font-size:11.5px;color:var(--ink3);margin-top:-4px}
+.spf .d{margin-inline-start:auto;font-variant-numeric:tabular-nums}
+
+.mc-f{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:11px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3)}
+.mc.s-money .mc-f{border-top-color:var(--coral-bd)}
+.mc-f .go{margin-inline-start:auto;color:var(--sky);font-weight:500;white-space:nowrap}
+.mc:hover .mc-f .go{text-decoration:underline}
+.al{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-style:normal;white-space:nowrap}
+.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.al.bad{color:var(--red)}.al.warn{color:var(--orange)}.al.ok{color:var(--green)}.al.info{color:var(--ink3)}
+.al.money{color:var(--coral-ink)}
+.mc-st{display:flex;align-items:center;gap:10px;font-size:13px}
+
+.empty{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);padding:38px 20px;text-align:center;color:var(--ink3);font-size:13px}
+.empty b{display:block;font-size:15px;color:var(--ink2);font-weight:600;margin-bottom:6px}
+.empty .btn{margin-top:12px}
+
+/* ---------- מודאל ---------- */
+.ov{position:fixed;inset:0;background:rgba(10,40,66,.44);display:none;align-items:center;justify-content:center;padding:24px;z-index:70}
+.ov.on{display:flex}
+.md{background:var(--white);border-radius:var(--r-panel);width:min(720px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(10,40,66,.32);overflow:hidden}
+.md .mh{display:flex;align-items:flex-start;gap:12px;padding:17px var(--pad) 14px;border-bottom:1px solid var(--bd)}
+.md .mh h3{font-size:19px;font-weight:600;color:var(--navy);line-height:1.25}
+.md .mh .sub{font-size:var(--fs-meta);color:var(--ink3);margin-top:3px}
+.md .mh .x{margin-inline-start:auto;width:30px;height:30px;border-radius:var(--r-ctl);display:grid;place-items:center;color:var(--ink3);flex:none}
+.md .mh .x:hover{background:var(--bg);color:var(--navy)}
+.md .mb{padding:16px var(--pad) 18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.md .mf{display:flex;align-items:center;gap:10px;padding:12px var(--pad) 14px;border-top:1px solid var(--bd);background:var(--surface2)}
+.md .mf .sp{margin-inline-start:auto}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r-card);padding:12px 14px}
+.stat .l{font-size:12px;color:var(--ink3)}
+.stat .v{font-size:var(--big2);font-weight:700;color:var(--navy);line-height:1.15;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:3px}
+.stat .v.bad{color:var(--red)}.stat .v.money{color:var(--coral-ink)}.stat .v.ok{color:var(--green)}.stat .v.near{color:var(--orange)}
+.stat .v.q{color:var(--bd2);font-size:20px}
+.stat .f{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.big-sp{border:1px solid var(--bd);border-radius:var(--r-card);padding:14px 14px 10px}
+.big-sp svg.sp{height:120px}
+.mos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:8px}
+.mo{text-align:center;font-size:11.5px;color:var(--ink3);padding-top:7px;border-top:1px solid var(--bd)}
+.mo b{display:block;font-size:13px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums;margin-top:2px}
+.mo.now b{color:var(--navy)}
+.mo.now{border-top-color:var(--bd2)}
+.note{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r-card);padding:13px 15px;font-size:13.5px;color:var(--ink2);line-height:1.6}
+.note b{color:var(--navy);font-weight:600}
+.note .h{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
+.note.money{background:var(--coral-bg);border-color:var(--coral-bd)}
+.note.money b{color:var(--coral-ink)}
+.entry{border:1px solid var(--fill-bd);background:var(--tint);border-radius:var(--r-card);padding:13px 15px}
+.entry .h{display:block;font-size:13.5px;color:var(--navy);font-weight:600;margin-bottom:8px}
+.entry .rowi{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.entry input{font:inherit;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;direction:ltr;text-align:start;
+  width:180px;padding:8px 12px;border:1px solid var(--bd2);border-radius:var(--r-ctl);background:var(--white);color:var(--ink)}
+.entry input:focus{outline:2px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
+.entry .hint{font-size:12.5px;color:var(--ink2)}
+.jl{display:flex;flex-direction:column}
+.jl .r{display:grid;grid-template-columns:minmax(0,1fr) 130px 130px;gap:12px;align-items:center;padding:10px 0;font-size:13.5px}
+.jl .r + .r{border-top:1px solid var(--bd)}
+.jl .r.hd{font-size:12px;color:var(--ink3);padding-bottom:6px}
+.jl .r .t{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jl .r .o{color:var(--ink3);font-variant-numeric:tabular-nums}
+.jl .r .nw{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
+
+.toast{position:fixed;inset-block-end:24px;inset-inline-start:50%;transform:translateX(50%) translateY(10px);background:var(--navy);color:var(--white);padding:11px 20px;border-radius:var(--r-ctl);font-size:13.5px;box-shadow:0 10px 30px rgba(12,64,104,.28);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:90}
+.toast.show{opacity:1;transform:translateX(50%) translateY(0)}
+
+/* ---------- מסכים צרים יותר ---------- */
+@media (max-width:1560px){
+  .close .in{grid-template-columns:minmax(0,1fr) 1px 372px}
+  .live .tx{max-width:330px}
+}
+@media (max-width:1400px){
+  .nav{padding:0 24px;gap:18px}
+  .strip{padding:0 24px;gap:18px}
+  .close{padding:14px 24px 16px}
+  .wrap{padding:16px 24px 26px}
+  .close .in{grid-template-columns:minmax(0,1fr) 1px 340px;gap:0 18px}
+  .strip .id .sub{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+@media (max-width:1180px){
+  .close .in{grid-template-columns:minmax(0,1fr)}
+  .close .vr{display:none}
+  .score{border-top:1px solid rgba(255,255,255,.12);padding-top:12px;margin-top:10px}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:820px){
+  .cards{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="dashboard.html"><i>HK</i>הצוות הפיננסי שלך</a>
+  <ul>
+    <li><a href="dashboard.html">דשבורד</a></li>
+    <li><a href="messages.html">הודעות</a></li>
+    <li><a href="meetings.html">פגישות</a></li>
+    <li><a href="ai.html">עוזר AI</a></li>
+    <li><a class="on" href="metrics.html">מדדים</a></li>
+  </ul>
+  <div class="me"><div><b>צחי עובד</b>בעלים</div><i>צע</i></div>
+</nav>
+
+<header class="strip">
+  <div class="id">
+    <h1>אנרגי אינטרנשיונל</h1>
+    <div class="sub num">ח.פ 511327876 · היועץ שלך <a href="messages.html">אילון אשכנזי</a></div>
+  </div>
+  <div class="sep"></div>
+  <div class="date num">יום חמישי · 02.07.2026</div>
+  <div class="sep"></div>
+  <div class="live" id="live"></div>
+  <div class="spacer"></div>
+  <div class="now num"><span>השעה</span><b class="mn">10:54</b></div>
+</header>
+
+<!-- ===== הבלוק הכהה היחיד: כאן פועלים ===== -->
+<section class="close dark">
+  <div class="hd">
+    <span class="cap">סגירת יוני</span>
+    <h2>מה נשאר ממך</h2>
+    <span class="cnt" id="ccnt"></span>
+    <span class="upd num">הנתונים מעודכנים ל-01.07.2026 · 23:40</span>
+  </div>
+  <div class="in">
+    <div class="lines" id="lines"></div>
+    <div class="vr"></div>
+    <div class="score">
+      <span class="cap">הציון שלך ביוני</span>
+      <div class="n" id="scoreN"></div>
+      <div class="sbar" id="sbar"></div>
+      <div class="skeys" id="skeys"></div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="bar">
+    <span class="ttl">הצג</span>
+    <span id="chips"></span>
+    <span class="rest" id="rest"></span>
+  </div>
+  <div id="groups"></div>
+</main>
+
+<div class="ov" id="ov"><div class="md" role="dialog" aria-modal="true" aria-labelledby="mdTtl" id="md"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ===================== הנתונים =====================
+   שלושת סוגי המדדים כמו במערכת:
+     own  — הבפועל מגיע ממך (הזנה ידנית או הגיליון שלך)
+     auto — הבפועל נמשך מהתנועות הפיננסיות שלך, בלי שתעשה כלום
+     calc — נוסחה בין מדדים אחרים; אין מה להזין
+   invert = ככל שנמוך יותר, טוב יותר (תקרה ולא יעד).
+   money  = סכנה כספית אמיתית — הכרטיס היחיד שלובש קורל.        */
+var MONTHS=['ינו','פבר','מרץ','אפר','מאי','יוני'];
+var M=[
+ {id:'revenue', g:'own', name:'מחזור הכנסות', unit:'₪', target:150000, actual:142522,
+  hist:[131400,128900,139200,151800,146300,142522],
+  kind:'מהגיליון שלך', src:'Google Sheets · תא B4 · לפי שם הגיליון',
+  what:'סך ההכנסות שנרשמו בגיליון המכירות שלך לחודש, לפני מע״מ.',
+  why:'זה הבסיס לכל שאר המדדים — ההכנסה ליום עבודה והרווח התזרימי נגזרים ממנו.'},
+
+ {id:'liters', g:'own', name:'סך הליטרים · לפי סוג דלק', unit:'ליטר', target:120000, actual:108000,
+  hist:[104200,98700,101500,106400,105100,108000],
+  kind:'מהגיליון שלך', src:'Google Sheets · תא C7 · חודשים לפי עמודות',
+  what:'כמות הליטרים שנמכרה בפועל בכל סוגי הדלק יחד.',
+  why:'הכמות מספרת אם הפער במחזור נובע ממחיר או מכמות. כאן הכמות עולה — הפער במחזור הוא פער מחיר.'},
+
+ {id:'collect', g:'own', name:'גבייה במזומן בשטח', unit:'₪', target:25000, actual:null,
+  hist:[22400,19800,24100,26300,23900,null],
+  kind:'אתה מזין', src:'הזנה ידנית · פעם בחודש',
+  short:'בלי המספר הזה תמונת ההכנסות של יוני חסרה.',
+  what:'המזומן שנאסף בשטח ולא עבר דרך הסליקה.',
+  why:'בלי המספר הזה תמונת ההכנסות של יוני חסרה, והתחזית ליולי מתבססת על נתון ישן.'},
+
+ {id:'stock', g:'own', name:'שווי מלאי נוכחי', unit:'₪', target:null, actual:null,
+  hist:[512000,548000,571000,596000,618400,null],
+  kind:'אתה מזין', src:'הזנה ידנית · פעם בחודש',
+  short:'למדד הזה אין יעד — הוא מדד מעקב.',
+  what:'שווי המלאי בסוף החודש, לפי הספירה שלכם.',
+  why:'למדד הזה אין יעד — הוא מדד מעקב. הוא עולה חמישה חודשים ברצף, וזה כסף שיושב במכלים במקום בחשבון.'},
+
+ {id:'sales', g:'auto', name:'הכנסות ממכירות · סליקה', unit:'₪', target:90000, actual:99642,
+  hist:[86200,84900,91300,97400,95800,99642],
+  kind:'אוטומטי', src:'מהתנועות שלך · קטגוריית הכנסות ממכירות - סליקה',
+  what:'כל התקבולים מהסליקה שנכנסו בפועל לחשבון הבנק בחודש.',
+  why:'זה הכסף שבאמת נכנס, להבדיל מהמחזור שנרשם. הפער בין השניים הוא מה שעוד לא נגבה.'},
+
+ {id:'budget', g:'auto', name:'עמידה בתקציב ההוצאות', unit:'%', target:100, actual:97, invert:true, capLbl:'מהתקציב',
+  hist:[103,99,101,96,102,97],
+  kind:'אוטומטי', src:'מהתנועות שלך · כל קטגוריות ההוצאות',
+  what:'סך ההוצאות בפועל מול התקציב החודשי שקבעת, באחוזים.',
+  why:'מתחת ל-100% אתה בתוך התקציב. יוני נסגר על 97% — בפעם הראשונה השנה שני חודשים רצופים בתוך התקציב.'},
+
+ {id:'debt', g:'auto', name:'חוב פתוח לגבייה', unit:'₪', target:25000, actual:38400, invert:true, capLbl:'מהתקרה',
+  hist:[21800,25400,28900,31200,34600,38400],
+  kind:'אוטומטי', src:'מהתנועות שלך · חשבוניות פתוחות מעל 30 יום',
+  what:'כסף שהוצאת עליו חשבונית, עבר מועד התשלום, ועדיין לא נכנס.',
+  why:'החוב גדל חמישה חודשים ברצף. זה בדיוק הסכום שחסר לך כדי להרחיק את החריגה בעו״ש.'},
+
+ {id:'cfprofit', g:'calc', name:'רווח תזרימי', unit:'₪', target:30000, actual:26900,
+  hist:[24800,19600,27300,33100,28400,26900],
+  kind:'מחושב', src:'מחזור הכנסות פחות כל ההוצאות',
+  what:'ההפרש בין הכסף שנכנס לכסף שיצא בפועל בחודש.',
+  why:'זה הרווח שאפשר להוציא מהחשבון, להבדיל מהרווח החשבונאי שכולל גם כסף שעוד לא נגבה.'},
+
+ {id:'perday', g:'calc', name:'הכנסה ליום עבודה', unit:'₪', target:6500, actual:6787,
+  hist:[6260,6140,6630,7230,6970,6787],
+  kind:'מחושב', src:'מחזור הכנסות חלקי 21 ימי עבודה',
+  what:'המחזור החודשי מחולק במספר ימי העבודה בחודש.',
+  why:'המדד מנטרל את אורך החודש. יוני היה קצר יותר, ולכן המחזור ירד אבל היום עצמו לא נחלש.'},
+
+ {id:'overdraft', g:'calc', name:'כרית ביטחון בעו״ש', unit:'ימים', target:14, actual:9, money:true,
+  hist:[26,24,19,17,14,9],
+  kind:'מחושב', src:'תחזית התזרים מול מסגרת האשראי',
+  what:'כמה ימים קדימה החשבון מחזיק לפני שהתחזית יורדת מתחת לאפס.',
+  why:'זה המדד היחיד כאן שמדבר על סכנה כספית ממשית. הכרית התכווצה מ-26 ימים לתשעה בחצי שנה.'}
+];
+
+var GROUPS=[
+ {g:'own',  t:'המדדים שאתה מזין',        s:'המספר מגיע ממך — ידנית או מהגיליון שלך'},
+ {g:'auto', t:'נמדדים מהתנועות שלך',     s:'הבפועל נמשך אוטומטית מהנתונים הפיננסיים, בלי שתעשה כלום'},
+ {g:'calc', t:'מדדים מחושבים',           s:'נוסחה בין מדדים אחרים — אין מה להזין'}
+];
+var JULY=[
+ {t:'מחזור הכנסות', o:150000, n:155000},
+ {t:'גבייה במזומן בשטח', o:25000, n:30000},
+ {t:'חוב פתוח לגבייה', o:25000, n:20000}
+];
+
+var FILTER='all', julyDone=false, lastFocus=null;
+
+/* ===================== עזרים ===================== */
+function nf(n){return Math.round(n).toLocaleString('en-US');}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function unitTag(m){return '<small>'+esc(m.unit)+'</small>';}
+function val(m,v){
+  if(v==null) return '—';
+  if(m.unit==='%') return '<span class="mn">'+nf(v)+'<small>%</small></span>';
+  return '<span class="mn">'+nf(v)+'</span> '+unitTag(m);
+}
+function stat(m){
+  if(m.actual==null) return 'wait';
+  if(m.money) return 'money';
+  if(!m.target) return 'none';
+  var r=m.actual/m.target;
+  if(m.invert) return r<=1?'ok':(r<=1.15?'near':'bad');
+  return r>=1?'ok':(r>=0.85?'near':'bad');
+}
+var ST={
+  ok:{lbl:'ביעד', al:'ok'},
+  near:{lbl:'קרוב ליעד', al:'warn'},
+  bad:{lbl:'לא ביעד', al:'bad'},
+  money:{lbl:'סכנה כספית', al:'money'},
+  wait:{lbl:'מחכה למספר שלך', al:'info'},
+  none:{lbl:'מדד מעקב · בלי יעד', al:'info'}
+};
+/* לצורך הציון והסינון: הסכנה הכספית נספרת עם "לא ביעד";
+   מדד בלי יעד אינו נספר בציר "ביעד" — הוא מדד מעקב בפני עצמו. */
+function bucket(m){var s=stat(m);return s==='money'?'bad':s;}
+function pctOf(m){
+  if(m.actual==null||!m.target) return null;
+  return Math.round(m.actual/m.target*100);
+}
+function delta(m){
+  var h=m.hist, cur=h[5], prev=h[4];
+  if(cur==null||prev==null||!prev) return '';
+  var d=(cur-prev)/Math.abs(prev)*100, up=d>=0;
+  return (up?'↑':'↓')+' '+Math.abs(d).toFixed(1)+'% מול מאי';
+}
+var ORDER={money:0,bad:1,wait:2,near:3,none:4,ok:5};
+
+/* ===================== גרף המגמה ===================== */
+function spark(m,W,H){
+  var h=m.hist, n=h.length, vals=[], i;
+  for(i=0;i<n;i++) if(h[i]!=null) vals.push(h[i]);
+  var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
+  var hasT=m.target!=null;
+  if(hasT){lo=Math.min(lo,m.target);hi=Math.max(hi,m.target);}
+  var pad=(hi-lo)*0.20||Math.max(1,hi*0.1);
+  lo-=pad;hi+=pad;
+  var px=3, py=5;
+  var X=function(k){return W-px-k*(W-2*px)/(n-1);};   /* RTL: ינואר מימין, יוני משמאל */
+  var Y=function(v){return py+(hi-v)/(hi-lo)*(H-2*py);};
+  var last=-1;
+  for(i=0;i<n;i++) if(h[i]!=null) last=i;
+  var pts=[],ar=[];
+  for(i=0;i<=last;i++){pts.push(X(i).toFixed(1)+','+Y(h[i]).toFixed(1));}
+  ar.push('M'+X(0).toFixed(1)+','+Y(h[0]).toFixed(1));
+  for(i=1;i<=last;i++) ar.push('L'+X(i).toFixed(1)+','+Y(h[i]).toFixed(1));
+  ar.push('L'+X(last).toFixed(1)+','+H+' L'+X(0).toFixed(1)+','+H+' Z');
+  var s='<svg class="sp" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">';
+  s+='<path class="a" d="'+ar.join(' ')+'"/>';
+  if(hasT&&m.target>lo&&m.target<hi)
+    s+='<line class="t" x1="'+px+'" y1="'+Y(m.target).toFixed(1)+'" x2="'+(W-px)+'" y2="'+Y(m.target).toFixed(1)+'"/>';
+  s+='<polyline class="l" points="'+pts.join(' ')+'"/>';
+  /* סימון החודש האחרון שיש לו נתון */
+  s+='<line class="m" x1="'+X(last).toFixed(1)+'" y1="'+Y(h[last]).toFixed(1)+'" x2="'+X(last).toFixed(1)+'" y2="'+H+'"/>';
+  /* חודש בלי נתון — קו מקווקו אל הקצה */
+  if(last<n-1)
+    s+='<line class="g" x1="'+X(last).toFixed(1)+'" y1="'+Y(h[last]).toFixed(1)+'" x2="'+X(n-1).toFixed(1)+'" y2="'+Y(h[last]).toFixed(1)+'"/>';
+  return s+'</svg>';
+}
+
+/* ===================== הרצועה — הדבר החי ===================== */
+function waiting(){return M.filter(function(m){return m.actual==null;});}
+function renderLive(){
+  var w=waiting().length, s;
+  if(w) s='<span class="cap">סגירת יוני</span>'+
+          '<span class="n num">'+w+'</span>'+
+          '<span class="tx">'+(w===1?'מדד אחד מחכה':'מדדים מחכים')+' למספר שלך '+
+          '<span class="q">· אחרון להזנה יום ראשון 05.07</span></span>'+
+          '<button class="btn" type="button" id="liveBtn">הזנת המספרים</button>';
+  else   s='<span class="cap">סגירת יוני</span>'+
+          '<span class="tx"><b>יוני סגור</b> — כל המספרים התקבלו '+
+          '<span class="q">· הסיכום נשלח לאילון</span></span>'+
+          '<button class="btn" type="button" id="liveBtn">לסיכום החודש</button>';
+  document.getElementById('live').innerHTML=s;
+  document.getElementById('liveBtn').addEventListener('click',function(){
+    var q=waiting();
+    if(q.length) openMetric(q[0].id,true); else openJune();
+  });
+}
+
+/* ===================== הבלוק הכהה ===================== */
+function renderClose(){
+  var q=waiting(), out='', i;
+  for(i=0;i<q.length;i++){
+    out+='<div class="ln"><span class="k">מחכה לך</span>'+
+      '<span class="s"><b>'+esc(q[i].name)+'</b> — עדיין אין מספר ליוני. '+
+      '<span class="q">'+esc(q[i].short||'')+'</span></span>'+
+      '<span class="act"><button class="btn" type="button" data-open="'+q[i].id+'">הזנת מספר</button></span></div>';
+  }
+  if(!julyDone)
+    out+='<div class="ln q"><span class="k">יעדי יולי</span>'+
+      '<span class="s">אילון הכין הצעה לשלושה יעדים מעודכנים ליולי, על בסיס חצי השנה האחרונה.</span>'+
+      '<span class="act"><button class="btn" type="button" id="julyBtn">לצפייה בהצעה</button></span></div>';
+  else
+    out+='<div class="ln ok"><span class="k">יעדי יולי</span>'+
+      '<span class="s">אישרת את שלושת היעדים המעודכנים. הם נכנסים לתוקף מ-01.07.</span>'+
+      '<span class="act"><button class="btn" type="button" id="julyBtn">לצפייה ביעדים</button></span></div>';
+  if(!q.length)
+    out='<div class="ln ok"><span class="k">הזנות</span>'+
+      '<span class="s">כל המספרים של יוני התקבלו. <b>אין מה להזין</b> — הדוח שלם.</span>'+
+      '<span class="act"><button class="btn" type="button" id="sumBtn">לסיכום יוני</button></span></div>'+out;
+
+  document.getElementById('lines').innerHTML=out;
+  var open=document.querySelectorAll('#lines [data-open]');
+  for(i=0;i<open.length;i++) open[i].addEventListener('click',function(){openMetric(this.getAttribute('data-open'),true);});
+  var jb=document.getElementById('julyBtn');
+  if(jb) jb.addEventListener('click',openJuly);
+  var sb=document.getElementById('sumBtn');
+  if(sb) sb.addEventListener('click',openJune);
+
+  document.getElementById('ccnt').textContent=
+    q.length? (q.length===1?'פעולה אחת פתוחה':q.length+' פעולות פתוחות') + (julyDone?'':' · ועוד אישור יעדים')
+            : (julyDone?'הכול סגור':'נשאר אישור היעדים ליולי');
+
+  /* הציון — נגזר מהנתונים, לא כתוב ביד */
+  var c={ok:0,near:0,bad:0,wait:0,none:0};
+  M.forEach(function(m){c[bucket(m)]++;});
+  var measured=c.ok+c.near+c.bad;
+  document.getElementById('scoreN').innerHTML=
+    '<span class="num">'+c.ok+'</span> <small>מתוך '+measured+' מדדים ביעד</small>';
+  var tot=M.length, seg='';
+  ['ok','near','bad','none','wait'].forEach(function(k){
+    if(c[k]) seg+='<i class="'+k+'" data-w="'+(c[k]/tot*100)+'"></i>';
+  });
+  document.getElementById('sbar').innerHTML=seg;
+  var keys='';
+  [['ok','ביעד'],['near','קרוב ליעד'],['bad','לא ביעד'],['none','מעקב'],['wait','מחכים לך']].forEach(function(p){
+    if(!c[p[0]]) return;
+    keys+='<button class="skey k-'+p[0]+(FILTER===p[0]?' on':'')+'" type="button" data-f="'+p[0]+'">'+
+          p[1]+' <b class="num">'+c[p[0]]+'</b></button>';
+  });
+  document.getElementById('skeys').innerHTML=keys;
+  var ks=document.querySelectorAll('#skeys .skey');
+  for(i=0;i<ks.length;i++) ks[i].addEventListener('click',function(){
+    var f=this.getAttribute('data-f');
+    setFilter(FILTER===f?'all':f);
+  });
+  sizeBars();
+}
+
+/* ===================== הרשימה ===================== */
+function visible(){
+  return M.filter(function(m){return FILTER==='all'||bucket(m)===FILTER;});
+}
+function card(m){
+  var s=stat(m), p=pctOf(m), d=delta(m), meta=ST[s];
+  var h='<div class="mc s-'+s+'" tabindex="0" role="button" data-open="'+m.id+'" aria-label="'+esc(m.name)+' — '+meta.lbl+'">';
+  h+='<div class="mc-t"><h3>'+esc(m.name)+'</h3><span class="kind">'+esc(m.kind)+'</span></div>';
+  h+='<div class="mc-n"><span class="l">בפועל · יוני</span>'+
+     (m.actual==null
+       ? '<b class="v wait">טרם הוזן</b>'
+       : '<b class="v">'+val(m,m.actual)+'</b>')+'</div>';
+  if(m.target!=null&&m.actual!=null){
+    h+='<div><div class="trk"><i data-w="'+Math.min(100,p)+'"></i></div>'+
+       '<div class="tl"><span>'+(m.invert?'תקרה':'יעד')+' <b>'+nf(m.target)+(m.unit==='%'?'%':m.unit==='₪'?' ₪':' '+m.unit)+'</b></span>'+
+       '<span class="pct">'+p+'% '+(m.capLbl||'מהיעד')+'</span></div></div>';
+  }else if(m.target!=null){
+    h+='<div class="notgt">'+(m.invert?'תקרה':'יעד')+' לחודש · <b class="num">'+nf(m.target)+'</b> '+
+       (m.unit==='%'?'%':m.unit==='₪'?'₪':m.unit)+' — נחשב ברגע שתזין את המספר</div>';
+  }else{
+    h+='<div class="notgt">מדד מעקב — לא הוגדר לו יעד חודשי</div>';
+  }
+  h+=spark(m,260,44);
+  h+='<div class="spf"><span>ינו—יוני 2026</span><span class="d">'+(d||'אין נתון להשוואה')+'</span></div>';
+  h+='<div class="mc-f"><span class="mc-st"><span class="al '+meta.al+'">'+meta.lbl+'</span></span>'+
+     '<span class="go">פירוט</span></div>';
+  return h+'</div>';
+}
+function renderList(){
+  var vis=visible(), out='', i;
+  GROUPS.forEach(function(G){
+    var items=vis.filter(function(m){return m.g===G.g;});
+    if(!items.length) return;
+    items.sort(function(a,b){return ORDER[stat(a)]-ORDER[stat(b)];});
+    out+='<section class="grp"><div class="ghd"><h2>'+esc(G.t)+'</h2><span class="sub">'+esc(G.s)+'</span>'+
+         '<span class="n num">'+(FILTER==='all'?items.length+' מדדים'
+        :items.length+' מתוך '+M.filter(function(m){return m.g===G.g;}).length)+'</span></div>'+
+         '<div class="cards">'+items.map(card).join('')+'</div></section>';
+  });
+  if(!out) out='<div class="empty"><b>אין מדד במצב הזה</b>'+
+    'כל המדדים של יוני נמצאים במצב אחר. אפשר לחזור לרשימה המלאה.'+
+    '<div><button class="btn" type="button" id="resetF">הצגת כל המדדים</button></div></div>';
+  var g=document.getElementById('groups');
+  g.innerHTML=out;
+  var rf=document.getElementById('resetF');
+  if(rf) rf.addEventListener('click',function(){setFilter('all');});
+  var cs=g.querySelectorAll('.mc');
+  for(i=0;i<cs.length;i++){
+    cs[i].addEventListener('click',function(){openMetric(this.getAttribute('data-open'));});
+    cs[i].addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openMetric(this.getAttribute('data-open'));}
+    });
+  }
+  document.getElementById('rest').textContent=
+    FILTER==='all'? M.length+' מדדים במעקב עבורך' : 'מוצגים '+vis.length+' מתוך '+M.length+' מדדים';
+  sizeBars();
+}
+function renderChips(){
+  var c={ok:0,near:0,bad:0,wait:0,none:0};
+  M.forEach(function(m){c[bucket(m)]++;});
+  var defs=[['all','הכול',M.length],['bad','לא ביעד',c.bad],['near','קרוב ליעד',c.near],
+            ['ok','ביעד',c.ok],['wait','מחכים לך',c.wait],['none','מעקב · בלי יעד',c.none]];
+  var h='',i;
+  defs.forEach(function(d){
+    if(!d[2]) return;
+    h+='<button class="chip'+(FILTER===d[0]?' on':'')+'" type="button" data-f="'+d[0]+'">'+d[1]+' <s>'+d[2]+'</s></button>';
+  });
+  document.getElementById('chips').innerHTML=h;
+  var cs=document.querySelectorAll('#chips .chip');
+  for(i=0;i<cs.length;i++) cs[i].addEventListener('click',function(){setFilter(this.getAttribute('data-f'));});
+}
+function setFilter(f){FILTER=f;renderChips();renderClose();renderList();}
+/* רוחב פסים נקבע מה-DOM ולא מ-style= במארקאפ */
+function sizeBars(){
+  var els=document.querySelectorAll('[data-w]'),i;
+  for(i=0;i<els.length;i++) els[i].style.width=els[i].getAttribute('data-w')+'%';
+}
+
+/* ===================== מודאלים ===================== */
+function openOv(html,focusSel){
+  var md=document.getElementById('md');
+  md.innerHTML=html;
+  lastFocus=document.activeElement;
+  document.getElementById('ov').classList.add('on');
+  var f=md.querySelector(focusSel||'button');
+  if(f) f.focus();
+  var xs=md.querySelectorAll('[data-close]'),i;
+  for(i=0;i<xs.length;i++) xs[i].addEventListener('click',closeOv);
+}
+function closeOv(){
+  document.getElementById('ov').classList.remove('on');
+  document.getElementById('md').innerHTML='';
+  if(lastFocus&&lastFocus.focus) lastFocus.focus();
+}
+function byId(id){return M.filter(function(m){return m.id===id;})[0];}
+
+function openMetric(id,focusInput){
+  var m=byId(id); if(!m) return;
+  var s=stat(m), meta=ST[s], p=pctOf(m);
+  var gapTxt='—', gapCls='q', gapFoot=m.actual==null?'ימולא ברגע שתזין את המספר':'למדד הזה אין יעד חודשי';
+  if(m.actual!=null&&m.target!=null){
+    var g=m.actual-m.target, good=m.invert?g<=0:g>=0, ab=Math.abs(g);
+    gapTxt=(m.unit==='%'?'<span class="mn">'+nf(ab)+'</span> <small>נק׳</small>'
+                        :'<span class="mn">'+nf(ab)+'</span> '+unitTag(m));
+    if(ab===0){gapTxt='<span class="mn">0</span>';gapFoot='בדיוק על היעד';}
+    else gapFoot=m.invert?(good?'מתחת לתקרה — יש לך מרווח':'מעל התקרה')
+                         :(good?'מעל היעד':'חסרים כדי לעמוד ביעד');
+    gapCls=good?'ok':(s==='money'?'money':(s==='near'?'near':'bad'));
+  }
+  var h='<div class="mh"><div><h3 id="mdTtl">'+esc(m.name)+'</h3>'+
+    '<div class="sub">'+esc(m.kind)+' · '+esc(m.src)+'</div></div>'+
+    '<button class="x" type="button" data-close="1" aria-label="סגירה">✕</button></div><div class="mb">';
+
+  h+='<div class="stats">'+
+     '<div class="stat"><div class="l">בפועל · יוני</div><div class="v '+
+        (m.actual==null?'q':(s==='money'?'money':s==='bad'?'bad':s==='near'?'near':s==='ok'?'ok':''))+'">'+
+        (m.actual==null?'טרם הוזן':val(m,m.actual))+'</div>'+
+        '<div class="f">'+(delta(m)||'אין חודש קודם להשוואה')+'</div></div>'+
+     '<div class="stat"><div class="l">'+(m.invert?'תקרה חודשית':'יעד חודשי')+'</div><div class="v'+(m.target==null?' q':'')+'">'+
+        (m.target==null?'ללא יעד':val(m,m.target))+'</div>'+
+        '<div class="f">'+(m.target==null?'מדד מעקב':(p!=null?p+'% '+(m.capLbl||'מהיעד')+' בפועל':'ימולא עם ההזנה'))+'</div></div>'+
+     '<div class="stat"><div class="l">הפער מהיעד</div><div class="v '+gapCls+'">'+gapTxt+'</div>'+
+        '<div class="f">'+esc(gapFoot)+'</div></div>'+
+     '</div>';
+
+  h+='<div class="big-sp s-'+s+'">'+spark(m,600,120)+'<div class="mos">'+
+     m.hist.map(function(v,i){
+       return '<div class="mo'+(i===5?' now':'')+'">'+MONTHS[i]+'<b>'+(v==null?'—':nf(v))+'</b></div>';
+     }).join('')+'</div></div>';
+
+  h+='<div class="note'+(m.money?' money':'')+'"><span class="h">מה המספר הזה</span>'+esc(m.what)+'</div>';
+  h+='<div class="note"><span class="h">למה זה חשוב לך</span>'+esc(m.why)+'</div>';
+
+  var hasEntry=(m.actual==null&&m.g==='own');
+  if(hasEntry)
+    h+='<div class="entry"><span class="h">הזנת המספר של יוני</span>'+
+       '<div class="rowi"><input id="entIn" type="text" inputmode="numeric" placeholder="0" aria-label="הבפועל של יוני">'+
+       '<span class="hint">'+(m.unit==='₪'?'בשקלים':m.unit==='%'?'באחוזים':'ב'+esc(m.unit))+
+       ' · מאי נסגר על <b class="mn">'+nf(m.hist[4])+'</b></span></div></div>';
+
+  h+='</div><div class="mf">'+
+     (hasEntry?'<button class="btn pri" type="button" id="saveEnt">שמירת המספר</button>':
+               '<a class="btn pri" href="ai.html?q='+encodeURIComponent('הסבר לי את המדד '+m.name)+'">לשאול את העוזר</a>')+
+     '<a class="btn" href="messages.html">שאלה לאילון</a>'+
+     '<span class="sp"></span><button class="btn" type="button" data-close="1">סגירה</button></div>';
+
+  openOv(h, focusInput&&hasEntry?'#entIn':'.btn.pri');
+  if(hasEntry){
+    var inp=document.getElementById('entIn');
+    document.getElementById('saveEnt').addEventListener('click',function(){saveEntry(m);});
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();saveEntry(m);}});
+  }
+}
+function saveEntry(m){
+  var raw=document.getElementById('entIn').value.replace(/[^\d.-]/g,'');
+  var v=parseFloat(raw);
+  if(!raw||isNaN(v)){toast('צריך מספר כדי לשמור');document.getElementById('entIn').focus();return;}
+  m.actual=v; m.hist[5]=v;
+  closeOv(); renderAll();
+  toast(m.name+' · יוני נשמר על '+nf(v)+(m.unit==='₪'?' ₪':''));
+}
+function openJuly(){
+  var h='<div class="mh"><div><h3 id="mdTtl">היעדים המעודכנים ליולי</h3>'+
+    '<div class="sub">אילון אשכנזי · על בסיס ינואר—יוני 2026</div></div>'+
+    '<button class="x" type="button" data-close="1" aria-label="סגירה">✕</button></div><div class="mb">';
+  h+='<div class="note"><span class="h">מה משתנה</span>שלושה יעדים בלבד. כל השאר נשארים כפי שהם. '+
+     'היעדים נכנסים לתוקף רטרואקטיבית מ-01.07 ומופיעים בכרטיסים כאן במסך.</div>';
+  h+='<div class="jl"><div class="r hd"><span class="t">המדד</span><span class="o">יעד יוני</span><span class="nw">יעד יולי</span></div>'+
+     JULY.map(function(r){
+       return '<div class="r"><span class="t">'+esc(r.t)+'</span>'+
+         '<span class="o"><span class="mn">'+nf(r.o)+'</span> ₪</span>'+
+         '<span class="nw"><span class="mn">'+nf(r.n)+'</span> ₪</span></div>';
+     }).join('')+'</div>';
+  h+='</div><div class="mf">'+
+     (julyDone?'<span class="al ok">אישרת את היעדים האלה</span>'
+              :'<button class="btn pri" type="button" id="okJuly">אישור שלושת היעדים</button>'+
+               '<a class="btn" href="messages.html">בקשת שינוי מאילון</a>')+
+     '<span class="sp"></span><button class="btn" type="button" data-close="1">סגירה</button></div>';
+  openOv(h,julyDone?'.btn':'.btn.pri');
+  var b=document.getElementById('okJuly');
+  if(b) b.addEventListener('click',function(){
+    julyDone=true; closeOv(); renderAll(); toast('שלושת היעדים ליולי אושרו · אילון קיבל הודעה');
+  });
+}
+function openJune(){
+  var c={ok:0,near:0,bad:0,wait:0,none:0};
+  M.forEach(function(m){c[bucket(m)]++;});
+  var h='<div class="mh"><div><h3 id="mdTtl">סיכום יוני 2026</h3>'+
+    '<div class="sub">עשרה מדדים במעקב · הנתונים מעודכנים ל-01.07 בשעה 23:40</div></div>'+
+    '<button class="x" type="button" data-close="1" aria-label="סגירה">✕</button></div><div class="mb">';
+  h+='<div class="stats">'+
+     '<div class="stat"><div class="l">ביעד</div><div class="v ok">'+c.ok+'</div><div class="f">מתוך '+(c.ok+c.near+c.bad)+' מדדים שנמדדו</div></div>'+
+     '<div class="stat"><div class="l">קרוב ליעד</div><div class="v near">'+c.near+'</div><div class="f">פער של עד 15%</div></div>'+
+     '<div class="stat"><div class="l">לא ביעד</div><div class="v bad">'+c.bad+'</div><div class="f">מהם אחד בסכנה כספית</div></div></div>';
+  h+='<div class="note money"><span class="h">מה הכי דחוף</span>'+
+     '<b>כרית הביטחון בעו״ש ירדה לתשעה ימים</b>, מול יעד של 14. באותו חודש החוב הפתוח לגבייה '+
+     'הגיע ל-38,400 ₪ — חמישה חודשים רצופים של עלייה. גבייה של מחצית מהחוב מחזירה את הכרית מעל היעד.</div>';
+  h+='<div class="note"><span class="h">מה עבד</span>ההוצאות נסגרו על 97% מהתקציב, ההכנסה ליום עבודה מעל היעד '+
+     'וסליקת המכירות עברה את היעד ב-11%. הקושי ביוני הוא בקצב הכניסה של הכסף, לא בהיקף הפעילות.</div>';
+  h+='</div><div class="mf"><a class="btn pri" href="meetings.html">להעלות בפגישה הקרובה</a>'+
+     '<a class="btn" href="messages.html">שליחת שאלה לאילון</a>'+
+     '<span class="sp"></span><button class="btn" type="button" data-close="1">סגירה</button></div>';
+  openOv(h,'.btn.pri');
+}
+
+/* ===================== toast ===================== */
+var tT=null;
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(tT); tT=setTimeout(function(){t.classList.remove('show');},2600);
+}
+
+/* ===================== הרצה ===================== */
+function renderAll(){renderLive();renderChips();renderClose();renderList();}
+
+document.getElementById('ov').addEventListener('click',function(e){if(e.target===this) closeOv();});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&document.getElementById('ov').classList.contains('on')) closeOv();
+});
+/* חוזה ה-URL: ?f= סינון · ?m= מדד לפתיחה */
+(function(){
+  var q=new URLSearchParams(location.search);
+  var f=q.get('f');
+  if(f&&['all','ok','near','bad','wait','none'].indexOf(f)>-1) FILTER=f;
+  renderAll();
+  var mid=q.get('m');
+  if(mid&&byId(mid)) openMetric(mid);
+})();
+})();
+</script>
+</body>
+</html>

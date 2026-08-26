@@ -7,384 +7,304 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* HK · מסך פגישות · סבב 3 — אותה שפה כמו today.html
-   רצועה 68 navy: כותרת 28 + תאריך | היום בקצרה | עכשיו
-   גוף: בלוק כהה אחד = "מה חסר" (ארבעה מונים, לחיצה מסננת) · חיפוש · רשימת כל הפגישות · לוח קרובות בצד
-   סקאלה: 28 / 17 / 14 / 12.5 / 12 · פאנל: גבול 1px, צל 4%, רדיוס 10 · גריד 1fr | 470 (430 ב-≤1450) */
+/* HK · מסך פגישות · מפרט אחיד v1
+   רצועה 68 navy: כותרת 28 + תאריך | האירוע הבא | עכשיו
+   גוף: בלוק כהה אחד = "מה חסר" (ארבעה מונים, לחיצה מסננת) · חיפוש · כל הפגישות · זירת הפגישה בצד
+   סקאלה: 28 / 22 / 19 / 17 / 14 / 13 / 12.5 / 12 / 11.5 · רדיוסים: 4 6 7 10 50%
+   גריד: 1fr | 620 (430 ב-≤1450) · פאנל: גבול 1px, צל 4%, רדיוס 10 */
 :root{
   --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bg:#F4F7FA;--bd:#E6ECF4;
-  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#7557E3;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#6B4FA0;
   --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
+  --on-warn:#FFDFA0;--on-good:#9FE8C5;--on-bad:#FFD3CF;
+  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--tint2:#F6F9FC;--surface2:#FAFCFE;
+  --row-hover:#F8FBFD;--row-sel:#EEF6FC;--bd2:#B7C3CF;--line:#C4CED8;--mark:#FFF1C2;
+  --warn-bg:#FFF9F0;--warn-bd:#F3DFC0;--warn-ink:#9A6300;
+  --bad-bg:#FDEDEB;--bad-bd:#F5CFC9;--bad-ink:#C43D30;
+  --good-bg:#F1FAF5;--good-bd:#CDEBD9;--good-ink:#13895b;
+  --info-bg:#F0F7FC;--info-bd:#D8EAF5;
+  --purple-bg:#F6F1FB;--purple-bd:#E3D8F2;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-.ltr{direction:ltr;unicode-bidi:isolate}
 .num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 
+/* ---- nav ---- */
 .nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
 .nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
-.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:#fff;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
-.nav ul{display:flex;list-style:none;gap:4px;margin-right:12px}
-.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13.5px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px;margin-inline-start:12px}
+.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13px}
 .nav li a:hover{background:var(--bg);color:var(--navy)}
-.nav li a.on{background:#EAF3FA;color:var(--navy);font-weight:600}
-.nav .me{margin-right:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:left}
+.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:end}
 .nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13px}
-.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EAF3FA;color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
+.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
 
-.strip{background:var(--navy);color:#fff;height:68px;display:flex;align-items:center;padding:0 32px;gap:16px}
+/* ---- strip ---- */
+.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
 .strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
-.strip .date{font-size:13px;color:#B9D3E6;margin-top:2px}
+.strip .date{font-size:13px;color:var(--on-navy2)}
 .strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
 .strip .next{display:flex;align-items:center;gap:12px;font-size:14px}
-.strip .next .cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
-.strip .next .tm{font-size:22px;font-weight:600;line-height:1;color:#fff}
-.strip .next .who{display:flex;align-items:center;gap:8px;color:#fff}
-.strip .next .who a{color:#fff;font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
-.strip .next .who a:hover{border-color:#fff}
-.strip .next .c{color:#7FA6C2}
-.strip .next .hint{color:#B9D3E6;font-size:13px}
-.strip .next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:3px 11px;font-size:12.5px;color:#DCEBF5}
-.strip .next .btn.rec{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;font-size:12.5px;font-weight:600;border-radius:6px;border:1px solid var(--coral);background:var(--coral);color:#fff;cursor:pointer;font-family:inherit}
-.strip .next .btn.rec i{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:mrec 1.6s ease-in-out infinite}
-@keyframes mrec{50%{opacity:.35}}
-.strip .next .btn.prep2{display:inline-flex;align-items:center;padding:5px 12px;font-size:12.5px;font-weight:600;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;cursor:pointer;font-family:inherit}
-.strip .next .btn.prep2:hover{background:rgba(255,255,255,.14)}
-.gq-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);background:#FAFCFE;flex-wrap:wrap}
-.gq-row .lbl{font-size:12.5px;color:var(--ink3);margin-inline-end:8px}
-.gq-row button{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;border:1px solid var(--bd);background:#fff;color:var(--ink2);cursor:pointer;white-space:nowrap}
-.gq-row button i{width:8px;height:8px;border-radius:50%;background:var(--coral)}
-.gq-row button.ns i{display:none}
-.gq-row button b{font-weight:600;color:var(--navy);background:var(--bg);border-radius:10px;padding:0 7px;font-size:12px;line-height:18px}
-.gq-row button:hover{border-color:var(--navy)}
-.gq-row button.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.gq-row button.on b{background:rgba(255,255,255,.18);color:#fff}
-/* בלי פגישה הבאה — העמודה */
-.ns-list{padding:4px 20px 8px}
-.ns-list .r{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}
-.ns-list .r:last-child{border-bottom:0}
-.ns-list .b{flex:1;min-width:0}
-.ns-list .name{font-size:14px;font-weight:600;color:var(--navy)}
-.ns-list .name:hover{text-decoration:underline}
-.ns-list .s{display:block;font-size:12px;color:var(--ink3);margin-top:2px}
-.ns-note{padding:10px 20px 14px;font-size:12px;color:var(--ink3);border-top:1px solid var(--bd)}
-.strip .today{display:flex;align-items:center;gap:10px;font-size:13.5px;color:#B9D3E6}
-.strip .today b{color:#fff;font-weight:500}
-.strip .today a{color:#fff;border-bottom:1px solid rgba(255,255,255,.35)}
-.strip .today a:hover{border-color:#fff}
-.strip .today .c{color:#7FA6C2}
-.strip .spacer{margin-right:auto}
-.strip .now{font-size:13px;color:#B9D3E6}
-.strip .now b{color:#fff;font-weight:500}
+.strip .next .cap{font-size:11.5px;color:var(--on-navy3);letter-spacing:.3px}
+.strip .next .tm{font-size:22px;font-weight:600;line-height:1;color:var(--white)}
+.strip .next .who{display:flex;align-items:center;gap:8px;color:var(--white)}
+.strip .next .who a{color:var(--white);font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.strip .next .who a:hover{border-color:var(--white)}
+.strip .next .c{color:var(--on-navy4)}
+.strip .next .hint{color:var(--on-navy2);font-size:13px}
+.strip .next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:3px 11px;font-size:12.5px;color:var(--on-navy)}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:13px;color:var(--on-navy2)}
+.strip .now b{color:var(--white);font-weight:500}
 
-.wrap{width:100%;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 620px;grid-template-rows:auto 1fr;gap:18px;min-height:calc(100vh - 120px)}
+/* ---- grid ---- */
+.wrap{width:100%;padding:18px 32px 20px;display:grid;grid-template-columns:minmax(0,1fr) 620px;grid-template-rows:auto minmax(0,1fr);gap:18px;align-items:stretch;height:calc(100vh - 120px);overflow:hidden}
+.wrap>*{min-width:0;min-height:0}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
 .ph .hint{font-size:12.5px;color:var(--ink3)}
-.ph .more{margin-right:auto;font-size:12.5px;color:var(--sky);font-weight:500}
-.ph .more:hover{text-decoration:underline}
+.ph .cfil{margin-inline-start:auto;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;background:var(--white);color:var(--ink)}
 
-/* ---- missing (dark block, one) ---- */
-.miss{grid-column:1/-1;background:var(--navy);color:#fff;border-radius:10px;display:grid;grid-template-columns:150px repeat(4,1fr);align-items:stretch;overflow:hidden}
-.miss .cap{padding:16px 20px;border-left:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;justify-content:center}
-.miss .cap b{font-size:15px;font-weight:600}
-.miss .cap span{font-size:12.5px;color:#9FC0DA;margin-top:2px}
-.miss .cap a{color:#fff;font-size:12.5px;margin-top:6px;display:none;border-bottom:1px solid rgba(255,255,255,.35);align-self:flex-start}
-.miss.f .cap a{display:inline}
-.miss .cap a:hover{color:#fff}
-.miss .q{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;padding:12px 20px;text-align:right;border-left:1px solid rgba(255,255,255,.12);transition:background .15s;position:relative}
-.miss .q:last-child{border-left:0}
+/* ---- buttons ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap;cursor:pointer}
+.btn:hover{background:var(--bg)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.btn.pri:hover{background:var(--navy2)}
+.btn.danger{background:var(--coral);border-color:var(--coral);color:var(--white)}
+.btn.danger:hover{background:var(--coral);filter:brightness(.94)}
+.btn.rec .rd{display:none;width:9px;height:9px;border-radius:50%;background:var(--white);box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:mrec 1.6s ease-in-out infinite}
+.btn.rec.recording .rd{display:inline-block}
+.btn.rec.recording svg{display:none}
+@keyframes mrec{50%{opacity:.35}}
+.dark .btn{background:transparent;border-color:rgba(255,255,255,.3);color:var(--white)}
+.dark .btn:hover{background:rgba(255,255,255,.12)}
+.dark .btn.pri{background:var(--sky);border-color:var(--sky);color:var(--white)}
+.dark .btn.danger{background:var(--coral);border-color:var(--coral);color:var(--white)}
+
+/* ---- chips (rule 9) ---- */
+.chip{font:inherit;font-size:12px;font-weight:500;background:var(--chip);border:0;border-radius:7px;padding:5px 10px;color:var(--ink2);cursor:pointer}
+.chip:hover{background:var(--chip-hover);color:var(--navy)}
+.chip.on{background:var(--navy);color:var(--white)}
+.chip b{font-weight:600;color:var(--ink3);font-size:11.5px;margin-inline-start:4px}
+.chip.on b{color:rgba(255,255,255,.75)}
+.chip.tmore{background:none;color:var(--sky);font-weight:600}
+.chip.tmore:hover{background:var(--chip);color:var(--sky)}
+
+/* ---- alerts (rule 10) ---- */
+.al{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.al.bad{color:var(--red)}
+.al.warn{color:var(--orange)}
+.al.ok{color:var(--green)}
+.al.info{color:var(--ink3)}
+
+/* ---- "מה חסר" — הבלוק הכהה היחיד בגוף (rule 3) ---- */
+.miss{grid-column:1/-1;background:var(--navy);color:var(--white);border-radius:10px;display:grid;grid-template-columns:190px repeat(4,1fr);align-items:stretch;overflow:hidden}
+.miss .cap{padding:12px 20px;border-inline-end:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;justify-content:center}
+.miss .cap b{font-size:14px;font-weight:600}
+.miss .cap span{font-size:12.5px;color:var(--on-navy3);margin-top:2px}
+.miss .q{font:inherit;color:var(--white);display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;padding:12px 20px;text-align:start;border-inline-end:1px solid rgba(255,255,255,.12);position:relative;cursor:pointer}
+.miss .q:last-child{border-inline-end:0}
 .miss .q:hover{background:rgba(255,255,255,.06)}
 .miss .q.on{background:var(--navy2)}
-.miss .q.on::after{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;background:var(--coral)}
-.miss .q .n{font-size:24px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
-.miss .q.zero .n{color:#7FA6C2}
-.miss .q .l{font-size:14px;font-weight:500;color:#fff;line-height:1.25}
-.miss .q .w{font-size:12.5px;color:#B9D3E6;margin-top:3px;line-height:1.3}
-.miss .q.zero .w{color:#7FA6C2}
+.miss .q.on::after{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--coral)}
+.miss .q .n{font-size:22px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;color:var(--white)}
+.miss .q.zero .n{color:var(--on-navy4)}
+.miss .q .l{display:block;font-size:14px;font-weight:500;color:var(--white);line-height:1.25}
+.miss .q .w{display:block;font-size:12.5px;color:var(--on-navy2);margin-top:3px;line-height:1.3}
+.miss .q.zero .w{color:var(--on-navy4)}
 
 /* ---- list ---- */
-.list{display:flex;flex-direction:column;min-width:0}
-.search{display:flex;align-items:center;gap:10px;padding:12px 20px 8px;background:#FAFCFE}
+.list{display:flex;flex-direction:column;min-width:0;min-height:0}
+.search{display:flex;align-items:center;gap:10px;padding:12px 20px 8px;background:var(--surface2)}
 .search .in{flex:1;position:relative}
-.search input{width:100%;height:38px;border:1px solid var(--bd);border-radius:6px;padding:0 36px 0 12px;font:inherit;font-size:13.5px;background:#fff;color:var(--ink)}
+.search input{width:100%;height:38px;border:1px solid var(--bd);border-radius:6px;padding-inline-start:36px;padding-inline-end:12px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
 .search input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
-.search svg{position:absolute;right:12px;top:11px;width:16px;height:16px;color:var(--ink3)}
+.search svg{position:absolute;inset-inline-start:12px;top:11px;width:16px;height:16px;color:var(--ink3)}
 .search .res{font-size:12.5px;color:var(--ink3);white-space:nowrap}
 .search .res b{color:var(--navy);font-weight:500}
 .search .clr{font-size:12.5px;color:var(--sky);font-weight:500;display:none}
 .search .clr.on{display:inline}
-table.ml{width:100%;border-collapse:collapse;font-size:14px}
-.ml th{font-weight:400;font-size:12px;color:var(--ink3);text-align:right;padding:9px 0 7px;border-bottom:1px solid var(--bd);white-space:nowrap}
-.ml th:first-child{padding-right:20px}.ml th:last-child{padding-left:20px}
-.tw{flex:1;display:flex;flex-direction:column;min-height:0}
-.tw table{height:100%}
-.ml thead tr{height:1px}
-.ml tr.fill{height:100%}
-.ml tr.fill td{border:0;padding:0}
-.ml td{padding:12px 0;border-bottom:1px solid var(--bd);vertical-align:middle;color:var(--ink2)}
+.topics{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:4px 20px;font-size:13px;align-items:start;background:var(--surface2)}
+.topics .lbl{font-size:12px;color:var(--ink3);font-weight:500;white-space:nowrap;padding-top:6px}
+.topics .tg{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;min-width:0}
+#fbtRow{padding-bottom:14px;border-bottom:1px solid var(--bd)}
+.tclr{display:none;font-size:12.5px;color:var(--red);font-weight:600;margin-inline-start:10px}
+.tclr.on{display:inline}
 
-.ml td:first-child{padding-right:20px}.ml td:last-child{padding-left:20px}
-.ml tr.m:hover td{background:#FAFCFE}
+/* ---- table (rule 7) ---- */
+.tw{flex:1;min-height:0;overflow-y:auto}
+table.ml{width:100%;border-collapse:collapse}
+.ml th{font-size:12px;font-weight:500;color:var(--ink3);background:var(--surface2);padding:7px 14px;text-align:start;border-bottom:1px solid var(--bd);white-space:nowrap;position:sticky;top:0;z-index:1}
+.ml td{font-size:14px;color:var(--ink2);padding:11px 14px;border-top:1px solid var(--bd);vertical-align:middle}
+.ml th:first-child,.ml td:first-child{padding-inline-start:20px}
+.ml th:last-child,.ml td:last-child{padding-inline-end:20px}
+.ml tbody tr.m{cursor:pointer}
+.ml tr.m:hover td{background:var(--row-hover)}
+.ml tr.hl td{background:var(--row-sel)}
 .ml tr.hid{display:none}
 .ml .d{white-space:nowrap;width:86px;color:var(--ink);font-weight:500}
 .ml .d small{display:block;font-size:12px;color:var(--ink3);font-weight:400}
 .ml .who a{font-weight:600;color:var(--navy)}
 .ml .who a:hover{text-decoration:underline}
 .ml .who .nm{color:var(--ink)}
-.ml .who .dot{color:#B7C3CF;margin:0 6px}
-.ml .who .hit{display:block;font-size:13px;color:var(--ink2);margin-top:4px;padding-right:10px;border-right:2px solid var(--sky)}
-.ml .who .hit mark{background:#FFF0B8;color:var(--ink);padding:0 2px;border-radius:2px}
-.ml .who .hit i{font-style:normal;color:var(--ink3);font-size:12px;margin-left:6px}
-.ml .len{white-space:nowrap;width:70px;color:var(--ink2)}
-.ml .st{white-space:nowrap;width:215px}
-.ml .st span{display:inline-block;font-size:12.5px;color:var(--ink2)}
-.ml .st span.dot{color:#C4CED8;margin:0 5px}
-.ml .st .bad{color:var(--red);font-weight:500}
-.ml .st .warn{color:var(--orange);font-weight:500}
-.ml .fb{white-space:nowrap;width:72px}
-.ml .fb a{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--navy);font-weight:500;border:1px solid var(--bd);border-radius:5px;padding:3px 9px;background:#fff}
-.ml .fb a::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
-.ml .fb a:hover{background:var(--bg)}
-.ml .fb .none{font-size:12.5px;color:var(--ink3)}
-.ml .ac{white-space:nowrap;width:128px;text-align:left}
-.ml .ok{color:#B7C3CF;font-size:13px;font-weight:600}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:#fff;color:var(--navy);white-space:nowrap}
-.btn:hover{background:var(--bg)}
-.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
-.btn.pri:hover{background:var(--navy2)}
-.btn.sky{background:var(--sky);border-color:var(--sky);color:#fff}
-.btn.sm{padding:4px 10px;font-size:12.5px}
-.empty{display:none;padding:30px 20px;color:var(--ink3);font-size:13.5px;text-align:center}
+.ml .who .mt{font-size:12.5px;color:var(--ink3)}
+.ml .who .dot{color:var(--bd2);margin:0 6px}
+.ml .who .hit{display:block;font-size:13px;color:var(--ink2);margin-top:4px;padding-inline-start:10px;border-inline-start:2px solid var(--sky)}
+.ml .who .hit:empty{display:none}
+.ml .who .hit mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:4px}
+.ml .who .hit i{font-style:normal;color:var(--ink3);font-size:12px;margin-inline-end:6px}
+.ml .st{white-space:nowrap;width:205px}
+.ml .st i{font-style:normal;display:block;font-size:12px;color:var(--ink3);margin-top:2px}
+.ml .ac{white-space:nowrap;width:132px;text-align:end}
+.empty{display:none;padding:40px 20px;text-align:center;color:var(--ink3);font-size:13px}
 .empty.on{display:block}
-.lfoot{margin-top:auto;padding:11px 20px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3);display:flex;gap:16px}
+.empty b{display:block;font-size:14px;color:var(--ink2);font-weight:600;margin-bottom:6px}
+.empty .btn{margin-top:12px}
+.lfoot{margin-top:auto;padding:12px 20px 14px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3);display:flex;gap:16px;flex:none}
 .lfoot b{color:var(--ink2);font-weight:500}
 
-/* ---- upcoming ---- */
-.up{display:flex;flex-direction:column}
-.tlw{padding:8px 20px 6px;flex:1;display:flex;flex-direction:column}
-.tlw .ut .b{min-height:100%}
-.ut{display:grid;grid-template-columns:92px 1fr;position:relative}
-.ut + .ut{border-top:1px solid var(--bd)}
-.ut .t{padding:14px 0 14px 12px;position:relative}
-.ut .t b{display:block;font-size:16px;font-weight:600;color:var(--navy)}
-.ut .t span{display:block;font-size:12px;color:var(--ink3);margin-top:1px}
-.ut .t::after{content:"";position:absolute;left:0;top:16px;width:10px;height:10px;border-radius:50%;border:2px solid var(--sky);background:#fff;transform:translateX(50%)}
-.ut.done .t::after{background:var(--green);border-color:var(--green)}
-.ut.done .t b{color:var(--green)}
-.ut .b{padding:14px 16px 14px 0;border-right:2px solid var(--bd);margin-right:-5px}
-.ut .b a.name{font-size:14.5px;font-weight:600;color:var(--navy)}
-.ut .b a.name:hover{text-decoration:underline}
-.ut .b .what{font-size:14px;color:var(--ink);margin-top:1px}
-.ut .meta{font-size:12.5px;color:var(--ink2);margin-top:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.ut .meta .dot{color:#C4CED8}
-.ut .meta .ok{color:var(--green);font-weight:500}
-.ut .meta .warn{color:var(--orange);font-weight:500}
-.ut .act{margin-top:8px}
-.nowline{display:grid;grid-template-columns:92px 1fr;align-items:center}
-.nowline .t{padding:4px 0 4px 12px;font-size:12.5px;color:var(--coral);font-weight:600;white-space:nowrap}
-.nowline .l{height:0;border-top:1.5px dashed var(--coral);opacity:.6;margin-right:-5px}
-.noset{margin-top:auto;padding:12px 0 6px;border-top:1px solid var(--bd)}
-.noset h4{font-size:12.5px;color:var(--ink3);font-weight:500;margin-bottom:6px}
-.noset .r{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px}
-.noset .r + .r{border-top:1px solid var(--bd)}
-.noset .r a.name{font-weight:600;color:var(--navy)}
-.noset .r a.name:hover{text-decoration:underline}
-.noset .r .s{font-size:12.5px;color:var(--ink3)}
-.noset .r .no{color:var(--red);font-weight:500;font-size:12.5px}
-.noset .r .btn{margin-right:auto}
-
-/* ---- modal + toast ---- */
-.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
-.ov.on{display:grid}
-.md{width:560px;max-width:92vw;background:#fff;border-radius:12px;padding:22px 26px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
-.md h3{font-size:18px;color:var(--navy);font-weight:600}
-.md .s{font-size:13px;color:var(--ink3);margin-top:3px}
-.md .body{margin-top:14px;font-size:14px;line-height:1.6}
-.md .body .row{display:grid;grid-template-columns:110px 1fr;gap:8px;padding:7px 0;border-bottom:1px dashed var(--bd)}
-.md .body .row span:first-child{color:var(--ink3);font-size:13px}
-.md .f{display:flex;gap:8px;margin-top:18px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;font-size:13.5px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-
-@media (min-height:1200px){
-  .ml td{padding:17px 0}
-  .ut .t,.ut .b{padding-top:18px;padding-bottom:18px}
-  .noset .r{padding:10px 0}
-}
-@media (max-width:1450px){
-  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px;min-height:calc(100vh - 112px)}
-  .nav,.strip{padding-left:24px;padding-right:24px}
-  .ph{padding:11px 18px 8px}
-  .ph h2{font-size:16px}
-  .miss{grid-template-columns:130px repeat(4,1fr)}
-  .miss .q{padding:10px 16px}
-  .miss .q .n{font-size:22px}
-  .ml td{padding:8px 0}
-  .ml .st{width:190px}
-  .ml .ac{width:118px}
-  .ut .t,.ut .b{padding-top:11px;padding-bottom:11px}
-  .search{padding:10px 18px}
-  .search input{height:34px}
-  .lfoot{display:none}
-}
-.ml .st .okst{color:var(--green);font-weight:500}
-.ml tbody tr.m{cursor:pointer}
-.ml tbody tr.m:hover td{background:#F8FBFD}
-#noset.pulse{box-shadow:0 0 0 3px rgba(57,171,226,.35);transition:box-shadow .3s}
-.ph .cfil{margin-right:auto;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;background:#fff;color:var(--ink)}
-.fbstars{color:#E9A93D;font-size:15px;letter-spacing:1px}
-.fbstars i{font-style:normal;color:#E1E9F1}
-.fbstars b{color:var(--ink2);font-size:12.5px;margin-inline-start:6px}
-/* זירת הפגישה — הפאנל הכחול */
-.arena{background:#fff;border:1px solid var(--bd);border-radius:10px;align-self:start;position:sticky;top:14px;height:calc(100vh - 28px);display:flex;flex-direction:column;overflow:hidden}
-.arena>.ar-sec{overflow:auto}
-.ar-h{background:var(--navy);color:#fff;padding:16px 20px 14px;flex:none}
-.ar-h.slim{padding:12px 20px 12px}
+/* ---- זירת הפגישה ---- */
+.arena{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.ar-body{flex:1;min-height:0;overflow-y:auto}
+.ar-h{background:var(--navy);color:var(--white);padding:16px 20px 14px;flex:none}
+.ar-h.slim{padding:12px 20px}
 .ar-h.slim .ar-line{display:flex;align-items:baseline;gap:8px;margin-top:6px;flex-wrap:wrap}
 .ar-h.slim h2{font-size:17px;font-weight:700;margin:0}
-.ar-h.slim .ar-nm{font-size:12.5px;color:#B9D3E6}
-.ar-h.slim .c{color:#7FA6C2}
-.ar-h.slim .ar-play{margin:0;margin-inline-start:auto;padding:4px 12px}
-.ar-cap{font-size:11.5px;color:#9FC0DA;letter-spacing:.3px}
-.ar-h h2{font-size:21px;font-weight:700;margin-top:4px}
-.ar-meta{display:flex;gap:7px;font-size:13px;color:#DCEBF5;margin-top:4px}
-.ar-meta .c{color:#7FA6C2}
-.ar-sec{padding:12px 20px 2px}
-.ar-sec h4{font-size:12px;color:var(--ink3);font-weight:700;margin-bottom:7px}
-.ar-r{display:flex;gap:10px;font-size:13.5px;line-height:1.45;padding:5px 0;color:var(--ink)}
-.ar-r i{font-style:normal;flex:none;width:18px;height:18px;border-radius:50%;background:#EAF3FA;color:var(--navy);display:grid;place-items:center;font-size:10.5px;margin-top:1px}
-.ar-r.warn i{background:#FDEDEB;color:#C43D30}
-.ar-r.warn{color:#8A3D14}
-.ar-q{font-size:13.5px;color:var(--ink2);background:#F6F9FC;border:1px solid #E6ECF4;border-radius:8px;padding:10px 14px;line-height:1.5}
-.ar-acts{display:flex;gap:8px;padding:14px 20px;margin-top:auto;border-top:1px solid var(--bd);background:#fff;flex:none}
-.ar-acts .rec2{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;font-weight:700;background:var(--coral);border:none;color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer}
-.ar-acts .rec2 i{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:mrec 1.6s ease-in-out infinite}
-.ar-acts .full{display:inline-flex;align-items:center;font-size:13px;font-weight:600;color:var(--navy) !important;background:#fff !important;border:1px solid var(--bd) !important;border-radius:8px;padding:9px 15px}
-.ar-acts .full:hover{background:var(--bg) !important}
-/* בלי פגישה הבאה — פס נפתח מתחת לצ'יפ */
-.ns-strip{display:none;padding:10px 20px;border-bottom:1px solid var(--bd);background:#FFF9F4;font-size:13px;align-items:center;gap:16px;flex-wrap:wrap}
-.ns-strip.on{display:flex}
-.ns-strip b{color:#8A3D14;font-size:12.5px}
-.ns-strip .r{display:inline-flex;align-items:center;gap:8px}
-.ns-strip .r a{font-weight:600;color:var(--navy)}
-.ns-strip .r i{font-style:normal;font-size:11.5px;color:var(--ink3)}
-.ar-none{font-size:13.5px;color:var(--ink2);background:#F6F9FC;border:1px solid #E6ECF4;border-radius:8px;padding:12px 14px;line-height:1.5}
-.ar-back{display:inline-block;font-size:12px;color:#9FC0DA;margin-bottom:6px}
-.ar-back:hover{color:#fff}
-.arena .ar-sec:last-of-type{padding-bottom:12px}
-.ar-stars{display:block;color:#E9A93D;letter-spacing:1px;margin-top:6px}
-.ml tr.hl td{background:#EEF6FC}
-/* זירת הפגישה — טאבים כמו במערכת */
+.ar-h.slim .ar-nm{font-size:12.5px;color:var(--on-navy2)}
+.ar-h.slim .c{color:var(--on-navy4)}
+.ar-h.slim .ar-dt::before{content:"·";color:var(--on-navy4);margin-inline-end:8px}
+.ar-h.slim .ar-play{margin-inline-start:auto;padding:4px 12px}
+.ar-cap{font-size:11.5px;color:var(--on-navy3);letter-spacing:.3px}
+.ar-h h2{font-size:19px;font-weight:700;margin-top:4px}
+.ar-meta{display:flex;gap:7px;font-size:13px;color:var(--on-navy);margin-top:4px}
+.ar-meta .c{color:var(--on-navy4)}
+.ar-back{display:inline-block;font-size:12px;color:var(--on-navy3);margin-bottom:6px}
+.ar-back:hover{color:var(--white)}
 .ar-top{display:flex;align-items:center;gap:10px}
-.ar-st{font-size:11px;font-weight:700;border-radius:12px;padding:2px 10px}
-.ar-st.wait{background:#FFF4DF;color:#9A6300}
-.ar-st.ok{background:rgba(19,137,91,.25);color:#9FE8C5}
-.ar-st.bad{background:rgba(232,99,90,.3);color:#FFD3CF}
+.ar-st{font-size:12px;font-weight:600;border-radius:7px;padding:2px 9px;background:rgba(255,255,255,.12);color:var(--white)}
+.ar-st.wait{background:rgba(201,132,4,.3);color:var(--on-warn)}
+.ar-st.ok{background:rgba(19,137,91,.3);color:var(--on-good)}
+.ar-st.bad{background:rgba(232,99,90,.3);color:var(--on-bad)}
 .ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--navy);flex:none}
-.ar-tabs button{font:inherit;font-size:13.5px;font-weight:600;color:#9FC0DA;background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
-.ar-tabs button:hover{color:#fff}
-.ar-tabs button.on{color:#fff;border-color:var(--coral)}
-.ar-ins{background:#F0F7FC;border:1px solid #D8EAF5;border-radius:8px;padding:10px 14px;margin-bottom:8px}
-.ar-ins b{display:block;font-size:13px;color:var(--ink);margin-bottom:3px}
-.ar-ins span{font-size:12.5px;color:var(--ink2);line-height:1.5}
-.ar-ins.good{background:#F1FAF5;border-color:#CDEBD9}
-.ar-ins.good b{color:#13895b}
-.ar-ins.imp{background:#FFF9F0;border-color:#F3DFC0}
-.ar-ins.imp b{color:#9A6300}
-.ar-who{font-style:normal;font-size:11px;color:var(--ink3);margin-inline-start:auto;white-space:nowrap}
-.ar-txr{font-size:13px;color:var(--ink);padding:4px 0;line-height:1.5}
-.ar-txr b{color:var(--ink3);font-weight:600;margin-inline-end:6px}
-.ar-txfull{display:inline-block;margin-top:8px;font-size:12.5px;color:var(--sky);font-weight:600}
-/* נגן ההקלטה — כפתור עם גל */
-.ar-play{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:12.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:22px;padding:7px 16px;cursor:pointer}
+.ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--on-navy3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
+.ar-tabs button:hover{color:var(--white)}
+.ar-tabs button.on{color:var(--white);border-color:var(--coral)}
+.ar-play{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:12.5px;font-weight:600;color:var(--white);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 14px;cursor:pointer}
 .ar-play:hover{background:rgba(255,255,255,.18)}
 .ar-wave{display:inline-flex;align-items:center;gap:2px;height:16px}
-.ar-wave i{width:2.5px;border-radius:2px;background:#7FC7EC;height:30%}
+.ar-wave i{width:2.5px;border-radius:4px;background:var(--sky);height:30%}
 .ar-wave i:nth-child(2n){height:75%}.ar-wave i:nth-child(3n){height:50%}.ar-wave i:nth-child(5n){height:95%}
 .ar-play.playing .ar-wave i{animation:arw .7s ease-in-out infinite alternate}
 .ar-play.playing .ar-wave i:nth-child(2n){animation-delay:.15s}.ar-play.playing .ar-wave i:nth-child(3n){animation-delay:.3s}
 @keyframes arw{from{transform:scaleY(.4)}to{transform:scaleY(1.15)}}
-/* טאב הסיכום — כמו במערכת */
-.ar-sky{font-size:15px !important;color:#2E9BD6 !important;font-weight:700 !important;margin:14px 0 8px !important}
-.ar-sky:first-child{margin-top:2px !important}
+.ar-sec{padding:12px 20px 2px}
+.ar-sec:last-child{padding-bottom:14px}
+.ar-sec h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.ar-sec h4~h4{margin-top:14px}
+.ar-r{display:flex;gap:10px;font-size:13px;line-height:1.45;padding:5px 0;color:var(--ink)}
+.ar-r i{font-style:normal;flex:none;width:18px;height:18px;border-radius:50%;background:var(--tint);color:var(--navy);display:grid;place-items:center;font-size:11.5px;margin-top:1px}
+.ar-r.warn i{background:var(--bad-bg);color:var(--bad-ink)}
+.ar-r.warn{color:var(--bad-ink)}
+.ar-q{font-size:13px;color:var(--ink2);background:var(--tint2);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;line-height:1.5}
+.ar-none{font-size:13px;color:var(--ink2);background:var(--tint2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;line-height:1.5}
+.ar-acts{display:flex;gap:8px;padding:12px 20px 14px;margin-top:auto;border-top:1px solid var(--bd);background:var(--white);flex:none;flex-wrap:wrap}
 .ar-ol{padding-inline-start:20px;margin:0}
-.ar-ol li{font-size:13.5px;color:var(--ink);line-height:1.55;padding:3px 0}
+.ar-ol li{font-size:13px;color:var(--ink);line-height:1.55;padding:3px 0}
 .ar-ins2{margin-bottom:12px}
 .ar-ins2 b{display:block;font-size:14px;color:var(--navy);margin-bottom:3px}
-.ar-ins2 p{font-size:13px;color:var(--ink2);line-height:1.55;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ar-ins2 p.open{-webkit-line-clamp:unset}
-.ar-more{font-size:12.5px;color:#2E9BD6;border-bottom:1px solid #2E9BD6}
+.ar-ins2 p{font-size:13px;color:var(--ink2);line-height:1.55;margin:0}
 .ar-who2{color:var(--ink3);font-size:12px}
-/* משוב — אקורדיון כמו במערכת */
+.ar-ins{background:var(--info-bg);border:1px solid var(--info-bd);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+.ar-ins b{display:block;font-size:13px;color:var(--ink);margin-bottom:3px}
+.ar-ins span{font-size:12.5px;color:var(--ink2);line-height:1.5}
+.ar-ins.good{background:var(--good-bg);border-color:var(--good-bd)}
+.ar-ins.good b{color:var(--good-ink)}
+.ar-ins.imp{background:var(--warn-bg);border-color:var(--warn-bd)}
+.ar-ins.imp b{color:var(--warn-ink)}
+.ar-txr{font-size:13px;color:var(--ink);padding:4px 0;line-height:1.5}
+.ar-txr b{color:var(--ink3);font-weight:600;margin-inline-end:6px}
 .ar-fbs{border-bottom:1px solid var(--bd)}
 .ar-fbh{width:100%;display:flex;align-items:center;justify-content:space-between;font:inherit;background:none;border:none;padding:11px 2px;cursor:pointer}
-.ar-fbh b{font-size:14.5px;color:var(--navy);font-weight:700}
+.ar-fbh b{font-size:14px;color:var(--navy);font-weight:700}
 .ar-fbh span{color:var(--ink3);transition:transform .15s}
 .ar-fbs.open .ar-fbh span{transform:rotate(180deg)}
 .ar-fbb{display:none;padding:0 2px 12px}
 .ar-fbs.open .ar-fbb{display:block}
 .ar-fbp{margin-bottom:10px}
 .ar-fbp b{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:4px}
-.ar-fbp b.g{color:#13895b}
-.ar-fbp b.o{color:#C77B18}
+.ar-fbp b.g{color:var(--green)}
+.ar-fbp b.o{color:var(--warn-ink)}
 .ar-fbp p{font-size:13px;color:var(--ink2);line-height:1.6;margin:0}
-/* טאב המשימות — כמו במערכת */
 .ar-tksub{font-size:12.5px;color:var(--ink3);margin-bottom:6px}
+.ar-tksub b{font-weight:600;color:var(--ink2)}
 .ar-tk{display:flex;align-items:flex-start;gap:12px;padding:11px 2px;border-bottom:1px solid var(--bd)}
-.ar-cb{width:19px;height:19px;border:1.5px solid #B7C3CF;border-radius:5px;display:grid;place-items:center;color:#fff;font-size:11px;cursor:pointer;flex:none;margin-top:2px}
-.ar-tk.done .ar-cb{background:var(--green);border-color:var(--green)}
-.ar-tk .ar-tkb b{display:block;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.45}
+.ar-cb{appearance:none;-webkit-appearance:none;width:19px;height:19px;border:1.5px solid var(--bd2);border-radius:4px;background:var(--white);display:grid;place-items:center;flex:none;margin-top:2px;cursor:pointer}
+.ar-cb:checked{background:var(--green);border-color:var(--green)}
+.ar-cb:checked::after{content:"✓";color:var(--white);font-size:12px;line-height:1}
+.ar-tk .ar-tkb b{display:block;font-size:13px;color:var(--ink);font-weight:500;line-height:1.45}
 .ar-tk.done .ar-tkb b{text-decoration:line-through;color:var(--ink3)}
 .ar-tk .ar-tkb span{font-size:12px;color:var(--ink3)}
-.ar-addtk{font:inherit;font-size:13px;font-weight:600;color:#2E9BD6;background:none;border:none;padding:10px 0 4px;cursor:pointer}
 .ar-tk .ar-tkacts{display:flex;align-items:center;gap:8px;margin-inline-start:auto;flex:none}
 .ar-tkacts .ari{display:grid;place-items:center;width:26px;height:26px;border:none;background:none;color:var(--navy);cursor:pointer;border-radius:6px}
 .ar-tkacts .ari:hover{background:var(--bg)}
-.ar-tkacts .ar-ok{font:inherit;font-size:12.5px;font-weight:600;color:#2E9BD6;background:#fff;border:1px solid #BFE0F2;border-radius:16px;padding:4px 16px;cursor:pointer}
-.ar-tkacts .ar-ok:hover{background:#F0F8FD}
 .ar-tk.done .ar-tkacts .ar-ok{visibility:hidden}
-.ar-tksub b{font-weight:700;color:var(--ink)}
+.ar-ok{font:inherit;font-size:12.5px;font-weight:500;color:var(--navy);background:var(--white);border:1px solid var(--bd);border-radius:6px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.ar-ok:hover{background:var(--bg)}
+.ar-addtk{font:inherit;font-size:13px;font-weight:600;color:var(--sky);background:none;border:none;padding:10px 0 4px;cursor:pointer}
 .ar-tkadd .ar-addfrm{display:none;gap:7px;margin-top:8px}
 .ar-tkadd.on .ar-addfrm{display:flex}
 .ar-tkadd.on .ar-addtk{display:none}
-.ar-addfrm input{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:8px;padding:7px 11px}
+.ar-addfrm input{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:6px 11px;color:var(--ink)}
 .ar-addfrm #arTkIn{flex:1;min-width:0}
 .ar-addfrm #arTkWho{width:110px}
-.ar-addfrm input:focus{outline:none;border-color:#2E9BD6}
-.ar-warnrow{display:flex;align-items:center;gap:10px;font-size:13px;color:#8A3D14;background:#FFF7F2;border:1px solid #EFB48D;border-radius:8px;padding:8px 12px;flex:1;flex-wrap:wrap}
-.ar-warnrow b{color:#8A3D14}
-.btn.sm2{padding:6px 12px !important;font-size:12.5px !important}
-.ar-addfrm button.ar-ok{flex:none}
-.ar-mem{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:9px 2px;border-bottom:1px solid var(--bd);font-size:13.5px;color:var(--ink);align-items:start}
-.ar-mem .k{font-size:12px;color:#6B4FA0;background:#F6F1FB;border:1px solid #E3D8F2;border-radius:12px;padding:2px 10px;text-align:center;white-space:nowrap}
-.ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:#2E9BD6;font-weight:600}
-/* נושאים חוזרים — הצעות מתחת לחיפוש */
-.topics{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:4px 20px;font-size:13px;align-items:start;background:#FAFCFE}
-.topics .tg{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;min-width:0}
-.topics:last-of-type{padding-bottom:14px;border-bottom:1px solid var(--bd)}
-.topics .lbl{font-size:12px;color:var(--ink3);font-weight:500;white-space:nowrap;padding-top:5px}
-.topics button{font:inherit;font-size:12px;font-weight:500;background:#F0F4F8;border:none;border-radius:7px;padding:4px 9px;color:var(--ink2);cursor:pointer;transition:background .12s,color .12s;white-space:nowrap}
-.topics button:hover{background:#E2EBF2;color:var(--navy)}
-.topics button.on{background:var(--navy);color:#fff}
-.topics button b{font-weight:600;color:var(--ink3);font-size:11.5px;margin-inline-start:4px}
-.topics button.on b{color:rgba(255,255,255,.75)}
-.topics.fbt button{background:#F4F1FA;color:#4A3580}
-.topics.fbt button:hover{background:#EAE3F5}
-.topics.fbt button.on{background:#6B4FA0;color:#fff}
-.topics button:hover{border-color:var(--navy)}
-.topics button.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.topics button.on b{background:rgba(255,255,255,.2);color:#fff}
-.tclr{display:none;font-size:12.5px;color:var(--red);font-weight:600;margin-inline-start:10px}
-.tclr.on{display:inline}
-.topics .tmore{background:none !important;color:var(--sky) !important;font-weight:600}
-.btn.rec .rd{display:none;width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:recdot 1.6s ease-in-out infinite}
-.btn.rec.recording .rd{display:inline-block}
-.btn.rec.recording svg{display:none}
+.ar-addfrm input:focus{outline:none;border-color:var(--sky)}
+.ar-addfrm .ar-ok{flex:none}
+.ar-warnrow{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--warn-ink);background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:8px 12px;flex:1;flex-wrap:wrap}
+.ar-warnrow b{color:var(--warn-ink);font-weight:600}
+.ar-mem{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:9px 2px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink);align-items:start}
+.ar-mem .k{font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--purple-bd);border-radius:7px;padding:2px 10px;text-align:center;white-space:nowrap}
+.ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--sky);font-weight:600}
+
+/* ---- toast ---- */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (min-height:1200px){
+  .ml td{padding:15px 14px}
+}
+@media (max-width:1450px){
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 24px 16px;gap:14px;height:calc(100vh - 120px)}
+  .nav,.strip{padding-inline:24px}
+  .strip{gap:20px}
+  .ph{padding:11px 18px 8px}
+  .ph h2{font-size:16px}
+  .miss{grid-template-columns:150px repeat(4,1fr)}
+  .miss .cap{padding:10px 16px}
+  .miss .q{padding:10px 16px}
+  .ml td{padding:8px 14px}
+  .ml .st{width:180px}
+  .ml .ac{width:122px}
+  .search{padding:10px 18px 8px}
+  .search input{height:34px}
+  .topics{padding:4px 18px}
+  #fbtRow{padding-bottom:12px}
+  .lfoot{padding:8px 18px;font-size:12px;gap:12px}
+  .lfoot span:nth-child(3){display:none}
+  .ar-h.slim .ar-dt{flex-basis:100%;margin-top:2px}
+  .ar-h.slim .ar-dt::before{content:none}
+  .ar-sec{padding:10px 18px 2px}
+  .ar-acts{padding:10px 18px 12px}
+}
 </style>
 </head>
 <body>
@@ -401,7 +321,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   <div class="me"><div><b>אילון אשכנזי</b>אשכנזי ייעוץ עסקי</div><i>אא</i></div>
 </nav>
 
-<header class="strip">
+<header class="strip dark">
   <div><h1>פגישות</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
@@ -410,8 +330,8 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     <span class="tm num">13:00</span>
     <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
     <span class="in num">בעוד 2:06</span>
-    <button class="btn rec" onclick="recTg(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button>
-    <button class="btn prep2" onclick="arenaShow('prep');document.getElementById('arena').scrollIntoView({behavior:'smooth',block:'start'})">הכנה לפגישה</button>
+    <button class="btn danger sm rec" onclick="recTg(this,'מטעי גבעון')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button>
+    <button class="btn sm" onclick="arenaShow('prep')">הכנה לפגישה</button>
   </div>
   <div class="spacer"></div>
   <div class="now num"><b>10:54</b> · עכשיו</div>
@@ -419,10 +339,19 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 
 <main class="wrap">
 
+  <!-- ===== מה חסר — הבלוק הכהה היחיד בגוף ===== -->
+  <section class="miss dark" id="miss">
+    <div class="cap"><b>מה חסר</b><span>לחיצה מסננת את הרשימה</span></div>
+    <button class="q" data-f="rec" data-w="אין תמלול, סיכום ומשימות"><span class="n num">0</span><span><span class="l">לא הוקלטה</span><span class="w">אין תמלול, סיכום ומשימות</span></span></button>
+    <button class="q" data-f="appr" data-w="מחכה לאישור שלך"><span class="n num">0</span><span><span class="l">סיכום לא אושר</span><span class="w">מחכה לאישור שלך</span></span></button>
+    <button class="q" data-f="sent" data-w="אושר — הלקוח עוד לא קיבל"><span class="n num">0</span><span><span class="l">סיכום לא נשלח</span><span class="w">אושר — הלקוח עוד לא קיבל</span></span></button>
+    <button class="q" data-f="prep" data-w="פגישה קרובה בלי דף הכנה"><span class="n num">0</span><span><span class="l">הכנה לא נפתחה</span><span class="w">פגישה קרובה בלי דף הכנה</span></span></button>
+  </section>
+
   <!-- ===== all meetings ===== -->
   <section class="panel list">
     <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint"></span>
-      <select class="cfil" id="cfil" onchange="apply()">
+      <select class="cfil" id="cfil" aria-label="סינון לפי לקוח">
         <option value="">כל הלקוחות</option>
         <option>אנרגי אינטרנשיונל</option><option>אנרגי גולני</option><option>מטעי גבעון</option><option>משה עובד</option><option>רימון יצחק</option>
       </select></div>
@@ -438,73 +367,72 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     <div class="topics fbt" id="fbtRow"></div>
     <div class="tw">
     <table class="ml" id="ml">
-      <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>משך</th><th></th></tr></thead>
+      <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>מה חסר</th><th></th></tr></thead>
       <tbody>
-        <tr class="m" data-tags="appr" data-fbt="why" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207"
+        <!-- הפגישה הקרובה של היום — ראש הרשימה -->
+        <tr class="m fut" tabindex="0" role="button" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
+          <td class="d num">היום<small class="num">16:00</small></td>
+          <td class="who"><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="dot">·</span><span class="mt">Zoom</span><span class="hit"></span></td>
+          <td class="st"><span class="al warn">הכנה לא נפתחה</span><i>בעוד 5 שעות</i></td>
+          <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="appr" data-fbt="why" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207"
             data-items='["סקירת המזומנים בשלושת החשבונות — מרכנתיל בחריגה","סיכון ריכוזיות: רימון מוצרי אנרגיה ≈ 70% מהמחזור","נבחן קידום מסגרת אשראי מול הבנק","יעד: לקוח משמעותי חדש עד ספטמבר"]'>
           <td class="d num">02.07<small class="num">09:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
-          <td class="len num">46 דק׳</td>
-          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();document.getElementById('r0207').classList.add('hl');arenaShow('r0207')">אישור ושליחה</button></td>
+          <td class="st"><span class="al warn">סיכום לא אושר</span><i>מהיום</i></td>
+          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">אישור ושליחה</button></td>
         </tr>
-        <tr class="m" data-tags="held" data-k="אנרגי גולני פ.ע חודש יוני" id="r2406">
+        <tr class="m" tabindex="0" role="button" data-tags="held" data-k="אנרגי גולני פ.ע חודש יוני" id="r2406">
           <td class="d num">24.06<small class="num">10:30</small></td>
           <td class="who"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
-          <td class="len">—</td>
-          <td class="ac"><button class="btn sm" data-act="resch">תיאום מחדש</button></td>
+          <td class="st"><span class="al info">הפגישה לא התקיימה</span><i>לפני 8 ימים</i></td>
+          <td class="ac"><button class="btn pri sm" data-act="resch">תיאום מחדש</button></td>
         </tr>
-        <tr class="m" data-tags="sent" data-fbt="why" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106"
+        <tr class="m" tabindex="0" role="button" data-tags="sent" data-fbt="why" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106"
             data-items='["מעבר לדיווח שבועי","יעד גבייה 95% — טיפול בחובות פתוחים","עדכון על מסגרת אשראי — ממתינים לבנק"]'>
           <td class="d num">01.06<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
-          <td class="len num">58 דק׳</td>
-          <td class="ac"></td>
+          <td class="st"><span class="al bad">סיכום לא נשלח</span><i>לפני 31 ימים</i></td>
+          <td class="ac"><button class="btn sm" onclick="event.stopPropagation();arenaShow('r0106')">שליחה ללקוח</button></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות" id="r1205"
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות" id="r1205"
             data-items='["מערך קורס המנחות אושר","תמחור הקורס והגבייה מהמשתתפות"]'>
           <td class="d num">12.05<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
-          <td class="len num">52 דק׳</td>
-          <td class="ac"><span class="ok">✓</span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
         </tr>
-        <tr class="m" data-tags="ok" data-fbt="deep nums" data-k="אנרגי אינטרנשיונל פ.ע חודש מאי" id="r0505a"
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-fbt="deep nums" data-k="אנרגי אינטרנשיונל פ.ע חודש מאי" id="r0505a"
             data-items='["ניתוח רבעון מרץ–מאי: הכנסות 116/140/120 אש״ח","זוהה פער: כרטיס ״מקס״ אינו מחובר ל-Bizibox","הוחלט: החלפת פונקציית שירות הלקוחות","הוגדר יעד: מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.7"]'>
           <td class="d num">05.05<small class="num">11:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש מאי</span><span class="hit"></span></td>
-          <td class="len num">49 דק׳</td>
-          <td class="ac"><span class="ok">✓</span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
         </tr>
-        <tr class="m" data-tags="rec" data-k="אנרגי גולני לימוד בנדל" id="r0505b">
+        <tr class="m" tabindex="0" role="button" data-tags="rec" data-k="אנרגי גולני לימוד בנדל" id="r0505b">
           <td class="d num">05.05<small class="num">09:00</small></td>
           <td class="who"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">לימוד בנדל</span><span class="hit"></span></td>
-          <td class="len num">55 דק׳</td>
-          <td class="ac"><button class="btn sm" data-act="upload">העלאת הקלטה</button></td>
+          <td class="st"><span class="al bad">לא הוקלטה</span><i>לפני 58 ימים</i></td>
+          <td class="ac"><button class="btn pri sm" data-act="upload">העלאת הקלטה</button></td>
         </tr>
-        <tr class="m" data-tags="ok" data-k="אנרגי אינטרנשיונל פגישה חודשית אפריל" id="r0304">
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל פגישה חודשית אפריל" id="r0304">
           <td class="d num">03.04<small class="num">10:00</small></td>
           <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה חודשית — אפריל</span><span class="hit"></span></td>
-          <td class="len num">57 דק׳</td>
-          <td class="ac"><span class="ok">✓</span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
         </tr>
-        <tr class="m" data-tags="ok" data-fbt="nums" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703"
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-fbt="nums" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703"
             data-items='["פילוח הוצאות לפי ספקים","יעד רווחיות Q2","נדונה מסגרת אשראי לגישור העונתיות"]'>
           <td class="d num">17.03<small class="num">12:00</small></td>
           <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
-          <td class="len num">61 דק׳</td>
-          <td class="ac"><span class="ok">✓</span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
         </tr>
-        <!-- future row, shown only under "הכנה לא נפתחה" -->
-        <tr class="m hid fut" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
-          <td class="d num">היום<small class="num">16:00</small></td>
-          <td class="who"><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="hit"></span></td>
-          <td class="len">Zoom</td>
-          <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></td>
-        </tr>
-        <tr class="fill"><td colspan="6"></td></tr>
       </tbody>
     </table>
     </div>
-    <div class="empty" id="empty">אין פגישה שמתאימה לחיפוש.</div>
+    <div class="empty" id="empty"><b id="emptyT"></b><span id="emptyS"></span><div><button class="btn sm" id="emptyR">ניקוי הסינון</button></div></div>
     <div class="lfoot"><span>משוב מהלקוח: <b>6 מתוך 8</b></span><span>הוקלטו: <b>6</b></span><span>הפגישה האחרונה שנשלחה ללקוח: <b class="num">12.05 מטעי גבעון</b></span></div>
   </section>
 
@@ -513,97 +441,108 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
 
 </main>
 
-<div class="ov" id="ov"><div class="md">
-  <h3 id="mdT">משוב</h3><div class="s" id="mdS"></div>
-  <div class="body" id="mdB"></div>
-  <div class="f"><button class="btn pri" id="mdClose">סגירה</button></div>
-</div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)};
-  let filter=null, query='';
+  window.toast=toast;
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const mark=(s,q)=>{const e=esc(s),eq=esc(q);return eq?e.split(eq).join('<mark>'+eq+'</mark>'):e};
   const rows=$$('#ml tbody tr.m');
-  const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
-  function nosetGo(){}
-  function topicGo(btn,q){
-    const on=btn.classList.contains('on');
-    document.querySelectorAll('.topics button').forEach(b=>b.classList.remove('on'));
-    const inp=document.getElementById('q');
-    if(on){ inp.value=''; query=''; } else { btn.classList.add('on'); inp.value=q; query=q; }
-    apply();
-  }
-  window.topicGo=topicGo;
-  let fbtFilter=null;
-  function fbtGo(btn,k){
-    const on=btn.classList.contains('on');
-    document.querySelectorAll('.topics.fbt button').forEach(b=>b.classList.remove('on'));
-    fbtFilter=on?null:k; if(!on) btn.classList.add('on');
-    apply();
-  }
-  window.fbtGo=fbtGo;
-  function tClear(){
-    fbtFilter=null; query=''; document.getElementById('q').value='';
-    document.querySelectorAll('.topics button').forEach(b=>b.classList.remove('on'));
-    apply();
-  }
-  window.tClear=tClear;
-  /* הנושאים מהג'וב היומי — מוצגים 4, השאר מאחורי "עוד" */
-  const TOPICS=[['מסגרת אשראי','מסגרת אשראי',4],['גבייה','גבייה',2],['קורס המנחות','קורס',1],['התלות ברימון','רימון מוצרי',1],['תמחור','תמחור',1],['גיוס עובדים','גיוס',1]];
-  const FBTS=[['חיבור חזק ל"למה"','why',2],['פתיחה במספרים בלי הקשר','nums',2],['צלילה לפרטים טכניים','deep',1],['הקשבה והכלה','listen',1],['סיכום פעולות חד','actions',1]];
+  const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה','תשע'];
+  /* מצב סינון אחד — כל צ'יפ, מסנן ותיבה נגזרים ממנו */
+  const S={q:'',fbt:null,f:null,c:''};
+  const MISS={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
+  const TOPICS=[['מסגרת אשראי','מסגרת אשראי'],['גבייה','גבייה'],['קורס המנחות','קורס'],['התלות ברימון','רימון מוצרי'],['תמחור','תמחור'],['גיוס עובדים','גיוס']];
+  const FBTS=[['חיבור חזק ל"למה"','why'],['פתיחה במספרים בלי הקשר','nums'],['צלילה לפרטים טכניים','deep'],['הקשבה והכלה','listen'],['סיכום פעולות חד','actions']];
   const T_CAP=4;
+  const items=r=>r.dataset.items?JSON.parse(r.dataset.items):[];
+  const qHit=(r,q)=>items(r).some(t=>t.includes(q))||r.dataset.k.includes(q);
+  const tagged=k=>rows.filter(r=>r.dataset.tags.split(' ').includes(k)).length;
+
+  /* ===== צ'יפים — המונה נגזר מאותו תנאי שהמסנן עצמו בודק, וצ'יפ ריק לא נרשם ===== */
   window._topMore=false; window._fbtMore=false;
   function renderTopics(){
-    const row=(items,host,go,moreKey,extra)=>{
-      const open=window[moreKey];
-      const list=open?items:items.slice(0,T_CAP);
+    const build=(src,host,go,moreKey,lbl,cur,extra)=>{
+      const live=src.map(x=>[x[0],x[1],host==='topRow'?rows.filter(r=>qHit(r,x[1])).length
+                                                     :rows.filter(r=>(r.dataset.fbt||'').split(' ').includes(x[1])).length])
+                    .filter(x=>x[2]>0);
+      const open=window[moreKey], list=open?live:live.slice(0,T_CAP);
       document.getElementById(host).innerHTML=
-        `<span class="lbl">${host==='topRow'?'נושאים שחזרו לאחרונה':'מה חוזר במשובים על היועץ'}</span><span class="tg">`
-        +list.map(x=>`<button onclick="${go}(this,'${x[1]}')">${x[0]}<b>·${x[2]}</b></button>`).join('')
-        +(items.length>T_CAP?`<button class="tmore" onclick="window.${moreKey}=!window.${moreKey};renderTopics()">${open?'פחות':'עוד '+(items.length-T_CAP)+' ▾'}</button>`:'')
+        `<span class="lbl">${lbl}</span><span class="tg">`
+        +list.map(x=>`<button class="chip${x[1]===cur?' on':''}" onclick="${go}(this,'${x[1]}')">${x[0]}<b>·${x[2]}</b></button>`).join('')
+        +(live.length>T_CAP?`<button class="chip tmore" onclick="window.${moreKey}=!window.${moreKey};renderTopics()">${open?'פחות':'עוד '+(live.length-T_CAP)+' ▾'}</button>`:'')
         +(extra||'')+'</span>';
     };
-    row(TOPICS,'topRow','topicGo','_topMore');
-    row(FBTS,'fbtRow','fbtGo','_fbtMore','<a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>');
+    build(TOPICS,'topRow','topicGo','_topMore','נושאים שחזרו לאחרונה',S.q);
+    build(FBTS,'fbtRow','fbtGo','_fbtMore','מה חוזר במשובים על היועץ',S.fbt,
+      '<a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>');
+    const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(S.q||S.fbt||S.f||S.c));
   }
-  renderTopics(); window.renderTopics=renderTopics;
+  window.renderTopics=renderTopics;
+
+  function topicGo(btn,q){ S.q=(S.q===q)?'':q; S.fbt=null; $('#q').value=S.q; apply(); }
+  function fbtGo(btn,k){ S.fbt=(S.fbt===k)?null:k; S.q=''; $('#q').value=''; apply(); }
+  function tClear(){ S.q='';S.fbt=null;S.f=null;S.c=''; $('#q').value=''; $('#cfil').value=''; apply(); }
+  window.topicGo=topicGo; window.fbtGo=fbtGo; window.tClear=tClear;
+
   function apply(){
     let shown=0;
-    const cf=document.getElementById('cfil').value;
     rows.forEach(r=>{
       const tags=r.dataset.tags.split(' ');
-      let ok = filter ? tags.includes(filter) : !r.classList.contains('fut');
-      if(ok&&cf&&!r.dataset.k.includes(cf)) ok=false;
-      if(ok&&fbtFilter&&!(r.dataset.fbt||'').split(' ').includes(fbtFilter)) ok=false;
+      let ok = S.f ? tags.includes(S.f) : true;
+      if(ok&&S.c&&!r.dataset.k.includes(S.c)) ok=false;
+      if(ok&&S.fbt&&!(r.dataset.fbt||'').split(' ').includes(S.fbt)) ok=false;
       const hit=r.querySelector('.hit'); hit.innerHTML='';
-      if(ok && query){
-        const items=r.dataset.items?JSON.parse(r.dataset.items):[];
-        const m=items.findIndex(s=>s.includes(query));
-        const kOk=r.dataset.k.includes(query);
-        if(m>=0){hit.innerHTML='<i>סעיף '+(m+1)+'</i>'+items[m].replace(query,'<mark>'+query+'</mark>')}
-        else if(!kOk) ok=false;
+      if(ok&&S.q){
+        const it=items(r), m=it.findIndex(t=>t.includes(S.q));
+        if(m>=0) hit.innerHTML='<i>סעיף '+(m+1)+'</i>'+mark(it[m],S.q);
+        else if(!r.dataset.k.includes(S.q)) ok=false;
       }
       r.classList.toggle('hid',!ok); if(ok) shown++;
     });
+    /* המונים בבלוק הכהה — נספרים מהנתונים בכל רינדור */
+    $$('#miss .q').forEach(b=>{
+      const n=tagged(b.dataset.f);
+      b.querySelector('.n').textContent=n;
+      b.querySelector('.w').textContent = n===0?'אין חוסרים':b.dataset.w;
+      b.classList.toggle('zero',n===0);
+      b.classList.toggle('on',S.f===b.dataset.f);
+    });
+    const parts=[];
+    if(S.f) parts.push(MISS[S.f]);
+    const fbl=(FBTS.find(f=>f[1]===S.fbt)||[])[0]; if(fbl) parts.push(fbl);
+    if(S.c) parts.push(S.c);
+    $('#hint').textContent = parts.length?'מסונן: '+parts.join(' · ')+' · '+(hebCount[shown]||shown):'';
+    $('#res').innerHTML = S.q?'<b>'+shown+'</b> תוצאות ל-״'+esc(S.q)+'״':'';
+    $('#clr').classList.toggle('on',!!S.q);
     $('#empty').classList.toggle('on',shown===0);
-
-    const names={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
-    const cf2=document.getElementById('cfil').value;
-    const fbtNames={why:'חיבור חזק ל"למה"',nums:'פתיחה במספרים בלי הקשר',deep:'צלילה לפרטים טכניים'};
-    $('#hint').textContent = fbtFilter ? 'מסונן: '+fbtNames[fbtFilter]+' — מתוך המשובים · '+hebCount[shown]
-      : filter ? 'מסונן: '+names[filter]+' · '+hebCount[shown] : cf2 ? cf2+' · '+hebCount[shown] : '';
-    const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(fbtFilter||query));
-    $('#res').innerHTML = query ? '<b>'+shown+'</b> תוצאות ל-״'+query+'״' : '';
-    $('#clr').classList.toggle('on',!!query);
+    if(shown===0){
+      $('#emptyT').textContent = S.q?'אין פגישה שמכילה ״'+S.q+'״'
+                                 : S.c?'אין פגישה של '+S.c+' שמתאימה לסינון'
+                                 : 'אין פגישה שמתאימה לסינון';
+      $('#emptyS').textContent = S.q?'החיפוש עובר על סיכומי הפגישות ועל שמות הפגישות.'
+                                   :'אפשר לנקות את הסינון ולחזור לכל הפגישות.';
+    }
+    renderTopics();
   }
 
-  $('#q').addEventListener('input',e=>{query=e.target.value.trim();apply()});
-  $('#clr').addEventListener('click',e=>{e.preventDefault();$('#q').value='';query='';apply()});
+  $('#q').addEventListener('input',e=>{S.q=e.target.value.trim();S.fbt=null;apply()});
+  $('#clr').addEventListener('click',e=>{e.preventDefault();S.q='';$('#q').value='';apply()});
+  $('#cfil').addEventListener('change',e=>{S.c=e.target.value;apply()});
+  $('#emptyR').addEventListener('click',tClear);
+  $$('#miss .q').forEach(b=>b.addEventListener('click',()=>{S.f=(S.f===b.dataset.f)?null:b.dataset.f;apply()}));
 
-  /* ===== הזירה בפאנל: ברירת מחדל — הפגישה הבאה. לחיצה על שורה טוענת אותה.
-     כל פגישה מציגה רק מה שבאמת יש לה — לא לכל פגישה יש סיכום, משימות, תמלול או משוב. */
+  function recTg(b,co){
+    b.classList.toggle('recording');
+    const on=b.classList.contains('recording');
+    b.querySelector('.rl').textContent=on?'מקליט…':'הקלטה';
+    toast(on?'ההקלטה התחילה — '+co:'ההקלטה נעצרה');
+  }
+  window.recTg=recTg;
+
   const ARENA={
     prep:{cap:'הכנה לפגישה · הבאה', co:'מטעי גבעון', meta:'היום 13:00 · שיחת מעקב · תומר לוי', next:true,
       prev:{d:'12.05', rows:['יעד קניות מלאי סומן בסיכון — סוכם מעקב חודשי','קורס מנחות יצא לדרך · 4/4 משימות נסגרו']},
@@ -659,16 +598,18 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
   function arenaShow(id){
     const a=ARENA[id]||ARENA.r0207; window._arSel=id=ARENA[id]?id:'r0207';
     const host=document.getElementById('arena');
+    document.querySelectorAll('#ml tr.hl').forEach(x=>x.classList.remove('hl'));
+    const selTr=document.getElementById(id); if(selTr) selTr.classList.add('hl');
     /* --- הכנה לפגישה עתידית --- */
     if(a.next){
       host.innerHTML=`<div class="ar-h">
           <a class="ar-back" href="#" onclick="event.preventDefault();arenaShow('r0207')">→ חזרה לזירת הפגישה</a>
           <span class="ar-cap">${a.cap}</span><h2>${a.co}</h2>
           <div class="ar-meta">${a.meta.split(' · ').map(x=>'<span>'+x+'</span>').join('<span class="c">·</span>')}</div></div>
-        <div class="ar-sec"><h4>מהפגישה הקודמת · ${a.prev.d}</h4>${a.prev.rows.map((r,i)=>`<div class="ar-r"><i>${i+1}</i>${r}</div>`).join('')}</div>
+        <div class="ar-body"><div class="ar-sec"><h4>מהפגישה הקודמת · ${a.prev.d}</h4>${a.prev.rows.map((r,i)=>`<div class="ar-r"><i>${i+1}</i>${r}</div>`).join('')}</div>
         <div class="ar-sec"><h4>מה השתנה מאז</h4>${a.changed.map(c=>`<div class="ar-r ${c.w?'warn':''}"><i>${c.w?'!':'+'}</i>${c.tx}</div>`).join('')}</div>
-        <div class="ar-sec"><h4>איך לדבר עם תומר</h4><div class="ar-q">${a.talk}</div></div>
-        <div class="ar-acts"><button class="btn rec2" onclick="recTg2(this,'${a.co}')"><span class="rl">הקלטה</span></button></div>`;
+        <div class="ar-sec"><h4>איך לדבר עם תומר</h4><div class="ar-q">${a.talk}</div></div></div>
+        <div class="ar-acts"><button class="btn danger rec" onclick="recTg(this,'${a.co}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button></div>`;
       return;
     }
     /* --- פגישה בלי תוצרים --- */
@@ -680,11 +621,11 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
             <b class="num">${(a.meta.match(/(\d+) דק/)||[,''])[1]}:00</b>
           </button>`:''}
         </div>
-        <div class="ar-line"><h2>${a.co}</h2><span class="c">·</span><span class="ar-nm">${a.name}</span><span class="c">·</span><span class="num ar-nm">${a.meta}</span></div>
+        <div class="ar-line"><h2>${a.co}</h2><span class="c">·</span><span class="ar-nm">${a.name}</span><span class="num ar-nm ar-dt">${a.meta}</span></div>
       </div>`;
     if(a.none){
-      host.innerHTML=head+`<div class="ar-sec"><div class="ar-none">${a.none}</div></div>
-        <div class="ar-acts">${a.act?`<button class="btn rec2" data-act="${a.act[0]}" style="background:#fff;color:var(--navy)">${a.act[1]}</button>`:''}</div>`;
+      host.innerHTML=head+`<div class="ar-body"><div class="ar-sec"><div class="ar-none">${a.none}</div></div></div>
+        <div class="ar-acts">${a.act?`<button class="btn pri" data-act="${a.act[0]}">${a.act[1]}</button>`:''}</div>`;
       return;
     }
     /* --- הזירה: טאבים כמו במערכת — סיכום פגישה · משימות · משוב · תמלול --- */
@@ -693,22 +634,22 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     let body='';
     if(_arTab==='sum'){
       body=`<div class="ar-sec">
-        <h4 class="ar-sky">תמונת מצב ונתוני יסוד</h4>
+        <h4>תמונת מצב ונתוני יסוד</h4>
         <ol class="ar-ol">${a.base.map(r=>`<li>${r}</li>`).join('')}</ol>
-        ${a.insights?`<h4 class="ar-sky">תובנות מרכזיות</h4>
-          ${a.insights.map((x,i)=>`<div class="ar-ins2"><b>${i+1}. ${x.t}</b><p>${x.d}</p><a href="#" class="ar-more" onclick="event.preventDefault();this.previousElementSibling.classList.toggle('open');this.textContent=this.textContent==='קרא עוד'?'סגור':'קרא עוד'">קרא עוד</a></div>`).join('')}`:''}
-        ${a.tasks&&a.tasks.length?`<h4 class="ar-sky">משימות לביצוע</h4>
+        ${a.insights?`<h4>תובנות מרכזיות</h4>
+          ${a.insights.map((x,i)=>`<div class="ar-ins2"><b>${i+1}. ${x.t}</b><p>${x.d}</p></div>`).join('')}`:''}
+        ${a.tasks&&a.tasks.length?`<h4>משימות לביצוע</h4>
           <ol class="ar-ol">${a.tasks.map(k=>`<li>${k.t} <span class="ar-who2">— ${k.who}</span></li>`).join('')}</ol>`:''}
       </div>`;
     }else if(_arTab==='tasks'){
       body=`<div class="ar-sec"><div class="ar-tksub"><b>להלן המשימות המוצעות ללקוח, יש לאשרן, ורק לאחר מכן ליצור את המשימות.</b></div>
         ${a.tasks.map((k,i)=>`<div class="ar-tk ${k.ok?'done':''}">
-          <span class="ar-cb" onclick="this.parentNode.classList.toggle('done')">✓</span>
+          <input type="checkbox" class="ar-cb" ${k.ok?'checked':''} aria-label="אישור המשימה: ${k.t}" onchange="arTkTg(${i},this.checked)">
           <div class="ar-tkb"><b>${k.t}</b><span>באחריות: ${k.who}</span></div>
           <span class="ar-tkacts">
             <button class="ari" title="קובץ מצורף" onclick="toast('צירוף קובץ למשימה')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
-            <button class="ari" title="מחיקה" onclick="this.closest('.ar-tk').remove();toast('המשימה נמחקה')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
-            <button class="ar-ok" onclick="const r=this.closest('.ar-tk');r.classList.add('done');toast('המשימה אושרה')">אישור</button>
+            <button class="ari" title="מחיקה" onclick="arTkDel(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+            <button class="ar-ok" onclick="arTkTg(${i},true)">אישור</button>
           </span>
         </div>`).join('')}
         <div class="ar-tkadd" id="arTkAdd">
@@ -720,7 +661,7 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
           </form>
         </div></div>`;
     }else if(_arTab==='mem'){
-      body=`<div class="ar-sec"><h4 class="ar-sky">מה נכנס לזיכרון הלקוח מהפגישה</h4>
+      body=`<div class="ar-sec"><h4>מה נכנס לזיכרון הלקוח מהפגישה</h4>
         ${a.mem.map(m=>`<div class="ar-mem"><span class="k">${m[0]}</span><span>${m[1]}</span></div>`).join('')}
         <a class="ar-memfull" href="memory.html">זיכרון הלקוח המלא ←</a></div>`;
     }else if(_arTab==='fb'){
@@ -740,12 +681,12 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
     }
     const acts=a.acts==='pending'
-      ?`<button class="btn rec2" style="background:var(--coral)" onclick="arApprove(true)">אישור ושליחה ל${a.contact||'לקוח'}</button><button class="btn full" onclick="arApprove(false)">אישור ללא שליחה</button>`
-      :a.acts==='send'?`<button class="btn rec2" style="background:var(--coral)" onclick="arSend()">שליחת הסיכום ללקוח</button>`
-      :`<a class="btn full" href="../../meeting-room.html">הזירה המלאה ↗</a>`;
+      ?`<button class="btn pri" onclick="arApprove(true)">אישור ושליחה ל${a.contact||'לקוח'}</button><button class="btn" onclick="arApprove(false)">אישור ללא שליחה</button>`
+      :a.acts==='send'?`<button class="btn pri" onclick="arSend()">שליחת הסיכום ללקוח</button>`
+      :`<a class="btn" href="../../meeting-room.html">הזירה המלאה ↗</a>`;
     host.innerHTML=head
       +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
-      +body+`<div class="ar-acts">${acts}</div>`;
+      +`<div class="ar-body">`+body+`</div><div class="ar-acts">${acts}</div>`;
   }
   /* ===== אישור ושליחה — הזרימה המלאה =====
      שליחה עם משימות שלא אושרו ⇒ עצירה ושאלה. אחרי הפעולה — הסטטוס,
@@ -757,13 +698,15 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
       window._arForce=true;
       const f=document.querySelector('#arena .ar-acts');
       f.innerHTML=`<div class="ar-warnrow"><b>${open} משימות טרם אושרו</b> — יישלחו רק המאושרות.
-        <button class="btn rec2 sm2" onclick="arApprove(true)">שליחה בכל זאת</button>
-        <button class="btn full sm2" onclick="window._arForce=false;arTab('tasks')">חזרה למשימות</button></div>`;
+        <button class="btn pri sm" onclick="arApprove(true)">שליחה בכל זאת</button>
+        <button class="btn sm" onclick="window._arForce=false;arTab('tasks')">חזרה למשימות</button></div>`;
       return;
     }
     window._arForce=false;
-    (a.tasks||[]).forEach(k=>{ if(k.ok||send===false) return; });
-    if(send){ a.st='נסגרה ✓'; a.stc='ok'; a.acts=null; toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ · המשימות המאושרות נוצרו'); arRowClose(); }
+    const made=(a.tasks||[]).filter(k=>k.ok).length;
+    (a.tasks||[]).forEach(k=>{ if(send&&k.ok) k.made=1; });
+    if(send){ a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
+      toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ'+(made?' · נוצרו '+made+' משימות':' · לא נוצרו משימות')); arRowClose(); }
     else{ a.st='אושר — לא נשלח'; a.stc='wait'; a.acts='send'; toast('הסיכום אושר · לא נשלח ללקוח'); arRowSendBtn(); }
     arenaShow(window._arSel);
   }
@@ -773,11 +716,23 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ');
     arRowClose(); arenaShow(window._arSel);
   }
-  function arRowClose(){ const tr=document.getElementById(window._arSel); if(!tr) return;
-    const ac=tr.querySelector('.ac'); if(ac) ac.innerHTML='<span class="ok">✓</span>'; }
-  function arRowSendBtn(){ const tr=document.getElementById(window._arSel); if(!tr) return;
-    const ac=tr.querySelector('.ac'); if(ac) ac.innerHTML=''; }
+  function arRowState(tags,st,ac){
+    const tr=document.getElementById(window._arSel); if(!tr) return;
+    tr.dataset.tags=tags;
+    const c=tr.querySelector('.st'); if(c) c.innerHTML=st;
+    const b=tr.querySelector('.ac'); if(b) b.innerHTML=ac;
+    apply();
+  }
+  function arRowClose(){ arRowState('ok','<span class="al ok">הושלם</span>',''); }
+  function arRowSendBtn(){ const id=window._arSel;
+    arRowState('sent','<span class="al warn">סיכום לא נשלח</span><i>מהיום</i>',
+      '<button class="btn sm" onclick="event.stopPropagation();arenaShow(\''+id+'\')">שליחה ללקוח</button>'); }
   window.arApprove=arApprove; window.arSend=arSend;
+  function arTkTg(i,on){ const a=ARENA[window._arSel]; if(!a.tasks||!a.tasks[i]) return;
+    a.tasks[i].ok=on?1:0; toast(on?'המשימה אושרה':'האישור בוטל'); arenaShow(window._arSel); }
+  function arTkDel(i){ const a=ARENA[window._arSel]; if(!a.tasks||!a.tasks[i]) return;
+    a.tasks.splice(i,1); toast('המשימה נמחקה'); arenaShow(window._arSel); }
+  window.arTkTg=arTkTg; window.arTkDel=arTkDel;
   function arTkNew(){
     const v=document.getElementById('arTkIn').value.trim(); if(!v) return;
     const who=document.getElementById('arTkWho').value.trim()||'צוות הייעוץ';
@@ -786,61 +741,37 @@ table.ml{width:100%;border-collapse:collapse;font-size:14px}
     setTimeout(()=>{const d=document.getElementById('arTkAdd'); if(d){d.classList.add('on');document.getElementById('arTkIn').focus();}},40);
   }
   window.arTkNew=arTkNew;
-  function recTg2(b,co){b.classList.toggle('recording');b.querySelector('.rl').textContent=b.classList.contains('recording')?'● מקליט…':'הקלטה';toast(b.classList.contains('recording')?'ההקלטה התחילה — '+co:'ההקלטה נעצרה');}
-  window.recTg2=recTg2;
   function arPlay(b){ b.classList.toggle('playing'); toast(b.classList.contains('playing')?'ההקלטה מתנגנת…':'ההשמעה הופסקה'); }
   window.arTab=arTab; window.arPlay=arPlay;
   document.addEventListener('click',e=>{
     const tr=e.target.closest('#ml tbody tr.m');
     if(!tr||e.target.closest('a,button')) return;
-    document.querySelectorAll('#ml tr.hl').forEach(x=>x.classList.remove('hl'));
-    tr.classList.add('hl');
-    arenaShow(tr.id||'next');
+    arenaShow(tr.id);
   });
-  window.arenaShow=arenaShow; window.nosetGo=nosetGo;
-  setTimeout(()=>arenaShow('r0207'),0);   /* אחרי הגדרת FB */
-  // feedback modal — תוכן המשוב עצמו: ציון + מה הלקוח כתב
-  const FB={
-    '02.07 09:00':{r:5,who:'צחי עובד',tx:'"פגישה ממוקדת. סוף סוף הבנתי את תמונת התזרים המלאה."'},
-    '01.06 11:00':{r:4,who:'צחי עובד',tx:'"טובה, קצת ארוכה. הייתי מוותר על חלק מהגרפים."'},
-    '12.05 10:00':{r:5,who:'תומר לוי',tx:'"הקורס נתן למנחות כלים אמיתיים. תודה!"'},
-    '05.05 11:00':{r:4,who:'צחי עובד',tx:'"מועיל. נשאר לי לא ברור נושא המסגרת — נדבר בפעם הבאה."'},
-    '03.04 10:00':{r:5,who:'צחי עובד',tx:'"מצוין כרגיל."'},
-    '17.03 12:00':{r:3,who:'דורון יצחק',tx:'"הרבה מספרים, פחות פילוחים. ביקשתי פירוט לפי ספקים."'},
-  };
-  const ov=$('#ov');
-  document.addEventListener('click',e=>{
-    const a=e.target.closest('[data-fb]'); if(!a) return; e.preventDefault();
-    const [c,d,n]=a.dataset.fb.split(' · ');
-    const fb=FB[d]||{r:4,who:'הלקוח',tx:'—'};
-    $('#mdT').textContent='משוב מהלקוח · '+c; $('#mdS').textContent=d+' · '+n;
-    $('#mdB').innerHTML='<div class="row"><span>ציון</span><span class="fbstars">'+'★'.repeat(fb.r)+'<i>'+'★'.repeat(5-fb.r)+'</i><b> '+fb.r+'/5</b></span></div>'
-      +'<div class="row"><span>מי מילא</span><span>'+fb.who+'</span></div>'
-      +'<div class="row"><span>מה נכתב</span><span>'+fb.tx+'</span></div>';
-    ov.classList.add('on');
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ') return;
+    const tr=e.target.closest?e.target.closest('#ml tbody tr.m'):null;
+    if(!tr||e.target!==tr) return;
+    e.preventDefault(); arenaShow(tr.id);
   });
-  $('#mdClose').addEventListener('click',()=>ov.classList.remove('on'));
-  ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('on')});
-
-  // actions
-  const setCount=(id,n)=>{const q=$('#'+id);q.querySelector('.n').textContent=n;q.classList.toggle('zero',n===0);if(n===0)q.querySelector('.w').textContent='הכל בסדר'};
+  window.arenaShow=arenaShow;
+  /* פעולות הרשימה */
   document.addEventListener('click',e=>{
     const b=e.target.closest('[data-act]'); if(!b) return;
     const act=b.dataset.act;
-    if(act==='appr'){const r=$('#r0207');r.dataset.tags='ok';r.querySelector('.st').innerHTML='<span>הוקלטה</span><span class="dot">·</span><span>אושר</span>';r.querySelector('.ac').innerHTML='<span class="ok">✓</span>';setCount('q-appr',0);toast('הסיכום של אנרגי אינטרנשיונל אושר');apply()}
-    else if(act==='send'){const r=$('#r0106');r.dataset.tags='ok';r.querySelector('.st').innerHTML='<span>הוקלטה</span><span class="dot">·</span><span>אושר ונשלח</span>';r.querySelector('.ac').innerHTML='<span class="ok">✓</span>';setCount('q-sent',0);toast('הסיכום נשלח ללקוח');apply()}
-    else if(act==='upload'){toast('בחירת קובץ הקלטה — לימוד בנדל 05.05')}
-    else if(act==='resch'){toast('תיאום מחדש עם אנרגי גולני — נפתח ביומן')}
-    else if(act==='sched'){toast('קביעת פגישה עם רימון יצחק — נפתח ביומן')}
-    else if(act==='prep'){location.href='today.html?prep=039112774'}
-    else if(act==='prepopen'){location.href='today.html?prep=511327876'}
+    if(act==='upload') toast('בחירת קובץ הקלטה — לימוד בנדל 05.05');
+    else if(act==='resch') toast('תיאום מחדש עם אנרגי גולני — נפתח ביומן');
+    else if(act==='prep') location.href='today.html?prep=039112774';
   });
+  /* חוזה כתובת: ?c לקוח · ?q חיפוש · ?f מה חסר · ?m פגישה */
   const u=new URLSearchParams(location.search);
-  if(u.get('f')) filter=u.get('f'); if(u.get('q')){query=u.get('q');$('#q').value=query}
+  if(u.get('f')&&MISS[u.get('f')]) S.f=u.get('f');
+  if(u.get('q')){ S.q=u.get('q').trim(); $('#q').value=S.q; }
+  if(u.get('c')){ const v=u.get('c'), sel=$('#cfil');
+    if([...sel.options].some(o=>(o.value||o.text)===v)){ sel.value=v; S.c=v; } }
   apply();
+  arenaShow(u.get('m')||'r0207');
 })();
-function recTg(b){b.classList.toggle('recording');const on=b.classList.contains('recording');b.querySelector('.rl').textContent=on?'מקליט…':'הקלטה';toast(on?'ההקלטה התחילה — מטעי גבעון':'ההקלטה נעצרה');}
-window.recTg=recTg;
 </script>
 </body>
 </html>

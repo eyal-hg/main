@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנרגי אינטרנשיונל · פגישות · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך הלקוח · פגישות — אנרגי אינטרנשיונל
+   ---------------------------------------------------------------------
+   אותה משפחה כמו מסכי היועץ, ניב אחר:
+   · הרצועה מעוגנת לעסק (שם החברה), לא למסך. שם המסך יורד לניווט.
+   · הדבר החי ברצועה שייך למסך הזה: הפגישה הבאה + הספירה לאחור + הצטרפות.
+   · צפיפות נמוכה: 14.5px בסיס, כרטיסים במקום טבלה, ריווח 20.
+   · רדיוס רך: פאנל 14, כרטיס פנימי 12, פקד 8.
+   · תכלת = המבטא המוביל. קורל = אך ורק סכנה כספית — במסך הזה אין כזו,
+     ולכן אין בו קורל בכלל. איחור במשימה = כתום, לא קורל.
+   · גוף פנייה שני: "הפגישה שלך", "מה מחכה ממך", "ביקשת שנדבר על".
+   · קרקע בהירה וחמימה יותר: #F7F9FC.
+   הבלוק הכהה היחיד בגוף = כרטיס הפגישה הבאה — שם פועלים (הצטרפות /
+   תיאום מחדש / העלאת נושא), לא שם קוראים.
+   מה שאסור להופיע כאן: תמלול, הקלטה, זיכרון הלקוח, משוב על היועץ,
+   סטטוס פנימי של HK. הלקוח רואה רק את מה ששלו.
+   ===================================================================== */
+:root{
+  /* --- המשפחה: זהה למסכי היועץ, בלי גוון חדש --- */
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
+  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
+  --row-hover:#F8FBFD;--bd2:#B7C3CF;--line:#C4CED8;
+  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--good-bg:#F1FAF5;
+  /* --- הניב של הלקוח: כל ערך שמבדיל מוגדר כאן, זהה בכל חמשת המסכים --- */
+  --bg:#F7F9FC;
+  --r-panel:14px;--r-card:12px;--r-ctl:8px;
+  --fs:14.5px;--fs-sub:13px;--fs-meta:12.5px;
+  --pad:20px;--sec:20px;
+  --big:30px;--big2:26px;
+  --ok-on-navy:#4FCB92;
+  --shadow:0 1px 2px rgba(12,64,104,.05),0 6px 18px rgba(12,64,104,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.mn{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+/* ---------- ניווט: כאן חיים שמות המסכים ---------- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px}
+.nav li a{display:block;padding:6px 13px;border-radius:var(--r-ctl);color:var(--ink2);font-size:13.5px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:var(--fs-meta);color:var(--ink3);text-align:end}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
+.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+
+/* ---------- רצועת הזהות: מעוגנת לעסק · נושאת את הפגישה הבאה ---------- */
+.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:24px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1.05;letter-spacing:-.3px}
+.strip .id .sub{font-size:var(--fs-meta);color:var(--on-navy3);margin-top:3px}
+.strip .id .sub a{color:var(--on-navy);border-bottom:1px solid rgba(255,255,255,.28)}
+.strip .id .sub a:hover{border-color:var(--white);color:var(--white)}
+.strip .sep{width:1px;height:34px;background:rgba(255,255,255,.16)}
+.strip .live{display:flex;align-items:center;gap:14px;min-width:0}
+.strip .live .cap{font-size:11.5px;letter-spacing:.5px;color:var(--on-navy3);text-transform:uppercase}
+.strip .live .tm{font-size:22px;font-weight:600;line-height:1}
+.strip .live .in{background:rgba(255,255,255,.09);border-radius:7px;padding:4px 10px;font-size:12.5px;color:var(--on-navy)}
+.strip .live .w{font-size:13.5px;color:var(--on-navy2)}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:13px;color:var(--on-navy3);display:flex;align-items:baseline;gap:8px}
+.strip .now b{color:var(--white);font-weight:500;font-size:18px}
+
+/* ---------- כפתורים ---------- */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;border-radius:var(--r-ctl);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btn.sm{padding:5px 11px;font-size:12.5px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.btn.pri:hover{background:var(--navy2)}
+.dark .btn{background:transparent;border-color:rgba(255,255,255,.32);color:var(--white)}
+.dark .btn:hover{background:rgba(255,255,255,.12)}
+.dark .btn.pri{background:var(--white);border-color:var(--white);color:var(--navy)}
+.dark .btn.pri:hover{background:var(--on-navy)}
+
+/* ---------- התראות: טקסט צבוע + נקודה, לעולם לא גלולה ---------- */
+.al{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;font-weight:500;font-style:normal;font-size:var(--fs-meta)}
+.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.al.warn{color:var(--orange)}
+.al.ok{color:var(--green)}
+.al.info{color:var(--ink3)}
+.al.sky{color:var(--sky)}
+
+/* ---------- תגית שקטה ---------- */
+.tag{font-size:12px;font-weight:500;background:var(--chip);border-radius:7px;padding:4px 10px;color:var(--ink2);white-space:nowrap}
+
+/* ---------- פריסה ---------- */
+.wrap{width:100%;padding:var(--sec) 32px 24px;display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:18px;align-items:start}
+.wrap>*{min-width:0}
+.main{display:flex;flex-direction:column;gap:var(--sec)}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow)}
+.ph{display:flex;align-items:baseline;gap:12px;padding:15px var(--pad) 12px;border-bottom:1px solid var(--bd)}
+.ph h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ph .hint{font-size:var(--fs-meta);color:var(--ink3)}
+.ph .more{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--sky);font-weight:500}
+.ph .more:hover{text-decoration:underline}
+
+/* ---------- הבלוק הכהה היחיד: הפגישה שלך הבאה ---------- */
+.hero{background:var(--navy);color:var(--white);border-radius:var(--r-panel);padding:18px var(--pad) 20px;display:grid;grid-template-columns:104px minmax(0,1fr) 1px 300px;gap:0 22px;align-items:stretch}
+.hero .vr{background:rgba(255,255,255,.12)}
+.hero .when{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(255,255,255,.07);border-radius:var(--r-card);padding:12px 6px}
+.hero .when b{font-size:var(--big);font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.hero .when span{font-size:13px;color:var(--on-navy2)}
+.hero .when i{font-style:normal;font-size:12px;color:var(--sky);font-weight:600;margin-top:4px}
+.hero .cap{font-size:11.5px;letter-spacing:.5px;color:var(--on-navy3);text-transform:uppercase}
+.hero h2{font-size:21px;font-weight:600;margin-top:5px;line-height:1.25}
+.hero .meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:var(--fs);color:var(--on-navy2);margin-top:7px}
+.hero .meta b{color:var(--white);font-weight:600}
+.hero .meta .d{color:var(--on-navy4)}
+.hero .acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.hero .note{margin-top:11px;font-size:var(--fs-meta);color:var(--on-navy2);display:none;align-items:center;gap:7px}
+.hero .note.on{display:inline-flex}
+.hero .note::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sky)}
+.hero .ag h3{font-size:var(--fs-meta);font-weight:500;color:var(--on-navy3);letter-spacing:.2px;margin-bottom:9px}
+.hero .ag ul{list-style:none;display:flex;flex-direction:column}
+.hero .ag li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:9px;padding:7px 0;font-size:var(--fs-sub);color:var(--on-navy);line-height:1.45}
+.hero .ag li + li{border-top:1px solid rgba(255,255,255,.08)}
+.hero .ag li i{font-style:normal;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.1);color:var(--on-navy2);font-size:10.5px;display:grid;place-items:center;margin-top:2px;font-variant-numeric:tabular-nums}
+.hero .ag li.mine i{background:var(--sky);color:var(--white)}
+.hero .ag li em{font-style:normal;display:block;font-size:12px;color:var(--on-navy4);margin-top:2px}
+.hero .ag li.mine em{color:var(--on-navy2)}
+
+/* ---------- גם ביומן ---------- */
+.also{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 4px}
+.also .l{font-size:var(--fs-meta);color:var(--ink3)}
+.also .it{display:inline-flex;align-items:center;gap:9px;background:var(--white);border:1px solid var(--bd);border-radius:var(--r-ctl);padding:6px 12px;font-size:var(--fs-sub);color:var(--ink2)}
+.also .it:hover{border-color:var(--bd2);color:var(--navy)}
+.also .it b{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
+.also .it .d{color:var(--line)}
+
+/* ---------- הפגישות שקיימנו ---------- */
+.list{padding:10px var(--pad) var(--pad);display:flex;flex-direction:column;gap:10px}
+.mtg{border:1px solid var(--bd);border-radius:var(--r-card);background:var(--white);overflow:hidden}
+.mtg:hover{border-color:var(--bd2)}
+.mtg.open{border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.1)}
+.mh{width:100%;display:grid;grid-template-columns:64px minmax(0,1fr) auto 20px;align-items:center;gap:0 16px;padding:13px 16px;text-align:start;background:var(--white)}
+.mh:hover{background:var(--row-hover)}
+.mtg.open .mh{background:var(--surface2);border-bottom:1px solid var(--bd)}
+.mh .d{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--tint);border-radius:var(--r-ctl);padding:7px 4px;color:var(--navy)}
+.mh .d b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;line-height:1.1}
+.mh .d span{font-size:11.5px;color:var(--ink3)}
+.mtg.no .mh .d{background:var(--chip);color:var(--ink3)}
+.mh .t b{display:block;font-size:15.5px;font-weight:600;color:var(--ink)}
+.mh .t span{display:block;font-size:var(--fs-meta);color:var(--ink3);margin-top:2px}
+.mh .tags{display:flex;align-items:center;gap:12px}
+.mh .cv{color:var(--ink3);justify-self:center;transition:transform .15s}
+.mtg.open .cv{transform:rotate(180deg);color:var(--sky)}
+.mb{display:none;padding:16px}
+.mtg.open .mb{display:block}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:0 22px}
+.cols>div{min-width:0}
+.cols .tw{border-inline-start:1px solid var(--bd);padding-inline-start:22px}
+.mb h4{font-size:var(--fs-meta);font-weight:600;color:var(--ink3);letter-spacing:.2px;margin-bottom:10px}
+.sums{list-style:none;display:flex;flex-direction:column}
+.sums li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:11px;padding:8px 0;font-size:var(--fs);color:var(--ink2);line-height:1.5}
+.sums li + li{border-top:1px solid var(--bd)}
+.sums li i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--tint);color:var(--navy);font-size:11.5px;font-weight:600;display:grid;place-items:center;margin-top:2px;font-variant-numeric:tabular-nums}
+.tks{list-style:none;display:flex;flex-direction:column;gap:2px}
+.tks li{display:grid;grid-template-columns:17px minmax(0,1fr);gap:10px;padding:7px 0;font-size:var(--fs-sub);color:var(--ink);line-height:1.4}
+.tks li + li{border-top:1px solid var(--bd)}
+.tks li .ck{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--bd2);display:grid;place-items:center;margin-top:1px;font-size:10px;color:var(--white)}
+.tks li.d .ck{background:var(--green);border-color:var(--green)}
+.tks li.d .ck::after{content:"✓"}
+.tks li.d span{color:var(--ink3)}
+.tks li em{font-style:normal;display:block;font-size:12px;color:var(--ink3);margin-top:1px}
+.tks li.me em{color:var(--sky);font-weight:500}
+.tn{margin-top:11px;padding-top:10px;border-top:1px solid var(--bd)}
+.mft{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--bd);flex-wrap:wrap}
+.mft .fn{font-size:var(--fs-meta);color:var(--ink3)}
+.nos{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r-card);padding:14px 16px;font-size:var(--fs);color:var(--ink2);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.nos p{min-width:0}
+.nos .btn{margin-inline-start:auto}
+
+/* ---------- העמודה: מה מחכה ממך + הנושאים שלך ---------- */
+.side{display:flex;flex-direction:column;gap:18px;position:sticky;top:var(--sec);height:calc(100vh - 160px)}
+.side .panel{display:flex;flex-direction:column;min-height:0}
+.side .panel.todo{flex:none}
+.side .panel.top{flex:1 1 auto;min-height:180px}
+.side .body{flex:1;overflow-y:auto;min-height:0}
+.todo ul{list-style:none;padding:4px var(--pad) 12px}
+.todo li{display:grid;grid-template-columns:19px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--bd);align-items:start}
+.todo li:last-child{border-bottom:0}
+.todo .cb{appearance:none;-webkit-appearance:none;width:19px;height:19px;border:1.5px solid var(--bd2);border-radius:6px;margin-top:2px;background:var(--white);display:grid;place-items:center}
+.todo .cb::after{content:"✓";color:var(--white);font-size:12px;line-height:1;opacity:0}
+.todo .cb:checked{background:var(--green);border-color:var(--green)}
+.todo .cb:checked::after{opacity:1}
+.todo li.d .tx{text-decoration:line-through;color:var(--ink3)}
+.todo .tx{font-size:var(--fs);font-weight:500;color:var(--ink);line-height:1.4}
+.todo .sub{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:var(--fs-meta);color:var(--ink3);margin-top:4px}
+.todo .sub .d{color:var(--line)}
+.todo .sub a{color:var(--navy);font-weight:500}
+.todo .sub a:hover{text-decoration:underline}
+.todo li.d .sub .al{color:var(--ink3)}
+.tps{list-style:none;padding:4px var(--pad) 10px}
+.tps li{display:grid;grid-template-columns:8px minmax(0,1fr);gap:11px;padding:11px 0;border-bottom:1px solid var(--bd);align-items:start}
+.tps li:last-child{border-bottom:0}
+.tps li>i{width:8px;height:8px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 3px var(--tint);margin-top:7px}
+.tps .q{font-size:var(--fs);color:var(--ink);line-height:1.4}
+.tps .w{font-size:var(--fs-meta);color:var(--ink3);margin-top:3px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tps .w .d{color:var(--line)}
+.tps .w a{color:var(--navy);font-weight:500}
+.tps .w a:hover{text-decoration:underline}
+.tps li.new>i{background:var(--green);box-shadow:0 0 0 3px var(--good-bg)}
+.tps li.was>i{background:var(--bd2);box-shadow:0 0 0 3px var(--chip)}
+.tps li.was .q{color:var(--ink2)}
+.tps li.hd{display:block;border-bottom:0;padding:14px 0 4px;font-size:11.5px;letter-spacing:.4px;color:var(--ink3);font-weight:500}
+.add{display:flex;gap:9px;padding:12px var(--pad) 14px;border-top:1px solid var(--bd);background:var(--surface2);border-radius:0 0 var(--r-panel) var(--r-panel)}
+.add input{flex:1;min-width:0;height:38px;border:1px solid var(--bd);border-radius:var(--r-ctl);padding:0 12px;font:inherit;font-size:var(--fs-sub);background:var(--white);color:var(--ink)}
+.add input::placeholder{color:var(--ink3)}
+.add input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.add .btn{height:38px}
+.panel.flash{box-shadow:0 0 0 3px rgba(57,171,226,.25)}
+
+/* ---------- מודאל + טוסט ---------- */
+.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
+.ov.on{display:grid}
+.md{width:520px;max-width:92vw;background:var(--white);border-radius:var(--r-panel);padding:22px var(--pad);box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.md h3{font-size:19px;color:var(--navy);font-weight:600}
+.md .s{font-size:var(--fs-sub);color:var(--ink3);margin-top:4px}
+.slots{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.slots label{display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:center;border:1px solid var(--bd);border-radius:var(--r-card);padding:12px 14px;cursor:pointer}
+.slots label:hover{background:var(--row-hover);border-color:var(--bd2)}
+.slots input{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1.5px solid var(--bd2);border-radius:50%;display:grid;place-items:center}
+.slots input::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--white)}
+.slots input:checked{background:var(--navy);border-color:var(--navy)}
+.slots b{font-weight:600;color:var(--ink);font-size:var(--fs)}
+.slots span{display:block;font-size:var(--fs-meta);color:var(--ink3);margin-top:1px}
+.md .f{display:flex;gap:9px;margin-top:18px}
+.md .f .x{margin-inline-start:auto}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:11px 20px;border-radius:var(--r-card);font-size:var(--fs-sub);opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1450px){
+  :root{--sec:16px;--pad:18px;--big:26px}
+  .nav,.strip{padding-inline:24px}
+  .wrap{padding:16px 24px 20px;gap:14px;grid-template-columns:minmax(0,1fr) 390px}
+  .main{gap:16px}
+  .side{gap:14px;height:calc(100vh - 152px)}
+  .hero{grid-template-columns:92px minmax(0,1fr) 1px 256px;gap:0 18px;padding:16px var(--pad) 18px}
+  .hero h2{font-size:19px}
+  .cols{grid-template-columns:minmax(0,1fr) 250px;gap:0 18px}
+  .cols .tw{padding-inline-start:18px}
+  .mh{grid-template-columns:58px minmax(0,1fr) auto 20px;gap:0 12px;padding:11px 14px}
+  .list{gap:8px}
+  .todo li{padding:10px 0}
+  .tps li{padding:9px 0}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="dashboard.html"><i>HK</i>הצוות הפיננסי שלך</a>
+  <ul>
+    <li><a href="dashboard.html">דשבורד</a></li>
+    <li><a href="messages.html">הודעות</a></li>
+    <li><a class="on" href="meetings.html">פגישות</a></li>
+    <li><a href="ai.html">עוזר AI</a></li>
+    <li><a href="metrics.html">מדדים</a></li>
+  </ul>
+  <div class="me"><div><b>צחי עובד</b>בעלים</div><i>צע</i></div>
+</nav>
+
+<header class="strip">
+  <div class="id">
+    <h1>אנרגי אינטרנשיונל</h1>
+    <div class="sub num">ח.פ 511327876 · היועץ שלך <a href="messages.html">אילון אשכנזי</a></div>
+  </div>
+  <div class="sep"></div>
+  <div class="live">
+    <span class="cap">הפגישה הבאה שלך</span>
+    <span class="tm mn">13:00</span>
+    <span class="in mn" id="cd">בעוד 2:06</span>
+    <span class="w">היום · בזום</span>
+    <button class="btn pri" onclick="join()">הצטרפות</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="now"><span>השעה</span><b class="mn" id="clk">10:54</b></div>
+</header>
+
+<main class="wrap">
+
+  <div class="main">
+
+    <!-- ===== הבלוק הכהה היחיד: כאן פועלים ===== -->
+    <section class="hero dark">
+      <div class="when">
+        <b class="mn">02</b>
+        <span>יולי</span>
+        <i>היום</i>
+      </div>
+
+      <div>
+        <span class="cap">הפגישה שלך</span>
+        <h2>סקירת התזרים לקראת רבעון 3</h2>
+        <div class="meta">
+          <span class="mn">13:00–14:00</span><span class="d">·</span>
+          <span>שעה</span><span class="d">·</span>
+          <span>בזום</span><span class="d">·</span>
+          <span>עם <b>אילון אשכנזי</b>, היועץ שלך</span>
+        </div>
+        <div class="acts">
+          <button class="btn pri" onclick="join()">הצטרפות בזום</button>
+          <button class="btn" onclick="openRe()">תיאום מחדש</button>
+          <button class="btn" onclick="askTopic()">יש לי נושא לפגישה</button>
+        </div>
+        <div class="note" id="reNote"></div>
+      </div>
+
+      <div class="vr"></div>
+
+      <div class="ag">
+        <h3>על מה נדבר · <span id="agN">3 נושאים</span></h3>
+        <ul id="ag">
+          <li><i>1</i><div>תזרים רבעון 3 — התחזית מול הביצוע ביוני<em>מאילון</em></div></li>
+          <li class="mine"><i>2</i><div>עלויות השילוח מחו״ל — קפצו ב-18% ברבעון<em>ביקשת שנדבר על זה</em></div></li>
+          <li><i>3</i><div>מסגרת האשראי הנוספת — איפה זה עומד מול הבנק<em>מאילון · יעד שנקבע במאי</em></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== גם ביומן ===== -->
+    <div class="also">
+      <span class="l">גם ביומן שלך:</span>
+      <a class="it" href="#" onclick="return cal('היום 17:00 · המשך — החלטות תקציב')"><b class="mn">היום 17:00</b><span class="d">·</span>המשך — החלטות תקציב<span class="d">·</span>חצי שעה</a>
+      <a class="it" href="#" onclick="return cal('05.08 10:00 · פגישה חודשית — אוגוסט')"><b class="mn">05.08</b><span class="d">·</span>פגישה חודשית — אוגוסט<span class="d">·</span>שעה</a>
+    </div>
+
+    <!-- ===== הפגישות שקיימנו ===== -->
+    <section class="panel">
+      <div class="ph">
+        <h2>הפגישות שקיימנו</h2>
+        <span class="hint" id="pastHint"></span>
+        <button class="more" onclick="allTg()" id="allBtn">פתיחת הכול</button>
+      </div>
+
+      <div class="list" id="list">
+
+        <article class="mtg" id="m1">
+          <button class="mh" aria-expanded="false" aria-controls="b1" onclick="tg('m1')">
+            <span class="d"><b class="mn">30.06</b><span>יוני</span></span>
+            <span class="t"><b>פ.ע — חודש יוני</b><span>לפני יומיים · עם אילון אשכנזי · שעה</span></span>
+            <span class="tags"><i class="al sky">הסיכום בהכנה</i></span>
+            <svg class="cv" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="mb" id="b1">
+            <div class="nos">
+              <p>הסיכום של הפגישה עדיין בהכנה. ברגע שהוא מוכן הוא נשלח אליך בוואטסאפ, ומופיע כאן עם מה שסוכם ומה יצא מזה.</p>
+              <button class="btn sm" onclick="toast('נעדכן אותך בוואטסאפ ברגע שהסיכום מוכן')">עדכנו אותי כשמוכן</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="mtg open" id="m2">
+          <button class="mh" aria-expanded="true" aria-controls="b2" onclick="tg('m2')">
+            <span class="d"><b class="mn">05.05</b><span>מאי</span></span>
+            <span class="t"><b>פ.ע — חודש מאי</b><span>עם אילון אשכנזי · שעה</span></span>
+            <span class="tags"><span class="tag">4 סעיפי סיכום</span><i class="al warn">משימה אחת פתוחה</i></span>
+            <svg class="cv" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="mb" id="b2">
+            <div class="cols">
+              <div>
+                <h4>מה סוכם</h4>
+                <ul class="sums">
+                  <li><i>1</i><span>ניתוח רבעון מרץ–מאי: הכנסות 116 / 140 / 120 אש״ח — יציבות תזרימית מלאה חרף גידול של 40% בהכנסות.</span></li>
+                  <li><i>2</i><span>זוהה פער: כרטיס האשראי החדש של ״מקס״ אינו מחובר ל-Bizibox, ולכן הוצאות השיווק לא נכנסו לתזרים.</span></li>
+                  <li><i>3</i><span>הוחלט על החלפת פונקציית שירות הלקוחות — חיסכון של כ-2,880 ₪ בחודש.</span></li>
+                  <li><i>4</i><span>הוגדר יעד: פתיחת מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.07.</span></li>
+                </ul>
+              </div>
+              <div class="tw">
+                <h4>מה יצא מזה</h4>
+                <ul class="tks">
+                  <li class="d"><span class="ck"></span><div><span>חיבור כרטיס מקס ל-Bizibox</span><em>באחריות HK</em></div></li>
+                  <li class="d"><span class="ck"></span><div><span>גיוס מחליפה לשירות לקוחות</span><em>באחריותך</em></div></li>
+                  <li class="d"><span class="ck"></span><div><span>פנייה לבנק בבקשה למסגרת נוספת</span><em>באחריות HK</em></div></li>
+                  <li class="me"><span class="ck"></span><div><span>חתימה על טופסי המסגרת הנוספת</span><em>באחריותך · עד 15.07</em></div></li>
+                </ul>
+                <div class="tn"><i class="al warn">3 מתוך 4 בוצעו · אחת מחכה לך</i></div>
+              </div>
+            </div>
+            <div class="mft">
+              <button class="btn sm" onclick="toast('הסיכום נשלח שוב לוואטסאפ שלך')">שלחו לי את הסיכום שוב</button>
+              <span class="fn num">הסיכום נשלח אליך ב-05.05 בוואטסאפ.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mtg" id="m3">
+          <button class="mh" aria-expanded="false" aria-controls="b3" onclick="tg('m3')">
+            <span class="d"><b class="mn">03.04</b><span>אפריל</span></span>
+            <span class="t"><b>פגישה חודשית — אפריל</b><span>עם אילון אשכנזי · שעה · השתתפה גם רות אלמוג</span></span>
+            <span class="tags"><span class="tag">3 סעיפי סיכום</span><i class="al warn">משימה אחת פתוחה</i></span>
+            <svg class="cv" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="mb" id="b3">
+            <div class="cols">
+              <div>
+                <h4>מה סוכם</h4>
+                <ul class="sums">
+                  <li><i>1</i><span>עודכן תקציב אפריל עם ההוצאות החד-פעמיות לריטריט — ירוק עז 7,500 ₪, קייטרינג 5,000 ₪.</span></li>
+                  <li><i>2</i><span>זוהה חיוב כפול מ-Payment טכנולוגיות — נפתח בירור מול הספק.</span></li>
+                  <li><i>3</i><span>רות הציגה את טבלת מעקב המכירות — הוחלט על עדכון שבועי קבוע.</span></li>
+                </ul>
+              </div>
+              <div class="tw">
+                <h4>מה יצא מזה</h4>
+                <ul class="tks">
+                  <li class="d"><span class="ck"></span><div><span>בירור החיוב הכפול מול Payment — הוחזר במלואו</span><em>באחריות HK</em></div></li>
+                  <li class="d"><span class="ck"></span><div><span>תזכורת שבועית לטבלת המכירות</span><em>באחריותך</em></div></li>
+                  <li class="me"><span class="ck"></span><div><span>העברת חשבוניות הריטריט לתומר לוי</span><em>באחריותך · היה אמור להיות עד 20.06</em></div></li>
+                </ul>
+                <div class="tn"><i class="al warn">2 מתוך 3 בוצעו · אחת באיחור</i></div>
+              </div>
+            </div>
+            <div class="mft">
+              <button class="btn sm" onclick="toast('הסיכום נשלח שוב לוואטסאפ שלך')">שלחו לי את הסיכום שוב</button>
+              <span class="fn num">הסיכום נשלח אליך ב-03.04 בוואטסאפ.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="mtg no" id="m4">
+          <button class="mh" aria-expanded="false" aria-controls="b4" onclick="tg('m4')">
+            <span class="d"><b class="mn">12.03</b><span>מרץ</span></span>
+            <span class="t"><b>פ.ע — חודש מרץ</b><span>לא התקיימה</span></span>
+            <span class="tags"><i class="al info">אין סיכום</i></span>
+            <svg class="cv" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="mb" id="b4">
+            <div class="nos">
+              <p>הפגישה לא התקיימה, ולכן אין ממנה סיכום ואין משימות. הנושאים שלה עלו בפגישת אפריל.</p>
+              <button class="btn sm" onclick="openRe()">תיאום מועד חדש</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="mtg" id="m5">
+          <button class="mh" aria-expanded="false" aria-controls="b5" onclick="tg('m5')">
+            <span class="d"><b class="mn">05.02</b><span>פברואר</span></span>
+            <span class="t"><b>פגישה חודשית — פברואר</b><span>עם אילון אשכנזי · שעה</span></span>
+            <span class="tags"><span class="tag">3 סעיפי סיכום</span><i class="al ok">הכול נסגר</i></span>
+            <svg class="cv" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="mb" id="b5">
+            <div class="cols">
+              <div>
+                <h4>מה סוכם</h4>
+                <ul class="sums">
+                  <li><i>1</i><span>סקירת סגירת 2025: הכנסות 1.28 מ׳ ₪, רווח תפעולי 11.4% — עלייה של 2.1 נקודות מול 2024.</span></li>
+                  <li><i>2</i><span>הוחלט להעביר את ההתקשרות עם הספק בחו״ל לתנאי שוטף 45 במקום שוטף 30 — שיפור של כ-11 ימי אשראי.</span></li>
+                  <li><i>3</i><span>נקבע דוח מלאי רבעוני קבוע — הראשון עד סוף מרץ.</span></li>
+                </ul>
+              </div>
+              <div class="tw">
+                <h4>מה יצא מזה</h4>
+                <ul class="tks">
+                  <li class="d"><span class="ck"></span><div><span>חתימה על תנאי התשלום החדשים מול הספק</span><em>באחריותך</em></div></li>
+                  <li class="d"><span class="ck"></span><div><span>הקמת דוח מלאי רבעוני</span><em>באחריות HK</em></div></li>
+                  <li class="d"><span class="ck"></span><div><span>העברת מאזן בוחן 2025 לרו״ח</span><em>באחריות HK</em></div></li>
+                </ul>
+                <div class="tn"><i class="al ok">3 מתוך 3 בוצעו · הכול נסגר</i></div>
+              </div>
+            </div>
+            <div class="mft">
+              <button class="btn sm" onclick="toast('הסיכום נשלח שוב לוואטסאפ שלך')">שלחו לי את הסיכום שוב</button>
+              <span class="fn num">הסיכום נשלח אליך ב-05.02 בוואטסאפ.</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== העמודה: מה מחכה ממך + הנושאים שלך ===== -->
+  <aside class="side">
+
+    <section class="panel todo">
+      <div class="ph"><h2>מה מחכה ממך</h2><span class="hint" id="todoHint"></span></div>
+      <ul id="todo">
+        <li>
+          <input class="cb" type="checkbox" aria-label="דוח מלאי Q2 לפני הפגישה" onchange="tick(this)">
+          <div>
+            <div class="tx">דוח מלאי Q2 — לצרף לפני הפגישה</div>
+            <div class="sub"><i class="al warn">עד היום 13:00</i><span class="d">·</span><span>אילון ביקש אתמול</span></div>
+          </div>
+        </li>
+        <li>
+          <input class="cb" type="checkbox" aria-label="העברת חשבוניות הריטריט לתומר לוי" onchange="tick(this)">
+          <div>
+            <div class="tx">העברת חשבוניות הריטריט לתומר לוי</div>
+            <div class="sub"><i class="al warn">באיחור 12 ימים</i><span class="d">·</span><a href="#m3" onclick="return goMt('m3')">מפגישת 03.04</a></div>
+          </div>
+        </li>
+        <li>
+          <input class="cb" type="checkbox" aria-label="חתימה על טופסי המסגרת הנוספת" onchange="tick(this)">
+          <div>
+            <div class="tx">חתימה על טופסי המסגרת הנוספת</div>
+            <div class="sub"><i class="al info">עד 15.07</i><span class="d">·</span><a href="#m2" onclick="return goMt('m2')">מפגישת 05.05</a></div>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel top" id="topPanel">
+      <div class="ph"><h2>הנושאים שלך</h2><span class="hint" id="topHint"></span></div>
+      <div class="body">
+        <ul class="tps" id="tps">
+          <li class="up"><i></i><div><div class="q">עלויות השילוח מחו״ל — קפצו ב-18% ברבעון</div><div class="w"><span class="num">נוסף 28.06</span><span class="d">·</span><i class="al ok">בסדר היום של היום</i></div></div></li>
+          <li class="up"><i></i><div><div class="q">האם כדאי להקדים את תשלום המע״מ של יולי</div><div class="w"><span>נוסף אתמול</span><span class="d">·</span><i class="al sky">אילון ראה · יעלה בפגישה</i></div></div></li>
+
+          <li class="hd" id="tpsHd">נושאים שכבר עלו</li>
+          <li class="was"><i></i><div><div class="q">החיוב הכפול מ-Payment טכנולוגיות</div><div class="w"><i class="al info">נענה</i><span class="d">·</span><a href="#m3" onclick="return goMt('m3')">בפגישת 03.04</a><span class="d">·</span><span>הוחזר במלואו</span></div></div></li>
+          <li class="was"><i></i><div><div class="q">האם להחליף את פונקציית שירות הלקוחות</div><div class="w"><i class="al info">נענה</i><span class="d">·</span><a href="#m2" onclick="return goMt('m2')">בפגישת 05.05</a><span class="d">·</span><span>הוחלט להחליף</span></div></div></li>
+          <li class="was"><i></i><div><div class="q">תנאי התשלום לספק בחו״ל</div><div class="w"><i class="al info">נענה</i><span class="d">·</span><a href="#m5" onclick="return goMt('m5')">בפגישת 05.02</a><span class="d">·</span><span>עבר לתנאי שוטף 45</span></div></div></li>
+          <li class="was"><i></i><div><div class="q">כמה עולה לנו באמת הריטריט השנתי</div><div class="w"><i class="al info">נענה</i><span class="d">·</span><a href="#m3" onclick="return goMt('m3')">בפגישת 03.04</a><span class="d">·</span><span class="num">12,500 ₪ חד-פעמי</span></div></div></li>
+          <li class="was"><i></i><div><div class="q">האם להעביר את רות למשרה מלאה</div><div class="w"><i class="al info">נענה</i><span class="d">·</span><a href="#m3" onclick="return goMt('m3')">בפגישת 03.04</a><span class="d">·</span><span>נבחן שוב ברבעון 3</span></div></div></li>
+          <li class="was"><i></i><div><div class="q">האם השכר של הצוות בטווח השוק</div><div class="w"><i class="al info">נענה</i><span class="d">·</span><a href="#m5" onclick="return goMt('m5')">בפגישת 05.02</a><span class="d">·</span><span>בטווח, בלי שינוי</span></div></div></li>
+        </ul>
+      </div>
+      <form class="add" onsubmit="return addTopic(event)">
+        <input id="topIn" type="text" placeholder="נושא שתרצה שנדבר עליו…" autocomplete="off" aria-label="נושא לפגישה הבאה">
+        <button class="btn pri" type="submit">שליחה לאילון</button>
+      </form>
+    </section>
+
+  </aside>
+</main>
+
+<!-- תיאום מחדש -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeRe()">
+  <div class="md" role="dialog" aria-modal="true" aria-labelledby="reT">
+    <h3 id="reT">תיאום מחדש של הפגישה</h3>
+    <div class="s">סקירת התזרים לקראת רבעון 3 · היום 13:00 · עם אילון אשכנזי</div>
+    <ul class="slots">
+      <li><label><input type="radio" name="slot" value="יום ראשון 05.07, 09:00" checked><span><b>יום ראשון 05.07 · 09:00–10:00</b><span>אילון פנוי</span></span></label></li>
+      <li><label><input type="radio" name="slot" value="יום שני 06.07, 14:00"><span><b>יום שני 06.07 · 14:00–15:00</b><span>אילון פנוי</span></span></label></li>
+      <li><label><input type="radio" name="slot" value="יום רביעי 08.07, 11:00"><span><b>יום רביעי 08.07 · 11:00–12:00</b><span>אילון פנוי</span></span></label></li>
+    </ul>
+    <div class="f">
+      <button class="btn pri" id="reOk" onclick="sendRe()">שליחת הבקשה</button>
+      <button class="btn" onclick="closeRe();toast('נשלחה בקשה לאילון להציע מועדים אחרים')">אף מועד לא מתאים</button>
+      <button class="btn x" onclick="closeRe()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+
+/* ---- שעון אחד: השעה ברצועה והספירה לפגישה נגזרות ממנו ---- */
+var DEMO=new Date(2026,6,2,10,54,0), BOOT=Date.now(), NEXT=new Date(2026,6,2,13,0,0);
+function now(){return new Date(DEMO.getTime()+(Date.now()-BOOT))}
+function pad(n){return (n<10?'0':'')+n}
+function hm(d){return pad(d.getHours())+':'+pad(d.getMinutes())}
+function tick2(){
+  var n=now(), m=Math.max(0,Math.round((NEXT-n)/60000));
+  $('#clk').textContent=hm(n);
+  $('#cd').textContent='בעוד '+Math.floor(m/60)+':'+pad(m%60);
+}
+
+/* ---- כל מונה נגזר מה-DOM בזמן ריצה ---- */
+var WORD=['','נושא אחד','שני נושאים','שלושה נושאים','ארבעה נושאים','חמישה נושאים','שישה נושאים'];
+function counts(){
+  var mtgs=$$('#list .mtg').length;
+  $('#pastHint').textContent=mtgs+' פגישות · לחיצה פותחת את מה שסוכם';
+
+  var open=$$('#todo li').filter(function(li){return !li.classList.contains('d')}).length;
+  $('#todoHint').textContent = open===0 ? 'הכול סגור' : (open===1?'משימה אחת':open+' משימות')+' · אילון רואה את זה גם';
+
+  var t=$$('#tps li.up').length;
+  $('#topHint').textContent = t===0 ? 'עוד לא ביקשת נושא' : (WORD[t]||t+' נושאים')+' לפגישה הבאה';
+
+  var a=$$('#ag li').length;
+  $('#agN').textContent = WORD[a]||a+' נושאים';
+
+  var allOpen=$$('#list .mtg.open').length===mtgs;
+  $('#allBtn').textContent = allOpen ? 'סגירת הכול' : 'פתיחת הכול';
+}
+
+/* ---- פתיחת פגישה ---- */
+function tg(id){
+  var el=document.getElementById(id); if(!el) return;
+  var on=el.classList.toggle('open');
+  var h=$('.mh',el); if(h) h.setAttribute('aria-expanded',on?'true':'false');
+  counts();
+}
+function allTg(){
+  var mtgs=$$('#list .mtg'), open=mtgs.filter(function(m){return m.classList.contains('open')}).length;
+  var want=open<mtgs.length;
+  mtgs.forEach(function(m){
+    m.classList.toggle('open',want);
+    var h=$('.mh',m); if(h) h.setAttribute('aria-expanded',want?'true':'false');
+  });
+  counts();
+}
+function goMt(id){
+  var el=document.getElementById(id); if(!el) return false;
+  if(!el.classList.contains('open')) tg(id);
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  return false;
+}
+
+/* ---- משימות שמחכות ממך ---- */
+function tick(cb){
+  var li=cb.closest('li');
+  li.classList.toggle('d',cb.checked);
+  counts();
+  if(cb.checked) toast('סומן כבוצע · אילון מקבל עדכון');
+}
+
+/* ---- הנושאים שלך → נכנסים גם לסדר היום של הפגישה ---- */
+function addTopic(e){
+  e.preventDefault();
+  var i=$('#topIn'), v=(i.value||'').trim();
+  if(!v){ i.focus(); return false; }
+
+  var li=document.createElement('li');
+  li.className='up new';
+  var dot=document.createElement('i');
+  var box=document.createElement('div');
+  var q=document.createElement('div'); q.className='q'; q.textContent=v;
+  var w=document.createElement('div'); w.className='w';
+  var s1=document.createElement('span'); s1.textContent='נוסף עכשיו';
+  var s2=document.createElement('span'); s2.className='d'; s2.textContent='·';
+  var s3=document.createElement('i'); s3.className='al ok'; s3.textContent='נשלח לאילון';
+  w.appendChild(s1); w.appendChild(s2); w.appendChild(s3);
+  box.appendChild(q); box.appendChild(w);
+  li.appendChild(dot); li.appendChild(box);
+  $('#tps').insertBefore(li,$('#tpsHd'));
+
+  var ag=$('#ag'), n=ag.children.length+1;
+  var al=document.createElement('li'); al.className='mine';
+  var num=document.createElement('i'); num.textContent=String(n);
+  var d2=document.createElement('div');
+  var tx=document.createTextNode(v);
+  var em=document.createElement('em'); em.textContent='ביקשת שנדבר על זה';
+  d2.appendChild(tx); d2.appendChild(em);
+  al.appendChild(num); al.appendChild(d2);
+  ag.appendChild(al);
+
+  i.value=''; counts();
+  toast('הנושא נשלח לאילון ונוסף לסדר היום של הפגישה');
+  return false;
+}
+function askTopic(){
+  var p=$('#topPanel');
+  p.classList.add('flash');
+  p.scrollIntoView({behavior:'smooth',block:'nearest'});
+  $('#topIn').focus();
+  setTimeout(function(){p.classList.remove('flash')},1400);
+}
+
+/* ---- תיאום מחדש ---- */
+var LAST=null;
+function openRe(){ $('#ov').classList.add('on'); LAST=document.activeElement; setTimeout(function(){$('#reOk').focus()},0); }
+function closeRe(){ $('#ov').classList.remove('on'); if(LAST&&LAST.focus) LAST.focus(); }
+function sendRe(){
+  var r=$$('input[name=slot]').filter(function(x){return x.checked})[0];
+  var v=r?r.value:'';
+  closeRe();
+  var n=$('#reNote'); n.textContent='נשלחה בקשה להעביר ל'+v+' · ממתין לאישור אילון'; n.classList.add('on');
+  toast('הבקשה נשלחה לאילון — נחזור אליך היום');
+}
+
+/* ---- שאר הפעולות ---- */
+function join(){ toast('הקישור נפתח — נתראה בזום'); }
+function cal(t){ toast(t+' · נוסף כתזכורת ליומן שלך'); return false; }
+
+var TT;
+function toast(t){
+  var el=$('#toast'); el.textContent=t; el.classList.add('on');
+  clearTimeout(TT); TT=setTimeout(function(){el.classList.remove('on')},2600);
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&$('#ov').classList.contains('on')) closeRe();
+});
+
+window.tg=tg; window.allTg=allTg; window.goMt=goMt; window.tick=tick;
+window.addTopic=addTopic; window.askTopic=askTopic;
+window.openRe=openRe; window.closeRe=closeRe; window.sendRe=sendRe;
+window.join=join; window.cal=cal; window.toast=toast;
+
+counts(); tick2(); setInterval(tick2,1000);
+})();
+</script>
+</body>
+</html>
