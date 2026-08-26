@@ -18,7 +18,6 @@
   --pos:#13895b; --pos-soft:#e7f7ef;
   --neg:#dc4436; --neg-soft:#fdeceb;
   --warn:#c98404;
-  --gap:#5A6B7D;            /* הפער — אפור נייטרלי: מספר לקריאה, לא אזהרה */
   --shadow-sm:0 2px 8px rgba(15,35,65,.06);
   --shadow-md:0 6px 18px rgba(12,64,104,.08);
 }
@@ -68,7 +67,7 @@ button{font-family:inherit;cursor:pointer}
 .scard .k small{font-weight:500;color:var(--muted);margin-inline-start:6px}
 .scard .g{font-size:12px;font-weight:600;color:var(--muted)}
 .scard .g b{font-size:17px;font-weight:800;margin-inline-start:6px;font-variant-numeric:tabular-nums}
-.scard .g.pos b{color:var(--pos)} .scard .g.neg b{color:var(--neg)} .scard .g.warn b{color:var(--gap)}
+.scard .g.pos b{color:var(--pos)} .scard .g.neg b{color:var(--neg)} .scard .g.warn b{color:var(--warn)}
 .scard .bl-bar{height:13px}
 
 /* קבוצות ושורות */
@@ -83,63 +82,6 @@ button{font-family:inherit;cursor:pointer}
 .gg-ok{color:#0F6D48;background:#EDF8F1;border:1px solid #A7E0BF;border-radius:999px;padding:3px 11px}
 .bl-row{display:grid;grid-template-columns:190px 120px 1fr 140px;gap:20px;align-items:center;padding:15px 22px;border-top:1px solid var(--border)}
 .bl-tgt{border-radius:10px;padding:4px 10px;margin:-4px -10px}
-/* היעד ניתן לעריכה — אותה שפה כמו התא הנערך בתזרים העתידי */
-.bl-tgt.ed{cursor:pointer;transition:.13s;position:relative}
-.bl-tgt.ed:hover{background:#EFF7FC;box-shadow:inset 0 0 0 1.5px #BFE2F5}
-.bl-tgt.ed .pen{opacity:0;font-size:9px;color:#39ABE2;margin-inline-start:5px;transition:.13s}
-.bl-tgt.ed:hover .pen{opacity:1}
-/* פופאפ שלושת החודשים — נפתח מהתג של מקור היעד */
-.h3-row{display:flex;align-items:center;gap:11px;padding:11px 2px;border-top:1px solid var(--border)}
-.h3-row:first-child{border-top:0}
-.h3-row .mn{font-size:13px;font-weight:700;color:var(--text);min-width:74px}
-.h3-row .track{flex:1;height:9px;background:#EEF3F8;border-radius:999px;overflow:hidden;min-width:50px}
-.h3-row .fill{height:100%;border-radius:999px;background:#39ABE2}
-.h3-row.inc .fill{background:#1B6C9C}
-.h3-row.exp .fill{background:#c98404}
-.h3-row .amt{font-size:14px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;min-width:82px;text-align:end}
-.h3-sum{display:flex;align-items:center;gap:11px;margin-top:12px;padding:12px 14px;background:#F4F7FA;border-radius:11px}
-.h3-sum .k{font-size:11.5px;font-weight:700;color:var(--muted)}
-.h3-sum .v{font-size:19px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.4px;margin-inline-start:auto}
-.h3-cmp{font-size:12px;line-height:1.7;margin-top:11px;padding:10px 13px;border-radius:10px}
-.h3-cmp.same{background:#F4F7FA;color:var(--muted)}
-.h3-cmp.diff{background:#EFF7FC;color:#215d80}
-.h3-cmp b{font-variant-numeric:tabular-nums}
-.h3-note{font-size:11px;color:var(--soft);line-height:1.65;margin-top:11px}
-.src-tag.clk{cursor:pointer;font-family:inherit;border:1px solid transparent}
-.src-tag.clk:hover{filter:brightness(.95)}
-.src-tag .cx{opacity:.5;font-size:8px;margin-inline-start:4px}
-.tge-fld{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:0 0 6px}
-.tge-val{width:100%;font-family:inherit;font-size:22px;font-weight:800;color:var(--text);
-  border:1.5px solid var(--border-strong);border-radius:11px;padding:11px 14px;outline:none;
-  text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
-.tge-val:focus{border-color:#39ABE2;box-shadow:0 0 0 3px #EBF7FD}
-.tge-chg{font-size:11.5px;margin:9px 0 0;padding:7px 11px;border-radius:9px;line-height:1.6}
-.tge-chg.same{background:#F4F7FA;color:var(--soft)}
-.tge-chg.diff{background:#FFFDEC;color:#7a6414}
-.tge-chg b{font-variant-numeric:tabular-nums}
-.tge-tgl{display:flex;align-items:flex-start;gap:11px;margin-top:16px;padding:12px 13px;
-  border:1.5px solid var(--border);border-radius:11px;cursor:pointer}
-.tge-tgl:hover{border-color:#C9D6E4}
-.tge-tgl input{display:none}
-.tge-tgl .sw{flex:0 0 auto;width:38px;height:22px;border-radius:999px;background:#D9E2EA;position:relative;transition:.16s;margin-top:1px}
-.tge-tgl .sw::after{content:'';position:absolute;top:3px;inset-inline-end:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.16s}
-.tge-tgl input:checked+.sw{background:#39ABE2}
-.tge-tgl input:checked+.sw::after{inset-inline-end:19px}
-.tge-tgl .tx{font-size:13px;font-weight:700;color:var(--text)}
-.tge-tgl .tx small{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
-.tge-dir{display:none;font-size:11.5px;margin-top:10px;padding:8px 12px;border-radius:9px;line-height:1.6}
-.tge-dir.show{display:block}
-.tge-dir.in{background:#F2FFEB;color:#2f6b16}
-.tge-dir.ex{background:#FFF4F2;color:#9c3a2b}
-.tge-acts{display:flex;gap:9px;margin-top:16px}
-.tge-acts button{flex:1;font-family:inherit;font-size:13px;font-weight:600;border-radius:999px;padding:10px;cursor:pointer;transition:.14s}
-.tge-p{background:#E48375;border:1px solid #E48375;color:#fff}
-.tge-p:hover{background:#d96a5a}
-.tge-g{background:#fff;border:1px solid #E48375;color:#E48375}
-.tge-g:hover{background:#FFE9E6}
-.tge-reset{width:100%;margin-top:9px;background:none;border:0;font-family:inherit;font-size:11.5px;
-  color:var(--soft);cursor:pointer;padding:6px;border-radius:8px}
-.tge-reset:hover{background:#F1F4F7;color:var(--text)}
 .bl-tgt>span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
 .bl-tgt b{font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 .src-tag{display:inline-block;font-size:9.5px;font-weight:700;border-radius:999px;padding:1.5px 8px;margin-top:3px;white-space:nowrap}
@@ -236,7 +178,7 @@ button{font-family:inherit;cursor:pointer}
 .bl-gap b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 .bl-gap.pos b{color:var(--pos)}
 .bl-gap.neg b{color:var(--neg)}
-.bl-gap.warn b{color:var(--gap)}
+.bl-gap.warn b{color:var(--warn)}
 .bl-gap.zero b{color:var(--soft)}
 
 /* פופאפ פעולות הקטגוריה */
@@ -404,7 +346,7 @@ button{font-family:inherit;cursor:pointer}
 .gt-ai-btn:hover{filter:brightness(.93)}
 .gt-sug{display:flex;align-items:center;gap:8px;background:#EAF4FB;border:1px solid #BCD9F6;color:#2C7FB0;font-size:11.5px;font-weight:600;border-radius:10px;padding:9px 12px;margin-bottom:13px;line-height:1.4}
 .gt-hd{display:flex;align-items:baseline;gap:8px;background:#F7FAFD;border:1px solid var(--border);border-radius:11px;padding:10px 13px;margin-bottom:13px}
-.gt-hd .amt{font-size:19px;font-weight:800;color:var(--gap);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+.gt-hd .amt{font-size:19px;font-weight:800;color:var(--warn);font-variant-numeric:tabular-nums;letter-spacing:-.4px}
 .gt-hd .mt{font-size:11px;color:var(--muted);font-weight:600;margin-inline-start:auto;text-align:end;line-height:1.4}
 .gt-req{font-size:11.5px;font-weight:700;color:var(--text);margin:12px 0 6px}
 .gt-req i{font-style:normal;color:#C2410C}
@@ -514,18 +456,6 @@ if(IS_CLI)document.body.classList.add('is-client');</script>
     <div class="pop-body" id="gtBody"></div>
   </div>
 </div>
-<div class="pop-ov" id="h3Ov">
-  <div class="pop" style="width:min(430px,94vw)">
-    <div class="pop-h"><div><b id="h3Title"></b><div class="sub" id="h3Sub"></div></div><button class="pop-x" onclick="h3Close()">✕</button></div>
-    <div class="pop-body" id="h3Body" style="padding-bottom:18px"></div>
-  </div>
-</div>
-<div class="pop-ov" id="tgOv">
-  <div class="pop" style="width:min(430px,94vw)">
-    <div class="pop-h"><div><b id="tgeTitle"></b><div class="sub" id="tgeSub"></div></div><button class="pop-x" onclick="tgeClose()">✕</button></div>
-    <div class="pop-body" id="tgeBody" style="padding-bottom:18px"></div>
-  </div>
-</div>
 <div id="toast"></div>
 
 <style>
@@ -582,26 +512,6 @@ const MONTHS=[
 let mi=0;
 
 /* בחודש עתידי אין בפועל — רק מה שכבר צבוע בתזרים */
-/* שלושת החודשים שקדמו לחודש המוצג */
-const H3_LABELS=['מרץ 2026','אפריל 2026','מאי 2026'];
-/* פיזור דטרמיניסטי לפי שם הקטגוריה, כדי שהמספרים יציבים בין רענונים.
-   הממוצע מתלכד בדיוק עם הבסיס — כך שהתג «ממוצע 3 ח׳» לא משקר. */
-function h3Of(r){
-  if(r._h3) return r._h3;
-  let h=0; for(const ch of r.label) h=(h*31+ch.charCodeAt(0))>>>0;
-  /* בשורה שסומנה «ממוצע» הבסיס הוא הממוצע עצמו; אחרת הממוצע שונה ממנו */
-  /* בשורה שאינה «ממוצע» הבסיס אינו הממוצע — נמנעים מפקטור 1.00 שיאפס את ההפרש */
-  const f=0.86+(h%17)/100;
-  const avg = r._bsrc==='avg' ? r._base : Math.round(r._base*(f===1?0.93:f));
-  const d1=(h%13)-6, d2=((h>>4)%13)-6;          // סטיות באחוזים, מסתכמות לאפס
-  const a=Math.round(avg*(1+d1/100)), b=Math.round(avg*(1+d2/100));
-  r._h3=[a,b,avg*3-a-b];
-  return r._h3;
-}
-
-/* הערך שהיה בתחילת החודש — הבסיס להשוואה ולכפתור ההחזרה */
-GROUPS.forEach(g=>g.rows.forEach(r=>{ r._base=r.target; r._bsrc=r.src; }));
-
 function rowVals(r){
   if(mi===0) return {act:r.act, flow:r.flow, bl:r.bl||0};
   return {act:0, flow:Math.round(r.target*(mi===1?0.72:0.38))};
@@ -1078,14 +988,10 @@ function openTxPop(gi,ri,flt){
 }
 function closeTxPop(){document.getElementById('popOv').classList.remove('show');}
 /* מקור היעד — אותה שפה כמו בתזרים העתידי */
-function srcTag(r,kind,gi,ri){
-  const lbl = r.src==='goal' ? (kind==='inc'?'↑ יעד הכנסה':'↓ יעד הוצאה')
-            : r.src==='manual' ? 'שונה ידנית' : 'ממוצע 3 ח׳';
-  const cls = r.src==='goal' ? 'goal-'+(kind==='inc'?'inc':'exp')
-            : r.src==='manual' ? 'man' : 'avg';
-  if(gi==null) return `<span class="src-tag ${cls}">${lbl}</span>`;
-  /* התג פותח את שלושת החודשים — גם ביעד שנקבע ידנית, כדי לראות מולו את המציאות */
-  return `<button class="src-tag ${cls} clk" onclick="event.stopPropagation();h3Open(${gi},${ri})" title="שלושת החודשים האחרונים">${lbl}<span class="cx">▾</span></button>`;
+function srcTag(r,kind){
+  if(r.src==='goal') return `<span class="src-tag goal-${kind==='inc'?'inc':'exp'}">${kind==='inc'?'↑ יעד הכנסה':'↓ יעד הוצאה'}</span>`;
+  if(r.src==='manual') return '<span class="src-tag man">שונה ידנית</span>';
+  return '<span class="src-tag avg">ממוצע 3 ח׳</span>';
 }
 /* עריכת יעד במקום — לחיצה על המספר */
 /* צ'יפ השורה התקציבית יושב ליד שם הקטגוריה — הוא מאפיין של השורה,
@@ -1190,7 +1096,7 @@ function render(){
         <div class="bl-row">
           <div class="bl-name"><button class="nm" onclick="openTxPop(${gi},${ri})" title="הפעולות של הקטגוריה החודש">${r.label}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m15 18-6-6 6-6"/></svg></button>
             ${blChip(r,gi,ri)}</div>
-          <div class="bl-tgt${IS_CLI?'':' ed'}"${IS_CLI?' title="היעד נקבע בבניית שלושת החודשים עם הלקוח"':` onclick="tgeOpen(${gi},${ri})" title="לחיצה לעריכת היעד"`}><span>יעד${IS_CLI?'':'<span class="pen">✎</span>'}</span><b>${nf.format(r.target)}</b>${srcTag(r,g.kind,gi,ri)}</div>
+          <div class="bl-tgt" title="היעד נקבע בבניית שלושת החודשים עם הלקוח — לא נערך באמצע חודש"><span>יעד</span><b>${nf.format(r.target)}</b>${srcTag(r,g.kind)}</div>
           <div class="bl-mid">${barHtml(r,g.kind,true,gi,ri)}</div>
           ${gapHtml(r,g.kind,gi,ri)}
         </div>`;}).join('')}
@@ -1278,99 +1184,6 @@ function gtSave(){
 function gtRemove(){ const r=GROUPS[GTP.gi].rows[GTP.ri]; gtSet(r,null,''); closeGtPop(); render(); toast('הסיווג הוסר'); }
 function gtNext(){ const l=gapsUntyped(); if(l.length){ openGtPop(l[0].gi,l[0].ri); } }
 function gateFocus(){ const l=gapsUntyped(); if(l.length) openGtPop(l[0].gi,l[0].ri); }
-
-/* ===== שלושת החודשים האחרונים — הבסיס שממנו נגזר הממוצע ===== */
-function h3Open(gi,ri){
-  const g=GROUPS[gi], r=g.rows[ri], a=h3Of(r);
-  const avg=Math.round(a.reduce((s,n)=>s+n,0)/3), mx=Math.max(...a,1);
-  document.getElementById('h3Title').textContent=r.label;
-  document.getElementById('h3Sub').textContent='שלושת החודשים האחרונים · '+(g.kind==='inc'?'הכנסה':'הוצאה');
-  const d=r.target-avg, pct=avg?Math.round(d/Math.abs(avg)*100):0;
-  const cmp = d===0
-    ? `<div class="h3-cmp same">היעד הנוכחי זהה לממוצע · <b>${nf.format(avg)}</b></div>`
-    : `<div class="h3-cmp diff">היעד הנוכחי <b>${nf.format(r.target)}</b> —
-       ${d>0?'גבוה':'נמוך'} ב-<b>${nf.format(Math.abs(d))}</b> מהממוצע${pct?' · '+Math.abs(pct)+'%':''}</div>`;
-  document.getElementById('h3Body').innerHTML=
-    a.map((v,i)=>`<div class="h3-row ${g.kind}"><span class="mn">${H3_LABELS[i]}</span>
-       <span class="track"><span class="fill" style="width:${Math.max(2,v/mx*100)}%"></span></span>
-       <span class="amt">${nf.format(v)}</span></div>`).join('')+
-    `<div class="h3-sum"><span class="k">ממוצע 3 חודשים</span><span class="v">${nf.format(avg)}</span></div>`+
-    cmp+
-    `<div class="h3-note">הממוצע הוא ברירת המחדל ליעד. לחיצה על מספר היעד פותחת עריכה — אפשר לקבוע ערך אחר או להפוך אותו ליעד מוסכם מול הלקוח.</div>`;
-  document.getElementById('h3Ov').classList.add('show');
-}
-function h3Close(){ document.getElementById('h3Ov').classList.remove('show'); }
-
-/* ===== עורך היעד — אותו מנגנון כמו התא הנערך בדוח התזרים העתידי:
-   ערך חופשי, ומתג שהופך אותו ליעד עם מעקב והתראות מול הלקוח.     ===== */
-var TGE=null;
-function tgeOpen(gi,ri){
-  if(IS_CLI) return;
-  const g=GROUPS[gi], r=g.rows[ri];
-  TGE={gi,ri,kind:g.kind,goal:(r.src==='goal')};
-  document.getElementById('tgeTitle').textContent=r.label;
-  document.getElementById('tgeSub').textContent=MONTHS[mi].label+' · '+(g.kind==='inc'?'קטגוריית הכנסה':'קטגוריית הוצאה');
-  const inc=g.kind==='inc';
-  document.getElementById('tgeBody').innerHTML=`
-    <label class="tge-fld">יעד לחודש (₪)</label>
-    <input type="number" class="tge-val" id="tgeVal" value="${r.target}" dir="ltr">
-    <div class="tge-chg same" id="tgeChg"></div>
-    <label class="tge-tgl">
-      <input type="checkbox" id="tgeGoal" ${TGE.goal?'checked':''} onchange="tgeSync()">
-      <span class="sw"></span>
-      <span class="tx">פתח יעד ללקוח 🎯<small>מעקב והתראות על עמידה ביעד</small></span>
-    </label>
-    <div class="tge-dir ${inc?'in':'ex'}" id="tgeDir">${inc
-      ? 'יעד הכנסה — צריך <b>לעבור</b> את הסכום ↑'
-      : 'יעד הוצאה — צריך <b>לא לעבור</b> את הסכום ↓'}</div>
-    <div class="tge-acts">
-      <button class="tge-p" onclick="tgeSave()">שמירה</button>
-      <button class="tge-g" onclick="tgeClose()">ביטול</button>
-    </div>
-    <button class="tge-reset" onclick="tgeReset()">↺ החזרה לערך המקורי · ${nf.format(r._base)}</button>`;
-  const v=document.getElementById('tgeVal');
-  v.oninput=tgeChg;
-  v.onkeydown=e=>{ if(e.key==='Enter') tgeSave(); if(e.key==='Escape') tgeClose(); };
-  tgeSync(); tgeChg();
-  document.getElementById('tgOv').classList.add('show');
-  v.focus(); v.select();
-}
-function tgeClose(){ document.getElementById('tgOv').classList.remove('show'); TGE=null; }
-function tgeSync(){
-  const on=document.getElementById('tgeGoal').checked;
-  document.getElementById('tgeDir').classList.toggle('show',on);
-}
-/* ההפרש מול הערך שהיה — כדי שהעריכה תהיה החלטה ולא הקלדה */
-function tgeChg(){
-  const r=GROUPS[TGE.gi].rows[TGE.ri], el=document.getElementById('tgeChg');
-  const v=Math.round(parseFloat(document.getElementById('tgeVal').value));
-  if(isNaN(v)||v===r._base){ el.className='tge-chg same';
-    el.innerHTML='תואם לערך המקורי · <b>'+nf.format(r._base)+'</b>'; return; }
-  const d=v-r._base, pct=r._base?Math.round(d/Math.abs(r._base)*100):0;
-  el.className='tge-chg diff';
-  el.innerHTML=(d>0?'גבוה ב-':'נמוך ב-')+'<b>'+nf.format(Math.abs(d))+'</b> מהערך המקורי'+
-    (pct?' · '+Math.abs(pct)+'%':'');
-}
-function tgeReset(){
-  const r=GROUPS[TGE.gi].rows[TGE.ri];
-  document.getElementById('tgeVal').value=r._base;
-  document.getElementById('tgeGoal').checked=(r._bsrc==='goal');
-  tgeSync(); tgeChg();
-}
-function tgeSave(){
-  const r=GROUPS[TGE.gi].rows[TGE.ri];
-  const v=Math.round(parseFloat(document.getElementById('tgeVal').value));
-  if(isNaN(v)||v<0){ toast('יעד חייב להיות מספר חיובי'); return; }
-  const goal=document.getElementById('tgeGoal').checked;
-  const changed=(v!==r.target)||(goal!==(r.src==='goal'));
-  r.target=v;
-  /* מקור היעד: יעד מוסכם / שינוי ידני / חזרה לממוצע כשלא נגענו בערך */
-  r.src = goal ? 'goal' : (v===r._base ? r._bsrc : 'manual');
-  tgeClose(); render();
-  if(changed) toast(goal
-    ? 'נקבע יעד ל"'+r.label+'" — '+nf.format(v)+' ₪ · הלקוח יקבל מעקב והתראות'
-    : 'היעד של "'+r.label+'" עודכן ל-'+nf.format(v)+' ₪');
-}
 
 function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(window._tt); window._tt=setTimeout(()=>el.classList.remove('on'),2200); }
 render();
