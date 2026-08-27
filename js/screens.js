@@ -176,7 +176,7 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון חשבונאי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'הודעות',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון חשבונאי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   function showTab(t){
     CUR_TAB=t;

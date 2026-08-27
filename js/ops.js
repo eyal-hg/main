@@ -3751,84 +3751,149 @@
   seedOps();
 
 
-/* ===== מסך הודעות — הקבוצה + שיחות פרטיות של המנהל (בלי צ'אטי AI) =====
-   הסים של HK: גם הפרטי עובר בצינור — ראוטינג זהה לקבוצה. */
+/* ===== קבוצת הוואטסאפ — ההתכתבות המשותפת של החברה =====
+   כאן לא קוראים 40 הודעות: קוראים מה יצא מהן. בסוף כל יום יושב הסיכום של
+   הג'וב הלילי — מה הוא חילץ מההודעות של אותו יום והכניס לזיכרון הלקוח.
+   כל דובר נושא שם ותפקיד כשדות נפרדים (docs/MEMORY_SPEC.md §6.1). */
 let MSGS_SEL='group', MSGS_Q='';
+/* שורת סיכום: cat=הקטגוריה · sc='co' חברה (כחול) | 'pr' אדם (סגול) · on=של מי */
+const S=(t,cat,sc,on)=>({t,cat,sc:sc||'co',on:on||''});
 const MSGS_THREADS={
-  group:{name:'הקבוצה', sub:'לקוח · יועץ · מנהל תזרים · בוט', icon:'📱', unread:2, msgs:[
-    {day:'אתמול'},
-    {who:'צחי עובד', role:'cl', t:'מצרף את אישור ההעברה ללדובק 🙏 [קובץ]', time:'10:12', tag:'→ משימת הזנה'},
-    {who:'לירון (מנהל תזרים)', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
-    {who:'אילון (יועץ)', role:'adv', t:'צחי, מחר ב-16:00 עוברים על התקציב לקראת הרבעון', time:'12:40'},
-    {who:'צחי עובד', role:'cl', t:'סגור. דרך אגב — סגרנו את החוזה עם מרכז הבנייה 🎉', time:'12:44', tag:'→ זיכרון · אירועים'},
-    {who:'בוט HK', role:'bot', t:'📋 סיכום פגישת 09:00 נשלח · נפתחו 3 משימות', time:'13:05'},
-    {day:'היום'},
-    {who:'רות אלמוג', role:'cl', t:'מעבירה את צפי התשלומים לאוגוסט [טבלה]', time:'08:55', tag:'→ טבלת הזנה'},
-    {who:'צחי עובד', role:'cl', t:'ההוראה להראל יורדת מחר', time:'11:40', tag:'→ נגררת'},
-    {who:'אילון (יועץ)', role:'adv', t:'בוא נדבר גם על התמחור מול רימון בפגישה', time:'12:10', tag:'→ זיכרון'},
+  group:{name:'תפעול · אנרגי אינטרנשיונל', ppl:[
+      {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'רות אלמוג',j:'מנהלת כספים',r:'cl'},
+      {n:'אילון אשכנזי',j:'יועץ',r:'adv'},{n:'לירון בן כליפא',j:'מנהל תזרים · HK',r:'me'},
+      {n:'054-771-2280',r:'unk',unk:1},{n:'בוט HK',j:'אוטומטי',r:'bot'}], unread:2, msgs:[
+    {day:'אתמול', date:'רביעי · 01.07'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'מצרף את אישור ההעברה ללדובק 🙏 [קובץ]', time:'10:12', tag:'משימת הזנה'},
+    {who:'לירון בן כליפא', job:'מנהל תזרים · HK', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'צחי, מחר ב-16:00 עוברים על התקציב לקראת הרבעון', time:'12:40'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'סגור. דרך אגב — סגרנו את החוזה עם מרכז הבנייה 🎉', time:'12:44'},
+    {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'אני אשלח את הדוח, צחי לא מעורב בזה בדרך כלל', time:'12:51'},
+    {who:'054-771-2280', role:'unk', unk:1, t:'שלום, מצרף את הצעת המחיר לליסינג החדש [PDF]', time:'12:58'},
+    {who:'בוט HK', job:'אוטומטי', role:'bot', t:'📋 סיכום פגישת 09:00 נשלח · נפתחו 3 משימות', time:'13:05'},
+    {sum:{ran:'02:10', n:15, unk:'054-771-2280', lines:[
+      S('נסגר החוזה עם מרכז הבנייה — צפי תוספת למחזור','אירועים מהותיים'),
+      S('החומר מגיע מרות אלמוג, לא מצחי','שיתוף פעולה'),
+      S('מעדיפה מיילים מסודרים על וואטסאפ','סגנון תקשורת','pr','רות אלמוג')]}},
+
+    {day:'היום', date:'חמישי · 02.07'},
+    {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'מעבירה את צפי התשלומים לאוגוסט [טבלה]', time:'08:55', tag:'טבלת הזנה'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'ההוראה להראל יורדת מחר', time:'11:40', tag:'נגררת'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'בוא נדבר גם על התמחור מול רימון בפגישה', time:'12:10'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'התזרים נראה צפוף החודש, אני לא אוהב לגעת במסגרת', time:'12:30'},
+    {who:'054-771-2280', role:'unk', unk:1, t:'מתי נוח לכם לדבר על ההצעה?', time:'13:15'},
+    {sum:{pending:4}},
   ]},
-  u0:{name:'צחי עובד · פרטי', sub:'שיחה ישירה שלך · דרך הסים של HK', icon:'👤', unread:0, msgs:[
-    {day:'אתמול'},
-    {who:'לירון (מנהל תזרים)', role:'me', t:'צחי, ראיתי חיוב PAYPAL 1,120 ₪ בכרטיס — של מה זה?', time:'14:02'},
-    {who:'צחי עובד', role:'cl', t:'זה כלי ניהול המלאי החדש, מנוי שנתי', time:'14:15', tag:'→ קיטלוג'},
-    {who:'לירון (מנהל תזרים)', role:'me', t:'מעולה, מקטלג ככה. תודה!', time:'14:16'},
-  ]},
-  u1:{name:'רות אלמוג · פרטי', sub:'שיחה ישירה שלך · דרך הסים של HK', icon:'👤', unread:1, msgs:[
-    {day:'היום'},
-    {who:'לירון (מנהל תזרים)', role:'me', t:'רות, מה מועד הפירעון של השיק לפלסט-גל?', time:'09:30'},
-    {who:'רות אלמוג', role:'cl', t:'25.8, שיק 21045. מעדכנת גם בטבלה', time:'09:44', tag:'→ טבלת הזנה'},
-    {who:'רות אלמוג', role:'cl', t:'ותגיד — אפשר לדחות את ההו״ק של הליסינג לסוף חודש?', time:'11:52'},
+  mgmt:{name:'הנהלה · אנרגי', ppl:[
+      {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'אילון אשכנזי',j:'יועץ',r:'adv'},
+      {n:'בוט HK',j:'אוטומטי',r:'bot'}], unread:0, msgs:[
+    {day:'שני', date:'שני · 29.06'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'צחי, לפני שנרחיב — כדאי שנסגור את המסגרת מול הבנק', time:'09:10'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'אני לא רוצה להגדיל מסגרת, זה נראה לי כמו הודאה בכישלון', time:'09:25'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'זה כלי, לא הצהרה. נדבר על זה בפגישה', time:'09:31'},
+    {sum:{ran:'02:10', n:6, lines:[
+      S('מסרב להגדיל את המסגרת — רואה בהגדלה הודאה בכישלון','מצב תזרימי'),
+      S('רו״ח חיצוני משפיע על החלטות מימון — לתאם לפני הצעות גדולות','הקשר אישי ואמון','pr','צחי עובד')]}},
+    {day:'היום', date:'חמישי · 02.07'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'העברתי לרו״ח את הנתונים לקראת הרבעון', time:'09:40'},
+    {sum:{pending:1}},
   ]},
 };
+/* אות אחת. לעברית אין קונבנציה לראשי-תיבות דו-אותיים, ו״בוט HK״ יוצא ״בH״. */
+const MG_INI=n=>String(n||'').trim().charAt(0);
+/* אייקון קו-מתאר, לא אמוג׳י — אותה שפת SVG של .com-search במסך הזיכרון */
+const MG_ICO=g=>g
+  ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15.5 19v-1.4a3.8 3.8 0 0 0-3.8-3.8H6.3A3.8 3.8 0 0 0 2.5 17.6V19"/><circle cx="9" cy="7" r="3.1"/><path d="M21.5 19v-1.4a3.8 3.8 0 0 0-2.9-3.7"/><path d="M16.2 4.2a3.8 3.8 0 0 1 0 7.3"/></svg>'
+  : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 19.5v-1.7a4.3 4.3 0 0 0-4.3-4.3H9.3A4.3 4.3 0 0 0 5 17.8v1.7"/><circle cx="12" cy="7.2" r="3.5"/></svg>';
+/* קיבוץ לפי משפחת זיכרון — קודם העסק ואז אדם-אדם, כמו שתי העמודות ב-renderCoMem.
+   הנקודה הצבועה עולה מהשורה לכותרת המשפחה, ולכן שם האדם נאמר פעם אחת ולא פעם לכל שורה. */
+function mgFam(lines){
+  const out=[];
+  lines.forEach(l=>{
+    const sc=l.sc==='pr'?'pr':'co', k=sc==='pr'?'pr:'+l.on:'co';
+    let g=out.find(x=>x.k===k);
+    if(!g){ g={k,sc,n:sc==='pr'?(l.on||'זיכרון האדם'):'העסק',lines:[]}; out.push(g); }
+    g.lines.push(l);
+  });
+  return out.sort((a,b)=>(a.sc==='co'?0:1)-(b.sc==='co'?0:1));
+}
+function mgSumHtml(s,isCli){
+  if(isCli) return '';
+  if(s.pending) return `<div class="mg-sum wait">
+    <span class="mg-sd"></span>הסיכום הלילי ירוץ הלילה ב-02:00 · <b>${s.pending}</b> הודעות ממתינות לעיבוד</div>`;
+  if(!s.lines||!s.lines.length) return `<div class="mg-sum none">
+    <span class="mg-sd"></span>הסיכום הלילי רץ ב-${s.ran} · ${s.n} הודעות · לא נמצא מה להוסיף לזיכרון</div>`;
+  return `<div class="mg-sum">
+    <div class="mg-sh"><b>נכנס לזיכרון הלקוח</b>
+      <span>סיכום לילי · רץ ב-${s.ran} · ${s.n} הודעות</span>
+      <a href="#" onclick="showTab('mem');return false">לזיכרון המלא</a></div>
+    <div class="mg-sb">${mgFam(s.lines).map(g=>
+      `<div class="mg-fam ${g.sc}"><span class="dot"></span>${g.n}</div>`+
+      g.lines.map(l=>`<div class="mg-sl">${l.t}<span class="mg-slc">${l.cat}</span></div>`).join('')
+    ).join('')}</div>
+    ${s.unk?`<div class="mg-unk"><bdo dir="ltr">${s.unk}</bdo> אינו מזוהה — מה שנאמר ממנו לא שויך לזיכרון אישי</div>`:''}
+  </div>`;
+}
 function renderMsgsView(){
   const el=document.getElementById('viewMsgs'); if(!el)return;
   const isAdv=(typeof ROLE!=='undefined'&&ROLE==='advisor');
-  /* בעל העסק רואה את הקבוצה בלבד: השיחות ה"פרטיות" הן של מנהל התזרים
-     מול כל עובד בנפרד — לא שלו, ובוודאי לא של עובד אחר. */
   const isCli=(typeof ROLE!=='undefined'&&(ROLE==='client1'||ROLE==='clientN'));
-  const keys=Object.keys(MSGS_THREADS).filter(k=>(!isAdv&&!isCli)||k==='group');
+  const keys=Object.keys(MSGS_THREADS);
   if(!keys.includes(MSGS_SEL))MSGS_SEL=keys[0];
   const T=MSGS_THREADS[MSGS_SEL];
   const q=MSGS_Q.trim();
-  const list=keys.map(k=>{const t=MSGS_THREADS[k];const last=[...t.msgs].reverse().find(m=>!m.day);
-    return `<div class="mg-th ${k===MSGS_SEL?'on':''}" onclick="MSGS_SEL='${k}';MSGS_Q='';renderMsgsView()">
-      <span class="mg-ico">${t.icon}</span>
-      <div class="mg-tb"><b>${t.name}</b><span>${last?last.t.slice(0,34):''}${last&&last.t.length>34?'…':''}</span></div>
-      ${t.unread?`<i class="mg-n">${t.unread}</i>`:''}
+  const solo=keys.length===1;
+  const list=keys.map(k=>{const g=MSGS_THREADS[k];const last=[...g.msgs].reverse().find(m=>!m.day&&!m.sum);
+    const pend=[...g.msgs].reverse().find(m=>m.sum&&m.sum.pending);
+    return `<div class="mg-grp ${k===MSGS_SEL?'on':''}">
+      <button class="mg-th" onclick="MSGS_SEL='${k}';MSGS_Q='';renderMsgsView()">
+        <div class="mg-tb"><b>${comEsc(g.name)}</b><span>${comEsc(last?last.t.slice(0,38)+(last.t.length>38?'…':''):'')}</span></div>
+        ${pend?`<i class="mg-n">${pend.sum.pending}</i>`:''}
+      </button>
+      ${k===MSGS_SEL?`<div class="mg-ppl">${(g.ppl||[]).map(p=>`<span class="mg-p ${p.r}">
+        <i>${p.unk?'?':MG_INI(p.n)}</i>
+        <b>${p.unk?`<bdo dir="ltr">${comEsc(p.n)}</bdo>`:comEsc(p.n)}</b>
+        <em>${p.unk?'לא מזוהה':comEsc(p.j||'')}</em></span>`).join('')}</div>`:''}
     </div>`;}).join('');
-  const msgs=T.msgs.filter(m=>m.day||!q||m.t.includes(q)||m.who.includes(q)).map(m=>m.day
-    ?`<div class="mg-day"><span>${m.day}</span></div>`
+  /* החיפוש רץ על ההודעות בלבד — הסיכום הלילי אינו הודעה — ומפריד יום שנשאר
+     בלי אף הודעה נופל איתן. */
+  let rows=T.msgs;
+  if(q){
+    rows=rows.filter(m=>m.day||(!m.sum&&(m.t.indexOf(q)>-1||m.who.indexOf(q)>-1)));
+    rows=rows.filter((m,i)=>!m.day||(rows[i+1]&&!rows[i+1].day));
+  }
+  const mk=s=>q?comEsc(s).split(comEsc(q)).join('<mark>'+comEsc(q)+'</mark>'):comEsc(s);
+  const msgs=rows.map(m=>
+      m.day?`<div class="mg-day"><span>${m.day}</span><i>${m.date||''}</i></div>`
+    : m.sum?mgSumHtml(m.sum,isCli)
     :`<div class="mg-m ${m.role}">
+        <span class="mg-av ${m.role}">${MG_INI(m.who)}</span>
         <div class="mg-bub">
-          ${MSGS_SEL==='group'?`<b class="mg-who ${m.role}">${m.who}</b>`:''}
-          <span class="mg-t">${m.t}</span>
+          <b class="mg-who">${m.unk?`<bdo dir="ltr">${mk(m.who)}</bdo>`:mk(m.who)}<i>${m.unk?'לא מזוהה':comEsc(m.job||'')}</i></b>
+          <span class="mg-t">${mk(m.t)}</span>
           <span class="mg-meta">${m.time}${(m.tag&&!isCli)?` <i class="mg-tag">${m.tag}</i>`:''}</span>
         </div>
       </div>`).join('');
-  el.innerHTML=`<div class="mg">
-    <aside class="mg-side">
-      <div class="mg-side-h">שיחות · ${(CLIENTS[CUR]||{}).name||''}</div>
-      ${list}
-      <div class="mg-note">${isCli
-        ? 'כל מה שנכתב כאן מגיע ליועץ ולמנהל התזרים שלך ב-HK. אין צורך לחזור על זה במייל.'
-        : 'הכל דרך הסים של HK — כל שיחה עוברת את אותו ראוטינג: משימות, זיכרון, נגררות.'+(isAdv?'':' הפרטי שלך גלוי רק לך ולאדמין.')}</div>
-    </aside>
+  /* הציר גולל עם הדף — בלי מכל פנימי ובלי גבול. הכותרת נדבקת למעלה. */
+  el.innerHTML=`<div class="mg ${solo?'solo':''}">
+    ${solo?'':`<aside class="mg-side">
+      <div class="mg-side-h">קבוצות הוואטסאפ<em>${keys.length}</em></div>
+      <div class="mg-list">${list}</div>
+      <div class="mg-note">כל הודעה בקבוצות האלה עוברת את אותו ראוטינג: משימות, נגררות, וסיכום לילי לזיכרון.</div>
+    </aside>`}
     <div class="mg-main">
       <div class="mg-head">
-        <div><b>${T.name}</b><span>${T.sub}</span></div>
-        <input class="mg-search" placeholder="חיפוש בשיחה…" value="${q}" oninput="MSGS_Q=this.value;renderMsgsView();this.focus();this.setSelectionRange(this.value.length,this.value.length)">
+        <div><b>${comEsc(T.name)}</b></div>
+        <div class="com-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input placeholder="חיפוש בשיחה" value="${comEsc(q)}" oninput="MSGS_Q=this.value;renderMsgsView();this.focus();this.setSelectionRange(this.value.length,this.value.length)"></div>
       </div>
-      <div class="mg-scroll" id="mgScroll">${msgs||'<div class="ops-empty" style="padding:30px">אין תוצאות</div>'}</div>
-      <div class="mg-comp">
-        <input class="mx2-inp" id="mgInp" placeholder="${MSGS_SEL==='group'?'כתיבה לקבוצה — בשמך…':'הודעה ל'+T.name.replace(' · פרטי','')+'…'}" onkeydown="if(event.key==='Enter')mgSend()">
-        <button class="oqs-send" onclick="mgSend()">שליחה</button>
-      </div>
+      <div class="mg-scroll">${msgs
+        ? `<div class="mg-track">${msgs}</div>`
+        : `<div class="com-empty"><b>אין הודעה שמכילה ”${comEsc(q)}”</b>
+        <span>החיפוש רץ על גוף ההודעה ועל שם הכותב, ולא על הסיכומים הליליים.</span>
+        <button class="btn" onclick="MSGS_Q='';renderMsgsView()">הצגת כל השיחה</button></div>`}</div>
     </div>
   </div>`;
-  const sc=document.getElementById('mgScroll'); if(sc)sc.scrollTop=sc.scrollHeight;
-}
-function mgSend(){
-  const i=document.getElementById('mgInp'); if(!i||!i.value.trim())return;
-  MSGS_THREADS[MSGS_SEL].msgs.push({who:'לירון (מנהל תזרים)', role:'me', t:i.value.trim(), time:'עכשיו'});
-  renderMsgsView();
+  /* נכנסים לקבוצה — מתייצבים על ההודעה האחרונה, לא על הראשונה */
+  const sc=el.querySelector('.mg-scroll'); if(sc&&!MSGS_Q) sc.scrollTop=sc.scrollHeight;
 }

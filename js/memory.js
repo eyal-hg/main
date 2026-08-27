@@ -85,12 +85,12 @@ const L=(id,t,src,d,ex)=>Object.assign({id,t,src,d,st:'live'},ex||{});
 const MEM_DATA={
   0:{
     cashpos:{lines:[
-      L('c1','העו״ש בלאומי בחריגה בפועל 6 ימים — 161,198- ₪ מול מסגרת 150,000 ₪','תזרים','02.07'),
-      L('c2','בפועלים יתרה חיובית 312,400 ₪ — הפתרון קיים ולא מבוצע','תזרים','02.07'),
-      L('c3','צפי חריגה מלאה בעוד 9 ימים אם לא תבוצע העברה בין החשבונות','תזרים','02.07'),
-      L('c4','המחזור החודשי יציב סביב 300 א׳ ₪, אך קניות המלאי גדלו 8% ולוחצות על התזרים','פגישה חודשית','02.07'),
-      L('c5','הגבייה מרוכזת בשבוע הראשון — פער תזמון קבוע מול תשלומי ספקים ב-10 לחודש','פגישה חודשית','02.07'),
-      L('c0','החריגה עמדה על 3 ימים, טרם זוהה פתרון בין-חשבונות','שיחת טלפון','25.06',{st:'dropped',by:'המערכת',on:'02.07'})],
+      L('c1','העו״ש בלאומי חי על המסגרת — חריגה חוזרת בכל חודש, לא אירוע חד-פעמי','פגישה חודשית','02.07'),
+      L('c2','מנהל שני חשבונות ולא מעביר ביניהם — הפתרון קיים ולא מבוצע','פגישה חודשית','02.07'),
+      L('c3','מסרב להגדיל את המסגרת — רואה בהגדלה הודאה בכישלון','שיחת טלפון','25.06'),
+      L('c4','קניות המלאי גדלו ולוחצות על התזרים, בלי גידול מקביל במחזור','פגישה חודשית','02.07'),
+      L('c5','פער תזמון קבוע: הגבייה בשבוע הראשון מול תשלומי ספקים ב-10 לחודש','פגישה חודשית','02.07'),
+      ],
       updated:'02.07', src:'פגישה חודשית'},
 
     bizprofile:{lines:[
@@ -122,7 +122,7 @@ const MEM_DATA={
     coop_co:{lines:[
       L('k1','טבלאות ההזנה מתעדכנות בזמן כל שבוע','תפעול שוטף','02.07'),
       L('k2','מסמכים מגיעים תוך יום-יומיים מבקשה','תפעול שוטף','02.07'),
-      L('k3','הרשאת חשבון הסליקה נתקעה אצל הבנק שבועיים — דורש דחיפה','צ׳אט','25.06')],
+      L('k3','הרשאת חשבון הסליקה נתקעה אצל הבנק שבועיים — דורש דחיפה','קבוצת הוואטסאפ','25.06')],
       updated:'02.07', src:'תפעול שוטף'},
 
     commstyle:{lines:[
@@ -136,10 +136,10 @@ const MEM_DATA={
     csat:{lines:[
       L('t1','מרוצה מאוד מהליווי של לירון — ציין יזום פעמיים','פגישה חודשית','02.07'),
       L('t2','על ה-AI: משתמש בצ׳אט כמעט יומיום ו״מופתע כמה זה מדויק״','פגישה חודשית','02.07'),
-      L('t3','התלונן שקיבל תשובה כללית מדי על שאלת מע״מ','צ׳אט','25.06'),
+      L('t3','התלונן שקיבל תשובה כללית מדי על שאלת מע״מ','קבוצת הוואטסאפ','25.06'),
       L('t4','פחות מרוצה מזמן ההמתנה לדוח החודשי','פגישה חודשית','02.07'),
       L('t5','מגמה: יציב-חיובי · סיכון נטישה: נמוך','פגישה חודשית','02.07'),
-      L('t0','תסכול מטעות בקיטלוג שתוקנה באיחור','פגישה חודשית','10.06',{st:'solved',on:'25.06'})],
+      ],
       updated:'02.07', src:'פגישה חודשית'},
 
     coop_user:{lines:[
@@ -149,8 +149,11 @@ const MEM_DATA={
       L('u4','הכי אפקטיבי: לסכם לו משימה אחת ממוקדת בוואטסאפ אחרי כל פגישה','פגישה חודשית','02.07')],
       updated:'02.07', src:'פגישה חודשית'},
 
+    /* קטגוריה שהמסמך שלה לא נשלח ללקוח — נשלחת במקומו ההנחיה הזאת, בלי אף עובדה */
+    pains_chat:'אל תציע הרחבת פעילות מול לקוח קיים · כשעולה גבייה, הצע פתרון תזמון',
     csat_chat:'אל תתנצל מראש · תשובות ממוקדות, בלי הכללות',
     mood_chat:'ענה ברוגע ובקצרה · הצג תמיד פתרון לצד בעיה',
+    relation_chat:'אל תיזום נושאי מימון בלי הקשר · אל תזכיר עלות שירות',
 
     mood:{lines:[
       L('m1','נשמע לחוץ סביב החריגה בלאומי — חזר לנושא שלוש פעמים','פגישה חודשית','02.07'),
@@ -453,120 +456,62 @@ function comBag(scope){
   return (MEM_UDATA[CUR][COM_USER]=MEM_UDATA[CUR][COM_USER]||{});
 }
 const comDoc=(scope,key)=>comBag(scope)[key]||null;
-function comChat(key){ const v=comBag('user')[key+'_chat']; return v||''; }
-function comChatSet(key,el){ comBag('user')[key+'_chat']=el.textContent.trim(); toast('ההנחיה לצ׳אט עודכנה'); }
+function comChat(scope,key){ return comBag(scope)[key+'_chat']||''; }
 
 /* ---- החותמת: רק מה ששונה מחותמת הכרטיס ---- */
-function comStamp(l,doc){
-  if(l.st==='dropped') return {cls:'', t:'הוסר · '+(l.by||COM_ME)+' · '+(l.on||'')};
-  if(l.st==='solved')  return {cls:'ok', t:'נפתר '+(l.on||l.d||'')};
-  const dd=l.d&&l.d!==doc.updated, ss=l.src&&l.src!==doc.src;
-  if(l.st==='stale')   return {cls:'', t:(dd?l.d+' · ':'')+'לא הוזכר מאז'};
-  if(dd&&ss) return {cls:'', t:l.d+' · '+l.src};
-  if(dd)     return {cls:'', t:l.d};
-  if(ss)     return {cls:'', t:l.src};
-  return null;
+/* לכל שורה מקור ותאריך משלה — הם לא מאפיין של הכרטיס */
+function comStamp(l){
+  const base=(l.d||'')+(l.src?' · '+l.src:'');
+  if(l.st==='dropped') return {cls:'off', t:'הוסר · '+(l.by||COM_ME)+' · '+(l.on||'')};
+  if(l.st==='solved')  return {cls:'ok',  t:'נפתר '+(l.on||l.d||'')};
+  if(l.st==='stale')   return {cls:'',    t:base+' · לא הוזכר מאז'};
+  return {cls:'', t:base};
 }
 
-/* ---- שמירה: ה-DOM הוא מקור האמת. אין diff ואין מודל ---- */
-function comSaveDoc(scope,key,el){
-  const doc=comDoc(scope,key); if(!doc) return;
-  const seen={}, out=[], byId={}; (doc.lines||[]).forEach(l=>byId[l.id]=l);
-  const dropped=(doc.lines||[]).filter(l=>l.st==='dropped');
-  [...el.querySelectorAll(':scope > .com-p')].forEach(p=>{
-    if(p.classList.contains('add')) return;
-    const c=p.cloneNode(true); c.querySelectorAll('.com-st').forEach(x=>x.remove());
-    const txt=c.textContent.replace(/\s+/g,' ').trim();
-    let id=p.dataset.id||'';
-    if(p.classList.contains('off')){ if(byId[id]) out.push(byId[id]); return; }
-    if(!txt){
-      /* אין מחיקה קשה: שורה שנשמרה חוזרת כ-dropped; שורה שנולדה עכשיו נמחקת */
-      if(id&&byId[id]){ out.push(Object.assign({},byId[id],{st:'dropped',by:COM_ME,on:COM_TODAY}));
-        if(!COM_UNDO){COM_UNDO=1;toast('שורה לא נמחקת — היא יוצאת מההקשר ונשארת ברשומה');} }
-      return;
-    }
-    if(!id||seen[id]) id=comUid();
-    seen[id]=1;
-    const old=byId[p.dataset.id];
-    if(old&&old.t===txt) out.push(Object.assign({},old,{id}));
-    else if(old){ const h=(doc.hist=doc.hist||[]); h.unshift(old.d+' · '+old.src+' — '+old.t);
-      out.push(Object.assign({},old,{id,t:txt,src:'היועץ',d:COM_TODAY,by:COM_ME,origin:'advisor',st:'live'})); }
-    else out.push({id,t:txt,src:'היועץ',d:COM_TODAY,by:COM_ME,origin:'advisor',st:'live'});
-  });
-  dropped.forEach(l=>{ if(!out.some(x=>x.id===l.id)) out.push(l); });
-  doc.lines=out;
-  renderCoMem();
+/* הפעולה היחידה במסך בשלב הזה: מחיקת שורה. עריכה והוספה ממתינות להכרעה. */
+function comDel(btn){
+  const card=btn.closest('.com-c'), p=btn.closest('.com-p');
+  const doc=comDoc(card.dataset.scope,card.dataset.key); if(!doc) return;
+  const i=(doc.lines||[]).findIndex(x=>x.id===p.dataset.id); if(i<0) return;
+  const gone=doc.lines[i];
+  hkConfirm('מחיקת שורה מהזיכרון',
+    '״'+gone.t+'״\n\nהשורה תצא מההקשר שנשלח ל-AI, ולא תשפיע יותר על אף תשובה — שלכם או של הלקוח.',
+    'מחיקה',()=>{
+      doc.lines.splice(i,1); renderCoMem();
+      toastUndo('השורה נמחקה מהזיכרון',()=>{ doc.lines.splice(i,0,gone); renderCoMem(); });
+    });
 }
-function comRow(btn){ const c=btn.closest('.com-c'); return c.querySelector('.com-p[data-id="'+c.dataset.row+'"]'); }
-function comRowEdit(btn){
-  const p=comRow(btn); if(!p) return;
-  const r=document.createRange(); r.selectNodeContents(p);
-  const st=p.querySelector('.com-st'); if(st) r.setEndBefore(st);
-  const s=getSelection(); s.removeAllRanges(); s.addRange(r);
-}
-function comRowSt(btn,st){
-  const c=btn.closest('.com-c'), p=comRow(btn); if(!p) return;
-  const doc=comDoc(c.dataset.scope,c.dataset.key), l=(doc.lines||[]).find(x=>x.id===p.dataset.id);
-  if(!l) return;
-  if(st==='dropped'){ l.st='dropped'; l.by=COM_ME; l.on=COM_TODAY; toast('יצאה מההקשר — נשארת ברשומה'); }
-  else { l.st='live'; delete l.by; delete l.on; toast('חזרה להקשר'); }
-  renderCoMem();
-}
-const comRowDrop=b=>comRowSt(b,'dropped');
-const comRowBack=b=>comRowSt(b,'live');
-function comShowOff(b){ const k=b.closest('.com-c').dataset.k; COM_OFF.has(k)?COM_OFF.delete(k):COM_OFF.add(k); renderCoMem(); }
+function gdOpen(){ document.getElementById('gdOv').classList.add('show'); }
+function gdClose(){ document.getElementById('gdOv').classList.remove('show'); }
 function comUser(i){ COM_USER=i; renderCoMem(); }
 function comSearch(v){ COM_Q=v.trim(); renderCoMem(true); }
 
-/* ---- הרייל: node אחד לכרטיס, גולש לשורה. אין N מאזינים ---- */
-function comRail(card,p){
-  if(!p||p.classList.contains('add')){ card.classList.remove('armed'); return; }
-  card.querySelector('.com-rail').style.setProperty('--ry',p.offsetTop+'px');
-  card.classList.toggle('on-off',p.classList.contains('off'));
-  card.dataset.row=p.dataset.id||''; card.classList.add('armed');
-}
-function comBind(host){
-  host.addEventListener('mouseover',e=>{ const c=e.target.closest('.com-c'); if(c) comRail(c,e.target.closest('.com-p')); });
-  host.addEventListener('mouseleave',e=>{ const c=e.target.closest&&e.target.closest('.com-c'); if(c)c.classList.remove('armed'); },true);
-}
-
 function comCard(c){
   const doc=comDoc(c.scope,c.key), k=c.scope+'|'+c.key+'|'+COM_USER;
-  const all=(doc&&doc.lines)||[];
-  const live=all.filter(l=>l.st!=='dropped'), off=all.filter(l=>l.st==='dropped');
+  /* יש הנחיה ⇔ המסמך לא נשלח ללקוח. אין הנחיה — המסמך כולו נכנס להקשר. */
+  const gd=comChat(c.scope,c.key);
+  /* שורה שהוסרה לא מוצגת — אין במסך פעולת מחיקה, אז אין מה לדווח עליו */
+  const all=((doc&&doc.lines)||[]).filter(l=>l.st!=='dropped');
   const q=COM_Q, mark=s=>q?comEsc(s).split(comEsc(q)).join('<mark>'+comEsc(q)+'</mark>'):comEsc(s);
   const hit=!q||(c.name.indexOf(q)>-1)||all.some(l=>l.t.indexOf(q)>-1);
   if(!hit) return '';
-  const showOff=COM_OFF.has(k), offShown=showOff?off:off.slice(0,1);
-  const rows=live.concat(offShown).map(l=>{
-    const s=comStamp(l,doc||{});
-    return `<p class="com-p ${l.st==='solved'?'solved':''} ${l.st==='dropped'?'off':''} ${l.origin==='advisor'?'adv':''}"
-      data-id="${l.id}"${l.st==='dropped'?' contenteditable="false"':''}>${mark(l.t)}${
-      s?`<i class="com-st ${s.cls}" contenteditable="false">${comEsc(s.t)}</i>`:''}</p>`;}).join('');
-  const capN=(c.cap||6), full=live.filter(l=>l.st==='live').length>=capN;
+  const rows=all.map(l=>{
+    const s=comStamp(l);
+    return `<p class="com-p ${l.st==='solved'?'solved':''} ${l.origin==='advisor'?'adv':''}"
+      data-id="${l.id}">${mark(l.t)}<i class="com-st ${s.cls}">${comEsc(s.t)}${
+      l.origin==='advisor'?' · הוזן ידנית':''}</i>
+      <button class="com-x" title="מחיקת השורה מהזיכרון" onclick="comDel(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></p>`;}).join('');
+  const capN=(c.cap||6), full=all.filter(l=>l.st==='live').length>=capN;
   return `<section class="com-c ${all.length?'':'empty'}" data-scope="${c.scope}" data-key="${c.key}" data-k="${k}">
     <div class="com-h">
       <b>${comEsc(c.name)}</b>
-      ${c.internal?'<span class="com-vis gd" title="המסמך לא נשלח ללקוח — נשלחת במקומו הנחיה מזוקקת">רק הנחיה ללקוח</span>'
-        :(c.scope==='company'?c.vis==='hk':rolesOf(c).length<6)?'<span class="com-vis" title="לא נכנס להקשר של הצ׳אט של הלקוח">לא ללקוח</span>':''}
-      ${doc?`<span class="com-src">${comEsc(doc.src||'')} · ${comEsc(doc.updated||'')}</span>`:'<span class="com-src none">טרם נלמד</span>'}
+      ${gd?`<button class="com-vis gd" onclick="gdOpen()" title="מה זה אומר?"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3 4 6v6c0 4.4 3.4 7.9 8 9 4.6-1.1 8-4.6 8-9V6l-8-3z"/></svg>מסונן ללקוח</button>`:''}
       ${doc&&doc.hist&&doc.hist.length?`<button class="com-hb ${MEM_HIST.has(k)?'on':''}" onclick="comHistTg('${k}')">היסטוריה ${doc.hist.length}</button>`:''}
     </div>
-    <div class="com-body">
-      <div class="com-doc" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true"
-           aria-label="${comEsc(c.name)} — מסמך הזיכרון"
-           onblur="comSaveDoc('${c.scope}','${c.key}',this)">${rows}<p class="com-p add ph" data-ph="${comEsc(c.desc||'הוספת שורה')}"><br></p></div>
-      <span class="com-rail">
-        <button class="com-a ed" type="button" aria-label="תיקון" onclick="comRowEdit(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-        <button class="com-a x" type="button" aria-label="לא נכון" onclick="comRowDrop(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-        <button class="com-a back" type="button" aria-label="החזרה להקשר" onclick="comRowBack(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-      </span>
-    </div>
-    ${off.length>1?`<button class="com-more" onclick="comShowOff(this)">${showOff?'הסתרת השורות שהוסרו':'עוד '+(off.length-1)+' שורות שהוסרו · הצגה'}</button>`:''}
+    <div class="com-body">${rows||'<p class="com-none">טרם נלמד — יתמלא מהאינטראקציה הבאה</p>'}</div>
     ${full?`<div class="com-cap">התקרה מלאה (${capN}) — שורה חדשה תדחוק את החלשה ביותר</div>`:''}
-    ${c.internal?`<div class="com-gd"><span class="gl">מה כן מגיע לצ׳אט של הלקוח</span>
-      <div class="gt" contenteditable="true" data-ph="טרם הופקה הנחיה" onblur="comChatSet('${c.key}',this)"
-           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${comEsc(comChat(c.key))}</div></div>`:''}
+    ${gd?`<div class="com-gd"><span class="gl">הלקוח לא מקבל את השורות שלמעלה — רק את זה</span>
+      <div class="gt">${comEsc(gd)}</div></div>`:''}
     ${MEM_HIST.has(k)&&doc&&doc.hist&&doc.hist.length?`<ul class="com-hist">${doc.hist.map(h=>`<li>${comEsc(h)}</li>`).join('')}</ul>`:''}
   </section>`;
 }
@@ -585,8 +530,6 @@ function renderCoMem(keepFocus){
     return s+((d&&d.lines)||[]).filter(l=>l.t.indexOf(COM_Q)>-1).length;},0):0;
   /* אדם שמחזיק כמה חברות — האזהרה היחידה שמונעת נזק אמיתי */
   const multi=(u.n==='רימון יצחק')?'רימון מוצרי אנרגיה':'';
-  const nNew=co.reduce((s,x)=>{const d=comDoc('company',x.key);
-    return s+((d&&d.lines)||[]).filter(l=>l.st==='live'&&l.d===(d.updated||'')).length;},0);
 
   host.innerHTML=`
   <div class="com">
@@ -597,7 +540,7 @@ function renderCoMem(keepFocus){
     </div>
     ${(coH||usH)?`<div class="com-cols">
       <section class="com-col">
-        <h3 class="com-sh co"><span class="dot"></span>העסק<em>${nNew?nNew+' שורות חדשות באינטראקציה האחרונה':'נכון לכל מי שמטפל בחברה'}</em></h3>
+        <h3 class="com-sh co"><span class="dot"></span>העסק</h3>
         ${coH||'<div class="com-empty sm">אין התאמה בזיכרון החברה</div>'}
       </section>
       <section class="com-col">
@@ -609,8 +552,7 @@ function renderCoMem(keepFocus){
     </div>`:`<div class="com-empty"><b>אין שורה שמכילה ״${comEsc(COM_Q)}״</b>
       <span>החיפוש רץ על שם הקטגוריה ועל כל שורה בזיכרון.</span>
       <button class="btn" onclick="comSearch('')">הצגת כל הזיכרון</button></div>`}
-    <p class="com-note">כל שורה כאן נכנסת להקשר של ה-AI. עריכה נשמרת עם מקור <b>היועץ</b> ולא נדרסת בריצה הבאה. שורה שהוסרה יוצאת מההקשר ונשארת ברשומה.</p>
+    <p class="com-note">כל שורה כאן נכנסת להקשר של ה-AI. ריחוף על שורה מציג את המקור והתאריך שלה.</p>
   </div>`;
-  comBind(host);
   if(keepFocus){ const q=document.getElementById('comQ'); if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length);} }
 }
