@@ -77,32 +77,95 @@ let MEM_CATS=[
 אם אין — החזר "אין עדכון". אם יש: עדכן — עד 7 שורות. כלול רק מה שהלקוח שיתף בעצמו; אל תסיק ואל תוסיף מידע חיצוני.`},
 ];
 
-/* ---- הזיכרון שנצבר — דמו מלא לאנרגי אינטרנשיונל ---- */
+/* ---- הזיכרון שנצבר — דמו מלא לאנרגי אינטרנשיונל ----
+   המסמך הוא **רשימת שורות**, לא פסקה (docs/MEMORY_SPEC.md §2.4).
+   שורה = {id, t, src, d, st} · st: live | solved | dropped | stale
+   התאריך והמקור הם שדות — הם לא כתובים בתוך הטקסט. ---- */
+const L=(id,t,src,d,ex)=>Object.assign({id,t,src,d,st:'live'},ex||{});
 const MEM_DATA={
   0:{
-    cashpos:{txt:'העו״ש בלאומי בחריגה בפועל 6 ימים (161,198- ₪) מול מסגרת של 150,000 ₪; בפועלים יתרה חיובית 312,400 ₪ (2.7 · תזרים). צפי חריגה מלאה בעוד 9 ימים אם לא תבוצע העברה בין החשבונות. המחזור החודשי יציב סביב 300 א׳ ₪, אך קניות המלאי גדלו 8% ולוחצות על התזרים (2.7 · פגישה חודשית). הגבייה מרוכזת בשבוע הראשון של החודש — פער תזמון קבוע מול תשלומי ספקים ב-10 לחודש.',
-      updated:'02.07', src:'פגישה חודשית', hist:['25.06 · שיחת טלפון — החריגה עמדה על 3 ימים, טרם זוהה פתרון בין-חשבונות.']},
-    bizprofile:{txt:'יבוא ושיווק מוצרי אנרגיה ודלקים (בז״ן, פז כספקים מרכזיים). לקוחות עיקריים: רימון יצחק מוצרי אנרגיה, חברת אוטובוסים ירושלים — כ-70% מהמחזור (תלות גבוהה). כ-25 עובדים, מטה בחיפה ומחסן לוגיסטי. עונתיות: שיא בחורף. שני חשבונות בנק פעילים (לאומי 604, פועלים 112) + סליקה בקארדקום.',
-      updated:'15.06', src:'פגישה חודשית', hist:[]},
-    pains:{txt:'1. תלות בשני לקוחות גדולים — 70% מהמחזור, מדיר שינה (2.7 · פגישה). 2. פער תזמון קבוע: ספקים ב-10 לחודש מול גבייה בתחילת החודש (25.6 · שיחה). 3. עומס על מנהלת הכספים — אין גיבוי בתפקיד (15.6 · פגישה).',
-      updated:'02.07', src:'פגישה חודשית', hist:['15.06 — נרשם כאב רביעי: ריבית גבוהה על המסגרת; נפתר אחרי מיחזור (25.6).']},
-    goals:{txt:'1. פתיחת מסגרת נוספת 100 א׳ ₪ בפועלים — באחריותנו, יעד 15.7, בתהליך (2.7 · פגישה). 2. הקטנת תלות בלקוחות גדולים — הלקוח בוחן שני מפיצים חדשים, עדכון בפגישה הבאה (2.7). 3. יעד ליטרים חודשי 120,000 — הוגדר במדדים, במעקב (15.6).',
-      updated:'02.07', src:'פגישה חודשית', hist:[]},
-    events:{txt:'1. זכייה במכרז אספקה לחברת האוטובוסים ירושלים — צפי תוספת 1.5 מ׳ ₪ במחזור שנתי, החל מאוגוסט (20.6 · שיחת טלפון). 2. עזיבת סמנכ״ל התפעול — צחי לוקח את התחום זמנית, עומס ניהולי (10.6 · פגישה).',
-      updated:'20.06', src:'שיחת טלפון', hist:[]},
-    coop_co:{txt:'חומר אחרון לתזרים: 2.7 · דפי בנק וחשבוניות יוני דרך הצ׳אט. טבלאות ההזנה מתעדכנות בזמן כל שבוע (2.7 · תפעול). מסמכים מגיעים תוך יום-יומיים מבקשה. הרשאת חשבון הסליקה נתקעה אצל הבנק שבועיים — דורש דחיפה (25.6 · צ׳אט).',
-      updated:'02.07', src:'תפעול שוטף', hist:[]},
-    commstyle:{txt:'פתח תמיד במספרים — צחי מאבד סבלנות מהקדמות. תשובות קצרות, בלי ז׳רגון פיננסי. מעדיף וואטסאפ על טלפון; זמין לשיחות רק אחרי 16:00. כשמציגים בעיה — להציג ישר גם פתרון מוצע. אוהב גרפים פשוטים, לא טבלאות.',
-      updated:'02.07', src:'פגישה חודשית', hist:[]},
-    csat:{txt:'מרוצה מאוד מהליווי של לירון — ציין יזום פעמיים (2.7, 25.6). מרוצה מהתזרים היומי. על ה-AI: משתמש בצ׳אט כמעט יומיום ו"מופתע כמה זה מדויק" (2.7 · פגישה), אבל התלונן שפעם קיבל תשובה כללית מדי על שאלת מע״מ (25.6 · צ׳אט). פחות מרוצה מזמן ההמתנה לדוח החודשי. מגמה: יציב-חיובי. סיכון נטישה: נמוך.',
-      updated:'02.07', src:'פגישה חודשית', hist:['10.06 — הביע תסכול מטעות בקיטלוג שתוקנה באיחור; נסגר לשביעות רצונו.']},
-    coop_user:{txt:'מגיע לכל הפגישות החודשיות, בזמן. מיישם המלצות תזרים כמעט מיד; המלצות ארגוניות (גיוס גיבוי לכספים) נדחות שוב ושוב (2.7 · פגישה). הכי אפקטיבי: לסכם לו משימה אחת ממוקדת בוואטסאפ אחרי כל פגישה.',
-      updated:'02.07', src:'פגישה חודשית', hist:[]},
+    cashpos:{lines:[
+      L('c1','העו״ש בלאומי בחריגה בפועל 6 ימים — 161,198- ₪ מול מסגרת 150,000 ₪','תזרים','02.07'),
+      L('c2','בפועלים יתרה חיובית 312,400 ₪ — הפתרון קיים ולא מבוצע','תזרים','02.07'),
+      L('c3','צפי חריגה מלאה בעוד 9 ימים אם לא תבוצע העברה בין החשבונות','תזרים','02.07'),
+      L('c4','המחזור החודשי יציב סביב 300 א׳ ₪, אך קניות המלאי גדלו 8% ולוחצות על התזרים','פגישה חודשית','02.07'),
+      L('c5','הגבייה מרוכזת בשבוע הראשון — פער תזמון קבוע מול תשלומי ספקים ב-10 לחודש','פגישה חודשית','02.07'),
+      L('c0','החריגה עמדה על 3 ימים, טרם זוהה פתרון בין-חשבונות','שיחת טלפון','25.06',{st:'dropped',by:'המערכת',on:'02.07'})],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    bizprofile:{lines:[
+      L('b1','יבוא ושיווק מוצרי אנרגיה ודלקים — בז״ן ופז כספקים מרכזיים','פגישה חודשית','15.06'),
+      L('b2','לקוחות עיקריים: רימון מוצרי אנרגיה, חברת אוטובוסים ירושלים — כ-70% מהמחזור','פגישה חודשית','15.06'),
+      L('b3','כ-25 עובדים · מטה בחיפה ומחסן לוגיסטי','פגישה חודשית','15.06'),
+      L('b4','עונתיות: שיא בחורף','פגישה חודשית','15.06'),
+      L('b5','שני חשבונות בנק פעילים (לאומי 604, פועלים 112) + סליקה בקארדקום','תפעול שוטף','15.06')],
+      updated:'15.06', src:'פגישה חודשית'},
+
+    pains:{lines:[
+      L('p1','תלות בשני לקוחות גדולים — 70% מהמחזור, מדיר שינה','פגישה חודשית','02.07'),
+      L('p2','פער תזמון קבוע: ספקים ב-10 לחודש מול גבייה בתחילת החודש','שיחת טלפון','25.06'),
+      L('p3','עומס על מנהלת הכספים — אין גיבוי בתפקיד','פגישה חודשית','15.06'),
+      L('p4','ריבית גבוהה על המסגרת','פגישה חודשית','15.06',{st:'solved',on:'25.06'})],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    goals:{lines:[
+      L('g1','פתיחת מסגרת נוספת 100 א׳ ₪ בפועלים — באחריותנו, יעד 15.7, בתהליך','פגישה חודשית','02.07'),
+      L('g2','הקטנת תלות בלקוחות גדולים — בוחן שני מפיצים חדשים, עדכון בפגישה הבאה','פגישה חודשית','02.07'),
+      L('g3','יעד ליטרים חודשי 120,000 — הוגדר במדדים, במעקב','פגישה חודשית','15.06')],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    events:{lines:[
+      L('e1','זכייה במכרז אספקה לחברת האוטובוסים ירושלים — צפי תוספת 1.5 מ׳ ₪ במחזור שנתי, מאוגוסט','שיחת טלפון','20.06'),
+      L('e2','עזיבת סמנכ״ל התפעול — צחי לוקח את התחום זמנית, עומס ניהולי','פגישה חודשית','10.06')],
+      updated:'20.06', src:'שיחת טלפון'},
+
+    coop_co:{lines:[
+      L('k1','טבלאות ההזנה מתעדכנות בזמן כל שבוע','תפעול שוטף','02.07'),
+      L('k2','מסמכים מגיעים תוך יום-יומיים מבקשה','תפעול שוטף','02.07'),
+      L('k3','הרשאת חשבון הסליקה נתקעה אצל הבנק שבועיים — דורש דחיפה','צ׳אט','25.06')],
+      updated:'02.07', src:'תפעול שוטף'},
+
+    commstyle:{lines:[
+      L('s1','פתח תמיד במספרים — צחי מאבד סבלנות מהקדמות','פגישה חודשית','02.07'),
+      L('s2','תשובות קצרות, בלי ז׳רגון פיננסי','פגישה חודשית','02.07'),
+      L('s3','מעדיף וואטסאפ על טלפון; זמין לשיחות רק אחרי 16:00','פגישה חודשית','02.07'),
+      L('s4','כשמציגים בעיה — להציג ישר גם פתרון מוצע','פגישה חודשית','02.07'),
+      L('s5','אוהב גרפים פשוטים, לא טבלאות','פגישה חודשית','02.07')],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    csat:{lines:[
+      L('t1','מרוצה מאוד מהליווי של לירון — ציין יזום פעמיים','פגישה חודשית','02.07'),
+      L('t2','על ה-AI: משתמש בצ׳אט כמעט יומיום ו״מופתע כמה זה מדויק״','פגישה חודשית','02.07'),
+      L('t3','התלונן שקיבל תשובה כללית מדי על שאלת מע״מ','צ׳אט','25.06'),
+      L('t4','פחות מרוצה מזמן ההמתנה לדוח החודשי','פגישה חודשית','02.07'),
+      L('t5','מגמה: יציב-חיובי · סיכון נטישה: נמוך','פגישה חודשית','02.07'),
+      L('t0','תסכול מטעות בקיטלוג שתוקנה באיחור','פגישה חודשית','10.06',{st:'solved',on:'25.06'})],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    coop_user:{lines:[
+      L('u1','מגיע לכל הפגישות החודשיות, בזמן','פגישה חודשית','02.07'),
+      L('u2','מיישם המלצות תזרים כמעט מיד','פגישה חודשית','02.07'),
+      L('u3','המלצות ארגוניות (גיוס גיבוי לכספים) נדחות שוב ושוב','פגישה חודשית','02.07'),
+      L('u4','הכי אפקטיבי: לסכם לו משימה אחת ממוקדת בוואטסאפ אחרי כל פגישה','פגישה חודשית','02.07')],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    csat_chat:'אל תתנצל מראש · תשובות ממוקדות, בלי הכללות',
     mood_chat:'ענה ברוגע ובקצרה · הצג תמיד פתרון לצד בעיה',
-    mood:{txt:'נשמע לחוץ סביב החריגה בלאומי — חזר לנושא שלוש פעמים בפגישה (2.7). ביטחון גבוה בעסק עצמו ("המכרז ישנה הכל"). עייפות ניכרת מאז שלקח את תחום התפעול (מאז 10.6). נרגע כשמציגים לו תוכנית מסודרת.',
-      updated:'02.07', src:'פגישה חודשית', hist:[]},
-    relation:{txt:'צחי מקבל ההחלטות היחיד; רו״ח חיצוני (משרד ברק) משפיע על החלטות מימון — כדאי לתאם איתו לפני הצעות גדולות. אמון גבוה בנו אחרי מיחזור המסגרת. רגישות: לא לדבר על עלות השירות בנוכחות השותף. אישי: בת בכורה התחתנה ביוני; חובב ריצות בוקר.',
-      updated:'25.06', src:'שיחת טלפון', hist:[]},
+
+    mood:{lines:[
+      L('m1','נשמע לחוץ סביב החריגה בלאומי — חזר לנושא שלוש פעמים','פגישה חודשית','02.07'),
+      L('m2','ביטחון גבוה בעסק עצמו — ״המכרז ישנה הכל״','פגישה חודשית','02.07'),
+      L('m3','עייפות ניכרת מאז שלקח את תחום התפעול','פגישה חודשית','10.06'),
+      L('m4','נרגע כשמציגים לו תוכנית מסודרת','פגישה חודשית','02.07')],
+      updated:'02.07', src:'פגישה חודשית'},
+
+    relation:{lines:[
+      L('r1','צחי מקבל ההחלטות היחיד','שיחת טלפון','25.06'),
+      L('r2','רו״ח חיצוני (משרד ברק) משפיע על החלטות מימון — לתאם איתו לפני הצעות גדולות','שיחת טלפון','25.06'),
+      L('r3','אמון גבוה בנו אחרי מיחזור המסגרת','שיחת טלפון','25.06'),
+      L('r4','רגישות: לא לדבר על עלות השירות בנוכחות השותף','שיחת טלפון','25.06'),
+      L('r5','אישי: בת בכורה התחתנה ביוני; חובב ריצות בוקר','שיחת טלפון','25.06')],
+      updated:'25.06', src:'שיחת טלפון'},
   },
 };
 
@@ -130,9 +193,18 @@ const MEM_USERS={
 const MEM_UDATA={
   0:[
     null,   // יוזר 0 — הנתונים עברו מ-MEM_DATA (מוזרקים למטה)
-    { commstyle:{txt:'מעדיפה מיילים מסודרים על וואטסאפ. נכנסת לפרטים — אפשר ומומלץ לשלוח טבלאות מפורטות. זמינה בבקרים בלבד.', updated:'28.06', src:'שיחת טלפון', hist:[]},
-      coop_user:{txt:'מעבירה את דפי הבנק והחשבוניות בזמן, כל שבוע. עונה מהר בצ׳אט. היא הכתובת האפקטיבית לכל בקשת חומר — לא צחי.', updated:'02.07', src:'תפעול שוטף', hist:[]},
-      empfb:{txt:'צחי ציין בפגישה שהיא "מנהלת את הכספים ביד רמה" (2.7 · פגישה). מצידנו: הדיוק והזמינות שלה מקצרים לנו את התפעול — הועבר לה משוב חיובי בצ׳אט (30.6). אין תלונות פתוחות.', updated:'02.07', src:'פגישה חודשית', hist:[]} },
+    { commstyle:{lines:[
+        L('rs1','מעדיפה מיילים מסודרים על וואטסאפ','שיחת טלפון','28.06'),
+        L('rs2','נכנסת לפרטים — אפשר ומומלץ לשלוח טבלאות מפורטות','שיחת טלפון','28.06'),
+        L('rs3','זמינה בבקרים בלבד','שיחת טלפון','28.06')], updated:'28.06', src:'שיחת טלפון'},
+      coop_user:{lines:[
+        L('ru1','מעבירה את דפי הבנק והחשבוניות בזמן, כל שבוע','תפעול שוטף','02.07'),
+        L('ru2','עונה מהר בצ׳אט','תפעול שוטף','02.07'),
+        L('ru3','היא הכתובת האפקטיבית לכל בקשת חומר — לא צחי','תפעול שוטף','02.07')], updated:'02.07', src:'תפעול שוטף'},
+      empfb:{lines:[
+        L('re1','צחי ציין בפגישה שהיא ״מנהלת את הכספים ביד רמה״','פגישה חודשית','02.07'),
+        L('re2','הדיוק והזמינות שלה מקצרים לנו את התפעול — הועבר לה משוב חיובי בצ׳אט','תפעול שוטף','30.06'),
+        L('re3','אין תלונות פתוחות','פגישה חודשית','02.07')], updated:'02.07', src:'פגישה חודשית'} },
   ],
 };
 /* ---- דלתאות: מה השתנה בזיכרון בריצות האחרונות (מוצג בדשבורד היועץ) ---- */
@@ -168,7 +240,8 @@ function memEntry(cat){
 }
 function memCatBlock(cat){
   const d=memEntry(cat);
-  const body=d?`<div class="mem-txt">${d.txt}</div>`:'<div class="mem-empty">טרם נצבר זיכרון — יתמלא מהאינטראקציה הבאה</div>';
+  const _lv=d&&d.lines?d.lines.filter(x=>x.st!=='dropped'):[];
+  const body=_lv.length?`<div class="mem-txt">${_lv.map(x=>x.t).join(' · ')}</div>`:'<div class="mem-empty">טרם נצבר זיכרון — יתמלא מהאינטראקציה הבאה</div>';
   const hist=d&&d.hist&&d.hist.length&&MEM_HIST.has(cat.key)
     ?`<div class="mem-hist">${d.hist.map(h=>`<div class="mem-hist-row">${h}</div>`).join('')}</div>`:'';
   return `<div class="mem-cat ${cat.internal?'internal':''}">
@@ -361,4 +434,183 @@ function memAdmAdd(){
   const appliesTo=document.querySelector('#maNewApp .mtk-chip.on').dataset.a;
   MEM_CATS.push({key:'c'+Date.now()%100000, scope, name, internal:vis==='hk', vis, appliesTo, lastRun:'טרם', prompt});
   renderMemAdmin(); toast('"'+name+'" נוספה — תתחיל להתמלא מהאינטראקציה הבאה');
+}
+
+/* =====================================================================
+   זיכרון החברה — המסך, לא ההגדרות.  docs/MEMORY_SPEC.md §2.4 · §5
+   המסמך הוא רשימת שורות; השורה היא ישות עם מקור, תאריך וסטטוס.
+   במנוחה זה נקרא כפסקאות — החותמת נדפסת רק כשהיא נושאת דלתא מול הכרטיס,
+   והפעולות (✎ · ✕ · ↺) יושבות ברייל אחד שגולש לשורה שמתחת לעכבר.
+   ===================================================================== */
+let COM_USER=0, COM_Q='', COM_OFF=new Set(), COM_ME='אילון אשכנזי', COM_TODAY='12.07';
+let COM_UNDO=null;
+const comEsc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const comUid=()=>'x'+(Math.abs(Date.now()%100000)+Math.floor(performance.now()%997)).toString(36);
+
+function comBag(scope){
+  if(scope==='company'||COM_USER===0) return (MEM_DATA[CUR]=MEM_DATA[CUR]||{});
+  MEM_UDATA[CUR]=MEM_UDATA[CUR]||[];
+  return (MEM_UDATA[CUR][COM_USER]=MEM_UDATA[CUR][COM_USER]||{});
+}
+const comDoc=(scope,key)=>comBag(scope)[key]||null;
+function comChat(key){ const v=comBag('user')[key+'_chat']; return v||''; }
+function comChatSet(key,el){ comBag('user')[key+'_chat']=el.textContent.trim(); toast('ההנחיה לצ׳אט עודכנה'); }
+
+/* ---- החותמת: רק מה ששונה מחותמת הכרטיס ---- */
+function comStamp(l,doc){
+  if(l.st==='dropped') return {cls:'', t:'הוסר · '+(l.by||COM_ME)+' · '+(l.on||'')};
+  if(l.st==='solved')  return {cls:'ok', t:'נפתר '+(l.on||l.d||'')};
+  const dd=l.d&&l.d!==doc.updated, ss=l.src&&l.src!==doc.src;
+  if(l.st==='stale')   return {cls:'', t:(dd?l.d+' · ':'')+'לא הוזכר מאז'};
+  if(dd&&ss) return {cls:'', t:l.d+' · '+l.src};
+  if(dd)     return {cls:'', t:l.d};
+  if(ss)     return {cls:'', t:l.src};
+  return null;
+}
+
+/* ---- שמירה: ה-DOM הוא מקור האמת. אין diff ואין מודל ---- */
+function comSaveDoc(scope,key,el){
+  const doc=comDoc(scope,key); if(!doc) return;
+  const seen={}, out=[], byId={}; (doc.lines||[]).forEach(l=>byId[l.id]=l);
+  const dropped=(doc.lines||[]).filter(l=>l.st==='dropped');
+  [...el.querySelectorAll(':scope > .com-p')].forEach(p=>{
+    if(p.classList.contains('add')) return;
+    const c=p.cloneNode(true); c.querySelectorAll('.com-st').forEach(x=>x.remove());
+    const txt=c.textContent.replace(/\s+/g,' ').trim();
+    let id=p.dataset.id||'';
+    if(p.classList.contains('off')){ if(byId[id]) out.push(byId[id]); return; }
+    if(!txt){
+      /* אין מחיקה קשה: שורה שנשמרה חוזרת כ-dropped; שורה שנולדה עכשיו נמחקת */
+      if(id&&byId[id]){ out.push(Object.assign({},byId[id],{st:'dropped',by:COM_ME,on:COM_TODAY}));
+        if(!COM_UNDO){COM_UNDO=1;toast('שורה לא נמחקת — היא יוצאת מההקשר ונשארת ברשומה');} }
+      return;
+    }
+    if(!id||seen[id]) id=comUid();
+    seen[id]=1;
+    const old=byId[p.dataset.id];
+    if(old&&old.t===txt) out.push(Object.assign({},old,{id}));
+    else if(old){ const h=(doc.hist=doc.hist||[]); h.unshift(old.d+' · '+old.src+' — '+old.t);
+      out.push(Object.assign({},old,{id,t:txt,src:'היועץ',d:COM_TODAY,by:COM_ME,origin:'advisor',st:'live'})); }
+    else out.push({id,t:txt,src:'היועץ',d:COM_TODAY,by:COM_ME,origin:'advisor',st:'live'});
+  });
+  dropped.forEach(l=>{ if(!out.some(x=>x.id===l.id)) out.push(l); });
+  doc.lines=out;
+  renderCoMem();
+}
+function comRow(btn){ const c=btn.closest('.com-c'); return c.querySelector('.com-p[data-id="'+c.dataset.row+'"]'); }
+function comRowEdit(btn){
+  const p=comRow(btn); if(!p) return;
+  const r=document.createRange(); r.selectNodeContents(p);
+  const st=p.querySelector('.com-st'); if(st) r.setEndBefore(st);
+  const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+function comRowSt(btn,st){
+  const c=btn.closest('.com-c'), p=comRow(btn); if(!p) return;
+  const doc=comDoc(c.dataset.scope,c.dataset.key), l=(doc.lines||[]).find(x=>x.id===p.dataset.id);
+  if(!l) return;
+  if(st==='dropped'){ l.st='dropped'; l.by=COM_ME; l.on=COM_TODAY; toast('יצאה מההקשר — נשארת ברשומה'); }
+  else { l.st='live'; delete l.by; delete l.on; toast('חזרה להקשר'); }
+  renderCoMem();
+}
+const comRowDrop=b=>comRowSt(b,'dropped');
+const comRowBack=b=>comRowSt(b,'live');
+function comShowOff(b){ const k=b.closest('.com-c').dataset.k; COM_OFF.has(k)?COM_OFF.delete(k):COM_OFF.add(k); renderCoMem(); }
+function comUser(i){ COM_USER=i; renderCoMem(); }
+function comSearch(v){ COM_Q=v.trim(); renderCoMem(true); }
+
+/* ---- הרייל: node אחד לכרטיס, גולש לשורה. אין N מאזינים ---- */
+function comRail(card,p){
+  if(!p||p.classList.contains('add')){ card.classList.remove('armed'); return; }
+  card.querySelector('.com-rail').style.setProperty('--ry',p.offsetTop+'px');
+  card.classList.toggle('on-off',p.classList.contains('off'));
+  card.dataset.row=p.dataset.id||''; card.classList.add('armed');
+}
+function comBind(host){
+  host.addEventListener('mouseover',e=>{ const c=e.target.closest('.com-c'); if(c) comRail(c,e.target.closest('.com-p')); });
+  host.addEventListener('mouseleave',e=>{ const c=e.target.closest&&e.target.closest('.com-c'); if(c)c.classList.remove('armed'); },true);
+}
+
+function comCard(c){
+  const doc=comDoc(c.scope,c.key), k=c.scope+'|'+c.key+'|'+COM_USER;
+  const all=(doc&&doc.lines)||[];
+  const live=all.filter(l=>l.st!=='dropped'), off=all.filter(l=>l.st==='dropped');
+  const q=COM_Q, mark=s=>q?comEsc(s).split(comEsc(q)).join('<mark>'+comEsc(q)+'</mark>'):comEsc(s);
+  const hit=!q||(c.name.indexOf(q)>-1)||all.some(l=>l.t.indexOf(q)>-1);
+  if(!hit) return '';
+  const showOff=COM_OFF.has(k), offShown=showOff?off:off.slice(0,1);
+  const rows=live.concat(offShown).map(l=>{
+    const s=comStamp(l,doc||{});
+    return `<p class="com-p ${l.st==='solved'?'solved':''} ${l.st==='dropped'?'off':''} ${l.origin==='advisor'?'adv':''}"
+      data-id="${l.id}"${l.st==='dropped'?' contenteditable="false"':''}>${mark(l.t)}${
+      s?`<i class="com-st ${s.cls}" contenteditable="false">${comEsc(s.t)}</i>`:''}</p>`;}).join('');
+  const capN=(c.cap||6), full=live.filter(l=>l.st==='live').length>=capN;
+  return `<section class="com-c ${all.length?'':'empty'}" data-scope="${c.scope}" data-key="${c.key}" data-k="${k}">
+    <div class="com-h">
+      <b>${comEsc(c.name)}</b>
+      ${c.internal?'<span class="com-vis gd" title="המסמך לא נשלח ללקוח — נשלחת במקומו הנחיה מזוקקת">רק הנחיה ללקוח</span>'
+        :(c.scope==='company'?c.vis==='hk':rolesOf(c).length<6)?'<span class="com-vis" title="לא נכנס להקשר של הצ׳אט של הלקוח">לא ללקוח</span>':''}
+      ${doc?`<span class="com-src">${comEsc(doc.src||'')} · ${comEsc(doc.updated||'')}</span>`:'<span class="com-src none">טרם נלמד</span>'}
+      ${doc&&doc.hist&&doc.hist.length?`<button class="com-hb ${MEM_HIST.has(k)?'on':''}" onclick="comHistTg('${k}')">היסטוריה ${doc.hist.length}</button>`:''}
+    </div>
+    <div class="com-body">
+      <div class="com-doc" contenteditable="true" spellcheck="false" role="textbox" aria-multiline="true"
+           aria-label="${comEsc(c.name)} — מסמך הזיכרון"
+           onblur="comSaveDoc('${c.scope}','${c.key}',this)">${rows}<p class="com-p add ph" data-ph="${comEsc(c.desc||'הוספת שורה')}"><br></p></div>
+      <span class="com-rail">
+        <button class="com-a ed" type="button" aria-label="תיקון" onclick="comRowEdit(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="com-a x" type="button" aria-label="לא נכון" onclick="comRowDrop(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button class="com-a back" type="button" aria-label="החזרה להקשר" onclick="comRowBack(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+      </span>
+    </div>
+    ${off.length>1?`<button class="com-more" onclick="comShowOff(this)">${showOff?'הסתרת השורות שהוסרו':'עוד '+(off.length-1)+' שורות שהוסרו · הצגה'}</button>`:''}
+    ${full?`<div class="com-cap">התקרה מלאה (${capN}) — שורה חדשה תדחוק את החלשה ביותר</div>`:''}
+    ${c.internal?`<div class="com-gd"><span class="gl">מה כן מגיע לצ׳אט של הלקוח</span>
+      <div class="gt" contenteditable="true" data-ph="טרם הופקה הנחיה" onblur="comChatSet('${c.key}',this)"
+           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${comEsc(comChat(c.key))}</div></div>`:''}
+    ${MEM_HIST.has(k)&&doc&&doc.hist&&doc.hist.length?`<ul class="com-hist">${doc.hist.map(h=>`<li>${comEsc(h)}</li>`).join('')}</ul>`:''}
+  </section>`;
+}
+
+function renderCoMem(keepFocus){
+  const host=document.getElementById('viewMem'); if(!host) return;
+  const c=CLIENTS[CUR]||{};
+  const users=MEM_USERS[CUR]||[{n:c.name||'בעל העסק',role:'איש קשר',type:'admin'}];
+  if(COM_USER>=users.length) COM_USER=0;
+  const u=users[COM_USER]||{}, uType=u.type||'admin';
+  const co=MEM_CATS.filter(x=>x.scope==='company');
+  const us=MEM_CATS.filter(x=>x.scope==='user').filter(x=>!x.appliesTo||x.appliesTo==='all'||x.appliesTo===uType);
+  const coH=co.map(comCard).join(''), usH=us.map(comCard).join('');
+  const nHit=[...co,...us].filter(x=>comCard(x)).length;
+  const nLines=COM_Q?[...co,...us].reduce((s,x)=>{const d=comDoc(x.scope,x.key);
+    return s+((d&&d.lines)||[]).filter(l=>l.t.indexOf(COM_Q)>-1).length;},0):0;
+  /* אדם שמחזיק כמה חברות — האזהרה היחידה שמונעת נזק אמיתי */
+  const multi=(u.n==='רימון יצחק')?'רימון מוצרי אנרגיה':'';
+  const nNew=co.reduce((s,x)=>{const d=comDoc('company',x.key);
+    return s+((d&&d.lines)||[]).filter(l=>l.st==='live'&&l.d===(d.updated||'')).length;},0);
+
+  host.innerHTML=`
+  <div class="com">
+    <div class="com-bar">
+      <div class="com-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="comQ" value="${comEsc(COM_Q)}" placeholder="חיפוש בזיכרון" oninput="comSearch(this.value)"></div>
+      ${COM_Q?`<span class="com-res"><b>${nLines}</b> שורות ב-${nHit} קטגוריות<button onclick="comSearch('')">ניקוי</button></span>`:''}
+    </div>
+    ${(coH||usH)?`<div class="com-cols">
+      <section class="com-col">
+        <h3 class="com-sh co"><span class="dot"></span>העסק<em>${nNew?nNew+' שורות חדשות באינטראקציה האחרונה':'נכון לכל מי שמטפל בחברה'}</em></h3>
+        ${coH||'<div class="com-empty sm">אין התאמה בזיכרון החברה</div>'}
+      </section>
+      <section class="com-col">
+        <h3 class="com-sh pr"><span class="dot"></span>${comEsc(u.n||'')}<em>${comEsc(u.role||'')}</em></h3>
+        <div class="com-us">${users.map((x,i)=>`<button class="com-u ${i===COM_USER?'on':''}" onclick="comUser(${i})">${comEsc(x.n)}</button>`).join('')}</div>
+        ${multi?`<p class="com-shared">הזיכרון האישי של ${comEsc(u.n)} משותף ל-2 חברות — תיקון כאן משפיע גם על ${comEsc(multi)}.</p>`:''}
+        ${usH||'<div class="com-empty sm">אין התאמה בזיכרון האדם</div>'}
+      </section>
+    </div>`:`<div class="com-empty"><b>אין שורה שמכילה ״${comEsc(COM_Q)}״</b>
+      <span>החיפוש רץ על שם הקטגוריה ועל כל שורה בזיכרון.</span>
+      <button class="btn" onclick="comSearch('')">הצגת כל הזיכרון</button></div>`}
+    <p class="com-note">כל שורה כאן נכנסת להקשר של ה-AI. עריכה נשמרת עם מקור <b>היועץ</b> ולא נדרסת בריצה הבאה. שורה שהוסרה יוצאת מההקשר ונשארת ברשומה.</p>
+  </div>`;
+  comBind(host);
+  if(keepFocus){ const q=document.getElementById('comQ'); if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length);} }
 }

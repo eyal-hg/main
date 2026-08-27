@@ -490,6 +490,7 @@
     document.getElementById('finFindings').innerHTML=finRecapHtml();
     document.getElementById('finFindings').classList.remove('bl-mode');
     renderFinFoot();
+    finChatFill();   /* הפאנל מלווה את כל הדרך — כולל מסך הסיום */
   }
   /* תמונה מלאה בסיום: שלבי העבודה (עם משך) + שלבי הבדיקה (הכל ✓) */
   function finRecapHtml(){

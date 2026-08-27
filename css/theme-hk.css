@@ -4034,3 +4034,145 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .cos-stopt .cos-stdot{margin-top:6px}
 .cos-stopt b{display:block;font-size:13px;font-weight:600;color:#12263A}
 .cos-stopt i{display:block;font-style:normal;font-size:11.5px;color:#7A8898;line-height:1.45;margin-top:2px}
+
+/* ===== זיכרון החברה — שני מסמכים זה לצד זה, השורה היא ישות
+   docs/MEMORY_SPEC.md §2.4 · §5 · docs/adv3/DESIGN_NOTES.md
+   טוקנים מקומיים בלבד — ל-:root של הפרויקט אין את הגוונים האלה. ===== */
+.com{
+  --com-navy:#0C4068; --com-ink:#44566A; --com-ink-2:#5F7285;
+  --com-mut:#93A3B2; --com-faint:#B7C3CF;
+  --com-line:#E6ECF4; --com-line-2:#EFF3F7;
+  --com-co:#1668A0; --com-pr:#6B4FA0;
+  --com-tint:#F5F8FB; --com-chip:#F0F4F8; --com-chip-h:#E2EBF2;
+  --com-focus:#39ABE2; --com-mark:#FFF1C2;
+  --com-good:#13895b; --com-warn:#9A6300;
+  --com-bad:#C43D30; --com-bad-bg:#FDEDEB; --com-strike:#D5DEE6;
+  --com-w:620px;
+  padding:2px 0 28px;
+}
+/* ---- רצועה: חיפוש ומצב הסינון. שום דבר אחר ---- */
+.com-bar{display:flex;align-items:center;gap:14px;min-height:34px;margin-bottom:14px}
+.com-search{display:flex;align-items:center;gap:8px;flex:none;height:34px;padding:0 11px;
+  background:#fff;border:1px solid var(--com-line);border-radius:6px;color:var(--com-mut)}
+.com-search:focus-within{border-color:var(--com-focus)}
+.com-search input{width:230px;border:0;outline:none;background:none;font:inherit;font-size:13px;color:var(--com-ink)}
+.com-res{font-size:12.5px;color:var(--com-mut)}
+.com-res b{color:var(--com-navy);font-weight:600}
+.com-res button{font:inherit;font-size:12.5px;color:var(--com-co);background:none;border:0;
+  padding:2px 4px;margin-inline-start:6px;cursor:pointer;text-decoration:underline}
+
+/* ---- שתי עמודות מסמך ---- */
+.com-cols{display:grid;grid-template-columns:repeat(2,minmax(0,var(--com-w)));
+  gap:22px;align-items:start;justify-content:start}
+.com-col{min-width:0}
+@media (max-width:1150px){.com-cols{grid-template-columns:minmax(0,var(--com-w))}}
+
+/* ---- כותרת עמודה נדבקת: אומרת של מי המסמך ---- */
+.com-sh{position:sticky;top:0;z-index:3;background:var(--bg,#F4F7FA);
+  display:flex;align-items:baseline;gap:9px;
+  padding:9px 0 8px;margin:0 0 4px;border-bottom:1px solid var(--com-line);
+  font-size:13px;font-weight:600;color:var(--com-navy)}
+.com-sh .dot{width:7px;height:7px;border-radius:50%;flex:none;align-self:center}
+.com-sh.co .dot{background:var(--com-co)}
+.com-sh.pr .dot{background:var(--com-pr)}
+.com-sh em{font-style:normal;font-size:11.5px;font-weight:400;color:var(--com-mut)}
+
+/* ---- בורר האנשים: הצ׳יפ הקנוני. בלי מדליית ראשי-תיבות ---- */
+.com-us{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.com-u{font:inherit;font-size:12px;font-weight:500;background:var(--com-chip);border:0;
+  border-radius:7px;padding:5px 10px;color:#6B7C8D;cursor:pointer}
+.com-u:hover{background:var(--com-chip-h);color:var(--com-navy)}
+.com-u.on{background:var(--com-navy);color:#fff}
+.com-shared{font-size:11.5px;color:var(--com-pr);margin:0 0 10px}
+
+/* ---- הכרטיס ---- */
+.com-c{background:#fff;border:1px solid var(--com-line);border-radius:10px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(12,64,104,.04);margin-bottom:12px;transition:border-color .14s}
+.com-c:hover{border-color:#D8E3ED}
+.com-c.empty{background:#FBFCFE;box-shadow:none}
+/* הכותרת בכחול הכהה — אותו בלוק שרץ בכל המסכים */
+.com-h{display:flex;align-items:baseline;gap:12px;padding:12px 20px 11px;background:var(--com-navy)}
+.com-h b{flex:none;font-size:17px;font-weight:600;color:#fff}
+.com-h .com-vis{color:rgba(255,255,255,.72)}
+.com-h .com-vis.gd{color:#CBBAEE}
+.com-h .com-src{color:rgba(255,255,255,.55)}
+.com-h .com-src.none{color:rgba(255,255,255,.4)}
+.com-h .com-hb{color:rgba(255,255,255,.72)}
+.com-h .com-hb:hover,.com-h .com-hb.on{color:#fff}
+@media (max-width:1450px){.com-h{padding:10px 18px 9px}.com-h b{font-size:16px}}
+.com-vis{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--com-mut)}
+.com-vis::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.com-vis.gd{color:var(--com-pr)}
+.com-src{margin-inline-start:auto;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;font-size:11.5px;color:var(--com-mut)}
+.com-src.none{color:var(--com-faint)}
+.com-hb{flex:none;font:inherit;font-size:11.5px;color:var(--com-mut);background:none;border:0;padding:0;cursor:pointer}
+.com-hb:hover,.com-hb.on{color:var(--com-co);text-decoration:underline}
+
+/* ---- הגוף: מסמך אחד + רייל אחד ---- */
+.com-body{position:relative;padding:10px 20px 12px}
+.com-doc{outline:none;cursor:text}
+/* השורה — פסקה. מרזב 44px בקצה שמור תמיד, כדי שהפעולות ייכנסו באפס הזזה. */
+.com-p{position:relative;font-size:13px;line-height:1.6;color:var(--com-ink);
+  padding:4px 8px 4px 44px;padding-inline-start:20px;padding-inline-end:44px;
+  margin-inline-start:-8px;margin-inline-end:-8px;
+  border-radius:6px;transition:background .12s}
+/* הנקודה — היא שאומרת «ידיעה עצמאית» ולא «שורה שנשברה» */
+.com-p::before{content:"";position:absolute;inset-inline-start:8px;top:.78em;
+  width:4px;height:4px;border-radius:50%;background:var(--com-faint)}
+.com-p + .com-p{margin-top:2px}
+.com-p:hover{background:var(--com-tint)}
+.com-p mark{background:var(--com-mark);color:inherit;border-radius:4px}
+/* מקור = פס בקצה הפנימי. הערוץ הזה נושא מקור בלבד, לעולם לא מצב */
+.com-p.adv::before{background:var(--com-pr)}   /* שורה שהיועץ כתב — ערוץ אחד, לא שניים */
+/* החותמת — ערוץ המצב והזמן, זורמת עם הטקסט. רק כשהיא נושאת דלתא. */
+.com-st{display:inline;margin-inline-start:7px;font-size:11.5px;font-style:normal;
+  color:var(--com-mut);white-space:nowrap;user-select:none}
+.com-st.ok{color:var(--com-good)}
+.com-st.ok::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:currentColor;margin-inline-end:5px;vertical-align:1px}
+.com-p.solved{color:var(--com-ink-2)}
+.com-p.off::before{background:var(--com-strike)}
+.com-p.off{color:var(--com-mut);cursor:default;
+  text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:var(--com-strike)}
+.com-more{display:block;margin:0 20px 10px;font:inherit;font-size:11.5px;color:var(--com-mut);
+  background:none;border:0;padding:0;cursor:pointer;text-align:start;
+  text-decoration:underline;text-underline-offset:2px}
+/* שורת הרפאים — תופסת מקום תמיד, נכנסת בדיו בלבד. אין כפתור «+ הוספה» */
+.com-p.add{opacity:0;transition:opacity .14s}
+.com-c:hover .com-p.add,.com-doc:focus-within .com-p.add,.com-c.empty .com-p.add{opacity:1}
+.com-p.add::before{display:none}
+.com-p.add.ph::after{content:"+  " attr(data-ph);color:var(--com-faint);
+  position:absolute;inset-inline-start:8px;top:4px}
+/* הרייל — node אחד לכרטיס, מחוץ לאזור העריכה, גולש בין שורות */
+.com-rail{position:absolute;inset-inline-end:22px;top:12px;transform:translateY(var(--ry,0px));
+  display:flex;gap:2px;opacity:0;pointer-events:none;transition:opacity .12s,transform .12s ease-out}
+.com-c.armed .com-rail{opacity:1;pointer-events:auto}
+.com-rail .back{display:none}
+.com-c.on-off .com-rail .ed,.com-c.on-off .com-rail .x{display:none}
+.com-c.on-off .com-rail .back{display:grid}
+.com-a{display:grid;place-items:center;width:20px;height:20px;padding:0;border:0;
+  background:none;border-radius:6px;color:var(--com-mut);cursor:pointer}
+.com-a:hover{background:var(--com-chip-h);color:var(--com-navy)}
+.com-a.x:hover{background:var(--com-bad-bg);color:var(--com-bad)}
+/* תקרה — רק כשהיא מלאה, ואומרת מה יקרה */
+.com-cap{margin:0 20px 10px;font-size:11.5px;color:var(--com-warn)}
+/* מה מגיע לצ׳אט — כותרת תחתונה, לא קופסה */
+.com-gd{margin:0 20px;padding:10px 0 12px;border-top:1px solid var(--com-line-2)}
+.com-gd .gl{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;
+  color:var(--com-pr);margin-bottom:3px}
+.com-gd .gl::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.com-gd .gt{font-size:12.5px;line-height:1.55;color:#3E3163;outline:none;border-radius:6px;
+  padding:2px 6px;margin-inline:-6px;cursor:text}
+.com-gd .gt:hover{background:#F6F2FC}
+.com-gd .gt:empty::before{content:attr(data-ph);color:#B0A3CB}
+/* היסטוריה · מצב ריק · הערת שוליים */
+.com-hist{list-style:none;margin:0 20px;padding:9px 0 12px;border-top:1px solid var(--com-line-2)}
+.com-hist li{font-size:11.5px;color:var(--com-mut);line-height:1.55;padding:2px 0}
+.com-empty{padding:40px 20px;text-align:center;color:var(--com-mut);font-size:13px}
+.com-empty.sm{padding:22px 12px;font-size:12.5px}
+.com-empty b{display:block;font-size:14px;color:var(--com-ink);font-weight:600;margin-bottom:6px}
+.com-empty .btn{margin-top:12px}
+.com-note{max-width:calc(var(--com-w)*2 + 22px);margin-top:22px;padding-top:12px;
+  border-top:1px solid var(--com-line);font-size:11.5px;color:var(--com-mut)}
+.com-note b{color:var(--com-pr);font-weight:600}

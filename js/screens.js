@@ -40,7 +40,7 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     document.getElementById('viewDash').style.display='';
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
@@ -176,12 +176,12 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון חשבונאי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'הודעות',flowlog:'מה השתנה בתזרים',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון חשבונאי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'הודעות',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
@@ -206,6 +206,10 @@
       document.getElementById('viewCal').style.display='';
       const f=document.getElementById('calFrame');
       if(!f.src) f.src=f.dataset.src;   // טעינה עצלה — היומן נטען רק בכניסה הראשונה
+    }
+    else if(t==='mem'){
+      document.getElementById('viewMem').style.display='';
+      if(typeof renderCoMem==='function') renderCoMem();
     }
     else if(t==='coset'){
       document.getElementById('viewCoSet').style.display='';
@@ -331,6 +335,7 @@
     meetings:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
     prep:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg>',
     flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7.5"/></svg>',
+    mem:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
     fcast:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 14 4-4 3 3 5-6"/></svg>'};
   function renderGlobalRail(){
     const list=document.getElementById('gnavList'); if(!list) return;
@@ -340,7 +345,7 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['msgs',0],['chat',1],['metrics',1],['meetings',0],['prep',1]];
+      const SEC=[['dash',0],['msgs',0],['chat',1],['metrics',1],['meetings',0],['mem',1],['prep',1]];
       html=(ROLE==='client1'?'':`<div class="gn-back" onclick="${backGo}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> ${backLbl}</div>`)+
         `<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
@@ -365,7 +370,7 @@
           if(!ks.length) return '';
           return (title?`<div class="gn-sec-h">${title}</div>`:'')+ks.map(item).join('');
         };
-        html+=seg('',['dash','msgs','meetings','chat','metrics']);   // ההכנה לפגישה — לא בסרגל; מגיעים אליה מהפגישות ומהיומן
+        html+=seg('',['dash','msgs','meetings','mem','chat','metrics']);   // ההכנה לפגישה — לא בסרגל; מגיעים אליה מהפגישות ומהיומן
       }
       // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
       if(typeof OPSMODE==='undefined'||!OPSMODE){
