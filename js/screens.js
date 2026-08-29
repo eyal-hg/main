@@ -12,6 +12,7 @@
       const _grp=(ROLE==='clientN');
       document.getElementById('curHp').textContent=_grp?'מבט מאוחד':'תיק לקוחות';
       document.getElementById('headName').textContent=_grp?'החברות שלי':'כל החברות';
+      document.querySelector('.client-head').classList.remove('inco');   /* במבט-על זו כן הכותרת */
       hp.style.display='none'; st.style.display='none'; acts.style.display='none';
       if(kpi)kpi.style.display='none';
       sub.textContent=_grp
@@ -40,8 +41,8 @@
     tabs.forEach(x=>x.classList.remove('on')); tabs[0].classList.add('on');
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
-    document.getElementById('viewDash').style.display='';
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther','viewCli'].forEach(v=>{const e=document.getElementById(v);if(e)e.style.display='none';});
+    applyDashView();   /* לא ישירות — הדשבורד של היועץ חי ב-docs/cli */
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
     GNAV = (s==='client') ? 'client'
@@ -178,11 +179,59 @@
   /* ---- section tabs / rail nav ---- */
   const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון חשבונאי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
+  /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
+     את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */
+  const CLI_TABS={dash:'cliDashFrame', msgs:'cliMsgsFrame', meetings:'cliMeetsFrame',
+                  chat:'cliAiFrame',   metrics:'cliMetricFrame',
+                  past:'cliPastFrame', flow:'cliFlowFrame'};
+  /* כניסה לחברה מציגה דשבורד. ליועץ זה מסך docs/cli, למנהלת התזרים
+     ולבעל העסק — הלוח הישן. הצהרת פונקציה כדי שתהיה זמינה גם למעלה. */
+  function applyDashView(){
+    const host=document.getElementById('viewCli');
+    const useCli=host&&ROLE!=='client1'&&ROLE!=='clientN'&&ROLE!=='manager';
+    if(useCli){
+      host.style.display='';
+      host.querySelectorAll('.cliframe').forEach(f=>f.style.display='none');
+      const f=document.getElementById('cliDashFrame');
+      if(f){ if(!f.src) f.src=f.dataset.src; f.style.display='block'; }
+      document.getElementById('viewDash').style.display='none';
+      const sl=document.querySelector('.sub-line'); if(sl) sl.style.display='none';
+      document.querySelector('.client-head').style.display='none';
+    }else{
+      if(host) host.style.display='none';
+      document.getElementById('viewDash').style.display='';
+      document.querySelector('.client-head').style.display='flex';
+    }
+  }
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther'].forEach(v=>document.getElementById(v).style.display='none');
+    ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther','viewCli'].forEach(v=>{const e=document.getElementById(v);if(e)e.style.display='none';});
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
+    /* מסכי docs/cli — מסגרת אחת לכל טאב, נטענת עצל בכניסה הראשונה */
+    const cliHost=document.getElementById('viewCli');
+    if(cliHost){
+      /* לבעל העסק ולמנהלת התזרים יש דשבורד משלהם — מסכי docs/cli הם של היועץ.
+         שאר הטאבים משותפים גם למנהלת התזרים. */
+      const useCli=CLI_TABS[t]&&ROLE!=='client1'&&ROLE!=='clientN'
+                   &&!(t==='dash'&&ROLE==='manager');
+      cliHost.style.display=useCli?'':'none';
+      cliHost.querySelectorAll('.cliframe').forEach(f=>f.style.display='none');
+      if(useCli){
+        const f=document.getElementById(CLI_TABS[t]);
+        /* ערך מפורש — display:'' נופל חזרה ל-display:none של .cliframe */
+        if(f){ if(!f.src) f.src=f.dataset.src; f.style.display='block'; }
+        document.querySelector('.db-actions').style.visibility='hidden';
+        document.getElementById('wbActions').style.display='none';
+        document.querySelector('.sub-line').style.display='none';
+        /* השורה מחזיקה רק את גלולת הסטטוס — סתם תופסת גובה */
+        document.querySelector('.client-head').style.display='none';
+        /* הסרגל מסמן את הטאב הפעיל — בלי זה הוא נשאר על "דשבורד" */
+        if(typeof renderGlobalRail==='function') renderGlobalRail();
+        return;
+      }
+    }
+    document.querySelector('.client-head').style.display='flex';
     if(t==='dash'){document.getElementById('viewDash').style.display='';}
     else if(t==='metrics'){document.getElementById('viewMetrics').style.display='';renderMetrics();}
     else if(t==='chat'){
@@ -400,7 +449,15 @@
       }
     }else{
       // מחוץ לחברה — היעדים של בעל התפקיד
-      html=gnavItems().map(it=>`
+      /* למנהל התזרים הסרגל נושא גם את רשימת החברות, והיא העבודה עצמה.
+         לכן היעדים שלו הם שורת אייקונים בגובה קבוע — אפשר להוסיף עוד בלי
+         שהרשימה תרד. הפעיל נושא את שמו, והשאר נחשפים בריחוף. */
+      const iconNav=(ROLE==='manager');
+      html=iconNav
+        ? `<div class="gn-row">`+gnavItems().map(it=>`
+            <button class="gn-i ${GNAV===it.k?'on':''}" onclick="${it.go}" title="${it.l}" aria-label="${it.l}">
+              ${GNAV_ICO[it.k]}${GNAV===it.k?`<b>${it.l}</b>`:''}</button>`).join('')+`</div>`
+        : gnavItems().map(it=>`
         <div class="gn-item ${GNAV===it.k?'on':''}" onclick="${it.go}">${GNAV_ICO[it.k]}<span>${it.l}</span></div>`).join('');
     }
     // מנהל תזרים: תור התפעול בסרגל — רק במסך הראשי (בתוך חברה הסרגל שייך לחברה)

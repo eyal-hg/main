@@ -151,6 +151,19 @@
     if(d.hkAdv&&d.h>200){
       const MAP={today:'advTodayFrame',tasks:'advTasksFrame',meetings:'advMeetsFrame',memory:'advMemFrame',clients:'clFrame'};
       const f=document.getElementById(MAP[d.hkAdv]); if(f) f.style.minHeight=d.h+'px'; return; }
+    /* מסכי החברה (docs/cli) — דיווח גובה והחלפת טאב מתוך המסגרת */
+    if(d.hkCli&&d.h>200){
+      const M={dash:'cliDashFrame',msgs:'cliMsgsFrame',meets:'cliMeetsFrame',ai:'cliAiFrame',
+               metric:'cliMetricFrame',past:'cliPastFrame',flow:'cliFlowFrame'};
+      const f=document.getElementById(M[d.hkCli]); if(f) f.style.minHeight=d.h+'px'; return; }
+    if(d.hkCliGo){
+      const G={dashboard:'dash',messages:'msgs',meetings:'meetings',ai:'chat',
+               metrics:'metrics','cashflow-past':'past',process:'flow'};
+      const k=G[d.hkCliGo]; if(!k||typeof showTab!=='function') return;
+      /* שאלה שנשלחה מהמסך — נטענת לתוך מסגרת העוזר */
+      if(d.q){ const f=document.getElementById('cliAiFrame');
+        if(f) f.src='docs/cli/ai.html?embed=1&q='+encodeURIComponent(d.q); }
+      showTab(k); return; }
     /* מסך נעול-גובה — נמתח לתחתית החלון במקום לגובה התוכן */
     if(d.hkAdvLock){ if(typeof advFrameFill==='function') advFrameFill(); return; }
     if(d.hkAdvGo){

@@ -69,6 +69,8 @@
     document.getElementById('curName').textContent=c.name;
     document.getElementById('curHp').textContent=c.hp;
     document.getElementById('headName').textContent=c.name;
+    /* בתוך חברה — השם והח.פ כבר בשדה החיפוש ובסרגל; הכותרת כאן כפולה */
+    document.querySelector('.client-head').classList.add('inco');
     document.getElementById('headHp').textContent=c.hp;
     setScope('client');
     renderRail();

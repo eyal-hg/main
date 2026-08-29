@@ -3,783 +3,285 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>אנרגי אינטרנשיונל · הודעות · HK</title>
+<title>אנרגי אינטרנשיונל · קבוצת הוואטסאפ · HK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
 <style>
 /* =====================================================================
-   HK · מסך הלקוח · הודעות — אנרגי אינטרנשיונל
-   ---------------------------------------------------------------------
-   אותה משפחה כמו מסכי היועץ, ניב אחר:
-   · הרצועה מעוגנת לעסק (שם החברה); שם המסך יושב בניווט.
-   · הדבר החי של המסך הזה: מה מחכה לתשובה שלך והבקשה הקרובה ביותר.
-   · צפיפות נמוכה: בסיס 14.5px, בועות שיחה במקום טבלה, ריווח 20.
-   · רדיוס רך: פאנל 14 · בועה/כרטיס 12 · פקד 8.
-   · תכלת = המבטא המוביל (בקשה שממתינה לך). קורל = אך ורק סכנה כספית.
-   · מספרים גדולים: תווית קטנה מעל, מספר 26px tabular.
-   · גוף שני: "השיחה שלך", "מחכה ממך", "שלחת".
-   · אין שום דבר פנימי של היועץ או של HK — רק מה שנאמר ללקוח.
-   הבלוק הכהה היחיד בגוף = תיבת הכתיבה: שם אתה פועל.
+   קבוצת הוואטסאפ — CLIENT_SCREENS_SPEC §3.2
+   הגרסה העצמאית של המסך שנבנה בכרטיס החברה (js/ops.js · MSGS_THREADS).
+   שלוש רמות כרונולוגיה: גלולת יום · בועות · כרטיס הסיכום הלילי.
+   זה מסך יועץ — הסיכומים והתיוגים נשארים גלויים. אין תיבת כתיבה:
+   היועץ עונה בוואטסאפ עצמו.
    ===================================================================== */
-:root{
-  /* --- המשפחה: זהה למסכי היועץ, בלי גוון חדש --- */
-  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bd:#E6ECF4;
-  --green:#13895b;--red:#dc4436;--orange:#c98404;
-  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
-  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
-  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
-  --row-hover:#F8FBFD;--bd2:#B7C3CF;--line:#C4CED8;
-  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--bad-bg:#FDEDEB;--bad-ink:#C43D30;--good-bg:#F1FAF5;
-  /* --- הניב של הלקוח: כל ערך שמבדיל מוגדר כאן --- */
-  --bg:#F7F9FC;
-  --r-panel:14px;--r-card:12px;--r-ctl:8px;
-  --fs:14.5px;--fs-sub:13px;--fs-meta:12.5px;
-  --pad:20px;--sec:20px;
-  --big:30px;--big2:26px;
-  --coral-ink:#C4453C;--coral-bg:#FFF6F4;--coral-bd:#F7DCD7;--coral-on-navy:#FFD3CF;
-  --sky-ink:#1B7FB5;--mine-bg:#EAF3FA;--mine-bd:#D7E8F5;
-  --shadow:0 1px 2px rgba(12,64,104,.05),0 6px 18px rgba(12,64,104,.04);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
-a{color:inherit;text-decoration:none}
-button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-.num{font-variant-numeric:tabular-nums}
-.mn{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
-:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.mg{display:flex;gap:18px;align-items:flex-start}
+.mg-side{flex:none;width:288px;position:sticky;top:20px}
+.mg-main{flex:1;min-width:0}
 
-/* ---------- ניווט: כאן חיים שמות המסכים ---------- */
-.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
-.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
-.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
-.nav ul{display:flex;list-style:none;gap:4px}
-.nav li a{display:block;padding:6px 13px;border-radius:var(--r-ctl);color:var(--ink2);font-size:13.5px}
-.nav li a:hover{background:var(--bg);color:var(--navy)}
-.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
-.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:var(--fs-meta);color:var(--ink3);text-align:end}
-.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
-.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+/* ---------- סרגל הקבוצות ---------- */
+.mg-grp+.mg-grp{margin-top:8px}
+.mg-th{width:100%;display:flex;align-items:center;gap:10px;text-align:start;
+  background:#fff;border:1px solid var(--cardbd);border-radius:14px;box-shadow:var(--lift);padding:12px 15px}
+.mg-th:hover{border-color:#D6E3EF}
+.mg-grp.on .mg-th{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy),var(--lift)}
+.mg-tb{min-width:0;flex:1}
+.mg-tb b{display:block;font-size:13.5px;font-weight:700;color:var(--navy)}
+.mg-tb span{display:block;font-size:11.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.mg-n{font-style:normal;flex:none;min-width:19px;height:19px;padding:0 6px;border-radius:99px;
+  background:var(--coral);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+/* המשתתפים — תמיד תחת הקבוצה הנבחרת */
+.mg-ppl{padding:12px 6px 4px}
+.mg-ppl .h{font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.3px;margin:0 9px 8px}
+.mg-p{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:10px}
+.mg-p i{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-style:normal;font-size:12px;font-weight:700}
+.mg-p b{font-size:12.5px;font-weight:500;color:var(--ink)}
+.mg-p span{font-size:11px;color:var(--ink3)}
+.mg-p.unk b{font-variant-numeric:tabular-nums;direction:ltr}
+.mg-p.unk span{color:var(--warn);font-weight:500}
+/* גוון לפי תפקיד — אותו קוד צבע גם באווטאר בשיחה */
+.cl  i{background:#E4F0F9;color:#0C4068}
+.adv i{background:#FBEAE4;color:#B9553B}
+.me  i{background:#E4F1EA;color:#0F7350}
+.bot i{background:#EDF2F8;color:#8496A6}
+.unk i{background:#FBF0DC;color:#9A6300}
 
-/* ---------- רצועת הזהות: מעוגנת לעסק + הדבר החי של המסך ---------- */
-.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:24px}
-.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1.05;letter-spacing:-.3px}
-.strip .id .sub{font-size:var(--fs-meta);color:var(--on-navy3);margin-top:3px}
-.strip .id .sub a{color:var(--on-navy);border-bottom:1px solid rgba(255,255,255,.28)}
-.strip .id .sub a:hover{border-color:var(--white);color:var(--white)}
-.strip .sep{width:1px;height:34px;background:rgba(255,255,255,.16);flex:none}
-.strip .date{font-size:13.5px;color:var(--on-navy2);white-space:nowrap}
-.strip .live{display:flex;align-items:center;gap:14px;min-width:0}
-.strip .live .cap{font-size:11.5px;letter-spacing:.5px;color:var(--on-navy3);white-space:nowrap}
-.strip .live .n{font-size:22px;font-weight:600;line-height:1}
-.strip .live .txt{font-size:var(--fs);color:var(--on-navy);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.strip .live .txt b{color:var(--white);font-weight:600}
-.strip .live .c{color:var(--on-navy4)}
-.strip .live .in{background:rgba(255,255,255,.09);border-radius:var(--r-ctl);padding:4px 10px;font-size:12.5px;color:var(--on-navy);white-space:nowrap}
-.strip .spacer{margin-inline-start:auto}
-.strip .now{font-size:13px;color:var(--on-navy3);display:flex;align-items:baseline;gap:8px;white-space:nowrap}
-.strip .now b{color:var(--white);font-weight:500;font-size:18px}
+/* ---------- חלון השיחה ---------- */
+.mg-box{background:#fff;border:1px solid var(--cardbd);border-radius:14px;box-shadow:var(--lift);
+  display:flex;flex-direction:column;overflow:hidden}
+.mg-head{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--tint);flex:none}
+.mg-head h2{font-size:15px;font-weight:700;color:var(--navy)}
+.mg-head .cnt{font-size:11.5px;color:var(--ink3)}
+.mg-head .sp{margin-inline-start:auto}
+.mg-sr{position:relative}
+.mg-sr input{width:210px;border:1px solid var(--bd);border-radius:999px;padding:6px 32px 6px 14px;font-size:12.5px}
+.mg-sr input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.mg-sr svg{position:absolute;inset-inline-start:11px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none}
+/* הגלילה קורית כאן בלבד — הכותרת וגלולת היום לא נגללות החוצה */
+.mg-scroll{flex:1;overflow-y:auto;padding:16px 20px 20px;background:linear-gradient(180deg,#FAFCFE,#fff 90px)}
 
-/* ---------- כפתורים ---------- */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-ctl);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap}
-.btn:hover{background:var(--bg)}
-.btn.sm{padding:4px 11px;font-size:12.5px}
-.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
-.btn.pri:hover{background:var(--navy2)}
-.btn.quiet{border-color:transparent;background:transparent;color:var(--ink3)}
-.btn.quiet:hover{background:var(--chip);color:var(--navy)}
-.dark .btn{background:transparent;border-color:rgba(255,255,255,.32);color:var(--white)}
-.dark .btn:hover{background:rgba(255,255,255,.12)}
-.dark .btn.pri{background:var(--white);border-color:var(--white);color:var(--navy)}
-.dark .btn.pri:hover{background:var(--on-navy)}
-.dark .btn[disabled]{opacity:.45;cursor:default}
-.dark .btn[disabled]:hover{background:transparent}
-.lk{color:var(--sky-ink);font-weight:500;font-size:13px}
-.lk:hover{text-decoration:underline}
+.mg-day{display:flex;align-items:center;justify-content:center;margin:14px 0 12px}
+.mg-day span{background:var(--chip);color:var(--ink2);font-size:11.5px;font-weight:600;
+  border-radius:999px;padding:4px 14px}
+.mg-msg{display:flex;gap:11px;padding:7px 0}
+.mg-msg i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  font-style:normal;font-size:12.5px;font-weight:700;margin-top:2px}
+/* עמודת קריאה — בלי התקרה השעה נזרקת לקצה השני של המסך ומתנתקת מההודעה */
+.mg-bd{min-width:0;flex:1;max-width:820px}
+.mg-mh{display:flex;align-items:baseline;gap:8px}
+.mg-mh b{font-size:12.5px;font-weight:600;color:var(--ink)}
+.mg-mh .j{font-size:11px;color:var(--ink3)}
+/* השעה צמודה לשם ולא נזרקת לקצה — ההודעות קצרות, ומרחק גדול מנתק אותה מהן */
+.mg-mh .t{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+.mg-mh .t::before{content:"· "}
+.mg-t{font-size:13.5px;color:var(--ink);line-height:1.6;margin-top:2px}
+.mg-msg.unk .mg-mh b{direction:ltr;font-variant-numeric:tabular-nums}
+.mg-tag{display:inline-block;margin-top:5px;font-size:11px;font-weight:600;color:var(--navy);
+  background:var(--tint);border-radius:999px;padding:2px 10px}
+.mg-msg.hit .mg-t{background:#FFF4CF;border-radius:8px;padding:2px 6px;margin-inline-start:-6px}
 
-/* ---------- צ׳יפים שקטים ---------- */
-.chip{font-size:12.5px;font-weight:500;background:var(--chip);border:0;border-radius:var(--r-ctl);padding:5px 11px;color:var(--ink2)}
-.chip:hover{background:var(--chip-hover);color:var(--navy)}
-.chip.on{background:var(--navy);color:var(--white)}
+/* ---------- כרטיס הסיכום הלילי ---------- */
+.mg-sum{background:var(--navy);color:#fff;border-radius:12px;padding:14px 17px;margin:14px 0 6px}
+.mg-sh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.mg-sh b{font-size:13px;font-weight:700}
+.mg-sh span{font-size:11.5px;color:var(--on-navy3)}
+.mg-sh a{margin-inline-start:auto;font-size:11.5px;font-weight:600;color:#7CC9F2}
+.mg-sh a:hover{text-decoration:underline}
+.mg-fam{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;
+  color:var(--on-navy2);margin:9px 0 5px}
+.mg-fam:first-child{margin-top:0}
+.mg-fam .dot{width:7px;height:7px;border-radius:50%}
+.mg-fam.co .dot{background:#7CC9F2}
+.mg-fam.pr .dot{background:#A99BF0}
+.mg-sl{display:flex;align-items:baseline;gap:10px;font-size:13px;color:#EAF3F9;
+  line-height:1.6;padding:3px 0 3px 0;margin-inline-start:14px;position:relative}
+.mg-sl::before{content:"";position:absolute;inset-inline-start:-14px;top:10px;width:4px;height:4px;
+  border-radius:50%;background:rgba(255,255,255,.4)}
+/* התגית צמודה לשורה שלה — ב"auto" היא נזרקת לקצה השני של הכרטיס */
+.mg-slc{flex:none;font-size:10.5px;color:var(--on-navy3);
+  border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:1px 9px}
+.mg-unk{margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.14);
+  font-size:11.5px;color:#F2C98A;display:flex;align-items:center;gap:7px}
+.mg-unk svg{flex:none}
+/* ממתין לעיבוד — לא כרטיס, רק שורה */
+.mg-wait{display:flex;align-items:center;gap:8px;margin:14px 0 4px;padding:9px 14px;
+  border:1px dashed var(--bd);border-radius:10px;font-size:12px;color:var(--ink3)}
+.mg-wait .sd{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.mg-wait b{color:var(--ink2);font-weight:600}
 
-/* ---------- התראות: טקסט צבוע + נקודה, בלי רקע ---------- */
-.al{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-style:normal}
-.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
-.al.bad{color:var(--coral-ink)}
-.al.warn{color:var(--orange)}
-.al.ok{color:var(--green)}
-.al.need{color:var(--sky-ink)}
-.al.info{color:var(--ink3)}
-
-/* ---------- פריסה ---------- */
-.wrap{padding:var(--sec) 32px 22px;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:var(--sec);align-items:stretch;height:calc(100vh - 120px)}
-.wrap>*{min-width:0;min-height:0}
-.panel{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:0}
-.ch{display:flex;align-items:center;gap:12px;padding:15px var(--pad) 13px;border-bottom:1px solid var(--bd);flex:none}
-.ch h2{font-size:16.5px;font-weight:600;color:var(--navy)}
-.ch .sub{font-size:var(--fs-meta);color:var(--ink3)}
-.ch .ctl{margin-inline-start:auto;display:flex;gap:6px;align-items:center}
-
-/* ---------- השיחה ---------- */
-.thread{flex:1;overflow-y:auto;min-height:0;padding:16px var(--pad) 10px;display:flex;flex-direction:column;gap:14px;background:var(--surface2)}
-.thread::-webkit-scrollbar,.body::-webkit-scrollbar{width:11px}
-.thread::-webkit-scrollbar-thumb,.body::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:8px;border:3px solid var(--surface2);background-clip:padding-box}
-.thread::-webkit-scrollbar-thumb:hover,.body::-webkit-scrollbar-thumb:hover{background:var(--line);background-clip:padding-box}
-.thread::-webkit-scrollbar-track,.body::-webkit-scrollbar-track{background:transparent}
-.body::-webkit-scrollbar-thumb{border-color:var(--white)}
-.dsep{align-self:center;background:var(--chip);color:var(--ink3);font-size:12px;border-radius:var(--r-ctl);padding:4px 12px}
-.msg{max-width:74%;display:flex;flex-direction:column;gap:5px;align-self:flex-start}
-.msg.me{align-self:flex-end}
-.msg .who{font-size:var(--fs-meta);color:var(--ink3);padding-inline:4px;display:flex;align-items:center;gap:7px}
-.msg .who b{color:var(--navy);font-weight:600}
-.msg.me .who{justify-content:flex-end}
-.msg .bub{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-card);border-start-start-radius:4px;padding:12px 15px 10px;font-size:var(--fs);color:var(--ink);line-height:1.6}
-.msg.me .bub{background:var(--mine-bg);border-color:var(--mine-bd);border-start-start-radius:var(--r-card);border-start-end-radius:4px}
-.msg .bub p + p{margin-top:8px}
-.msg .bub a.in{color:var(--sky-ink);font-weight:500;border-bottom:1px solid rgba(27,127,181,.35)}
-.msg .bub a.in:hover{border-color:var(--sky-ink)}
-.msg .ft{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);padding-inline:4px}
-.msg.me .ft{justify-content:flex-end}
-.msg .ft .rd{color:var(--sky-ink)}
-.msg.hit .bub{box-shadow:0 0 0 2px var(--sky)}
-.msg.gone{display:none}
-
-/* בקשה שממתינה לך — הסימון הברור */
-.msg.req .bub{border-inline-start:3px solid var(--sky);background:var(--white)}
-.msg.req.done .bub{border-inline-start-color:var(--green)}
-.reqhd{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:12.5px}
-.reqhd .due{color:var(--ink3)}
-.reqacts{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
-.msg.req.done .reqacts{display:none}
-
-/* קובץ מצורף */
-.att{display:flex;align-items:center;gap:10px;border:1px solid var(--bd);border-radius:10px;padding:8px 10px;background:var(--surface2);margin-top:9px;width:100%;text-align:start}
-.att:hover{background:var(--tint);border-color:var(--mine-bd)}
-.att i{width:34px;height:34px;border-radius:var(--r-ctl);background:var(--tint);display:grid;place-items:center;color:var(--navy);font-size:10.5px;font-weight:700;font-style:normal;flex:none}
-.att .n{font-size:13.5px;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.att .s{font-size:12px;color:var(--ink3);margin-inline-start:auto;white-space:nowrap}
-
-/* מספר כספי בתוך בועה: תווית קטנה מעל, מספר גדול */
-.fig{margin:11px 0 3px}
-.fig .lab{display:block;font-size:11.5px;letter-spacing:.4px;color:var(--ink3);margin-bottom:2px}
-.fig .n{font-size:var(--big2);font-weight:700;line-height:1.1;letter-spacing:-.6px;color:var(--ink);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
-.fig .u{font-size:16px;font-weight:500;color:var(--ink3);margin-inline-start:2px}
-.fig.bad .n{color:var(--coral-ink)}
-.fig.bad .u{color:var(--coral-ink)}
-.fig .note{font-size:13px;color:var(--ink2);margin-top:3px}
-
-/* ---------- תיבת הכתיבה: הבלוק הכהה היחיד בגוף ---------- */
-.composer{background:var(--navy);color:var(--white);padding:13px var(--pad) 15px;border-radius:0 0 var(--r-panel) var(--r-panel);flex:none}
-.composer .hd{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:var(--fs-meta);color:var(--on-navy3)}
-.composer .ctx{display:none;align-items:center;gap:8px;background:rgba(255,255,255,.09);border-radius:var(--r-ctl);padding:4px 6px 4px 10px;font-size:12.5px;color:var(--on-navy)}
-.composer .ctx.on{display:inline-flex}
-.composer .ctx b{color:var(--white);font-weight:600}
-.composer .ctx button{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:var(--on-navy2);font-size:13px;line-height:1}
-.composer .ctx button:hover{background:rgba(255,255,255,.16);color:var(--white)}
-.composer .row{display:flex;align-items:flex-end;gap:10px}
-.composer textarea{flex:1;min-width:0;height:44px;max-height:110px;background:var(--white);border:1px solid var(--white);border-radius:10px;padding:11px 14px;font:inherit;font-size:var(--fs);color:var(--ink);resize:none;line-height:1.4}
-.composer textarea::placeholder{color:var(--ink3)}
-.composer textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.35)}
-.composer .row .btn{height:44px}
-.composer .hint{margin-top:8px;font-size:12px;color:var(--on-navy4)}
-
-/* ---------- הטור השמאלי ---------- */
-.left{display:flex;flex-direction:column;gap:var(--sec);min-height:0}
-.left .panel.mine{flex:0 1 auto}
-.left .panel.sent{flex:1 1 210px;min-height:150px}
-.body{flex:1;overflow-y:auto;min-height:0;padding:4px var(--pad) 14px}
-
-.need{list-style:none}
-.need li{border:1px solid var(--bd);border-radius:var(--r-card);padding:13px 15px 12px;margin-top:12px;background:var(--white);cursor:pointer}
-.need li:hover{background:var(--row-hover);border-color:var(--mine-bd)}
-.need li .t{font-size:var(--fs);font-weight:600;color:var(--ink)}
-.need li .w{font-size:var(--fs-sub);color:var(--ink2);margin-top:4px;line-height:1.5}
-.need li .m{display:flex;align-items:center;gap:9px;margin-top:8px;font-size:var(--fs-meta);color:var(--ink3);flex-wrap:wrap}
-.need li .m .dot{color:var(--line)}
-.need li .acts{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
-.need li.done{display:none}
-
-.sent-l{list-style:none}
-.sent-l li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--bd)}
-.sent-l li:last-child{border-bottom:0}
-.sent-l li i{width:34px;height:34px;border-radius:var(--r-ctl);background:var(--tint);display:grid;place-items:center;color:var(--navy);font-size:10.5px;font-weight:700;font-style:normal}
-.sent-l .n{font-size:13.5px;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sent-l .w{font-size:var(--fs-meta);color:var(--ink3);margin-top:2px}
-.sent-l .st{font-size:var(--fs-meta);white-space:nowrap}
-
-.cf{display:flex;align-items:center;gap:8px;padding:11px var(--pad) 13px;border-top:1px solid var(--bd);background:var(--surface2);border-radius:0 0 var(--r-panel) var(--r-panel);font-size:var(--fs-meta);color:var(--ink3);flex:none}
-.empty{padding:34px 16px 30px;text-align:center;color:var(--ink3);font-size:var(--fs-sub)}
-.empty b{display:block;font-size:var(--fs);color:var(--ink2);font-weight:600;margin-bottom:6px}
-.empty .btn{margin-top:13px}
-
-/* ---------- מודאל + טוסט ---------- */
-.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
-.ov.on{display:grid}
-.md{width:520px;max-width:92vw;background:var(--white);border-radius:var(--r-panel);padding:22px 22px 20px;box-shadow:0 22px 54px rgba(0,0,0,.26)}
-.md h3{font-size:19px;color:var(--navy);font-weight:600}
-.md .s{font-size:var(--fs-sub);color:var(--ink3);margin-top:4px}
-.pick{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:8px}
-.pick li{display:flex;align-items:center;gap:11px;border:1px solid var(--bd);border-radius:var(--r-card);padding:10px 12px;cursor:pointer}
-.pick li:hover{background:var(--row-hover)}
-.pick li.sel{border-color:var(--sky);background:var(--tint)}
-.pick input{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1.5px solid var(--bd2);border-radius:4px;background:var(--white);display:grid;place-items:center;flex:none;cursor:pointer}
-.pick input::after{content:"✓";color:var(--white);font-size:12px;line-height:1;opacity:0}
-.pick input:checked{background:var(--green);border-color:var(--green)}
-.pick input:checked::after{opacity:1}
-.pick .n{font-size:13.5px;font-weight:500;color:var(--ink)}
-.pick .s2{font-size:12px;color:var(--ink3);margin-inline-start:auto}
-.md .f{display:flex;gap:9px;margin-top:20px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--ink);color:var(--white);padding:11px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.25s;z-index:60;pointer-events:none;max-width:80vw;text-align:center}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-
-@media (max-width:1450px){
-  :root{--pad:18px;--sec:16px;--big2:24px}
-  .nav,.strip{padding-inline:24px}
-  .strip{gap:18px}
-  .strip h1{font-size:25px}
-  .wrap{padding:var(--sec) 24px 18px;grid-template-columns:minmax(0,1fr) 372px;gap:var(--sec)}
-  .ch{padding:12px var(--pad) 11px}
-  .ch h2{font-size:16px}
-  .thread{padding:13px var(--pad) 8px;gap:12px}
-  .msg{max-width:80%}
-  .need li{padding:10px 13px 11px;margin-top:9px}
-  .need li .w{margin-top:3px}
-  .need li .m{margin-top:6px}
-  .need li .acts{margin-top:9px}
-  .sent-l .st{font-size:12px}
-  .sent-l li{padding:9px 0}
-  .composer{padding:11px var(--pad) 13px}
-}
+/* ---------- הרגל: אין תיבת כתיבה ---------- */
+.mg-foot{flex:none;display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid var(--tint)}
+.mg-foot .note{font-size:12px;color:var(--ink3)}
+.mg-empty{padding:40px 0;text-align:center;font-size:13px;color:var(--ink3)}
+@media(max-width:1100px){.mg{flex-direction:column}.mg-side{position:static;width:100%}}
 </style>
 </head>
-<body>
-
-<nav class="nav">
-  <a class="brand" href="dashboard.html"><i>HK</i>הצוות הפיננסי שלך</a>
-  <ul>
-    <li><a href="dashboard.html">דשבורד</a></li>
-    <li><a class="on" href="messages.html">הודעות</a></li>
-    <li><a href="meetings.html">פגישות</a></li>
-    <li><a href="ai.html">עוזר AI</a></li>
-    <li><a href="metrics.html">מדדים</a></li>
-  </ul>
-  <div class="me"><div><b>צחי עובד</b>בעלים</div><i>צע</i></div>
-</nav>
-
-<header class="strip">
-  <div class="id">
-    <h1>אנרגי אינטרנשיונל</h1>
-    <div class="sub num">ח.פ 511327876 · היועץ שלך <a href="meetings.html">אילון אשכנזי</a></div>
-  </div>
-  <div class="sep"></div>
-  <div class="date num">יום חמישי · 02.07.2026</div>
-  <div class="sep"></div>
-  <div class="live" id="live">
-    <span class="cap">מחכה ממך</span>
-    <span class="n num" id="liveN">3</span>
-    <span class="txt" id="liveTxt">בקשות פתוחות <span class="c">·</span> הקרובה: <b>דפי הבנק של יוני</b></span>
-    <span class="in num" id="liveIn">עד היום 16:00</span>
-    <button class="btn" id="liveBtn" type="button">להראות לי</button>
-  </div>
-  <div class="spacer"></div>
-  <div class="now num"><span>השעה</span><b class="mn" id="clk">10:54</b></div>
-</header>
-
+<body data-cli="msgs">
 <main class="wrap">
-
-  <!-- ===== השיחה ===== -->
-  <section class="panel conv">
-    <div class="ch">
-      <h2>השיחה שלך עם הצוות</h2>
-      <span class="sub" id="convSub"></span>
-      <div class="ctl">
-        <button class="chip on" type="button" data-f="all">הכל</button>
-        <button class="chip" type="button" data-f="req">מה שמחכה לי</button>
-        <button class="chip" type="button" data-f="file">מסמכים</button>
+  <div class="mg">
+    <aside class="mg-side" id="mgSide"></aside>
+    <div class="mg-main">
+      <div class="mg-box" id="mgBox">
+        <div class="mg-head">
+          <h2 id="mgName"></h2><span class="cnt" id="mgCnt"></span>
+          <span class="sp"></span>
+          <div class="mg-sr">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+            <input id="mgQ" placeholder="חיפוש בהודעות" oninput="mgRender(false)">
+          </div>
+        </div>
+        <div class="mg-scroll" id="mgScroll"></div>
+        <div class="mg-foot">
+          <a class="btn pri" href="#" onclick="toast('בדמו: וואטסאפ ייפתח על הקבוצה');return false">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.7-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
+            המשך בוואטסאפ</a>
+          <span class="note">התשובות נכתבות בוואטסאפ עצמו — כאן קוראים מה עבר ומה נכנס לזיכרון.</span>
+        </div>
       </div>
     </div>
-
-    <div class="thread" id="thread">
-
-      <div class="dsep num">שלישי · 30.06</div>
-
-      <div class="msg hk" data-kind="file">
-        <div class="who"><b>לירון בן כליפא</b>מנהלת התזרים שלך</div>
-        <div class="bub">
-          <p>שלום צחי, דוח התזרים של יוני מוכן ומחכה לך. שני דברים בלטו החודש — ההוצאות התפעוליות והפער בגבייה מרימון.</p>
-          <button class="att" type="button" data-file="תזרים יוני 2026.pdf"><i>PDF</i><span class="n">תזרים יוני 2026.pdf</span><span class="s num">1.2MB</span></button>
-        </div>
-        <div class="ft"><span class="num">30.06 · 16:20</span></div>
-      </div>
-
-      <div class="msg me">
-        <div class="who">שלחת</div>
-        <div class="bub"><p>תודה לירון, אעבור על זה הערב ואחזור אליכם.</p></div>
-        <div class="ft"><span class="num">30.06 · 18:44</span><span class="rd">נקרא</span></div>
-      </div>
-
-      <div class="dsep num">רביעי · 01.07</div>
-
-      <div class="msg me">
-        <div class="who">שלחת</div>
-        <div class="bub"><p>עברתי על הדוח. מה שהפתיע אותי זה ההוצאות התפעוליות — זה לא נראה לי הגיוני מול מה שתכננו.</p></div>
-        <div class="ft"><span class="num">01.07 · 09:05</span><span class="rd">נקרא</span></div>
-      </div>
-
-      <div class="msg hk">
-        <div class="who"><b>אילון אשכנזי</b>היועץ שלך</div>
-        <div class="bub">
-          <p>צודק, זה החריג המרכזי של יוני. רוב הפער מגיע משני סעיפים: תחזוקת ציוד ושכר קבלני משנה.</p>
-          <div class="fig">
-            <span class="lab">ההוצאות התפעוליות שלך ביוני</span>
-            <span class="n">214,900</span><span class="u">₪</span>
-            <div class="note"><i class="al warn">18% מעל התכנון</i> · 32,800 ₪ מעבר לתקציב החודשי</div>
-          </div>
-          <p>נפרק את זה יחד בפגישה, אבל כדי לוודא שאין כאן חיוב כפול אני צריך ממך שני דברים.</p>
-        </div>
-        <div class="ft"><span class="num">01.07 · 11:32</span></div>
-      </div>
-
-      <div class="msg hk req" id="m-r1" data-kind="req">
-        <div class="who"><b>אילון אשכנזי</b>היועץ שלך</div>
-        <div class="bub">
-          <div class="reqhd"><i class="al need">מחכה ממך</i><span class="due num">עד היום 16:00</span></div>
-          <p><b>דפי הבנק של יוני</b> — משני החשבונות. בלעדיהם אי אפשר להתאים את ההוצאות התפעוליות ולסגור את החודש.</p>
-          <div class="reqacts">
-            <button class="btn sm" type="button" data-attach="r1">לצרף עכשיו</button>
-            <button class="btn sm" type="button" data-reply="r1">לכתוב תשובה</button>
-          </div>
-        </div>
-        <div class="ft"><span class="num">01.07 · 11:33</span></div>
-      </div>
-
-      <div class="msg hk req" id="m-r2" data-kind="req">
-        <div class="who"><b>אילון אשכנזי</b>היועץ שלך</div>
-        <div class="bub">
-          <div class="reqhd"><i class="al need">מחכה ממך</i><span class="due num">עד מחר</span></div>
-          <p><b>חשבונית ספק — רימון מוצרי אנרגיה, 12,480 ₪.</b> יש לנו חיוב בבנק בלי חשבונית תואמת. אם יש לך העתק, שלח לנו אותו.</p>
-          <div class="reqacts">
-            <button class="btn sm" type="button" data-attach="r2">לצרף עכשיו</button>
-            <button class="btn sm" type="button" data-reply="r2">לכתוב תשובה</button>
-            <button class="btn quiet sm" type="button" data-skip="r2">אין לי את זה</button>
-          </div>
-        </div>
-        <div class="ft"><span class="num">01.07 · 11:35</span></div>
-      </div>
-
-      <div class="dsep num">היום · חמישי 02.07</div>
-
-      <div class="msg hk">
-        <div class="who"><b>לירון בן כליפא</b>מנהלת התזרים שלך</div>
-        <div class="bub">
-          <p>בוקר טוב. אחרי דחיית התשלום לספק, התחזית מראה שהחשבון שלך נכנס למינוס באמצע החודש.</p>
-          <div class="fig bad">
-            <span class="lab">היתרה הצפויה שלך ב-14.07</span>
-            <span class="n">-38,400</span><span class="u">₪</span>
-            <div class="note"><i class="al bad">מתחת למסגרת האשראי</i> · הפער נסגר ב-22.07 עם הגבייה מרימון</div>
-          </div>
-          <p>יש שתי דרכים לגשר על זה, ואת שתיהן נציג לך בפגישה. <a class="in" href="dashboard.html">לתמונת התזרים המלאה</a></p>
-        </div>
-        <div class="ft"><span class="num">היום · 08:12</span></div>
-      </div>
-
-      <div class="msg me">
-        <div class="who">שלחת</div>
-        <div class="bub"><p>ראיתי. תומר מוציא היום את דפי הבנק, הוא יעלה אותם לכאן.</p></div>
-        <div class="ft"><span class="num">היום · 09:31</span><span class="rd">נקרא</span></div>
-      </div>
-
-      <div class="msg hk req" id="m-r3" data-kind="req">
-        <div class="who"><b>לירון בן כליפא</b>מנהלת התזרים שלך</div>
-        <div class="bub">
-          <div class="reqhd"><i class="al need">מחכה ממך</i><span class="due num">עד היום</span></div>
-          <p><b>אישור לדחיית התשלום לד.ג. תעשיות ב-10 ימים.</b> דיברנו איתם, הם מסכימים בלי ריבית. צריך רק את האישור שלך כדי לעדכן את ההוראה בבנק.</p>
-          <div class="reqacts">
-            <button class="btn sm" type="button" data-ok="r3">לאשר את הדחייה</button>
-            <button class="btn sm" type="button" data-reply="r3">לכתוב תשובה</button>
-          </div>
-        </div>
-        <div class="ft"><span class="num">היום · 09:40</span></div>
-      </div>
-
-      <div class="msg hk" data-kind="file">
-        <div class="who"><b>אילון אשכנזי</b>היועץ שלך</div>
-        <div class="bub">
-          <p>סיכום הפגישה של הבוקר מוכן. הכל מרוכז בקובץ אחד, כולל ההחלטות והתאריכים שסיכמנו.</p>
-          <button class="att" type="button" data-file="סיכום פגישה 02.07.pdf"><i>PDF</i><span class="n">סיכום פגישה 02.07.pdf</span><span class="s num">340KB</span></button>
-        </div>
-        <div class="ft"><span class="num">היום · 10:41</span></div>
-      </div>
-
-    </div>
-
-    <!-- הבלוק הכהה היחיד בגוף: כאן אתה פועל -->
-    <div class="composer dark">
-      <div class="hd">
-        <span>הודעה לצוות הפיננסי שלך</span>
-        <span class="ctx" id="ctx">מענה ל־<b id="ctxT"></b><button type="button" id="ctxX" aria-label="ביטול המענה">✕</button></span>
-      </div>
-      <div class="row">
-        <button class="btn" type="button" id="attBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.4 11.05 12.25 20.2a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a3.5 3.5 0 1 1 4.95 4.95l-9.2 9.19a1.5 1.5 0 0 1-2.12-2.12l8.49-8.49"/></svg>צירוף מסמך</button>
-        <textarea id="cmp" rows="1" placeholder="כתוב כאן… הצוות עונה בדרך כלל תוך שעתיים"></textarea>
-        <button class="btn pri" type="button" id="sendBtn">שליחה</button>
-      </div>
-      <div class="hint">הודעות נשלחות גם לוואטסאפ שלך · <span class="num">052-4418907</span></div>
-    </div>
-  </section>
-
-  <!-- ===== הטור השמאלי: מה מחכה ממני ===== -->
-  <aside class="left">
-    <section class="panel mine">
-      <div class="ch"><h2>מה מחכה ממני</h2><span class="sub" id="mineSub"></span></div>
-      <div class="body">
-        <ul class="need" id="need">
-          <li data-req="r1" tabindex="0" role="button">
-            <div class="t">דפי הבנק של יוני</div>
-            <div class="w">משני החשבונות — בלי זה אי אפשר לסגור את התאמת ההוצאות.</div>
-            <div class="m"><i class="al warn">עד היום 16:00</i><span class="dot">·</span><span>ביקש אילון · 01.07</span></div>
-            <div class="acts">
-              <button class="btn pri sm" type="button" data-attach="r1">לצרף עכשיו</button>
-              <button class="btn sm" type="button" data-reply="r1">לכתוב תשובה</button>
-            </div>
-          </li>
-          <li data-req="r2" tabindex="0" role="button">
-            <div class="t">חשבונית — רימון מוצרי אנרגיה</div>
-            <div class="w">חיוב של 12,480 ₪ בבנק בלי חשבונית תואמת.</div>
-            <div class="m"><i class="al info">עד מחר</i><span class="dot">·</span><span>ביקש אילון · 01.07</span></div>
-            <div class="acts">
-              <button class="btn sm" type="button" data-attach="r2">לצרף עכשיו</button>
-              <button class="btn quiet sm" type="button" data-skip="r2">אין לי את זה</button>
-            </div>
-          </li>
-          <li data-req="r3" tabindex="0" role="button">
-            <div class="t">אישור לדחיית תשלום — ד.ג. תעשיות</div>
-            <div class="w">10 ימים, בלי ריבית. צריך את האישור שלך כדי לעדכן בבנק.</div>
-            <div class="m"><i class="al warn">עד היום</i><span class="dot">·</span><span>ביקשה לירון · היום</span></div>
-            <div class="acts">
-              <button class="btn sm" type="button" data-ok="r3">לאשר את הדחייה</button>
-              <button class="btn sm" type="button" data-reply="r3">לכתוב תשובה</button>
-            </div>
-          </li>
-        </ul>
-        <div class="empty" id="needEmpty" hidden>
-          <b>אין בקשות פתוחות</b>
-          טיפלת בכל מה שהצוות ביקש. כשתהיה בקשה חדשה היא תופיע כאן ובוואטסאפ.
-          <button class="btn" type="button" id="emptyBtn">לכתוב לצוות</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel sent">
-      <div class="ch"><h2>מה שלחת לאחרונה</h2><span class="sub">והאם זה התקבל</span></div>
-      <div class="body">
-        <ul class="sent-l" id="sentl">
-          <li><i>XLSX</i><div><div class="n">דוח מלאי — יוני.xlsx</div><div class="w num">01.07 · 14:22</div></div><span class="st al ok">התקבל</span></li>
-          <li><i>PDF</i><div><div class="n">אישור העברה לספק.pdf</div><div class="w num">29.06 · 10:05</div></div><span class="st al ok">התקבל</span></li>
-          <li><i>הודעה</i><div><div class="n">תשובה על מסגרת האשראי</div><div class="w num">27.06 · 17:40</div></div><span class="st al ok">נענתה</span></li>
-          <li><i>PDF</i><div><div class="n">חוזה מרכז הבנייה.pdf</div><div class="w num">24.06 · 09:12</div></div><span class="st al ok">התקבל</span></li>
-        </ul>
-      </div>
-      <div class="cf">המסמכים ששלחת נשמרים בתיק שלך</div>
-    </section>
-  </aside>
-
+  </div>
 </main>
 
-<!-- בחירת מסמך -->
-<div class="ov" id="ov">
-  <div class="md" role="dialog" aria-modal="true" aria-labelledby="mdT">
-    <h3 id="mdT">צירוף מסמך</h3>
-    <div class="s" id="mdS"></div>
-    <ul class="pick" id="pick"></ul>
-    <div class="f">
-      <button class="btn pri" type="button" id="doAtt">שליחה לצוות</button>
-      <button class="btn" type="button" id="mdX">ביטול</button>
-    </div>
-  </div>
-</div>
-<div class="toast" id="toast"></div>
-
+<script src="cli.js"></script>
 <script>
-(function(){
-'use strict';
-var $=function(s,r){return (r||document).querySelector(s)};
-var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+hkChrome('msgs',{strip:false});
 
-/* ---- שעון אחד: השעה ברצועה והזמן שנותר לבקשה הקרובה נגזרים ממנו ---- */
-var DEMO=new Date(2026,6,2,10,54,0), BOOT=Date.now(), DUE=new Date(2026,6,2,16,0,0);
-function now(){return new Date(DEMO.getTime()+(Date.now()-BOOT))}
-function pad(n){return (n<10?'0':'')+n}
-function hm(d){return pad(d.getHours())+':'+pad(d.getMinutes())}
-function left(ms){var m=Math.max(0,Math.round(ms/60000));return Math.floor(m/60)+':'+pad(m%60)}
+/* הנתונים כמו ב-js/ops.js · MSGS_THREADS — לא שוכפלו ברוח, הועתקו במדויק */
+const S=(t,cat,sc,on)=>({t,cat,sc:sc||'co',on:on||''});
+const THREADS={
+  group:{name:'תפעול · אנרגי אינטרנשיונל', ppl:[
+      {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'רות אלמוג',j:'מנהלת כספים',r:'cl'},
+      {n:'אילון אשכנזי',j:'יועץ',r:'adv'},{n:'לירון בן כליפא',j:'מנהל תזרים · HK',r:'me'},
+      {n:'054-771-2280',r:'unk',unk:1},{n:'בוט HK',j:'אוטומטי',r:'bot'}], msgs:[
+    {day:'אתמול · רביעי 01.07'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'מצרף את אישור ההעברה ללדובק [קובץ]', time:'10:12', tag:'משימת הזנה'},
+    {who:'לירון בן כליפא', job:'מנהל תזרים · HK', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'צחי, מחר ב-16:00 עוברים על התקציב לקראת הרבעון', time:'12:40'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'סגור. דרך אגב — סגרנו את החוזה עם מרכז הבנייה', time:'12:44'},
+    {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'אני אשלח את הדוח, צחי לא מעורב בזה בדרך כלל', time:'12:51'},
+    {who:'054-771-2280', role:'unk', t:'שלום, מצרף את הצעת המחיר לליסינג החדש [PDF]', time:'12:58'},
+    {who:'בוט HK', job:'אוטומטי', role:'bot', t:'סיכום פגישת 09:00 נשלח · נפתחו 3 משימות', time:'13:05'},
+    {sum:{ran:'02:10', n:15, unk:'054-771-2280', lines:[
+      S('נסגר החוזה עם מרכז הבנייה — צפי תוספת למחזור','אירועים מהותיים'),
+      S('החומר מגיע מרות אלמוג, לא מצחי','שיתוף פעולה'),
+      S('מעדיפה מיילים מסודרים על וואטסאפ','סגנון תקשורת','pr','רות אלמוג')]}},
 
-/* ---- הנתונים של תיבת הצירוף ---- */
-var REQ={
-  r1:{t:'דפי הבנק של יוני',files:[
-    {n:'דפי בנק — לאומי 6/2026.pdf',s:'880KB'},
-    {n:'דפי בנק — הפועלים 6/2026.pdf',s:'640KB'},
-    {n:'ריכוז תנועות יוני.xlsx',s:'120KB'}]},
-  r2:{t:'חשבונית — רימון מוצרי אנרגיה',files:[
-    {n:'חשבונית 4471 — רימון.pdf',s:'210KB'},
-    {n:'צילום החשבונית.jpg',s:'1.8MB'}]},
-  r3:{t:'אישור לדחיית תשלום — ד.ג. תעשיות',files:[
-    {n:'התכתבות עם ד.ג. תעשיות.pdf',s:'150KB'}]}
+    {day:'היום · חמישי 02.07'},
+    {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'מעבירה את צפי התשלומים לאוגוסט [טבלה]', time:'08:55', tag:'טבלת הזנה'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'ההוראה להראל יורדת מחר', time:'11:40', tag:'נגררת'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'בוא נדבר גם על התמחור מול רימון בפגישה', time:'12:10'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'התזרים נראה צפוף החודש, אני לא אוהב לגעת במסגרת', time:'12:30'},
+    {who:'054-771-2280', role:'unk', t:'מתי נוח לכם לדבר על ההצעה?', time:'13:15'},
+    {sum:{pending:4}},
+  ]},
+  mgmt:{name:'הנהלה · אנרגי', ppl:[
+      {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'אילון אשכנזי',j:'יועץ',r:'adv'},
+      {n:'בוט HK',j:'אוטומטי',r:'bot'}], msgs:[
+    {day:'שני · 29.06'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'צחי, לפני שנרחיב — כדאי שנסגור את המסגרת מול הבנק', time:'09:10'},
+    {who:'צחי עובד', job:'בעלים', role:'cl', t:'אני לא רוצה להגדיל מסגרת, זה נראה לי כמו הודאה בכישלון', time:'09:25'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'זה כלי, לא הצהרה. נדבר על זה בפגישה', time:'09:31'},
+    {sum:{ran:'02:10', n:6, lines:[
+      S('מסרב להגדיל את המסגרת — רואה בהגדלה הודאה בכישלון','מצב תזרימי'),
+      S('רו״ח חיצוני משפיע על החלטות מימון — לתאם לפני הצעות גדולות','הקשר אישי ואמון','pr','צחי עובד')]}},
+    {day:'היום · חמישי 02.07'},
+    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'העברתי לרו״ח את הנתונים לקראת הרבעון', time:'09:40'},
+    {sum:{pending:1}},
+  ]},
 };
+/* אות אחת. לעברית אין קונבנציה לראשי-תיבות דו-אותיים, ו"בוט HK" יוצא "בH". */
+const INI=n=>String(n||'').trim().charAt(0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let SEL='group';
 
-/* ---- מונים: נגזרים מהרשימה, לא כתובים ביד ---- */
-var WORDS=['אין','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
-function openItems(){return $$('#need li').filter(function(l){return !l.classList.contains('done')})}
-function render(){
-  var open=openItems(), n=open.length;
-  $('#liveN').textContent=n;
-  $('#mineSub').textContent=n?(n===1?'בקשה אחת פתוחה':WORDS[n]+' בקשות פתוחות'):'הכל סגור';
-  $('#convSub').textContent='עם אילון אשכנזי ולירון בן כליפא · '+(n?(n===1?'בקשה אחת מחכה לך':n+' בקשות מחכות לך'):'שום דבר לא מחכה לך');
-  $('#need').hidden=!n;
-  $('#needEmpty').hidden=!!n;
-  var live=$('#live');
-  if(!n){
-    $('#liveN').textContent='0';
-    $('#liveTxt').textContent='כל מה שהצוות ביקש — נשלח';
-    $('#liveIn').hidden=true;
-    $('#liveBtn').textContent='לכתוב לצוות';
-    live.dataset.mode='write';
-    return;
-  }
-  var first=open[0], ttl=$('.t',first).textContent, due=$('.m .al',first).textContent;
-  $('#liveTxt').textContent='';
-  var a=document.createElement('span');a.textContent=(n===1?'בקשה פתוחה':'בקשות פתוחות');
-  var c=document.createElement('span');c.className='c';c.textContent='·';
-  var b=document.createElement('b');b.textContent=ttl;
-  $('#liveTxt').appendChild(a);$('#liveTxt').appendChild(document.createTextNode(' '));
-  $('#liveTxt').appendChild(c);$('#liveTxt').appendChild(document.createTextNode(' הקרובה: '));
-  $('#liveTxt').appendChild(b);
-  $('#liveIn').hidden=false;
-  $('#liveBtn').textContent='להראות לי';
-  live.dataset.mode='show';
-  live.dataset.req=first.dataset.req;
-  tickDue(due);
+/* קיבוץ לפי משפחת זיכרון — קודם העסק ואז אדם-אדם, כמו שתי העמודות במסך הזיכרון.
+   הנקודה הצבועה עולה מהשורה לכותרת המשפחה, ולכן שם האדם נאמר פעם אחת. */
+function fam(lines){
+  const out=[];
+  lines.forEach(l=>{const sc=l.sc==='pr'?'pr':'co', k=sc==='pr'?'pr:'+l.on:'co';
+    let g=out.find(x=>x.k===k);
+    if(!g){g={k,sc,n:sc==='pr'?(l.on||'זיכרון האדם'):'העסק',lines:[]};out.push(g);}
+    g.lines.push(l);});
+  return out.sort((a,b)=>(a.sc==='co'?0:1)-(b.sc==='co'?0:1));
 }
-function tickDue(due){
-  var el=$('#liveIn');
-  if(due&&due.indexOf('היום 16:00')>-1){el.textContent='נשאר '+left(DUE-now())+' שעות';}
-  else if(due){el.textContent=due;}
-}
-function tick(){
-  $('#clk').textContent=hm(now());
-  var open=openItems();
-  if(open.length)tickDue($('.m .al',open[0]).textContent);
+const pendOf=g=>{const m=[...g.msgs].reverse().find(x=>x.sum&&x.sum.pending);return m?m.sum.pending:0};
+
+function sumHtml(s){
+  if(s.pending) return `<div class="mg-wait"><span class="sd"></span>
+    הסיכום הלילי ירוץ הלילה ב-02:00 · <b>${s.pending}</b> הודעות ממתינות לעיבוד</div>`;
+  return `<div class="mg-sum">
+    <div class="mg-sh"><b>נכנס לזיכרון החברה</b>
+      <span>סיכום לילי · רץ ב-${s.ran} · ${s.n} הודעות</span>
+      <a href="ai.html?q=${encodeURIComponent('מה נכנס לזיכרון מהקבוצה?')}">לזיכרון המלא ←</a></div>
+    <div>${fam(s.lines).map(g=>
+      `<div class="mg-fam ${g.sc}"><span class="dot"></span>${esc(g.n)}</div>`+
+      g.lines.map(l=>`<div class="mg-sl">${esc(l.t)}<span class="mg-slc">${esc(l.cat)}</span></div>`).join('')
+    ).join('')}</div>
+    ${s.unk?`<div class="mg-unk">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span><bdo dir="ltr">${esc(s.unk)}</bdo> אינו מזוהה — מה שנאמר ממנו לא שויך לזיכרון אישי</span></div>`:''}
+  </div>`;
 }
 
-/* ---- פעולות ---- */
-var tt;
-function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('on')},2600)}
-function bottom(){var th=$('#thread');th.scrollTop=th.scrollHeight}
-function flash(el){
-  if(!el)return;
-  el.scrollIntoView({block:'center'});
-  el.classList.add('hit');
-  setTimeout(function(){el.classList.remove('hit')},1700);
-}
-function jump(id){flash($('#m-'+id))}
+function mgRender(toBottom){
+  const q=(document.getElementById('mgQ').value||'').trim();
+  const T=THREADS[SEL];
 
-/* בועה חדשה שלך */
-function say(text,file){
-  var m=document.createElement('div');m.className='msg me';
-  if(file)m.dataset.kind='file';
-  var w=document.createElement('div');w.className='who';w.textContent='שלחת';
-  var b=document.createElement('div');b.className='bub';
-  if(text){var p=document.createElement('p');p.textContent=text;b.appendChild(p)}
-  if(file){
-    var a=document.createElement('button');a.type='button';a.className='att';a.dataset.file=file.n;
-    var i=document.createElement('i');i.textContent=(file.n.split('.').pop()||'').toUpperCase().slice(0,4);
-    var n=document.createElement('span');n.className='n';n.textContent=file.n;
-    var s=document.createElement('span');s.className='s num';s.textContent=file.s;
-    a.appendChild(i);a.appendChild(n);a.appendChild(s);b.appendChild(a);
-  }
-  var f=document.createElement('div');f.className='ft';
-  var t=document.createElement('span');t.className='num';t.textContent='היום · '+hm(now());
-  f.appendChild(t);
-  m.appendChild(w);m.appendChild(b);m.appendChild(f);
-  $('#thread').appendChild(m);bottom();
-  applyFilter();
-  return m;
-}
-/* שורה חדשה ב"מה שלחת לאחרונה" */
-function logSent(name,kind){
-  var li=document.createElement('li');
-  var i=document.createElement('i');i.textContent=kind;
-  var mid=document.createElement('div');
-  var n=document.createElement('div');n.className='n';n.textContent=name;
-  var w=document.createElement('div');w.className='w num';w.textContent='היום · '+hm(now());
-  mid.appendChild(n);mid.appendChild(w);
-  var st=document.createElement('span');st.className='st al ok';st.textContent='נשלח';
-  li.appendChild(i);li.appendChild(mid);li.appendChild(st);
-  $('#sentl').prepend(li);
-}
-/* סגירת בקשה */
-function closeReq(id,note){
-  var li=$('#need li[data-req="'+id+'"]');if(li)li.classList.add('done');
-  var msg=$('#m-'+id);
-  if(msg){
-    msg.classList.add('done');msg.dataset.kind='';
-    var hd=$('.reqhd',msg);
-    if(hd){hd.textContent='';
-      var ok=document.createElement('i');ok.className='al ok';ok.textContent=note||'טופל על ידך';
-      var tm=document.createElement('span');tm.className='due num';tm.textContent='היום · '+hm(now());
-      hd.appendChild(ok);hd.appendChild(tm);}
-  }
-  render();applyFilter();
-}
+  /* סרגל הקבוצות + המשתתפים של הנבחרת */
+  document.getElementById('mgSide').innerHTML=Object.keys(THREADS).map(k=>{
+    const g=THREADS[k], last=[...g.msgs].reverse().find(m=>!m.day&&!m.sum), p=pendOf(g);
+    return `<div class="mg-grp ${k===SEL?'on':''}">
+      <button class="mg-th" onclick="SEL='${k}';document.getElementById('mgQ').value='';mgRender(true)">
+        <div class="mg-tb"><b>${esc(g.name)}</b>
+          <span>${last?esc(last.t.slice(0,40)+(last.t.length>40?'…':'')):''}</span></div>
+        ${p?`<i class="mg-n">${p}</i>`:''}
+      </button>
+      ${k===SEL?`<div class="mg-ppl"><div class="h">משתתפים · ${g.ppl.length}</div>
+        ${g.ppl.map(p=>`<div class="mg-p ${p.r}"><i>${p.r==='unk'?'?':esc(INI(p.n))}</i>
+          <div><b>${esc(p.n)}</b>${p.j?`<span> · ${esc(p.j)}</span>`:'<span> · לא מזוהה</span>'}</div>
+        </div>`).join('')}</div>`:''}
+    </div>`;}).join('');
 
-/* מענה מתוך תיבת הכתיבה */
-var ctxReq=null;
-function setCtx(id){
-  ctxReq=id;
-  $('#ctxT').textContent=REQ[id]?REQ[id].t:'';
-  $('#ctx').classList.add('on');
-  $('#cmp').focus();
-  jump(id);
-}
-function clearCtx(){ctxReq=null;$('#ctx').classList.remove('on')}
-function send(){
-  var el=$('#cmp'), v=el.value.trim();
-  if(!v){el.focus();toast('כתוב הודעה לפני השליחה');return}
-  say(v);
-  el.value='';el.style.height='44px';
-  if(ctxReq){var id=ctxReq;clearCtx();closeReq(id,'ענית לצוות');toast('התשובה נשלחה — הבקשה נסגרה')}
-  else toast('ההודעה נשלחה לצוות הפיננסי שלך');
-}
+  document.getElementById('mgName').textContent=T.name;
+  const nMsg=T.msgs.filter(m=>!m.day&&!m.sum).length;
+  document.getElementById('mgCnt').textContent=q
+    ? nMsg+' הודעות · מסונן ל"'+q+'"' : nMsg+' הודעות אחרונות';
 
-/* מודאל הצירוף */
-var attReq=null;
-function openAtt(id){
-  attReq=id;
-  var r=REQ[id];if(!r)return;
-  $('#mdS').textContent=r.t+' · בחר מה לצרף';
-  var ul=$('#pick');ul.textContent='';
-  r.files.forEach(function(f,ix){
-    var li=document.createElement('li');li.tabIndex=0;li.setAttribute('role','button');
-    var cb=document.createElement('input');cb.type='checkbox';cb.checked=ix===0;
-    cb.setAttribute('aria-label',f.n);
-    var n=document.createElement('span');n.className='n';n.textContent=f.n;
-    var s=document.createElement('span');s.className='s2 num';s.textContent=f.s;
-    li.appendChild(cb);li.appendChild(n);li.appendChild(s);
-    if(cb.checked)li.classList.add('sel');
-    li.addEventListener('click',function(e){if(e.target!==cb)cb.checked=!cb.checked;li.classList.toggle('sel',cb.checked)});
-    li.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();cb.checked=!cb.checked;li.classList.toggle('sel',cb.checked)}});
-    ul.appendChild(li);
+  /* הזרם: גלולת יום · בועות · כרטיס סיכום */
+  let html='',shown=0;
+  T.msgs.forEach(m=>{
+    if(m.day){ if(!q) html+=`<div class="mg-day"><span>${esc(m.day)}</span></div>`; return; }
+    if(m.sum){ if(!q) html+=sumHtml(m.sum); return; }
+    const hit=q&&(m.t.includes(q)||String(m.who).includes(q));
+    if(q&&!hit) return;
+    shown++;
+    html+=`<div class="mg-msg ${m.role} ${hit?'hit':''}">
+      <i>${m.role==='unk'?'?':esc(INI(m.who))}</i>
+      <div class="mg-bd">
+        <div class="mg-mh"><b>${esc(m.who)}</b>
+          <span class="j">${m.job?esc(m.job):'לא מזוהה'}</span>
+          <span class="t">${esc(m.time)}</span></div>
+        <div class="mg-t">${esc(m.t)}</div>
+        ${m.tag?`<span class="mg-tag">${esc(m.tag)}</span>`:''}
+      </div></div>`;
   });
-  $('#ov').classList.add('on');
-  $('#doAtt').focus();
-}
-function closeMd(){$('#ov').classList.remove('on');attReq=null}
-function doAttach(){
-  var r=REQ[attReq];if(!r){closeMd();return}
-  var picked=[];
-  $$('#pick li').forEach(function(li,ix){if($('input',li).checked)picked.push(r.files[ix])});
-  if(!picked.length){toast('בחר לפחות מסמך אחד');return}
-  var id=attReq;closeMd();
-  picked.forEach(function(f,ix){say(ix===0?'מצרף — '+r.t:'',f);logSent(f.n,(f.n.split('.').pop()||'').toUpperCase().slice(0,4))});
-  if(ctxReq===id)clearCtx();
-  closeReq(id,'שלחת את המסמכים');
-  toast(picked.length===1?'המסמך נשלח לצוות':picked.length+' מסמכים נשלחו לצוות');
+  if(q&&!shown) html='<div class="mg-empty">לא נמצאו הודעות שמכילות "'+esc(q)+'"</div>';
+  const sc=document.getElementById('mgScroll');
+  sc.innerHTML=html;
+  /* הכניסה נוחתת על ההודעה האחרונה */
+  if(toBottom!==false) sc.scrollTop=sc.scrollHeight;
 }
 
-/* סינון השיחה */
-var FILTER='all';
-function applyFilter(){
-  $$('#thread .msg').forEach(function(m){
-    var k=m.dataset.kind||'';
-    var show=FILTER==='all'||(FILTER==='req'&&k==='req')||(FILTER==='file'&&k==='file');
-    m.classList.toggle('gone',!show);
-  });
-  $$('#thread .dsep').forEach(function(d){d.classList.toggle('gone',FILTER!=='all')});
-  var vis=$$('#thread .msg').filter(function(m){return !m.classList.contains('gone')}).length;
-  var old=$('#threadEmpty');if(old)old.remove();
-  if(!vis){
-    var e=document.createElement('div');e.className='empty';e.id='threadEmpty';
-    var b=document.createElement('b');b.textContent=FILTER==='req'?'שום דבר לא מחכה לך':'אין מסמכים בשיחה';
-    e.appendChild(b);
-    e.appendChild(document.createTextNode(FILTER==='req'?'טיפלת בכל מה שהצוות ביקש.':'כשיישלח מסמך הוא יופיע כאן.'));
-    var btn=document.createElement('button');btn.className='btn';btn.type='button';btn.textContent='להצגת כל השיחה';
-    btn.addEventListener('click',function(){setFilter('all')});
-    e.appendChild(btn);
-    $('#thread').appendChild(e);
-  }
+/* גובה החלון נגזר מהכרום — הכותרת, גלולת היום והרגל לא נגללים */
+function mgFit(){
+  const box=document.getElementById('mgBox');
+  const top=box.getBoundingClientRect().top;
+  box.style.height=Math.max(420,innerHeight-top-44)+'px';
+  const sc=document.getElementById('mgScroll'); sc.scrollTop=sc.scrollHeight;
 }
-function setFilter(f){
-  FILTER=f;
-  $$('.ch .chip').forEach(function(c){c.classList.toggle('on',c.dataset.f===f)});
-  applyFilter();bottom();
-}
-
-/* ---- חיווט ---- */
-document.addEventListener('click',function(e){
-  var t=e.target.closest('[data-attach],[data-reply],[data-ok],[data-skip],[data-file],[data-f],[data-req]');
-  if(!t)return;
-  if(t.dataset.attach){e.stopPropagation();openAtt(t.dataset.attach);return}
-  if(t.dataset.reply){e.stopPropagation();setCtx(t.dataset.reply);return}
-  if(t.dataset.ok){e.stopPropagation();
-    say('אני מאשר את דחיית התשלום לד.ג. תעשיות ב-10 ימים.');
-    closeReq('r3','אישרת');toast('האישור נשלח — לירון תעדכן את ההוראה בבנק');return}
-  if(t.dataset.skip){e.stopPropagation();
-    say('אין לי את החשבונית הזאת, אבקש מהספק עותק.');
-    closeReq(t.dataset.skip,'עדכנת שאין לך');toast('עדכנו את הצוות — הם ימשיכו מול הספק');return}
-  if(t.dataset.file){toast('פותח את '+t.dataset.file);return}
-  if(t.dataset.f){setFilter(t.dataset.f);return}
-  if(t.dataset.req){jump(t.dataset.req)}
-});
-$$('#need li').forEach(function(li){
-  li.addEventListener('keydown',function(e){
-    if(e.key==='Enter'||e.key===' '){e.preventDefault();jump(li.dataset.req)}
-  });
-});
-$('#liveBtn').addEventListener('click',function(){
-  var live=$('#live');
-  if(live.dataset.mode==='write'){$('#cmp').focus();return}
-  jump(live.dataset.req);
-});
-$('#emptyBtn').addEventListener('click',function(){$('#cmp').focus()});
-$('#attBtn').addEventListener('click',function(){
-  var open=openItems();
-  openAtt(ctxReq||(open.length?open[0].dataset.req:'r1'));
-});
-$('#sendBtn').addEventListener('click',send);
-$('#ctxX').addEventListener('click',clearCtx);
-$('#doAtt').addEventListener('click',doAttach);
-$('#mdX').addEventListener('click',closeMd);
-$('#ov').addEventListener('click',function(e){if(e.target===this)closeMd()});
-$('#cmp').addEventListener('input',function(){
-  this.style.height='44px';
-  this.style.height=Math.min(110,this.scrollHeight)+'px';
-});
-$('#cmp').addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}
-});
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    if($('#ov').classList.contains('on')){closeMd();return}
-    if(ctxReq)clearCtx();
-  }
-});
-
-/* ---- חוזה ה-URL: ?f= סינון · ?r= בקשה · ?q= טקסט חופשי ---- */
-function fromUrl(){
-  var u=new URLSearchParams(location.search);
-  var f=u.get('f');
-  if(f==='req'||f==='file'||f==='all')setFilter(f);
-  var r=u.get('r');
-  if(r&&REQ[r])jump(r);
-  var q=u.get('q');
-  if(q){
-    var hit=$$('#thread .msg').filter(function(m){return m.textContent.indexOf(q)>-1})[0];
-    if(hit)flash(hit);else toast('לא נמצאה הודעה שמכילה את הטקסט');
-  }
-}
-
-render();tick();applyFilter();bottom();fromUrl();
-setInterval(tick,15000);
-})();
+mgRender(true); mgFit(); addEventListener('resize',mgFit);
 </script>
 </body>
 </html>

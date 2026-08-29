@@ -5,826 +5,1106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>אנרגי אינטרנשיונל · מדדים · HK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
 <style>
 /* =====================================================================
-   HK · מסך הלקוח · מדדים — אנרגי אינטרנשיונל
-   ---------------------------------------------------------------------
-   אותה משפחה כמו מסכי היועץ, אותו ניב כמו שאר מסכי הלקוח:
-   · הרצועה מעוגנת לעסק (שם החברה), לא למסך. שם המסך יורד לניווט.
-   · צפיפות נמוכה: 14.5px בסיס, כרטיסים במקום טבלאות, ריווח 20.
-   · רדיוס רך: פאנל 14, כרטיס פנימי 12, פקד 8.
-   · תכלת = המבטא המוביל. קורל = אך ורק סכנה כספית (כאן: הכרית בעו״ש).
-   · המספר הוא הגיבור: 30px, tabular-nums, התווית קטנה מעליו.
-   · גוף פנייה שני: "המדדים שלך", "מחכה למספר שלך".
-   · קרקע בהירה וחמימה יותר: #F7F9FC.
-   הדבר החי ברצועה = סגירת יוני: כמה מדדים עוד מחכים למספר ממך, ועד מתי.
-   הבלוק הכהה היחיד בגוף = "מה נשאר ממך לסגירת יוני" — פעולה, לא קריאה.
-   כל מונה במסך נגזר מהנתונים בזמן ריצה. אין style= במארקאפ, אין !important.
+   מדדים — CLIENT_SCREENS_SPEC §3.5
+   המסך מתהפך: הביצוע למעלה, ההגדרות למטה.
+   · שורת החודש — מחושבת מהנתונים, בלי AI.
+   · רשימה אחת רציפה של ווידג'טים, ממוינת: מה שדורש טיפול קודם.
+     אין צ'יפים של סינון ואין טאבים — הלקוח ביקש הכל במקום אחד.
+   · לב הווידג'ט: בר "קצב מול זמן" — מילוי = הביצוע, סמן קורל = איפה החודש,
+     והפער ביניהם נצבע ומתורגם למספר יומי.
+   · מדד ידני שלא עודכן הוא מצב עם פעולה, לא מקף.
+   · כל ההגדרות יורדות ל"ניהול המדדים" המקופל בתחתית.
    ===================================================================== */
-:root{
-  /* --- המשפחה: זהה למסכי היועץ, בלי גוון חדש --- */
-  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bd:#E6ECF4;
-  --green:#13895b;--red:#dc4436;--orange:#c98404;
-  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
-  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
-  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
-  --row-hover:#F8FBFD;--bd2:#B7C3CF;--line:#C4CED8;
-  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--bad-bg:#FDEDEB;--bad-ink:#C43D30;--good-bg:#F1FAF5;
-  /* --- הניב של הלקוח: כל ערך שמבדיל מוגדר כאן --- */
-  --bg:#F7F9FC;
-  --r-panel:14px;--r-card:12px;--r-ctl:8px;
-  --fs:14.5px;--fs-sub:13px;--fs-meta:12.5px;
-  --pad:20px;--sec:20px;
-  --big:30px;--big2:26px;
-  --coral-ink:#C4453C;--coral-bg:#FFF6F4;--coral-bd:#F7DCD7;--coral-on-navy:#FFD3CF;
-  --coral-bd2:#EEC7C1;--coral-tint:#FDEAE7;
-  --ok-on-navy:#4FCB92;--fill-pos:#CDE6F6;--fill-neg:#F8CFCB;--fill-bd:#CDE0EE;
-  --shadow:0 1px 2px rgba(12,64,104,.05),0 6px 18px rgba(12,64,104,.04);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-.num{font-variant-numeric:tabular-nums}
+
+/* מספר בתוך משפט עברי — ננעל ל-LTR כדי שהפסיק והיחידה לא יקפצו */
 .mn{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
-:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 
-/* ---------- ניווט: כאן חיים שמות המסכים ---------- */
-.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
-.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
-.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
-.nav ul{display:flex;list-style:none;gap:4px}
-.nav li a{display:block;padding:6px 13px;border-radius:var(--r-ctl);color:var(--ink2);font-size:13.5px}
-.nav li a:hover{background:var(--bg);color:var(--navy)}
-.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
-.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:var(--fs-meta);color:var(--ink3);text-align:end}
-.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
-.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+/* ---------- שורת החודש ---------- */
+.mhead{position:relative;background:#fff;border:1px solid var(--cardbd);border-radius:14px;
+  box-shadow:var(--lift);padding:15px 22px;margin-bottom:18px;
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.mhead::before{content:"";position:absolute;inset-inline-start:0;top:14px;bottom:14px;width:3px;
+  border-radius:0 99px 99px 0;background:var(--coral)}
+.mo{display:flex;align-items:center;gap:9px;flex:none}
+.mo .lbl{font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.3px}
+.mo h2{font-size:21px;font-weight:800;color:var(--navy);letter-spacing:-.4px;min-width:118px}
+.mo .st{font-size:11px;font-weight:600;color:var(--ink2);border:1px solid var(--bd);
+  border-radius:999px;padding:2px 9px;white-space:nowrap}
+.mstep{display:flex;gap:4px}
+.mstep button{width:26px;height:26px;border-radius:50%;border:1px solid var(--bd);
+  display:grid;place-items:center;color:var(--ink2);background:#fff}
+.mstep button:hover:not(:disabled){background:var(--bg);color:var(--navy);border-color:var(--sky)}
+.mstep button:disabled{opacity:.34;cursor:default}
+.msent{flex:1;min-width:270px;font-size:16px;font-weight:300;line-height:1.7;color:var(--ink)}
+.msent b{font-weight:700;color:var(--navy)}
+.msent .w{font-weight:600;color:var(--warn)}
+.msent .d{font-weight:600;color:var(--bad)}
+.mfacts{flex:none;font-size:11.5px;color:var(--ink3);line-height:1.75;text-align:end;
+  border-inline-start:1px solid var(--cardbd);padding-inline-start:20px}
+.mfacts b{color:var(--ink2);font-weight:600}
+.mfacts .btn{margin-top:7px}
 
-/* ---------- רצועת הזהות: מעוגנת לעסק ---------- */
-.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:24px}
-.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1.05;letter-spacing:-.3px}
-.strip .id .sub{font-size:var(--fs-meta);color:var(--on-navy3);margin-top:3px}
-.strip .id .sub a{color:var(--on-navy);border-bottom:1px solid rgba(255,255,255,.28)}
-.strip .id .sub a:hover{border-color:var(--white);color:var(--white)}
-.strip .sep{width:1px;height:34px;background:rgba(255,255,255,.16);flex:none}
-.strip .date{font-size:13.5px;color:var(--on-navy2);white-space:nowrap}
-.strip .spacer{margin-inline-start:auto}
-.strip .now{font-size:13px;color:var(--on-navy3);display:flex;align-items:baseline;gap:8px;white-space:nowrap}
-.strip .now b{color:var(--white);font-weight:500;font-size:18px}
-/* הדבר החי של המסך הזה: סגירת יוני */
-.live{display:flex;align-items:center;gap:13px;min-width:0}
-.live .cap{font-size:11.5px;letter-spacing:.6px;color:var(--on-navy3);text-transform:uppercase;white-space:nowrap}
-.live .n{font-size:22px;font-weight:600;line-height:1;color:var(--white)}
-.live .tx{font-size:13.5px;color:var(--on-navy);min-width:0}
-.live .tx b{color:var(--white);font-weight:600}
-.live .tx .q{color:var(--on-navy3)}
-.live .btn{padding:5px 12px;font-size:12.5px}
+/* ---------- לוח הווידג'טים ---------- */
+.mgrid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1400px){.mgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.mw{position:relative;overflow:hidden;background:#fff;border:1px solid var(--cardbd);
+  border-radius:14px;box-shadow:var(--lift);padding:14px 18px 11px;
+  display:flex;flex-direction:column;min-width:0}
+/* פס מצב על שפת הכרטיס — רק למה שדורש טיפול */
+.mw.att::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--warn)}
+.mw.dng::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--bad)}
 
-/* ---------- הבלוק הכהה היחיד: מה נשאר ממך ---------- */
-.close{background:var(--navy);color:var(--white);padding:16px 32px 18px;border-top:1px solid rgba(255,255,255,.10)}
-.close .hd{display:flex;align-items:baseline;gap:12px;padding-bottom:11px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,.10)}
-.close .hd .cap{font-size:11.5px;letter-spacing:.6px;color:var(--on-navy3);text-transform:uppercase}
-.close .hd h2{font-size:17px;font-weight:600;color:var(--white)}
-.close .hd .cnt{font-size:13px;color:var(--on-navy2)}
-.close .hd .upd{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--on-navy4)}
-.close .in{display:grid;grid-template-columns:minmax(0,1fr) 1px 400px;gap:0 24px;align-items:stretch}
-.close .vr{background:rgba(255,255,255,.12)}
-.lines{display:flex;flex-direction:column;gap:2px}
-.ln{display:grid;grid-template-columns:104px minmax(0,1fr) auto;align-items:center;gap:0 14px;padding:9px 0}
-.ln + .ln{border-top:1px solid rgba(255,255,255,.07)}
-.ln .k{display:flex;align-items:center;gap:8px;font-size:var(--fs-meta);font-weight:500;color:var(--on-navy3);letter-spacing:.2px}
-.ln .k::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sky);flex:none}
-.ln.ok .k::before{background:var(--ok-on-navy)}
-.ln.q .k::before{background:var(--on-navy4)}
-.ln .s{font-size:var(--fs);color:var(--on-navy);min-width:0}
-.ln .s b{color:var(--white);font-weight:600}
-.ln .s .q{color:var(--on-navy3)}
-.ln .act{white-space:nowrap}
+.mw-h{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px}
+.mw-h .nm{min-width:0}
+.mw-h b{display:block;font-size:14.5px;font-weight:700;color:var(--navy);line-height:1.35}
+.kind{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:10.5px;font-weight:600;
+  white-space:nowrap;border-radius:999px;padding:2px 8px;background:var(--chip);color:var(--ink2)}
+.kind.sheets{background:#EAF6EE;color:#1E7A45}
+.kind.bz{background:#EAF2FA;color:#1E6FA8}
+.kind.calc{background:#F1EEF9;color:#5B4A9E}
+.mw-h .flag{margin-inline-start:auto;flex:none;margin-top:3px;white-space:nowrap}
+.flag.near{color:var(--ink3)}
+.flag.wt{color:var(--navy)}
+.flag.wt::before{background:transparent;box-shadow:inset 0 0 0 2px currentColor}
+.flag.trk{color:var(--ink3)}
+.flag.trk::before{background:transparent;box-shadow:inset 0 0 0 2px currentColor}
 
-/* לוח הציון של החודש — כל פלח מסנן את הרשימה למטה */
-.score{display:flex;flex-direction:column;justify-content:center;gap:9px}
-.score .cap{font-size:11.5px;letter-spacing:.6px;color:var(--on-navy3);text-transform:uppercase}
-.score .n{font-size:var(--big);font-weight:700;line-height:1;letter-spacing:-.6px;color:var(--white)}
-.score .n small{font-size:15px;font-weight:500;color:var(--on-navy2);letter-spacing:0}
-.sbar{display:flex;height:9px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.12);gap:2px}
-.sbar i{display:block;height:100%}
-.sbar i.ok{background:var(--ok-on-navy)}
-.sbar i.near{background:var(--orange)}
-.sbar i.bad{background:var(--coral)}
-.sbar i.wait{background:var(--on-navy4)}
-.sbar i.none{background:rgba(255,255,255,.24)}
-.skeys{display:flex;flex-wrap:wrap;gap:6px}
-.skey{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--on-navy2);background:rgba(255,255,255,.08);border-radius:var(--r-ctl);padding:4px 9px;white-space:nowrap}
-.skey:hover{background:rgba(255,255,255,.16);color:var(--white)}
-.skey.on{background:var(--sky);color:var(--white)}
-.skey b{color:var(--white);font-weight:600}
-.skey::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
-.skey.k-ok::before{background:var(--ok-on-navy)}
-.skey.k-near::before{background:var(--orange)}
-.skey.k-bad::before{background:var(--coral)}
-.skey.k-wait::before{background:var(--on-navy4)}
-.skey.k-none::before{background:rgba(255,255,255,.34)}
+.mw-n{display:flex;align-items:flex-end;gap:12px;margin-bottom:11px}
+.mw-n .v{min-width:0}
+.mw-n .big{line-height:1}
+.mw-n .big.pale{color:var(--ink3);font-size:24px}
+.mw-n .t{font-size:12px;color:var(--ink3);margin-top:5px}
+.mw-n .t b{color:var(--ink2);font-weight:600}
+.mw-n .sp{margin-inline-start:auto;flex:none}
+.sp .ln{fill:none;stroke:var(--sky);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.sp .ar{fill:rgba(57,171,226,.11);stroke:none}
+.sp .tg{stroke:var(--faint);stroke-width:1;stroke-dasharray:2 3}
+.sp .dot{fill:var(--navy)}
 
-/* ---------- כפתורים ---------- */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-ctl);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap}
-.btn:hover{background:var(--bg)}
-.btn.sm{padding:4px 11px;font-size:12.5px}
-.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
-.btn.pri:hover{background:var(--navy2)}
-.dark .btn{background:transparent;border-color:rgba(255,255,255,.32);color:var(--white)}
-.dark .btn:hover{background:rgba(255,255,255,.12)}
-.dark .btn.pri{background:var(--white);border-color:var(--white);color:var(--navy)}
-.dark .btn.pri:hover{background:var(--on-navy)}
-.lk{color:var(--sky);font-weight:500;font-size:13px}
-.lk:hover{text-decoration:underline}
+/* הבר: קצב מול זמן. הסקאלה 0–125% מהיעד, כך שהיעד עצמו יושב ב-80% מהמסילה
+   ולסמן הקורל יש מקום להיות סמן ולא קצה. */
+.track{position:relative;height:10px;border-radius:99px;background:var(--chip);margin:0 0 8px}
+.track i{position:absolute;top:0;bottom:0;display:block}
+.track .fill{inset-inline-start:0;border-radius:99px;background:linear-gradient(to left,#175E92,#2F92CE)}
+.track .fill.dng{background:linear-gradient(to left,#A32E23,#D4574A)}
+.track .fill.over{background:linear-gradient(to left,#8A5A00,#C99022)}
+/* הפער בין הביצוע לסמן — זה מה שחסר */
+.track .gapseg{background:repeating-linear-gradient(-45deg,#F6DFB7 0 4px,#FBEDD5 4px 8px)}
+.track .gapseg.dng{background:repeating-linear-gradient(-45deg,#F3CDC7 0 4px,#FBE4E1 4px 8px)}
+.track .mark{width:2px;top:-4px;bottom:-4px;background:var(--coral);border-radius:2px}
+.track .mark::after{content:"";position:absolute;top:-4px;inset-inline-start:-2px;
+  width:6px;height:6px;border-radius:50%;background:var(--coral)}
 
-/* ---------- צ׳יפים שקטים ---------- */
-.chip{font-size:12.5px;font-weight:500;background:var(--chip);border:0;border-radius:var(--r-ctl);padding:5px 11px;color:var(--ink2)}
-.chip:hover{background:var(--chip-hover);color:var(--navy)}
-.chip.on{background:var(--navy);color:var(--white)}
-.chip s{text-decoration:none;color:var(--ink3);font-variant-numeric:tabular-nums}
-.chip.on s{color:var(--on-navy2)}
+.scale{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;font-size:11.5px;color:var(--ink3);margin-bottom:10px}
+.scale b{color:var(--ink2);font-weight:600}
+.scale .mk{margin-inline-start:auto;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.scale .mk::before{content:"";width:9px;height:2px;border-radius:2px;background:var(--coral);flex:none}
 
-/* ---------- גוף המסך ---------- */
-.wrap{padding:var(--sec) 32px 30px;display:flex;flex-direction:column;gap:var(--sec)}
-.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.bar .ttl{font-size:var(--fs-sub);color:var(--ink3);margin-inline-end:4px}
-.bar .rest{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--ink3)}
+/* שורת הפער — המספר שחשוב */
+.gap{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;line-height:1.5;
+  border-radius:10px;padding:8px 11px;margin-bottom:10px;
+  background:#FFF8EE;border:1px solid #F2E2C6;color:#8A5A00}
+.gap svg{flex:none;margin-top:2px}
+.gap b{font-weight:700}
+.gap.dng{background:#FDEDEB;border-color:#F3D3CE;color:var(--bad)}
+.gap.pos{background:#F1FAF5;border-color:#CFEADE;color:var(--good)}
 
-#groups{display:flex;flex-direction:column;gap:24px}
-.grp{display:flex;flex-direction:column;gap:12px}
-.ghd{display:flex;align-items:baseline;gap:12px}
-.ghd h2{font-size:17px;font-weight:600;color:var(--navy)}
-.ghd .sub{font-size:var(--fs-meta);color:var(--ink3);min-width:0}
-.ghd .n{margin-inline-start:auto;font-size:var(--fs-meta);color:var(--ink3);white-space:nowrap}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-items:stretch}
+/* מדד ידני שלא עודכן — מצב, לא מקף */
+.wait{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--tint);border:1px solid var(--bd);border-radius:10px;
+  padding:9px 11px;margin-bottom:10px;font-size:12.5px;color:var(--ink2);line-height:1.5}
+.wait .tx{flex:1;min-width:150px}
+.wait .tx b{color:var(--navy);font-weight:600}
+.wait .btn{flex:none}
+.wait.sent{background:#F1FAF5;border-color:#CFEADE;color:var(--good)}
 
-/* ---------- כרטיס מדד ---------- */
-.mc{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);
-    padding:15px 18px 13px;display:flex;flex-direction:column;gap:11px;min-width:0;text-align:start;position:relative}
-.mc:hover{border-color:var(--fill-bd);box-shadow:0 1px 2px rgba(12,64,104,.06),0 10px 24px rgba(12,64,104,.07)}
-.mc-t{display:flex;align-items:flex-start;gap:10px;min-width:0}
-.mc-t h3{font-size:15px;font-weight:600;color:var(--navy);line-height:1.3;min-width:0}
-.kind{margin-inline-start:auto;font-size:11.5px;color:var(--ink3);background:var(--chip);border-radius:var(--r-ctl);padding:3px 8px;white-space:nowrap;flex:none}
-.mc-n{display:flex;flex-direction:column;gap:3px}
-.mc-n .l{font-size:12px;color:var(--ink3)}
-.mc-n .v{font-size:var(--big);font-weight:700;color:var(--navy);line-height:1;letter-spacing:-.7px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.mc-n .v small{font-size:15px;font-weight:500;color:var(--ink3);letter-spacing:0}
-.mc-n .v.wait{font-size:var(--big2);color:var(--bd2);letter-spacing:-.3px}
-.mc.s-bad .mc-n .v{color:var(--red)}
-.mc.s-money{background:var(--coral-bg);border-color:var(--coral-bd)}
-.mc.s-money .mc-n .v{color:var(--coral-ink)}
-.mc.s-money .kind{background:var(--white)}
-.mc.s-money:hover{border-color:var(--coral-bd2)}
+/* מדד מעקב — מצב במילים */
+.state{font-size:13px;color:var(--ink2);line-height:1.55;margin-bottom:10px}
+.state b{color:var(--navy);font-weight:600}
 
-.trk{position:relative;height:8px;background:var(--chip);border-radius:99px;overflow:hidden}
-.trk i{position:absolute;inset-block:0;inset-inline-start:0;background:var(--sky);border-radius:99px}
-.mc.s-ok .trk i{background:var(--green)}
-.mc.s-near .trk i{background:var(--orange)}
-.mc.s-bad .trk i{background:var(--red)}
-.mc.s-money .trk i{background:var(--coral)}
-.mc.s-money .trk{background:var(--white)}
-.tl{display:flex;align-items:baseline;gap:8px;margin-top:6px;font-size:12.5px;color:var(--ink3)}
-.tl .pct{margin-inline-start:auto;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
-.tl b{color:var(--ink2);font-weight:500}
-.notgt{font-size:12.5px;color:var(--ink3);padding:4px 0 2px;border-top:1px solid var(--bd)}
+.mw-f{margin-top:auto;padding-top:9px;border-top:1px solid var(--tint);
+  display:flex;align-items:center;gap:10px}
+.mw-f .src{font-size:11px;color:var(--faint);line-height:1.45;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mw-f .src b{font-weight:600;color:var(--ink3)}
+.mw-f .ask{margin-inline-start:auto;flex:none;font-size:11.5px;font-weight:600;color:var(--sky);
+  display:inline-flex;align-items:center;gap:4px;opacity:.62;transition:opacity .15s}
+.mw:hover .mw-f .ask{opacity:1}
+.mw-f .ask:hover{text-decoration:underline}
 
-svg.sp{display:block;width:100%;height:44px}
-.sp .a{fill:var(--tint);stroke:none}
-.sp .l{fill:none;stroke:var(--sky);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.sp .t{stroke:var(--bd2);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke;fill:none}
-.sp .m{stroke:var(--sky);stroke-width:2;vector-effect:non-scaling-stroke}
-.s-ok .sp .m{stroke:var(--green)}
-.s-near .sp .m{stroke:var(--orange)}
-.s-bad .sp .m{stroke:var(--red)}
-.s-money .sp .m{stroke:var(--coral)}
-.s-money .sp .a{fill:var(--coral-tint)}
-.s-money .sp .l{stroke:var(--coral)}
-.sp .g{stroke:var(--bd2);stroke-width:1.5;stroke-dasharray:3 3;vector-effect:non-scaling-stroke;fill:none}
-.spf{display:flex;align-items:baseline;gap:8px;font-size:11.5px;color:var(--ink3);margin-top:-4px}
-.spf .d{margin-inline-start:auto;font-variant-numeric:tabular-nums}
 
-.mc-f{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:11px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3)}
-.mc.s-money .mc-f{border-top-color:var(--coral-bd)}
-.mc-f .go{margin-inline-start:auto;color:var(--sky);font-weight:500;white-space:nowrap}
-.mc:hover .mc-f .go{text-decoration:underline}
-.al{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-style:normal;white-space:nowrap}
-.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
-.al.bad{color:var(--red)}.al.warn{color:var(--orange)}.al.ok{color:var(--green)}.al.info{color:var(--ink3)}
-.al.money{color:var(--coral-ink)}
-.mc-st{display:flex;align-items:center;gap:10px;font-size:13px}
+/* =====================================================================
+   רשימה + זירת המדד (29.08) — אותו דפוס של מסך הפגישות.
+   כל המדדים מימין ברשימה אחת; עמידה על מדד הופכת את הצד השמאלי לזירה שלו.
+   ===================================================================== */
+.mt{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);
+  gap:18px;align-items:start;margin-top:16px}
+/* 1000 ולא 1240 — בהטמעה המסגרת צרה מהחלון (1316 כשהחלון 1600) */
+@media(max-width:1000px){.mt{grid-template-columns:minmax(0,1fr)}}
+.ml{padding:6px 14px 14px}
+.ml-grp{padding:12px 12px 6px;font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.3px}
+.ph .mstep{display:flex;align-items:center;gap:2px;border:1px solid var(--bd);
+  border-radius:999px;padding:2px 4px}
+.ph .mstep b{font-size:12.5px;font-weight:600;color:var(--navy);padding:0 8px;white-space:nowrap}
+.motag{font-size:10.5px;font-weight:600;color:var(--ink3);background:var(--chip);
+  border-radius:999px;padding:1px 8px;margin-inline-end:4px}
+.ph .mstep button{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--ink3)}
+.ph .mstep button:hover:not(:disabled){background:var(--bg);color:var(--navy)}
+.ph .mstep button:disabled{opacity:.3;cursor:default}
+.mdef{display:flex;align-items:flex-start;gap:8px;margin:2px 12px 12px;padding:10px 13px;
+  background:var(--tint);border-radius:11px;font-size:12px;line-height:1.65;color:var(--ink2)}
+.mdef svg{flex:none;margin-top:2px;color:var(--sky)}
+.mdef b{color:var(--navy);font-weight:600}
+.mxdef{font-size:12px;line-height:1.6;color:var(--ink2);background:var(--tint);
+  border-radius:10px;padding:9px 13px;margin:-6px 0 15px}
+.mxdef b{color:var(--navy);font-weight:600}
+.ml-hd{display:grid;grid-template-columns:38px minmax(0,1fr) 100px 108px 96px;gap:13px;
+  padding:8px 26px 6px;font-size:11px;font-weight:700;color:var(--faint);letter-spacing:.3px;
+  border-bottom:1px solid var(--tint);margin:0 -14px 4px}
+.ml-hd button{text-align:start;font:inherit;color:inherit;display:inline-flex;align-items:center;gap:4px}
+.ml-hd button:hover{color:var(--ink2)}
+.ml-hd button.on{color:var(--navy)}
+.ml-hd button .cv{opacity:0;transition:transform .15s}
+.ml-hd button.on .cv{opacity:1}
+.ml-hd button.on.desc .cv{transform:rotate(180deg)}
+/* חיפוש בכותרת הרשימה */
+.tog{width:38px;height:21px;border-radius:99px;background:var(--bd);position:relative;flex:none;transition:background .15s}
+.tog::after{content:"";position:absolute;top:2px;inset-inline-end:2px;width:17px;height:17px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(12,64,104,.25);transition:transform .18s}
+.tog.on{background:var(--sky)}
+.tog.on::after{transform:translateX(-17px)}
+.mxrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mxrow .s.num{width:150px}
+.mxcalc{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin-top:8px}
+.mxcalc .side{min-width:0}
+.pillrow.sm .pill{font-size:11.5px;padding:3px 10px}
+.pillrow.op{flex-direction:column;gap:4px}
+.msr{position:relative;display:flex;align-items:center}
+.msr svg{position:absolute;inset-inline-start:11px;color:var(--faint);pointer-events:none}
+.msr input{width:150px;border:1px solid var(--bd);border-radius:999px;padding:6px 12px 6px 30px;font-size:12.5px}
+.msr input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+/* מתג ימים/חודשים בזירה */
+.tgl{display:inline-flex;gap:2px;border:1px solid var(--bd);border-radius:999px;padding:2px;margin-inline-start:auto}
+.tgl button{font-size:11.5px;font-weight:600;color:var(--ink3);border-radius:999px;padding:3px 12px}
+.tgl button.on{background:var(--navy);color:#fff}
+.sect.row{display:flex;align-items:center;gap:10px}
+.ml-row{position:relative;display:grid;grid-template-columns:38px minmax(0,1fr) 100px 108px 96px;
+  gap:13px;align-items:center;width:100%;text-align:start;
+  padding:11px 12px;border-radius:11px;transition:background .12s}
+.ml-row:hover{background:var(--tint)}
+.ml-row.on{background:#ECF4FA;box-shadow:inset 0 0 0 1px #C9DDEC}
+.ml-dot{width:10px;height:10px;margin-inline-start:6px;border-radius:50%;background:#CBD7E2}
+.ml-row.s-dng  .ml-dot{background:var(--bad);box-shadow:0 0 0 3px rgba(196,61,48,.14)}
+.ml-row.s-wait .ml-dot{background:#B07A00;box-shadow:0 0 0 3px rgba(176,122,0,.15)}
+.ml-row.s-off  .ml-dot{background:#E0A32B}
+.ml-row.s-near .ml-dot{background:#8CB8D8}
+.ml-row.s-ok   .ml-dot{background:var(--good)}
+.ml-n{min-width:0;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35}
+.ml-row .kind{justify-self:start}
+.ml-v{font-size:14px;font-weight:700;color:var(--navy);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.ml-v.pale{color:var(--faint);font-weight:600}
+.ml-g{font-size:13px;font-weight:500;color:var(--ink3);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.ml-g.pale{color:var(--faint)}
 
-.empty{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);padding:38px 20px;text-align:center;color:var(--ink3);font-size:13px}
-.empty b{display:block;font-size:15px;color:var(--ink2);font-weight:600;margin-bottom:6px}
-.empty .btn{margin-top:12px}
+/* ---------- זירת המדד ---------- */
+.marn{position:sticky;top:16px;overflow:hidden}
+.marn-h{background:var(--navy);color:#fff;padding:18px 22px 19px}
+.marn-h .k{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--on-navy3)}
+.marn-h .k .tag{border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:1px 9px}
+.marn-h h2{font-size:18px;font-weight:700;margin-top:6px;letter-spacing:-.2px}
+.marn-h .big{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1.05;margin-top:10px;
+  color:#fff}                              /* בלי זה .big מ-cli.css צובע נייבי על נייבי */
+.marn-h .big small{color:var(--on-navy2);font-weight:500}
+.marn-h .vrow{display:flex;align-items:flex-end;gap:22px;margin-top:10px}
+.marn-h .vrow .big{margin-top:0}
+.marn-h .tgtbox{padding-inline-start:22px;border-inline-start:1px solid rgba(255,255,255,.18);padding-bottom:6px}
+.marn-h .tgtbox span{display:block;font-size:11.5px;color:var(--on-navy3)}
+.marn-h .tgtbox b{font-size:19px;font-weight:700;color:var(--on-navy);font-variant-numeric:tabular-nums}
+.marn-h .big.pale{color:var(--on-navy3)}
+.marn-h .tgt{font-size:12.5px;color:var(--on-navy2);margin-top:5px}
+.marn-h .tgt b{color:#fff;font-weight:600}
+.marn-b{padding:16px 22px 20px}
+.marn-b .track{margin-top:0}
+/* מגמת ששת החודשים — עמודות, לא ספארק זעיר */
+.hb{display:flex;align-items:flex-end;gap:9px;height:96px;margin-top:10px}
+.hb .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.hb .c s{text-decoration:none;display:block;width:100%;border-radius:5px 5px 0 0;background:#D5E5F2;min-height:3px}
+.hb .c.on s{background:var(--navy)}
+.hb .c.nul s{background:repeating-linear-gradient(135deg,#E8EEF4 0 4px,#F4F7FA 4px 8px)}
+.hb .c u{text-decoration:none;font-size:11px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
+.hb .c em{font-style:normal;font-size:11px;color:var(--faint)}
+.hb .c.on u{color:var(--navy)}
+/* עמודה לכל יום עבודה + קו היעד היומי */
+.dbars{position:relative;display:flex;align-items:flex-end;gap:3px;height:104px;margin-top:12px;
+  padding-bottom:2px;border-bottom:1px solid var(--tint)}
+.dbars i{flex:1;border-radius:3px 3px 0 0;background:#CFE3F2;min-width:4px}
+.dbars i.up{background:var(--sky)}
+.dbars u{position:absolute;inset-inline:0;height:0;border-top:1.4px dashed var(--coral);text-decoration:none}
+.dbars u em{position:absolute;inset-inline-start:0;top:-16px;font-style:normal;font-size:10.5px;
+  font-weight:600;color:var(--coral-d);background:#fff;padding:0 5px;border-radius:4px}
+.dax{display:flex;font-size:11px;color:var(--faint);margin-top:2px}
+.dax .sp{flex:1}
+.marn-b .rules{margin-top:6px}
+.marn-b .rule{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2);
+  padding:8px 0;border-top:1px solid var(--tint)}
+.marn-b .rule .st{font-size:11px;font-weight:600;border-radius:999px;padding:2px 9px;
+  border:1px solid var(--bd);color:var(--ink3);white-space:nowrap}
+.marn-b .rule .st.on{color:var(--good);border-color:#CFE6DA;background:#F1F9F5}
+.marn-acts{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+/* ---------- ניהול המדדים — מקופל בתחתית ---------- */
+.mgr{margin-top:22px;background:#fff;border:1px solid var(--cardbd);border-radius:14px;
+  box-shadow:var(--lift);overflow:hidden}
+.mgr-h{display:flex;align-items:center;gap:12px;width:100%;padding:14px 20px;text-align:start}
+.mgr-h h3{font-size:15px;font-weight:700;color:var(--navy)}
+.mgr-h .sub{font-size:12px;color:var(--ink3)}
+.mgr-h .chev{margin-inline-start:auto;color:var(--ink3);transition:transform .18s}
+.mgr-h[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.mgr-b{border-top:1px solid var(--tint);padding:16px 20px 20px}
+.mgr-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.mgr-top .lb{font-size:12px;font-weight:600;color:var(--ink2)}
+.mgr-top .hint{font-size:11.5px;color:var(--ink3)}
+.mgr-top .sp{margin-inline-start:auto}
+.pillrow{display:flex;gap:6px;flex-wrap:wrap}
+.pillrow .pill{cursor:pointer}
+.pillrow .pill:hover{border-color:var(--sky)}
+.tblx{overflow-x:auto;border:1px solid var(--cardbd);border-radius:12px}
+.mtbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:1040px}
+.mtbl td.num{white-space:nowrap}
+.mtbl th{text-align:start;font-size:11px;font-weight:700;color:var(--ink3);letter-spacing:.2px;
+  padding:9px 14px;background:var(--bg);border-bottom:1px solid var(--cardbd);white-space:nowrap}
+.mtbl td{padding:10px 14px;border-bottom:1px solid var(--tint);vertical-align:middle;color:var(--ink2)}
+.mtbl tr:last-child td{border-bottom:0}
+.mtbl tr:hover td{background:var(--bg)}
+.mtbl .nm{font-weight:600;color:var(--navy);font-size:13px}
+.mtbl .src{font-size:11.5px;color:var(--ink3)}
+.mtbl .tools{display:flex;gap:6px;justify-content:flex-end}
+.ibtn{width:28px;height:28px;border-radius:8px;border:1px solid var(--bd);background:#fff;
+  display:grid;place-items:center;color:var(--ink2)}
+.ibtn:hover{background:var(--bg);color:var(--navy);border-color:var(--sky)}
+.ibtn.on{color:#B07A00;border-color:#EBD6A8;background:#FFFAF0}
+.alcount{font-size:11.5px;color:var(--ink3)}
+.alcount b{color:#B07A00;font-weight:700}
 
-/* ---------- מודאל ---------- */
-.ov{position:fixed;inset:0;background:rgba(10,40,66,.44);display:none;align-items:center;justify-content:center;padding:24px;z-index:70}
-.ov.on{display:flex}
-.md{background:var(--white);border-radius:var(--r-panel);width:min(720px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(10,40,66,.32);overflow:hidden}
-.md .mh{display:flex;align-items:flex-start;gap:12px;padding:17px var(--pad) 14px;border-bottom:1px solid var(--bd)}
-.md .mh h3{font-size:19px;font-weight:600;color:var(--navy);line-height:1.25}
-.md .mh .sub{font-size:var(--fs-meta);color:var(--ink3);margin-top:3px}
-.md .mh .x{margin-inline-start:auto;width:30px;height:30px;border-radius:var(--r-ctl);display:grid;place-items:center;color:var(--ink3);flex:none}
-.md .mh .x:hover{background:var(--bg);color:var(--navy)}
-.md .mb{padding:16px var(--pad) 18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
-.md .mf{display:flex;align-items:center;gap:10px;padding:12px var(--pad) 14px;border-top:1px solid var(--bd);background:var(--surface2)}
-.md .mf .sp{margin-inline-start:auto}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.stat{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r-card);padding:12px 14px}
-.stat .l{font-size:12px;color:var(--ink3)}
-.stat .v{font-size:var(--big2);font-weight:700;color:var(--navy);line-height:1.15;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:3px}
-.stat .v.bad{color:var(--red)}.stat .v.money{color:var(--coral-ink)}.stat .v.ok{color:var(--green)}.stat .v.near{color:var(--orange)}
-.stat .v.q{color:var(--bd2);font-size:20px}
-.stat .f{font-size:11.5px;color:var(--ink3);margin-top:2px}
-.big-sp{border:1px solid var(--bd);border-radius:var(--r-card);padding:14px 14px 10px}
-.big-sp svg.sp{height:120px}
-.mos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:8px}
-.mo{text-align:center;font-size:11.5px;color:var(--ink3);padding-top:7px;border-top:1px solid var(--bd)}
-.mo b{display:block;font-size:13px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums;margin-top:2px}
-.mo.now b{color:var(--navy)}
-.mo.now{border-top-color:var(--bd2)}
-.note{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r-card);padding:13px 15px;font-size:13.5px;color:var(--ink2);line-height:1.6}
-.note b{color:var(--navy);font-weight:600}
-.note .h{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
-.note.money{background:var(--coral-bg);border-color:var(--coral-bd)}
-.note.money b{color:var(--coral-ink)}
-.entry{border:1px solid var(--fill-bd);background:var(--tint);border-radius:var(--r-card);padding:13px 15px}
-.entry .h{display:block;font-size:13.5px;color:var(--navy);font-weight:600;margin-bottom:8px}
-.entry .rowi{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.entry input{font:inherit;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;direction:ltr;text-align:start;
-  width:180px;padding:8px 12px;border:1px solid var(--bd2);border-radius:var(--r-ctl);background:var(--white);color:var(--ink)}
-.entry input:focus{outline:2px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
-.entry .hint{font-size:12.5px;color:var(--ink2)}
-.jl{display:flex;flex-direction:column}
-.jl .r{display:grid;grid-template-columns:minmax(0,1fr) 130px 130px;gap:12px;align-items:center;padding:10px 0;font-size:13.5px}
-.jl .r + .r{border-top:1px solid var(--bd)}
-.jl .r.hd{font-size:12px;color:var(--ink3);padding-bottom:6px}
-.jl .r .t{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.jl .r .o{color:var(--ink3);font-variant-numeric:tabular-nums}
-.jl .r .nw{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
-
-.toast{position:fixed;inset-block-end:24px;inset-inline-start:50%;transform:translateX(50%) translateY(10px);background:var(--navy);color:var(--white);padding:11px 20px;border-radius:var(--r-ctl);font-size:13.5px;box-shadow:0 10px 30px rgba(12,64,104,.28);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:90}
-.toast.show{opacity:1;transform:translateX(50%) translateY(0)}
-
-/* ---------- מסכים צרים יותר ---------- */
-@media (max-width:1560px){
-  .close .in{grid-template-columns:minmax(0,1fr) 1px 372px}
-  .live .tx{max-width:330px}
-}
-@media (max-width:1400px){
-  .nav{padding:0 24px;gap:18px}
-  .strip{padding:0 24px;gap:18px}
-  .close{padding:14px 24px 16px}
-  .wrap{padding:16px 24px 26px}
-  .close .in{grid-template-columns:minmax(0,1fr) 1px 340px;gap:0 18px}
-  .strip .id .sub{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-}
-@media (max-width:1180px){
-  .close .in{grid-template-columns:minmax(0,1fr)}
-  .close .vr{display:none}
-  .score{border-top:1px solid rgba(255,255,255,.12);padding-top:12px;margin-top:10px}
-  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:820px){
-  .cards{grid-template-columns:minmax(0,1fr)}
-}
+/* ---------- עורך המדד ---------- */
+.md.wide{width:min(720px,94vw);max-height:88vh;overflow-y:auto;padding:21px 24px 20px}
+.fld{margin-top:13px}
+.fld>label{display:block;font-size:11.5px;font-weight:700;color:var(--ink3);margin:0 2px 6px}
+.fld .hint{font-size:11px;color:var(--faint);margin-top:5px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+@media(max-width:640px){.two{grid-template-columns:minmax(0,1fr)}}
+.md input.s{padding:8px 12px;font-size:13px}
+.rules{display:flex;flex-direction:column;gap:8px}
+.rule{display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:var(--bg);
+  border:1px solid var(--bd);border-radius:10px;padding:8px 10px}
+.rule.off{opacity:.5}
+.rule .tx{font-size:12px;color:var(--ink2)}
+.rule input.th{width:74px;padding:5px 9px;font-size:12.5px;border-radius:999px;text-align:center}
+.rule .del{margin-inline-start:auto}
+.rule-empty{font-size:12.5px;color:var(--ink3);padding:10px 2px}
+.tog{width:34px;height:19px;border-radius:99px;background:var(--faint);position:relative;flex:none;transition:background .15s}
+.tog::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:15px;height:15px;
+  border-radius:50%;background:#fff;transition:transform .15s}
+.tog.on{background:var(--good)}
+.tog.on::after{transform:translateX(-15px)}
+.md .warnbar{margin-top:15px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:#FDEDEB;border:1px solid #F3D3CE;border-radius:10px;padding:9px 12px;
+  font-size:12.5px;color:var(--bad)}
+.md .warnbar .sp{margin-inline-start:auto}
+.btn.dang{border:1px solid #F0CCC7;color:var(--bad);background:#fff}
+.btn.dang:hover{background:#FDEDEB}
 </style>
 </head>
-<body>
-
-<nav class="nav">
-  <a class="brand" href="dashboard.html"><i>HK</i>הצוות הפיננסי שלך</a>
-  <ul>
-    <li><a href="dashboard.html">דשבורד</a></li>
-    <li><a href="messages.html">הודעות</a></li>
-    <li><a href="meetings.html">פגישות</a></li>
-    <li><a href="ai.html">עוזר AI</a></li>
-    <li><a class="on" href="metrics.html">מדדים</a></li>
-  </ul>
-  <div class="me"><div><b>צחי עובד</b>בעלים</div><i>צע</i></div>
-</nav>
-
-<header class="strip">
-  <div class="id">
-    <h1>אנרגי אינטרנשיונל</h1>
-    <div class="sub num">ח.פ 511327876 · היועץ שלך <a href="messages.html">אילון אשכנזי</a></div>
-  </div>
-  <div class="sep"></div>
-  <div class="date num">יום חמישי · 02.07.2026</div>
-  <div class="sep"></div>
-  <div class="live" id="live"></div>
-  <div class="spacer"></div>
-  <div class="now num"><span>השעה</span><b class="mn">10:54</b></div>
-</header>
-
-<!-- ===== הבלוק הכהה היחיד: כאן פועלים ===== -->
-<section class="close dark">
-  <div class="hd">
-    <span class="cap">סגירת יוני</span>
-    <h2>מה נשאר ממך</h2>
-    <span class="cnt" id="ccnt"></span>
-    <span class="upd num">הנתונים מעודכנים ל-01.07.2026 · 23:40</span>
-  </div>
-  <div class="in">
-    <div class="lines" id="lines"></div>
-    <div class="vr"></div>
-    <div class="score">
-      <span class="cap">הציון שלך ביוני</span>
-      <div class="n" id="scoreN"></div>
-      <div class="sbar" id="sbar"></div>
-      <div class="skeys" id="skeys"></div>
-    </div>
-  </div>
-</section>
-
+<body data-cli="metric">
 <main class="wrap">
-  <div class="bar">
-    <span class="ttl">הצג</span>
-    <span id="chips"></span>
-    <span class="rest" id="rest"></span>
+
+  <!-- שורת החודש — מחושבת מהנתונים, בלי AI -->
+  <!-- כל המדדים ברשימה אחת רציפה, ממוינת: מה שדורש טיפול קודם -->
+  <div class="mt">
+    <!-- כל המדדים — רשימה אחת, ממוינת לפי מצב -->
+    <section class="panel">
+      <div class="ph"><h3>המדדים</h3>
+        <div class="mstep">
+          <!-- ב-RTL "הקודם" מצביע ימינה — חזרה אחורה בזמן היא לכיוון תחילת הקריאה -->
+          <button id="moPrev" aria-label="החודש הקודם">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          <b id="moName">יוני 2026</b><span class="motag" id="moTag">נסגר</span>
+          <button id="moNext" aria-label="החודש הבא">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        </div>
+        <span class="cnt" id="mlCnt"></span>
+        <div class="sp"></div>
+        <div class="msr">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+          <input id="mQ" placeholder="חיפוש מדד" oninput="render()">
+        </div>
+        <button class="btn pln" id="addM">+ מדד חדש</button>
+      </div>
+      <p class="mdef">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/></svg>
+        <span><b>מדד הוא יעד שנקבע ללקוח ומוצג לו</b> — מספר שסוכם עליו, שיש לו יעד חודשי,
+        ושהלקוח נמדד מולו. התרעות ומצבים (חריגה צפויה, פגישה שנקבעה) הם לא מדדים —
+        מקומם בדשבורד ובפגישות.</span></p>
+      <div class="ml-hd" id="mlHd"></div>
+      <div class="ml" id="mlist"></div>
+    </section>
+    <!-- זירת המדד — מה שעומדים עליו נפתח כאן -->
+    <section id="marena"></section>
   </div>
-  <div id="groups"></div>
+
+  <!-- ניהול המדדים — כל ההגדרות, סגור כברירת מחדל -->
+  <section class="mgr">
+    <button class="mgr-h" id="mgrH" aria-expanded="false" aria-controls="mgrB">
+      <h3>ניהול המדדים</h3>
+      <span class="sub" id="mgrSub"></span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="mgr-b hid" id="mgrB">
+      <div class="mgr-top">
+        <span class="lb">ימי עבודה בחודש</span>
+        <div class="pillrow" id="wdPills"></div>
+        <span class="hint">קובע את היעד היומי ואת המדד "הכנסה ליום עבודה"</span>
+        <span class="sp"></span>
+        <button class="btn pri" id="addM">+ מדד חדש</button>
+      </div>
+      <div class="tblx"><table class="mtbl"><thead><tr>
+        <th>מדד</th><th>סוג</th><th>מקור הנתון</th><th>יעד / תקרה</th><th>יעד יומי</th><th></th>
+      </tr></thead><tbody id="mtbody"></tbody></table></div>
+    </div>
+  </section>
+
 </main>
 
-<div class="ov" id="ov"><div class="md" role="dialog" aria-modal="true" aria-labelledby="mdTtl" id="md"></div></div>
-<div class="toast" id="toast"></div>
+<!-- עורך המדד -->
+<div class="ov" id="mxOv">
+  <div class="md wide" role="dialog" aria-modal="true" aria-labelledby="mxTtl">
+    <button class="x" id="mxX" aria-label="סגירה">✕</button>
+    <h3 id="mxTtl">מדד חדש</h3>
+    <p class="mxdef">מדד הוא <b>יעד שנקבע ללקוח ומוצג לו</b>. אם אין יעד שסוכם עליו — זה מצב, לא מדד.</p>
 
+    <div class="fld"><label>סוג מדד</label><div class="pillrow" id="mxSrc"></div>
+      <div class="hint" id="mxSrcHint"></div></div>
+
+    <div class="fld"><label for="mxName">נושא היעד</label>
+      <input id="mxName" class="s" placeholder="למשל: מחזור הכנסות"></div>
+
+    <div class="fld"><label>יעד</label>
+      <div class="mxrow">
+        <div class="pillrow" id="mxUnit"></div>
+        <input id="mxTarget" class="s num" inputmode="numeric" placeholder="מספר">
+        <button class="pill" id="mxNoTgt">ללא יעד</button>
+      </div>
+      <div class="hint" id="mxDaily"></div></div>
+
+    <!-- מדד עצמאי: בפועל ידני, או סנכרון מגיליון -->
+    <div id="mxPaneManual">
+      <div class="fld" id="mxActualF"><label for="mxActual">נתון בפועל</label>
+        <input id="mxActual" class="s num" inputmode="numeric" placeholder="מספר"></div>
+      <div class="fld">
+        <div class="mxrow"><label style="margin:0">סנכרון מ-Google Sheets</label>
+          <button class="tog" id="mxShOn" role="switch" aria-checked="false" aria-label="סנכרון מגיליון"></button></div>
+        <div class="hid" id="mxShF">
+          <label style="margin-top:12px">לוגיקת סנכרון</label><div class="pillrow" id="mxLogic"></div>
+          <div class="two" style="margin-top:10px">
+            <div><label for="mxCell">תא</label><input id="mxCell" class="s" placeholder="B4"></div>
+            <div><label for="mxGid">gid של הטאב</label><input id="mxGid" class="s" placeholder="0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- מדד מחושב: שני אגפים ואופרטור -->
+    <div class="hid" id="mxPaneCalc">
+      <div class="fld"><label>נוסחת החישוב</label>
+        <div class="mxcalc">
+          <div class="side"><div class="pillrow sm" id="mxSrcA"></div><div id="mxOpA"></div></div>
+          <div class="pillrow op" id="mxCalcOp"></div>
+          <div class="side"><div class="pillrow sm" id="mxSrcB"></div><div id="mxOpB"></div></div>
+        </div>
+        <div class="hint">כל צד יכול להיות מדד, קטגוריה, תא מגיליון או מספר קבוע — הבפועל מחושב אוטומטית ולא ניתן להזנה.</div>
+      </div>
+    </div>
+
+    <!-- מדד לפי קטגוריות -->
+    <div class="fld hid" id="mxPaneCats"><label>קטגוריות תזרים</label>
+      <div class="pillrow" id="mxCats"></div>
+      <div class="hint">הנתון בפועל מתעדכן אוטומטית מנתוני האמת ב-Bizibox.</div></div>
+
+    <div class="warnbar hid" id="mxDelBar">
+      <span>המדד יימחק מהמסך ומהדוח של הלקוח. לא ניתן לשחזר.</span>
+      <span class="sp"></span>
+      <button class="btn dang" id="mxDelYes">מחיקה</button>
+      <button class="btn pln" id="mxDelNo">ביטול</button>
+    </div>
+
+    <div class="ft">
+      <button class="btn pri" id="mxSave">אישור</button>
+      <button class="btn pln" id="mxCancel">ביטול</button>
+      <span class="to"><button class="btn dang" id="mxDel">מחיקת המדד</button></span>
+    </div>
+  </div>
+</div>
+
+<script src="cli.js"></script>
 <script>
-(function(){
+hkChrome('metric',{strip:false});
+
+/* =====================================================================
+   הנתונים — מהמערכת:
+     js/screens.js  · METRICS  → שם, סוג, יחידה, יעד, מקור, חוקי התראה
+     js/ops.js      · MET[0]   → הערכים של אנרגי אינטרנשיונל
+                                 (budget 82% · overdraft 9 ימים · liters 78% · cfprofit 104%)
+     js/alerts.js              → מנוע החוקים והניסוח
+     docs/cli/metrics.html      → סדרת ששת החודשים וההסברים לכל מדד
+   החודש הנמדד הוא יוני 2026 — נסגר ב-30.06 ונבדק היום, 02.07.
+   ===================================================================== */
 'use strict';
 
-/* ===================== הנתונים =====================
-   שלושת סוגי המדדים כמו במערכת:
-     own  — הבפועל מגיע ממך (הזנה ידנית או הגיליון שלך)
-     auto — הבפועל נמשך מהתנועות הפיננסיות שלך, בלי שתעשה כלום
-     calc — נוסחה בין מדדים אחרים; אין מה להזין
-   invert = ככל שנמוך יותר, טוב יותר (תקרה ולא יעד).
-   money  = סכנה כספית אמיתית — הכרטיס היחיד שלובש קורל.        */
-var MONTHS=['ינו','פבר','מרץ','אפר','מאי','יוני'];
+var MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+var CUR_MI=6;          /* יולי — החודש שבעיצומו (היום 02.07) */
+var MSHORT=['ינו','פבר','מרץ','אפר','מאי','יוני'];
+var MI=5;              // החודש המוצג
+/* היום 02.07 — כל חודש ברשימה כבר נסגר. הדגל נשאר גנרי: ברגע שיוצג חודש
+   בעיצומו, הסמן הופך ל"איפה החודש" והשורה למעלה מדברת על קצב ולא על סגירה. */
+function monthOpen(){return MI===CUR_MI;}
+var WORKDAYS=22;       // ימי עבודה בחודש (screens.js · WORKDAYS)
+var CLOSE_DUE='05.07'; // אחרון להזנת המספרים הידניים לסגירת יוני
+
+/* סוגי המדדים והמקורות — כמו במערכת */
+var SRC={
+  hand  :{lbl:'הזנה ידנית', cls:''},
+  sheets:{lbl:'Google Sheets', cls:'sheets'},
+  cats  :{lbl:'לפי קטגוריות', cls:'bz'},
+  calc  :{lbl:'מחושב', cls:'calc'},
+  auto  :{lbl:'אוטומטי', cls:''}
+};
+var LOGIC=['ללא לוגיקה','אותו תא לכל החודשים','חודשים לפי עמודות','לפי שם הגיליון'];
+var UNITS=['₪','מספר','%','ימים'];
+var FREQ=['חודשי','שבועי','יומי'];
+var CALCS=['מחזור הכנסות − כל קטגוריות ההוצאות','מחזור הכנסות ÷ ימי עבודה',
+           'הכנסות ממכירות + הכנסות סליקה','מחזור הכנסות − עלות המכר'];
+var CATLIST=['כל קטגוריות ההוצאות','הכנסות ממכירות - סליקה','הכנסות אחרות',
+             'ספקים','הוצאות שכר','שכירות','אחזקת עסק','גבייה מלקוחות'];
+
 var M=[
- {id:'revenue', g:'own', name:'מחזור הכנסות', unit:'₪', target:150000, actual:142522,
+ {k:'revenue', name:'מחזור הכנסות', src:'sheets', unit:'₪', target:150000, freq:'חודשי',
+  cell:'B4', logic:'לפי שם הגיליון',
   hist:[131400,128900,139200,151800,146300,142522],
-  kind:'מהגיליון שלך', src:'Google Sheets · תא B4 · לפי שם הגיליון',
-  what:'סך ההכנסות שנרשמו בגיליון המכירות שלך לחודש, לפני מע״מ.',
-  why:'זה הבסיס לכל שאר המדדים — ההכנסה ליום עבודה והרווח התזרימי נגזרים ממנו.'},
+  alerts:[{on:false,mode:'pct',dir:'below',th:80,sev:'mid'}],
+  note:'הבסיס לכל השאר — ההכנסה ליום עבודה והרווח התזרימי נגזרים ממנו.'},
 
- {id:'liters', g:'own', name:'סך הליטרים · לפי סוג דלק', unit:'ליטר', target:120000, actual:108000,
-  hist:[104200,98700,101500,106400,105100,108000],
-  kind:'מהגיליון שלך', src:'Google Sheets · תא C7 · חודשים לפי עמודות',
-  what:'כמות הליטרים שנמכרה בפועל בכל סוגי הדלק יחד.',
-  why:'הכמות מספרת אם הפער במחזור נובע ממחיר או מכמות. כאן הכמות עולה — הפער במחזור הוא פער מחיר.'},
+ {k:'liters', name:'סך הליטרים - לפי סוג דלק', src:'sheets', unit:'ליטר', target:120000, freq:'חודשי',
+  cell:'C7', logic:'חודשים לפי עמודות',
+  hist:[104200,98700,101500,106400,105100,93600],
+  alerts:[{on:true,mode:'pct',dir:'below',th:85,sev:'mid'}],
+  note:'הכמות מספרת אם הפער במחזור הוא פער מחיר או פער כמות. כאן הכמות ירדה.'},
 
- {id:'collect', g:'own', name:'גבייה במזומן בשטח', unit:'₪', target:25000, actual:null,
+ {k:'collect', name:'גבייה במזומן בשטח', src:'hand', unit:'₪', target:25000, freq:'חודשי',
   hist:[22400,19800,24100,26300,23900,null],
-  kind:'אתה מזין', src:'הזנה ידנית · פעם בחודש',
-  short:'בלי המספר הזה תמונת ההכנסות של יוני חסרה.',
-  what:'המזומן שנאסף בשטח ולא עבר דרך הסליקה.',
-  why:'בלי המספר הזה תמונת ההכנסות של יוני חסרה, והתחזית ליולי מתבססת על נתון ישן.'},
+  alerts:[{on:false,mode:'pct',dir:'below',th:70,sev:'mid'}],
+  note:'המזומן שנאסף בשטח ולא עבר דרך הסליקה. בלעדיו תמונת ההכנסות של החודש חסרה.'},
 
- {id:'stock', g:'own', name:'שווי מלאי נוכחי', unit:'₪', target:null, actual:null,
-  hist:[512000,548000,571000,596000,618400,null],
-  kind:'אתה מזין', src:'הזנה ידנית · פעם בחודש',
-  short:'למדד הזה אין יעד — הוא מדד מעקב.',
-  what:'שווי המלאי בסוף החודש, לפי הספירה שלכם.',
-  why:'למדד הזה אין יעד — הוא מדד מעקב. הוא עולה חמישה חודשים ברצף, וזה כסף שיושב במכלים במקום בחשבון.'},
+ {k:'inventory', name:'שווי מלאי נוכחי', src:'hand', unit:'₪', target:null, freq:'חודשי',
+  hist:[512000,548000,571000,596000,618400,null], alerts:[],
+  note:'מדד מעקב בלי יעד. עולה חמישה חודשים ברצף — כסף שיושב במכלים ולא בחשבון.'},
 
- {id:'sales', g:'auto', name:'הכנסות ממכירות · סליקה', unit:'₪', target:90000, actual:99642,
+ {k:'salesclr', name:'הכנסות ממכירות - סליקה', src:'cats', unit:'₪', target:90000, freq:'חודשי',
+  cats:['הכנסות ממכירות - סליקה'],
   hist:[86200,84900,91300,97400,95800,99642],
-  kind:'אוטומטי', src:'מהתנועות שלך · קטגוריית הכנסות ממכירות - סליקה',
-  what:'כל התקבולים מהסליקה שנכנסו בפועל לחשבון הבנק בחודש.',
-  why:'זה הכסף שבאמת נכנס, להבדיל מהמחזור שנרשם. הפער בין השניים הוא מה שעוד לא נגבה.'},
+  alerts:[{on:false,mode:'pct',dir:'below',th:75,sev:'mid'}],
+  note:'הכסף שבאמת נכנס לבנק, להבדיל מהמחזור שנרשם.'},
 
- {id:'budget', g:'auto', name:'עמידה בתקציב ההוצאות', unit:'%', target:100, actual:97, invert:true, capLbl:'מהתקציב',
-  hist:[103,99,101,96,102,97],
-  kind:'אוטומטי', src:'מהתנועות שלך · כל קטגוריות ההוצאות',
-  what:'סך ההוצאות בפועל מול התקציב החודשי שקבעת, באחוזים.',
-  why:'מתחת ל-100% אתה בתוך התקציב. יוני נסגר על 97% — בפעם הראשונה השנה שני חודשים רצופים בתוך התקציב.'},
+ {k:'budget', name:'עמידה בתקציב', src:'cats', unit:'%', target:100, invert:true, freq:'חודשי',
+  cats:['כל קטגוריות ההוצאות'],
+  hist:[103,99,101,96,102,82],
+  alerts:[{on:true,mode:'pct',dir:'above',th:100,sev:'high'},
+          {on:true,mode:'pct',dir:'above',th:95,sev:'mid'}],
+  note:'סך ההוצאות בפועל מול התקציב החודשי. מתחת ל-100% — בתוך התקציב.'},
 
- {id:'debt', g:'auto', name:'חוב פתוח לגבייה', unit:'₪', target:25000, actual:38400, invert:true, capLbl:'מהתקרה',
+ {k:'debt', name:'חוב פתוח לגבייה', src:'cats', unit:'₪', target:25000, invert:true, freq:'חודשי',
+  cats:['גבייה מלקוחות'],
   hist:[21800,25400,28900,31200,34600,38400],
-  kind:'אוטומטי', src:'מהתנועות שלך · חשבוניות פתוחות מעל 30 יום',
-  what:'כסף שהוצאת עליו חשבונית, עבר מועד התשלום, ועדיין לא נכנס.',
-  why:'החוב גדל חמישה חודשים ברצף. זה בדיוק הסכום שחסר לך כדי להרחיק את החריגה בעו״ש.'},
+  alerts:[{on:true,mode:'abs',dir:'above',th:25000,sev:'mid'}],
+  note:'חשבוניות שעבר מועד התשלום שלהן. גדל חמישה חודשים ברצף.'},
 
- {id:'cfprofit', g:'calc', name:'רווח תזרימי', unit:'₪', target:30000, actual:26900,
-  hist:[24800,19600,27300,33100,28400,26900],
-  kind:'מחושב', src:'מחזור הכנסות פחות כל ההוצאות',
-  what:'ההפרש בין הכסף שנכנס לכסף שיצא בפועל בחודש.',
-  why:'זה הרווח שאפשר להוציא מהחשבון, להבדיל מהרווח החשבונאי שכולל גם כסף שעוד לא נגבה.'},
+ {k:'cfprofit', name:'רווח / הפסד תזרימי', src:'calc', unit:'₪', target:30000, freq:'חודשי',
+  calc:'מחזור הכנסות − כל קטגוריות ההוצאות',
+  hist:[24800,19600,27300,33100,28400,31200],
+  alerts:[{on:true,mode:'pct',dir:'below',th:80,sev:'mid'}],
+  note:'ההפרש בין הכסף שנכנס לכסף שיצא בפועל.'},
 
- {id:'perday', g:'calc', name:'הכנסה ליום עבודה', unit:'₪', target:6500, actual:6787,
-  hist:[6260,6140,6630,7230,6970,6787],
-  kind:'מחושב', src:'מחזור הכנסות חלקי 21 ימי עבודה',
-  what:'המחזור החודשי מחולק במספר ימי העבודה בחודש.',
-  why:'המדד מנטרל את אורך החודש. יוני היה קצר יותר, ולכן המחזור ירד אבל היום עצמו לא נחלש.'},
-
- {id:'overdraft', g:'calc', name:'כרית ביטחון בעו״ש', unit:'ימים', target:14, actual:9, money:true,
-  hist:[26,24,19,17,14,9],
-  kind:'מחושב', src:'תחזית התזרים מול מסגרת האשראי',
-  what:'כמה ימים קדימה החשבון מחזיק לפני שהתחזית יורדת מתחת לאפס.',
-  why:'זה המדד היחיד כאן שמדבר על סכנה כספית ממשית. הכרית התכווצה מ-26 ימים לתשעה בחצי שנה.'}
+ {k:'perday', name:'הכנסה ליום עבודה', src:'calc', unit:'₪', target:6800, rate:true, freq:'חודשי',
+  calc:'מחזור הכנסות ÷ ימי עבודה', from:'revenue', alerts:[{on:false,mode:'pct',dir:'below',th:85,sev:'mid'}],
+  note:'מנטרל את אורך החודש — היום עצמו, בלי תלות בכמה ימים היו.'},
 ];
 
-var GROUPS=[
- {g:'own',  t:'המדדים שאתה מזין',        s:'המספר מגיע ממך — ידנית או מהגיליון שלך'},
- {g:'auto', t:'נמדדים מהתנועות שלך',     s:'הבפועל נמשך אוטומטית מהנתונים הפיננסיים, בלי שתעשה כלום'},
- {g:'calc', t:'מדדים מחושבים',           s:'נוסחה בין מדדים אחרים — אין מה להזין'}
-];
-var JULY=[
- {t:'מחזור הכנסות', o:150000, n:155000},
- {t:'גבייה במזומן בשטח', o:25000, n:30000},
- {t:'חוב פתוח לגבייה', o:25000, n:20000}
-];
-
-var FILTER='all', julyDone=false, lastFocus=null;
-
-/* ===================== עזרים ===================== */
+/* ---------- עזרים ---------- */
 function nf(n){return Math.round(n).toLocaleString('en-US');}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function unitTag(m){return '<small>'+esc(m.unit)+'</small>';}
-function val(m,v){
-  if(v==null) return '—';
-  if(m.unit==='%') return '<span class="mn">'+nf(v)+'<small>%</small></span>';
-  return '<span class="mn">'+nf(v)+'</span> '+unitTag(m);
-}
-function stat(m){
-  if(m.actual==null) return 'wait';
-  if(m.money) return 'money';
-  if(!m.target) return 'none';
-  var r=m.actual/m.target;
-  if(m.invert) return r<=1?'ok':(r<=1.15?'near':'bad');
-  return r>=1?'ok':(r>=0.85?'near':'bad');
-}
-var ST={
-  ok:{lbl:'ביעד', al:'ok'},
-  near:{lbl:'קרוב ליעד', al:'warn'},
-  bad:{lbl:'לא ביעד', al:'bad'},
-  money:{lbl:'סכנה כספית', al:'money'},
-  wait:{lbl:'מחכה למספר שלך', al:'info'},
-  none:{lbl:'מדד מעקב · בלי יעד', al:'info'}
-};
-/* לצורך הציון והסינון: הסכנה הכספית נספרת עם "לא ביעד";
-   מדד בלי יעד אינו נספר בציר "ביעד" — הוא מדד מעקב בפני עצמו. */
-function bucket(m){var s=stat(m);return s==='money'?'bad':s;}
-function pctOf(m){
-  if(m.actual==null||!m.target) return null;
-  return Math.round(m.actual/m.target*100);
-}
-function delta(m){
-  var h=m.hist, cur=h[5], prev=h[4];
-  if(cur==null||prev==null||!prev) return '';
-  var d=(cur-prev)/Math.abs(prev)*100, up=d>=0;
-  return (up?'↑':'↓')+' '+Math.abs(d).toFixed(1)+'% מול מאי';
-}
-var ORDER={money:0,bad:1,wait:2,near:3,none:4,ok:5};
+function uTxt(m){return m.unit==='%'?'':(m.unit==='מספר'?'':' '+m.unit);}
+function num(m,v){return '<span class="mn">'+nf(v)+(m.unit==='%'?'%':'')+'</span>'+
+  (m.unit==='%'||m.unit==='מספר'?'':' <small>'+esc(m.unit)+'</small>');}
+function plain(m,v){return nf(v)+(m.unit==='%'?'%':uTxt(m));}
 
-/* ===================== גרף המגמה ===================== */
-function spark(m,W,H){
-  var h=m.hist, n=h.length, vals=[], i;
-  for(i=0;i<n;i++) if(h[i]!=null) vals.push(h[i]);
-  var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
-  var hasT=m.target!=null;
-  if(hasT){lo=Math.min(lo,m.target);hi=Math.max(hi,m.target);}
-  var pad=(hi-lo)*0.20||Math.max(1,hi*0.1);
-  lo-=pad;hi+=pad;
-  var px=3, py=5;
-  var X=function(k){return W-px-k*(W-2*px)/(n-1);};   /* RTL: ינואר מימין, יוני משמאל */
+/* הערך של המדד בחודש הנבחר */
+/* יולי בעיצומו: אחרי 2 ימי עבודה מתוך 22. הערך נגזר מהיעד ומהתקדמות החודש,
+   עם סטייה קטנה ודטרמיניסטית לפי המדד — כך הבר מראה קצב אמיתי מול זמן. */
+var JUL_DONE=2;
+function julValue(m){
+  if(m.target==null) return null;
+  var s=0,i; for(i=0;i<m.k.length;i++) s=(s*31+m.k.charCodeAt(i))%97;
+  var f=JUL_DONE/WORKDAYS*(0.72+(s/97)*0.55);
+  return m.rate?m.target*(0.85+(s/97)*0.3):Math.round(m.target*f);
+}
+function valOf(m){
+  if(m.rate){var b=byKey(m.from); var v=b&&b.hist[MI]; return v==null?null:v/WORKDAYS;}
+  if(MI>CUR_MI) return null;                    /* חודש שטרם התחיל */
+  if(MI===CUR_MI) return m.src==='hand'?null:julValue(m);
+  return (m.hist&&m.hist[MI]!=null)?m.hist[MI]:null;
+}
+function byKey(k){for(var i=0;i<M.length;i++) if(M[i].k===k) return M[i]; return null;}
+function pctOf(m){var v=valOf(m); if(v==null||!m.target) return null; return v/m.target*100;}
+
+/* מצב המדד — סדר הרשימה נגזר ממנו */
+function stateOf(m){
+  if(MI>CUR_MI) return 'future';
+  var v=valOf(m);
+  if(v==null) return 'wait';
+  if(!m.target) return 'trk';
+  var p=pctOf(m);
+  if(m.money) return p<100?'dng':'ok';
+  if(m.invert) return p<=100?'ok':(p<=115?'near':'off');
+  return p>=100?'ok':(p>=85?'near':'off');
+}
+var ORDER={dng:0,wait:1,off:2,near:3,ok:4,trk:5,future:6};
+var FLAG={
+  dng :{cls:'',     t:'סכנה כספית'},
+  wait:{cls:'wt',   t:'מחכה למספר מהלקוח'},
+  future:{cls:'',   t:'החודש טרם התחיל'},
+  off :{cls:'warn', t:'לא ביעד'},
+  near:{cls:'near', t:'קרוב ליעד'},
+  ok  :{cls:'ok',   t:'ביעד'},
+  trk :{cls:'trk',  t:'מדד מעקב'}
+};
+
+/* משפט המקור — כמו srcLine ב-screens.js */
+function srcTxt(m){
+  if(m.src==='sheets') return '<b>Google Sheets</b> · '+esc(m.logic)+' · תא '+esc(m.cell);
+  if(m.src==='hand')   return '<b>הזנה ידנית</b> · מתעדכן כל חודש';
+  if(m.src==='cats')   return '<b>Bizibox</b> · נתוני אמת · '+esc((m.cats||[]).join(' + '));
+  if(m.src==='calc')   return '<b>ƒ</b> '+esc(m.calc);
+  return '<b>אוטומטי</b> · מיומן הפגישות';
+}
+function kindTag(m){var s=SRC[m.src];return '<span class="kind '+s.cls+'">'+esc(s.lbl)+'</span>';}
+
+/* ---------- גרף ששת החודשים ---------- */
+function spark(m){
+  if(!m.hist) return '';
+  var W=94,H=30,px=2,py=5,n=MI+1,i,vals=[];
+  for(i=0;i<n;i++) if(m.hist[i]!=null) vals.push(m.hist[i]);
+  if(vals.length<2) return '';
+  var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);
+  if(m.target){lo=Math.min(lo,m.target);hi=Math.max(hi,m.target);}
+  var pad=(hi-lo)*0.22||Math.max(1,hi*0.1); lo-=pad; hi+=pad;
+  var X=function(k){return n<2?W-px:W-px-k*(W-2*px)/(n-1);};   /* RTL — ינואר מימין */
   var Y=function(v){return py+(hi-v)/(hi-lo)*(H-2*py);};
-  var last=-1;
-  for(i=0;i<n;i++) if(h[i]!=null) last=i;
-  var pts=[],ar=[];
-  for(i=0;i<=last;i++){pts.push(X(i).toFixed(1)+','+Y(h[i]).toFixed(1));}
-  ar.push('M'+X(0).toFixed(1)+','+Y(h[0]).toFixed(1));
-  for(i=1;i<=last;i++) ar.push('L'+X(i).toFixed(1)+','+Y(h[i]).toFixed(1));
-  ar.push('L'+X(last).toFixed(1)+','+H+' L'+X(0).toFixed(1)+','+H+' Z');
-  var s='<svg class="sp" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">';
-  s+='<path class="a" d="'+ar.join(' ')+'"/>';
-  if(hasT&&m.target>lo&&m.target<hi)
-    s+='<line class="t" x1="'+px+'" y1="'+Y(m.target).toFixed(1)+'" x2="'+(W-px)+'" y2="'+Y(m.target).toFixed(1)+'"/>';
-  s+='<polyline class="l" points="'+pts.join(' ')+'"/>';
-  /* סימון החודש האחרון שיש לו נתון */
-  s+='<line class="m" x1="'+X(last).toFixed(1)+'" y1="'+Y(h[last]).toFixed(1)+'" x2="'+X(last).toFixed(1)+'" y2="'+H+'"/>';
-  /* חודש בלי נתון — קו מקווקו אל הקצה */
-  if(last<n-1)
-    s+='<line class="g" x1="'+X(last).toFixed(1)+'" y1="'+Y(h[last]).toFixed(1)+'" x2="'+X(n-1).toFixed(1)+'" y2="'+Y(h[last]).toFixed(1)+'"/>';
+  var last=-1; for(i=0;i<n;i++) if(m.hist[i]!=null) last=i;
+  var pts=[],d='M'+X(0).toFixed(1)+','+Y(m.hist[0]).toFixed(1);
+  for(i=0;i<=last;i++){pts.push(X(i).toFixed(1)+','+Y(m.hist[i]).toFixed(1));
+    if(i)d+=' L'+X(i).toFixed(1)+','+Y(m.hist[i]).toFixed(1);}
+  d+=' L'+X(last).toFixed(1)+','+H+' L'+X(0).toFixed(1)+','+H+' Z';
+  var s='<svg class="sp" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" aria-hidden="true">';
+  s+='<path class="ar" d="'+d+'"/>';
+  if(m.target&&m.target>lo&&m.target<hi)
+    s+='<line class="tg" x1="'+px+'" y1="'+Y(m.target).toFixed(1)+'" x2="'+(W-px)+'" y2="'+Y(m.target).toFixed(1)+'"/>';
+  s+='<polyline class="ln" points="'+pts.join(' ')+'"/>';
+  s+='<circle class="dot" cx="'+X(last).toFixed(1)+'" cy="'+Y(m.hist[last]).toFixed(1)+'" r="2.4"/>';
   return s+'</svg>';
 }
 
-/* ===================== הרצועה — הדבר החי ===================== */
-function waiting(){return M.filter(function(m){return m.actual==null;});}
-function renderLive(){
-  var w=waiting().length, s;
-  if(w) s='<span class="cap">סגירת יוני</span>'+
-          '<span class="n num">'+w+'</span>'+
-          '<span class="tx">'+(w===1?'מדד אחד מחכה':'מדדים מחכים')+' למספר שלך '+
-          '<span class="q">· אחרון להזנה יום ראשון 05.07</span></span>'+
-          '<button class="btn" type="button" id="liveBtn">הזנת המספרים</button>';
-  else   s='<span class="cap">סגירת יוני</span>'+
-          '<span class="tx"><b>יוני סגור</b> — כל המספרים התקבלו '+
-          '<span class="q">· הסיכום נשלח לאילון</span></span>'+
-          '<button class="btn" type="button" id="liveBtn">לסיכום החודש</button>';
-  document.getElementById('live').innerHTML=s;
-  document.getElementById('liveBtn').addEventListener('click',function(){
-    var q=waiting();
-    if(q.length) openMetric(q[0].id,true); else openJune();
-  });
+/* ---------- הבר: קצב מול זמן ----------
+   המסילה מייצגת 0–125% מהיעד, כך שהיעד יושב ב-80% ממנה ולסמן הקורל
+   ("איפה החודש") יש מקום. הפער בין המילוי לסמן הוא בדיוק מה שחסר. */
+var SCALE=125, MARK=100/SCALE*100;   /* 80% מהמסילה */
+function trackHtml(m,st){
+  var p=pctOf(m); if(p==null) return '';
+  var fill=Math.max(1.5,Math.min(p,SCALE)/SCALE*100);
+  var dng=st==='dng', over=m.invert&&p>100;
+  var s='<div class="track">';
+  s+='<i class="fill'+(dng?' dng':over?' over':'')+'" style="width:'+fill.toFixed(1)+'%"></i>';
+  /* הפער מסומן רק כשהוא חוסר. במדד תקרה (הוצאות, חוב) המרווח עד הסמן הוא מרווח נשימה */
+  if(fill<MARK&&!m.invert)
+    s+='<i class="gapseg'+(dng?' dng':'')+'" style="inset-inline-start:'+fill.toFixed(1)+'%;width:'+(MARK-fill).toFixed(1)+'%"></i>';
+  s+='<i class="mark" style="inset-inline-start:'+MARK+'%"></i>';
+  return s+'</div>';
 }
 
-/* ===================== הבלוק הכהה ===================== */
-function renderClose(){
-  var q=waiting(), out='', i;
-  for(i=0;i<q.length;i++){
-    out+='<div class="ln"><span class="k">מחכה לך</span>'+
-      '<span class="s"><b>'+esc(q[i].name)+'</b> — עדיין אין מספר ליוני. '+
-      '<span class="q">'+esc(q[i].short||'')+'</span></span>'+
-      '<span class="act"><button class="btn" type="button" data-open="'+q[i].id+'">הזנת מספר</button></span></div>';
+/* שורת הפער — המספר שחשוב, כולל התרגום ליום עבודה */
+var ICO_W='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v5M12 17.5v.01"/><path d="M10.3 3.9 2.4 17a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
+var ICO_OK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+function gapHtml(m,st){
+  var v=valOf(m); if(v==null||!m.target) return '';
+  if(m.invert){
+    var over=v-m.target;
+    if(over>0) return '<div class="gap">'+ICO_W+'<span><b>'+plain(m,over)+'</b> מעל התקרה'+
+      (m.k==='debt'?' · גדל חמישה חודשים ברצף':'')+'</span></div>';
+    return '<div class="gap pos">'+ICO_OK+'<span><b>'+plain(m,m.target-v)+'</b> מתחת לתקרה — בתוך התקציב</span></div>';
   }
-  if(!julyDone)
-    out+='<div class="ln q"><span class="k">יעדי יולי</span>'+
-      '<span class="s">אילון הכין הצעה לשלושה יעדים מעודכנים ליולי, על בסיס חצי השנה האחרונה.</span>'+
-      '<span class="act"><button class="btn" type="button" id="julyBtn">לצפייה בהצעה</button></span></div>';
-  else
-    out+='<div class="ln ok"><span class="k">יעדי יולי</span>'+
-      '<span class="s">אישרת את שלושת היעדים המעודכנים. הם נכנסים לתוקף מ-01.07.</span>'+
-      '<span class="act"><button class="btn" type="button" id="julyBtn">לצפייה ביעדים</button></span></div>';
-  if(!q.length)
-    out='<div class="ln ok"><span class="k">הזנות</span>'+
-      '<span class="s">כל המספרים של יוני התקבלו. <b>אין מה להזין</b> — הדוח שלם.</span>'+
-      '<span class="act"><button class="btn" type="button" id="sumBtn">לסיכום יוני</button></span></div>'+out;
-
-  document.getElementById('lines').innerHTML=out;
-  var open=document.querySelectorAll('#lines [data-open]');
-  for(i=0;i<open.length;i++) open[i].addEventListener('click',function(){openMetric(this.getAttribute('data-open'),true);});
-  var jb=document.getElementById('julyBtn');
-  if(jb) jb.addEventListener('click',openJuly);
-  var sb=document.getElementById('sumBtn');
-  if(sb) sb.addEventListener('click',openJune);
-
-  document.getElementById('ccnt').textContent=
-    q.length? (q.length===1?'פעולה אחת פתוחה':q.length+' פעולות פתוחות') + (julyDone?'':' · ועוד אישור יעדים')
-            : (julyDone?'הכול סגור':'נשאר אישור היעדים ליולי');
-
-  /* הציון — נגזר מהנתונים, לא כתוב ביד */
-  var c={ok:0,near:0,bad:0,wait:0,none:0};
-  M.forEach(function(m){c[bucket(m)]++;});
-  var measured=c.ok+c.near+c.bad;
-  document.getElementById('scoreN').innerHTML=
-    '<span class="num">'+c.ok+'</span> <small>מתוך '+measured+' מדדים ביעד</small>';
-  var tot=M.length, seg='';
-  ['ok','near','bad','none','wait'].forEach(function(k){
-    if(c[k]) seg+='<i class="'+k+'" data-w="'+(c[k]/tot*100)+'"></i>';
-  });
-  document.getElementById('sbar').innerHTML=seg;
-  var keys='';
-  [['ok','ביעד'],['near','קרוב ליעד'],['bad','לא ביעד'],['none','מעקב'],['wait','מחכים לך']].forEach(function(p){
-    if(!c[p[0]]) return;
-    keys+='<button class="skey k-'+p[0]+(FILTER===p[0]?' on':'')+'" type="button" data-f="'+p[0]+'">'+
-          p[1]+' <b class="num">'+c[p[0]]+'</b></button>';
-  });
-  document.getElementById('skeys').innerHTML=keys;
-  var ks=document.querySelectorAll('#skeys .skey');
-  for(i=0;i<ks.length;i++) ks[i].addEventListener('click',function(){
-    var f=this.getAttribute('data-f');
-    setFilter(FILTER===f?'all':f);
-  });
-  sizeBars();
+  var d=m.target-v;
+  if(d>0){
+    var per=m.rate?null:d/WORKDAYS;
+    return '<div class="gap">'+ICO_W+'<span>חסר <b>'+plain(m,d)+'</b> כדי לסגור את היעד'+
+      (per?' — <b>'+plain(m,per)+'</b> בכל יום עבודה':'')+'</span></div>';
+  }
+  var e=v-m.target, perE=m.rate?null:e/WORKDAYS;
+  return '<div class="gap pos">'+ICO_OK+'<span><b>'+plain(m,e)+'</b> מעל היעד'+
+    (perE?' — '+plain(m,perE)+' בכל יום עבודה':'')+'</span></div>';
 }
 
-/* ===================== הרשימה ===================== */
-function visible(){
-  return M.filter(function(m){return FILTER==='all'||bucket(m)===FILTER;});
+/* שורת הקצב מתחת לבר */
+function scaleHtml(m,st){
+  var p=pctOf(m); if(p==null) return '';
+  var left='<b>'+Math.round(p)+'%</b> '+(m.invert?'מהתקרה':'מהיעד');
+  /* המונח של המערכת הוא "יעד יומי" — לא "קצב/נדרש" */
+  if(!m.invert&&m.unit!=='ימים'&&m.unit!=='%')
+    left+=' · יעד יומי <span class="mn">'+nf(m.rate?m.target:m.target/WORKDAYS)+'</span> '+(m.unit==='₪'?'₪':m.unit);
+  /* הסמן הקוראלי הוא "איפה החודש" — אחוז ימי העבודה שעברו. יוני כבר נסגר,
+     ולכן הוא יושב בקצה: כל 22 ימי העבודה מאחורינו והמרחק אליו הוא הפער. */
+  return '<div class="scale"><span>'+left+'</span>'+
+         '<span class="mk">'+(monthOpen()?'איפה החודש':'קו היעד · '+MONTHS[MI]+' נסגר')+'</span></div>';
 }
+
+/* ---------- הווידג'ט ---------- */
+var SENT={};   /* מדדים שכבר נשלחה עליהם בקשה ללקוח */
 function card(m){
-  var s=stat(m), p=pctOf(m), d=delta(m), meta=ST[s];
-  var h='<div class="mc s-'+s+'" tabindex="0" role="button" data-open="'+m.id+'" aria-label="'+esc(m.name)+' — '+meta.lbl+'">';
-  h+='<div class="mc-t"><h3>'+esc(m.name)+'</h3><span class="kind">'+esc(m.kind)+'</span></div>';
-  h+='<div class="mc-n"><span class="l">בפועל · יוני</span>'+
-     (m.actual==null
-       ? '<b class="v wait">טרם הוזן</b>'
-       : '<b class="v">'+val(m,m.actual)+'</b>')+'</div>';
-  if(m.target!=null&&m.actual!=null){
-    h+='<div><div class="trk"><i data-w="'+Math.min(100,p)+'"></i></div>'+
-       '<div class="tl"><span>'+(m.invert?'תקרה':'יעד')+' <b>'+nf(m.target)+(m.unit==='%'?'%':m.unit==='₪'?' ₪':' '+m.unit)+'</b></span>'+
-       '<span class="pct">'+p+'% '+(m.capLbl||'מהיעד')+'</span></div></div>';
-  }else if(m.target!=null){
-    h+='<div class="notgt">'+(m.invert?'תקרה':'יעד')+' לחודש · <b class="num">'+nf(m.target)+'</b> '+
-       (m.unit==='%'?'%':m.unit==='₪'?'₪':m.unit)+' — נחשב ברגע שתזין את המספר</div>';
+  var st=stateOf(m), v=valOf(m), f=FLAG[st];
+  var cls='mw'+(st==='dng'?' dng':(st==='off'||st==='wait')?' att':'');
+  var s='<article class="'+cls+'">';
+  s+='<div class="mw-h"><div class="nm"><b>'+esc(m.name)+'</b>'+kindTag(m)+'</div>'+
+     '<span class="flag '+f.cls+'">'+f.t+'</span></div>';
+
+  /* המספר */
+  if(st==='wait'){
+    var H=m.hist||[], lastI=-1, i;
+    for(i=0;i<MI;i++) if(H[i]!=null) lastI=i;
+    s+='<div class="mw-n"><div class="v"><div class="big pale">'+
+       (lastI>=0?num(m,H[lastI]):'—')+'</div>'+
+       '<div class="t">'+(lastI>=0?'המספר האחרון · '+MONTHS[lastI]:'אין נתון קודם')+
+       (m.target?' · יעד <b>'+plain(m,m.target)+'</b>':'')+'</div></div>'+spark(m)+'</div>';
+  }else if(m.k==='meeting'){
+    s+='<div class="mw-n"><div class="v"><div class="big">'+(MI===5?'נקבעה':'התקיימה')+'</div>'+
+       '<div class="t">'+(MI===5?'היום 17:00 · צחי עובד · המשך סקירה':'פגישה אחת בחודש · כנדרש ב-Money+')+'</div></div></div>';
   }else{
-    h+='<div class="notgt">מדד מעקב — לא הוגדר לו יעד חודשי</div>';
+    s+='<div class="mw-n"><div class="v"><div class="big">'+num(m,v)+'</div>'+
+       '<div class="t">'+(m.target
+         ? (m.invert?'תקרה ':'מתוך יעד ')+'<b>'+plain(m,m.target)+'</b>'
+         : 'מדד מעקב · בלי יעד חודשי')+'</div></div>'+spark(m)+'</div>';
   }
-  h+=spark(m,260,44);
-  h+='<div class="spf"><span>ינו—יוני 2026</span><span class="d">'+(d||'אין נתון להשוואה')+'</span></div>';
-  h+='<div class="mc-f"><span class="mc-st"><span class="al '+meta.al+'">'+meta.lbl+'</span></span>'+
-     '<span class="go">פירוט</span></div>';
-  return h+'</div>';
+
+  /* הבר, הקצב והפער */
+  if(st!=='wait'&&m.target){ s+=trackHtml(m,st)+scaleHtml(m,st)+gapHtml(m,st); }
+
+  /* מדד ידני שלא עודכן — מצב עם פעולה */
+  if(st==='wait'){
+    if(SENT[m.k])
+      s+='<div class="wait sent"><span class="tx">הבקשה נשלחה לצחי עובד · <span class="mn">10:54</span></span></div>';
+    else
+      s+='<div class="wait"><span class="tx">מתעדכן ידנית — <b>טרם עודכן ל'+MONTHS[MI]+'</b>. '+
+         'אחרון להזנה <span class="mn">'+CLOSE_DUE+'</span>.</span>'+
+         '<button class="btn pri" data-ask-client="'+m.k+'">בקש מהלקוח</button></div>';
+    if(m.note) s+='<div class="state">'+esc(m.note)+'</div>';
+  }
+  if(st==='trk'&&!m.target&&m.note) s+='<div class="state">'+esc(m.note)+'</div>';
+
+  s+='<div class="mw-f"><span class="src">'+srcTxt(m)+'</span>'+
+     '<button class="ask" data-q="'+esc(m.name)+'">שאל את העוזר '+ICO.back+'</button></div>';
+  return s+'</article>';
 }
-function renderList(){
-  var vis=visible(), out='', i;
-  GROUPS.forEach(function(G){
-    var items=vis.filter(function(m){return m.g===G.g;});
-    if(!items.length) return;
-    items.sort(function(a,b){return ORDER[stat(a)]-ORDER[stat(b)];});
-    out+='<section class="grp"><div class="ghd"><h2>'+esc(G.t)+'</h2><span class="sub">'+esc(G.s)+'</span>'+
-         '<span class="n num">'+(FILTER==='all'?items.length+' מדדים'
-        :items.length+' מתוך '+M.filter(function(m){return m.g===G.g;}).length)+'</span></div>'+
-         '<div class="cards">'+items.map(card).join('')+'</div></section>';
+
+/* ---------- הרשימה + שורת החודש ---------- */
+function counts(){
+  var c={dng:0,wait:0,off:0,near:0,ok:0,trk:0};
+  M.forEach(function(m){c[stateOf(m)]++;});
+  return c;
+}
+/* ---------- הרשימה מימין ---------- */
+var SELK=null;
+/* מיון: ברירת המחדל היא לפי מצב (מה שדורש טיפול קודם). לחיצה על כותרת
+   עמודה ממיינת לפיה; לחיצה חוזרת הופכת את הכיוון. */
+var SORT='state', DESC=false;
+var COLS=[['state','מצב'],['name','שם המדד'],['kind','סוג'],['val','בפועל'],['tgt','יעד']];
+var CV='<svg class="cv" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>';
+function mSort(k){ if(SORT===k) DESC=!DESC; else {SORT=k;DESC=false;} render(); }
+function renderHd(){
+  document.getElementById('mlHd').innerHTML=COLS.map(function(c){
+    return '<button class="'+(SORT===c[0]?'on':'')+(SORT===c[0]&&DESC?' desc':'')+
+           '" onclick="mSort(\''+c[0]+'\')">'+c[1]+CV+'</button>';}).join('');
+}
+function sortKey(m){
+  if(SORT==='name') return m.name;
+  if(SORT==='kind') return (SRC[m.src]||{}).lbl||'';
+  if(SORT==='val'){ var v=valOf(m); return v==null?-Infinity:v; }
+  if(SORT==='tgt') return m.target||-Infinity;
+  return null;
+}
+function sortList(){
+  var dist=function(m){var p=pctOf(m); if(p==null) return 0; return m.invert?(p-100):(100-p);};
+  var q=(document.getElementById('mQ')||{}).value||'';
+  q=q.trim();
+  var list=M.filter(function(m){ return !q||m.name.indexOf(q)>-1||((SRC[m.src]||{}).lbl||'').indexOf(q)>-1; });
+  list.sort(function(a,b){
+    if(SORT==='state') return (ORDER[stateOf(a)]-ORDER[stateOf(b)])||(dist(b)-dist(a));
+    var ka=sortKey(a), kb=sortKey(b);
+    if(typeof ka==='string') return ka.localeCompare(kb,'he');
+    return kb-ka;
   });
-  if(!out) out='<div class="empty"><b>אין מדד במצב הזה</b>'+
-    'כל המדדים של יוני נמצאים במצב אחר. אפשר לחזור לרשימה המלאה.'+
-    '<div><button class="btn" type="button" id="resetF">הצגת כל המדדים</button></div></div>';
-  var g=document.getElementById('groups');
-  g.innerHTML=out;
-  var rf=document.getElementById('resetF');
-  if(rf) rf.addEventListener('click',function(){setFilter('all');});
-  var cs=g.querySelectorAll('.mc');
-  for(i=0;i<cs.length;i++){
-    cs[i].addEventListener('click',function(){openMetric(this.getAttribute('data-open'));});
-    cs[i].addEventListener('keydown',function(e){
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();openMetric(this.getAttribute('data-open'));}
-    });
+  if(DESC) list.reverse();
+  return list;
+}
+
+function mRow(m){
+  var st=stateOf(m), v=valOf(m);
+  var val = st==='wait' ? '<span class="ml-v pale">ממתין</span>'
+                        : '<span class="ml-v">'+num(m,v)+'</span>';
+  var tgt = m.target ? '<span class="ml-g">'+plain(m,m.target)+'</span>'
+                     : '<span class="ml-g pale">—</span>';
+  return '<button class="ml-row s-'+st+(SELK===m.k?' on':'')+'" data-k="'+m.k+'" onclick="mArena(\''+m.k+'\')">'+
+    '<span class="ml-dot"></span>'+
+    '<span class="ml-n">'+esc(m.name)+'</span>'+
+    kindTag(m)+val+tgt+'</button>';
+}
+
+/* ---------- זירת המדד ---------- */
+/* סדרת ימי החודש — **כמה היה בכל יום**, לא צבירה.
+   מדד זרימה (₪/ליטר): סכום הימים = הערך של החודש. מדד מצב (%): הערך שנמדד באותו יום.
+   השונות דטרמיניסטית לפי מפתח המדד, כדי שהגרף לא יקפוץ בכל רינדור. */
+var TREND='m';   /* m = חודשים · d = ימים */
+function trendTg(k){TREND=k;mArena(SELK);}
+function seedOf(k){var s=0;for(var i=0;i<k.length;i++)s=(s*31+k.charCodeAt(i))%997;return s;}
+function dailySeries(m){
+  var tot=valOf(m); if(tot==null) return null;
+  var n=WORKDAYS, s=seedOf(m.k), raw=[], i, sum=0;
+  var flow=!m.invert&&!m.rate&&m.unit!=='%';
+  for(i=0;i<n;i++){
+    s=(s*1103515245+12345)%2147483648;
+    raw.push(0.55+(s/2147483648)*0.9);          /* 0.55–1.45 */
+    sum+=raw[i];
   }
-  document.getElementById('rest').textContent=
-    FILTER==='all'? M.length+' מדדים במעקב עבורך' : 'מוצגים '+vis.length+' מתוך '+M.length+' מדדים';
-  sizeBars();
+  if(flow) return raw.map(function(x){return tot*x/sum;});      /* סכום הימים = החודש */
+  return raw.map(function(x){return tot*(0.82+x*0.24);});       /* מצב — מתנדנד סביב הערך */
 }
-function renderChips(){
-  var c={ok:0,near:0,bad:0,wait:0,none:0};
-  M.forEach(function(m){c[bucket(m)]++;});
-  var defs=[['all','הכול',M.length],['bad','לא ביעד',c.bad],['near','קרוב ליעד',c.near],
-            ['ok','ביעד',c.ok],['wait','מחכים לך',c.wait],['none','מעקב · בלי יעד',c.none]];
-  var h='',i;
-  defs.forEach(function(d){
-    if(!d[2]) return;
-    h+='<button class="chip'+(FILTER===d[0]?' on':'')+'" type="button" data-f="'+d[0]+'">'+d[1]+' <s>'+d[2]+'</s></button>';
-  });
-  document.getElementById('chips').innerHTML=h;
-  var cs=document.querySelectorAll('#chips .chip');
-  for(i=0;i<cs.length;i++) cs[i].addEventListener('click',function(){setFilter(this.getAttribute('data-f'));});
-}
-function setFilter(f){FILTER=f;renderChips();renderClose();renderList();}
-/* רוחב פסים נקבע מה-DOM ולא מ-style= במארקאפ */
-function sizeBars(){
-  var els=document.querySelectorAll('[data-w]'),i;
-  for(i=0;i<els.length;i++) els[i].style.width=els[i].getAttribute('data-w')+'%';
-}
-
-/* ===================== מודאלים ===================== */
-function openOv(html,focusSel){
-  var md=document.getElementById('md');
-  md.innerHTML=html;
-  lastFocus=document.activeElement;
-  document.getElementById('ov').classList.add('on');
-  var f=md.querySelector(focusSel||'button');
-  if(f) f.focus();
-  var xs=md.querySelectorAll('[data-close]'),i;
-  for(i=0;i<xs.length;i++) xs[i].addEventListener('click',closeOv);
-}
-function closeOv(){
-  document.getElementById('ov').classList.remove('on');
-  document.getElementById('md').innerHTML='';
-  if(lastFocus&&lastFocus.focus) lastFocus.focus();
-}
-function byId(id){return M.filter(function(m){return m.id===id;})[0];}
-
-function openMetric(id,focusInput){
-  var m=byId(id); if(!m) return;
-  var s=stat(m), meta=ST[s], p=pctOf(m);
-  var gapTxt='—', gapCls='q', gapFoot=m.actual==null?'ימולא ברגע שתזין את המספר':'למדד הזה אין יעד חודשי';
-  if(m.actual!=null&&m.target!=null){
-    var g=m.actual-m.target, good=m.invert?g<=0:g>=0, ab=Math.abs(g);
-    gapTxt=(m.unit==='%'?'<span class="mn">'+nf(ab)+'</span> <small>נק׳</small>'
-                        :'<span class="mn">'+nf(ab)+'</span> '+unitTag(m));
-    if(ab===0){gapTxt='<span class="mn">0</span>';gapFoot='בדיוק על היעד';}
-    else gapFoot=m.invert?(good?'מתחת לתקרה — יש לך מרווח':'מעל התקרה')
-                         :(good?'מעל היעד':'חסרים כדי לעמוד ביעד');
-    gapCls=good?'ok':(s==='money'?'money':(s==='near'?'near':'bad'));
+/* עמודה ליום — ורואים מיד אילו ימים היו מעל קצב היעד היומי */
+function dayChart(m){
+  var d=dailySeries(m); if(!d) return '';
+  var mx=Math.max.apply(null,d), flow=!m.invert&&!m.rate&&m.unit!=='%';
+  var per=(m.target&&flow)?m.target/WORKDAYS:null;
+  if(per&&per>mx) mx=per;
+  var s='<div class="dbars">';
+  for(var i=0;i<d.length;i++){
+    var h=Math.max(3,d[i]/mx*100);
+    s+='<i class="'+(per&&d[i]>=per?'up':'')+'" style="height:'+h.toFixed(1)+'%" '+
+       'title="יום '+(i+1)+' · '+plain(m,d[i])+'"></i>';
   }
-  var h='<div class="mh"><div><h3 id="mdTtl">'+esc(m.name)+'</h3>'+
-    '<div class="sub">'+esc(m.kind)+' · '+esc(m.src)+'</div></div>'+
-    '<button class="x" type="button" data-close="1" aria-label="סגירה">✕</button></div><div class="mb">';
+  if(per) s+='<u style="bottom:'+(per/mx*100).toFixed(1)+'%"><em>יעד יומי '+plain(m,per)+'</em></u>';
+  s+='</div><div class="dax"><span>יום '+WORKDAYS+'</span><span class="sp"></span><span>יום 1</span></div>';
+  return s;
+}
 
-  h+='<div class="stats">'+
-     '<div class="stat"><div class="l">בפועל · יוני</div><div class="v '+
-        (m.actual==null?'q':(s==='money'?'money':s==='bad'?'bad':s==='near'?'near':s==='ok'?'ok':''))+'">'+
-        (m.actual==null?'טרם הוזן':val(m,m.actual))+'</div>'+
-        '<div class="f">'+(delta(m)||'אין חודש קודם להשוואה')+'</div></div>'+
-     '<div class="stat"><div class="l">'+(m.invert?'תקרה חודשית':'יעד חודשי')+'</div><div class="v'+(m.target==null?' q':'')+'">'+
-        (m.target==null?'ללא יעד':val(m,m.target))+'</div>'+
-        '<div class="f">'+(m.target==null?'מדד מעקב':(p!=null?p+'% '+(m.capLbl||'מהיעד')+' בפועל':'ימולא עם ההזנה'))+'</div></div>'+
-     '<div class="stat"><div class="l">הפער מהיעד</div><div class="v '+gapCls+'">'+gapTxt+'</div>'+
-        '<div class="f">'+esc(gapFoot)+'</div></div>'+
-     '</div>';
-
-  h+='<div class="big-sp s-'+s+'">'+spark(m,600,120)+'<div class="mos">'+
-     m.hist.map(function(v,i){
-       return '<div class="mo'+(i===5?' now':'')+'">'+MONTHS[i]+'<b>'+(v==null?'—':nf(v))+'</b></div>';
-     }).join('')+'</div></div>';
-
-  h+='<div class="note'+(m.money?' money':'')+'"><span class="h">מה המספר הזה</span>'+esc(m.what)+'</div>';
-  h+='<div class="note"><span class="h">למה זה חשוב לך</span>'+esc(m.why)+'</div>';
-
-  var hasEntry=(m.actual==null&&m.g==='own');
-  if(hasEntry)
-    h+='<div class="entry"><span class="h">הזנת המספר של יוני</span>'+
-       '<div class="rowi"><input id="entIn" type="text" inputmode="numeric" placeholder="0" aria-label="הבפועל של יוני">'+
-       '<span class="hint">'+(m.unit==='₪'?'בשקלים':m.unit==='%'?'באחוזים':'ב'+esc(m.unit))+
-       ' · מאי נסגר על <b class="mn">'+nf(m.hist[4])+'</b></span></div></div>';
-
-  h+='</div><div class="mf">'+
-     (hasEntry?'<button class="btn pri" type="button" id="saveEnt">שמירת המספר</button>':
-               '<a class="btn pri" href="ai.html?q='+encodeURIComponent('הסבר לי את המדד '+m.name)+'">לשאול את העוזר</a>')+
-     '<a class="btn" href="messages.html">שאלה לאילון</a>'+
-     '<span class="sp"></span><button class="btn" type="button" data-close="1">סגירה</button></div>';
-
-  openOv(h, focusInput&&hasEntry?'#entIn':'.btn.pri');
-  if(hasEntry){
-    var inp=document.getElementById('entIn');
-    document.getElementById('saveEnt').addEventListener('click',function(){saveEntry(m);});
-    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();saveEntry(m);}});
+function histBars(m){
+  var H=m.hist||[], mx=0, i;
+  for(i=0;i<H.length;i++) if(H[i]!=null&&H[i]>mx) mx=H[i];
+  if(m.target&&m.target>mx) mx=m.target;
+  if(!mx) return '';
+  var s='<div class="sect row" style="margin-top:18px">מגמה — ששת החודשים האחרונים'+trendTgl()+'</div><div class="hb">';
+  for(i=0;i<6;i++){
+    var v=H[i], h=v==null?12:Math.max(4,v/mx*74);
+    s+='<div class="c'+(i===MI?' on':'')+(v==null?' nul':'')+'">'+
+       '<u>'+(v==null?'—':nf(v))+'</u>'+
+       '<s style="height:'+h.toFixed(0)+'px"></s>'+
+       '<em>'+MONTHS[i]+'</em></div>';
   }
-}
-function saveEntry(m){
-  var raw=document.getElementById('entIn').value.replace(/[^\d.-]/g,'');
-  var v=parseFloat(raw);
-  if(!raw||isNaN(v)){toast('צריך מספר כדי לשמור');document.getElementById('entIn').focus();return;}
-  m.actual=v; m.hist[5]=v;
-  closeOv(); renderAll();
-  toast(m.name+' · יוני נשמר על '+nf(v)+(m.unit==='₪'?' ₪':''));
-}
-function openJuly(){
-  var h='<div class="mh"><div><h3 id="mdTtl">היעדים המעודכנים ליולי</h3>'+
-    '<div class="sub">אילון אשכנזי · על בסיס ינואר—יוני 2026</div></div>'+
-    '<button class="x" type="button" data-close="1" aria-label="סגירה">✕</button></div><div class="mb">';
-  h+='<div class="note"><span class="h">מה משתנה</span>שלושה יעדים בלבד. כל השאר נשארים כפי שהם. '+
-     'היעדים נכנסים לתוקף רטרואקטיבית מ-01.07 ומופיעים בכרטיסים כאן במסך.</div>';
-  h+='<div class="jl"><div class="r hd"><span class="t">המדד</span><span class="o">יעד יוני</span><span class="nw">יעד יולי</span></div>'+
-     JULY.map(function(r){
-       return '<div class="r"><span class="t">'+esc(r.t)+'</span>'+
-         '<span class="o"><span class="mn">'+nf(r.o)+'</span> ₪</span>'+
-         '<span class="nw"><span class="mn">'+nf(r.n)+'</span> ₪</span></div>';
-     }).join('')+'</div>';
-  h+='</div><div class="mf">'+
-     (julyDone?'<span class="al ok">אישרת את היעדים האלה</span>'
-              :'<button class="btn pri" type="button" id="okJuly">אישור שלושת היעדים</button>'+
-               '<a class="btn" href="messages.html">בקשת שינוי מאילון</a>')+
-     '<span class="sp"></span><button class="btn" type="button" data-close="1">סגירה</button></div>';
-  openOv(h,julyDone?'.btn':'.btn.pri');
-  var b=document.getElementById('okJuly');
-  if(b) b.addEventListener('click',function(){
-    julyDone=true; closeOv(); renderAll(); toast('שלושת היעדים ליולי אושרו · אילון קיבל הודעה');
-  });
-}
-function openJune(){
-  var c={ok:0,near:0,bad:0,wait:0,none:0};
-  M.forEach(function(m){c[bucket(m)]++;});
-  var h='<div class="mh"><div><h3 id="mdTtl">סיכום יוני 2026</h3>'+
-    '<div class="sub">עשרה מדדים במעקב · הנתונים מעודכנים ל-01.07 בשעה 23:40</div></div>'+
-    '<button class="x" type="button" data-close="1" aria-label="סגירה">✕</button></div><div class="mb">';
-  h+='<div class="stats">'+
-     '<div class="stat"><div class="l">ביעד</div><div class="v ok">'+c.ok+'</div><div class="f">מתוך '+(c.ok+c.near+c.bad)+' מדדים שנמדדו</div></div>'+
-     '<div class="stat"><div class="l">קרוב ליעד</div><div class="v near">'+c.near+'</div><div class="f">פער של עד 15%</div></div>'+
-     '<div class="stat"><div class="l">לא ביעד</div><div class="v bad">'+c.bad+'</div><div class="f">מהם אחד בסכנה כספית</div></div></div>';
-  h+='<div class="note money"><span class="h">מה הכי דחוף</span>'+
-     '<b>כרית הביטחון בעו״ש ירדה לתשעה ימים</b>, מול יעד של 14. באותו חודש החוב הפתוח לגבייה '+
-     'הגיע ל-38,400 ₪ — חמישה חודשים רצופים של עלייה. גבייה של מחצית מהחוב מחזירה את הכרית מעל היעד.</div>';
-  h+='<div class="note"><span class="h">מה עבד</span>ההוצאות נסגרו על 97% מהתקציב, ההכנסה ליום עבודה מעל היעד '+
-     'וסליקת המכירות עברה את היעד ב-11%. הקושי ביוני הוא בקצב הכניסה של הכסף, לא בהיקף הפעילות.</div>';
-  h+='</div><div class="mf"><a class="btn pri" href="meetings.html">להעלות בפגישה הקרובה</a>'+
-     '<a class="btn" href="messages.html">שליחת שאלה לאילון</a>'+
-     '<span class="sp"></span><button class="btn" type="button" data-close="1">סגירה</button></div>';
-  openOv(h,'.btn.pri');
+  return s+'</div>';
 }
 
-/* ===================== toast ===================== */
-var tT=null;
-function toast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(tT); tT=setTimeout(function(){t.classList.remove('show');},2600);
+function trendTgl(){
+  return '<span class="tgl">'+
+    '<button class="'+(TREND==='d'?'on':'')+'" onclick="trendTg(\'d\')">ימים</button>'+
+    '<button class="'+(TREND==='m'?'on':'')+'" onclick="trendTg(\'m\')">חודשים</button></span>';
+}
+function trendBlock(m){
+  if(TREND==='d'){
+    var c=dayChart(m);
+    return '<div class="sect row" style="margin-top:18px">לאורך '+MONTHS[MI]+' — כמה בכל יום'+trendTgl()+'</div>'+
+           (c||'<div class="state">אין נתון ל'+MONTHS[MI]+' — הפילוח היומי ייבנה כשהמספר יתקבל.</div>');
+  }
+  return histBars(m);
 }
 
-/* ===================== הרצה ===================== */
-function renderAll(){renderLive();renderChips();renderClose();renderList();}
+function mArena(k){
+  var m=byKey(k); if(!m) return;
+  SELK=k;
+  var rows=document.querySelectorAll('.ml-row');
+  for(var i=0;i<rows.length;i++) rows[i].classList.toggle('on',rows[i].dataset.k===k);
 
-document.getElementById('ov').addEventListener('click',function(e){if(e.target===this) closeOv();});
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'&&document.getElementById('ov').classList.contains('on')) closeOv();
+  var st=stateOf(m), v=valOf(m), f=FLAG[st];
+  var H=m.hist||[], lastI=-1, j;
+  for(j=0;j<MI;j++) if(H[j]!=null) lastI=j;
+
+  var head='<div class="marn-h">'+
+    '<div class="k">'+kindTag(m)+'<span class="tag">'+srcTxt(m)+'</span><span class="tag">'+m.freq+'</span></div>'+
+    '<h2>'+esc(m.name)+'</h2>';
+  if(st==='wait'){
+    head+='<div class="vrow"><div class="big pale">'+(lastI>=0?num(m,H[lastI]):'—')+'</div>'+
+      (m.target?'<div class="tgtbox"><span>'+(m.invert?'תקרה':'יעד')+'</span><b>'+plain(m,m.target)+'</b></div>':'')+
+      '</div><div class="tgt">'+(lastI>=0?'המספר האחרון · '+MONTHS[lastI]:'אין נתון קודם')+'</div>';
+  }else{
+    /* בפועל גדול, ולצידו משמאל היעד — כדי שההשוואה תהיה במבט אחד */
+    head+='<div class="vrow"><div class="big">'+num(m,v)+'</div>'+
+      (m.target?'<div class="tgtbox"><span>'+(m.invert?'תקרה':'יעד')+'</span><b>'+plain(m,m.target)+'</b></div>':'')+
+      '</div><div class="tgt">'+(m.target?MONTHS[MI]+' 2026':'מדד מעקב · בלי יעד חודשי')+'</div>';
+  }
+  head+='</div>';
+
+  var b='<div class="marn-b">';
+  b+='<div class="flag '+f.cls+'" style="margin-bottom:12px">'+f.t+'</div>';
+  if(st!=='wait'&&m.target) b+=trackHtml(m,st)+scaleHtml(m,st)+gapHtml(m,st);
+  if(st==='future'){
+    b+='<div class="state">'+MONTHS[MI]+' עוד לא התחיל. היעד כבר מוגדר — המעקב ייפתח עם תחילת החודש.</div>';
+  }
+  if(st==='wait'){
+    b+= SENT[m.k]
+      ? '<div class="wait sent"><span class="tx">הבקשה נשלחה לצחי עובד · <span class="mn">10:54</span></span></div>'
+      : '<div class="wait"><span class="tx">מתעדכן ידנית — <b>טרם עודכן ל'+MONTHS[MI]+'</b>. '+
+        'אחרון להזנה <span class="mn">'+CLOSE_DUE+'</span>.</span>'+
+        '<button class="btn pri" data-ask-client="'+m.k+'">בקש מהלקוח</button></div>';
+  }
+  b+=trendBlock(m);
+  if(m.note) b+='<div class="sect" style="margin-top:18px">מה המדד אומר</div><div class="state">'+esc(m.note)+'</div>';
+  b+='<div class="marn-acts">'+
+     '<button class="btn pln ask" data-q="'+esc(m.name)+'">שאל את העוזר על המדד</button>'+
+     '<button class="btn pln" data-edit="'+M.indexOf(m)+'">עריכת המדד</button></div>';
+  b+='</div>';
+
+  document.getElementById('marena').innerHTML='<div class="panel marn">'+head+b+'</div>';
+}
+
+function render(){
+  var list=sortList();
+  renderHd();
+  document.getElementById('mlist').innerHTML=
+    list.length?list.map(mRow).join('')
+               :'<div class="tl-empty">לא נמצא מדד שמכיל את מה שחיפשת</div>';
+  /* בלי מלל קבוע — הספירה מופיעה רק כשמסננים, ואז היא באמת אומרת משהו */
+  var q=((document.getElementById('mQ')||{}).value||'').trim();
+  document.getElementById('mlCnt').textContent = q ? list.length+' מתוך '+M.length : '';
+  if(!SELK||!byKey(SELK)) SELK=(list[0]||M[0]).k;
+  mArena(SELK);
+
+  var c=counts(), goals=M.filter(function(m){return m.target;}).length;
+  var pace=c.ok+c.near, need=c.dng+c.off, wait=c.wait;
+  document.getElementById('moName').textContent=MONTHS[MI]+' 2026';
+  var elS=document.getElementById('moSent'), elF=document.getElementById('moFacts');
+
+  var sent='<b>'+pace+' מ-'+goals+' יעדים '+(monthOpen()?'בקצב':'נסגרו ביעד')+'</b>';
+  if(need)  sent+=' · <span class="'+(c.dng?'d':'w')+'">'+need+' דורשים טיפול</span>';
+  if(wait)  sent+=' · '+(wait===1?'מדד אחד מחכה':wait===2?'שני מדדים מחכים':wait+' מדדים מחכים')+' למספר מהלקוח';
+  if(!need&&!wait) sent+=' · אין מה לטפל';
+  if(elS) elS.innerHTML=sent;
+
+  var facts='<span class="mn">'+WORKDAYS+'</span> ימי עבודה ב'+MONTHS[MI]+
+            ' · היעד היומי נגזר מהם<br>';
+  facts+= wait? 'אחרון להזנת המספרים הידניים · <b class="mn">'+CLOSE_DUE+'</b>'
+              : 'כל המספרים התקבלו · הדוח שלם';
+  var waiting=M.filter(function(m){return stateOf(m)==='wait'&&!SENT[m.k];});
+  if(waiting.length) facts+='<br><button class="btn pri" id="askAll">'+
+    (waiting.length===1?'בקשו את המספר מהלקוח':
+     waiting.length===2?'בקשו את שני המספרים':'בקשו את '+waiting.length+' המספרים')+'</button>';
+  if(elF) elF.innerHTML=facts;
+
+  document.getElementById('moPrev').disabled=(MI<=0);
+  document.getElementById('moNext').disabled=(MI>=MONTHS.length-1);
+  var st=document.getElementById('moTag');
+  if(st) st.textContent = MI<CUR_MI?'נסגר' : MI===CUR_MI?'בעיצומו' : 'עתידי';
+  renderMgr();
+}
+
+/* ---------- ניהול המדדים ---------- */
+function renderMgr(){
+  document.getElementById('mgrSub').textContent=
+    M.length+' מדדים · '+WORKDAYS+' ימי עבודה בחודש';
+
+  document.getElementById('wdPills').innerHTML=[20,21,22,23].map(function(d){
+    return '<button class="pill'+(d===WORKDAYS?' on':'')+'" data-wd="'+d+'">'+d+'</button>';}).join('');
+
+  document.getElementById('mtbody').innerHTML=M.map(function(m,i){
+    /* יעד יומי רלוונטי רק למדד מצטבר בכסף/כמות — לא לתקרה, לא לאחוז ולא לימים */
+    var monthly=m.rate?'—':(m.target?plain(m,m.target):'—');
+    var daily=m.rate?plain(m,m.target)
+      :(m.target&&!m.invert&&m.unit!=='%'&&m.unit!=='ימים'?plain(m,m.target/WORKDAYS):'—');
+    return '<tr>'+
+      '<td><div class="nm">'+esc(m.name)+'</div></td>'+
+      '<td>'+kindTag(m)+'</td>'+
+      '<td class="src">'+srcTxt(m)+'</td>'+
+      '<td class="num">'+monthly+'</td>'+
+      '<td class="num">'+daily+'</td>'+
+      '<td><div class="tools">'+
+        '<button class="ibtn" title="עריכת המדד" data-edit="'+i+'">'+
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'+
+      '</div></td></tr>';
+  }).join('');
+}
+
+/* ---------- עורך המדד ---------- */
+var EX=-1, D=null;   /* D — עותק עבודה; נשמר רק ב"שמירה" */
+function openMx(i){
+  EX=i;
+  D=i>=0 ? JSON.parse(JSON.stringify(M[i]))
+         : {k:'m'+Date.now(), name:'', src:'hand', unit:'₪', target:null,
+            cell:'', gid:'', logic:LOGIC[0], cats:[], calc:'',
+            hist:[null,null,null,null,null,null], note:''};
+  document.getElementById('mxTtl').textContent = i>=0?'עריכת מדד':'מדד חדש';
+  document.getElementById('mxName').value=D.name;
+  document.getElementById('mxTarget').value=D.target==null?'':D.target;
+  document.getElementById('mxActual').value=(D.hist&&D.hist[MI]!=null)?D.hist[MI]:'';
+  document.getElementById('mxCell').value=D.cell||'';
+  document.getElementById('mxGid').value=D.gid||'';
+  document.getElementById('mxDel').classList.toggle('hid', i<0);
+  document.getElementById('mxDelBar').classList.add('hid');
+  drawMx();
+  document.getElementById('mxOv').classList.add('on');
+  setTimeout(function(){document.getElementById('mxName').focus();},60);
+}
+function closeMx(){document.getElementById('mxOv').classList.remove('on');EX=-1;D=null;}
+function pills(id,arr,cur,attr){
+  var el=document.getElementById(id); if(!el) return;
+  el.innerHTML=arr.map(function(v){
+    return '<button class="pill'+(v===cur||(Array.isArray(cur)&&cur.indexOf(v)>=0)?' on':'')+
+           '" data-'+attr+'="'+esc(v)+'">'+esc(v)+'</button>';}).join('');
+}
+/* סוג המדד כמו במערכת: עצמאי · מחושב · לפי קטגוריות. סנכרון מגיליון הוא
+   מתג בתוך "עצמאי", ולא סוג בפני עצמו. */
+var KINDS=[['hand','מדד עצמאי'],['calc','מדד מחושב'],['cats','מדד לפי קטגוריות']];
+function kindOf(){return D.src==='sheets'?'hand':D.src;}
+function drawMx(){
+  pills('mxSrc',KINDS.map(function(x){return x[1];}),
+        (KINDS.filter(function(x){return x[0]===kindOf();})[0]||KINDS[0])[1],'kind');
+  pills('mxUnit',['₪','1-2'],D.unit==='₪'?'₪':'1-2','unit');
+  pills('mxLogic',LOGIC,D.logic,'logic');
+  pills('mxCats',CATLIST,D.cats||[],'cat');
+  pills('mxCalc',CALCS,D.calc,'calc');
+
+  var kind=kindOf();
+  document.getElementById('mxPaneManual').classList.toggle('hid',kind!=='hand');
+  document.getElementById('mxPaneCalc').classList.toggle('hid',kind!=='calc');
+  document.getElementById('mxPaneCats').classList.toggle('hid',kind!=='cats');
+  document.getElementById('mxSrcHint').textContent=
+    kind==='hand'?'הלקוח מזין את המספר פעם בחודש — או שהוא נמשך מגיליון. אם לא עודכן, המדד יופיע כמצב עם בקשה.':
+    kind==='calc'?'הבפועל מחושב מהנוסחה — אין מה להזין.':
+                  'הבפועל מתעדכן אוטומטית מנתוני האמת ב-Bizibox.';
+
+  var sh=(D.src==='sheets');
+  var tog=document.getElementById('mxShOn');
+  tog.classList.toggle('on',sh); tog.setAttribute('aria-checked',sh?'true':'false');
+  document.getElementById('mxShF').classList.toggle('hid',!sh);
+  document.getElementById('mxActualF').classList.toggle('hid',sh);
+
+  var noT=(D.target==null||!(D.target>0));
+  document.getElementById('mxNoTgt').classList.toggle('on',noT);
+  document.getElementById('mxTarget').disabled=noT;
+
+  var tv=parseFloat(document.getElementById('mxTarget').value);
+  document.getElementById('mxDaily').textContent=
+    (tv>0&&D.unit==='₪')?'יעד יומי '+nf(tv/WORKDAYS)+' ₪ · לפי '+WORKDAYS+' ימי עבודה':'';
+}
+
+/* ---------- חיווט ---------- */
+document.addEventListener('click',function(e){
+  var t=e.target.closest('button'); if(!t) return;
+
+  /* שאל את העוזר על מדד */
+  if(t.classList.contains('ask')&&t.dataset.q){
+    askAI('הסבר לי את המדד '+t.dataset.q+' של אנרגי אינטרנשיונל ב'+MONTHS[MI]+' — למה הוא במצב הזה ומה כדאי לעשות'); return;}
+
+  /* בקשת מספר מהלקוח */
+  if(t.dataset.askClient){
+    var m=byKey(t.dataset.askClient); SENT[m.k]=1; render();
+    toast('נשלחה בקשה לצחי עובד בקבוצת הוואטסאפ — '+m.name+' ל'+MONTHS[MI]); return;}
+  if(t.id==='askAll'){
+    var w=M.filter(function(x){return stateOf(x)==='wait'&&!SENT[x.k];});
+    w.forEach(function(x){SENT[x.k]=1;}); render();
+    toast('נשלחה בקשה לצחי עובד — '+w.map(function(x){return x.name;}).join(' · ')); return;}
+
+  /* בורר החודש */
+  if(t.id==='moPrev'){MI=Math.max(0,MI-1);render();return;}
+  if(t.id==='moNext'){MI=Math.min(MONTHS.length-1,MI+1);render();return;}
+
+  /* ניהול המדדים */
+  if(t.id==='mgrH'){
+    var open=t.getAttribute('aria-expanded')==='true';
+    t.setAttribute('aria-expanded',String(!open));
+    document.getElementById('mgrB').classList.toggle('hid',open);
+    if(!open) setTimeout(function(){t.scrollIntoView({behavior:'smooth',block:'start'});},60);
+    return;}
+  if(t.dataset.wd){WORKDAYS=parseInt(t.dataset.wd,10);render();toast('ימי העבודה עודכנו ל-'+WORKDAYS+' — היעדים היומיים חושבו מחדש');return;}
+  if(t.dataset.edit!=null&&!D){openMx(parseInt(t.dataset.edit,10));return;}
+  if(t.id==='addM'){openMx(-1);return;}
+
+  /* העורך */
+  if(!D) return;
+  if(t.id==='mxX'||t.id==='mxCancel'){closeMx();return;}
+  if(t.dataset.unit){D.unit=(t.dataset.unit==='₪')?'₪':'מספר';drawMx();return;}
+  if(t.dataset.kind){
+    KINDS.forEach(function(x){if(x[1]===t.dataset.kind) D.src=x[0];});
+    drawMx();return;}
+  if(t.id==='mxShOn'){D.src=(D.src==='sheets')?'hand':'sheets';drawMx();return;}
+  if(t.id==='mxNoTgt'){
+    if(D.target>0){D.target=null;document.getElementById('mxTarget').value='';}
+    else{D.target=0;document.getElementById('mxTarget').disabled=false;
+         setTimeout(function(){document.getElementById('mxTarget').focus();},10);}
+    drawMx();return;}
+  if(t.dataset.logic){D.logic=t.dataset.logic;drawMx();return;}
+  if(t.dataset.calc){D.calc=t.dataset.calc;drawMx();return;}
+  if(t.dataset.cat){
+    D.cats=D.cats||[]; var ix=D.cats.indexOf(t.dataset.cat);
+    if(ix>=0)D.cats.splice(ix,1); else D.cats.push(t.dataset.cat);
+    drawMx();return;}
+  if(t.id==='mxDel'){document.getElementById('mxDelBar').classList.remove('hid');return;}
+  if(t.id==='mxDelNo'){document.getElementById('mxDelBar').classList.add('hid');return;}
+  if(t.id==='mxDelYes'){var nm=M[EX].name;M.splice(EX,1);closeMx();render();toast('המדד "'+nm+'" נמחק');return;}
+  if(t.id==='mxSave'){
+    D.name=document.getElementById('mxName').value.trim()||'מדד חדש';
+    var tv=parseFloat(document.getElementById('mxTarget').value);
+    D.target=isNaN(tv)?null:tv;
+    D.cell=document.getElementById('mxCell').value.trim();
+    D.gid=document.getElementById('mxGid').value.trim();
+    var av=parseFloat(document.getElementById('mxActual').value);
+    if(!isNaN(av)){ D.hist=D.hist||[]; D.hist[MI]=av; }
+    var nm2=D.name;
+    if(EX>=0) M[EX]=D; else M.push(D);
+    closeMx();render();toast('המדד "'+nm2+'" נשמר');return;}
 });
-/* חוזה ה-URL: ?f= סינון · ?m= מדד לפתיחה */
-(function(){
-  var q=new URLSearchParams(location.search);
-  var f=q.get('f');
-  if(f&&['all','ok','near','bad','wait','none'].indexOf(f)>-1) FILTER=f;
-  renderAll();
-  var mid=q.get('m');
-  if(mid&&byId(mid)) openMetric(mid);
-})();
-})();
+/* קלט בעורך — יעד יומי מתעדכן חי, וחוקי ההתראה נשמרים בעותק העבודה */
+document.addEventListener('input',function(e){
+  if(!D) return;
+  if(e.target.id==='mxTarget'){
+    var v=parseFloat(e.target.value); D.target=isNaN(v)?null:v;
+    document.getElementById('mxDaily').textContent=
+      (v>0&&D.unit==='₪')?'יעד יומי '+nf(v/WORKDAYS)+' ₪ · לפי '+WORKDAYS+' ימי עבודה':'';
+  }
+});
+/* סגירת העורך בלחיצה על הרקע (Escape כבר מטופל ב-cli.js) */
+document.getElementById('mxOv').addEventListener('click',function(e){if(e.target===this)closeMx();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&D)closeMx();});
+
+render();
 </script>
 </body>
 </html>

@@ -1,0 +1,221 @@
+/* =====================================================================
+   HK · מסכי החברה של היועץ (docs/cli) — שכבת הכרום המשותפת
+   כל חמשת המסכים טוענים את הקובץ הזה ואז את ה-CSS הייחודי שלהם.
+   כאן חיים: הטוקנים · הניווט · רצועת החברה · הפס הכחול · הפאנלים ·
+   הכפתורים · הפופאפים · הטוסט · גרירת הקובץ.
+   שפה: hak.co.il — קורל=פעולה · אדום עמוק=סכנה כספית · נייבי=מצב ומבנה.
+   ===================================================================== */
+:root{
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;
+  --coral:#E4826E;--coral-d:#D96A55;
+  --bad:#C43D30;--bad-on-navy:#FF9E93;--good:#13895b;--warn:#9A6300;
+  --ink:#28425C;--ink2:#54708C;--ink3:#93A3B2;--faint:#B7C3CF;
+  --bd:#E3EAF3;--cardbd:#eef2f6;--bg:#F6F8FB;--tint:#F0F5FA;--chip:#EDF2F8;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;
+  /* אותה הרמה בדיוק של כרטיס הווידג'ט במערכת — כדי שהכל ייראה משפחה אחת */
+  --lift:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05);
+  --nav-h:58px;--strip-h:72px;--bar-h:52px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--ink);
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--coral);outline-offset:2px}
+::selection{background:rgba(228,130,110,.28)}
+.hid{display:none !important}
+
+/* ---------- ניווט ---------- */
+.nav{height:var(--nav-h);background:#fff;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;padding:0 26px;gap:22px}
+@media(max-width:1500px){.nav li a{padding:8px 10px;font-size:13px}.nav{gap:16px}}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--navy);font-size:14.5px;letter-spacing:-.2px}
+.nav .brand i{display:inline-flex;align-items:center;justify-content:center;direction:ltr;
+  width:30px;height:30px;border-radius:9px;background:var(--navy);color:#fff;font-style:normal;
+  font-size:12.5px;font-weight:700;box-shadow:inset 0 -8px 14px rgba(57,171,226,.35)}
+.nav .brand i b{color:#7CC9F2}
+/* פירורית החברה — מחליפה את הרצועה בארבעת המסכים שאינם הדשבורד.
+   מספיקה כדי לדעת איפה אנחנו, בלי הבלוק הכבד שהשווה בין כל המסכים. */
+.nav .crumb{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;
+  color:var(--navy);padding:6px 13px;border-radius:999px;background:var(--bg);
+  border:1px solid var(--bd);margin-inline-start:-18px}
+.nav .crumb:hover{border-color:#CFDCE9}
+.nav .crumb .d{width:7px;height:7px;border-radius:50%;background:var(--coral);flex:none}
+.nav ul{display:flex;list-style:none;gap:2px}
+.nav li a{position:relative;display:flex;align-items:center;gap:6px;padding:8px 14px;
+  border-radius:999px;color:var(--ink2);font-size:13.5px;font-weight:500}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{color:var(--navy);font-weight:700}
+.nav li a.on::after{content:"";position:absolute;inset-inline:14px;bottom:1px;height:3px;border-radius:99px;background:var(--coral)}
+.nav li a em{font-style:normal;font-size:10.5px;font-weight:700;min-width:17px;height:17px;padding:0 5px;
+  border-radius:99px;background:var(--coral);color:#fff;display:grid;place-items:center;line-height:1}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:11px;font-size:12px;color:var(--ink3);text-align:end}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
+.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--bg);
+  border:1px solid var(--bd);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+
+/* ---------- רצועת החברה ---------- */
+.strip{height:var(--strip-h);background:var(--navy);color:#fff;display:flex;align-items:center;padding:0 30px;gap:22px}
+.strip h1{font-weight:800;font-size:26px;letter-spacing:-.5px;position:relative;padding-bottom:3px}
+.strip h1::after{content:"";position:absolute;inset-inline-start:1px;bottom:-3px;width:26px;height:4px;border-radius:99px;background:var(--coral)}
+.strip .sub{font-size:12.5px;color:var(--on-navy2);font-weight:300;margin-top:2px}
+.strip .sub b{color:var(--on-navy);font-weight:500}
+.strip .st{font-size:11.5px;font-weight:600;border:1px solid rgba(255,255,255,.28);border-radius:999px;
+  padding:3px 11px;color:var(--on-navy);align-self:center}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:12.5px;color:var(--on-navy3);text-align:end}
+.strip .now b{display:block;color:#fff;font-weight:500;font-size:19px;letter-spacing:.4px}
+
+/* ---------- הפס הכחול: כל מה שעושים מול HK ---------- */
+.bar{background:var(--navy2);color:#fff;display:flex;align-items:center;gap:20px;
+  padding:0 30px;height:var(--bar-h);border-top:1px solid rgba(255,255,255,.11);font-size:13px}
+.bar .sep{width:1px;height:22px;background:rgba(255,255,255,.13);flex:none}
+.bar .cell{display:flex;align-items:center;gap:9px;min-width:0;white-space:nowrap}
+.bar .lb{font-size:11.5px;color:var(--on-navy3)}
+.bar .v{font-weight:600;color:#fff}
+.bar .cnt{font-size:16px;font-weight:600}
+/* משימה באיחור היא מצב, לא כסף בסכנה — ענבר, לא האדום של החריגה */
+.bar .late{font-size:11.5px;font-weight:500;color:#F2B75E}
+.bar .risk{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--bad-on-navy)}
+.bar .risk::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.bar .ok30{display:inline-flex;align-items:center;gap:6px;color:var(--on-navy2)}
+.bar .ok30::before{content:"";width:6px;height:6px;border-radius:50%;background:#4FCB92;flex:none}
+.bar .meet{border-radius:999px;padding:5px 12px;margin-inline-end:-6px}
+.bar .meet:hover{background:rgba(255,255,255,.07)}
+.bar .meet b{color:#fff;font-weight:600}
+.bar .spacer{margin-inline-start:auto}
+.bar .sep.ms{display:none}
+/* מונה המשימות הוא הכניסה לרשימה עצמה — לא רק מספר */
+.tkbtn{display:flex;align-items:center;gap:9px;border-radius:999px;padding:4px 10px;margin-inline-start:-10px;color:inherit}
+.tkbtn:hover{background:rgba(255,255,255,.08)}
+.tkbtn .chev{color:var(--on-navy3);transition:transform .15s}
+.tkbtn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.tkbtn .late:empty{display:none}
+
+/* רשימת המשימות שנפתחת מתחת לפס */
+.tklist{position:fixed;inset-inline-start:24px;z-index:70;width:min(430px,92vw);
+  background:#fff;border:1px solid var(--cardbd);border-radius:14px;
+  box-shadow:0 18px 46px -14px rgba(12,64,104,.32);display:none}
+.tklist.on{display:block}
+.tklist .tk-h{display:flex;align-items:center;padding:13px 18px 11px;border-bottom:1px solid var(--tint)}
+.tklist .tk-h b{font-size:14px;font-weight:700;color:var(--navy)}
+.tklist .tk-h .x{margin-inline-start:auto;width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;color:var(--faint);font-size:14px}
+.tklist .tk-h .x:hover{background:var(--bg);color:var(--ink)}
+.tk-row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 18px;border-bottom:1px solid var(--tint)}
+.tk-t{font-size:13.5px;font-weight:500;color:var(--ink);line-height:1.45}
+.tk-m{grid-column:1;font-size:11.5px;color:var(--ink3)}
+.tk-m b{color:#B07A00;font-weight:600}
+.tk-do{grid-row:1/3;align-self:center;border:1px solid var(--bd);border-radius:999px;
+  padding:5px 12px;font-size:11.5px;font-weight:600;color:var(--navy);white-space:nowrap}
+.tk-do:hover{background:var(--tint);border-color:var(--sky)}
+.tk-empty{padding:22px 18px;text-align:center;font-size:13px;color:var(--ink3)}
+.tklist .tk-f{display:flex;align-items:center;gap:12px;padding:12px 18px}
+.tklist .tk-f .muted{font-size:11.5px}
+/* מתחת ל-3 עמודות אין רוחב לארבעת הסלוטים בשורה — נשבר לשתיים במקום להיחתך */
+@media(max-width:1399px){
+  .bar{flex-wrap:wrap;height:auto;padding:8px 30px;row-gap:9px}
+  .bar .spacer{display:none}
+  .bar .sep.ms{display:block}
+}
+
+/* ---------- כפתורים ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;font-size:12.5px;
+  font-weight:600;padding:6px 14px;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.btn.pri{background:var(--coral);color:#fff}
+.btn.pri:hover{background:var(--coral-d)}
+.btn.gh{border:1px solid rgba(255,255,255,.32);color:#fff}
+.btn.gh:hover{background:rgba(255,255,255,.09)}
+.btn.pln{border:1px solid var(--bd);color:var(--navy);background:#fff}
+.btn.pln:hover{background:var(--bg)}
+.btn.big{font-size:13.5px;padding:9px 20px}
+
+/* ---------- גוף ופאנלים ---------- */
+.wrap{padding:20px 30px 44px}
+.panel{background:#fff;border:1px solid var(--cardbd);border-radius:14px;box-shadow:var(--lift);min-width:0}
+/* הכותרת נשברת לשורה שלמה במקום למעוך מילים כשהמסגרת צרה */
+.ph{display:flex;align-items:center;gap:10px;row-gap:8px;flex-wrap:wrap;
+  padding:14px 20px;border-bottom:1px solid var(--tint)}
+.ph h3{font-size:15px;font-weight:700;color:var(--navy);white-space:nowrap}
+.ph .cnt{white-space:nowrap}
+.ph .btn{flex:none}
+.ph .sp{margin-inline-start:auto}
+.pb{padding:16px 20px}
+.flag{font-size:11.5px;font-weight:600;color:var(--bad);display:inline-flex;align-items:center;gap:6px;line-height:1}
+.flag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.flag.ok{color:var(--good)}
+.flag.warn{color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;border:1px solid var(--bd);
+  background:#fff;color:var(--ink2);font-size:12px;font-weight:500;padding:4px 12px}
+.pill.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600}
+.big{font-size:30px;font-weight:800;letter-spacing:-.5px;color:var(--navy);line-height:1.1}
+.big small{font-size:14px;font-weight:500;color:var(--ink3);letter-spacing:0}
+.muted{color:var(--ink3)}
+.sect{font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.3px;margin:0 4px 9px}
+
+/* ---------- גרירת קובץ לכל מקום ---------- */
+.drop{position:fixed;inset:0;z-index:90;display:none;place-items:center;
+  background:rgba(12,64,104,.5);backdrop-filter:blur(2px)}
+.drop.on{display:grid}
+/* בזמן גרירה ה-iframes מפסיקים לתפוס עכבר — אחרת הקובץ נופל לתוך הווידג'ט */
+html.dragging iframe{pointer-events:none}
+.drop .in{background:#fff;border-radius:16px;padding:34px 54px;text-align:center;
+  border:2px dashed var(--sky);font-size:16px;font-weight:600;color:var(--navy)}
+.drop .in span{display:block;margin-top:6px;font-size:12.5px;font-weight:400;color:var(--ink3)}
+
+/* ---------- פופאפ מערכתי ---------- */
+.ov{position:fixed;inset:0;z-index:80;display:none;place-items:center;background:rgba(12,38,58,.42)}
+.ov.on{display:grid}
+.md{position:relative;width:min(500px,92vw);background:#fff;border-radius:16px;padding:21px 24px;
+  box-shadow:0 24px 60px rgba(12,64,104,.25)}
+.md h3{font-size:16.5px;font-weight:700;color:var(--navy)}
+.md .s{font-size:12.5px;color:var(--ink3);margin:3px 0 15px}
+.md .x{position:absolute;top:14px;inset-inline-end:16px;width:26px;height:26px;border-radius:50%;
+  display:grid;place-items:center;color:var(--faint);font-size:15px}
+.md .x:hover{background:var(--bg);color:var(--ink)}
+.md input,.md textarea{width:100%;font-size:14px;border:1px solid var(--bd);border-radius:10px;padding:10px 14px}
+.md input::placeholder,.md textarea::placeholder{color:var(--faint)}
+.md input:focus,.md textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.md .ft{display:flex;align-items:center;gap:9px;margin-top:15px}
+.md .ft .to{margin-inline-start:auto;font-size:11.5px;color:var(--ink3)}
+
+/* מרכוז בלי translateX: inset-inline-start:50% מתהפך ב-RTL אבל translateX נשאר
+   פיזי, והצירוף דוחף את הטוסט שמאלה בדיוק ברוחבו — עד מחוץ למסך בחלון צר.
+   inset-inline:0 + margin-inline:auto ממרכז נכון בשני הכיוונים. */
+/* צירוף מסמכים בתוך המשימה */
+.md .atts{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.md .atts:empty{display:none}
+.att{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--navy);
+  background:var(--tint);border:1px solid var(--bd);border-radius:999px;padding:4px 6px 4px 12px}
+.att button{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
+  color:var(--ink3);font-size:11px}
+.att button:hover{background:#fff;color:var(--bad)}
+.attadd{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin-top:11px;
+  text-align:start;border:1px dashed var(--bd);border-radius:11px;padding:11px 14px;
+  font-size:12.5px;font-weight:600;color:var(--navy)}
+.attadd svg{margin-inline-end:6px;vertical-align:-2px}
+.attadd span{font-size:11.5px;font-weight:400;color:var(--ink3)}
+.attadd:hover{border-color:var(--sky);background:#FAFCFE}
+
+#toast{position:fixed;bottom:26px;inset-inline:0;margin-inline:auto;width:max-content;max-width:calc(100vw - 48px);
+  transform:translateY(14px);
+  background:var(--navy);color:#fff;padding:10px 22px;border-radius:999px;font-size:13.5px;
+  box-shadow:0 12px 30px rgba(12,64,104,.28);opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;z-index:99}
+#toast.on{opacity:1;transform:none}
+
+/* מצב הטמעה ב-index.html — סרגל המערכת מחליף את הניווט הפנימי */
+html.embed .nav{display:none}
+/* בהטמעה סרגל המערכת וכותרת החברה כבר מוצגים — הרצועה הפנימית מיותרת */
+html.embed .strip{display:none}
+html.embed .wrap{padding-top:14px}
+
+/* פסי גלילה דקים */
+*::-webkit-scrollbar{width:9px;height:9px}
+*::-webkit-scrollbar-thumb{background:#D3DEE9;border-radius:99px;border:2px solid transparent;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:#BCCBD9;background-clip:content-box}
+*::-webkit-scrollbar-track{background:transparent}
+
+

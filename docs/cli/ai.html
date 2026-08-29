@@ -5,861 +5,711 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>אנרגי אינטרנשיונל · עוזר AI · HK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
 <style>
 /* =====================================================================
-   HK · מסך הלקוח · עוזר AI — אנרגי אינטרנשיונל
-   ---------------------------------------------------------------------
-   אותה משפחה כמו מסכי היועץ, אותו ניב כמו שאר מסכי הלקוח:
-   · הרצועה מעוגנת לעסק. הדבר החי של המסך הזה = כמה נתונים חדשים נכנסו
-     מאז אתמול ומתי סונכרנו — כי זה מה שקובע על מה העוזר יכול לענות.
-   · צפיפות נמוכה: בסיס 14.5px, כרטיסים במקום טבלאות, ריווח 20.
-   · רדיוס רך: פאנל 14, כרטיס פנימי 12, פקד 8.
-   · תכלת = המבטא המוביל. קורל = אך ורק סכנה כספית (ירידה מתחת לאפס).
-   · המספרים גדולים: כל תשובה חוזרת עם מספר או מיני-גרף מהנתונים.
-   · גוף פנייה שני: "החשבון שלך", "הפגישה שלך".
-   · קרקע בהירה וחמימה: #F7F9FC.
-   הבלוק הכהה היחיד בגוף = תיבת הכתיבה. שם פועלים, ולכן שם הכחול.
-   כל המספרים בעמוד נגזרים מאותם נתוני דמו של הדשבורד — נחשבים בזמן ריצה.
+   עוזר AI — CLIENT_SCREENS_SPEC §3.4
+   מסך שיחה, לא דשבורד. שני עמודים בלבד: השיחה, וההיסטוריה של החברה.
+   הכלל שמנהל את המסך: תשובה גרפית רק כששאלו על **המצב עכשיו** או על
+   **החברה / איש קשר** מתוך הזיכרון — שם ההקשר כבר טעון והתשובה מיידית.
+   כל השאר: טקסט. בלי כרטיסים, בלי גרפים, בלי קישוטים.
    ===================================================================== */
-:root{
-  /* --- המשפחה: זהה למסכי היועץ, בלי גוון חדש --- */
-  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bd:#E6ECF4;
-  --green:#13895b;--red:#dc4436;--orange:#c98404;
-  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
-  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
-  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
-  --row-hover:#F8FBFD;--bd2:#B7C3CF;--line:#C4CED8;
-  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--bad-bg:#FDEDEB;--bad-ink:#C43D30;--good-bg:#F1FAF5;
-  /* --- הניב של הלקוח: כל ערך שמבדיל מוגדר כאן --- */
-  --bg:#F7F9FC;
-  --r-panel:14px;--r-card:12px;--r-ctl:8px;
-  --fs:14.5px;--fs-sub:13px;--fs-meta:12.5px;
-  --pad:20px;--sec:20px;
-  --big:30px;--big2:26px;
-  --coral-ink:#C4453C;--coral-bg:#FFF6F4;--coral-bd:#F7DCD7;--coral-on-navy:#FFD3CF;
-  --ok-on-navy:#4FCB92;--fill-pos:#CDE6F6;--fill-neg:#F8CFCB;--fill-bd:#CDE0EE;--grid:#EDF2F7;
-  --shadow:0 1px 2px rgba(12,64,104,.05),0 6px 18px rgba(12,64,104,.04);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-.num{font-variant-numeric:tabular-nums}
-.mn{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
-:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 
-/* ---------- ניווט: כאן חיים שמות המסכים ---------- */
-.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
-.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
-.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
-.nav ul{display:flex;list-style:none;gap:4px}
-.nav li a{display:block;padding:6px 13px;border-radius:var(--r-ctl);color:var(--ink2);font-size:13.5px}
-.nav li a:hover{background:var(--bg);color:var(--navy)}
-.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
-.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:var(--fs-meta);color:var(--ink3);text-align:end}
-.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
-.nav .me i{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
+.ai{display:grid;grid-template-columns:minmax(0,1fr) 262px;gap:34px;align-items:start}
+@media(max-width:1040px){.ai{grid-template-columns:minmax(0,1fr)}}
 
-/* ---------- רצועת הזהות: מעוגנת לעסק ---------- */
-.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:24px}
-.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1.05;letter-spacing:-.3px}
-.strip .id .sub{font-size:var(--fs-meta);color:var(--on-navy3);margin-top:3px}
-.strip .id .sub a{color:var(--on-navy);border-bottom:1px solid rgba(255,255,255,.28)}
-.strip .id .sub a:hover{border-color:var(--white);color:var(--white)}
-.strip .sep{width:1px;height:34px;background:rgba(255,255,255,.16)}
-.strip .date{font-size:13.5px;color:var(--on-navy2)}
-/* הדבר החי של המסך הזה: כמה חומר חדש נכנס ומתי סונכרן */
-.strip .live .cap{font-size:11.5px;letter-spacing:.5px;color:var(--on-navy3);text-transform:uppercase;display:block}
-.strip .live .l{display:flex;align-items:baseline;gap:8px;margin-top:3px;font-size:13.5px;color:var(--on-navy2);white-space:nowrap}
-.strip .live .l b{font-size:22px;font-weight:600;color:var(--white);line-height:1}
-.strip .live .l .pulse{width:7px;height:7px;border-radius:50%;background:var(--sky);flex:none;align-self:center;box-shadow:0 0 0 0 rgba(57,171,226,.6);animation:pl 2.4s ease-out infinite}
-@keyframes pl{0%{box-shadow:0 0 0 0 rgba(57,171,226,.55)}70%{box-shadow:0 0 0 7px rgba(57,171,226,0)}100%{box-shadow:0 0 0 0 rgba(57,171,226,0)}}
-.strip .spacer{margin-inline-start:auto}
-.strip .now{font-size:13px;color:var(--on-navy3);display:flex;align-items:baseline;gap:8px}
-.strip .now b{color:var(--white);font-weight:500;font-size:18px}
+/* ---------- עמודת השיחה ----------
+   כל התוכן יושב על קו טקסט אחד (16px מהקצה), והפס הקורלי של השאלה
+   נתלה מחוצה לו — כך השאלה, התשובה ותיבת הכתיבה מיושרות לאותה עמודה. */
+/* העמודה ממלאת את הגובה שנשאר מתחת לכרום, כדי שהמצב ההתחלתי לא ירחף
+   בשליש העליון עם חצי מסך ריק מתחתיו. --chrome = ניווט + רצועה + פס. */
+.ai{--chrome:182px;min-height:calc(100vh - var(--chrome) - 64px)}
+.conv{display:flex;flex-direction:column;min-height:inherit}
+.stream{flex:1}
+/* בשיחה ריקה הפתיחה והתיבה יושבות יחד במרכז האנכי */
+.conv.empty{justify-content:center}
+.conv.empty .stream{flex:0}
+.conv.empty .comp{padding-top:26px}
+@media(max-width:1399px){.ai{--chrome:214px}}
 
-/* ---------- כפתורים ---------- */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--r-ctl);font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap}
-.btn:hover{background:var(--bg)}
-.btn.sm{padding:4px 11px;font-size:12.5px}
-.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
-.btn.pri:hover{background:var(--navy2)}
-.dark .btn{background:transparent;border-color:rgba(255,255,255,.32);color:var(--white)}
-.dark .btn:hover{background:rgba(255,255,255,.12)}
-.dark .btn.pri{background:var(--white);border-color:var(--white);color:var(--navy)}
-.dark .btn.pri:hover{background:var(--on-navy)}
-.lk{color:var(--sky);font-weight:500;font-size:13px}
-.lk:hover{text-decoration:underline}
+/* פתיחה — רק כשאין עדיין שיחה */
+.hello{max-width:70ch;padding-inline-start:16px;padding-top:24px}
+.hello h2{font-size:27px;font-weight:800;color:var(--navy);letter-spacing:-.6px;line-height:1.25}
+.hello p{margin-top:9px;font-size:15.5px;line-height:1.75;font-weight:300;color:var(--ink2)}
 
-/* ---------- צ׳יפים שקטים ---------- */
-.chip{font-size:12.5px;font-weight:500;background:var(--chip);border:0;border-radius:var(--r-ctl);padding:6px 12px;color:var(--ink2);text-align:start}
-.chip:hover{background:var(--chip-hover);color:var(--navy)}
-.dark .chip{background:rgba(255,255,255,.09);color:var(--on-navy)}
-.dark .chip:hover{background:rgba(255,255,255,.17);color:var(--white)}
+/* שאלות מוכנות — גדולות בפתיחה, דקות מעל תיבת הכתיבה אחרי שהשיחה התחילה */
+.sug{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+.sug button{border:1px solid var(--bd);background:#fff;border-radius:999px;padding:9px 18px;
+  font-size:14px;font-weight:500;color:var(--navy);box-shadow:0 1px 2px rgba(12,64,104,.045)}
+.sug button:hover{border-color:var(--sky);background:var(--tint)}
+.suggrp{margin-top:20px}
+.suggrp .glb{display:block;font-size:11.5px;font-weight:700;color:var(--ink3);
+  letter-spacing:.3px;margin-inline-start:2px}
+.suggrp .sug{margin-top:9px}
+.sug.mini{margin:0 0 10px;gap:7px}
+.sug.mini button{font-size:12.5px;padding:5px 13px;font-weight:500;color:var(--ink2);
+  background:transparent;box-shadow:none}
+.sug.mini button:hover{color:var(--navy)}
 
-/* ---------- התראה: טקסט צבוע + נקודה ---------- */
-.al{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-style:normal}
-.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
-.al.bad{color:var(--coral-ink)}.al.warn{color:var(--orange)}.al.ok{color:var(--green)}.al.info{color:var(--ink3)}
+/* ---------- תור בשיחה: שאלה למעלה, תשובה מתחתיה ----------
+   בלי אווטארים ובלי בועות. השאלה היא הכותרת (הפס הקורלי = פעולה של היועץ),
+   התשובה היא הגוף. שתיהן על אותו קו, כדי שהעמודה תישאר שקטה. */
+.turn.q{position:relative;padding-inline-start:16px;margin-bottom:13px;
+  font-size:17px;font-weight:600;color:var(--navy);letter-spacing:-.2px;max-width:76ch}
+.turn.q::before{content:"";position:absolute;inset-inline-start:0;top:4px;bottom:4px;
+  width:3px;border-radius:99px;background:var(--coral)}
+.turn.a{padding-inline-start:16px;margin-bottom:38px;max-width:900px}
+.turn.a>*{max-width:884px}
+.txt{font-size:16px;line-height:1.85;font-weight:300;color:var(--ink);max-width:76ch}
+.txt p+p{margin-top:13px}
+.txt b{font-weight:600;color:var(--navy)}
+.txt .rd{color:var(--bad);font-weight:600}
 
-/* ---------- גוף המסך ---------- */
-.wrap{padding:var(--sec) 32px 24px;display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:var(--sec);align-items:stretch;height:calc(100vh - 120px)}
-.wrap>*{min-width:0;min-height:0}
-.card{background:var(--white);border:1px solid var(--bd);border-radius:var(--r-panel);box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;min-height:0}
-.ch{display:flex;align-items:center;gap:12px;padding:14px var(--pad) 12px;border-bottom:1px solid var(--bd);flex:none}
-.ch h2,.ch h3{font-size:16.5px;font-weight:600;color:var(--navy)}
-.ch .sub{font-size:var(--fs-meta);color:var(--ink3)}
-.ch .ctl{margin-inline-start:auto;display:flex;gap:6px;align-items:center}
-
-/* ---------- השיחה ---------- */
-.stream{flex:1;overflow-y:auto;padding:14px var(--pad) 4px;display:flex;flex-direction:column;gap:14px}
-.stream > .m:first-child{margin-top:auto}
-.m{display:flex;gap:12px;max-width:820px;align-items:flex-start}
-.m.me{margin-inline-start:auto;flex-direction:row-reverse;max-width:640px}
-.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;font-style:normal;font-size:11.5px;font-weight:700}
-.av.ai{background:var(--navy);color:var(--white)}
-.av.you{background:var(--tint);color:var(--navy)}
-.bub{background:var(--surface2);border:1px solid var(--bd);border-radius:var(--r-card);padding:11px 15px 12px;min-width:0}
-.m.ai .bub{border-inline-start:3px solid var(--sky)}
-.m.me .bub{background:var(--tint);border-color:var(--fill-bd);border-radius:var(--r-card)}
-.bub p{font-size:var(--fs);line-height:1.62;color:var(--ink)}
-.bub p + p{margin-top:8px}
-.bub b{font-weight:600;color:var(--ink)}
-.bub .q{color:var(--ink3)}
-.bub .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.dots{display:inline-flex;gap:4px;padding:3px 0}
-.dots i{width:6px;height:6px;border-radius:50%;background:var(--bd2);animation:bl 1.1s ease-in-out infinite}
-.dots i:nth-child(2){animation-delay:.16s}.dots i:nth-child(3){animation-delay:.32s}
+/* "חושב" — רק לתשובות טקסט. תשובה גרפית חוזרת מיד, בלי המתנה */
+.think{display:flex;gap:5px;padding:12px 0}
+.think i{width:6px;height:6px;border-radius:50%;background:var(--faint);animation:bl 1.1s infinite}
+.think i:nth-child(2){animation-delay:.18s}
+.think i:nth-child(3){animation-delay:.36s}
 @keyframes bl{0%,80%,100%{opacity:.3}40%{opacity:1}}
 
-/* ---------- המספרים בתוך התשובה ---------- */
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:10px;margin-top:12px}
-.fact{border:1px solid var(--bd);border-radius:var(--r-card);background:var(--white);padding:11px 13px 12px;min-width:0}
-.fact .l{font-size:12.5px;color:var(--ink3)}
-.fact .n{font-size:var(--big2);font-weight:700;color:var(--navy);line-height:1.15;letter-spacing:-.6px;margin-top:3px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.fact .n small{font-size:15px;font-weight:500;color:var(--ink3);letter-spacing:0}
-.fact .f{font-size:12px;color:var(--ink3);margin-top:4px}
-.fact .f b{font-weight:500;color:var(--ink2)}
-.fact.danger{background:var(--coral-bg);border-color:var(--coral-bd)}
-.fact.danger .n,.fact.danger .l{color:var(--coral-ink)}
-.fact.danger .f b{color:var(--coral-ink)}
-.fact .n.pos{color:var(--green)}
+/* ---------- הכרטיס — שני המקרים היחידים ---------- */
+.ansc{max-width:884px;overflow:hidden}
+.ansc .lbl{font-size:11.5px;font-weight:700;color:var(--ink3);letter-spacing:.3px;padding:14px 20px 0}
+.ansc .foot{border-top:1px solid var(--tint);background:#FCFDFE;padding:10px 20px;
+  font-size:11.5px;line-height:1.6;color:var(--faint)}
 
-.viz{margin-top:12px;max-width:660px;border:1px solid var(--bd);border-radius:var(--r-card);background:var(--white);padding:12px 13px 10px}
-.viz .vt{font-size:12.5px;color:var(--ink3);margin-bottom:8px;display:flex;align-items:baseline;gap:8px}
-.viz .vt b{font-weight:500;color:var(--ink2)}
-.viz svg{display:block;width:100%}
-.viz .lg{display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--ink3);flex-wrap:wrap}
-.viz .lg span{display:inline-flex;align-items:center;gap:6px}
-.viz .lg i{width:9px;height:9px;border-radius:3px;background:var(--fill-pos)}
-.viz .lg i.neg{background:var(--fill-neg)}
-.viz .lg i.tgt{background:var(--navy);width:2px;height:11px;border-radius:2px}
+/* (א) המצב עכשיו — מספרים גדולים, מגמה, שורת משמעות */
+.nums{display:flex;flex-wrap:wrap;padding:13px 20px 4px}
+.nums .n{padding-inline-end:26px;margin-inline-end:26px;border-inline-end:1px solid var(--tint);margin-bottom:10px}
+.nums .n:last-child{border-inline-end:0;margin-inline-end:0;padding-inline-end:0}
+.nums .n span{display:block;font-size:12px;color:var(--ink3);margin-bottom:2px}
+.nums .n i{display:block;font-style:normal;font-size:12px;color:var(--ink2);margin-top:3px}
+.nums .n.bad .big{color:var(--bad)}
+.trend{padding:6px 20px 4px}
+.trend .th{font-size:11.5px;color:var(--ink3);margin-bottom:9px}
+.trend .bars{display:flex;align-items:flex-end;gap:10px;height:74px;max-width:380px}
+.trend .b{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.trend .b u{text-decoration:none;font-size:11.5px;font-weight:600;color:var(--ink2)}
+.trend .b em{font-style:normal;font-size:11px;color:var(--faint)}
+.trend .b s{text-decoration:none;display:block;width:100%;border-radius:5px 5px 0 0;background:#CFE3F2}
+.trend .b.on s{background:var(--navy)}
+.trend .b.on u{color:var(--navy)}
+.mean{margin:12px 20px 14px 20px;padding-top:13px;border-top:1px solid var(--tint);
+  font-size:14.5px;line-height:1.8;font-weight:300;color:var(--ink)}
+.mean b{font-weight:600;color:var(--navy)}
+.mean .rd{color:var(--bad);font-weight:600}
 
-/* שורות עם בר: תווית · בר · מספר */
-.rw{display:grid;grid-template-columns:minmax(0,1fr) 168px 132px;gap:12px;align-items:center;padding:7px 0;font-size:13.5px;color:var(--ink2)}
-.rw + .rw{border-top:1px solid var(--bd)}
-.rw .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rw .t s{text-decoration:none;color:var(--ink3);font-size:12px;margin-inline-start:6px}
-.rw .v{font-variant-numeric:tabular-nums;font-weight:500;color:var(--ink);white-space:nowrap;text-align:end}
-.rw .v.bad{color:var(--coral-ink)}
-.rw .v.good{color:var(--green)}
-.rw .v s{display:block;text-decoration:none;font-weight:400;font-size:11.5px;color:var(--ink3)}
+/* (ב) כרטיס מהזיכרון — שורות עם המקור והתאריך שלהן */
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 16px;
+  padding:11px 20px;border-top:1px solid var(--tint);align-items:center}
+.mrow:first-of-type{border-top:0}
+.ansc .lbl+.mrow{border-top:0}
+.mrow .t{font-size:14.5px;line-height:1.6;color:var(--ink)}
+.mrow .t b{font-weight:600;color:var(--navy)}
+.mrow .s{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.mrow .t .dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--bad);margin-inline-end:8px;vertical-align:middle}
+.mrow .t .dot.mid{background:#E0A32B}
+.mrow .t .dot.ok{background:var(--good)}
+.mrow.done .t{color:var(--ink3)}
+.mrow .tag{display:inline-block;font-size:10.5px;font-weight:600;color:var(--warn);
+  border:1px solid #EADDBF;background:#FCF7EC;border-radius:999px;padding:1px 8px;margin-inline-start:8px}
+.mrow .st{font-size:11.5px;font-weight:600;color:var(--navy);border:1px solid var(--bd);
+  border-radius:999px;padding:3px 11px;white-space:nowrap}
+.mrow .st.wait{color:var(--warn);border-color:#EADDBF;background:#FCF7EC}
+/* אנשי קשר — אווטאר, שם ותפקיד, ומתחת מה שהזיכרון יודע */
+.prow{display:flex;gap:13px;padding:13px 20px;border-top:1px solid var(--tint)}
+.ansc .lbl+.prow{border-top:0}
+.prow .pav{flex:none;width:34px;height:34px;border-radius:50%;background:var(--tint);
+  border:1px solid var(--bd);color:var(--navy);display:grid;place-items:center;font-size:14px;font-weight:600}
+.prow .pb2{min-width:0}
+.prow h4{font-size:14.5px;font-weight:700;color:var(--navy)}
+.prow h4 em{font-style:normal;font-weight:400;font-size:12.5px;color:var(--ink3);margin-inline-start:7px}
+.prow p{font-size:13.5px;line-height:1.65;color:var(--ink);margin-top:4px}
+.prow p i{font-style:normal;color:var(--faint);font-size:11.5px;margin-inline-start:6px}
 
-/* יומן פעולות בתוך תשובה */
-.ops{margin-top:12px;border:1px solid var(--bd);border-radius:var(--r-card);background:var(--white);padding:4px 13px}
-.op{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:11px;align-items:baseline;padding:9px 0;font-size:13.5px}
-.op + .op{border-top:1px solid var(--bd)}
-.op .d{width:7px;height:7px;border-radius:50%;background:var(--sky);align-self:center}
-.op .t b{font-weight:500;color:var(--ink)}
-.op .t s{display:block;text-decoration:none;font-size:12.5px;color:var(--ink3);margin-top:1px}
-.op .w{font-size:12px;color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
+/* ---------- תיבת הכתיבה ---------- */
+/* התיבה נצמדת לתחתית החלון כשהשיחה ארוכה; הדהייה מונעת שהטקסט ייקרא מתחתיה */
+.comp{position:sticky;bottom:16px;padding:18px 0 0;padding-inline-start:16px;
+  background:linear-gradient(to bottom,rgba(246,248,251,0) 0,var(--bg) 18px)}
+/* אותו רוחב של כרטיס התשובה — הקצוות נופלים על קו אחד */
+.comp .row{display:flex;align-items:center;gap:10px;max-width:884px}
+.comp .hint{max-width:884px}
+.sug.mini{padding-inline-start:0}
+.field{flex:1;min-width:0;display:flex;align-items:center;gap:4px;background:#fff;
+  border:1px solid var(--bd);border-radius:999px;padding:6px;box-shadow:var(--lift)}
+.field input{flex:1;min-width:0;border:0;outline:none;background:none;height:38px;
+  font-size:15px;padding:0 14px}
+.field input::placeholder{color:var(--faint)}
+.iconb{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--ink2)}
+.iconb:hover{background:var(--tint);color:var(--navy)}
+.sendb{flex:none;width:38px;height:38px;border-radius:50%;background:var(--coral);color:#fff;
+  display:grid;place-items:center;transition:background .15s}
+.sendb:hover{background:var(--coral-d)}
+.sendb:disabled{background:#DCE5EE;color:#fff;cursor:default}
+.hint{font-size:11.5px;color:var(--faint);margin:9px 4px 0}
 
-/* כרטיס הפגישה בתוך תשובה */
-.mcard{margin-top:12px;border:1px solid var(--bd);border-radius:var(--r-card);background:var(--white);padding:13px 15px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 16px;align-items:center}
-.mcard .tm{font-size:var(--big2);font-weight:700;color:var(--navy);line-height:1;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
-.mcard .tm s{display:block;text-decoration:none;font-size:12px;font-weight:400;color:var(--ink3);letter-spacing:0;margin-top:5px}
-.mcard .b b{font-weight:600;color:var(--ink)}
-.mcard .b .q{display:block;font-size:12.5px;color:var(--ink3);margin-top:3px}
-.mcard .b .acts{margin-top:10px}
+/* מצב הקלטה — אותה תיבה, תוכן אחר */
+.field.rec{border-color:var(--coral);box-shadow:0 0 0 3px rgba(228,130,110,.13)}
+.recdot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--coral);
+  margin-inline-start:12px;animation:pp 1.2s infinite}
+@keyframes pp{0%,100%{opacity:1}50%{opacity:.25}}
+.wave{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;
+  height:38px;padding:0 14px;overflow:hidden}
+.wave i{flex:none;width:3px;border-radius:2px;background:var(--coral);opacity:.8;animation:wv 1s ease-in-out infinite}
+@keyframes wv{0%,100%{height:5px}50%{height:22px}}
+.rect{flex:none;font-size:13px;font-weight:600;color:var(--navy)}
+.recstop{flex:none}
 
-/* ---------- הבלוק הכהה היחיד בגוף: תיבת הכתיבה ---------- */
-.comp{flex:none;margin:12px var(--pad) var(--pad);background:var(--navy);color:var(--white);border-radius:var(--r-card);padding:13px 15px 14px}
-.comp .cap{font-size:11.5px;letter-spacing:.5px;color:var(--on-navy3);text-transform:uppercase}
-.comp .chips{display:flex;flex-wrap:wrap;gap:8px;margin:9px 0 12px}
-.comp .none{margin:9px 0 12px;font-size:13px;color:var(--on-navy3)}
-.comp .row{display:flex;gap:10px;align-items:center}
-.comp input{flex:1;min-width:0;height:42px;border-radius:var(--r-ctl);border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:var(--white);padding:0 14px;font:inherit;font-size:var(--fs)}
-.comp input::placeholder{color:var(--on-navy4)}
-.comp input:focus{outline:none;border-color:var(--sky);background:rgba(255,255,255,.14)}
-.comp .send{height:42px;padding:0 18px;border-radius:var(--r-ctl);background:var(--white);color:var(--navy);font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:8px}
-.comp .send:hover{background:var(--on-navy)}
-.comp .note{font-size:12px;color:var(--on-navy4);margin-top:9px}
+/* ---------- ההיסטוריה של החברה ---------- */
+.hist{position:sticky;top:16px}
+.hist .newc{width:100%;justify-content:center;margin-bottom:16px}
+.hrow{display:block;width:100%;text-align:start;border-radius:11px;padding:9px 11px;
+  border:1px solid transparent}
+.hrow b{display:block;font-size:13px;font-weight:500;color:var(--ink);line-height:1.45;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow span{display:block;font-size:11px;color:var(--faint);margin-top:2px}
+.hrow:hover{background:#fff;border-color:var(--cardbd)}
+.hrow.on{background:#fff;border-color:var(--bd);box-shadow:var(--lift)}
+.hrow.on b{color:var(--navy);font-weight:600}
+.hnote{font-size:11px;line-height:1.6;color:var(--faint);margin:14px 6px 0}
 
-/* ---------- הטור הצדי: מה שמתי לב אליו + על מה אני עונה ---------- */
-.side{display:flex;flex-direction:column;gap:14px;min-height:0}
-.side .card.fnd{flex:1 1 auto;min-height:0}
-.side .card.src{flex:none}
-.side .bd{flex:1;overflow-y:auto;min-height:0;padding:6px var(--pad) 10px}
-.fd{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:0 11px;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--bd);align-items:center}
-.fd:last-child{border-bottom:0}
-.fd:hover{background:var(--row-hover)}
-.fd .d{width:8px;height:8px;border-radius:50%;background:var(--sky)}
-.fd.bad .d{background:var(--coral)}
-.fd .t{display:block;font-size:13.5px;font-weight:500;color:var(--ink);line-height:1.4}
-.fd:hover .t{text-decoration:underline}
-.fd .n{display:block;font-size:20px;font-weight:700;color:var(--navy);letter-spacing:-.4px;font-variant-numeric:tabular-nums;margin-top:3px;line-height:1.15}
-.fd.bad .n{color:var(--coral-ink)}
-.fd .n s{text-decoration:none;font-size:12.5px;font-weight:400;color:var(--ink3);letter-spacing:0;margin-inline-start:7px}
-.fd .go{font-size:15px;color:var(--sky);font-weight:500}
-.srcs{padding:4px var(--pad) 8px}
-.sr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 0;font-size:13.5px;color:var(--ink2)}
-.sr + .sr{border-top:1px solid var(--bd)}
-.sr .w{font-size:12px;color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
-.sr .w.live{color:var(--green);font-weight:500}
-.cf{display:flex;align-items:center;gap:10px;padding:11px var(--pad) 12px;border-top:1px solid var(--bd);background:var(--surface2);border-radius:0 0 var(--r-panel) var(--r-panel);font-size:var(--fs-meta);color:var(--ink3);flex:none}
+/* כפתור השיחה הקולית — הפעולה הבולטת ביותר בתיבה */
+.vcbtn{position:relative;display:flex;align-items:center;gap:10px;flex:none;
+  background:var(--coral);color:#fff;border-radius:999px;padding:9px 20px 9px 16px;
+  box-shadow:0 6px 18px -6px rgba(228,130,110,.75);transition:background .15s,transform .12s}
+.vcbtn:hover{background:var(--coral-d);transform:translateY(-1px)}
+.vcbtn .tx{display:block;text-align:start;line-height:1.25}
+.vcbtn .tx b{display:block;font-size:13.5px;font-weight:700}
+.vcbtn .tx em{display:block;font-style:normal;font-size:11px;font-weight:400;color:rgba(255,255,255,.82)}
+.vcbtn .ring{position:absolute;inset:-4px;border-radius:999px;border:2px solid var(--coral);
+  opacity:.45;animation:vcr 2.6s ease-out infinite;pointer-events:none}
+@keyframes vcr{0%{transform:scale(1);opacity:.45}70%{transform:scale(1.09);opacity:0}100%{opacity:0}}
 
-/* ---------- toast ---------- */
-.toast{position:fixed;inset-block-end:24px;inset-inline-start:50%;transform:translateX(50%) translateY(10px);background:var(--navy);color:var(--white);padding:11px 20px;border-radius:var(--r-ctl);font-size:13.5px;box-shadow:0 10px 30px rgba(12,64,104,.28);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:60}
-.toast.show{opacity:1;transform:translateX(50%) translateY(0)}
-
-/* ---------- מסכים נמוכים (מסכי לפטופ): אותה שפה, צפוף במעט ---------- */
-@media (max-height:960px){
-  .ch{padding:11px var(--pad) 10px}
-  .stream{padding:8px var(--pad) 4px;gap:11px}
-  .bub{padding:9px 14px 10px}
-  .facts{margin-top:9px;gap:9px}
-  .viz{margin-top:9px;padding:10px 12px 8px}
-  .comp{margin:8px var(--pad) 14px;padding:11px 14px 12px}
-  .comp .chips{margin:7px 0 10px}
-  .fd{padding:11px 0}
-  .sr{padding:6px 0}
-  .cf{padding:9px var(--pad) 10px}
-}
-
-/* ---------- מסכים צרים יותר ---------- */
-@media (max-width:1560px){
-  .wrap{grid-template-columns:minmax(0,1fr) 392px}
-  .viz{max-width:none}
-  .rw{grid-template-columns:minmax(0,1fr) 140px 118px}
-}
-@media (max-width:1360px){
-  .nav{padding:0 24px;gap:20px}
-  .strip{padding:0 24px;gap:18px}
-  .wrap{padding:16px 24px 20px;gap:16px;grid-template-columns:minmax(0,1fr) 360px}
-  .strip .live .l .lb{display:none}
-}
-@media (max-width:1080px){
-  .wrap{grid-template-columns:minmax(0,1fr);height:auto;min-height:calc(100vh - 120px)}
-  .side .card.fnd{flex:none}
-  .side .bd{overflow:visible}
-}
+/* ---------- שיחה קולית ---------- */
+.vc{width:min(460px,92vw);text-align:center;padding:26px 24px 20px}
+.orb{width:96px;height:96px;margin:6px auto 0;border-radius:50%;position:relative;
+  display:grid;place-items:center;background:var(--navy);color:#fff}
+.orb::before,.orb::after{content:"";position:absolute;inset:0;border-radius:50%;
+  border:2px solid rgba(57,171,226,.5);animation:rp 2.2s ease-out infinite}
+.orb::after{animation-delay:1.1s}
+@keyframes rp{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+.vc h3{margin-top:16px}
+.vc .vt{font-size:13px;font-weight:600;color:var(--ink2);margin-top:3px}
+.vc .caps{margin-top:16px;text-align:start;border-top:1px solid var(--tint);padding-top:14px;
+  min-height:132px;display:flex;flex-direction:column;gap:11px}
+.cap{font-size:14px;line-height:1.65;animation:fi .35s ease-out}
+.cap b{display:block;font-size:11px;font-weight:600;color:var(--ink3);margin-bottom:2px}
+.cap.hk{color:var(--ink)}
+.cap.me{color:var(--ink2)}
+.cap.live b::after{content:" · מקשיב";color:var(--coral)}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.vc .vf{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px}
 </style>
 </head>
-<body>
-
-<nav class="nav">
-  <a class="brand" href="dashboard.html"><i>HK</i>הצוות הפיננסי שלך</a>
-  <ul>
-    <li><a href="dashboard.html">דשבורד</a></li>
-    <li><a href="messages.html">הודעות</a></li>
-    <li><a href="meetings.html">פגישות</a></li>
-    <li><a class="on" href="ai.html">עוזר AI</a></li>
-    <li><a href="metrics.html">מדדים</a></li>
-  </ul>
-  <div class="me"><div><b>צחי עובד</b>בעלים</div><i>צע</i></div>
-</nav>
-
-<header class="strip">
-  <div class="id">
-    <h1>אנרגי אינטרנשיונל</h1>
-    <div class="sub num">ח.פ 511327876 · היועץ שלך <a href="messages.html">אילון אשכנזי</a></div>
-  </div>
-  <div class="sep"></div>
-  <div class="date num">יום חמישי · 02.07.2026</div>
-  <div class="sep"></div>
-  <div class="live">
-    <span class="cap">מסונכרן עם החשבון שלך</span>
-    <span class="l"><i class="pulse"></i><b class="num" id="liveN">14</b> תנועות חדשות מאתמול<span class="lb"> · עדכון אחרון לפני 4 דקות</span></span>
-  </div>
-  <div class="spacer"></div>
-  <div class="now num"><span>השעה</span><b class="mn">10:54</b></div>
-</header>
-
+<body data-cli="ai">
 <main class="wrap">
+  <div class="ai">
 
-  <!-- ===== השיחה ===== -->
-  <section class="card chat">
-    <div class="ch">
-      <h2>שאל אותי על המספרים שלך</h2>
-      <span class="sub">אני עונה רק ממה שיש בנתונים של אנרגי אינטרנשיונל</span>
-      <span class="ctl"><button class="btn sm" id="reset">שיחה חדשה</button></span>
-    </div>
+    <!-- ===== השיחה ===== -->
+    <section class="conv">
+      <div class="stream" id="stream" role="log" aria-live="polite" aria-label="השיחה עם העוזר"></div>
 
-    <div class="stream" id="stream" role="log" aria-live="polite" aria-label="השיחה עם העוזר"></div>
-
-    <!-- הבלוק הכהה היחיד בגוף: כאן פועלים -->
-    <div class="comp dark">
-      <span class="cap">שאלות מוצעות</span>
-      <div class="chips" id="chips"></div>
-      <div class="row">
-        <input id="q" type="text" autocomplete="off" placeholder="כתוב שאלה — למשל: כמה נשאר לי בתקציב של יולי?" aria-label="שאלה לעוזר">
-        <button class="send" id="send">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          שליחה
-        </button>
-      </div>
-      <div class="note">התשובות מבוססות על החשבון, החשבוניות והתקציב שלך בלבד. לפני החלטה גדולה — כדאי לוודא מול <a class="lk" href="messages.html">אילון</a>.</div>
-    </div>
-  </section>
-
-  <!-- ===== הטור הצדי: העבודה שלו היא היוזמה — מה העוזר כבר מצא ===== -->
-  <aside class="side">
-    <section class="card fnd">
-      <div class="ch">
-        <h3>מה שמתי לב אליו</h3>
-        <span class="sub" id="fndSub"></span>
-      </div>
-      <div class="bd" id="fnds"></div>
-      <div class="cf"><span>סריקה אוטומטית בכל בוקר ב-<b class="mn">07:00</b></span></div>
+      <form class="comp" id="comp" onsubmit="event.preventDefault();sendTyped()">
+        <div class="sug mini" id="sugMini"></div>
+        <div class="row">
+          <div class="field" id="field">
+            <input id="q" autocomplete="off" aria-label="שאלה לעוזר" oninput="syncSend()"
+                   placeholder="שאלו על אנרגי אינטרנשיונל — מספרים, זיכרון, פגישות או משימות">
+            <button type="button" class="iconb" id="micBtn" onclick="recStart()" aria-label="הקלטת שאלה">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+            </button>
+            <button type="submit" class="sendb" id="sendBtn" disabled aria-label="שליחה">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            </button>
+          </div>
+          <!-- השיחה הקולית היא הפיצ'ר הבולט של המסך — קורל, לא כפתור משני -->
+          <button type="button" class="vcbtn" onclick="vcOpen()">
+            <span class="ring"></span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12v1M7.5 8v8M12 4.5v15M16.5 8v8M21 12v1"/></svg>
+            <span class="tx"><b>שיחה קולית</b><em>לדבר עם העוזר במקום להקליד</em></span>
+          </button>
+        </div>
+        <div class="hint">המספרים החיים של אנרגי והזיכרון של החברה כבר בהקשר — אין צורך לצרף נתונים.</div>
+      </form>
     </section>
 
-    <section class="card src">
-      <div class="ch"><h3>על מה אני עונה</h3></div>
-      <div class="srcs" id="srcs"></div>
-      <div class="cf"><span>אני לא רואה מסמכים שלא הועלו ולא מידע פנימי של HK.</span></div>
-    </section>
-  </aside>
+    <!-- ===== היסטוריית השיחות של החברה ===== -->
+    <aside class="hist">
+      <!-- הקורל שמור לפעולה המרכזית של המסך — שליחת השאלה -->
+      <button class="btn pln big newc" onclick="newConv()">+ שיחה חדשה</button>
+      <div class="sect">שיחות קודמות · אנרגי</div>
+      <div id="histList"></div>
+      <p class="hnote">השיחות נשמרות פר חברה. שיחה שנפתחת כאן ממשיכה מאותה נקודה.</p>
+    </aside>
 
+  </div>
 </main>
 
-<div class="toast" id="toast"></div>
+<!-- שיחה קולית — פופאפ עם ✕, לחיצה בחוץ ו-Escape -->
+<div class="ov" id="vcOv" onclick="if(event.target===this)vcClose()">
+  <div class="md vc">
+    <button class="x" onclick="vcClose()" aria-label="סגירה">✕</button>
+    <div class="orb">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12v1M8 8.5v7M12 5v14M16 8.5v7M20 12v1"/></svg>
+    </div>
+    <h3>שיחה קולית עם העוזר</h3>
+    <div class="vt num" id="vcTime">00:00</div>
+    <div class="caps" id="vcCaps"></div>
+    <div class="vf">
+      <button class="btn pri big" onclick="vcEnd()">סיום השיחה</button>
+      <button class="btn pln" onclick="vcClose()">ביטול</button>
+    </div>
+  </div>
+</div>
 
+<script src="cli.js"></script>
 <script>
-(function(){
-'use strict';
-
-/* ============ עזרי טקסט ומספרים ============ */
-var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){
-  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
-var nf=function(v){return Math.round(Math.abs(v)).toLocaleString('en-US');};
-var money=function(v){return (v<0?'−':'')+nf(v)+' ₪';};
-var mh=function(t){return '<span class="mn">'+t+'</span>';};
-var moneyH=function(v){return mh(money(v));};
-var pct=function(a,b){return Math.round(a/b*1000)/10;};
-var CS=getComputedStyle(document.documentElement);
-var CSSV=function(n){return CS.getPropertyValue(n).trim();};
-var kfmt=function(v){var a=Math.abs(v);return (v<0?'−':'')+(a>=1000?Math.round(a/1000)+'K':a);};
-
-/* ============ toast ============ */
-var tEl=document.getElementById('toast'), tTm=null;
-function toast(msg){ tEl.textContent=msg; tEl.classList.add('show');
-  clearTimeout(tTm); tTm=setTimeout(function(){tEl.classList.remove('show');},2600); }
+hkChrome('ai',{strip:false});
 
 /* =====================================================================
-   נתוני הדמו — זהים לאלה של הדשבורד. כל מספר בתשובות נגזר מכאן.
+   1 · הנתונים — מקבצי המערכת
+   זיכרון: js/memory.js (MEM_DATA[0] · MEM_NUMS[0] · MEM_USERS[0])
+   מספרים: js/memory.js + הפס הכחול · פגישות: js/meetings.js
+   משימות: js/ops.js (ADV_TASKS[0]) · התראות ופערים: js/alerts.js
    ===================================================================== */
-var CO='אנרגי אינטרנשיונל';
-var ADV='אילון אשכנזי';
-var MON=['ינואר','פברואר','מרץ','אפריל','מאי','יוני'];
-var REVENUE=[742000,698000,811000,776000,803000,869000];
-var SERIES={
-  gross:[289000,262000,319000,302000,313000,347600],
-  op:   [ 62000, 41000, 88000, 71000, 79000, 96400],
-  cash: [ 38000,-12000, 64000, 22000, 51000,-18300]
-};
-var SRC=[
-  {t:'מכירות מזומן ואחר',  v:243000},
-  {t:'אלקטרה מוצרי חשמל',  v:214000},
-  {t:'רימון מוצרי אנרגיה', v:187000},
-  {t:'סליקת אשראי',        v:163500},
-  {t:'חברות שילוח',        v: 61500}
-];
-var OPEN=412800;               /* היתרה בעו״ש היום, 02.07 */
-var MOVES=[
-  {d:'03.07',t:'אלקטרה מוצרי חשמל',      v:  96000},
-  {d:'05.07',t:'שכר עבודה',              v:-214000},
-  {d:'07.07',t:'סליקת אשראי',            v:  58200},
-  {d:'09.07',t:'מוסדות מס — מע״מ',       v:-132400},
-  {d:'10.07',t:'סונול — דלקים',          v: -96000},
-  {d:'12.07',t:'שכירות ותפעול',          v: -41800},
-  {d:'13.07',t:'קבלני משנה',             v: -73200},
-  {d:'14.07',t:'החזר הלוואה ועמלות בנק', v: -48000},
-  {d:'16.07',t:'רימון מוצרי אנרגיה',     v: 187000},
-  {d:'20.07',t:'חברות שילוח',            v:  42500},
-  {d:'22.07',t:'קניות מלאי',             v:-118000},
-  {d:'25.07',t:'מכירות מזומן',           v:  64000},
-  {d:'28.07',t:'משיכת בעלים',            v: -35000},
-  {d:'31.07',t:'אלקטרה מוצרי חשמל',      v:  88000}
-];
-var GAPS=[
-  {n:'קניות מלאי',         k:'exp', t:268000, a:311400},
-  {n:'קבלני משנה',         k:'exp', t: 74000, a: 96200},
-  {n:'חברות שילוח',        k:'inc', t: 96000, a: 61500},
-  {n:'אלקטרה מוצרי חשמל',  k:'inc', t:180000, a:214000},
-  {n:'רימון מוצרי אנרגיה', k:'inc', t:165000, a:187000},
-  {n:'פרסום ושיווק',       k:'exp', t: 32000, a: 18600},
-  {n:'סליקת אשראי',        k:'inc', t:172000, a:163500},
-  {n:'מימון ועמלות בנק',   k:'exp', t:  9100, a: 14800},
-  {n:'שכר עבודה',          k:'exp', t:214000, a:214000},
-  {n:'שכירות ותפעול',      k:'exp', t: 44000, a: 43600},
-  {n:'מוסדות מס',          k:'exp', t:132000, a:128900}
-];
-var BCTL=[
-  {n:'קניות מלאי',       b:275000, c:118000},
-  {n:'שכר עבודה',        b:214000, c:214000},
-  {n:'מוסדות מס',        b:134000, c:132400},
-  {n:'קבלני משנה',       b: 78000, c: 73200},
-  {n:'שכירות ותפעול',    b: 44000, c: 41800},
-  {n:'מימון ועמלות בנק', b: 13000, c: 12000},
-  {n:'פרסום ושיווק',     b: 30000, c:  6400}
-];
-var OPS=[
-  {t:'הושלם תפעול מלא · 32 דק׳',            d:'כל הבדיקות עברו — התזרים תקין ומעודכן',        w:'אתמול · 09:40'},
-  {t:'קוטלגו 4 תנועות חדשות',               d:'הסיווג אושר על ידי לירון בן כליפא',            w:'אתמול · 09:12'},
-  {t:'טופלה חשבונית ספק — סונול · 4,820 ₪', d:'שויכה להוצאות דלק ונרשמה בתזרים',              w:'30.06'},
-  {t:'נשלח אליך עדכון תזרים שבועי',         d:'בוואטסאפ — כולל צפי לסוף החודש',               w:'28.06'},
-  {t:'זוהתה וטופלה כפילות חיוב · 3,540 ₪',  d:'Payment טכנולוגיות — הוסרה מהתזרים',           w:'28.06'}
-];
-var MEET={day:'היום',date:'02.07',tm:'13:00',who:ADV,what:'סקירת התזרים לקראת רבעון 3',where:'בזום',now:'10:54'};
-var DOCS={total:9, inv:3};
-var SOURCES=[
-  {t:'חשבון עו״ש · בנק לאומי',  w:'לפני 4 דקות', live:1},
-  {t:'כרטיסי אשראי',            w:'היום 07:20',  live:0},
-  {t:'חשבוניות ספקים ולקוחות',  w:'אתמול 09:12', live:0},
-  {t:'תקציב יולי 2026',         w:'01.07',       live:0},
-  {t:'הפגישות והמסמכים שלך',    w:'01.07',       live:0}
-];
+const REV={lbl:'הכנסות · 6 חודשים אחורה (א׳ ₪)',
+  m:['פבר','מרץ','אפר','מאי','יוני','יולי'], v:[242,268,255,300,307,301]};
 
-/* ============ חישובים נגזרים ============ */
-function dayOf(d){return parseInt(d.slice(0,2),10);}
-function runBal(moves){
-  var pts=[{d:'02.07',v:OPEN,t:'היתרה שלך היום',a:0}], bal=OPEN;
-  moves.slice().sort(function(a,b){return dayOf(a.d)-dayOf(b.d);}).forEach(function(m){
-    bal+=m.v; pts.push({d:m.d,v:bal,t:m.t,a:m.v});
-  });
-  return pts;
-}
-function lowest(pts){
-  var lo=pts[0];
-  pts.forEach(function(p){ if(p.v<lo.v) lo=p; });
-  return lo;
-}
-var PTS=runBal(MOVES);
-var LOW=lowest(PTS);                                   /* −38,400 ב-14.07 */
-/* אותה תחזית כשהתשלום לסונול נדחה בשבוע */
-var MOVES_FIX=MOVES.map(function(m){return m.t.indexOf('סונול')===0?{d:'17.07',t:m.t,v:m.v}:m;});
-var LOW_FIX=lowest(runBal(MOVES_FIX));
-var REV=REVENUE[5], GROSS=SERIES.gross[5], OP=SERIES.op[5], CASHP=SERIES.cash[5];
-var REV_AVG=REVENUE.reduce(function(a,b){return a+b;},0)/REVENUE.length;
-var BUD_TOT=BCTL.reduce(function(a,r){return a+r.b;},0);
-var BUD_USED=BCTL.reduce(function(a,r){return a+r.c;},0);
-var BUD_PCT=Math.round(BUD_USED/BUD_TOT*100);
-function gapOf(n){var r=null;GAPS.forEach(function(g){if(g.n===n)r=g;});return r;}
-/* מה יוצא ומה נכנס בין 05.07 ל-14.07 — הקטע שמוריד אותך מתחת לאפס */
-var WIN=MOVES.filter(function(m){var d=dayOf(m.d);return d>=5&&d<=dayOf(LOW.d);});
-var WIN_OUT=WIN.filter(function(m){return m.v<0;}).reduce(function(a,m){return a+m.v;},0);
-var WIN_IN =WIN.filter(function(m){return m.v>0;}).reduce(function(a,m){return a+m.v;},0);
-function minsUntil(from,to){
-  var a=from.split(':'), b=to.split(':');
-  return (b[0]*60+ +b[1])-(a[0]*60+ +a[1]);
-}
-function untilTxt(min){
-  var h=Math.floor(min/60), m=min%60;
-  var hw=['','שעה','שעתיים','שלוש שעות','ארבע שעות','חמש שעות','שש שעות'][h]||(h+' שעות');
-  var mw=['','דקה','שתי דקות','שלוש דקות','ארבע דקות','חמש דקות','שש דקות','שבע דקות','שמונה דקות','תשע דקות'][m]||(m+' דקות');
-  if(!h) return 'בעוד '+mw;
-  if(!m) return 'בעוד '+hw;
-  return 'בעוד '+hw+' ו'+mw;
+/* ---------- (א) המצב עכשיו — מספרים גדולים, מגמה, שורת משמעות ---------- */
+function cardState(){
+  const mx=Math.max(...REV.v);
+  return `<article class="panel ansc">
+    <div class="lbl">מצב אנרגי אינטרנשיונל · עכשיו</div>
+    <div class="nums">
+      <div class="n"><span>יתרה נוכחית</span><div class="big num">75,187 ₪</div>
+        <i>לאומי 604 · פועלים 112</i></div>
+      <div class="n bad"><span>חריגה צפויה</span><div class="big num">11.07</div>
+        <i>32,400- ₪ בעו״ש לאומי · בעוד 9 ימים</i></div>
+      <div class="n"><span>מסגרת אשראי · ניצול</span><div class="big num">107%</div>
+        <i>150,000 ₪ · בניצול מלא</i></div>
+    </div>
+    <div class="trend">
+      <div class="th">${REV.lbl}</div>
+      <!-- בסיס הבארים גבוה מאפס בכוונה: זו מגמה בטווח 240–307, והמספר עצמו
+           רשום מעל כל בר כדי שהקריאה תישאר מדויקת -->
+      <div class="bars">${REV.v.map((v,i)=>`<div class="b ${i===REV.v.length-1?'on':''}">
+        <u class="num">${v}</u><s style="height:${Math.round(13+(v-232)/(mx-232)*39)}px"></s>
+        <em>${REV.m[i]}</em></div>`).join('')}</div>
+    </div>
+    <div class="mean">ההכנסות יציבות סביב 300 א׳ ₪ ועומדות על <b>95% מיעד ההכנסות</b> החודשי,
+      וההוצאות על 82% מהתקציב — <b>הבעיה היא תזמון, לא היקף</b>: הגבייה נכנסת בשבוע הראשון
+      והתשלומים לספקים יוצאים ב-10 לחודש.
+      ההעברה מפועלים 112 ללאומי 604 — <b>42,000 ₪</b> — פתוחה אצל לירון להיום;
+      ביצועה מוריד את <span class="rd">החריגה של 11.07</span> מהתחזית.</div>
+    <div class="foot">מהמספרים החיים של אנרגי · סנכרון אחרון 10:54 — ומזיכרון החברה: מצב תזרימי, עודכן 02.07 מפגישה חודשית.</div>
+  </article>`;
 }
 
-/* =====================================================================
-   ויזואליזציות — נמדדות אחרי ההוספה ל-DOM, בלי style= במארקאפ
-   ===================================================================== */
-var VIZ={}, vizId=0;
-function viz(spec){ var id=++vizId; VIZ[id]=spec; return '<div class="viz" data-v="'+id+'"></div>'; }
-
-function drawAll(){
-  var list=document.querySelectorAll('.viz[data-v]');
-  Array.prototype.forEach.call(list,function(el){
-    var s=VIZ[el.getAttribute('data-v')]; if(!s) return;
-    var w=Math.max(260, el.clientWidth-26);
-    el.innerHTML=(s.title?'<div class="vt">'+s.title+'</div>':'')+BUILD[s.kind](s,w)+(s.legend||'');
-  });
-}
-
-var BUILD={};
-
-/* --- גרף יתרה: שטח תכלת מעל האפס, קורל מתחת --- */
-BUILD.bal=function(s,w){
-  var pts=s.pts, h=196, pT=26, pB=26, pR=54, pL=26;
-  var cW=w-pR-pL, cH=h-pT-pB;
-  var vals=pts.map(function(p){return p.v;});
-  var minV=Math.min(0,Math.min.apply(null,vals)), maxV=Math.max.apply(null,vals);
-  var pad=(maxV-minV)*0.16; maxV+=pad; minV-=pad;
-  var rg=(maxV-minV)||1, n=pts.length, st=cW/(n-1);
-  var xOf=function(i){return (w-pR)-st*i;};
-  var yOf=function(v){return pT+cH-((v-minV)/rg)*cH;};
-  var z=yOf(0), o='';
-  var gstep=(maxV-minV)>800000?200000:(maxV-minV)>400000?100000:100000;
-  for(var t=Math.ceil(minV/gstep)*gstep;t<=maxV;t+=gstep){
-    var ty=yOf(t); if(ty<pT-6||ty>h-pB+6) continue;
-    o+='<line x1="'+pL+'" y1="'+ty.toFixed(1)+'" x2="'+(w-pR)+'" y2="'+ty.toFixed(1)+'" stroke="'+CSSV('--grid')+'"/>';
-    o+='<text x="'+(w-pR+8)+'" y="'+(ty+4).toFixed(1)+'" font-size="11" fill="'+CSSV('--ink3')+'" text-anchor="start" direction="ltr">'+kfmt(t)+'</text>';
-  }
-  var line='';
-  pts.forEach(function(p,i){ line+=(i?' L':'M')+xOf(i).toFixed(1)+','+yOf(p.v).toFixed(1); });
-  var area=line+' L'+xOf(n-1).toFixed(1)+','+z.toFixed(1)+' L'+xOf(0).toFixed(1)+','+z.toFixed(1)+'Z';
-  var cid='c'+(++vizId);
-  o+='<defs><clipPath id="up'+cid+'"><rect x="0" y="0" width="'+w+'" height="'+z.toFixed(1)+'"/></clipPath>'+
-     '<clipPath id="dn'+cid+'"><rect x="0" y="'+z.toFixed(1)+'" width="'+w+'" height="'+(h-z).toFixed(1)+'"/></clipPath></defs>';
-  o+='<path d="'+area+'" fill="'+CSSV('--fill-pos')+'" clip-path="url(#up'+cid+')"/>';
-  o+='<path d="'+area+'" fill="'+CSSV('--fill-neg')+'" clip-path="url(#dn'+cid+')"/>';
-  if(z>pT&&z<h-pB) o+='<line x1="'+pL+'" y1="'+z.toFixed(1)+'" x2="'+(w-pR)+'" y2="'+z.toFixed(1)+'" stroke="'+CSSV('--line')+'"/>';
-  o+='<path d="'+line+'" fill="none" stroke="'+CSSV('--navy')+'" stroke-width="2" stroke-linejoin="round"/>';
-  var loI=0; pts.forEach(function(p,i){ if(p.v<pts[loI].v) loI=i; });
-  pts.forEach(function(p,i){
-    var x=xOf(i), y=yOf(p.v), lo=(i===loI), c=lo?CSSV('--coral'):CSSV('--navy');
-    o+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(lo?4.5:2.6)+'" fill="'+(lo?c:'#fff')+'" stroke="'+c+'" stroke-width="2"/>';
-    if(lo) o+='<text x="'+x.toFixed(1)+'" y="'+(y+19).toFixed(1)+'" text-anchor="middle" font-size="11.5" font-weight="700" direction="ltr" fill="'+CSSV('--coral-ink')+'">'+money(p.v)+'</text>';
-    if(i%2===0||lo) o+='<text x="'+x.toFixed(1)+'" y="'+(h-6)+'" text-anchor="middle" font-size="11" fill="'+(lo?CSSV('--coral-ink'):CSSV('--ink3'))+'" font-weight="'+(lo?600:400)+'" direction="ltr">'+p.d+'</text>';
-  });
-  return '<svg viewBox="0 0 '+w+' '+h+'" height="'+h+'" role="img" aria-label="'+esc(s.alt||'תחזית יתרה')+'">'+o+'</svg>';
-};
-
-/* --- שורות עם בר: תווית · בר · מספר. הבר הוא SVG ברוחב קבוע --- */
-BUILD.rows=function(s){
-  var bw=180, max=0;
-  s.rows.forEach(function(r){ var m=Math.max(Math.abs(r.v),Math.abs(r.t||0)); if(m>max) max=m; });
-  return s.rows.map(function(r){
-    var col=r.bad?CSSV('--coral'):r.good?CSSV('--green'):CSSV('--sky');
-    var len=Math.max(3,Math.abs(r.v)/max*bw);
-    var g='<rect x="'+(bw-len).toFixed(1)+'" y="3" width="'+len.toFixed(1)+'" height="9" rx="3" fill="'+col+'"/>';
-    if(r.t!==undefined&&r.t!==null){
-      var tx=bw-Math.abs(r.t)/max*bw;
-      g='<rect x="0" y="3" width="'+bw+'" height="9" rx="3" fill="'+CSSV('--chip')+'"/>'+g+
-        '<rect x="'+(tx-1).toFixed(1)+'" y="0" width="2" height="15" rx="1" fill="'+CSSV('--navy')+'"/>';
-    }
-    return '<div class="rw"><span class="t">'+esc(r.n)+(r.s?'<s>'+esc(r.s)+'</s>':'')+'</span>'+
-      '<svg viewBox="0 0 '+bw+' 15" height="15" aria-hidden="true">'+g+'</svg>'+
-      '<span class="v'+(r.bad?' bad':r.good?' good':'')+'">'+mh(money(r.v))+(r.f?'<s>'+esc(r.f)+'</s>':'')+'</span></div>';
-  }).join('');
-};
-
-/* =====================================================================
-   מאגר התשובות — כל אחת מחזירה טקסט + מה שנפתח מתחתיו
-   ===================================================================== */
-function fact(l,n,f,cls){
-  return '<div class="fact'+(cls?' '+cls:'')+'"><div class="l">'+l+'</div>'+
-    '<div class="n'+(cls==='pos'?' pos':'')+'">'+n+'</div>'+(f?'<div class="f">'+f+'</div>':'')+'</div>';
-}
-function facts(){ return '<div class="facts">'+Array.prototype.join.call(arguments,'')+'</div>'; }
-function ask(q,label){ return '<button class="btn sm" data-ask="'+esc(q)+'">'+esc(label||q)+'</button>'; }
-function link(href,label,pri){ return '<a class="btn sm'+(pri?' pri':'')+'" href="'+href+'">'+label+'</a>'; }
-
-function aState(){
-  return {t:'התמונה של '+CO+' הבוקר: בחשבון יש '+money(OPEN)+', מחזור יוני נסגר על '+money(REV)+' — החודש הגבוה בחצי השנה — והרווח הגולמי '+money(GROSS)+', '+pct(GROSS,REV)+'% מהמחזור. הדבר היחיד שדורש ממך החלטה הוא התזרים של יולי: ב-'+LOW.d+' החשבון יורד מתחת לאפס.',
-    h:facts(
-      fact('היתרה שלך עכשיו',mh(nf(OPEN)+' <small>₪</small>'),'מסגרת אשראי <b>0 ₪</b>'),
-      fact('הנקודה הנמוכה ב-30 יום',mh(money(LOW.v)),'ב-<b class="mn">'+LOW.d+'</b> · '+(dayOf(LOW.d)-2)+' ימים מהיום','danger'),
-      fact('רווח גולמי · יוני',mh(nf(GROSS)+' <small>₪</small>'),mh(pct(GROSS,REV)+'%')+' מהמחזור · '+mh('+'+Math.round((GROSS-SERIES.gross[4])/SERIES.gross[4]*100)+'%')+' מול מאי','pos')
-    )+'<div class="acts">'+ask('למה צפויה חריגה ביולי?','להיכנס לחריגה')+ask('איך נראית הרווחיות של יוני?','לרווחיות של יוני')+'</div>'};
-}
-
-function aGap(){
-  var big=WIN.filter(function(m){return m.v<0;}).sort(function(a,b){return a.v-b.v;});
-  return {t:'ב-'+LOW.d+' היתרה שלך צפויה לרדת למינוס '+nf(LOW.v)+' ₪. הסיבה היא לא הוצאה חריגה אחת, אלא צפיפות: בין 05.07 ל-'+LOW.d+' יוצאים מהחשבון '+nf(WIN_OUT)+' ₪ ונכנסים רק '+nf(WIN_IN)+' ₪. שלושת התשלומים הכבדים — שכר, מע״מ וסונול — נופלים בתוך שישה ימים, וההכנסה הגדולה של רימון נכנסת רק ב-16.07, יומיים אחרי הנקודה הנמוכה.',
-    h:viz({kind:'bal',pts:PTS.filter(function(p){return dayOf(p.d)<=20;}),alt:'תחזית היתרה בעו״ש מ-02.07 עד 20.07',
-        title:'היתרה שלך בעו״ש · <b>02.07 – 20.07</b> · פתיחה '+moneyH(OPEN),
-        legend:'<div class="lg"><span><i></i>מעל האפס</span><span><i class="neg"></i>מתחת לאפס</span></div>'})
-      +viz({kind:'rows',title:'מה יוצא בקטע הזה · <b>05.07 – '+LOW.d+'</b>',
-        rows:big.map(function(m){return {n:m.t,s:m.d,v:m.v,bad:dayOf(m.d)===dayOf(LOW.d)};})})
-      +'<div class="acts">'+ask('מה קורה אם אדחה את התשלום לסונול בשבוע?','ואם אדחה את סונול?')+link('messages.html','לכתוב לאילון')+'</div>'};
-}
-
-function aSonol(){
-  var s=null; MOVES.forEach(function(m){ if(m.t.indexOf('סונול')===0) s=m; });
-  return {t:'התשלום לסונול הוא '+nf(s.v)+' ₪ ב-'+s.d+', מתוך חוב פתוח של 128,500 ₪. אם דוחים אותו בשבוע, ל-17.07, הוא עובר לצד השני של ההכנסה מרימון (187,000 ₪ ב-16.07) — והנקודה הנמוכה של החודש עולה ממינוס '+nf(LOW.v)+' ₪ לפלוס '+nf(LOW_FIX.v)+' ₪, כלומר אתה לא יורד מתחת לאפס בכלל. זו הדחייה היחידה שמספיקה לבד; דחייה של שלושה ימים לא פותרת.',
-    h:facts(
-      fact('היום · הנקודה הנמוכה',mh(money(LOW.v)),'ב-<b class="mn">'+LOW.d+'</b>','danger'),
-      fact('עם דחייה ל-17.07',mh(nf(LOW_FIX.v)+' <small>₪</small>'),'ב-<b class="mn">'+LOW_FIX.d+'</b> · לא יורד מתחת לאפס','pos'),
-      fact('חוב פתוח לסונול',mh('128,500 <small>₪</small>'),'מזה <b>'+nf(-s.v)+' ₪</b> לתשלום ב-'+s.d)
-    )+'<div class="acts">'+link('messages.html','לבקש מאילון לתאם דחייה',1)+ask('למה צפויה חריגה ביולי?','לראות את כל התחזית')+'</div>'};
-}
-
-function aHK(){
-  return {t:'השבוע עברנו על החשבון שלך בשלמותו. התפעול המלא הושלם אתמול ולקח 32 דקות, קוטלגו 4 תנועות חדשות, טופלה חשבונית של סונול על 4,820 ₪, נשלח אליך עדכון תזרים שבועי בוואטסאפ, וזוהתה כפילות חיוב של 3,540 ₪ שהוסרה מהתזרים. אחרי כל אלה, המספרים שאתה רואה בדשבורד מעודכנים.',
-    h:'<div class="ops">'+OPS.map(function(o){
-        return '<div class="op"><span class="d"></span><span class="t"><b>'+esc(o.t)+'</b><s>'+esc(o.d)+'</s></span><span class="w">'+esc(o.w)+'</span></div>';
-      }).join('')+'</div>'
-      +'<div class="acts">'+ask('אילו מסמכים חסרים לכם ממני?','מה עוד חסר לכם ממני?')+'</div>'};
-}
-
-function aMeet(){
-  var mins=minsUntil(MEET.now,MEET.tm);
-  return {t:'הפגישה הבאה שלך היא '+MEET.day+' ב-'+MEET.tm+' עם '+MEET.who+' — '+MEET.what+', '+MEET.where+'. זה '+untilTxt(mins)+'. הנושא המרכזי שהכנו אליה הוא הירידה מתחת לאפס ב-'+LOW.d+' והדרכים לצאת ממנה.',
-    h:'<div class="mcard"><span class="tm">'+MEET.tm+'<s>'+MEET.day+' · '+MEET.date+'</s></span>'+
-      '<span class="b"><b>'+esc(MEET.what)+'</b> עם '+esc(MEET.who)+
-      '<span class="q">'+MEET.where+' · '+untilTxt(mins)+' · 45 דקות</span>'+
-      '<span class="acts">'+link('meetings.html','להכנה לפגישה',1)+link('meetings.html','לכל הפגישות')+'</span></span></div>'};
-}
-
-function aSalary(){
-  var g=gapOf('שכר עבודה'), nx=null;
-  MOVES.forEach(function(m){ if(m.t==='שכר עבודה') nx=m; });
-  return {t:'השכר ביוני היה '+money(g.a)+' — בדיוק על התקציב, בלי חריגה. זה '+pct(g.a,REV)+'% מהמחזור של יוני. התשלום הבא, באותו סכום, יוצא ב-'+nx.d+' והוא ההוצאה הגדולה ביותר של החודש.',
-    h:viz({kind:'rows',title:'שכר עבודה · <b>בפועל מול היעד</b>',
-      legend:'<div class="lg"><span><i></i>בפועל</span><span><i class="tgt"></i>היעד</span></div>',
-      rows:[{n:'יוני 2026',s:'חודש סגור',v:g.a,t:g.t,f:'בדיוק על היעד'},
-            {n:'יולי 2026',s:'התשלום הבא · '+nx.d,v:-nx.v,t:g.t,f:'ההוצאה הגדולה של יולי'}]})};
-}
-
-function aDocs(){
-  return {t:'ממתינים אצלנו '+DOCS.total+' מסמכים שהעליתם ועוד לא הוזנו, מהם '+DOCS.inv+' חשבוניות ספק. עד שהן ייכנסו, תחזית יולי מתבססת על הצפי בלבד ולא על סכומים סופיים — כלומר הנקודה הנמוכה של '+MEET.date.slice(3)+' עשויה לזוז. הזנה של השלוש האלה היא הדבר הכי מועיל שאתה יכול לעשות היום.',
-    h:facts(
-      fact('מסמכים ממתינים להזנה',mh(String(DOCS.total)),'הועלו בשבוע האחרון'),
-      fact('מתוכם חשבוניות ספק',mh(String(DOCS.inv)),'משפיעות ישירות על התחזית')
-    )+'<div class="acts">'+link('messages.html','לשלוח את החסר')+'<button class="btn sm" data-toast="רשימת המסמכים הממתינים תיפתח כאן">לרשימת המסמכים</button></div>'};
-}
-
-function aShip(){
-  var g=gapOf('חברות שילוח'), d=g.a-g.t;
-  return {t:'חברות שילוח הכניסו ביוני '+money(g.a)+' מול יעד של '+money(g.t)+' — חסרים '+money(-d)+', הפער הגדול ביותר בצד ההכנסות. זה '+pct(g.a,REV)+'% מהמחזור, לעומת '+pct(g.t,REV)+'% שתוכננו. שאר ערוצי ההכנסה סגרו את הפער, ולכן המחזור הכולל בכל זאת עלה.',
-    h:viz({kind:'rows',title:'הכנסות יוני · <b>בפועל מול היעד</b>',
-      legend:'<div class="lg"><span><i></i>בפועל</span><span><i class="tgt"></i>היעד</span></div>',
-      rows:GAPS.filter(function(x){return x.k==='inc';}).sort(function(a,b){return b.a-a.a;})
-        .map(function(x){return {n:x.n,v:x.a,t:x.t,bad:x.a<x.t,f:(x.a>=x.t?'+':'−')+nf(x.a-x.t)+' ₪ מהיעד'};})})
-    +'<div class="acts">'+link('metrics.html','לכל הפערים של יוני')+'</div>'};
-}
-
-function aStock(){
-  var g=gapOf('קניות מלאי'), d=g.a-g.t;
-  return {t:'קניות המלאי ביוני היו '+money(g.a)+' מול יעד של '+money(g.t)+' — חריגה של '+money(d)+', '+Math.round(d/g.t*100)+'% מעל התכנון וההוצאה החורגת הגדולה של החודש. ביולי כבר צבועים '+money(118000)+' לקניות מלאי מתוך תקציב של '+money(275000)+', כלומר יש עוד מקום — אבל לא הרבה.',
-    h:viz({kind:'rows',title:'הוצאות יוני שחרגו מהיעד',
-      legend:'<div class="lg"><span><i></i>בפועל</span><span><i class="tgt"></i>היעד</span></div>',
-      rows:GAPS.filter(function(x){return x.k==='exp'&&x.a>x.t;}).sort(function(a,b){return (b.a-b.t)-(a.a-a.t);})
-        .map(function(x){return {n:x.n,v:x.a,t:x.t,bad:true,f:'+'+nf(x.a-x.t)+' ₪ מעל היעד'};})})};
-}
-
-function aProfit(){
-  var chg=Math.round((GROSS-SERIES.gross[4])/SERIES.gross[4]*100);
-  return {t:'ביוני נשארו לך '+money(GROSS)+' רווח גולמי — '+pct(GROSS,REV)+'% מהמחזור ו-'+chg+'% יותר ממאי, הכי גבוה בחצי השנה. הרווח התפעולי '+money(OP)+', '+pct(OP,REV)+'% מהמחזור. מה שכן בולט: הרווח התזרימי שלילי — מינוס '+nf(CASHP)+' ₪ — כלומר '+nf(GROSS-CASHP)+' ₪ נרשמו כרווח אבל עוד לא נכנסו לחשבון. זה בדיוק מה שיוצר את הלחץ בתזרים של יולי.',
-    h:facts(
-      fact('רווח גולמי · יוני',mh(nf(GROSS)+' <small>₪</small>'),mh(pct(GROSS,REV)+'%')+' מהמחזור · '+mh('+'+chg+'%')+' מול מאי','pos'),
-      fact('רווח תפעולי · יוני',mh(nf(OP)+' <small>₪</small>'),mh(pct(OP,REV)+'%')+' מהמחזור'),
-      fact('רווח תזרימי · יוני',mh(money(CASHP)),'הכסף שבאמת נכנס לחשבון','danger')
-    )+'<div class="acts">'+link('metrics.html','לפירוט המדדים')+ask('למה צפויה חריגה ביולי?','ואיך זה נראה ביולי?')+'</div>'};
-}
-
-function aRev(){
-  var chg=Math.round((REV-REVENUE[4])/REVENUE[4]*1000)/10;
-  return {t:'המחזור של יוני היה '+money(REV)+' — עלייה של '+chg+'% מול מאי והחודש הגבוה בחצי השנה. הממוצע החצי-שנתי שלך הוא '+money(REV_AVG)+' לחודש, כך שיוני היה '+Math.round((REV-REV_AVG)/REV_AVG*100)+'% מעליו. חמשת מקורות ההכנסה מתחלקים כך:',
-    h:viz({kind:'rows',title:'מקורות ההכנסה · <b>יוני 2026</b>',
-      rows:SRC.slice().sort(function(a,b){return b.v-a.v;}).map(function(r){
-        return {n:r.t,v:r.v,f:pct(r.v,REV)+'% מהמחזור'};})})};
-}
-
-function aBudget(){
-  var left=BUD_TOT-BUD_USED;
-  return {t:BUD_PCT+'% מתקציב ההוצאות של יולי כבר צבועים בתזרים — וזה רק היום השני של החודש. מתוך '+money(BUD_TOT)+' שתוכננו, '+money(BUD_USED)+' כבר מחויבים ונשארו '+money(left)+' פנויים. השורות שכמעט נסגרו הן שכר עבודה ומוסדות מס; המקום שנשאר הוא בעיקר בקניות מלאי ובפרסום.',
-    h:viz({kind:'rows',title:'תקציב יולי · <b>כמה כבר תפוס</b>',
-      legend:'<div class="lg"><span><i></i>תפוס בתזרים</span><span><i class="tgt"></i>התקציב</span></div>',
-      rows:BCTL.slice().sort(function(a,b){return (b.c/b.b)-(a.c/a.b);}).map(function(r){
-        return {n:r.n,v:r.c,t:r.b,bad:r.c/r.b>=0.98,f:Math.round(r.c/r.b*100)+'% מתוך '+nf(r.b)+' ₪'};})})
-    +'<div class="acts">'+link('metrics.html','לתקציב המלא')+'</div>'};
-}
-
-function aVat(){
-  var m=null; MOVES.forEach(function(x){ if(x.t.indexOf('מוסדות מס')===0) m=x; });
-  var g=gapOf('מוסדות מס');
-  return {t:'תשלום המע״מ הקרוב הוא '+money(-m.v)+' ב-'+m.d+', ארבעה ימים לפני הנקודה הנמוכה של החודש. ביוני שילמת '+money(g.a)+' מול תקציב של '+money(g.t)+' — קצת מתחת. זה תשלום שאי אפשר לדחות, ולכן הוא נכנס לתחזית כנתון קבוע.',
-    h:facts(
-      fact('מע״מ · התשלום הקרוב',mh(nf(-m.v)+' <small>₪</small>'),'ב-<b class="mn">'+m.d+'</b> · לא ניתן לדחייה'),
-      fact('מוסדות מס · יוני',mh(nf(g.a)+' <small>₪</small>'),mh('−'+nf(g.t-g.a))+' ₪ מתחת לתקציב')
-    )};
-}
-
-function aBal(){
-  var next=MOVES.slice(0,4);
-  return {t:'בעו״ש שלך יש עכשיו '+money(OPEN)+', בלי מסגרת אשראי. ארבע התנועות הקרובות משנות את זה מהר: '+money(96000)+' נכנסים ב-03.07 ומיד אחריהם יוצא השכר. אלה התנועות הבאות בתור:',
-    h:viz({kind:'rows',title:'ארבע התנועות הקרובות',
-      rows:next.map(function(m){return {n:m.t,s:m.d,v:m.v,good:m.v>0,bad:m.v<0&&Math.abs(m.v)>150000};})})
-    +'<div class="acts">'+ask('למה צפויה חריגה ביולי?','ומה קורה בהמשך החודש?')+'</div>'};
-}
-
-function aFallback(q){
-  return {t:'על השאלה הזאת אין לי נתון ישיר. מה שכן יש לי עליך: יתרת העו״ש ('+money(OPEN)+'), תחזית התזרים עד 31.07, מחזור ורווחיות של ששת החודשים האחרונים, פערי היעדים של יוני, תקציב יולי, החשבוניות והמסמכים שלך והפגישות עם '+ADV+'. נסה אחת מאלה:',
-    h:'<div class="acts">'+ask('מה המצב של החברה?')+ask('כמה נשאר לי בתקציב של יולי?')+ask('איך נראית הרווחיות של יוני?')+'</div>'};
-}
-
-var ANS=[
-  {k:['מסמכ','חשבוניות','חסרים','להזנה'], f:aDocs},
-  {k:['מתחת לאפס','חריגה','מינוס','שלילי','14.07','14.7'], f:aGap},
-  {k:['סונול','לדחות','אדחה','דחיי'], f:aSonol},
-  {k:['hk','עשתה','עשיתם','תפעול','טיפלתם'], f:aHK},
-  {k:['פגישה','פגישות','ניפגש'], f:aMeet},
-  {k:['שכר','משכורות'], f:aSalary},
-  {k:['שילוח'], f:aShip},
-  {k:['מלאי','קניות'], f:aStock},
-  {k:['רווח','רווחיות','גולמי','תפעולי'], f:aProfit},
-  {k:['הכנסות','מחזור','מכירות'], f:aRev},
-  {k:['תקציב'], f:aBudget},
-  {k:['מע״מ','מע"מ','מוסדות מס','מיסים'], f:aVat},
-  {k:['יתרה','כמה כסף','עו״ש','בחשבון','בנק'], f:aBal},
-  {k:['מצב','תמונת','מה קורה','סיכום'], f:aState}
-];
-function answer(q){
-  var s=String(q).toLowerCase();
-  for(var i=0;i<ANS.length;i++){
-    for(var j=0;j<ANS[i].k.length;j++){
-      if(s.indexOf(ANS[i].k[j])>-1) return ANS[i].f(q);
-    }
-  }
-  return aFallback(q);
-}
-
-/* =====================================================================
-   השיחה
-   ===================================================================== */
-var stream=document.getElementById('stream');
-var chipsEl=document.getElementById('chips');
-var input=document.getElementById('q');
-var busy=false;
-
-var POOL=[
-  'מה המצב של החברה?',
-  'למה צפויה חריגה ביולי?',
-  'מה HK עשתה השבוע?',
-  'מתי הפגישה הבאה שלי?',
-  'מה קורה אם אדחה את התשלום לסונול בשבוע?',
-  'כמה נשאר לי בתקציב של יולי?',
-  'איך נראית הרווחיות של יוני?',
-  'אילו מסמכים חסרים לכם ממני?'
-];
-var used={};
-
-function renderChips(){
-  var open=POOL.filter(function(q){return !used[q];}).slice(0,4);
-  if(!open.length){ chipsEl.className='none'; chipsEl.textContent='שאלת את כל המוצעות. כתוב כל שאלה על המספרים שלך — אני עונה מהנתונים.'; return; }
-  chipsEl.className='chips';
-  chipsEl.innerHTML=open.map(function(q){return '<button class="chip" data-ask="'+esc(q)+'">'+esc(q)+'</button>';}).join('');
-}
-
-function bubble(who,html,cls){
-  var m=document.createElement('div');
-  m.className='m '+who;
-  m.innerHTML='<i class="av '+(who==='ai'?'ai':'you')+'" aria-hidden="true">'+
-      (who==='ai'?'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>':'צע')+
-    '</i><div class="bub'+(cls?' '+cls:'')+'">'+html+'</div>';
-  stream.appendChild(m);
-  return m;
-}
-function toBottom(){ stream.scrollTop=stream.scrollHeight;
-  if(window.requestAnimationFrame) requestAnimationFrame(function(){stream.scrollTop=stream.scrollHeight;}); }
-
-function say(a){                       /* תשובה מיידית — בלי הנפשה */
-  var m=bubble('ai','<p>'+esc(a.t)+'</p>'+(a.h||''));
-  drawAll(); toBottom(); return m;
-}
-
-function askQ(q){
-  if(busy) return;
-  q=String(q).trim(); if(!q) return;
-  used[q]=1; renderChips();
-  bubble('me','<p>'+esc(q)+'</p>');
-  var m=bubble('ai','<span class="dots" aria-label="מקליד"><i></i><i></i><i></i></span>');
-  toBottom(); busy=true;
-  var a=answer(q);
-  setTimeout(function(){
-    var bub=m.querySelector('.bub');
-    bub.innerHTML='<p></p>';
-    var p=bub.querySelector('p'), i=0, txt=a.t;
-    var tick=setInterval(function(){
-      p.textContent=txt.slice(0,++i);
-      toBottom();
-      if(i>=txt.length){
-        clearInterval(tick);
-        if(a.h){ p.insertAdjacentHTML('afterend',a.h); drawAll(); }
-        toBottom(); busy=false;
-        input.focus();
-      }
-    },9);
-  },620);
-}
-
-/* --- פתיחת השיחה: העוזר פותח עם מה שהשתנה, לא בשאלה --- */
-function greet(){
-  stream.innerHTML='';
-  say({t:'בוקר טוב, צחי. אני עונה רק ממה שיש בחשבון, בחשבוניות ובתקציב שלך. מאז אתמול נכנסו 14 תנועות — ואלה שלושת המספרים שכדאי שיהיו לך בראש לפני הפגישה ב-'+MEET.tm+':',
-    h:facts(
-      fact('היתרה שלך עכשיו',mh(nf(OPEN)+' <small>₪</small>'),'מסגרת אשראי <b>0 ₪</b>'),
-      fact('הנקודה הנמוכה ב-30 יום',mh(money(LOW.v)),'ב-<b class="mn">'+LOW.d+'</b> · '+(dayOf(LOW.d)-2)+' ימים מהיום','danger'),
-      fact('תקציב יולי · כבר תפוס',mh(BUD_PCT+'%'),'ביום השני של החודש')
-    )});
-  bubble('me','<p>כמה יצא לי על שכר ביוני?</p>');
-  say(aSalary());
-}
-
-/* =====================================================================
-   הטור הצדי
-   ===================================================================== */
-function renderFinds(){
-  var ship=gapOf('חברות שילוח'), stock=gapOf('קניות מלאי');
-  var F=[
-    {bad:1, t:'החשבון שלך יורד מתחת לאפס ב-'+LOW.d, n:money(LOW.v), s:'הנקודה הנמוכה בחודש',
-     q:'למה צפויה חריגה ביולי?'},
-    {bad:0, t:'דחיית התשלום לסונול מוציאה אותך מזה', n:money(LOW_FIX.v), s:'אחרי דחייה של שבוע',
-     q:'מה קורה אם אדחה את התשלום לסונול בשבוע?'},
-    {bad:0, t:'תקציב יולי כבר תפוס ברובו', n:BUD_PCT+'%', s:'ביום השני של החודש',
-     q:'כמה נשאר לי בתקציב של יולי?'},
-    {bad:0, t:'הרווח התזרימי של יוני יצא שלילי', n:money(CASHP), s:'מול '+nf(GROSS)+' ₪ גולמי',
-     q:'איך נראית הרווחיות של יוני?'},
-    {bad:0, t:'קניות מלאי חרגו מהיעד ביוני', n:'+'+nf(stock.a-stock.t)+' ₪', s:'מעל היעד של יוני',
-     q:'למה קניות מלאי חרגו ביוני?'},
-    {bad:0, t:'חברות שילוח מתחת ליעד ההכנסה', n:'−'+nf(ship.t-ship.a)+' ₪', s:'מתחת ליעד יוני',
-     q:'למה חברות שילוח מתחת ליעד?'},
-    {bad:0, t:'מסמכים שהעליתם ועוד לא הוזנו', n:DOCS.total+' מסמכים', s:'מהם '+DOCS.inv+' חשבוניות ספק',
-     q:'אילו מסמכים חסרים לכם ממני?'}
+/* ---------- (ב) כרטיסי זיכרון — חברה ואיש קשר ---------- */
+function cardContacts(){
+  const P=[
+    {a:'צ',n:'צחי עובד',r:'בעלים · איש הקשר',
+     l:[['מקבל ההחלטות היחיד בחברה','שיחת טלפון · 25.06'],
+        ['לקח על עצמו את תחום התפעול אחרי עזיבת סמנכ״ל התפעול — עומס ניהולי','פגישה חודשית · 10.06']]},
+    {a:'ר',n:'רות אלמוג',r:'מנהלת כספים',
+     l:[['הכתובת האפקטיבית לכל בקשת חומר — לא צחי','תפעול שוטף · 02.07'],
+        ['מעבירה דפי בנק וחשבוניות בזמן, כל שבוע · מעדיפה מיילים מסודרים','שיחת טלפון · 28.06']]},
+    {a:'ב',n:'רו״ח חיצוני · משרד ברק',r:'לא משתמש במערכת',
+     l:[['משפיע על החלטות מימון — לתאם איתו לפני הצעות גדולות','שיחת טלפון · 25.06']]},
   ];
-  document.getElementById('fnds').innerHTML=F.map(function(f){
-    return '<button class="fd'+(f.bad?' bad':'')+'" data-ask="'+esc(f.q)+'" aria-label="'+esc(f.q)+'">'+
-      '<span class="d"></span><span><span class="t">'+esc(f.t)+'</span>'+
-      '<span class="n">'+mh(esc(f.n))+'<s>'+esc(f.s)+'</s></span></span>'+
-      '<span class="go" aria-hidden="true">←</span></button>';
-  }).join('');
-  document.getElementById('fndSub').textContent=F.length+' דברים · מהסריקה של הבוקר';
+  return `<article class="panel ansc">
+    <div class="lbl">אנשי הקשר של אנרגי · מהזיכרון</div>
+    ${P.map(p=>`<div class="prow"><span class="pav">${p.a}</span><div class="pb2">
+      <h4>${p.n}<em>${p.r}</em></h4>
+      ${p.l.map(x=>`<p>${x[0]}<i>${x[1]}</i></p>`).join('')}
+    </div></div>`).join('')}
+    <div class="foot">מזיכרון החברה והיוזרים — הקשר אישי ואמון · שיתוף פעולה · סגנון תקשורת.
+      מצדנו על החברה: לירון בן כליפא (מנהלת התזרים) ואילון אשכנזי (היועץ).</div>
+  </article>`;
 }
-function renderSrcs(){
-  document.getElementById('srcs').innerHTML=SOURCES.map(function(s){
-    return '<div class="sr"><span>'+esc(s.t)+'</span><span class="w'+(s.live?' live':'')+'">'+esc(s.w)+'</span></div>';
-  }).join('');
+
+function cardComm(){
+  const L=[
+    ['פתח תמיד במספרים — צחי מאבד סבלנות מהקדמות','פגישה חודשית · 02.07'],
+    ['תשובות קצרות, בלי ז׳רגון פיננסי','פגישה חודשית · 02.07'],
+    ['כשמציגים בעיה — להציג ישר גם פתרון מוצע','פגישה חודשית · 02.07'],
+    ['מעדיף וואטסאפ על טלפון; זמין לשיחות רק אחרי 16:00','פגישה חודשית · 02.07'],
+    ['אוהב גרפים פשוטים, לא טבלאות','פגישה חודשית · 02.07'],
+  ];
+  const INT=[
+    ['לא לדבר על עלות השירות בנוכחות השותף','הקשר אישי ואמון · 25.06'],
+    ['נשמע לחוץ סביב החריגה בלאומי — ענה ברוגע, פתרון לצד כל בעיה','מצב אישי ולחץ · 02.07'],
+  ];
+  return `<article class="panel ansc">
+    <div class="lbl">איך לדבר עם צחי עובד · מהזיכרון</div>
+    ${L.map(x=>`<div class="mrow"><div class="t">${x[0]}</div><div class="s">${x[1]}</div></div>`).join('')}
+    ${INT.map(x=>`<div class="mrow"><div class="t">${x[0]}<span class="tag">פנימי</span></div>
+      <div class="s">${x[1]}</div></div>`).join('')}
+    <div class="foot">סגנון תקשורת · עודכן 02.07 מפגישה חודשית. שתי השורות המסומנות פנימי נשלחות לצ׳אט של הלקוח כהנחיית טון בלבד — בלי התוכן עצמו.</div>
+  </article>`;
+}
+
+function cardPains(){
+  const L=[
+    ['','תלות בשני לקוחות גדולים — כ-70% מהמחזור, מדיר שינה','פגישה חודשית · 02.07'],
+    ['','פער תזמון קבוע: ספקים ב-10 לחודש מול גבייה בתחילת החודש','שיחת טלפון · 25.06'],
+    ['mid','קניות המלאי גדלו ולוחצות על התזרים, בלי גידול מקביל במחזור','פגישה חודשית · 02.07'],
+    ['mid','עומס על מנהלת הכספים — אין גיבוי בתפקיד','פגישה חודשית · 15.06'],
+  ];
+  return `<article class="panel ansc">
+    <div class="lbl">הכאבים הפתוחים של אנרגי · מהזיכרון</div>
+    ${L.map(x=>`<div class="mrow"><div class="t"><span class="dot ${x[0]}"></span>${x[1]}</div>
+      <div class="s">${x[2]}</div></div>`).join('')}
+    <div class="mrow done"><div class="t"><span class="dot ok"></span>ריבית גבוהה על המסגרת — נפתר</div>
+      <div class="s">נפתר 25.06</div></div>
+    <div class="foot">כאבי לקוח · עודכן 02.07. הכאב הראשון נוסף הבוקר מפגישת 09:00 והוא החדש ברשימה.</div>
+  </article>`;
+}
+
+function cardGoals(){
+  const L=[
+    ['פתיחת מסגרת נוספת 100 א׳ ₪ בפועלים','באחריותנו · יעד 15.7','בתהליך',''],
+    ['הקטנת התלות בלקוחות הגדולים — צחי בוחן שני מפיצים','באחריות צחי · עדכון בפגישה הבאה','פתוח','wait'],
+    ['יעד ליטרים חודשי 120,000','הוגדר במדדים · 108,000 בפועל','במעקב',''],
+    ['עדכון קטגוריות הריטריט בתזרים','משימה מפגישת אפריל · טרם בוצעה','פתוח','wait'],
+    ['הרשאת חשבון הסליקה בקארדקום','תקועה בבנק שבועיים · דורשת דחיפה','פתוח','wait'],
+  ];
+  return `<article class="panel ansc">
+    <div class="lbl">מה סוכם ועדיין לא נסגר · מהזיכרון</div>
+    ${L.map(x=>`<div class="mrow"><div class="t"><b>${x[0]}</b><br>${x[1]}</div>
+      <div class="st ${x[3]}">${x[2]}</div></div>`).join('')}
+    <div class="foot">יעדים והסכמות (02.07) · שיתוף פעולה (02.07) · משימות פתוחות מפגישות קודמות.</div>
+  </article>`;
+}
+
+const CARDS={state:cardState, contacts:cardContacts, comm:cardComm, pains:cardPains, goals:cardGoals};
+
+/* ---------- תשובות טקסט — כל השאר ---------- */
+const T={
+  exposure:`<p>החריגה נבנית מ<b>פער תזמון</b>, לא מירידה בהכנסות. העו״ש בלאומי 604 חי על המסגרת —
+    150,000 ₪ בניצול 107% — והתשלומים לספקים יוצאים ב-10 לחודש, בעוד רוב הגבייה נכנסת בשבוע הראשון.
+    על זה נוספו קניות מלאי שגדלו ל-181,000 ₪ ביוני, בלי גידול מקביל במחזור.</p>
+    <p>בפועל יש כיסוי: בפועלים 112 יש יתרה חיובית, וההעברה של <b>42,000 ₪</b> ללאומי כבר פתוחה
+    אצל לירון להיום. אם היא מתבצעת — <span class="rd">החריגה של 11.07</span> יורדת מהתחזית.
+    אם לא, זה יחזור גם באוגוסט: זה דפוס חודשי קבוע, לא אירוע חד-פעמי.</p>`,
+
+  profit:`<p>ביוני נכנסו 307,039 ₪ ויצאו כמעט אותו סכום: קניות מלאי 181,000 ₪, שכר עבודה 99,000 ₪
+    והוצאות תפעול 17,800 ₪. מכאן הרווח התזרימי הדק — 26,900 ₪ מול יעד של 30,000 ₪.</p>
+    <p>כל ההסבר יושב במלאי. הוא גדל שלושה חודשים ברצף בלי גידול מקביל במחזור, ו-25,000 ₪ ממנו
+    עדיין לא נצבעו בתזרים — כך שהתמונה קדימה גרועה אפילו מהמספר הזה.</p>`,
+
+  stock:`<p>קניות המלאי הן הפער הגדול של החודש: 114% מהתקציב, ומדובר בחודש שלישי ברציפות.
+    בתוך זה יש 25,000 ₪ שטרם נצבעו בתזרים — משימה פתוחה של לירון ליעד 01.08 — ולכן התחזית
+    קדימה עדיין לא מכילה אותם.</p>
+    <p>בזיכרון זה מופיע כבר כשורה קבועה: המלאי גדל ולוחץ על התזרים בלי גידול מקביל במחזור.
+    שווה להעלות את זה היום ב-17:00, בהמשך הסקירה — זה הנושא היחיד שחוזר בלי שינוי כבר רבעון.</p>`,
+
+  tasks:`<p>שתי משימות פתוחות מולה: <b>בדיקת ההעברה מפועלים 112 ללאומי 604 — 42,000 ₪</b>, ליעד היום,
+    זו שמזיזה את החריגה; ו<b>פילוח עלות המכר לפי ספקים</b> לקראת הפגישה, ביעד 30.06 — כלומר
+    יומיים באיחור.</p>
+    <p>מעבר לאלה יש משימה עתידית ל-01.08: צביעת יתרת קניות המלאי בתזרים, 25,000 ₪.
+    אפשר לפתוח לה משימה חדשה או לדחוף אותה מהפס הכחול למעלה.</p>`,
+
+  suppliers:`<p>ביוני יצאו לספקים <b>147,000 ₪</b> — מתוכם <b>130,000 ₪</b> קניות מלאי
+    (מתוך תקציב 155,000 ₪) ו-<b>17,000 ₪</b> הוצאות תפעול ושירותים. חובות הספקים עמדו על
+    3,000 ₪ מול תקציב של 2,000 ₪.</p>
+    <p>הפילוח <b>לפי ספק</b> עדיין לא קיים במערכת — זו בדיוק המשימה שפתוחה אצל לירון מ-30.06,
+    "פילוח עלות המכר לפי ספקים", לקראת הפגישה. היא באיחור.</p>`,
+
+  meeting:`<p>פגישת הסקירה של הבוקר (09:00–10:00, הוקלטה 46 דקות) הסתיימה,
+    <b>והסיכום כבר ממתין לאישורך</b> — הוא חזר מהתמלול תוך כמה דקות. שלושה עדכונים כבר נכנסו לזיכרון: תלות בלקוח מרכזי כ-70% מהמחזור,
+    ירידה בשביעות הרצון סביב קצב התגובה בוואטסאפ, וצפי החריגה שעודכן ל-9 ימים.</p>
+    <p>הפגישה המאושרת האחרונה היא פ.ע של 05.05: שם נסגרו חיבור כרטיס מקס ל-Bizibox, החלפת פונקציית
+    שירות הלקוחות (חיסכון כ-2,880 ₪ לחודש), והוגדר יעד פתיחת מסגרת נוספת של 100 א׳ ₪ עד 15.7.
+    הבא בתור הוא היום ב-17:00 — המשך סקירה, החלטות תקציב.</p>`,
+
+  revenue:`<p>מחזור ההכנסות עומד על 142,522 ₪ מול יעד חודשי של 150,000 ₪ — חסרים 7,478 ₪, כ-95% מהיעד.
+    בקצב הנוכחי, ובימי העבודה שנותרו, זה יעד בר-סגירה.</p>
+    <p>המקור הקרוב ביותר הוא הגבייה: החוב הפתוח עומד על 38,400 ₪ מול תקרה של 25,000 ₪.
+    סגירה של חלק ממנו סוגרת גם את הפער וגם מקילה על החריגה ב-11.07.</p>`,
+
+  actions:`<p>ארבע פעולות חסרות בתזרים כרגע: ההעברה מפועלים 112 ללאומי 604 (42,000 ₪, פתוחה אצל לירון),
+    צביעת 25,000 ₪ מקניות המלאי, חיבור כרטיס האשראי מקס ל-Bizibox, והרשאת חשבון הסליקה בקארדקום
+    שתקועה בבנק כבר שבועיים.</p>
+    <p>בנוסף, שני חשבונות הבנק לא נמשכו מ-28.06 — כל עוד זה כך, התחזית עובדת על נתון מיושן בארבעה ימים.</p>`,
+
+  none:`<p>על השאלה הזאת אין לי מספיק מהנתונים של אנרגי כדי לענות בביטחון, ואני מעדיף לא לנחש.</p>
+    <p>מה שכן פתוח בפניי: המספרים החיים (תזרים, תקציב, מדדים), הזיכרון של החברה ושל אנשי הקשר,
+    הפגישות והסיכומים, והמשימות מול לירון. נסחו מחדש או שאלו על אחד מאלה.</p>`,
+};
+
+/* מדדים — הגעה מ-metrics.html דרך "הסבר לי את המדד X" */
+const MET={
+  'מחזור הכנסות':'142,522 ₪ מול יעד 150,000 ₪ — 95%. חסרים 7,478 ₪ עד סוף החודש.',
+  'סך הליטרים':'108,000 ליטר מול יעד 120,000 — 90%. היעד הוגדר בפגישה החודשית ב-15.06 והוא במעקב.',
+  'גבייה במזומן בשטח':'מדד שמתעדכן ידנית ולא עודכן החודש — אפשר לבקש מהלקוח עדכון ישירות מהקבוצה.',
+  'הכנסות ממכירות':'99,642 ₪ מול יעד 90,000 ₪ — 111%. נמשך אוטומטית מהסליקה.',
+  'עמידה בתקציב ההוצאות':'97% מהתקציב — בתוך המסגרת, אבל קניות המלאי לבדן עומדות על 114%.',
+  'חוב פתוח לגבייה':'38,400 ₪ מול תקרה של 25,000 ₪ — חריגה. זה גם המקור המהיר ביותר לסגירת פער ההכנסות.',
+  'רווח תזרימי':'26,900 ₪ מול יעד 30,000 ₪. המלאי הוא ההסבר — 181,000 ₪ ביוני.',
+  'הכנסה ליום עבודה':'6,787 ₪ מול יעד 6,500 ₪ — מעל היעד.',
+  'כרית ביטחון בעו״ש':'9 ימים מול יעד 14. זה בדיוק המספר שמייצר את החריגה הצפויה ב-11.07.',
+  'שווי מלאי נוכחי':'מתעדכן ידנית וטרם עודכן החודש — בלעדיו קשה להסביר את הלחץ התזרימי במדויק.',
+};
+
+/* =====================================================================
+   2 · הניתוב — מה מקבל כרטיס ומה מקבל טקסט
+   הסדר חשוב: הביטוי הספציפי קודם לכללי.
+   ===================================================================== */
+const ROUTES=[
+  [/הסבר לי את המדד\s*(.*)/, q=>{
+     const n=(q.match(/הסבר לי את המדד\s*(.*)/)[1]||'').trim();
+     const k=Object.keys(MET).find(x=>n.indexOf(x)===0||n.indexOf(x)>-1);
+     return k?{t:'txt',h:`<p><b>${k}</b> — ${MET[k]}</p>
+       <p>המדד מוגדר במסך המדדים, ואפשר לערוך שם את היעד ואת ההתראה.</p>`}
+             :{t:'txt',h:T.none};}],
+  [/חריג|11\.07|11 ביולי|בונה את/,                 ()=>({t:'txt',h:T.exposure})],
+  [/פגיש|סיכום|תמלול|17:00/,                        ()=>({t:'txt',h:T.meeting})],
+  [/לירון|משימ|פתוח מול/,                           ()=>({t:'txt',h:T.tasks})],
+  [/מלאי|פערים|קניות|נצבע/,                         ()=>({t:'txt',h:T.stock})],
+  [/אנשי הקשר|איש קשר|מי מקבל|תפקיד/,               ()=>({t:'card',k:'contacts'})],
+  [/לדבר עם|לתקשר|סגנון|טון/,                       ()=>({t:'card',k:'comm'})],
+  [/כאב|מטריד|בעיות של/,                            ()=>({t:'card',k:'pains'})],
+  [/נסגר|הסכמ|יעדים ו|מה סוכם|הבטח/,                ()=>({t:'card',k:'goals'})],
+  [/מצב|מה קורה|מה שלום|תמונת/,                     ()=>({t:'card',k:'state'})],
+  [/הכנס|מחזור|יעד החודש|כמה נכנס|מול היעד/,        ()=>({t:'txt',h:T.revenue})],
+  [/ספק|עלות המכר|הוצאות|כמה יצא|כמה הוצאנו/,     ()=>({t:'txt',h:T.suppliers})],
+  [/פעולות חסרות|חיבור|בנק|סליקה/,                  ()=>({t:'txt',h:T.actions})],
+  [/רווח|רווחיות/,                                  ()=>({t:'txt',h:T.profit})],
+];
+/* שאלה מוכנה חייבת תשובה — ניתוב מפורש לפי הטקסט, לפני הביטויים הרגולריים.
+   בלי זה שינוי נוסח קטן ("הכנסנו" מול "הכנסות") מפיל אותה לפולבק. */
+const PRESET={
+  'מה מצב החברה עכשיו?'        :()=>({t:'card',k:'state'}),
+  'כמה הכנסנו החודש מול היעד?' :()=>({t:'txt',h:T.revenue}),
+  'כמה יצא לספקים ביוני?'      :()=>({t:'txt',h:T.suppliers}),
+  'מה הרווח התזרימי החודש?'    :()=>({t:'txt',h:T.profit}),
+  'מי אנשי הקשר ומה תפקידם?'   :()=>({t:'card',k:'contacts'}),
+  'איך כדאי לדבר עם צחי?'      :()=>({t:'card',k:'comm'}),
+  'מה הכאבים הפתוחים?'         :()=>({t:'card',k:'pains'}),
+  'מה סוכם ועדיין לא נסגר?'    :()=>({t:'card',k:'goals'}),
+};
+function route(q){
+  const k=q.trim();
+  if(PRESET[k]) return PRESET[k]();
+  for(const [re,fn] of ROUTES) if(re.test(q)) return fn(q);
+  return {t:'txt',h:T.none};
 }
 
 /* =====================================================================
-   חיווט
+   3 · השיחה — מצב, רינדור ושליחה
    ===================================================================== */
-document.addEventListener('click',function(e){
-  var b=e.target.closest?e.target.closest('[data-ask],[data-toast]'):null;
-  if(!b) return;
-  if(b.hasAttribute('data-toast')){ toast(b.getAttribute('data-toast')); return; }
-  askQ(b.getAttribute('data-ask'));
+/* שתי משפחות במפורש — בלי זה נראה שהעוזר עונה רק על "רכות" ולא על מספרים */
+const SUGG=[
+  {g:'מספרים', q:['מה מצב החברה עכשיו?','כמה הכנסנו החודש מול היעד?',
+                  'כמה יצא לספקים ביוני?','מה הרווח התזרימי החודש?']},
+  {g:'החברה והאנשים', q:['מי אנשי הקשר ומה תפקידם?','איך כדאי לדבר עם צחי?',
+                          'מה הכאבים הפתוחים?','מה סוכם ועדיין לא נסגר?']},
+];
+const SUG=SUGG.reduce((a,s)=>a.concat(s.q.map(x=>[x])),[]);
+
+/* היסטוריית השיחות של החברה — נשמרות פר חברה */
+const HIST=[
+  {id:'h1', title:'החריגה ב-11.07 וההעברה מפועלים', when:'היום 09:12', turns:[
+    {q:'מה בונה את החריגה הצפויה ב-11.07?', t:'txt', h:T.exposure},
+    {q:'מה פתוח מול לירון בנושא?',          t:'txt', h:T.tasks}]},
+  {id:'h2', title:'הכנה לפגישת הסקירה של הבוקר', when:'היום 08:40', turns:[
+    {q:'איך כדאי לדבר עם צחי?',              t:'card', k:'comm'},
+    {q:'מה הכאבים הפתוחים שלו?',             t:'card', k:'pains'}]},
+  {id:'h3', title:'עלות המכר לפי ספקים', when:'30.06', turns:[
+    {q:'מי הספקים הגדולים ומה חלקם ברכש?',   t:'txt',
+     h:`<p>שלושה ספקים מחזיקים את כל הרכש כמעט: בז״ן — דלקים 45%, פז חברת נפט 28%, וספקי משנה 12%.
+        היתר מפוזר בין ספקים קטנים.</p>
+        <p>הפילוח המלא לפי עלות המכר עדיין פתוח כמשימה אצל לירון — הוא נדרש לפגישה, והיא באיחור מ-30.06.</p>`}]},
+  {id:'h4', title:'המכרז של חברת האוטובוסים', when:'20.06', turns:[
+    {q:'איך הזכייה במכרז משפיעה על התזרים?', t:'txt',
+     h:`<p>הזכייה באספקה לחברת האוטובוסים ירושלים צפויה להוסיף כ-1.5 מ׳ ₪ למחזור השנתי, מאוגוסט.
+        זה אירוע מהותי שנכנס לזיכרון ב-20.06 משיחת טלפון.</p>
+        <p>ההשפעה על התזרים אינה מיידית: המימון קודם לגבייה, כלומר קניות מלאי גדולות יותר לפני
+        התקבול הראשון. זו בדיוק הסיבה שהיעד לפתיחת מסגרת נוספת של 100 א׳ ₪ עד 15.7 קריטי,
+        ולא רק נחמד שיהיה.</p>`}]},
+  {id:'h5', title:'אנשי הקשר של אנרגי', when:'25.06', turns:[
+    {q:'מי אנשי הקשר ומה תפקידם?',           t:'card', k:'contacts'}]},
+];
+
+let CONV={id:null, turns:[]};      // השיחה שעל המסך
+let SEEN=new Set();                // שאלות מוכנות שכבר נשאלו — יורדות מהשורה הדקה
+
+function turnHtml(t){
+  const ans = t.pending ? '<div class="think"><i></i><i></i><i></i></div>'
+            : t.t==='card' ? CARDS[t.k]()
+            : `<div class="txt">${t.h}</div>`;
+  return `<div class="turn q">${t.q}</div><div class="turn a">${ans}</div>`;
+}
+function render(){
+  const s=document.getElementById('stream');
+  if(!CONV.turns.length){
+    s.innerHTML=`<div class="hello">
+      <h2>מה תרצה לדעת על אנרגי אינטרנשיונל?</h2>
+      <p>המספרים החיים של אנרגי והזיכרון שלה כבר בהקשר — אפשר לשאול <b>מספרים</b>
+         (יתרה, הכנסות, הוצאות, רווח) בדיוק כמו ששואלים על החברה ועל האנשים.
+         שאלות מצב וזיכרון חוזרות מיד; כל השאר — תשובה בכתב.</p>
+      ${SUGG.map(s=>`<div class="suggrp"><span class="glb">${s.g}</span>
+        <div class="sug">${s.q.map(x=>`<button onclick="ask('${x.replace(/'/g,"\\'")}')">${x}</button>`).join('')}</div>
+      </div>`).join('')}
+    </div>`;
+  } else {
+    s.innerHTML=CONV.turns.map(turnHtml).join('');
+  }
+  document.querySelector('.conv').classList.toggle('empty',!CONV.turns.length);
+  /* השורה הדקה מעל תיבת הכתיבה — רק שאלות שעוד לא נשאלו, ורק כשהשיחה כבר רצה */
+  const left=SUG.filter(x=>!SEEN.has(x[0])).slice(0,3);
+  document.getElementById('sugMini').innerHTML =
+    (CONV.turns.length&&left.length)
+      ? left.map(x=>`<button type="button" onclick="ask('${x[0]}')">${x[0]}</button>`).join('') : '';
+  document.querySelectorAll('.hrow').forEach(el=>el.classList.toggle('on',el.dataset.id===CONV.id));
+}
+
+/* שאלה חדשה. תשובה גרפית חוזרת מיד; תשובת טקסט מקבלת רגע חשיבה */
+function ask(q){
+  q=(q||'').trim(); if(!q) return;
+  SEEN.add(q);
+  const a=route(q), t={q, pending:true};
+  CONV.turns.push(t); render(); toEnd();
+  const fill=()=>{delete t.pending; Object.assign(t,a); render(); toEnd();};
+  a.t==='card' ? fill() : setTimeout(fill,700);
+}
+function sendTyped(){
+  const i=document.getElementById('q');
+  if(!i.value.trim()) return;
+  ask(i.value); i.value=''; syncSend();
+}
+function syncSend(){
+  document.getElementById('sendBtn').disabled=!document.getElementById('q').value.trim();
+}
+function toEnd(){
+  requestAnimationFrame(()=>{
+    const c=document.getElementById('comp').getBoundingClientRect();
+    if(c.bottom>innerHeight) scrollTo({top:scrollY+c.bottom-innerHeight+24, behavior:'smooth'});
+  });
+}
+
+/* ---------- היסטוריה ---------- */
+function renderHist(){
+  document.getElementById('histList').innerHTML=HIST.map(h=>
+    `<button class="hrow" data-id="${h.id}" onclick="loadConv('${h.id}')">
+      <b>${h.title}</b><span>${h.when} · ${h.turns.length*2} הודעות</span></button>`).join('');
+}
+function loadConv(id){
+  const h=HIST.find(x=>x.id===id); if(!h) return;
+  /* טעינת שיחה = המשך שלה: התורים חוזרים כמו שהיו, וממשיכים לשאול מכאן */
+  CONV={id:h.id, turns:h.turns.map(t=>Object.assign({},t))};
+  h.turns.forEach(t=>SEEN.add(t.q));
+  render(); scrollTo({top:0,behavior:'smooth'});
+}
+function newConv(){
+  CONV={id:null, turns:[]}; SEEN=new Set(); render();
+  scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('q').focus();
+}
+
+/* =====================================================================
+   4 · קול — הקלטת שאלה, ושיחה קולית מלאה
+   ===================================================================== */
+let recT=null, recSec=0;
+function recStart(){
+  recSec=0;
+  const f=document.getElementById('field');
+  f.classList.add('rec');
+  const bars=Array.from({length:44},(_,i)=>
+    `<i style="animation-delay:${(i%9)*.09}s"></i>`).join('');
+  f.innerHTML=`<span class="recdot"></span>
+    <span class="wave">${bars}</span>
+    <span class="rect num" id="recT">00:00</span>
+    <button type="button" class="btn pri recstop" onclick="recStop()">עצירה ושליחה</button>
+    <button type="button" class="iconb" onclick="recCancel()" aria-label="ביטול ההקלטה">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
+  recT=setInterval(()=>{recSec++;
+    const e=document.getElementById('recT');
+    if(e)e.textContent='0'+Math.floor(recSec/60)+':'+String(recSec%60).padStart(2,'0');},1000);
+}
+/* שחזור התיבה הרגילה — נשמרת כתבנית אחת ומוזרקת בחזרה */
+const FIELD_HTML=document.getElementById('field').innerHTML;
+function recRestore(){
+  clearInterval(recT); recT=null;
+  const f=document.getElementById('field');
+  f.classList.remove('rec'); f.innerHTML=FIELD_HTML;
+  syncSend();
+}
+function recCancel(){ recRestore(); toast('ההקלטה בוטלה'); }
+function recStop(){
+  recRestore();
+  /* בדמו: התמלול מוחזר מוכן. במערכת — הקובץ עולה לתמלול ומשם לשאלה */
+  ask('מה מצב החברה עכשיו?');
+  toast('התמלול הוחזר — ' + recSec + ' שניות הקלטה');
+}
+
+/* ---------- שיחה קולית ---------- */
+const VC=[
+  {w:'me', n:'אילון', t:'מה חשוב שאדע לפני הפגישה של 17:00?'},
+  {w:'hk', n:'העוזר', t:'שלושה דברים: החריגה הצפויה ב-11 ביולי, ההעברה של 42,000 ₪ מפועלים שעדיין פתוחה אצל לירון, וקניות המלאי שחורגות חודש שלישי ברצף.'},
+  {w:'me', n:'אילון', t:'ומה עם התלות ברימון?'},
+  {w:'hk', n:'העוזר', t:'היא עלתה בפגישת הבוקר ונכנסה לזיכרון ככאב חדש — כ-70% מהמחזור. צחי רגיש לנושא, כדאי לגעת בו בעדינות ובלי לחץ.'},
+];
+let vcT=null, vcSec=0, vcStep=0, vcNext=null;
+function vcOpen(){
+  if(recT) recCancel();
+  vcSec=0; vcStep=0;
+  document.getElementById('vcTime').textContent='00:00';
+  document.getElementById('vcCaps').innerHTML='<div class="cap me live"><b>אילון</b>…</div>';
+  document.getElementById('vcOv').classList.add('on');
+  vcT=setInterval(()=>{vcSec++;
+    document.getElementById('vcTime').textContent='0'+Math.floor(vcSec/60)+':'+String(vcSec%60).padStart(2,'0');},1000);
+  vcTick();
+}
+const VC_LIVE='<div class="cap me live"><b>אילון</b>…</div>';
+function vcTick(){
+  const c=document.getElementById('vcCaps');
+  const live=c.querySelector('.cap.live'); if(live) live.remove();
+  if(vcStep>=VC.length){ c.insertAdjacentHTML('beforeend',VC_LIVE); return; }
+  const v=VC[vcStep++];
+  c.insertAdjacentHTML('beforeend',`<div class="cap ${v.w}"><b>${v.n}</b>${v.t}</div>`);
+  /* מציגים לכל היותר שלוש שורות — זו שיחה, לא תמלול */
+  const rows=c.querySelectorAll('.cap');
+  if(rows.length>3) rows[0].remove();
+  if(vcStep<VC.length) c.insertAdjacentHTML('beforeend',VC_LIVE);
+  vcNext=setTimeout(vcTick, v.w==='me'?1600:3400);
+}
+function vcStopTimers(){ clearInterval(vcT); clearTimeout(vcNext); vcT=null; vcNext=null; }
+function vcClose(){ vcStopTimers(); document.getElementById('vcOv').classList.remove('on'); }
+function vcEnd(){
+  const secs=vcSec; vcClose();
+  /* השיחה הקולית נשמרת כשיחה בהיסטוריה של החברה, כמו כל שיחה אחרת */
+  HIST.unshift({id:'v'+Date.now(), title:'שיחה קולית — לפני הפגישה של 17:00',
+    when:'היום ' + CO.clock, turns:[
+      {q:VC[0].t, t:'txt', h:'<p>'+VC[1].t+'</p>'},
+      {q:VC[2].t, t:'txt', h:'<p>'+VC[3].t+'</p>'}]});
+  renderHist(); render();
+  toast('השיחה הקולית נשמרה בהיסטוריה · ' + secs + ' שניות');
+}
+
+/* =====================================================================
+   5 · הפעלה
+   ===================================================================== */
+renderHist();
+/* Escape סוגר גם את ההקלטה וגם את השיחה הקולית (הכרום סוגר את הפופאפ עצמו) */
+addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
+  if(recT) recCancel();
+  if(vcT) vcClose();
 });
-document.getElementById('send').onclick=function(){ var v=input.value; input.value=''; askQ(v); };
-input.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('send').click(); } });
-document.getElementById('reset').onclick=function(){
-  used={}; renderChips(); greet(); toast('התחלנו שיחה חדשה'); input.focus();
-};
 
-var rz=null;
-window.addEventListener('resize',function(){ clearTimeout(rz); rz=setTimeout(drawAll,140); });
-
-/* חוזה ה-URL: ?q= שאלה פתוחה */
-renderChips(); renderFinds(); renderSrcs(); greet();
-var qp=(location.search.match(/[?&]q=([^&]*)/)||[])[1];
-if(qp){ try{ askQ(decodeURIComponent(qp.replace(/\+/g,' '))); }catch(err){} }
-document.getElementById('liveN').textContent='14';
-})();
+/* שאלה שהגיעה מהדשבורד או מהמדדים — ?q=... */
+const urlQ=new URLSearchParams(location.search).get('q');
+render();
+if(urlQ) ask(urlQ);
 </script>
 </body>
 </html>
