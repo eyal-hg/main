@@ -1,239 +1,324 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jampa · דשבורד מטפל</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JAMPA · הקליניקה של ענת שלו</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!-- shared HK core -->
-<link rel="stylesheet" href="../css/base.css">
-<link rel="stylesheet" href="../css/dashboard.css">
-<link rel="stylesheet" href="../css/portfolio.css">
-<link rel="stylesheet" href="../css/ops.css">
-<link rel="stylesheet" href="../css/chat.css">
-<link rel="stylesheet" href="../css/meetings.css">
-<!-- Jampa brand layer -->
-<link rel="stylesheet" href="css/theme.css">
 <style>
-  /* Jampa-only bits */
-  .rec-badge{font-size:10.5px;font-weight:600;color:var(--blue);background:var(--blue-bg);border-radius:20px;padding:2px 9px;margin-inline-start:8px;vertical-align:middle}
-  .hc-mood{flex:0 0 auto;opacity:.9}
-  .prep-head{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .prep-tag{font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-bg);border-radius:20px;padding:4px 12px}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
-  @media(max-width:1050px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  .awdg--blue .awdg-ic,.awdg--coral .awdg-ic,.awdg--navy .awdg-ic{font-size:15px}
-  #homeStrip{margin-bottom:16px}
-  .ms-meta2{font-size:12px;color:var(--muted);margin-top:3px}
+/* =====================================================================
+   JAMPA — המעטפת. אותו מבנה של המערכת ב-HK: פס עליון, סרגל דו-רמתי,
+   ומסגרת אחת לכל מסך. המסכים עצמם חיים ב-adv/ (הרובד של המטפלת,
+   לכל המטופלים) וב-cli/ (הרובד של מטופל אחד) ונטענים עצל.
+   המעטפת לא מכילה תוכן — היא רק מנתבת. כל מה שנראה על המסך מגיע
+   מהמסך המוטמע, ולכן אין כאן כפילות עיצוב מול המסכים.
+   ===================================================================== */
+:root{
+  --navy:#37306B;--navy2:#2C265A;--sky:#7557E3;--coral:#9C89F2;--coral-d:#7557E3;
+  --ink:#3A3552;--ink2:#655F82;--ink3:#8B86A3;--faint:#B6B1C7;
+  --bd:#E6E1F2;--cardbd:#F0ECF8;--bg:#FBF8F2;--tint:#F5F1FB;--chip:#EFECFD;
+  --on-navy:#E6E1F7;--on-navy2:#C9C1E8;--on-navy3:#ABA2D4;
+  --lift:0 1px 2px rgba(72,57,150,.05),0 10px 28px rgba(72,57,150,.07);
+  --rail:236px;--top:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:Rubik,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+  -webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-thumb{background:#D8D0EE;border-radius:99px;border:3px solid var(--bg);background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:#BFB4E4;background-clip:content-box}
+*::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- הפס העליון ---------- */
+.top{position:fixed;inset-inline:0;top:0;height:var(--top);z-index:30;background:#fff;
+  border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:22px;padding:0 22px}
+.logo{display:flex;align-items:center;gap:9px;flex:none}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--navy);color:#fff;font-style:normal;
+  font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;
+  letter-spacing:.3px;white-space:nowrap;
+  box-shadow:inset 0 -8px 14px rgba(117,87,227,.42)}
+.logo i b{color:#B9A9F7;font-weight:600}
+.logo span{font-size:15px;font-weight:600;color:var(--navy);letter-spacing:-.2px}
+
+/* מחפש מטופל — הכניסה לרובד המטופל */
+.sw{position:relative;flex:none;width:330px}
+.sw-b{width:100%;display:flex;align-items:center;gap:9px;height:36px;padding:0 13px;
+  border:1px solid var(--bd);border-radius:999px;background:#fff;text-align:start;transition:border-color .15s}
+.sw-b:hover{border-color:#D6CEEE}
+.sw-b svg{flex:none;color:var(--faint)}
+.sw-b .cur{font-size:13px;font-weight:500;color:var(--navy);white-space:nowrap}
+.sw-b .sub{font-size:11.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.sw-b .chev{margin-inline-start:auto;color:var(--faint)}
+.sw-dd{position:absolute;inset-inline:0;top:44px;background:#fff;border:1px solid var(--bd);
+  border-radius:14px;box-shadow:0 18px 46px -14px rgba(72,57,150,.32);padding:7px;display:none;z-index:40}
+.sw-dd.on{display:block}
+.sw-dd .q{position:relative;margin:2px 2px 6px}
+.sw-dd .q input{width:100%;height:34px;border:1px solid var(--bd);border-radius:9px;
+  padding:0 34px 0 12px;font:inherit;font-size:12.5px;background:var(--tint)}
+.sw-dd .q input:focus{outline:none;border-color:var(--sky);background:#fff;box-shadow:0 0 0 3px rgba(117,87,227,.14)}
+.sw-dd .q svg{position:absolute;inset-inline-start:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.sw-dd .all{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;font-size:13px;
+  font-weight:500;color:var(--navy);width:100%;text-align:start}
+.sw-dd .all:hover{background:var(--tint)}
+.sw-dd .sep{height:1px;background:var(--cardbd);margin:6px 4px}
+.sw-list{max-height:330px;overflow-y:auto}
+.sw-list button{width:100%;display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:9px;text-align:start}
+.sw-list button:hover,.sw-list button.hl{background:var(--tint)}
+.sw-list i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--chip);color:#5b3fd6;
+  font-style:normal;font-size:12px;font-weight:600;display:grid;place-items:center}
+.sw-list .nm{font-size:13px;font-weight:500;color:var(--navy);display:block}
+.sw-list .fc{font-size:11.5px;color:var(--ink3);display:block;margin-top:1px}
+.sw-list .st{margin-inline-start:auto;flex:none;font-size:10.5px;color:var(--ink3);white-space:nowrap}
+.sw-list .none{padding:16px 12px;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+.me{margin-inline-start:auto;display:flex;align-items:center;gap:11px;flex:none}
+.me div{text-align:end;line-height:1.35}
+.me b{display:block;font-size:12.5px;font-weight:500;color:var(--navy)}
+.me span{font-size:11px;color:var(--ink3)}
+.me i{width:33px;height:33px;border-radius:50%;background:var(--chip);color:#5b3fd6;font-style:normal;
+  font-size:12px;font-weight:600;display:grid;place-items:center}
+
+/* ---------- הפריסה ----------
+   grid ולא מיקום קבוע: ב-RTL העמודה הראשונה היא הימנית, ולכן הסרגל
+   נוחת בצד הנכון מעצמו. inset-inline-end היה מציב אותו בשמאל. */
+.shell{display:grid;grid-template-columns:var(--rail) 1fr;padding-top:var(--top);
+  min-height:100vh}
+
+/* ---------- הסרגל ---------- */
+.rail{position:sticky;top:var(--top);height:calc(100vh - var(--top));z-index:20;
+  background:#fff;border-inline-end:1px solid var(--bd);padding:14px 12px;overflow-y:auto}
+.rail .sec{font-size:10.5px;font-weight:600;color:var(--faint);letter-spacing:.4px;
+  margin:14px 10px 7px}
+.rail .sec:first-child{margin-top:2px}
+.rl{width:100%;display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;
+  font-size:13.5px;font-weight:400;color:var(--ink2);text-align:start;transition:background .12s,color .12s}
+.rl:hover{background:var(--tint);color:var(--navy)}
+.rl.on{background:var(--chip);color:var(--navy);font-weight:500}
+.rl svg{flex:none;color:currentColor;opacity:.72}
+.rl.on svg{opacity:1}
+.rl em{margin-inline-start:auto;font-style:normal;min-width:19px;height:19px;padding:0 6px;
+  border-radius:99px;background:var(--coral);color:#fff;font-size:11px;font-weight:600;
+  display:grid;place-items:center}
+/* חזרה לרובד הגלובלי + שם המטופל */
+.back{display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:10px;font-size:12px;
+  font-weight:500;color:var(--ink3);width:100%;text-align:start}
+.back:hover{background:var(--tint);color:var(--navy)}
+.who{padding:3px 11px 12px;border-bottom:1px solid var(--cardbd);margin-bottom:10px}
+.who b{display:block;font-size:16px;font-weight:600;color:var(--navy);letter-spacing:-.2px}
+.who span{display:block;font-size:11.5px;color:var(--ink3);margin-top:3px;line-height:1.5}
+
+/* ---------- הבמה ---------- */
+.stage{min-width:0}
+.fr{width:100%;border:0;display:none;background:transparent}
+.fr.on{display:block}
+@media(max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;height:auto;border-inline-end:0;border-bottom:1px solid var(--bd);
+    display:flex;gap:6px;overflow-x:auto;padding:9px 12px}
+  .rail .sec,.who{display:none}
+  .rl{width:auto;flex:none;white-space:nowrap}
+  .back{width:auto;flex:none;white-space:nowrap}
+  .sw{width:auto;flex:1;min-width:0}
+}
 </style>
 </head>
 <body>
 
-<!-- ===== top bar ===== -->
-<div class="topbar">
-  <div class="logo j-logo">
-    <svg width="30" height="28" viewBox="0 0 32 30" fill="none">
-      <path d="M4 4h24a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H14l-6 6v-6H4a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3z" fill="#E5E7FF" stroke="#7557E3" stroke-width="1.6"/>
-      <path d="M16 20s-6-3.6-6-7.4c0-2 1.6-3.6 3.5-3.6 1 0 2 .5 2.5 1.3.5-.8 1.5-1.3 2.5-1.3 1.9 0 3.5 1.6 3.5 3.6 0 3.8-6 7.4-6 7.4z" fill="#7557E3"/>
-    </svg>
-    <span class="jl-word">Jampa</span>
-  </div>
+<header class="top">
+  <a class="logo" href="#" onclick="go('today');return false"><i>J<b>A</b></i><span>JAMPA</span></a>
 
-  <div class="switcher-wrap">
-    <div class="switcher" onclick="toggleSwitcher(event)" title="החלפת מטופל">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
-      <span class="cur" id="curName">כל המטופלים</span>
-      <span class="hp" id="curHp">מבט-על</span>
-      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-    </div>
-    <div class="sw-dd" id="swDD"></div>
-  </div>
-
-  <div class="top-right">
-    <div class="role-sel" title="הדגמה — תצוגה לפי תפקיד">
-      תצוגה:
-      <select id="roleSel" onchange="setRole(this.value)">
-        <option value="therapist">מטפל</option>
-        <option value="patient">מטופל</option>
-      </select>
-    </div>
-    <div class="who">ערב טוב, ענת<br><b>לאיזור האישי</b></div>
-    <div class="avatar" style="background:#7557E3">ע</div>
-  </div>
-</div>
-
-<!-- ===== shell ===== -->
-<div class="shell collapsed" id="shell">
-
-  <!-- patients rail -->
-  <aside class="rail">
-    <div class="rail-head">
-      <span class="rt">מטופלים</span>
-      <span class="badge" id="cliCount">6</span>
-      <button class="collapse-btn" onclick="toggleRail()" title="כווץ / הרחב">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
-    </div>
-    <div class="rail-portfolio" id="railPortfolio" onclick="selectHome()" title="כל המטופלים">
-      <span class="rp-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-      <div class="ci"><div class="cn">כל המטופלים</div><div class="cs">מוקד טיפולי · מבט-על</div></div>
-    </div>
-    <div class="rail-search">
+  <div class="sw">
+    <button class="sw-b" id="swB" onclick="swTg(event)" aria-haspopup="listbox" aria-expanded="false">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
-      <input id="railQ" placeholder="חיפוש מטופל / נושא טיפול" oninput="renderRail()">
-    </div>
-    <div class="rail-list" id="railList"></div>
-  </aside>
-
-  <!-- main -->
-  <main class="main">
-    <div class="client-head">
-      <h1 id="headName">כל המטופלים</h1>
-      <span class="hp2" id="headSub" style="display:none"></span>
-      <span class="st active" id="headStage" style="display:none"></span>
-      <div class="db-actions">
-        <div class="chip-btn" onclick="toast('הנתונים עודכנו')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/></svg> רענון</div>
-        <button class="chip-btn primary" id="btnRec" onclick="enterRec()" style="display:none">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"/></svg>
-          הקלט פגישה
-        </button>
+      <span class="cur" id="swCur">כל המטופלים</span>
+      <span class="sub" id="swSub">הקליניקה · 23 מטופלים</span>
+      <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="sw-dd" id="swDD" role="listbox">
+      <div class="q">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+        <input id="swQ" placeholder="חיפוש מטופל או נושא טיפול" autocomplete="off" oninput="swDraw()">
       </div>
-    </div>
-    <div class="sub-line">מוקד טיפולי · 6 מטופלים במעקב</div>
-
-    <!-- tabs (patient scope) -->
-    <div class="tabs" style="display:none">
-      <div class="tab on" onclick="switchTab(this,'dash')">דשבורד</div>
-      <div class="tab" onclick="switchTab(this,'meet')">פגישות</div>
-      <div class="tab" onclick="switchTab(this,'chat')">צ'אט וליווי</div>
-      <div class="tab pro-only" onclick="switchTab(this,'prep')">הכנה לפגישה</div>
-    </div>
-
-    <!-- therapist home: attention focus -->
-    <div id="viewHome">
-      <div class="jsplit">
-        <div class="jcol">
-          <div id="homeStrip"></div>
-          <div id="homeCoal"></div>
-          <div class="al-health" id="homeHealth"></div>
-          <div class="al-board" id="homeBoard"></div>
-        </div>
-        <div id="jMsgCol"></div>
-      </div>
-    </div>
-
-    <!-- patient dashboard -->
-    <div id="viewDash" style="display:none">
-      <div class="kpis" id="pKpis"></div>
-      <div class="al-board" id="pBoard"></div>
-    </div>
-
-    <!-- meetings -->
-    <div id="viewMeet" style="display:none">
-      <div class="mt-wrap">
-        <div class="mt-whead">
-          <div class="mt-wtitle"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>פגישות והקלטות</span></div>
-          <button class="mt-new" onclick="toast('נשלחו הצעות זמנים למטופל')" style="background:var(--blue)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> קביעת פגישה</button>
-        </div>
-        <div class="mt-filters" id="mtFilters"></div>
-        <div class="mt-list" id="mtList"></div>
-      </div>
-    </div>
-
-    <!-- chat -->
-    <div id="viewChat" style="display:none">
-      <div class="chat">
-        <div class="chat-body" id="chatBody"></div>
-        <div class="chat-input">
-          <input id="chatInput" placeholder="כתיבת הודעה למטופל — תישלח בוואטסאפ בטון הטיפולי שלך" onkeydown="if(event.key==='Enter')chatSend()">
-          <button class="chat-send" onclick="chatSend()" aria-label="שליחה"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- prep brief -->
-    <div id="viewPrep" style="display:none"><div id="prepBody"></div></div>
-
-    <!-- recording mode (המקבילה של מצב התפעול) -->
-    <div id="viewRec" style="display:none">
-      <div class="ops-banner">
-        <span class="ops-live"></span>
-        <div class="ops-title">מקליטה פגישה — <span id="recScope"></span> <span class="sub">השיחה מתומללת ומנותחת בסיום</span></div>
-        <span class="ops-clock" id="recClock">⏺ 0:00</span>
-        <div class="ops-actions">
-          <button class="ops-done" onclick="finishRec()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="7" width="10" height="10" rx="2"/></svg> סיום הקלטה</button>
-          <button class="ops-close" onclick="exitRec()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg> ביטול</button>
-        </div>
-      </div>
-      <div class="ops-rows">
-        <div class="ops-rows-head"><div class="orh-l"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-10"/><path d="M12 19v3"/></svg><span>הפגישה מוקלטת</span></div></div>
-        <div style="padding:36px;text-align:center;color:var(--muted);font-size:14px;line-height:1.8">
-          🎙 ההקלטה רצה ברקע — אפשר להתרכז במטופל.<br>בסיום: תמלול, ניתוח רגשי, סיכום אישי, סופרוויזיון ומשימות — הכול אוטומטי.
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- AI processing modal (reuses the fin- skeleton from ops.css) -->
-<div class="fin-ov" id="finOv">
-  <div class="fin">
-    <div class="fin-head">
-      <div class="fin-ico" id="finIco"><div class="spin"></div></div>
-      <div class="fin-title" id="finTitle" style="font-size:19px;font-weight:600;color:var(--navy)">מעבדת את הפגישה…</div>
-      <div class="fin-sub" id="finSub" style="font-size:12.5px;color:var(--muted);margin-top:4px"></div>
-    </div>
-    <div class="fin-steps" id="finSteps"></div>
-    <div class="fin-findings" id="finFindings"></div>
-    <div class="fin-foot" id="finFoot"></div>
-  </div>
-</div>
-
-<!-- meeting summary modal -->
-<div class="ms-ov" id="msOv" onclick="if(event.target===this)closeSummary()">
-  <div class="ms">
-    <div class="ms-head">
-      <button class="ms-x" onclick="closeSummary()" style="position:absolute;inset-inline-end:18px;top:16px;background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer">✕</button>
-      <div style="font-size:18px;font-weight:600;color:var(--navy)" id="msTitle"></div>
-      <div class="ms-meta2" id="msMeta"></div>
-      <div style="display:flex;gap:4px;margin-top:14px;border-bottom:1px solid var(--line)">
-        <div class="ms-tab on" data-t="sum" onclick="msFill('sum')" style="padding:9px 16px;font-size:13.5px;cursor:pointer">סיכום פגישה</div>
-        <div class="ms-tab" data-t="sup" onclick="msFill('sup')" style="padding:9px 16px;font-size:13.5px;cursor:pointer">סופרוויזיון</div>
-        <div class="ms-tab" data-t="tasks" onclick="msFill('tasks')" style="padding:9px 16px;font-size:13.5px;cursor:pointer">משימות</div>
-      </div>
-    </div>
-    <div style="padding:18px 22px;overflow-y:auto" id="msBody"></div>
-    <div style="display:flex;gap:10px;padding:14px 22px;border-top:1px solid var(--line)">
-      <button class="fin-wa" style="margin:0;flex:1" onclick="approveSummary()">אישור ושליחת סיכום למטופל</button>
-      <button class="chip-btn" onclick="closeSummary()">סגירה</button>
+      <button class="all" onclick="go('today')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        כל המטופלים
+      </button>
+      <div class="sep"></div>
+      <div class="sw-list" id="swList"></div>
     </div>
   </div>
+
+  <div class="me"><div><b>ענת שלו</b><span>פסיכולוגית קלינית</span></div><i>עש</i></div>
+</header>
+
+<div class="shell">
+  <nav class="rail" id="rail"></nav>
+  <main class="stage" id="stage"></main>
 </div>
 
-<style>.ms-tab.on{color:var(--blue);font-weight:600;box-shadow:inset 0 -2px 0 var(--blue)}</style>
+<script>
+/* =====================================================================
+   הנתונים של המעטפת בלבד: מי המטופלים, ומה המסכים בכל רובד.
+   כל היתר חי בתוך המסכים עצמם.
+   ===================================================================== */
+const PT=[
+  {id:'p1',n:'נועה ברק',   f:'חרדה חברתית',           st:'שלב 4 · עבודה על דפוסים', next:'היום 16:00', unread:2},
+  {id:'p2',n:'יואב פרידמן', f:'משבר זוגי',              st:'שלב 2 · מיפוי צרכים',     next:'מחר 10:00'},
+  {id:'p3',n:'מיכל אדרי',  f:'ביטחון עצמי בעבודה',     st:'שלב 5 · יישום והטמעה',    next:'לא נקבעה', unread:1},
+  {id:'p4',n:'דניאל כהן',  f:'ויסות רגשי · מתבגרים',   st:'שלב 3 · כלים להתמודדות',  next:'היום 17:30'},
+  {id:'p5',n:'שרה לוינסון', f:'אבל ואובדן',             st:'שלב 1 · בניית קשר',       next:'ראשון 09:00'},
+  {id:'p6',n:'עומר גל',    f:'דחיינות ומיקוד',         st:'שלב 4 · עבודה על דפוסים', next:'רביעי 13:00'},
+];
 
-<!-- confirm dialog -->
-<div class="mx-ov" id="cfOv">
-  <div class="mx2 cf">
-    <div class="mx2-title" id="cfTitle"></div>
-    <div class="cf-msg" id="cfMsg"></div>
-    <div class="mx2-foot">
-      <button class="mx2-btn danger" id="cfYes" onclick="cfClose(true)">אישור</button>
-      <button class="mx2-btn" onclick="cfClose(false)">ביטול</button>
-    </div>
-  </div>
-</div>
+const I={
+  today:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  tasks:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5l2 2 3.5-3.5M4 14.5l2 2 3.5-3.5"/><path d="M13 7h7M13 15h7"/></svg>',
+  people:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.6"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>',
+  meets:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  mem:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
+  cal:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8.5" cy="14.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="14.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="14.5" r="1.1" fill="currentColor" stroke="none"/></svg>',
+  dash:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+  msgs:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>',
+  ai:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-3.5 3 1 4.6L12 14.7 8 16.6l1-4.6L5.5 9l4.6-1.4z"/></svg>',
+  flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7.5"/></svg>',
+};
 
-<div class="toast" id="toast"></div>
+/* הרובד של המטפלת — לכל המטופלים */
+const ADV=[
+  {k:'today', f:'adv/today.html',    l:'היום',            i:'today'},
+  {k:'tasks', f:'adv/tasks.html',    l:'משימות',          i:'tasks'},
+  {k:'clients',f:'adv/clients.html', l:'מטופלים',         i:'people'},
+  {k:'meetings',f:'adv/meetings.html',l:'פגישות',         i:'meets'},
+  {k:'memory',f:'adv/memory.html',   l:'פרופילי מטופלים', i:'mem'},
+  {k:'cal',   f:'adv/calendar.html', l:'יומן',            i:'cal'},
+];
+/* הרובד של מטופל אחד */
+const CLI=[
+  {k:'dash',  f:'cli/dashboard.html', l:'דשבורד',           i:'dash'},
+  {k:'msgs',  f:'cli/messages.html',  l:'השיחה',            i:'msgs', badge:p=>p.unread},
+  {k:'meets', f:'cli/meetings.html',  l:'פגישות',           i:'meets'},
+  {k:'ai',    f:'cli/ai.html',        l:'עוזר AI',          i:'ai'},
+  {k:'flow',  f:'cli/process.html',   l:'התהליך הטיפולי',   i:'flow'},
+];
 
-<script src="js/data.js"></script>
-<script src="js/core.js"></script>
-<script src="js/screens.js"></script>
-<script src="js/record.js"></script>
-<script src="js/meetings.js"></script>
-<script src="js/chat.js"></script>
-<script src="js/main.js"></script>
+let SCOPE='adv';     /* adv = כל המטופלים · cli = מטופל אחד */
+let VIEW='today';    /* המסך הפעיל בתוך הרובד */
+let CUR=null;        /* המטופל הפתוח */
+
+/* ---------- הבמה: מסגרת אחת לכל מסך, נטענת בכניסה הראשונה ---------- */
+const stage=document.getElementById('stage');
+function frame(k,src){
+  let f=document.getElementById('f_'+k);
+  if(!f){
+    f=document.createElement('iframe');
+    f.id='f_'+k; f.className='fr'; f.title=k; f.loading='lazy';
+    f.style.minHeight='calc(100vh - '+getComputedStyle(document.documentElement).getPropertyValue('--top')+')';
+    f.src=src+(src.indexOf('?')>-1?'&':'?')+'embed=1';
+    stage.appendChild(f);
+  }
+  return f;
+}
+function show(k,src){
+  stage.querySelectorAll('.fr').forEach(x=>x.classList.remove('on'));
+  frame(k,src).classList.add('on');
+}
+
+/* ---------- ניווט ---------- */
+function go(k){                       /* רובד המטפלת */
+  const it=ADV.find(x=>x.k===k)||ADV[0];
+  SCOPE='adv'; VIEW=it.k; CUR=null;
+  show('adv_'+it.k,it.f); rail(); swSet(); swClose();
+  scrollTo({top:0,behavior:'instant'});
+}
+function openPt(id,k){                /* רובד המטופל */
+  const p=PT.find(x=>x.id===id); if(!p) return;
+  const it=CLI.find(x=>x.k===k)||CLI[0];
+  SCOPE='cli'; VIEW=it.k; CUR=p;
+  /* בדמו כל המסכים בנויים סביב נועה — המעטפת אומרת את זה במפורש
+     במקום להעמיד פנים שהתוכן מתחלף. */
+  show('cli_'+it.k,it.f); rail(); swSet(); swClose();
+  scrollTo({top:0,behavior:'instant'});
+}
+function cliGo(k){ if(CUR) openPt(CUR.id,k); }
+
+/* ---------- הסרגל ---------- */
+function rail(){
+  const r=document.getElementById('rail');
+  if(SCOPE==='adv'){
+    r.innerHTML='<div class="sec">הקליניקה</div>'+ADV.map(a=>
+      `<button class="rl ${VIEW===a.k?'on':''}" onclick="go('${a.k}')">${I[a.i]}<span>${a.l}</span></button>`).join('');
+  }else{
+    r.innerHTML=
+      `<button class="back" onclick="go('clients')">
+         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+         כל המטופלים</button>
+       <div class="who"><b>${CUR.n}</b><span>${CUR.f} · ${CUR.st}</span></div>`+
+      CLI.map(c=>{const b=c.badge&&c.badge(CUR);
+        return `<button class="rl ${VIEW===c.k?'on':''}" onclick="cliGo('${c.k}')">${I[c.i]}<span>${c.l}</span>${b?`<em>${b}</em>`:''}</button>`}).join('');
+  }
+}
+
+/* ---------- מחפש המטופלים ---------- */
+function swSet(){
+  document.getElementById('swCur').textContent = CUR?CUR.n:'כל המטופלים';
+  document.getElementById('swSub').textContent = CUR?CUR.f:'הקליניקה · 23 מטופלים';
+}
+function swDraw(){
+  const q=(document.getElementById('swQ').value||'').trim();
+  const hits=PT.filter(p=>!q||p.n.includes(q)||p.f.includes(q));
+  document.getElementById('swList').innerHTML = hits.length
+    ? hits.map(p=>`<button onclick="openPt('${p.id}')">
+        <i>${p.n.charAt(0)}</i>
+        <span><span class="nm">${p.n}</span><span class="fc">${p.f}</span></span>
+        <span class="st">${p.next}</span></button>`).join('')
+    : '<div class="none">לא נמצא מטופל שמתאים ל"'+q+'"</div>';
+}
+function swTg(e){
+  e.stopPropagation();
+  const dd=document.getElementById('swDD'), on=!dd.classList.contains('on');
+  dd.classList.toggle('on',on);
+  document.getElementById('swB').setAttribute('aria-expanded',on);
+  if(on){document.getElementById('swQ').value='';swDraw();setTimeout(()=>document.getElementById('swQ').focus(),40)}
+}
+function swClose(){document.getElementById('swDD').classList.remove('on');
+  document.getElementById('swB').setAttribute('aria-expanded','false')}
+addEventListener('click',e=>{if(!e.target.closest('.sw'))swClose()});
+addEventListener('keydown',e=>{if(e.key==='Escape')swClose()});
+
+/* =====================================================================
+   הפרוטוקול מול המסכים המוטמעים — זהה לזה של המערכת ב-HK:
+   hkAdv/hkCli מדווחים גובה · hkAdvGo/hkCliGo מבקשים החלפת מסך ·
+   hkAdvOpen פותח מטופל · hkAdvLock נועל את המסגרת לגובה החלון.
+   ===================================================================== */
+const ADVKEY={}, CLIKEY={};
+ADV.forEach(a=>ADVKEY[a.f.split('/').pop().replace('.html','')]=a.k);
+CLI.forEach(c=>CLIKEY[c.f.split('/').pop().replace('.html','')]=c.k);
+
+addEventListener('message',e=>{
+  const d=e.data||{}; if(typeof d!=='object') return;
+  if(d.hkAdv&&d.h>200){ const f=document.getElementById('f_adv_'+d.hkAdv); if(f)f.style.minHeight=d.h+'px'; return; }
+  if(d.hkCli&&d.h>200){ const f=document.getElementById('f_cli_'+d.hkCli); if(f)f.style.minHeight=d.h+'px'; return; }
+  if(d.hkAdvLock){ const f=stage.querySelector('.fr.on'); if(f)f.style.minHeight='calc(100vh - var(--top))'; return; }
+  if(d.hkAdvGo){ const k=ADVKEY[d.hkAdvGo]; if(k) go(k); return; }
+  if(d.hkAdvOpen){ openPt(d.hkAdvOpen); return; }
+  if(d.hkCliGo){
+    const k=CLIKEY[d.hkCliGo]; if(!k||!CUR) return;
+    openPt(CUR.id,k);
+    /* שאלה שנשלחה לעוזר — נכנסת ל-src של המסגרת */
+    if(k==='ai'&&d.q){ const f=document.getElementById('f_cli_ai');
+      if(f) f.src='cli/ai.html?embed=1&q='+encodeURIComponent(d.q); }
+    return;
+  }
+});
+
+/* ---------- פתיחה ---------- */
+go('today');
+</script>
 </body>
 </html>

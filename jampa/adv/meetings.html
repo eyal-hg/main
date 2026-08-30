@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פגישות · JAMPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* HK · מסך פגישות · מפרט אחיד v1
+   רצועה 68 navy: כותרת 28 + תאריך | האירוע הבא | עכשיו
+   גוף: חיפוש · כל הפגישות · זירת הפגישה קבועה בצד שמאל
+   סקאלה: 28 / 22 / 19 / 17 / 14 / 13 / 12.5 / 12 / 11.5 · רדיוסים: 4 6 7 10 50%
+   גריד: 1fr | 620 (430 ב-≤1450) · פאנל: גבול 1px, צל 4%, רדיוס 10 */
+:root{
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bg:#F4F7FA;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#6B4FA0;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
+  --on-warn:#FFDFA0;--on-good:#9FE8C5;--on-bad:#FFD3CF;
+  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--tint2:#F6F9FC;--surface2:#FAFCFE;
+  --row-hover:#F8FBFD;--row-sel:#EEF6FC;--bd2:#B7C3CF;--line:#C4CED8;--mark:#FFF1C2;
+  --warn-bg:#FFF9F0;--warn-bd:#F3DFC0;--warn-ink:#9A6300;
+  --bad-bg:#FDEDEB;--bad-bd:#F5CFC9;--bad-ink:#C43D30;
+  --good-bg:#F1FAF5;--good-bd:#CDEBD9;--good-ink:#13895b;
+  --info-bg:#F0F7FC;--info-bd:#D8EAF5;
+  --purple-bg:#F6F1FB;--purple-bd:#E3D8F2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+/* ---- nav ---- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px;margin-inline-start:12px}
+.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:end}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
+
+/* ---- strip ---- */
+.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
+.strip .date{font-size:13px;color:var(--on-navy2)}
+.strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
+.strip .next{display:flex;align-items:center;gap:12px;font-size:14px}
+.strip .next .cap{font-size:11.5px;color:var(--on-navy3);letter-spacing:.3px}
+.strip .next .tm{font-size:22px;font-weight:600;line-height:1;color:var(--white)}
+.strip .next .who{display:flex;align-items:center;gap:8px;color:var(--white)}
+.strip .next .who a{color:var(--white);font-weight:600;border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:1px}
+.strip .next .who a:hover{border-color:var(--white)}
+.strip .next .c{color:var(--on-navy4)}
+.strip .next .hint{color:var(--on-navy2);font-size:13px}
+.strip .next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:3px 11px;font-size:12.5px;color:var(--on-navy)}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:13px;color:var(--on-navy2)}
+.strip .now b{color:var(--white);font-weight:500}
+
+/* ---- grid ---- */
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 620px;grid-template-rows:minmax(0,1fr);gap:18px;align-items:stretch;height:calc(100vh - 120px);overflow:hidden}
+.wrap>*{min-width:0;min-height:0}
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
+.ph h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ph .hint{font-size:12.5px;color:var(--ink3)}
+.ph .cfil{margin-inline-start:auto;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;background:var(--white);color:var(--ink)}
+
+/* ---- buttons ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap;cursor:pointer}
+.btn:hover{background:var(--bg)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.btn.pri:hover{background:var(--navy2)}
+.btn.danger{background:var(--coral);border-color:var(--coral);color:var(--white)}
+.btn.danger:hover{background:var(--coral);filter:brightness(.94)}
+.btn.rec .rd{display:none;width:9px;height:9px;border-radius:50%;background:var(--white);box-shadow:0 0 0 2px rgba(255,255,255,.35);animation:mrec 1.6s ease-in-out infinite}
+.btn.rec.recording .rd{display:inline-block}
+.btn.rec.recording svg{display:none}
+@keyframes mrec{50%{opacity:.35}}
+.dark .btn{background:transparent;border-color:rgba(255,255,255,.3);color:var(--white)}
+.dark .btn:hover{background:rgba(255,255,255,.12)}
+.dark .btn.pri{background:var(--sky);border-color:var(--sky);color:var(--white)}
+.dark .btn.danger{background:var(--coral);border-color:var(--coral);color:var(--white)}
+
+/* ---- chips (rule 9) ---- */
+.chip{font:inherit;font-size:12px;font-weight:500;background:var(--chip);border:0;border-radius:7px;padding:5px 10px;color:var(--ink2);cursor:pointer}
+.chip:hover{background:var(--chip-hover);color:var(--navy)}
+.chip.on{background:var(--navy);color:var(--white)}
+.chip b{font-weight:600;color:var(--ink3);font-size:11.5px;margin-inline-start:4px}
+.chip.on b{color:rgba(255,255,255,.75)}
+.chip.tmore{background:none;color:var(--sky);font-weight:600}
+.chip.tmore:hover{background:var(--chip);color:var(--sky)}
+
+/* ---- alerts (rule 10) ---- */
+.al{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.al.bad{color:var(--red)}
+.al.warn{color:var(--orange)}
+.al.ok{color:var(--green)}
+.al.info{color:var(--ink3)}
+
+
+/* ---- list ---- */
+.list{display:flex;flex-direction:column;min-width:0;min-height:0}
+.search{display:flex;align-items:center;gap:10px;padding:12px 20px 8px;background:var(--surface2)}
+.search .in{flex:1;position:relative}
+.search input{width:100%;height:38px;border:1px solid var(--bd);border-radius:6px;padding-inline-start:36px;padding-inline-end:12px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.search svg{position:absolute;inset-inline-start:12px;top:11px;width:16px;height:16px;color:var(--ink3)}
+.search .res{font-size:12.5px;color:var(--ink3);white-space:nowrap}
+.search .res b{color:var(--navy);font-weight:500}
+.search .clr{font-size:12.5px;color:var(--sky);font-weight:500;display:none}
+.search .clr.on{display:inline}
+.topics{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:4px 20px;font-size:13px;align-items:start;background:var(--surface2)}
+.topics .lbl{font-size:12px;color:var(--ink3);font-weight:500;white-space:nowrap;padding-top:6px}
+.topics .tg{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;min-width:0}
+#fbtRow{padding-bottom:14px;border-bottom:1px solid var(--bd)}
+.tclr{display:none;font-size:12.5px;color:var(--red);font-weight:600;margin-inline-start:10px}
+.tclr.on{display:inline}
+
+/* ---- table (rule 7) ---- */
+.tw{flex:1;min-height:0;overflow-y:auto}
+table.ml{width:100%;border-collapse:collapse}
+.ml th{font-size:12px;font-weight:500;color:var(--ink3);background:var(--surface2);padding:7px 14px;text-align:start;border-bottom:1px solid var(--bd);white-space:nowrap;position:sticky;top:0;z-index:1}
+.ml td{font-size:14px;color:var(--ink2);padding:11px 14px;border-top:1px solid var(--bd);vertical-align:middle}
+.ml th:first-child,.ml td:first-child{padding-inline-start:20px}
+.ml th:last-child,.ml td:last-child{padding-inline-end:20px}
+.ml tbody tr.m{cursor:pointer}
+.ml tr.m:hover td{background:var(--row-hover)}
+.ml tr.hl td{background:var(--row-sel)}
+.ml tr.hid{display:none}
+.ml .d{white-space:nowrap;width:86px;color:var(--ink);font-weight:500}
+.ml .d small{display:block;font-size:12px;color:var(--ink3);font-weight:400}
+.ml .who a{font-weight:600;color:var(--navy)}
+.ml .who a:hover{text-decoration:underline}
+.ml .who .nm{color:var(--ink)}
+.ml .who .mt{font-size:12.5px;color:var(--ink3)}
+.ml .who .dot{color:var(--bd2);margin:0 6px}
+.ml .who .hit{display:block;font-size:13px;color:var(--ink2);margin-top:4px;padding-inline-start:10px;border-inline-start:2px solid var(--sky)}
+.ml .who .hit:empty{display:none}
+.ml .who .hit mark{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:4px}
+.ml .who .hit i{font-style:normal;color:var(--ink3);font-size:12px;margin-inline-end:6px}
+.ml .st{white-space:nowrap;width:205px}
+.ml .st i{font-style:normal;display:block;font-size:12px;color:var(--ink3);margin-top:2px}
+.ml .ac{white-space:nowrap;width:132px;text-align:end}
+.empty{display:none;padding:40px 20px;text-align:center;color:var(--ink3);font-size:13px}
+.empty.on{display:block}
+.empty b{display:block;font-size:14px;color:var(--ink2);font-weight:600;margin-bottom:6px}
+.empty .btn{margin-top:12px}
+.lfoot{margin-top:auto;padding:12px 20px 14px;border-top:1px solid var(--bd);font-size:12.5px;color:var(--ink3);display:flex;gap:16px;flex:none}
+.lfoot b{color:var(--ink2);font-weight:500}
+
+/* ---- זירת הפגישה ---- */
+.arena{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.ar-body{flex:1;min-height:0;overflow-y:auto}
+.ar-h{background:var(--navy);color:var(--white);padding:16px 20px 14px;flex:none}
+.ar-h.slim{padding:12px 20px}
+.ar-h.slim .ar-line{display:flex;align-items:baseline;gap:8px;margin-top:6px;flex-wrap:wrap}
+.ar-h.slim h2{font-size:17px;font-weight:700;margin:0}
+.ar-h.slim .ar-nm{font-size:12.5px;color:var(--on-navy2)}
+.ar-h.slim .c{color:var(--on-navy4)}
+.ar-h.slim .ar-dt::before{content:"·";color:var(--on-navy4);margin-inline-end:8px}
+.ar-h.slim .ar-play{margin-inline-start:auto;padding:4px 12px}
+.ar-cap{font-size:11.5px;color:var(--on-navy3);letter-spacing:.3px}
+.ar-h h2{font-size:19px;font-weight:700;margin-top:4px}
+.ar-meta{display:flex;gap:7px;font-size:13px;color:var(--on-navy);margin-top:4px}
+.ar-meta .c{color:var(--on-navy4)}
+.ar-back{display:inline-block;font-size:12px;color:var(--on-navy3);margin-bottom:6px}
+.ar-back:hover{color:var(--white)}
+.ar-top{display:flex;align-items:center;gap:10px}
+.ar-st{font-size:12px;font-weight:600;border-radius:7px;padding:2px 9px;background:rgba(255,255,255,.12);color:var(--white)}
+.ar-st.wait{background:rgba(201,132,4,.3);color:var(--on-warn)}
+.ar-st.ok{background:rgba(19,137,91,.3);color:var(--on-good)}
+.ar-st.bad{background:rgba(232,99,90,.3);color:var(--on-bad)}
+.ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--navy);flex:none}
+.ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--on-navy3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
+.ar-tabs button:hover{color:var(--white)}
+.ar-tabs button.on{color:var(--white);border-color:var(--coral)}
+.ar-play{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:12.5px;font-weight:600;color:var(--white);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 14px;cursor:pointer}
+.ar-play:hover{background:rgba(255,255,255,.18)}
+.ar-wave{display:inline-flex;align-items:center;gap:2px;height:16px}
+.ar-wave i{width:2.5px;border-radius:4px;background:var(--sky);height:30%}
+.ar-wave i:nth-child(2n){height:75%}.ar-wave i:nth-child(3n){height:50%}.ar-wave i:nth-child(5n){height:95%}
+.ar-play.playing .ar-wave i{animation:arw .7s ease-in-out infinite alternate}
+.ar-play.playing .ar-wave i:nth-child(2n){animation-delay:.15s}.ar-play.playing .ar-wave i:nth-child(3n){animation-delay:.3s}
+@keyframes arw{from{transform:scaleY(.4)}to{transform:scaleY(1.15)}}
+.ar-sec{padding:12px 20px 2px}
+.ar-sec:last-child{padding-bottom:14px}
+.ar-sec h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.ar-sec h4~h4{margin-top:14px}
+.ar-r{display:flex;gap:10px;font-size:13px;line-height:1.45;padding:5px 0;color:var(--ink)}
+.ar-r i{font-style:normal;flex:none;width:18px;height:18px;border-radius:50%;background:var(--tint);color:var(--navy);display:grid;place-items:center;font-size:11.5px;margin-top:1px}
+.ar-r.warn i{background:var(--bad-bg);color:var(--bad-ink)}
+.ar-r.warn{color:var(--bad-ink)}
+.ar-q{font-size:13px;color:var(--ink2);background:var(--tint2);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;line-height:1.5}
+.ar-none{font-size:13px;color:var(--ink2);background:var(--tint2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;line-height:1.5}
+.ar-acts{display:flex;gap:8px;padding:12px 20px 14px;margin-top:auto;border-top:1px solid var(--bd);background:var(--white);flex:none;flex-wrap:wrap}
+.ar-ol{padding-inline-start:20px;margin:0}
+.ar-ol li{font-size:13px;color:var(--ink);line-height:1.55;padding:3px 0}
+.ar-ins2{margin-bottom:12px}
+.ar-ins2 b{display:block;font-size:14px;color:var(--navy);margin-bottom:3px}
+.ar-ins2 p{font-size:13px;color:var(--ink2);line-height:1.55;margin:0}
+.ar-who2{color:var(--ink3);font-size:12px}
+.ar-ins{background:var(--info-bg);border:1px solid var(--info-bd);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+.ar-ins b{display:block;font-size:13px;color:var(--ink);margin-bottom:3px}
+.ar-ins span{font-size:12.5px;color:var(--ink2);line-height:1.5}
+.ar-ins.good{background:var(--good-bg);border-color:var(--good-bd)}
+.ar-ins.good b{color:var(--good-ink)}
+.ar-ins.imp{background:var(--warn-bg);border-color:var(--warn-bd)}
+.ar-ins.imp b{color:var(--warn-ink)}
+.ar-txr{font-size:13px;color:var(--ink);padding:4px 0;line-height:1.5}
+.ar-txr b{color:var(--ink3);font-weight:600;margin-inline-end:6px}
+.ar-fbs{border-bottom:1px solid var(--bd)}
+.ar-fbh{width:100%;display:flex;align-items:center;justify-content:space-between;font:inherit;background:none;border:none;padding:11px 2px;cursor:pointer}
+.ar-fbh b{font-size:14px;color:var(--navy);font-weight:700}
+.ar-fbh span{color:var(--ink3);transition:transform .15s}
+.ar-fbs.open .ar-fbh span{transform:rotate(180deg)}
+.ar-fbb{display:none;padding:0 2px 12px}
+.ar-fbs.open .ar-fbb{display:block}
+.ar-fbp{margin-bottom:10px}
+.ar-fbp b{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:4px}
+.ar-fbp b.g{color:var(--green)}
+.ar-fbp b.o{color:var(--warn-ink)}
+.ar-fbp p{font-size:13px;color:var(--ink2);line-height:1.6;margin:0}
+.ar-tksub{font-size:12.5px;color:var(--ink3);margin-bottom:6px}
+.ar-tksub b{font-weight:600;color:var(--ink2)}
+.ar-tk{display:flex;align-items:flex-start;gap:12px;padding:11px 2px;border-bottom:1px solid var(--bd)}
+.ar-cb{appearance:none;-webkit-appearance:none;width:19px;height:19px;border:1.5px solid var(--bd2);border-radius:4px;background:var(--white);display:grid;place-items:center;flex:none;margin-top:2px;cursor:pointer}
+.ar-cb:checked{background:var(--green);border-color:var(--green)}
+.ar-cb:checked::after{content:"✓";color:var(--white);font-size:12px;line-height:1}
+.ar-tk .ar-tkb b{display:block;font-size:13px;color:var(--ink);font-weight:500;line-height:1.45}
+.ar-tk.done .ar-tkb b{text-decoration:line-through;color:var(--ink3)}
+.ar-tk .ar-tkb span{font-size:12px;color:var(--ink3)}
+.ar-tk .ar-tkacts{display:flex;align-items:center;gap:8px;margin-inline-start:auto;flex:none}
+.ar-tkacts .ari{display:grid;place-items:center;width:26px;height:26px;border:none;background:none;color:var(--navy);cursor:pointer;border-radius:6px}
+.ar-tkacts .ari:hover{background:var(--bg)}
+.ar-tk.done .ar-tkacts .ar-ok{visibility:hidden}
+.ar-ok{font:inherit;font-size:12.5px;font-weight:500;color:var(--navy);background:var(--white);border:1px solid var(--bd);border-radius:6px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.ar-ok:hover{background:var(--bg)}
+.ar-addtk{font:inherit;font-size:13px;font-weight:600;color:var(--sky);background:none;border:none;padding:10px 0 4px;cursor:pointer}
+.ar-tkadd .ar-addfrm{display:none;gap:7px;margin-top:8px}
+.ar-tkadd.on .ar-addfrm{display:flex}
+.ar-tkadd.on .ar-addtk{display:none}
+.ar-addfrm input{font:inherit;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:6px 11px;color:var(--ink)}
+.ar-addfrm #arTkIn{flex:1;min-width:0}
+.ar-addfrm #arTkWho{width:110px}
+.ar-addfrm input:focus{outline:none;border-color:var(--sky)}
+.ar-addfrm .ar-ok{flex:none}
+.ar-warnrow{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--warn-ink);background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px;padding:8px 12px;flex:1;flex-wrap:wrap}
+.ar-warnrow b{color:var(--warn-ink);font-weight:600}
+.ar-mem{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:9px 2px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink);align-items:start}
+.ar-mem .k{font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--purple-bd);border-radius:7px;padding:2px 10px;text-align:center;white-space:nowrap}
+.ar-memfull{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--sky);font-weight:600}
+
+/* ---- toast ---- */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (min-height:1200px){
+  .ml td{padding:15px 14px}
+}
+@media (max-width:1450px){
+  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 0 16px;gap:14px;height:calc(100vh - 120px)}
+  .nav,.strip{padding-inline:24px}
+  .strip{gap:20px}
+  .ph{padding:11px 18px 8px}
+  .ph h2{font-size:16px}
+  .ml td{padding:8px 14px}
+  .ml .st{width:180px}
+  .ml .ac{width:122px}
+  .search{padding:10px 18px 8px}
+  .search input{height:34px}
+  .topics{padding:4px 18px}
+  #fbtRow{padding-bottom:12px}
+  .lfoot{padding:8px 18px;font-size:12px;gap:12px}
+  .lfoot span:nth-child(3){display:none}
+  .ar-h.slim .ar-dt{flex-basis:100%;margin-top:2px}
+  .ar-h.slim .ar-dt::before{content:none}
+  .ar-sec{padding:10px 18px 2px}
+  .ar-acts{padding:10px 18px 12px}
+}
+</style>
+<link rel="stylesheet" href="brand.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="today.html"><i>J<b>A</b></i>JAMPA</a>
+  <ul>
+    <li><a href="today.html">היום</a></li>
+    <li><a href="tasks.html">משימות</a></li>
+    <li><a href="clients.html">מטופלים</a></li>
+    <li><a class="on" href="meetings.html">פגישות</a></li>
+    <li><a href="memory.html">פרופילי מטופלים</a></li>
+  </ul>
+  <div class="me"><div><b>ענת שלו</b>פסיכולוגית קלינית</div><i>עש</i></div>
+</nav>
+
+<header class="strip dark">
+  <div><h1>פגישות</h1></div>
+  <div class="date num">יום חמישי · 02.07.2026</div>
+  <div class="sep"></div>
+  <div class="next">
+    <span class="cap">הפגישה הבאה</span>
+    <span class="tm num">13:00</span>
+    <span class="who"><a href="clients.html?c=p3">מיכל אדרי</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">שבועיים בלי פגישה</span></span>
+    <span class="in num">בעוד 2:06</span>
+    <button class="btn danger sm rec" onclick="recTg(this,'מיכל אדרי')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button>
+    <button class="btn sm" onclick="arenaShow('prep')">בריף לפגישה</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="now num"><b>10:54</b> · עכשיו</div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== all meetings ===== -->
+  <section class="panel list">
+    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint"></span>
+      <select class="cfil" id="cfil" aria-label="סינון לפי מטופל">
+        <option value="">כל המטופלים</option>
+        <option>נועה ברק</option><option>יואב פרידמן</option><option>מיכל אדרי</option><option>דניאל כהן</option><option>שרה לוינסון</option><option>עומר גל</option>
+      </select></div>
+    <div class="search">
+      <div class="in">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="חיפוש בסיכומי הפגישות — נושא, דפוס, החלטה">
+      </div>
+      <span class="res" id="res"></span>
+      <a href="#" class="clr" id="clr">ניקוי</a>
+    </div>
+    <div class="topics" id="topRow"></div>
+    <div class="topics fbt" id="fbtRow"></div>
+    <div class="tw">
+    <table class="ml" id="ml">
+      <thead><tr><th>תאריך</th><th>מטופל · פגישה</th><th>מה חסר</th><th></th></tr></thead>
+      <tbody>
+        <!-- הפגישה הקרובה של היום — ראש הרשימה -->
+        <tr class="m fut" tabindex="0" role="button" data-tags="prep" data-k="דניאל כהן פגישה שבועית מתבגרים" id="r1730">
+          <td class="d num">היום<small class="num">17:30</small></td>
+          <td class="who"><a href="clients.html?c=p4">דניאל כהן</a><span class="dot">·</span><span class="nm">פגישה שבועית — מתבגרים</span><span class="dot">·</span><span class="mt">שלב 3</span><span class="hit"></span></td>
+          <td class="st"><span class="al warn">הבריף לא נפתח</span><i>בעוד 6 שעות</i></td>
+          <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת הבריף</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="appr" data-fbt="why" data-k="שרה לוינסון פגישה שבועית אבל ואובדן" id="r0207"
+            data-items='["נמנעת מלבקש עזרה — לא רוצה להעמיס על הילדים","הביאה נושא מיוזמתה לראשונה — ברית טיפולית מתחזקת","כתיבת מכתב שלא נשלח הביאה הקלה ניכרת","סוכם: להמשיך את המכתב עד הפגישה הבאה"]'>
+          <td class="d num">02.07<small class="num">09:00</small></td>
+          <td class="who"><a href="clients.html?c=p5">שרה לוינסון</a><span class="dot">·</span><span class="nm">פגישה שבועית — אבל ואובדן</span><span class="hit"></span></td>
+          <td class="st"><span class="al warn">סיכום לא אושר</span><i>מהיום</i></td>
+          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">אישור ושליחה</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="appr" data-fbt="why" data-k="נועה ברק פגישה שבועית חשיפה מדורגת" id="r2606"
+            data-items='["זיהתה לבד שהיא מתארת את עצמה במילים שלא הייתה משתמשת בהן לגבי אחרים","אמונת הליבה כולם רואים שאני לחוצה נבחנה מול עדויות ונחלשה","סוכם על חשיפה מדורגת — משפט אחד בישיבת הצוות","הנשימות הפכו לכלי שהיא מיישמת מיוזמתה"]'>
+          <td class="d num">26.06<small class="num">16:00</small></td>
+          <td class="who"><a href="clients.html?c=p1">נועה ברק</a><span class="dot">·</span><span class="nm">פגישה שבועית — חשיפה מדורגת</span><span class="hit"></span></td>
+          <td class="st"><span class="al warn">סיכום לא אושר</span><i>לפני 6 ימים</i></td>
+          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r2606')">אישור ושליחה</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="held" data-k="עומר גל פגישה שבועית" id="r2506">
+          <td class="d num">25.06<small class="num">13:00</small></td>
+          <td class="who"><a href="clients.html?c=p6">עומר גל</a><span class="dot">·</span><span class="nm">פגישה שבועית</span><span class="hit"></span></td>
+          <td class="st"><span class="al info">הפגישה לא התקיימה</span><i>לפני 7 ימים</i></td>
+          <td class="ac"><button class="btn pri sm" data-act="resch">תיאום מחדש</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="sent" data-fbt="why" data-k="מיכל אדרי פגישה שבועית הטמעה" id="r1906"
+            data-items='["מעבר לשלב 5 — יישום והטמעה","הפחתת תדירות הפגישות לאחת לשבועיים","סוכם: להציג בישיבת צוות בלי הכנה של שבוע"]'>
+          <td class="d num">19.06<small class="num">16:00</small></td>
+          <td class="who"><a href="clients.html?c=p3">מיכל אדרי</a><span class="dot">·</span><span class="nm">פגישה שבועית — הטמעה</span><span class="hit"></span></td>
+          <td class="st"><span class="al bad">סיכום לא נשלח</span><i>לפני 13 ימים</i></td>
+          <td class="ac"><button class="btn sm" onclick="event.stopPropagation();arenaShow('r1906')">שליחה למטופלת</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-k="יואב פרידמן פגישה שבועית מיפוי צרכים" id="r2906"
+            data-items='["מופו הצרכים של שני בני הזוג בנפרד","סוכם על שיחת 20 דקות בלי מסכים, פעמיים בשבוע"]'>
+          <td class="d num">29.06<small class="num">10:00</small></td>
+          <td class="who"><a href="clients.html?c=p2">יואב פרידמן</a><span class="dot">·</span><span class="nm">פגישה שבועית — מיפוי צרכים</span><span class="hit"></span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-fbt="deep nums" data-k="נועה ברק שלב 3 כלים להתמודדות" id="r0506"
+            data-items='["נבנה סולם המצבים החברתיים — מהקל למאיים","נלמד תרגול נשימות 4-7-8","זוהתה השתיקה כמשאב — היא מביאה את המשפט האמיתי","סוכם על תרגול מדורג בסביבה בטוחה"]'>
+          <td class="d num">05.06<small class="num">16:00</small></td>
+          <td class="who"><a href="clients.html?c=p1">נועה ברק</a><span class="dot">·</span><span class="nm">שלב 3 — כלים להתמודדות</span><span class="hit"></span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="rec" data-k="דניאל כהן פגישה שבועית" id="r2706">
+          <td class="d num">27.06<small class="num">17:30</small></td>
+          <td class="who"><a href="clients.html?c=p4">דניאל כהן</a><span class="dot">·</span><span class="nm">פגישה שבועית</span><span class="hit"></span></td>
+          <td class="st"><span class="al bad">לא הוקלטה</span><i>לפני 5 ימים</i></td>
+          <td class="ac"><button class="btn pri sm" data-act="upload">העלאת הקלטה</button></td>
+        </tr>
+        <tr class="m" tabindex="0" role="button" data-tags="ok" data-fbt="nums" data-k="נועה ברק שלב 2 מיפוי צרכים ומצבים" id="r0805"
+            data-items='["מופו המצבים המעוררים והמחשבות האוטומטיות","עלתה אמונת הליבה אם אני לא מושלמת עדיף שלא אדבר בכלל","זוהו ההתנהגויות הבטוחות — הכנה של שבוע מראש"]'>
+          <td class="d num">08.05<small class="num">16:00</small></td>
+          <td class="who"><a href="clients.html?c=p1">נועה ברק</a><span class="dot">·</span><span class="nm">שלב 2 — מיפוי צרכים</span><span class="hit"></span></td>
+          <td class="st"><span class="al ok">הושלם</span></td>
+          <td class="ac"></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="empty" id="empty"><b id="emptyT"></b><span id="emptyS"></span><div><button class="btn sm" id="emptyR">ניקוי הסינון</button></div></div>
+    <div class="lfoot"><span>משוב מהמטופל: <b>6 מתוך 9</b></span><span>הוקלטו: <b>7</b></span><span>הסיכום האחרון שנשלח: <b class="num">29.06 יואב פרידמן</b></span></div>
+  </section>
+
+  <!-- ===== upcoming ===== -->
+  <aside class="arena" id="arena"></aside>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2200)};
+  window.toast=toast;
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const mark=(s,q)=>{const e=esc(s),eq=esc(q);return eq?e.split(eq).join('<mark>'+eq+'</mark>'):e};
+  const rows=$$('#ml tbody tr.m');
+  const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה','תשע'];
+  /* מצב סינון אחד — כל צ'יפ, מסנן ותיבה נגזרים ממנו */
+  const S={q:'',fbt:null,f:null,c:''};
+  const MISS={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
+  const TOPICS=[['חשיפה מדורגת','חשיפה'],['אמונות ליבה','אמונ'],['הימנעות','הימנע'],['ביקורת עצמית','ביקורת'],['משימות בין פגישות','משימ'],['ברית טיפולית','ברית']];
+  const FBTS=[['החזקת שתיקה שעובדת','why'],['שבח שמפעיל ביקורת','nums'],['הזדמנות שחמקה','deep'],['הקשבה והכלה','listen'],['סיכום ומשימות חדות','actions']];
+  const T_CAP=4;
+  const items=r=>r.dataset.items?JSON.parse(r.dataset.items):[];
+  const qHit=(r,q)=>items(r).some(t=>t.includes(q))||r.dataset.k.includes(q);
+  const tagged=k=>rows.filter(r=>r.dataset.tags.split(' ').includes(k)).length;
+
+  /* ===== צ'יפים — המונה נגזר מאותו תנאי שהמסנן עצמו בודק, וצ'יפ ריק לא נרשם ===== */
+  window._topMore=false; window._fbtMore=false;
+  function renderTopics(){
+    const build=(src,host,go,moreKey,lbl,cur,extra)=>{
+      const live=src.map(x=>[x[0],x[1],host==='topRow'?rows.filter(r=>qHit(r,x[1])).length
+                                                     :rows.filter(r=>(r.dataset.fbt||'').split(' ').includes(x[1])).length])
+                    .filter(x=>x[2]>0);
+      const open=window[moreKey], list=open?live:live.slice(0,T_CAP);
+      document.getElementById(host).innerHTML=
+        `<span class="lbl">${lbl}</span><span class="tg">`
+        +list.map(x=>`<button class="chip${x[1]===cur?' on':''}" onclick="${go}(this,'${x[1]}')">${x[0]}<b>·${x[2]}</b></button>`).join('')
+        +(live.length>T_CAP?`<button class="chip tmore" onclick="window.${moreKey}=!window.${moreKey};renderTopics()">${open?'פחות':'עוד '+(live.length-T_CAP)+' ▾'}</button>`:'')
+        +(extra||'')+'</span>';
+    };
+    build(TOPICS,'topRow','topicGo','_topMore','נושאים שחזרו לאחרונה',S.q);
+    build(FBTS,'fbtRow','fbtGo','_fbtMore','מה חוזר במשובים על היועץ',S.fbt,
+      '<a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>');
+    const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(S.q||S.fbt||S.f||S.c));
+  }
+  window.renderTopics=renderTopics;
+
+  function topicGo(btn,q){ S.q=(S.q===q)?'':q; S.fbt=null; $('#q').value=S.q; apply(); }
+  function fbtGo(btn,k){ S.fbt=(S.fbt===k)?null:k; S.q=''; $('#q').value=''; apply(); }
+  function tClear(){ S.q='';S.fbt=null;S.f=null;S.c=''; $('#q').value=''; $('#cfil').value=''; apply(); }
+  window.topicGo=topicGo; window.fbtGo=fbtGo; window.tClear=tClear;
+
+  function apply(){
+    let shown=0;
+    rows.forEach(r=>{
+      const tags=r.dataset.tags.split(' ');
+      let ok = S.f ? tags.includes(S.f) : true;
+      if(ok&&S.c&&!r.dataset.k.includes(S.c)) ok=false;
+      if(ok&&S.fbt&&!(r.dataset.fbt||'').split(' ').includes(S.fbt)) ok=false;
+      const hit=r.querySelector('.hit'); hit.innerHTML='';
+      if(ok&&S.q){
+        const it=items(r), m=it.findIndex(t=>t.includes(S.q));
+        if(m>=0) hit.innerHTML='<i>סעיף '+(m+1)+'</i>'+mark(it[m],S.q);
+        else if(!r.dataset.k.includes(S.q)) ok=false;
+      }
+      r.classList.toggle('hid',!ok); if(ok) shown++;
+    });
+    const parts=[];
+    if(S.f) parts.push(MISS[S.f]);
+    const fbl=(FBTS.find(f=>f[1]===S.fbt)||[])[0]; if(fbl) parts.push(fbl);
+    if(S.c) parts.push(S.c);
+    $('#hint').textContent = parts.length?'מסונן: '+parts.join(' · ')+' · '+(hebCount[shown]||shown):'';
+    $('#res').innerHTML = S.q?'<b>'+shown+'</b> תוצאות ל-״'+esc(S.q)+'״':'';
+    $('#clr').classList.toggle('on',!!S.q);
+    $('#empty').classList.toggle('on',shown===0);
+    if(shown===0){
+      $('#emptyT').textContent = S.q?'אין פגישה שמכילה ״'+S.q+'״'
+                                 : S.c?'אין פגישה של '+S.c+' שמתאימה לסינון'
+                                 : 'אין פגישה שמתאימה לסינון';
+      $('#emptyS').textContent = S.q?'החיפוש עובר על סיכומי הפגישות ועל שמות הפגישות.'
+                                   :'אפשר לנקות את הסינון ולחזור לכל הפגישות.';
+    }
+    renderTopics();
+  }
+
+  $('#q').addEventListener('input',e=>{S.q=e.target.value.trim();S.fbt=null;apply()});
+  $('#clr').addEventListener('click',e=>{e.preventDefault();S.q='';$('#q').value='';apply()});
+  $('#cfil').addEventListener('change',e=>{S.c=e.target.value;apply()});
+  $('#emptyR').addEventListener('click',tClear);
+
+  function recTg(b,co){
+    b.classList.toggle('recording');
+    const on=b.classList.contains('recording');
+    b.querySelector('.rl').textContent=on?'מקליט…':'הקלטה';
+    toast(on?'ההקלטה התחילה — '+co:'ההקלטה נעצרה');
+  }
+  window.recTg=recTg;
+
+  const ARENA={
+    prep:{cap:'בריף לפגישה · הבאה', co:'מיכל אדרי', meta:'היום 13:00 · שיחת מעקב · שלב 5', next:true,
+      prev:{d:'19.06', rows:['מעבר לשלב 5 — יישום והטמעה','סוכם: להציג בישיבת צוות בלי הכנה של שבוע']},
+      changed:[{w:1,tx:'שבועיים בלי פגישה — הרצף נשבר, והיא בשלב שדורש ליווי צמוד'},{tx:'"הצגתי היום בישיבת הצוות בלי להתכונן שבוע מראש" (שיחה, אתמול)'}],
+      talk:'"נותנת תשובות קצרות כשלוחצים. עדיף לשאול ולחכות — היא ממלאת את השתיקה."'},
+
+    r1730:{cap:'בריף לפגישה · הערב', co:'דניאל כהן', meta:'היום 17:30 · פגישה שבועית · שלב 3', next:true,
+      prev:{d:'27.06', rows:['לא הוקלטה — אין סיכום','שלוש משימות נשארו פתוחות']},
+      changed:[{w:1,tx:'לא ענה לשתי הפניות האחרונות — שבוע ברציפות'},{tx:'אישור ההורים לטיפול הקבוצתי טרם התקבל'}],
+      talk:'"נפתח רק ברבע השעה האחרון. לא למהר לשאלות הגדולות בהתחלה."'},
+
+    r0207:{co:'שרה לוינסון', contact:'שרה', name:'פגישה שבועית — אבל ואובדן', meta:'02.07 · 09:00–09:50 · 45 דק׳', st:'ממתין לאישור', stc:'wait',
+      base:['שרה הביאה בעצמה את הנושא של הילדים — לראשונה מאז תחילת הטיפול.','זוהה דפוס: נמנעת מלבקש עזרה גם כשמציעים לה.','כתיבת מכתב שלא נשלח הביאה הקלה ניכרת בסוף הפגישה.'],
+      insights:[{t:'הימנעות מבקשת עזרה — דפוס מרכזי',d:'המשפט "לא רוצה להעמיס על הילדים" חזר שלוש פעמים. מתחתיו אמונת ליבה על מה מותר לה לבקש.'},{t:'הברית הטיפולית מתחזקת',d:'הגיעה בזמן והביאה נושא מיוזמתה — שינוי מהפגישות הראשונות, שבהן חיכתה שאשאל.'}],
+      tasks:[{t:'להמשיך את המכתב שלא נשלח',who:'שרה'},{t:'לשים לב לפעם אחת שבה ביקשה עזרה',who:'שרה'},{t:'לשקול הפניה לקבוצת תמיכה',who:'ענת'}],
+      fb:[{t:'עומק ההתערבות',
+         strong:'החזקת את השתיקה אחרי המשפט על הילדים ולא מיהרת למלא אותה — משם הגיע המכתב.',
+         improve:'אפשר היה לשאול מה היה קורה אילו הייתה מבקשת — הבדיקה מול המציאות נשארה תיאורטית.'},
+        {t:'קשר, הקשבה ומרחב', strong:'נתת לה להוביל את הקצב בפגישה שבה היא בכתה פעמיים.', improve:''},
+        {t:'עבודה ברובד הסמוי', strong:'', improve:'"להעמיס" הוא מילה שחוזרת אצלה גם בהקשרים אחרים — שווה לבדוק מאיפה היא מגיעה.'}],
+      mem:[['דפוסים','נוסף דפוס: נמנעת מלבקש עזרה — גם כשמציעים'],['אמונות ליבה','"אם אבקש עזרה אני מעמיסה על הילדים"'],['כלים שעובדים','כתיבת מכתב שלא נשלח — הקלה ניכרת'],['ברית טיפולית','הביאה נושא מיוזמתה לראשונה']],
+      tx:[['מטפלת','איך עבר עלייך השבוע?'],['מטופלת','בסדר. הילדים מתקשרים כל יום, זה נחמד.'],['מטפלת','ומה את אומרת להם כשהם שואלים איך את?'],['מטופלת','שאני בסדר. הם עסוקים, לא רוצה להעמיס עליהם.'],['מטפלת','…'],['מטופלת','אני יודעת מה את חושבת. אבל זה באמת ככה.'],['מטפלת','לא חשבתי כלום. רק שמעתי את המילה "להעמיס".'],['מטופלת','זה מה שזה. הם איבדו אבא, הם לא צריכים גם אמא שבורה.'],['מטפלת','מה היה קורה אם היית מתקשרת ואומרת שהיום קשה?'],['מטופלת','לא יודעת. אף פעם לא ניסיתי.'],['מטפלת','רוצה לכתוב את זה? לא לשלוח — רק לכתוב.'],['מטופלת','אולי. כן.']],
+      acts:'approve'},
+
+    r2606:{co:'נועה ברק', contact:'נועה', name:'פגישה שבועית — חשיפה מדורגת', meta:'26.06 · 16:00–16:50 · 50 דק׳', st:'ממתין לאישור', stc:'wait',
+      base:['נועה זיהתה לבד שהיא מתארת את עצמה במילים שלא הייתה משתמשת בהן לגבי אף אחד אחר.','אמונת הליבה "כולם רואים שאני לחוצה" נבחנה מול עדויות ונחלשה.','סוכם על חשיפה מדורגת: משפט אחד בישיבת הצוות, בלי הכנה של שבוע.'],
+      insights:[{t:'הביקורת העצמית מנטרלת את החיזוק',d:'אחרי כל תיאור של הצלחה הגיעה הסתייגות. זה דפוס חדש שלא היה בפגישות הקודמות, והוא מסוכן יותר מההימנעות עצמה.'},{t:'הנשימות הופנמו',d:'היא מיישמת אותן לפני החשיפה ולא אחריה — כלומר הכלי עבר משימוש בכיבוי לשימוש במניעה.'}],
+      tasks:[{t:'לומר משפט אחד בישיבת הצוות',who:'נועה'},{t:'יומן מצבים חברתיים — שלושה אירועים',who:'נועה'},{t:'המשך נשימות 4-7-8 פעמיים ביום',who:'נועה'}],
+      fb:[{t:'עומק ההתערבות',
+         strong:'שאלת "מה היית אומרת לחברה" הביאה את המשפט שכל הפגישה נשענת עליו.',
+         improve:'כשנועה אמרה "אני יודעת שזה לא נורא" עברת הלאה — שם היה הדיסוננס בין הידיעה לחוויה.'},
+        {t:'קשר, הקשבה ומרחב', strong:'השתיקה בדקה 31 עשתה את העבודה במקומך.', improve:''},
+        {t:'עבודה ברובד הסמוי', strong:'', improve:'חיזקת אותה שלוש פעמים, ואחרי כל חיזוק היא הקטינה את ההישג. השבח מפעיל אצלה את הביקורת — עדיף לתאר ולתת לה לשפוט.'}],
+      mem:[['דפוסים','ביקורת עצמית מיד אחרי הצלחה — מנטרלת את החיזוק'],['אמונות ליבה','"כולם רואים שאני לחוצה" — נחלשה מול עדויות'],['כלים שעובדים','נשימות 4-7-8 — מיושמות מיוזמתה'],['מטרות הטיפול','חשיפה מדורגת — משפט אחד בישיבת צוות']],
+      tx:[['מטפלת','ספרי לי מה קרה בישיבה ביום שלישי.'],['מטופלת','אמרתי משפט אחד. הלב דפק חזק אבל לא יצאתי.'],['מטפלת','נשארת. זה בדיוק מה שסיכמנו. איך זה הרגיש אחרי?'],['מטופלת','אני מניחה שבסדר. אבל חשבתי שיכולתי להגיד את זה יותר טוב.'],['מטפלת','שמת לב שהתחלת מ"בסדר" ותוך משפט הגעת ל"יכולתי יותר טוב"?'],['מטופלת','אני יודעת שזה לא נורא. פשוט בזמן אמת אני לא מצליחה להזכיר לעצמי את זה.'],['מטפלת','אם חברה שלך הייתה מספרת לך בדיוק את מה שסיפרת לי — מה היית אומרת לה?'],['מטופלת','שהיא עשתה משהו גדול. אלה מילים שלא הייתי משתמשת בהן לגבי עצמי.']],
+      acts:'approve'},
+
+    r2506:{co:'עומר גל', name:'פגישה שבועית', meta:'25.06 · 13:00', st:'לא התקיימה', stc:'bad',
+      none:'הפגישה לא התקיימה — אין תמלול, אין סיכום ואין משימות.', act:['resch','תיאום מחדש']},
+
+    r1906:{co:'מיכל אדרי', contact:'מיכל', name:'פגישה שבועית — הטמעה', meta:'19.06 · 16:00 · 48 דק׳', st:'אושר — לא נשלח', stc:'wait',
+      base:['מעבר לשלב 5 — יישום והטמעה.','הפחתת תדירות הפגישות לאחת לשבועיים.','סוכם: להציג בישיבת צוות בלי הכנה של שבוע.'],
+      tasks:[{t:'הצגה בישיבת צוות בלי הכנה מוקדמת',who:'מיכל',ok:1}],
+      mem:[['מטרות הטיפול','מעבר לשלב 5 · הפחתת תדירות'],['שיתוף פעולה','מיישמת בין הפגישות בלי תזכורת']],
+      fbTab:{d:'19.06.2026', strong:'"הרגשתי שאני כבר לא צריכה את הפגישה כדי לדעת מה לעשות."', improve:''},
+      tx:[['מטפלת','איפה את מרגישה שאת עומדת?'],['מטופלת','שהכלים כבר בפנים. אני רק צריכה לזכור להשתמש בהם.']],
+      acts:'send'},
+
+    r2906:{co:'יואב פרידמן', name:'פגישה שבועית — מיפוי צרכים', meta:'29.06 · 10:00 · 50 דק׳', st:'נסגרה ✓', stc:'ok',
+      base:['מופו הצרכים של שני בני הזוג בנפרד.','סוכם על שיחת 20 דקות בלי מסכים, פעמיים בשבוע.'],
+      tasks:[{t:'שיחת 20 דקות בלי מסכים',who:'יואב',ok:1}],
+      fbTab:{d:'29.06.2026', strong:'"המשימה הייתה מוזרה בהתחלה אבל היא עבדה."', improve:''},
+      tx:[['מטפלת','מה קרה בשיחה בלי המסכים?'],['מטופלת','דיברנו על דברים שלא דיברנו עליהם חודשים.']]},
+
+    r0506:{co:'נועה ברק', name:'שלב 3 — כלים להתמודדות', meta:'05.06 · 16:00 · 52 דק׳', st:'נסגרה ✓', stc:'ok',
+      base:['נבנה סולם המצבים החברתיים — מהקל למאיים.','נלמד תרגול נשימות 4-7-8.','זוהתה השתיקה כמשאב.','סוכם על תרגול מדורג בסביבה בטוחה.'],
+      tasks:[{t:'תרגול נשימות יומי',who:'נועה',ok:1},{t:'סולם מצבים — דירוג עצמי',who:'נועה',ok:1},{t:'שיחת מסדרון יזומה',who:'נועה',ok:1},{t:'דף הסבר על הימנעות',who:'ענת',ok:1}],
+      fbTab:{d:'05.06.2026', strong:'"הנשימות עזרו כבר בפגישה עצמה."', improve:''},
+      tx:[['מטפלת','ננסה את זה יחד עכשיו.'],['מטופלת','הלחץ בחזה באמת ירד.']]},
+
+    r2706:{co:'דניאל כהן', name:'פגישה שבועית', meta:'27.06 · 17:30 · 50 דק׳', st:'לא הוקלטה', stc:'bad',
+      none:'לא הוקלטה — אין תמלול, אין סיכום ואין סופרוויזיון.', act:['upload','העלאת הקלטה']},
+
+    r0805:{co:'נועה ברק', name:'שלב 2 — מיפוי צרכים', meta:'08.05 · 16:00 · 55 דק׳', st:'נסגרה ✓', stc:'ok',
+      base:['מופו המצבים המעוררים והמחשבות האוטומטיות.','עלתה אמונת הליבה "אם אני לא מושלמת, עדיף שלא אדבר בכלל".','זוהו ההתנהגויות הבטוחות — הכנה של שבוע מראש.'],
+      fbTab:{d:'08.05.2026', strong:'', improve:'"היו הרבה שאלות. לפעמים רציתי שתגידי לי מה לעשות."'},
+      tx:[['מטפלת','מה עובר לך בראש רגע לפני שאת נכנסת לישיבה?'],['מטופלת','שכולם יראו שאני לחוצה.']]},
+  };
+  let _arTab='sum';
+  function arTab(v){ _arTab=v; arenaShow(window._arSel); }
+  function arenaShow(id){
+    const a=ARENA[id]||ARENA.r0207; window._arSel=id=ARENA[id]?id:'r0207';
+    const host=document.getElementById('arena');
+    document.querySelectorAll('#ml tr.hl').forEach(x=>x.classList.remove('hl'));
+    const selTr=document.getElementById(id); if(selTr) selTr.classList.add('hl');
+    /* --- הכנה לפגישה עתידית --- */
+    if(a.next){
+      host.innerHTML=`<div class="ar-h">
+          <a class="ar-back" href="#" onclick="event.preventDefault();arenaShow('r0207')">→ חזרה לזירת הפגישה</a>
+          <span class="ar-cap">${a.cap}</span><h2>${a.co}</h2>
+          <div class="ar-meta">${a.meta.split(' · ').map(x=>'<span>'+x+'</span>').join('<span class="c">·</span>')}</div></div>
+        <div class="ar-body"><div class="ar-sec"><h4>מהפגישה הקודמת · ${a.prev.d}</h4>${a.prev.rows.map((r,i)=>`<div class="ar-r"><i>${i+1}</i>${r}</div>`).join('')}</div>
+        <div class="ar-sec"><h4>מה השתנה מאז</h4>${a.changed.map(c=>`<div class="ar-r ${c.w?'warn':''}"><i>${c.w?'!':'+'}</i>${c.tx}</div>`).join('')}</div>
+        <div class="ar-sec"><h4>איך לדבר עם תומר</h4><div class="ar-q">${a.talk}</div></div></div>
+        <div class="ar-acts"><button class="btn danger rec" onclick="recTg(this,'${a.co}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button></div>`;
+      return;
+    }
+    /* --- פגישה בלי תוצרים --- */
+    const head=`<div class="ar-h slim">
+        <div class="ar-top"><span class="ar-cap">זירת הפגישה</span><span class="ar-st ${a.stc}">${a.st}</span>
+          ${a.tx?`<button class="ar-play" onclick="arPlay(this)" title="השמעת ההקלטה">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <span class="ar-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+            <b class="num">${(a.meta.match(/(\d+) דק/)||[,''])[1]}:00</b>
+          </button>`:''}
+        </div>
+        <div class="ar-line"><h2>${a.co}</h2><span class="c">·</span><span class="ar-nm">${a.name}</span><span class="num ar-nm ar-dt">${a.meta}</span></div>
+      </div>`;
+    if(a.none){
+      host.innerHTML=head+`<div class="ar-body"><div class="ar-sec"><div class="ar-none">${a.none}</div></div></div>
+        <div class="ar-acts">${a.act?`<button class="btn pri" data-act="${a.act[0]}">${a.act[1]}</button>`:''}</div>`;
+      return;
+    }
+    /* --- הזירה: טאבים כמו במערכת — סיכום פגישה · משימות · משוב · תמלול --- */
+    const tabs=[['sum','סיכום פגישה',!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['mem','זיכרון',!!(a.mem&&a.mem.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx]].filter(x=>x[2]);
+    if(!tabs.some(x=>x[0]===_arTab)) _arTab=tabs[0][0];
+    let body='';
+    if(_arTab==='sum'){
+      body=`<div class="ar-sec">
+        <h4>תמונת מצב ונתוני יסוד</h4>
+        <ol class="ar-ol">${a.base.map(r=>`<li>${r}</li>`).join('')}</ol>
+        ${a.insights?`<h4>תובנות מרכזיות</h4>
+          ${a.insights.map((x,i)=>`<div class="ar-ins2"><b>${i+1}. ${x.t}</b><p>${x.d}</p></div>`).join('')}`:''}
+        ${a.tasks&&a.tasks.length?`<h4>משימות לביצוע</h4>
+          <ol class="ar-ol">${a.tasks.map(k=>`<li>${k.t} <span class="ar-who2">— ${k.who}</span></li>`).join('')}</ol>`:''}
+      </div>`;
+    }else if(_arTab==='tasks'){
+      body=`<div class="ar-sec"><div class="ar-tksub"><b>להלן המשימות המוצעות ללקוח, יש לאשרן, ורק לאחר מכן ליצור את המשימות.</b></div>
+        ${a.tasks.map((k,i)=>`<div class="ar-tk ${k.ok?'done':''}">
+          <input type="checkbox" class="ar-cb" ${k.ok?'checked':''} aria-label="אישור המשימה: ${k.t}" onchange="arTkTg(${i},this.checked)">
+          <div class="ar-tkb"><b>${k.t}</b><span>באחריות: ${k.who}</span></div>
+          <span class="ar-tkacts">
+            <button class="ari" title="קובץ מצורף" onclick="toast('צירוף קובץ למשימה')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+            <button class="ari" title="מחיקה" onclick="arTkDel(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+            <button class="ar-ok" onclick="arTkTg(${i},true)">אישור</button>
+          </span>
+        </div>`).join('')}
+        <div class="ar-tkadd" id="arTkAdd">
+          <button class="ar-addtk" onclick="document.getElementById('arTkAdd').classList.add('on');document.getElementById('arTkIn').focus()">+ הוספת משימה</button>
+          <form class="ar-addfrm" onsubmit="event.preventDefault();arTkNew()">
+            <input id="arTkIn" placeholder="משימה חדשה ללקוח…" autocomplete="off">
+            <input id="arTkWho" placeholder="באחריות…" autocomplete="off">
+            <button class="ar-ok" type="submit">הוספה</button>
+          </form>
+        </div></div>`;
+    }else if(_arTab==='mem'){
+      body=`<div class="ar-sec"><h4>מה נכנס לזיכרון הלקוח מהפגישה</h4>
+        ${a.mem.map(m=>`<div class="ar-mem"><span class="k">${m[0]}</span><span>${m[1]}</span></div>`).join('')}
+        <a class="ar-memfull" href="memory.html">זיכרון הלקוח המלא ←</a></div>`;
+    }else if(_arTab==='fb'){
+      const F=a.fbTab;
+      body=F.sections
+        ?`<div class="ar-sec"><h4>משוב על היועץ · ${F.d}</h4>
+            ${F.sections.map((s,i)=>`<div class="ar-fbs ${s.open?'open':''}">
+              <button class="ar-fbh" onclick="this.parentNode.classList.toggle('open')"><b>${i+1}. ${s.t}</b><span>▾</span></button>
+              <div class="ar-fbb">
+                ${s.strong?`<div class="ar-fbp"><b class="g">✓ נקודת חוזק</b><p>${s.strong}</p></div>`:''}
+                ${s.improve?`<div class="ar-fbp"><b class="o">↗ נקודה לשיפור</b><p>${s.improve}</p></div>`:''}
+              </div></div>`).join('')}</div>`
+        :`<div class="ar-sec"><h4>משוב · ${F.d}</h4>
+            ${F.strong?`<div class="ar-ins good"><b>✓ נקודת חוזק</b><span>${F.strong}</span></div>`:''}
+            ${F.improve?`<div class="ar-ins imp"><b>↗ נקודה לשיפור</b><span>${F.improve}</span></div>`:''}</div>`;
+    }else{
+      body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
+    }
+    const acts=a.acts==='pending'
+      ?`<button class="btn pri" onclick="arApprove(true)">אישור ושליחה ל${a.contact||'מטופל'}</button><button class="btn" onclick="arApprove(false)">אישור ללא שליחה</button>`
+      :a.acts==='send'?`<button class="btn pri" onclick="arSend()">שליחת הסיכום ללקוח</button>`
+      :`<a class="btn" href="../../meeting-room.html">הזירה המלאה ↗</a>`;
+    host.innerHTML=head
+      +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
+      +`<div class="ar-body">`+body+`</div><div class="ar-acts">${acts}</div>`;
+  }
+  /* ===== אישור ושליחה — הזרימה המלאה =====
+     שליחה עם משימות שלא אושרו ⇒ עצירה ושאלה. אחרי הפעולה — הסטטוס,
+     הטאבים, הכפתורים ושורת הטבלה מתעדכנים. */
+  function arApprove(send){
+    const a=ARENA[window._arSel];
+    const open=(a.tasks||[]).filter(k=>!k.ok).length;
+    if(send&&open&&!window._arForce){
+      window._arForce=true;
+      const f=document.querySelector('#arena .ar-acts');
+      f.innerHTML=`<div class="ar-warnrow"><b>${open} משימות טרם אושרו</b> — יישלחו רק המאושרות.
+        <button class="btn pri sm" onclick="arApprove(true)">שליחה בכל זאת</button>
+        <button class="btn sm" onclick="window._arForce=false;arTab('tasks')">חזרה למשימות</button></div>`;
+      return;
+    }
+    window._arForce=false;
+    const made=(a.tasks||[]).filter(k=>k.ok).length;
+    (a.tasks||[]).forEach(k=>{ if(send&&k.ok) k.made=1; });
+    if(send){ a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
+      toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ'+(made?' · נוצרו '+made+' משימות':' · לא נוצרו משימות')); arRowClose(); }
+    else{ a.st='אושר — לא נשלח'; a.stc='wait'; a.acts='send'; toast('הסיכום אושר · לא נשלח ללקוח'); arRowSendBtn(); }
+    arenaShow(window._arSel);
+  }
+  function arSend(){
+    const a=ARENA[window._arSel];
+    a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
+    toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ');
+    arRowClose(); arenaShow(window._arSel);
+  }
+  function arRowState(tags,st,ac){
+    const tr=document.getElementById(window._arSel); if(!tr) return;
+    tr.dataset.tags=tags;
+    const c=tr.querySelector('.st'); if(c) c.innerHTML=st;
+    const b=tr.querySelector('.ac'); if(b) b.innerHTML=ac;
+    apply();
+  }
+  function arRowClose(){ arRowState('ok','<span class="al ok">הושלם</span>',''); }
+  function arRowSendBtn(){ const id=window._arSel;
+    arRowState('sent','<span class="al warn">סיכום לא נשלח</span><i>מהיום</i>',
+      '<button class="btn sm" onclick="event.stopPropagation();arenaShow(\''+id+'\')">שליחה ללקוח</button>'); }
+  window.arApprove=arApprove; window.arSend=arSend;
+  function arTkTg(i,on){ const a=ARENA[window._arSel]; if(!a.tasks||!a.tasks[i]) return;
+    a.tasks[i].ok=on?1:0; toast(on?'המשימה אושרה':'האישור בוטל'); arenaShow(window._arSel); }
+  function arTkDel(i){ const a=ARENA[window._arSel]; if(!a.tasks||!a.tasks[i]) return;
+    a.tasks.splice(i,1); toast('המשימה נמחקה'); arenaShow(window._arSel); }
+  window.arTkTg=arTkTg; window.arTkDel=arTkDel;
+  function arTkNew(){
+    const v=document.getElementById('arTkIn').value.trim(); if(!v) return;
+    const who=document.getElementById('arTkWho').value.trim()||'צוות הייעוץ';
+    (ARENA[window._arSel].tasks=ARENA[window._arSel].tasks||[]).push({t:v, who});
+    toast('המשימה נוספה — מחכה לאישור'); arenaShow(window._arSel);
+    setTimeout(()=>{const d=document.getElementById('arTkAdd'); if(d){d.classList.add('on');document.getElementById('arTkIn').focus();}},40);
+  }
+  window.arTkNew=arTkNew;
+  function arPlay(b){ b.classList.toggle('playing'); toast(b.classList.contains('playing')?'ההקלטה מתנגנת…':'ההשמעה הופסקה'); }
+  window.arTab=arTab; window.arPlay=arPlay;
+  document.addEventListener('click',e=>{
+    const tr=e.target.closest('#ml tbody tr.m');
+    if(!tr||e.target.closest('a,button')) return;
+    arenaShow(tr.id);
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ') return;
+    const tr=e.target.closest?e.target.closest('#ml tbody tr.m'):null;
+    if(!tr||e.target!==tr) return;
+    e.preventDefault(); arenaShow(tr.id);
+  });
+  window.arenaShow=arenaShow;
+  /* פעולות הרשימה */
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const act=b.dataset.act;
+    if(act==='upload') toast('בחירת קובץ הקלטה — לימוד בנדל 05.05');
+    else if(act==='resch') toast('תיאום מחדש עם עומר גל — נפתח ביומן');
+    else if(act==='prep') location.href='today.html?prep=039112774';
+  });
+  /* חוזה כתובת: ?c לקוח · ?q חיפוש · ?f מה חסר · ?m פגישה */
+  const u=new URLSearchParams(location.search);
+  if(u.get('f')&&MISS[u.get('f')]) S.f=u.get('f');
+  if(u.get('q')){ S.q=u.get('q').trim(); $('#q').value=S.q; }
+  if(u.get('c')){ const v=u.get('c'), sel=$('#cfil');
+    if([...sel.options].some(o=>(o.value||o.text)===v)){ sel.value=v; S.c=v; } }
+  apply();
+  arenaShow(u.get('m')||'r0207');
+})();
+</script>
+<style id="hk-embed-css">
+html.embed .nav{display:none !important}
+html.embed body{background:transparent}
+html.embed .strip{border-radius:0}
+/* המסך נעול לגובה החלון (טבלה וזירה גוללות בפנים) — בהטמעה הניווט הפנימי מוסתר,
+   ולכן הכרום היחיד שנשאר הוא הפס. המערכת קובעת את גובה המסגרת. */
+html.embed .wrap{height:calc(100vh - 68px)}
+</style>
+<script id="hk-embed-js">
+/* ===== הטמעה במערכת =====
+   ?embed=1 — הדף נטען בתוך המערכת: הניווט הפנימי מוסתר (הסרגל של המערכת מחליף אותו),
+   והדף מדווח את גובהו כלפי חוץ כדי שהמסגרת תיפתח לכל התוכן. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  var last=0;
+  function report(){
+    var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+    /* מסך נעול-גובה — לא מדווח גובה תוכן; המערכת מותחת את המסגרת לגובה החלון */
+    parent.postMessage({hkAdvLock:'meetings'},'*'); last=h;
+  }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  new MutationObserver(report).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  setInterval(report,1200);
+  /* ניווט פנימי בין המסכים — מבקש מהמערכת להחליף מסך במקום לנווט בתוך המסגרת */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href$=".html"]'); if(!a) return;
+    var f=a.getAttribute('href').split('/').pop().split('?')[0].replace('.html','');
+    e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
+  },true);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מטופלים · JAMPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   HK · מסך היועץ · לקוחות — לפי מפרט העיצוב המאוחד v1
+   רצועה 68px navy (כותרת + תאריך | שני המספרים החיים | שעה)
+   בלוק כהה אחד בגוף: כותרת כרטיס הלקוח — ובתוכו הפעולה (שינוי סטטוס).
+   טבלה: 5 עמודות, שורה 44px (38px ≤1450), בלי גלילה אופקית פנימית.
+   ===================================================================== */
+:root{
+  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;--coral:#E8635A;--bg:#F4F7FA;--bd:#E6ECF4;
+  --green:#13895b;--red:#dc4436;--orange:#c98404;--purple:#6B4FA0;
+  --ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--white:#fff;
+  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;--on-navy4:#7FA6C2;
+  --chip:#F0F4F8;--chip-hover:#E2EBF2;--tint:#EAF3FA;--surface2:#FAFCFE;
+  --row-hover:#F8FBFD;--row-sel:#EEF6FC;--bd2:#B7C3CF;--line:#C4CED8;--mark:#FFF1C2;
+  --warn-bg:#FFF9F0;--warn-ink:#9A6300;--bad-bg:#FDEDEB;--bad-ink:#C43D30;
+  --good-bg:#F1FAF5;--good-ink:#13895b;--on-bad:#FFD3CF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+/* ---------- top nav ---------- */
+.nav{height:52px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 32px;gap:28px}
+.nav .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--navy);font-size:14px}
+.nav .brand i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--navy);color:var(--white);font-style:normal;font-size:12px;font-weight:700;letter-spacing:.5px}
+.nav ul{display:flex;list-style:none;gap:4px;margin-inline-start:12px}
+.nav li a{display:block;padding:6px 12px;border-radius:6px;color:var(--ink2);font-size:13px}
+.nav li a:hover{background:var(--bg);color:var(--navy)}
+.nav li a.on{background:var(--tint);color:var(--navy);font-weight:600}
+.nav .me{margin-inline-start:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2);text-align:end}
+.nav .me b{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.nav .me i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--tint);color:var(--navy);font-style:normal;font-weight:600;font-size:12px}
+
+/* ---------- navy strip ---------- */
+.strip{background:var(--navy);color:var(--white);height:68px;display:flex;align-items:center;padding:0 32px;gap:28px}
+.strip h1{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:28px;line-height:1;letter-spacing:-.3px}
+.strip .date{font-size:13px;color:var(--on-navy2);margin-top:2px}
+.strip .sep{width:1px;height:32px;background:rgba(255,255,255,.18)}
+.strip .sum{display:flex;align-items:baseline;gap:24px}
+.strip .kpi{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--on-navy);border-bottom:1px solid transparent;padding-bottom:2px;white-space:nowrap}
+.strip .kpi b{font-size:22px;font-weight:700;color:var(--white);line-height:1}
+.strip button.kpi:hover{border-bottom-color:rgba(255,255,255,.45);color:var(--white)}
+.strip button.kpi.on{border-bottom-color:var(--white);color:var(--white)}
+.strip button.kpi:disabled{cursor:default;color:var(--on-navy4)}
+.strip button.kpi:disabled b{color:var(--on-navy2)}
+.strip .vs{width:1px;height:24px;background:rgba(255,255,255,.18);flex:none}
+.strip .sen{font-size:13px;color:var(--on-navy);white-space:nowrap;display:inline-flex;align-items:baseline;gap:6px}
+.strip .sen b{font-size:18px;font-weight:700;color:var(--white);line-height:1}
+.strip .alw{font:inherit;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid transparent;padding-bottom:1px}
+.strip .alw.cf{color:#FF9086}
+.strip .alw.sat{color:#F4C560}
+.strip .alw:hover{border-bottom-color:currentColor}
+.strip .alw.on{border-bottom-color:currentColor}
+.strip .spacer{margin-inline-start:auto}
+.strip .now{font-size:13px;color:var(--on-navy2)}
+.strip .now b{color:var(--white);font-weight:500}
+
+/* ---------- body grid ---------- */
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;
+      gap:18px;align-items:stretch;height:calc(100vh - 120px);overflow:hidden}
+.wrap>*{min-width:0;min-height:0}
+
+/* ---------- panel ---------- */
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04);
+        min-width:0;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.ph h2{font-size:17px;font-weight:600;color:var(--navy)}
+.ph .hint{font-size:12.5px;color:var(--ink3)}
+.ph .hint b{font-weight:500;color:var(--ink2)}
+.ph .tools{margin-inline-start:auto;display:flex;align-items:center;gap:8px;align-self:center}
+.ph input{height:32px;width:220px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
+.ph input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.ph select{height:32px;border:1px solid var(--bd);border-radius:6px;padding:0 10px;font:inherit;font-size:13px;background:var(--white);color:var(--ink2);cursor:pointer}
+.ph select:focus{outline:none;border-color:var(--sky)}
+
+/* ---------- chips (חוק 9) ---------- */
+.chip{font:inherit;font-size:12px;font-weight:500;background:var(--chip);border:0;border-radius:7px;
+      padding:5px 10px;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.chip:hover{background:var(--chip-hover);color:var(--navy)}
+.chip.on{background:var(--navy);color:var(--white)}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--line));flex:none}
+.chip b{font-weight:600;font-size:12px;line-height:17px;color:var(--navy);background:var(--white);border-radius:7px;padding:0 6px}
+.chip.on b{background:rgba(255,255,255,.2);color:var(--white)}
+.dark .chip{background:rgba(255,255,255,.08);color:var(--on-navy)}
+.dark .chip:hover{background:rgba(255,255,255,.16);color:var(--white)}
+.dark .chip.on{background:var(--white);color:var(--navy);font-weight:600}
+
+/* ---------- filter bar ---------- */
+.fbar{padding:10px 20px 12px;border-bottom:1px solid var(--bd);background:var(--surface2);display:flex;flex-direction:column;gap:8px}
+.frow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.frow .lbl{font-size:12.5px;color:var(--ink3);min-width:52px}
+.frow .vsep{width:1px;height:16px;background:var(--bd);margin:0 6px}
+.frow .reset{font-size:12.5px;color:var(--sky);font-weight:500;display:none;margin-inline-start:auto}
+.frow .reset.on{display:inline-block}
+#tl2:empty{display:none}
+
+.tw{flex:1;min-height:0;overflow:auto}
+.tb thead th{position:sticky;top:0;z-index:1}
+/* ---------- table (חוק 7) ---------- */
+.tb{width:100%;border-collapse:collapse}
+.tb.none{display:none}
+.tb th{font-size:12px;font-weight:500;color:var(--ink3);background:var(--surface2);padding:7px 14px;
+       text-align:start;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tb td{font-size:14px;color:var(--ink2);padding:11px 14px;border-top:1px solid var(--bd);white-space:nowrap;vertical-align:middle}
+.tb td:last-child{white-space:normal}
+td .lnk{white-space:nowrap}
+.tb th:first-child,.tb td:first-child{padding-inline-start:20px}
+.tb th:last-child,.tb td:last-child{padding-inline-end:20px}
+.tb tr{cursor:pointer}
+.tb tr:hover td{background:var(--row-hover)}
+.tb tr.hl td{background:var(--row-sel)}
+.tb tr.dim td{opacity:.32}
+.tb tr.first td{border-top:2px solid var(--bd)}
+td.n{color:var(--ink);font-weight:600}
+td.n small{font-weight:400;font-size:12px;color:var(--ink3);margin-inline-start:8px}
+td.n .num{color:var(--ink3)}
+td.n .dash{margin-inline-start:8px;color:var(--sky);opacity:0;font-weight:700;transition:opacity .12s}
+.tb tr:hover td.n .dash{opacity:1}
+/* ===== טוקן סטטוס — זהה בשלושת המקומות: סינון · טבלה · כרטיס המטופל =====
+   גלולה בגוון הסטטוס עצמו + נקודה רוויה. הצבע נושא את הזיהוי, לא צבע נייטרלי אחיד. */
+.stg,.chip.stat{--sc:var(--c,#C4CED8);
+  font:inherit;font-size:12px;font-weight:600;letter-spacing:-.1px;line-height:1;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  padding:5px 11px;border-radius:999px;
+  background:color-mix(in srgb,var(--sc) 14%,#fff);
+  border:1px solid color-mix(in srgb,var(--sc) 30%,#fff);
+  color:color-mix(in srgb,var(--sc) 60%,#12293F)}
+.stg::before,.chip.stat .dot{content:"";width:6px;height:6px;border-radius:50%;
+  background:color-mix(in srgb,var(--sc) 85%,#12293F);flex:none}
+.chip.stat{cursor:pointer;transition:box-shadow .12s,background .12s}
+.chip.stat:hover{background:color-mix(in srgb,var(--sc) 22%,#fff)}
+.chip.stat.on{background:color-mix(in srgb,var(--sc) 88%,#12293F);border-color:transparent;color:#fff}
+.chip.stat.on .dot{background:rgba(255,255,255,.9)}
+.chip.stat b{font-weight:600;font-size:11.5px;line-height:16px;border-radius:999px;padding:0 6px;
+  background:color-mix(in srgb,var(--sc) 26%,#fff);color:color-mix(in srgb,var(--sc) 65%,#12293F)}
+.chip.stat.on b{background:rgba(255,255,255,.22);color:#fff}
+/* על רקע כהה — אותה גלולה; הגוון נשאר בנקודה, כדי שגם סטטוס כהה יישאר קריא על הכחול */
+.dark .chip.stat{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20);color:var(--on-navy)}
+.dark .chip.stat:hover{background:rgba(255,255,255,.18);color:var(--white)}
+.dark .chip.stat .dot{background:color-mix(in srgb,var(--sc) 62%,#fff)}
+.dark .chip.stat.on{background:#fff;border-color:#fff;color:var(--navy)}
+.dark .chip.stat.on .dot{background:var(--sc)}
+.sub{font-size:12px;color:var(--ink3);margin-inline-start:6px}
+td .today{color:var(--navy);font-weight:600}
+td .no{color:var(--red);font-weight:500}
+td .lnk{font-size:12.5px;color:var(--sky);font-weight:500;margin-inline-start:8px;border-bottom:1px solid transparent}
+td .lnk:hover{border-color:var(--sky)}
+.als{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.tb th.alc,.tb td.alc{width:126px}
+/* החלפת סטטוס ישירות מהשורה */
+.tb td.stc{position:relative}
+.stg .cv{width:0;height:0;border:3.5px solid transparent;border-top-color:currentColor;opacity:.55;margin-inline-start:1px;flex:none}
+button.stg{cursor:pointer}
+button.stg:hover{background:color-mix(in srgb,var(--sc) 24%,#fff)}
+.stmenu{position:absolute;top:calc(100% - 2px);inset-inline-start:8px;z-index:5;background:var(--white);
+  border:1px solid var(--bd);border-radius:10px;box-shadow:0 10px 26px rgba(12,64,104,.18);padding:6px;
+  display:flex;flex-direction:column;gap:4px;white-space:nowrap}
+.stmenu .chip.stat{justify-content:flex-start}
+.tb td.duec{white-space:nowrap}
+/* ---------- alerts (חוק 10) ---------- */
+.al{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px}
+.al::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.al.bad{color:var(--red)}
+.al.warn{color:var(--orange)}
+.al.ok{color:var(--green)}
+.al.info{color:var(--ink3)}
+/* תאריך יעד לשלב — לחיץ */
+.due{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);border-radius:6px;padding:2px 7px;cursor:pointer}
+.due:hover{outline:1px solid var(--sky);color:var(--navy)}
+.due.late{color:var(--red);font-weight:500}
+.due input{font:inherit;font-size:12px;border:1px solid var(--sky);border-radius:6px;padding:0 4px;width:78px}
+/* ---------- empty (חוק 10) ---------- */
+.empty{padding:40px 20px;text-align:center;color:var(--ink3);font-size:13px;display:none}
+.empty.on{display:block}
+.empty b{display:block;font-size:14px;color:var(--ink2);font-weight:600;margin-bottom:6px}
+.empty .btn{margin-top:12px}
+
+/* ---------- side column (חוק 5) ---------- */
+aside.left{display:flex;flex-direction:column;gap:14px;min-height:0}
+.card{background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;
+      display:flex;flex-direction:column;width:100%;min-height:0;flex:1}
+.card .hd{background:var(--navy);color:var(--white);padding:16px 20px 14px}
+.card .hd h3{font-size:19px;font-weight:600;line-height:1.2}
+.card .hd .s{font-size:12.5px;color:var(--on-navy2);margin-top:4px}
+.card .stgblk{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14);font-size:13px}
+.card .stage-ed{display:flex;flex-wrap:wrap;gap:6px}
+.card .duerow{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--on-navy3);flex-wrap:wrap}
+.card .duerow input{font:inherit;font-size:12.5px;border:1px solid rgba(255,255,255,.22);border-radius:6px;
+                    padding:3px 8px;background:rgba(255,255,255,.07);color:var(--white);width:78px}
+.card .duerow input:focus{outline:none;border-color:var(--sky);background:rgba(255,255,255,.14)}
+.card .duerow .df{white-space:nowrap;color:var(--on-navy4)}
+.card .duerow.late{color:var(--on-bad);font-weight:500}
+.card .duerow.late input{border-color:rgba(232,99,90,.65)}
+.card .tabs{display:flex;border-bottom:1px solid var(--bd);padding:0 12px}
+.card .tabs button{font-size:13px;padding:10px 12px 9px;color:var(--ink2);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;gap:5px;align-items:center}
+.card .tabs button.on{color:var(--navy);font-weight:600;border-color:var(--navy)}
+.card .tabs button i{font-style:normal;font-size:11.5px;color:var(--ink3);background:var(--bg);border-radius:7px;padding:0 6px;line-height:16px}
+.card .tab{display:none}
+.card .tab.on{display:block;flex:1 1 auto;overflow-y:auto;min-height:0}
+.card .bd{padding:6px 20px 14px}
+.card .row{display:grid;grid-template-columns:92px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:13px;align-items:start}
+.card .row:last-child{border-bottom:0}
+.card .row .k{color:var(--ink3);font-size:12.5px;padding-top:2px}
+.card .row .v{color:var(--ink)}
+.card .row .v .none{color:var(--ink3)}
+.card .pp{display:flex;gap:8px;align-items:baseline;padding:2px 0;font-size:13px}
+.card .pp b{font-weight:500}
+.card .pp span{color:var(--ink3);font-size:12px}
+.card .none.pad{display:block;padding:14px 0;color:var(--ink3)}
+.card .addlnk{display:inline-block;margin-top:10px;font-size:12.5px;color:var(--sky);font-weight:500}
+.card .tk{display:flex;gap:10px;align-items:center;padding:9px 0;font-size:14px;border-bottom:1px solid var(--bd)}
+.card .tk:last-of-type{border-bottom:0}
+.card .tk input{appearance:none;-webkit-appearance:none;width:15px;height:15px;border:1.5px solid var(--bd2);
+                border-radius:4px;flex:none;cursor:pointer;display:grid;place-items:center;background:var(--white)}
+.card .tk input:checked{background:var(--navy);border-color:var(--navy)}
+.card .tk input:checked::after{content:"✓";color:var(--white);font-size:10px;line-height:1}
+.card .tk.done{color:var(--ink3);text-decoration:line-through}
+.card .mt{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd);font-size:14px;align-items:start}
+.card .mt:last-child{border-bottom:0}
+.card .mt .d{color:var(--ink3);font-size:12.5px;padding-top:1px}
+.card .mt b{display:block;font-weight:500;color:var(--ink)}
+.card .mt span{font-size:12px;color:var(--ink3)}
+.card .mu{display:grid;grid-template-columns:104px 1fr auto;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.card .mu:last-child{border-bottom:0}
+.card .mu .m{color:var(--ink3);font-size:12px}
+.card .ft{display:flex;gap:8px;padding:12px 20px 14px;border-top:1px solid var(--bd);flex-wrap:wrap;margin-top:auto}
+
+/* ---------- buttons (חוק 6) ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;
+     font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap;cursor:pointer}
+.btn:hover{background:var(--bg)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.btn.pri:hover{background:var(--navy2)}
+
+/* ---------- modal + toast ---------- */
+.ov{position:fixed;inset:0;background:rgba(12,38,58,.45);display:none;place-items:center;z-index:50}
+.ov.on{display:grid}
+.md{width:660px;max-width:92vw;background:var(--white);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden}
+.md .hd{background:var(--navy);color:var(--white);padding:16px 20px;display:flex;align-items:flex-start;gap:14px}
+.md .hd h3{font-size:19px;font-weight:600;line-height:1.2}
+.md .hd .s{font-size:12.5px;color:var(--on-navy2);margin-top:3px}
+.md .hd .x{margin-inline-start:auto;font-size:19px;color:var(--on-navy2);line-height:1}
+.md .hd .x:hover{color:var(--white)}
+.md .bd{padding:6px 20px 18px}
+.md .ft{display:flex;gap:8px;padding:0 20px 18px}
+.st-list{display:flex;flex-direction:column}
+.st-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.st-ord{width:18px;font-size:12px;color:var(--ink3);text-align:center}
+.st-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--white);box-shadow:0 0 0 1px var(--bd);cursor:pointer;flex:none;background:var(--c,var(--line))}
+.st-pick{position:relative;flex:none;display:flex}
+.st-pal{display:none;position:absolute;top:calc(100% + 7px);inset-inline-start:-7px;
+        background:var(--white);border:1px solid var(--bd);border-radius:999px;padding:5px 7px;gap:6px;
+        box-shadow:0 6px 20px rgba(12,64,104,.16);z-index:2}
+.st-pal.on{display:flex}
+.st-pal::before{content:"";position:absolute;top:-5px;inset-inline-start:12px;width:9px;height:9px;
+  background:var(--white);border-inline-start:1px solid var(--bd);border-top:1px solid var(--bd);transform:rotate(45deg)}
+.st-row{position:relative}
+.st-pal .sw{width:18px;height:18px;border-radius:50%;background:var(--c);border:2px solid var(--white);
+        box-shadow:0 0 0 1px var(--bd);cursor:pointer;flex:none}
+.st-pal .sw:hover{transform:scale(1.12)}
+.st-pal .sw.on{box-shadow:0 0 0 2px var(--navy)}
+.st-name{flex:1;min-width:0;font:inherit;font-size:13px;font-weight:600;border:1px solid transparent;border-radius:6px;padding:6px 9px;color:var(--ink)}
+.st-name:hover{border-color:var(--bd)}
+.st-name:focus{outline:none;border-color:var(--sky);background:var(--white)}
+.st-days{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);white-space:nowrap}
+.st-days input{width:46px;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:4px 6px;text-align:center}
+.st-used{font-size:11.5px;color:var(--ink3);min-width:64px;text-align:end}
+.st-mv{display:flex;gap:2px}
+.st-mv button{color:var(--ink3);font-size:12px;padding:2px 4px;border-radius:4px}
+.st-mv button:hover:not(:disabled){color:var(--navy)}
+.st-mv button:disabled{opacity:.25;cursor:default}
+.st-del{color:var(--line);font-size:13px;padding:2px 6px;border-radius:6px}
+.st-del:hover:not(:disabled){color:var(--red);background:var(--bad-bg)}
+.st-del:disabled{opacity:.4;cursor:not-allowed}
+.st-add{margin-top:10px;font-size:13px;font-weight:600;color:var(--sky);padding:0}
+.st-note{margin-top:10px;font-size:12px;color:var(--ink3)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1450px){
+  .nav{padding-inline:24px}
+  .strip{padding-inline:24px;gap:20px}
+  .strip .sum{gap:18px}
+  .wrap{padding:14px 0 16px;gap:14px;grid-template-columns:minmax(0,1fr) 430px;height:calc(100vh - 120px)}
+  .ph{padding:11px 18px 8px}
+  .ph h2{font-size:16px}
+  .ph input{width:170px}
+  .fbar{padding:8px 18px 10px}
+  .tb td,.tb th{padding:8px 9px}
+  /* בחלון צר התאים נשברים לשתי שורות במקום שהעמודות ייחתכו */
+  .tb td{white-space:normal}
+  .tb td .stg,.tb td .due,.tb td .num,.tb td .no,.tb td .today,.tb td .lnk,.tb td .sub{white-space:nowrap}
+  .tb td .sub{display:block;margin-inline-start:0;margin-top:2px}
+  td .lnk{display:block;margin-inline-start:0;margin-top:2px}
+  td.n small{display:none}
+  .tb th:first-child,.tb td:first-child{padding-inline-start:18px}
+  .tb th:last-child,.tb td:last-child{padding-inline-end:18px}
+  td.n small{display:none}
+  .al{font-size:12px}
+  .als{gap:8px}
+}
+/* חלון צר — כרטיס המטופל מצטמצם כדי שכל עמודות הטבלה יישארו על המסך */
+@media (max-width:1080px){
+  .wrap{grid-template-columns:minmax(0,1fr) 300px;gap:10px}
+  .tb td,.tb th{padding:8px 5px}
+  .tb th.alc,.tb td.alc{width:112px}
+  .al{font-size:11px;gap:5px}
+  /* "לפני N ימים" יורד — התאריך עצמו נשאר, והפירוט יושב בכרטיס */
+  .tb td .sub{display:none}
+  /* עמודת המטופל נשארת נעוצה כשהטבלה בכל זאת נגללת לרוחב */
+  .tb th:first-child,.tb td:first-child{position:sticky;inset-inline-end:0;background:var(--white);z-index:1}
+  .tb th:first-child{background:var(--surface2);z-index:2}
+  .tb tr.hl td:first-child{background:var(--row-sel)}
+  .tb tr:hover td:first-child{background:var(--row-hover)}
+}
+@media (max-width:1200px){
+  .wrap{grid-template-columns:minmax(0,1fr) 360px;gap:12px}
+  .tb th{white-space:normal}
+  .tb td,.tb th{padding:8px 7px;font-size:13.5px}
+  .card .hd h2{font-size:20px}
+}
+</style>
+<link rel="stylesheet" href="brand.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="today.html"><i>J<b>A</b></i>JAMPA</a>
+  <ul>
+    <li><a href="today.html">היום</a></li>
+    <li><a href="tasks.html">משימות</a></li>
+    <li><a class="on" href="clients.html">מטופלים</a></li>
+    <li><a href="meetings.html">פגישות</a></li>
+    <li><a href="memory.html">פרופילי מטופלים</a></li>
+  </ul>
+  <div class="me"><div><b>ענת שלו</b>פסיכולוגית קלינית</div><i>עש</i></div>
+</nav>
+
+<header class="strip">
+  <div><h1>מטופלים</h1></div>
+  <div class="date num">יום חמישי · 02.07.2026</div>
+  <div class="sep"></div>
+  <div class="sum" id="sum"></div>
+  <div class="spacer"></div>
+  <div class="now num"><b>10:54</b></div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===== table ===== -->
+  <section class="panel">
+    <div class="ph">
+      <h2>הקליניקה שלי</h2>
+      <span class="hint" id="hint"></span>
+      <div class="tools">
+        <select id="sort" title="סדר הצגה" onchange="setSort(this.value)">
+          <option value="due">סדר · יעד לסטטוס</option>
+          <option value="last">סדר · פגישה אחרונה</option>
+          <option value="next">סדר · פגישה הבאה</option>
+          <option value="name">סדר · שם המטופל</option>
+        </select>
+        <input id="q" type="search" placeholder="חיפוש מטופל או נושא טיפול" autocomplete="off" oninput="applyFilter()">
+        <button class="chip" onclick="stOpen()" title="הגדרת הסטטוסים — לכל הקליניקה">הגדרת סטטוסים</button>
+      </div>
+    </div>
+    <div class="fbar">
+      <div class="frow" id="tl"></div>
+    </div>
+    <div class="tw">
+    <table class="tb">
+      <thead><tr>
+        <th>מטופל</th><th>סטטוס</th><th>יעד</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th class="alc">תשומת לב</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+    </div>
+    <div class="empty" id="empty"></div>
+  </section>
+
+  <div class="ov" id="stOv" onclick="if(event.target===this)stClose()">
+    <div class="md" role="dialog" aria-modal="true" aria-label="הגדרת סטטוסים">
+      <div class="hd"><div><h3>הגדרת סטטוסים</h3><div class="s">מוגדר לכל הקליניקה · תמיד סטטוס אחד לכל מטופל</div></div><button class="x" onclick="stClose()" title="סגירה">×</button></div>
+      <div class="bd" id="stBody"></div>
+      <div class="ft"><button class="btn pri" id="stSaveBtn" onclick="stSave()">שמירה</button><button class="btn" onclick="stClose()">ביטול</button></div>
+    </div>
+  </div>
+  <aside class="left"><div class="card" id="card"></div></aside>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== נתוני הקליניקה ===== */
+/* הסטטוסים מוגדרים ברמת הקליניקה — ניתנים לעריכה בפופאפ ההגדרות */
+let STATUSES=[null,
+  {n:'ממתין לתיאום',  c:'#C6BFDE', days:5},
+  {n:'פגישה נקבעה',   c:'#9C89F2', days:5},
+  {n:'בטיפול פעיל',   c:'#8E4BA8', days:5},
+  {n:'סיכום לאישור',  c:'#B07A1E', days:5},
+  {n:'סיכום נשלח',    c:'#37306B', days:5},
+];
+const stName=s=>STATUSES[s]?STATUSES[s].n:'';
+const stColor=s=>STATUSES[s]?STATUSES[s].c:'#C6BFDE';
+/* ששת המטופלים של PATIENTS ב-jampa/js/data.js. pk = שלב בתוכנית הטיפול.
+   al.cf = דורש תשומת לב · al.sat = ירידה במעקב היומי. */
+const C=[
+ {id:'p1',n:'נועה ברק',pk:'חרדה חברתית',s:3,last:'26.06',next:{t:'היום 16:00'},al:{cf:1},mg:'שלב 4 · דפוסים',
+  tasks:['יומן מצבים חברתיים · באיחור','אישור סיכום — 26.06 · היום'],
+  mem:[['דפוסים','ביקורת עצמית מיד אחרי הצלחה — מנטרלת את החיזוק','30.06'],['כלים שעובדים','נשימות 4-7-8 — מיושמות מיוזמתה','26.06']]},
+ {id:'p3',n:'מיכל אדרי',pk:'ביטחון עצמי בעבודה',s:1,last:'19.06',next:{none:1},al:{cf:1},mg:'שלב 5 · הטמעה',
+  tasks:['לקבוע פגישת סיכום · היום'],
+  mem:[['נקודות מפנה','הציגה בישיבת צוות בלי הכנה מוקדמת','אתמול 15:20']]},
+ {id:'p4',n:'דניאל כהן',pk:'ויסות רגשי · מתבגרים',s:2,last:'27.06',next:{t:'היום 17:30'},al:{sat:1},mg:'שלב 3 · כלים',
+  tasks:['הסכמת הורים לטיפול קבוצתי · באיחור'],
+  mem:[['שיתוף פעולה','לא ענה לשתי הפניות האחרונות — שבוע ברציפות','אתמול 20:15']]},
+ {id:'p5',n:'שרה לוינסון',pk:'אבל ואובדן',s:4,last:'02.07',next:{t:'ראשון 09:00'},al:{},mg:'שלב 1 · בניית קשר',
+  tasks:['אישור סיכום — פגישה שבועית · היום'],
+  mem:[['דפוסים','נמנעת מלבקש עזרה — "לא רוצה להעמיס על הילדים"','היום 09:52']]},
+ {id:'p2',n:'יואב פרידמן',pk:'משבר זוגי',s:2,last:'29.06',next:{t:'מחר 10:00'},al:{},mg:'שלב 2 · מיפוי',
+  tasks:['דף תרגול — תקשורת זוגית · באיחור'],
+  mem:[['כלים שעובדים','שיחת 20 דקות בלי מסכים — בוצעה','29.06']]},
+ {id:'p6',n:'עומר גל',pk:'דחיינות ומיקוד',s:5,last:'25.06',next:{t:'רביעי 13:00'},al:{},mg:'שלב 4 · דפוסים',
+  tasks:[],
+  mem:[['סגנון עבודה','מגיב טוב למשימות קצרות עם דדליין ברור','25.06']]},
+ ...[['אורי שביט',1,'התקף חרדה','שלב 1 · בניית קשר','18.06','','ממתין לתיאום מ-25.06',1,'05.07'],
+     ['בר אלימלך',3,'הפרעת קשב · מבוגרים','שלב 3 · כלים','26.06','09.07 10:00','',0,'08.07'],
+     ['גיא נחמיאס',1,'לחץ בעבודה','שלב 1 · בניית קשר','05.06','','',0,'03.07'],
+     ['דנה אשכנזי',2,'דימוי גוף','שלב 2 · מיפוי','24.06','','',0,'06.07'],
+     ['הילה ורדי',4,'חרדת בחינות','שלב 4 · דפוסים','30.06','06.07 14:00','',0,'06.07'],
+     ['ורד סיטון',4,'משבר גירושין','שלב 3 · כלים','29.06','07.07 09:30','',0,'07.07'],
+     ['זיו מרציאנו',3,'ויסות כעס','שלב 3 · כלים','23.06','','',0,'05.07'],
+     ['חן בוזגלו',5,'אימון מנטלי · ספורט','שלב 6 · סיכום','01.07','','',0,'—'],
+     ['טליה רוזן',1,'טראומה מאירוע','שלב 1 · בניית קשר','11.06','','',1,'01.07'],
+     ['יהונתן מור',4,'ביטחון עצמי','שלב 4 · דפוסים','28.06','08.07 11:00','',0,'08.07'],
+     ['כרמל אביב',1,'חרדה חברתית','שלב 1 · בניית קשר','15.06','','',0,'04.07'],
+     ['ליאור בן דוד',2,'קשיי הורות','שלב 2 · מיפוי','25.06','','',0,'07.07'],
+     ['מאיה גפן',4,'דיכאון קל','שלב 4 · דפוסים','30.06','05.07 16:00','',0,'05.07'],
+     ['נדב שקד',3,'שחיקה תעסוקתית','שלב 3 · כלים','22.06','','',0,'04.07'],
+     ['סיון ארז',5,'אימון מנטלי · קריירה','שלב 6 · סיכום','01.07','','',0,'—'],
+     ['עדי פלד',4,'חרדת נהיגה','שלב 5 · הטמעה','27.06','10.07 10:00','',0,'10.07'],
+     ['פאני לוגסי',5,'אבל ואובדן','שלב 6 · סיכום','30.06','','',0,'—']]
+   .map(([n,s,pk,mg,last,nt,sub,late,due],i)=>({id:'q'+i,n,s,pk,mg,last,next:nt?{t:nt}:{none:1},lastSub:sub,al:late?{cf:1}:{},tasks:[],mem:[],due}))
+];
+C[0].due='03.07';C[1].due='02.07';C[2].due='04.07';C[3].due='03.07';C[4].due='05.07';C[5].due='—';
+C[0].ppl=[['נועה ברק','מטופלת · בת 34'],['ג׳מפה','ליווי בין פגישות']];C[0].since='03.2026';
+C[0].meets=[['02.07 16:00','פגישה שבועית','היום · הבריף נפתח'],['26.06','פגישה שבועית — חשיפה מדורגת','הוקלטה · סיכום לאישור'],['19.06','פגישה שבועית — עיבוד הישיבה','סיכום לאישור'],['05.06','שלב 3 — כלים להתמודדות','סיכום נשלח ✓']];
+C[0].memAll=[['דפוסים','הימנעות מחשיפה בקבוצה — הדפוס המרכזי','26.06'],['דפוסים','ביקורת עצמית מיד אחרי הצלחה','30.06'],['אמונות ליבה','"אם אני לא מושלמת, עדיף שלא אדבר בכלל"','08.05'],['כלים שעובדים','נשימות 4-7-8 — מיושמות מיוזמתה','26.06'],['סגנון עבודה','שבחים ישירים מפעילים ביקורת עצמית','30.06']];
+C[1].ppl=[['מיכל אדרי','מטופלת · בת 27']];C[1].since='01.2026';
+C[1].meets=[['19.06','פגישה שבועית — הטמעה','סיכום נשלח ✓'],['05.06','פגישה שבועית','סיכום נשלח ✓']];
+C[1].memAll=[['נקודות מפנה','הציגה בישיבת צוות בלי הכנה מוקדמת','אתמול 15:20'],['סטטוס','שבועיים בלי פגישה — מוכנה לפגישת סיכום','היום']];
+C[2].ppl=[['דניאל כהן','מטופל · בן 16'],['רונית כהן','אם · אישור הורים']];C[2].since='04.2026';
+C[2].meets=[['02.07 17:30','פגישה שבועית — מתבגרים','היום · הבריף לא נפתח'],['27.06','פגישה שבועית','סיכום נשלח ✓']];
+C[2].memAll=[['שיתוף פעולה','לא ענה לשתי הפניות האחרונות — שבוע ברציפות','אתמול 20:15'],['סגנון עבודה','נפתח רק ברבע השעה האחרון של הפגישה','27.06']];
+C[3].ppl=[['שרה לוינסון','מטופלת · בת 52']];C[3].since='06.2026';
+C[3].meets=[['02.07 09:00','פגישה שבועית — אבל ואובדן','הוקלטה · סיכום לאישור'],['30.06','פגישה ראשונה','סיכום נשלח ✓']];
+C[3].memAll=[['דפוסים','נמנעת מלבקש עזרה — "לא רוצה להעמיס על הילדים"','היום 09:52'],['ברית טיפולית','הביאה נושא מיוזמתה לראשונה','היום 09:53']];
+C[4].ppl=[['יואב פרידמן','מטופל · בן 41']];C[4].since='05.2026';
+C[4].meets=[['03.07 10:00','פגישה שבועית','מחר'],['29.06','פגישה שבועית — מיפוי צרכים','סיכום נשלח ✓']];
+C[4].memAll=[['כלים שעובדים','שיחת 20 דקות בלי מסכים — בוצעה','29.06']];
+C[5].ppl=[['עומר גל','מטופל · בן 29']];C[5].since='02.2026';
+C[5].meets=[['08.07 13:00','פגישה שבועית','בעוד שישה ימים'],['25.06','פגישה שבועית','סיכום נשלח ✓']];
+C[5].memAll=[['סגנון עבודה','מגיב טוב למשימות קצרות עם דדליין ברור','25.06']];
+
+/* ===== עזרים ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const byId=id=>C.find(x=>x.id===id);
+const TODAY='02.07', TODAY_D=new Date(2026,6,2);
+function cmpD(a,b){const [d1,m1]=a.split('.').map(Number),[d2,m2]=b.split('.').map(Number);return (m1-m2)||(d1-d2)}
+function dkey(s){if(!s)return 9999;if(String(s).indexOf('היום')>-1)return 702;const p=String(s).match(/(\d{2})\.(\d{2})/);return p?(+p[2])*100+(+p[1]):9999}
+function daysAgo(s){const p=String(s).match(/^(\d{2})\.(\d{2})$/);if(!p)return null;return Math.round((TODAY_D-new Date(2026,+p[2]-1,+p[1]))/864e5)}
+function paint(r){(r||document).querySelectorAll('[data-c]').forEach(el=>el.style.setProperty('--c',el.dataset.c))}
+const isLate=c=>!!(c.due&&c.due!=='—'&&c.s<STATUSES.length-1&&cmpD(c.due,TODAY)<0);
+const FLAGS={nom:c=>!!c.next.none, lt:isLate};
+const FLAGN={nom:'בלי פגישה הבאה', lt:'עברו יעד לסטטוס'};
+const ALN={cf:'דורש תשומת לב', sat:'לא עונה בשיחה'};
+
+/* ===== מצב המסך ===== */
+let F={stage:0,alert:null,flag:null,pk:null,mg:null};
+let SORT='due', SORTED=[], SELID=null, CARDTAB='ov';
+let PKS=[], MGS=[];
+const PKS0=[...new Set(C.map(c=>c.pk))], MGS0=[...new Set(C.map(c=>c.mg))];
+const qv=()=>$('#q').value.trim();
+const anyF=()=>!!(F.stage||F.alert||F.flag||F.pk||F.mg||qv());
+function match(c,skip){
+  if(skip!=='stage'&&F.stage&&c.s!==F.stage)return false;
+  if(skip!=='alert'&&F.alert&&!c.al[F.alert])return false;
+  if(skip!=='flag'&&F.flag&&!FLAGS[F.flag](c))return false;
+  if(skip!=='pk'&&F.pk&&c.pk!==F.pk)return false;
+  if(skip!=='mg'&&F.mg&&c.mg!==F.mg)return false;
+  const s=qv(); if(s&&!(c.n.indexOf(s)>-1||c.id.indexOf(s)>-1))return false;
+  return true;
+}
+const SORTS={
+  due:(a,b)=>dkey(a.due)-dkey(b.due)||a.n.localeCompare(b.n,'he'),
+  last:(a,b)=>dkey(a.last)-dkey(b.last)||a.n.localeCompare(b.n,'he'),
+  next:(a,b)=>dkey(a.next.t)-dkey(b.next.t)||a.n.localeCompare(b.n,'he'),
+  name:(a,b)=>a.n.localeCompare(b.n,'he')
+};
+
+/* ===== טבלה ===== */
+function row(c){
+  const ag=daysAgo(c.last);
+  const lastSub=c.lastSub?c.lastSub:(ag!==null?'לפני '+ag+' ימים':'');
+  const last=c.last&&c.last!=='—'
+    ? `<span class="num">${c.last}</span>${lastSub?`<span class="sub">${esc(lastSub)}</span>`:''}`
+    : `<span class="sub">טרם נפגשתם</span>`;
+  let next='';
+  if(c.next.t)next=`<span class="today num">${esc(c.next.t)}</span>`;
+  else next=`<span class="no">לא נקבעה</span><a class="lnk" href="#" onclick="event.stopPropagation();return sendLink('${c.id}')">הצעת מועדים</a>`;
+  const late=isLate(c);
+  const due=c.s===STATUSES.length-1?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לסטטוס הבא — לחיצה לעריכה"><span class="num">${c.due||'—'}</span></span>`;
+  const al=[c.al.cf?`<span class="al bad">${ALN.cf}</span>`:'',c.al.sat?`<span class="al warn">${ALN.sat}</span>`:''].join('');
+  return `<tr data-id="${c.id}" tabindex="0" role="button" onclick="openCard('${c.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCard('${c.id}')}">
+    <td class="n">${esc(c.n)}<small>${esc(c.pk)}</small><a class="dash" href="#" onclick="event.stopPropagation();parent.postMessage({hkAdvOpen:'${c.id}'},'*');return false" title="הכרטיס של המטופל">↗</a></td>
+    <td class="stc"><button class="stg" data-c="${stColor(c.s)}" title="החלפת סטטוס" onclick="event.stopPropagation();rowStat(this,'${c.id}')">${esc(stName(c.s))}<i class="cv"></i></button></td>
+    <td class="duec">${due}</td>
+    <td class="num">${last}</td>
+    <td>${next}</td>
+    <td class="alc"><div class="als">${al}</div></td>
+  </tr>`;
+}
+function render(){
+  const list=C.slice().sort(SORTS[SORT]);
+  SORTED=list.map(c=>c.id);
+  $('#tb').innerHTML=list.map(row).join('');
+  paint($('#tb'));
+  applyFilter();
+}
+function applyFilter(){
+  const tb=$('#tb'), rows=[...tb.querySelectorAll('tr')];
+  let n=0; const out=[],dim=[];
+  rows.forEach(tr=>{
+    const c=byId(tr.dataset.id); const ok=!!c&&match(c);
+    tr.classList.toggle('dim',!ok); tr.classList.remove('first');
+    tr.classList.toggle('hl',tr.dataset.id===SELID);
+    (ok?out:dim).push(tr); if(ok)n++;
+  });
+  if(anyF()){ out.concat(dim).forEach(tr=>tb.appendChild(tr)); if(dim.length&&out.length)dim[0].classList.add('first'); }
+  else SORTED.forEach(id=>{const tr=rows.find(r=>r.dataset.id===id); if(tr)tb.appendChild(tr)});
+  renderFilters(); renderHint(n); renderStrip(); renderEmpty(n);
+}
+function renderHint(n){
+  const p=[];
+  if(F.stage)p.push(stName(F.stage));
+  if(F.alert)p.push(ALN[F.alert]);
+  if(F.flag)p.push(FLAGN[F.flag]);
+  if(F.pk)p.push(F.pk);
+  if(F.mg)p.push(F.mg);
+  if(qv())p.push('"'+qv()+'"');
+  $('#hint').innerHTML=p.length?`<b>${esc(p.join(' · '))}</b> · ${n} מתוך ${C.length}`:`${C.length} מטופלים`;
+}
+function renderEmpty(n){
+  const e=$('#empty'); e.classList.toggle('on',n===0);
+  document.querySelector('table.tb').classList.toggle('none',n===0);
+  if(n===0)e.innerHTML=`<b>אין מטופל שתואם את הסינון</b><div>${qv()?'לא נמצא מטופל או נושא טיפול שמתאימים ל"'+esc(qv())+'"':'צירוף המסננים הנוכחי לא מחזיר אף מטופל'}</div><button class="btn" onclick="resetAll()">ניקוי כל המסננים</button>`;
+}
+function renderStrip(){
+  /* תשומת הלב כמשפט — רק שתי המילים צבועות ולחיצות (סגול טיפולי · צהוב שיתוף פעולה) */
+  const cf=C.filter(c=>c.al&&c.al.cf).length, sat=C.filter(c=>c.al&&c.al.sat).length;
+  const many=n=>n===1?'לקוח אחד':`<b class="num">${n}</b> לקוחות`;
+  const sent=[];
+  if(cf) sent.push(`<span class="sen">${many(cf)} <button class="alw cf ${F.alert==='cf'?'on':''}" onclick="alertGo('cf')">דורשים תשומת לב</button></span>`);
+  if(sat) sent.push(`<span class="sen">${many(sat)} <button class="alw sat ${F.alert==='sat'?'on':''}" onclick="alertGo('sat')">שלא עונים בשיחה</button></span>`);
+  $('#sum').innerHTML=sent.join('<span class="vs"></span>');
+}
+function renderFilters(){
+  const cnt={}; C.forEach(c=>{if(match(c,'stage'))cnt[c.s]=(cnt[c.s]||0)+1});
+  $('#tl').innerHTML=`<span class="lbl">סטטוס</span>`
+    +STATUSES.map((s,i)=>s?`<button class="chip stat ${F.stage===i?'on':''}" data-c="${s.c}" onclick="setStage(${i})"><span class="dot"></span>${esc(s.n)}<b class="num">${cnt[i]||0}</b></button>`:'').join('')
+    +`<a class="reset ${anyF()?'on':''}" href="#" onclick="return resetAll()">ניקוי המסננים</a>`;
+  PKS=[...new Set(C.map(c=>c.pk))]; MGS=[...new Set(C.map(c=>c.mg))];
+  paint($('#tl'));
+}
+function setStage(s){F.stage=(F.stage===s)?0:s;applyFilter();return false}
+function alertGo(k){F.alert=(F.alert===k)?null:k;applyFilter();return false}
+function flagGo(k){F.flag=(F.flag===k)?null:k;applyFilter();return false}
+function pkGo(i){const v=PKS[i];F.pk=(F.pk===v)?null:v;applyFilter();return false}
+function mgGo(i){const v=MGS[i];F.mg=(F.mg===v)?null:v;applyFilter();return false}
+function resetAll(){F={stage:0,alert:null,flag:null,pk:null,mg:null};$('#q').value='';applyFilter();return false}
+function setSort(v){SORT=SORTS[v]?v:'due';render()}
+function sendLink(id){const c=byId(id);toast('לינק לקביעת פגישה נשלח — '+c.n);return false}
+
+/* ===== יעד לסטטוס ===== */
+function dueEdit(el,id){
+  const c=byId(id); if(el.querySelector('input'))return;
+  el.innerHTML=`<input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter'){this.blur()}if(event.key==='Escape'){event.stopPropagation();this.value='__';this.blur()}" onblur="dueSet('${id}',this.value)">`;
+  el.querySelector('input').focus();
+}
+function dueSet(id,v){
+  const c=byId(id);
+  if(v!=='__'&&/^\d{2}\.\d{2}$/.test(v.trim())){c.due=v.trim();toast('תאריך היעד עודכן — '+c.n+' · '+c.due)}
+  render(); if(SELID===id)openCard(id);
+}
+
+/* ===== כרטיס הלקוח ===== */
+function openCard(id){
+  const c=byId(id); if(!c)return false; SELID=id;
+  const al=(c.al.cf||c.al.sat)
+    ? `<div class="als">${c.al.cf?`<span class="al bad">${ALN.cf}</span>`:''}${c.al.sat?`<span class="al warn">${ALN.sat}</span>`:''}</div>`
+    : '<span class="none">אין</span>';
+  let next='—';
+  if(c.next.t)next=`<span class="today num">${esc(c.next.t)}</span>`;
+  else next=`<span class="no">לא נקבעה</span> <a class="lnk" href="#" onclick="return sendLink('${c.id}')">הצעת מועדים</a>`;
+  const ag=daysAgo(c.last);
+  const lastV=(c.last&&c.last!=='—')
+    ? `<span class="num">${c.last}</span>${ag!==null?`<span class="sub">לפני ${ag} ימים</span>`:''}${c.lastSub?`<div class="sub">${esc(c.lastSub)}</div>`:''}`
+    : '<span class="none">טרם נפגשתם</span>';
+  const tk=(list,pad)=>list.length
+    ? list.map((t,i)=>`<label class="tk ${c.tdone&&c.tdone[i]?'done':''}"><input type="checkbox" ${c.tdone&&c.tdone[i]?'checked':''} onchange="tkDone('${c.id}',${i},this.checked)">${esc(t)}</label>`).join('')
+    : (pad?'<div class="none pad">אין משימות פתוחות</div>':'<span class="none">אין משימות פתוחות</span>');
+  const stg=`<div class="stage-ed">${STATUSES.map((s,i)=>s?`<button class="chip stat ${i===c.s?'on':''}" data-c="${s.c}" onclick="stageSet('${c.id}',${i})"><span class="dot"></span>${esc(s.n)}</button>`:'').join('')}</div>
+    ${c.s<STATUSES.length-1?`<div class="duerow ${isLate(c)?'late':''}">${isLate(c)?'עבר את היעד':'יעד לסטטוס הבא'}<input value="${c.due==='—'?'':c.due}" placeholder="dd.mm" onkeydown="if(event.key==='Enter')this.blur()" onchange="dueSet('${c.id}',this.value)"><span class="df" title="ברירת המחדל נקבעת בהגדרות המשרד">ברירת מחדל · ${(STATUSES[c.s]||{}).days||5} ימים</span></div>`:''}`;
+  const tab=t=>t===CARDTAB?'on':'';
+  $('#card').innerHTML=`
+    <div class="hd dark"><h3>${esc(c.n)}</h3><div class="s">${esc(c.pk)} · ${esc(c.mg)}</div>
+      <div class="stgblk">${stg}</div>
+    </div>
+    <div class="tabs"><button class="${tab('ov')}" data-t="ov" onclick="cardTab(this)">סקירה</button><button class="${tab('tk')}" data-t="tk" onclick="cardTab(this)">משימות <i>${c.tasks.length}</i></button><button class="${tab('mt')}" data-t="mt" onclick="cardTab(this)">פגישות <i>${(c.meets||[]).length}</i></button><button class="${tab('mm')}" data-t="mm" onclick="cardTab(this)">זיכרון <i>${(c.memAll||c.mem).length}</i></button></div>
+    <div class="bd tab ${tab('ov')}" data-t="ov">
+      <div class="row"><span class="k">בטיפול מאז</span><div class="v num">${c.since||'—'}</div></div>
+      <div class="row"><span class="k">אנשים</span><div class="v">${(c.ppl||[]).map(p=>`<div class="pp"><b>${esc(p[0])}</b><span>${esc(p[1])}</span></div>`).join('')||'<span class="none">—</span>'}</div></div>
+      <div class="row"><span class="k">פגישה אחרונה</span><div class="v">${lastV}</div></div>
+      <div class="row"><span class="k">פגישה הבאה</span><div class="v">${next}</div></div>
+      <div class="row"><span class="k">התראות</span><div class="v">${al}</div></div>
+      <div class="row"><span class="k">משימות פתוחות</span><div class="v">${tk(c.tasks,false)}</div></div>
+    </div>
+    <div class="bd tab ${tab('tk')}" data-t="tk">${tk(c.tasks,true)}<a class="addlnk" href="tasks.html?c=${c.id}">+ משימה למטופל</a></div>
+    <div class="bd tab ${tab('mt')}" data-t="mt">${(c.meets||[]).length?c.meets.map(m=>`<div class="mt"><span class="num d">${esc(m[0])}</span><div><b>${esc(m[1])}</b><span>${esc(m[2])}</span></div></div>`).join(''):'<div class="none pad">אין פגישות</div>'}</div>
+    <div class="bd tab ${tab('mm')}" data-t="mm">${(c.memAll||c.mem).length?(c.memAll||c.mem).map(m=>`<div class="mu"><span class="m">${esc(m[0])}</span><span>${esc(m[1])}</span><span class="m num">${esc(m[2])}</span></div>`).join(''):'<div class="none pad">עוד לא נלמד כלום</div>'}</div>
+    <div class="ft"><a class="btn pri" href="#" onclick="parent.postMessage({hkAdvOpen:'${c.id}'},'*');return false">הכרטיס של המטופל ←</a><a class="btn" href="memory.html?c=${c.id}">הפרופיל המלא</a><a class="btn" href="meetings.html?c=${c.id}">כל הפגישות</a></div>`;
+  paint($('#card'));
+  document.querySelectorAll('#tb tr').forEach(tr=>tr.classList.toggle('hl',tr.dataset.id===id));
+  return false;
+}
+function cardTab(b){
+  CARDTAB=b.dataset.t;
+  [...b.parentNode.children].forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('#card .tab').forEach(x=>x.classList.toggle('on',x.dataset.t===CARDTAB));
+}
+function tkDone(id,i,on){
+  const c=byId(id); c.tdone=c.tdone||{}; c.tdone[i]=on;
+  toast(on?'סומן כבוצע — '+c.tasks[i]:'הסימון בוטל');
+  openCard(id);
+}
+/* תפריט הסטטוסים על השורה — אותם טוקנים בדיוק כמו בסינון ובכרטיס */
+let STMENU=null;
+function stMenuClose(){ if(STMENU){STMENU.remove();STMENU=null;} }
+function rowStat(btn,id){
+  const open = STMENU && STMENU.dataset.id===id;
+  stMenuClose(); if(open) return;
+  const c=C.find(x=>x.id===id); if(!c) return;
+  const m=document.createElement('div'); m.className='stmenu'; m.dataset.id=id;
+  m.innerHTML=STATUSES.map((s,i)=>s?`<button class="chip stat ${i===c.s?'on':''}" data-c="${s.c}" onclick="event.stopPropagation();stageSet('${id}',${i});stMenuClose()"><span class="dot"></span>${esc(s.n)}</button>`:'').join('');
+  btn.closest('td').appendChild(m); paint(m); STMENU=m;
+}
+document.addEventListener('click',stMenuClose);
+document.addEventListener('scroll',stMenuClose,true);
+function stageSet(id,s){const c=byId(id);c.s=s;toast(c.n+' — '+stName(s));render();openCard(id)}
+
+/* ===== הגדרת הסטטוסים (יועץ אדמין) ===== */
+const ST_PALETTE=['#C4CED8','#39ABE2','#6B4FA0','#13895b','#0C4068','#E8635A','#c98404','#0FA3A3'];
+let ST_DRAFT=null;
+function stOpen(){
+  ST_DRAFT=STATUSES.slice(1).map((s,i)=>({...s,_i:i+1}));
+  stRender(); $('#stOv').classList.add('on'); $('#stSaveBtn').focus();
+}
+function stClose(){ $('#stOv').classList.remove('on'); ST_DRAFT=null; ST_PICK=null; }
+function stRender(){
+  $('#stBody').innerHTML=`<div class="st-list">
+    ${ST_DRAFT.map((s,i)=>{
+      const used=C.filter(c=>c.s===s._i).length;
+      return `<div class="st-row">
+        <span class="st-ord num">${i+1}</span>
+        <span class="st-pick">
+          <button class="st-dot" data-c="${s.c}" title="בחירת צבע" onclick="stPick(${i})"></button>
+          <span class="st-pal ${ST_PICK===i?'on':''}">${ST_PALETTE.map(c=>`<button class="sw ${c===s.c?'on':''}" style="--c:${c}" title="${c}" onclick="stColorSet(${i},'${c}')"></button>`).join('')}</span>
+        </span>
+        <input class="st-name" value="${esc(s.n)}" oninput="ST_DRAFT[${i}].n=this.value">
+        <label class="st-days">יעד <input type="number" min="1" max="31" value="${s.days}" oninput="ST_DRAFT[${i}].days=+this.value||5"> ימים</label>
+        <span class="st-used">${used?used+' לקוחות':''}</span>
+        <span class="st-mv"><button ${i===0?'disabled':''} title="העלאה" onclick="stMove(${i},-1)">↑</button><button ${i===ST_DRAFT.length-1?'disabled':''} title="הורדה" onclick="stMove(${i},1)">↓</button></span>
+        <button class="st-del" ${used?'disabled title="יש לקוחות בסטטוס הזה — קודם להעביר אותם"':'title="מחיקה"'} onclick="stDel(${i})">✕</button>
+      </div>`;}).join('')}
+    </div>
+    <button class="st-add" onclick="stAdd()">+ סטטוס חדש</button>
+    <div class="st-note">היעד קובע את ברירת המחדל של "יעד לסטטוס הבא" — היועץ יכול לדרוס פר לקוח.</div>`;
+  paint($('#stBody'));
+}
+let ST_PICK=null;
+function stPick(i){ ST_PICK=(ST_PICK===i)?null:i; stRender(); }
+function stColorSet(i,c){ ST_DRAFT[i].c=c; ST_PICK=null; stRender(); }
+function stMove(i,d){ const a=ST_DRAFT.splice(i,1)[0]; ST_DRAFT.splice(i+d,0,a); stRender(); }
+function stDel(i){ ST_DRAFT.splice(i,1); stRender(); }
+function stAdd(){ ST_DRAFT.push({n:'סטטוס חדש', c:ST_PALETTE[ST_DRAFT.length%ST_PALETTE.length], days:5}); stRender(); }
+function stSave(){
+  if(ST_DRAFT.some(s=>!s.n.trim())){ toast('לכל סטטוס צריך שם'); return; }
+  const map={}; ST_DRAFT.forEach((s,i)=>{if(s._i)map[s._i]=i+1});
+  STATUSES=[null,...ST_DRAFT.map(s=>({n:s.n.trim(),c:s.c,days:s.days}))];
+  C.forEach(c=>{if(map[c.s])c.s=map[c.s]});
+  if(F.stage)F.stage=map[F.stage]||0;
+  stClose(); render(); if(SELID)openCard(SELID);
+  toast('הסטטוסים עודכנו — לכל המשרד');
+}
+
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if($('#stOv').classList.contains('on')){stClose();return}
+});
+/* חוזה ה-URL: ?c= לקוח · ?q= חיפוש חופשי · ?f= מסנן (שם סטטוס / התראה / דגל) */
+const P=new URLSearchParams(location.search);
+if(P.get('q'))$('#q').value=P.get('q');
+const pf=P.get('f');
+if(pf){
+  if(FLAGN[pf])F.flag=pf;
+  else if(ALN[pf])F.alert=pf;
+  else{const i=STATUSES.findIndex(s=>s&&s.n===pf); if(i>0)F.stage=i;
+       else if(PKS0.indexOf(pf)>-1)F.pk=pf; else if(MGS0.indexOf(pf)>-1)F.mg=pf;}
+}
+render();
+/* ברירת מחדל: הלקוח הראשון בסדר התצוגה — הכרטיס אף פעם לא ריק */
+const pc=P.get('c');
+openCard(pc&&C.some(c=>c.id===pc)?pc:SORTED[0]);
+</script>
+<style id="hk-embed-css">
+html.embed .nav{display:none !important}
+html.embed body{background:transparent}
+html.embed .strip{border-radius:0}
+html.embed .wrap{height:calc(100vh - 68px)}
+</style>
+<script id="hk-embed-js">
+/* ===== הטמעה במערכת =====
+   ?embed=1 — הדף נטען בתוך המערכת: הניווט הפנימי מוסתר (הסרגל של המערכת מחליף אותו),
+   והדף מדווח את גובהו כלפי חוץ כדי שהמסגרת תיפתח לכל התוכן. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  var last=0;
+  function report(){
+    var h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+    /* מסך נעול-גובה — המערכת מותחת את המסגרת לגובה החלון */
+    parent.postMessage({hkAdvLock:'clients'},'*'); last=h;
+  }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  new MutationObserver(report).observe(document.documentElement,{subtree:true,childList:true,attributes:true});
+  setInterval(report,1200);
+  /* ניווט פנימי בין המסכים — מבקש מהמערכת להחליף מסך במקום לנווט בתוך המסגרת */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href$=".html"]'); if(!a) return;
+    var f=a.getAttribute('href').split('/').pop().split('?')[0].replace('.html','');
+    e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
+  },true);
+})();
+</script>
+</body>
+</html>

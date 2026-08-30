@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>נועה ברק · דשבורד · JAMPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
+<style>
+/* =====================================================================
+   דשבורד המטופל — המקבילה של דשבורד החברה ב-HK.
+   שם: הפס = פעולות · תקציר הבוקר = הנרטיב · הווידג'טים = הראיות.
+   כאן אותו מבנה בדיוק, רק שהראיות אינן מספרים אלא מה שקורה לאדם:
+   הבריף מפנה אל הכרטיס שמחזיק אותו, בדיוק כמו שם.
+   ===================================================================== */
+body{font-family:Rubik,system-ui,sans-serif}
+
+/* הבריף — 60 השניות שלפני הפגישה */
+.brief{position:relative;background:#fff;border:1px solid var(--cardbd);border-radius:14px;
+  box-shadow:var(--lift);padding:18px 24px;margin-bottom:20px;display:flex;align-items:stretch;gap:30px}
+.brief::before{content:"";position:absolute;inset-inline-start:0;top:16px;bottom:16px;width:3px;
+  border-radius:0 99px 99px 0;background:var(--coral)}
+.brief h2{font-size:12px;font-weight:600;color:var(--ink3);letter-spacing:.3px;margin-bottom:7px}
+.brief .main{flex:1;min-width:0}
+.brief p{font-size:16.5px;line-height:1.78;color:var(--ink);font-weight:300}
+.brief p b{font-weight:500;color:var(--navy)}
+.brief .jump{font-weight:500;color:var(--navy);cursor:pointer;border-bottom:1px solid transparent}
+.brief .jump:hover{border-bottom-color:currentColor}
+.brief .stamp{margin-inline-start:auto;flex:none;width:236px;font-size:11.5px;color:var(--faint);
+  border-inline-start:1px solid var(--cardbd);padding-inline-start:22px;line-height:1.75}
+.brief .stamp .w{color:var(--ink2);font-weight:500}
+.brief .stamp a{display:inline-block;margin-top:9px;color:var(--sky);font-weight:500;font-size:12px}
+.brief .stamp a:hover{text-decoration:underline}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start}
+@media(min-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.panel.pulse{animation:pl 1.5s ease-out}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(156,137,242,.55)}100%{box-shadow:0 0 0 16px rgba(156,137,242,0)}}
+.ph .ask{margin-inline-start:auto;font-size:11.5px;font-weight:500;color:var(--sky);opacity:.6;
+  display:inline-flex;align-items:center;gap:4px;transition:opacity .15s}
+.panel:hover .ph .ask{opacity:1}
+.ph .ask:hover{text-decoration:underline}
+
+/* מהשיחה השבוע — מה שנועה כתבה בין הפגישות. זה מה שג'מפה באמת אוספת:
+   הודעות, לא מדידות. אין כאן ציון ואין סולם — יש מילים שלה. */
+.said .row{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--tint)}
+.said .row:last-child{border-bottom:0;padding-bottom:0}
+.said .row:first-child{padding-top:0}
+.said .wh{flex:none;width:52px;font-size:11px;color:var(--faint);padding-top:3px;white-space:nowrap}
+.said .tx{flex:1;min-width:0;font-size:13.5px;color:var(--ink);line-height:1.62}
+.said .row.her .tx{color:var(--navy);font-weight:400}
+.said .row.sys .tx{color:var(--ink2);font-weight:300}
+.said .tag{display:inline-block;margin-top:5px;font-size:10.5px;font-weight:500;padding:2px 9px;
+  border-radius:99px;background:var(--chip);color:#5b3fd6}
+.said-f{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;
+  border-top:1px solid var(--tint);font-size:12.5px;color:var(--ink2)}
+
+/* דפוסים — הליבה של ג'מפה: מה חוזר, ועל מה כבר עבדנו */
+.pat{display:flex;flex-direction:column}
+.pat .row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--tint)}
+.pat .row:last-child{border-bottom:0;padding-bottom:0}
+.pat .row:first-child{padding-top:0}
+.pat .tx{flex:1;min-width:0}
+.pat b{display:block;font-size:13.5px;font-weight:500;color:var(--navy);margin-bottom:3px}
+.pat span{font-size:12.5px;color:var(--ink2);line-height:1.65}
+.pat .tag{flex:none;align-self:flex-start;font-size:10.5px;font-weight:500;padding:3px 9px;
+  border-radius:99px;background:var(--chip);color:var(--coral-ink,#5b3fd6)}
+.pat .tag.new{background:#FDF4E3;color:#8A6A12}
+
+/* משימות בין הפגישות */
+.tsk .row{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--tint)}
+.tsk .row:last-child{border-bottom:0;padding-bottom:0}
+.tsk .row:first-child{padding-top:0}
+.tsk .mk{flex:none;width:17px;height:17px;border-radius:50%;border:1.5px solid var(--bd);margin-top:1px;
+  display:grid;place-items:center;font-size:10px;color:#fff}
+.tsk .row.done .mk{background:var(--good);border-color:var(--good)}
+.tsk .row.late .mk{border-color:#E8A13A}
+.tsk .tx{flex:1;min-width:0;font-size:13.5px;color:var(--navy);line-height:1.5}
+/* הקו החוצה על הכותרת בלבד — text-decoration יורש לצאצאים ואי אפשר לבטלו
+   מלמטה, ולכן הוא יושב על u ולא על השורה כולה */
+.tsk .row.done u{color:var(--ink3);text-decoration:line-through}
+.tsk u{text-decoration:none}
+.tsk .mt{display:block;font-size:11.5px;color:var(--ink3);margin-top:3px}
+.tsk .row.late .mt{color:#8A6A12}
+
+/* הפגישה האחרונה */
+.last p{font-size:13.5px;line-height:1.75;color:var(--ink);font-weight:300}
+.last p+p{margin-top:9px}
+.last .q{border-inline-start:2px solid var(--chip);padding-inline-start:12px;color:var(--ink2);font-style:normal}
+.last .ft{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid var(--tint)}
+
+/* פתיחת הפגישה — ההמלצה המעשית */
+.open ol{list-style:none;counter-reset:o}
+.open li{counter-increment:o;position:relative;padding:0 30px 13px 0;font-size:13.5px;
+  line-height:1.7;color:var(--ink)}
+.open li:last-child{padding-bottom:0}
+.open li::before{content:counter(o);position:absolute;inset-inline-start:0;top:1px;width:20px;height:20px;
+  border-radius:50%;background:var(--chip);color:var(--coral-ink,#5b3fd6);font-size:11px;font-weight:600;
+  display:grid;place-items:center}
+.open li b{font-weight:500;color:var(--navy)}
+</style>
+</head>
+<body data-cli="dash">
+<main class="wrap">
+
+  <section class="brief">
+    <div class="main">
+      <h2>הבריף שלך לפגישה — 60 שניות</h2>
+      <p>נועה מגיעה היום ב-16:00 אחרי שבוע חזק:
+         <span class="jump" role="button" tabindex="0" data-go="said">היא נשארה בישיבת הצוות ואמרה משפט</span>,
+         ובפעם הראשונה כתבה זאת מיוזמתה בזמן אמת. מיד אחרי זה הגיעה
+         <span class="jump" role="button" tabindex="0" data-go="pat">ביקורת עצמית</span> —
+         דפוס חדש שמנטרל לה את החיזוק, והיא עצמה ביקשה הבוקר להעלות אותו.
+         מנגד, <span class="jump" role="button" tabindex="0" data-go="tsk">יומן המצבים החברתיים
+         לא מולא</span> — שבוע שני ברציפות, וזו אותה הימנעות.</p>
+    </div>
+    <aside class="stamp">
+      <div class="w">נכתב הבוקר ב-06:00</div>
+      <div>מהפרופיל של נועה, מ-12 הפגישות ומהשיחה שביניהן — לא מהתמלול הגולמי</div>
+      <div class="w" style="margin-top:7px">עודכן 09:41, אחרי ההודעה שלה בוואטסאפ</div>
+      <a href="ai.html?q=מה כדאי לי לשים לב אליו אצל נועה היום">להמשיך עם העוזר ←</a>
+    </aside>
+  </section>
+
+  <div class="grid">
+
+    <article class="panel" id="said">
+      <div class="ph"><h3>מהשיחה השבוע</h3>
+        <a class="ask" href="messages.html">לשיחה המלאה</a></div>
+      <div class="pb said">
+        <div class="row her"><span class="wh">שני</span><div class="tx">"הנשימות. אני עושה אותן בדרך לעבודה וזה עוזר לי להיכנס יותר רגועה"</div></div>
+        <div class="row her"><span class="wh">שלישי</span><div class="tx">"אמרתי משפט אחד. הלב דפק חזק אבל לא יצאתי"
+          <span class="tag">נקודת מפנה</span></div></div>
+        <div class="row her"><span class="wh">שלישי</span><div class="tx">"אני גם חושבת שיכולתי להגיד את זה יותר טוב"
+          <span class="tag">ביקורת עצמית</span></div></div>
+        <div class="row her"><span class="wh">היום</span><div class="tx">"למה אחרי שמשהו מצליח לי אני מיד מוצאת מה היה לא בסדר בו"
+          <span class="tag">ביקשה להעלות</span></div></div>
+        <div class="said-f"><span class="flag ok">ענתה על כל הפניות השבוע — ושתיים מהן ביוזמתה</span></div>
+      </div>
+    </article>
+
+    <article class="panel" id="pat">
+      <div class="ph"><h3>דפוסים שזוהו</h3>
+        <a class="ask" href="ai.html?q=אילו דפוסים חוזרים אצל נועה ואיך לעבוד עליהם?">שאל את העוזר</a></div>
+      <div class="pb pat">
+        <div class="row"><div class="tx"><b>הימנעות מחשיפה בקבוצה</b>
+          <span>עולה ב-9 מתוך 12 הפגישות. מתחזק לפני ישיבות עם המנהל, נחלש כשיש הכנה מראש.</span></div>
+          <span class="tag">דפוס מרכזי</span></div>
+        <div class="row"><div class="tx"><b>ביקורת עצמית אחרי הצלחה</b>
+          <span>אחרי כל אירוע שעבר טוב היא מוצאת מה היה אפשר לעשות אחרת — מנטרל את החיזוק.</span></div>
+          <span class="tag new">חדש · 3 פגישות</span></div>
+        <div class="row"><div class="tx"><b>ויסות דרך הגוף עובד</b>
+          <span>נשימות מקצרות את האפיזודה. זה הכלי היחיד שהיא מיישמת מיוזמתה.</span></div>
+          <span class="tag">חוזק</span></div>
+      </div>
+    </article>
+
+    <article class="panel" id="tsk">
+      <div class="ph"><h3>משימות בין הפגישות</h3>
+        <a class="ask" href="ai.html?q=למה נועה לא ממלאת את יומן המצבים החברתיים?">שאל את העוזר</a></div>
+      <div class="pb tsk">
+        <div class="row done"><span class="mk">✓</span><div class="tx"><u>תרגול נשימות 4-7-8 — פעמיים ביום</u>
+          <span class="mt">בוצע 4 מתוך 7 ימים · דיווחה מיוזמתה</span></div></div>
+        <div class="row late"><span class="mk"></span><div class="tx"><u>יומן מצבים חברתיים — שלושה אירועים השבוע</u>
+          <span class="mt">לא מולא · שבוע שני ברציפות · יעד 30.06</span></div></div>
+        <div class="row done"><span class="mk">✓</span><div class="tx"><u>לומר משפט אחד בישיבת הצוות</u>
+          <span class="mt">בוצע · דיווחה שזה עבר מהר יותר מהצפוי</span></div></div>
+      </div>
+    </article>
+
+    <article class="panel" id="last">
+      <div class="ph"><h3>מהפגישה האחרונה · 26.06</h3>
+        <a class="ask" href="ai.html?q=מה סוכם בפגישה האחרונה עם נועה?">שאל את העוזר</a></div>
+      <div class="pb last">
+        <p>עבדנו על הפער בין איך שהיא חווה את עצמה בישיבה לבין מה שקרה בפועל.
+           היא זיהתה לבד שהיא מתארת את עצמה במילים שלא הייתה משתמשת בהן לגבי אף אחד אחר.</p>
+        <p class="q">"אני יודעת שזה לא נורא. פשוט בזמן אמת אני לא מצליחה להזכיר לעצמי את זה."</p>
+        <div class="ft"><a class="btn pln" href="meetings.html">לסיכום המלא</a>
+          <span class="muted" style="font-size:12px">נשלח לנועה · נקרא 26.06</span></div>
+      </div>
+    </article>
+
+    <article class="panel" id="open" style="grid-column:1/-1">
+      <div class="ph"><h3>איך לפתוח היום</h3>
+        <span class="muted" style="font-size:12px">הצעה — מהדפוסים ומהשבוע שעבר</span>
+        <a class="ask" href="ai.html?q=תציע לי דרכים לפתוח את הפגישה עם נועה היום">שאל את העוזר</a></div>
+      <div class="pb open">
+        <ol>
+          <li>לפתוח מהחיזוק, לא מהחוסר — <b>היא נשארה בחדר ואמרה משפט</b>. זו הפעם הראשונה שהיא מדווחת על כך מיוזמתה.</li>
+          <li>לגעת בביקורת העצמית שהגיעה מיד אחרי — <b>הדפוס החדש</b> שמנטרל לה את ההצלחות. שווה לתת לו שם משותף.</li>
+          <li>את היומן שלא מולא לברר בסקרנות ולא כמשימה שנכשלה — <b>ההימנעות מהיומן היא אותה הימנעות</b> שאנחנו עובדות עליה.</li>
+        </ol>
+      </div>
+    </article>
+
+  </div>
+</main>
+
+<script src="cli.js"></script>
+<script>
+hkChrome('dash');
+
+/* מהבריף אל הראיה — בדיוק כמו בדשבורד של HK */
+document.querySelectorAll('.brief .jump').forEach(el=>{
+  const go=()=>{const p=document.getElementById(el.dataset.go);if(!p)return;
+    p.scrollIntoView({behavior:'smooth',block:'center'});
+    p.classList.remove('pulse');void p.offsetWidth;p.classList.add('pulse');};
+  el.onclick=go;
+  el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};});
+</script>
+</body>
+</html>

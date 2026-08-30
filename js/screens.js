@@ -42,7 +42,16 @@
     OPSMODE=false; document.body.classList.remove('ops-on');
     document.getElementById('opsView').style.display='none';
     ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther','viewCli'].forEach(v=>{const e=document.getElementById(v);if(e)e.style.display='none';});
-    applyDashView();   /* לא ישירות — הדשבורד של היועץ חי ב-docs/cli */
+    /* רק בתוך חברה — בתיק הגלובלי applyDashView היה מחזיר את viewCli
+       עם דשבורד החברה מעל מסכי היועץ, וכל טאב גלובלי נראה כאילו לא זז */
+    if(s==='client') applyDashView();
+    else{
+      /* בתיק הגלובלי viewDash הוא המעטפת של מסכי היועץ (היום/משימות/פגישות/
+         זיכרון, הלוח והתראות) — הוא חייב להיות גלוי, ו-viewCli של החברה מוסתר.
+         בלי זה applyDashView היה מחזיר את דשבורד החברה מעל הכל. */
+      const h=document.getElementById('viewCli'); if(h) h.style.display='none';
+      document.getElementById('viewDash').style.display='';
+    }
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
     GNAV = (s==='client') ? 'client'

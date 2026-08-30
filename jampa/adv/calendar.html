@@ -1,0 +1,3115 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>יומן · JAMPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068;
+    --blue:#39ABE2;
+    --blue-soft:#E4F6FE;
+    --salmon:#c97b6e;
+    --salmon-soft:#f6e4e0;
+    --green:#1e8e5f;
+    --green-bg:#dff3e9;
+    --amber:#b46e0e;
+    --amber-bg:#fbecd0;
+    --red:#a8302a;
+    --red-bg:#fbe1de;
+    --purple:#7a4ea0;
+    --purple-bg:#ece1f5;
+    --gray:#8c9099;
+    --gray-bg:#eef0f3;
+    --divider:#E3E3E3;
+    --line:#eaecef;
+    --muted:#7E7E7E;
+    --muted-2:#a9a9a9;
+    --bg:#F4F7FA;
+    --off:#F8FAFC;
+    --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+    --shadow-pop:0 8px 24px rgba(12,64,104,.16), 0 2px 6px rgba(12,64,104,.08);
+    --hour-h:48px;            /* גובה שעה בגריד */
+  }
+  /* =====================================================================
+     JAMPA — שכבת המותג. אותו יומן בדיוק, טוקנים אחרים. נשאר צמוד למקור
+     של HK כדי שתיקון עיצוב שם ימשיך להשתלב כאן.
+     נייבי → דיו סגלגל · תכלת → סגול · סלמון → לבנדר · קרקע → קרם.
+     ===================================================================== */
+  :root{
+    --navy:#37306B;
+    --blue:#7557E3;
+    --blue-soft:#EFECFD;
+    --salmon:#9C89F2;
+    --salmon-soft:#EDE9FB;
+    --purple:#8E4BA8;
+    --purple-bg:#F3E8F8;
+    --divider:#E6E1F2;
+    --line:#EFECF6;
+    --muted:#8B86A3;
+    --muted-2:#B6B1C7;
+    --bg:#FBF8F2;
+    --off:#FCFBFE;
+    --shadow-card:7px 5px 21.4px rgba(72,57,150,.10), -3px -6px 19.3px rgba(96,90,140,.11);
+    --shadow-pop:0 8px 24px rgba(55,48,107,.18), 0 2px 6px rgba(55,48,107,.09);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{direction:rtl;height:100%}
+  body{
+    font-family:'Rubik',sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:.9rem;color:var(--navy)}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+  ul{list-style:none}
+
+  /* ============ Layout ============ */
+  .app{display:flex;flex-direction:column;height:100vh}
+  /* הפס העליון כחול — אותה שפה כמו הפס במסכי היועץ */
+  .toolbar{
+    background:var(--navy);
+    color:#fff;
+    height:68px;
+    padding:0 20px;
+    display:flex;align-items:center;gap:14px;
+    flex:none;
+  }
+  .toolbar__group{display:flex;align-items:center;gap:6px}
+  .toolbar__spacer{flex:1}
+
+  .body{display:flex;flex:1;min-height:0}
+  .side{
+    width:248px;flex:none;
+    background:#fff;border-left:1px solid var(--line);
+    overflow-y:auto;padding:14px 14px 24px;
+  }
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+
+  /* ============ Buttons ============ */
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:7px 14px;border-radius:60px;
+    font-weight:500;font-size:.86rem;transition:all .14s;
+    border:1px solid transparent;
+  }
+  .btn--primary{background:var(--salmon);color:#fff}
+  .btn--primary:hover{background:#b8685c}
+  .btn--ghost{background:#fff;color:var(--navy);border-color:var(--divider)}
+  .btn--ghost:hover{border-color:var(--blue);color:var(--blue)}
+  .btn--navy{background:var(--navy);color:#fff}
+  .btn--navy:hover{background:#0a3553}
+  .btn--icon{
+    width:40px;height:40px;border-radius:10px;font-size:1.45rem;
+    display:inline-flex;align-items:center;justify-content:center;
+    color:var(--navy);transition:background .14s;
+  }
+  .btn--icon:hover{background:var(--blue-soft)}
+  /* וריאנטים בתוך הפס הכחול */
+  .toolbar .btn--ghost{background:rgba(255,255,255,.10);color:#fff;border-color:rgba(255,255,255,.22)}
+  .toolbar .btn--ghost:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);color:#fff}
+  .toolbar .btn--icon{color:rgba(255,255,255,.8)}
+  .toolbar .btn--icon:hover{background:rgba(255,255,255,.12);color:#fff}
+  .btn--sm{padding:4px 12px;font-size:.8rem}
+
+  /* ============ Toolbar bits ============ */
+  .today-btn{
+    padding:6px 16px;border-radius:60px;
+    background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;
+    font-weight:500;font-size:.86rem;transition:all .14s;
+  }
+  .today-btn:hover{background:rgba(255,255,255,.12);border-color:#fff}
+  .nav-arrow{
+    width:30px;height:30px;border-radius:50%;
+    color:rgba(255,255,255,.75);font-size:1rem;font-weight:500;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:all .14s;
+  }
+  .nav-arrow:hover{background:rgba(255,255,255,.12);color:#fff}
+  .range-label{
+    font-size:1.12rem;font-weight:500;color:#fff;
+    letter-spacing:-.2px;margin:0 4px;min-width:230px;
+  }
+  .views{
+    display:flex;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
+    border-radius:60px;padding:3px;
+  }
+  .view-btn{
+    padding:6px 14px;border-radius:60px;font-size:.84rem;font-weight:500;
+    color:rgba(255,255,255,.72);transition:all .14s;
+  }
+  .view-btn:hover{color:#fff}
+  .view-btn.is-active{background:#fff;color:var(--navy)}
+  .user-pick{
+    display:flex;align-items:center;gap:9px;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:60px;
+    padding:4px 14px 4px 8px;font-size:.86rem;
+    color:#fff;transition:all .14s;
+  }
+  .user-pick:hover{background:rgba(255,255,255,.18)}
+  .user-pick__avatar{
+    width:24px;height:24px;border-radius:50%;
+    background:var(--blue);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.72rem;font-weight:600;
+  }
+  .user-pick__caret{font-size:.7rem;color:rgba(255,255,255,.6)}
+  .vh__holiday{font-size:.66rem;font-weight:600;color:#8a6d1f;background:#fdf4e3;border:1px solid #f0e2b8;border-radius:20px;padding:1px 8px;margin-top:3px;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .view__head__cell.is-holiday{background:#fffdf6}
+  .mcell.is-holiday{background:#fffdf6}
+  .mcell__holiday{font-size:.66rem;font-weight:600;color:#8a6d1f;background:#fdf4e3;border-radius:6px;padding:1px 6px;margin:2px 6px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .client-wrap{position:relative}
+  #extRow input{text-align:left}
+  .client-wrap input{width:100%}
+  .client-caret{position:absolute;inset-inline-end:12px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--muted);pointer-events:none}
+  .client-menu{position:absolute;top:calc(100% + 6px);inset-inline:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(15,45,84,.16);max-height:210px;overflow-y:auto;padding:5px;display:none;z-index:90}
+  .client-menu.show{display:block}
+  .client-item{padding:8px 11px;border-radius:8px;font-size:.85rem;color:var(--ink);cursor:pointer}
+  .client-item:hover{background:var(--blue-bg)}
+  .client-item.is-new{color:var(--blue);font-weight:600}
+  .client-cnt{float:inline-end;font-size:.72rem;color:var(--blue);background:var(--blue-bg);border-radius:20px;padding:1px 8px}
+  .client-back{padding:8px 11px;font-size:.8rem;font-weight:600;color:var(--blue);cursor:pointer;border-bottom:1px solid var(--line);margin-bottom:4px}
+  .client-contact{display:flex;align-items:center;gap:8px;padding:7px 11px;border-radius:8px;font-size:.85rem;color:var(--ink);cursor:pointer}
+  .client-contact input{flex:0 0 auto;margin:0}
+  .client-contact span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .client-contact:hover{background:var(--blue-bg)}
+  .client-contact input{accent-color:var(--blue)}
+  .client-ok{margin-top:4px;padding:8px;text-align:center;font-size:.83rem;font-weight:700;color:#fff;background:var(--blue);border-radius:9px;cursor:pointer}
+  .bp-phone{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--off)}
+  .bp-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .bp-head b{font-size:.95rem;color:var(--navy)}
+  .bp-url{font-size:.72rem;color:var(--muted);direction:ltr;text-align:right}
+  .bp-sec{font-size:.75rem;font-weight:700;color:var(--muted);margin:10px 0 6px}
+  .bp-locs{display:flex;gap:6px;flex-wrap:wrap}
+  .bp-loc{font-family:inherit;font-size:.8rem;background:#fff;border:1px solid var(--line);border-radius:30px;padding:5px 12px;cursor:pointer}
+  .bp-loc.on{border-color:var(--blue);background:var(--blue-bg);color:var(--navy);font-weight:600}
+  .bp-day{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:.78rem;color:var(--navy)}
+  .bp-day b{min-width:74px;font-weight:600}
+  .bp-slot{font-family:inherit;font-size:.78rem;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer}
+  .bp-slot.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .bp-done{margin-top:10px;background:var(--green-bg,#e8f6ee);color:var(--green,#1e8e5f);font-size:.82rem;font-weight:600;border-radius:10px;padding:9px 12px}
+  .user-pick-wrap{position:relative}
+  .user-pick-menu{position:absolute;top:calc(100% + 8px);inset-inline-start:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(15,45,84,.16);min-width:200px;padding:6px;display:none;z-index:80}
+  .user-pick-menu.show{display:block}
+  .user-pick-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:.86rem;font-weight:500;color:var(--ink)}
+  .user-pick-item:hover{background:var(--blue-bg)}
+  .user-pick-item.on{background:var(--blue-bg)}
+  .upi-name{flex:1}
+  .upi-check{color:var(--blue);font-weight:700}
+
+  /* ============ Side panel ============ */
+  .side h4{
+    font-size:.74rem;color:var(--muted);font-weight:500;
+    text-transform:uppercase;letter-spacing:.4px;
+    margin:18px 4px 8px;
+  }
+  .side h4:first-child{margin-top:6px}
+
+  /* mini month */
+  .mini{
+    background:var(--off);border-radius:14px;padding:12px 10px 14px;
+  }
+  .mini__head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .mini__title{font-size:.92rem;font-weight:500;color:var(--navy)}
+  .mini__nav{display:flex;gap:2px}
+  .mini__nav button{
+    width:24px;height:24px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--muted);font-size:.9rem;
+  }
+  .mini__nav button:hover{background:#fff;color:var(--navy)}
+  .mini__grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;font-size:.74rem}
+  .mini__dow{
+    text-align:center;color:var(--muted);font-weight:500;
+    padding:5px 0 6px;font-size:.66rem;
+  }
+  .mini__day{
+    text-align:center;padding:4px 0;border-radius:50%;
+    cursor:pointer;color:var(--navy);font-weight:400;
+    transition:all .12s;
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  }
+  .mini__day:hover{background:#fff}
+  .mini__day.is-other{color:var(--muted-2)}
+  .mini__day.is-today{background:var(--blue);color:#fff;font-weight:600}
+  .mini__day.is-selected:not(.is-today){background:var(--navy);color:#fff;font-weight:500}
+  .mini__day.has-events::after{
+    content:'';display:block;width:3px;height:3px;border-radius:50%;
+    background:var(--salmon);position:absolute;
+    margin-top:14px;
+  }
+  .mini__day{position:relative}
+
+  /* Accounts / sync / legend */
+  .acct-list{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+  .acct{
+    display:flex;align-items:center;gap:9px;
+    padding:6px 8px;border-radius:8px;font-size:.88rem;
+    color:var(--navy);cursor:pointer;
+  }
+  .acct:hover{background:var(--off)}
+  .acct__sq{
+    width:14px;height:14px;border-radius:4px;flex:none;
+    border:1px solid currentColor;
+    position:relative;
+  }
+  .acct.is-on .acct__sq{background:currentColor}
+  .acct.is-on .acct__sq::after{
+    content:'✓';position:absolute;inset:0;color:#fff;
+    font-size:.72rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .acct__name{flex:1;color:var(--navy)}
+
+  .sync{
+    background:var(--blue-soft);border:1px solid #cae2ee;
+    border-radius:12px;padding:10px 12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .sync__g{
+    width:30px;height:30px;border-radius:50%;background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:700;
+    font-family:Arial,sans-serif;
+    background:conic-gradient(from 220deg, #4285F4 0 25%, #34A853 25% 50%, #FBBC05 50% 75%, #EA4335 75% 100%);
+    color:#fff;font-size:.8rem;
+  }
+  .sync__body{flex:1;font-size:.82rem;color:var(--navy)}
+  .sync__title{font-weight:500}
+  .sync__sub{font-size:.74rem;color:var(--muted);margin-top:1px}
+  .sync__btn{
+    font-size:.74rem;color:var(--blue);font-weight:500;
+    padding:3px 9px;border-radius:60px;background:#fff;
+  }
+  .sync__btn:hover{background:var(--navy);color:#fff}
+
+  /* Legend */
+  .legend{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+  .legend__item{display:flex;align-items:center;gap:9px;font-size:.86rem;padding:4px 8px}
+  .legend__dot{width:11px;height:11px;border-radius:3px;flex:none}
+
+  /* Working hours mini */
+  /* Locations settings */
+  .loc-settings-row{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 12px;background:var(--off);border-radius:10px;
+    margin-bottom:8px;border-inline-start:3px solid currentColor;
+  }
+  .loc-settings-row__icon{font-size:1rem}
+  .loc-settings-row__body{flex:1}
+  .loc-settings-row__name{font-weight:500;color:var(--navy);font-size:.92rem}
+  .loc-settings-row__addr{font-size:.78rem;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:6px}
+  .loc-edit-name{font-family:inherit;font-weight:500;color:var(--navy);font-size:.92rem;border:1px solid transparent;border-radius:7px;padding:2px 7px;margin-inline-start:-8px;background:transparent;width:60%}
+  .loc-edit-addr{font-family:inherit;font-size:.78rem;color:var(--muted);border:1px solid transparent;border-radius:7px;padding:1px 7px;margin-inline-start:-8px;background:transparent;flex:1;min-width:0}
+  .loc-edit-name:hover,.loc-edit-addr:hover{border-color:var(--divider)}
+  .loc-edit-name:focus,.loc-edit-addr:focus{outline:none;border-color:var(--blue);background:#fff}
+  .loc-days-sum{flex:0 0 auto;white-space:nowrap}
+  .gc-acct{font-size:.8rem;color:var(--muted);margin:10px 0 2px}
+  .gc-acct b{color:var(--navy)}
+  .gc-change{color:var(--blue);cursor:pointer}
+  .gc-change:hover{text-decoration:underline}
+  .gc-title{font-size:.83rem;font-weight:600;color:var(--navy);margin:10px 0 6px}
+  .gc-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--divider);border-radius:10px;margin-bottom:7px;background:#fff}
+  .gc-row.is-off{opacity:.55}
+  .gc-dot{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+  .gc-body{flex:1;display:flex;align-items:center;gap:10px;min-width:0;justify-content:space-between}
+  .gc-name{font-size:.86rem;font-weight:500;color:var(--navy)}
+  .gc-dir{font-family:inherit;font-size:.75rem;color:var(--muted);border:1px solid var(--divider);border-radius:8px;padding:3px 8px;background:#fff;max-width:52%}
+  .gc-dir:disabled{opacity:.5}
+  .vh__holiday.closed{color:#b3352b;background:#fdecec;border-color:#f3c2be}
+  .vh__holiday.swap{color:#0369a1;background:#e4f6fe;border-color:#bfe6fa}
+  .vh__holiday.eve{color:#8a6d1f;background:#fdf4e3;border-color:#f0e2b8}
+  .vh__locs{display:flex;justify-content:center;gap:5px;margin-top:3px;flex-wrap:wrap}
+  .vh__loc{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:500;color:var(--muted);background:var(--off);border:1px solid var(--divider);border-radius:20px;padding:1px 8px;white-space:nowrap}
+  .vh__loc i{width:7px;height:7px;border-radius:2px;flex:0 0 auto}
+  .ov-eve{display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--navy);margin:-2px 0 12px}
+  .set-tabs{display:flex;gap:2px;border-bottom:1px solid var(--divider);margin-bottom:16px;position:sticky;top:0;background:#fff;z-index:5}
+  .set-tab{font-family:inherit;font-size:.88rem;font-weight:500;color:var(--muted);padding:9px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .set-tab:hover{color:var(--navy)}
+  .set-tab.is-active{color:var(--navy);font-weight:600;border-bottom-color:var(--salmon)}
+  .type-row{display:flex;align-items:center;gap:9px;border:1px solid var(--divider);border-radius:10px;padding:6px 10px;margin-bottom:7px;background:#fff}
+  .type-sw-wrap{position:relative}
+  .type-sw{width:26px;height:26px;border-radius:8px;border:2px solid #fff;box-shadow:0 0 0 1px var(--divider);cursor:pointer}
+  .type-pal{position:absolute;top:calc(100% + 6px);inset-inline-start:0;background:#fff;border:1px solid var(--divider);border-radius:12px;box-shadow:0 10px 30px rgba(15,45,84,.16);padding:8px;display:none;grid-template-columns:repeat(5,1fr);gap:7px;z-index:30;width:172px}
+  .type-pal.show{display:grid}
+  .type-pal-c{width:26px;height:26px;border-radius:8px;border:2px solid #fff;box-shadow:0 0 0 1px var(--divider);cursor:pointer}
+  .type-pal-c:hover{transform:scale(1.12)}
+  .type-pal-c.on{box-shadow:0 0 0 2px var(--navy)}
+  .type-name{font-family:inherit;font-size:.88rem;font-weight:500;color:var(--navy);border:1px solid transparent;border-radius:7px;padding:4px 8px;flex:1;background:transparent}
+  .type-name:hover{border-color:var(--divider)}
+  .type-name:focus{outline:none;border-color:var(--blue);background:#fff}
+  .type-del{color:var(--muted);font-size:.85rem;padding:2px 7px;border-radius:6px}
+  .type-del:hover:not(:disabled){background:var(--red-bg);color:var(--red)}
+  .type-del:disabled{opacity:.35;cursor:default}
+  .set-note{font-size:.82rem;color:var(--navy);background:var(--blue-soft);border:1px solid #cfeafc;border-radius:10px;padding:9px 13px;margin-bottom:14px}
+  .set-pane{display:none}
+  .set-pane.is-active{display:block}
+  .ov-add{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+  .ov-inp{font-family:inherit;font-size:.82rem;border:1px solid var(--divider);border-radius:9px;padding:6px 10px;background:#fff}
+  .ov-row{display:flex;align-items:center;gap:10px;font-size:.83rem;color:var(--navy);border:1px solid var(--divider);border-radius:9px;padding:7px 11px;margin-bottom:6px}
+  .ov-row span{color:var(--muted);flex:1}
+  .ov-del{color:var(--muted);font-size:.85rem;padding:2px 6px;border-radius:6px}
+  .ov-del:hover{background:var(--red-bg);color:var(--red)}
+  .loc-settings-row__edit, .loc-settings-row__del{
+    width:30px;height:30px;border-radius:8px;
+    color:var(--muted);font-size:.86rem;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;border:1px solid var(--divider);
+    transition:all .14s;cursor:pointer;
+  }
+  .loc-settings-row__edit:hover{border-color:var(--blue);color:var(--blue)}
+  .loc-settings-row__del:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+  .add-loc-btn{
+    width:100%;padding:9px 12px;margin-top:4px;
+    background:transparent;border:1px dashed var(--divider);border-radius:10px;
+    color:var(--muted);font-size:.84rem;font-weight:500;
+    transition:all .14s;
+  }
+  .add-loc-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+
+  .loc-tabs{
+    display:flex;gap:6px;flex-wrap:wrap;
+    background:var(--off);border-radius:10px;padding:5px;margin-bottom:11px;
+  }
+  .loc-tab{
+    padding:6px 14px;border-radius:8px;
+    font-size:.84rem;font-weight:500;color:var(--muted);
+    display:flex;align-items:center;gap:6px;
+    transition:all .14s;cursor:pointer;background:transparent;border:none;
+  }
+  .loc-tab:hover{color:var(--navy);background:#fff}
+  .loc-tab.is-active{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .loc-tab .loc-dot{margin-inline-end:0}
+
+  /* Locations list בסיידבר */
+  .loc-list{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+  .loc-card{
+    background:var(--off);border-radius:10px;padding:9px 11px;
+    border-inline-start:3px solid currentColor;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .loc-card__top{
+    display:flex;align-items:center;gap:7px;
+    color:var(--navy);font-size:.9rem;font-weight:500;
+  }
+  .loc-card__name{flex:1;color:var(--navy)}
+  .loc-card__icon{font-size:.95rem}
+  .loc-card__edit{
+    width:24px;height:24px;border-radius:6px;
+    color:var(--muted);font-size:.78rem;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;transition:all .14s;cursor:pointer;
+  }
+  .loc-card__edit:hover{background:#fff;color:var(--blue)}
+  .loc-card__addr{font-size:.74rem;color:var(--muted);font-weight:400;padding-inline-start:22px}
+  .loc-card__hours{
+    display:flex;flex-direction:column;gap:2px;
+    margin-top:6px;padding-top:6px;padding-inline-start:22px;
+    border-top:1px solid rgba(0,0,0,.06);
+  }
+  .loc-card__hours-row{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;
+    font-size:.74rem;
+  }
+  .loc-card__hours-day{color:var(--muted);font-weight:500;flex-shrink:0}
+  .loc-card__hours-time{color:var(--navy);font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+
+  /* Booking flow steps inside the single booking card */
+  .booking-flow{
+    margin-top:10px;padding-top:9px;
+    border-top:1px solid rgba(0,0,0,.07);
+    display:flex;flex-direction:column;gap:5px;
+  }
+  .booking-flow__step{
+    display:flex;align-items:center;gap:8px;
+    font-size:.78rem;color:var(--muted);line-height:1.4;
+  }
+  .booking-flow__num{
+    flex:none;width:18px;height:18px;border-radius:50%;
+    background:rgba(255,255,255,.7);color:var(--salmon);
+    font-size:.7rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* Public booking links (פיצ'ר מרכזי — לקוחות קובעים פגישה לבד) */
+  .booking-links{display:flex;flex-direction:column;gap:8px}
+  .booking-row{
+    background:#fff;border:1px solid var(--divider);border-radius:12px;
+    padding:10px 12px 11px;border-inline-start:3px solid currentColor;
+  }
+  .booking-row--main{
+    background:linear-gradient(135deg, rgba(201,123,110,.10), rgba(228,246,254,.7));
+    border-color:#e7d2cc;
+  }
+  .booking-row__head{
+    display:flex;align-items:center;gap:6px;
+    color:var(--navy);font-size:.84rem;font-weight:500;margin-bottom:5px;
+  }
+  .booking-row__sub{font-size:.7rem;color:var(--muted);font-weight:400}
+  .booking-row__url{
+    background:#fff;border:1px solid var(--divider);border-radius:7px;
+    padding:5px 8px;font-size:.74rem;color:var(--navy);
+    direction:ltr;text-align:right;font-family:'SFMono-Regular',Menlo,Consolas,monospace;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    margin-bottom:6px;cursor:text;user-select:all;
+  }
+  .booking-row__actions{display:flex;gap:5px}
+  .booking-row__actions .bl-btn{padding:5px 4px;font-size:.72rem}
+  .booking-row__hint{
+    font-size:.7rem;color:var(--muted);margin-top:6px;line-height:1.4;
+  }
+
+  .booking-link{
+    background:linear-gradient(135deg, var(--salmon-soft), var(--blue-soft));
+    border:1px solid #e7d2cc;border-radius:14px;padding:14px 14px 12px;
+    position:relative;
+  }
+  .booking-link__url{
+    background:#fff;border:1px solid var(--divider);border-radius:8px;
+    padding:8px 10px;font-size:.8rem;color:var(--navy);
+    direction:ltr;text-align:right;font-family:'SFMono-Regular',Menlo,Consolas,monospace;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    margin-bottom:10px;cursor:text;user-select:all;
+  }
+  .booking-link__actions{display:flex;gap:6px}
+  .bl-btn{
+    flex:1;padding:7px 6px;border-radius:8px;
+    font-size:.78rem;font-weight:500;color:var(--navy);
+    background:#fff;border:1px solid var(--divider);
+    display:flex;align-items:center;justify-content:center;gap:4px;
+    transition:all .14s;cursor:pointer;font-family:inherit;
+  }
+  .bl-btn:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px)}
+  .bl-btn.is-copied{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+  .booking-link__hint{
+    font-size:.72rem;color:var(--muted);
+    margin-top:10px;line-height:1.45;
+  }
+
+  .wh-mini{
+    background:var(--off);border-radius:12px;padding:11px 12px;
+    font-size:.82rem;color:var(--navy);
+  }
+  .wh-mini__row{display:flex;justify-content:space-between;padding:3px 0}
+  .wh-mini__day{color:var(--muted)}
+  .wh-mini__time{font-variant-numeric:tabular-nums}
+  .wh-mini__edit{
+    display:block;width:100%;margin-top:9px;
+    padding:6px 10px;border-radius:8px;
+    background:#fff;border:1px solid var(--divider);
+    font-size:.8rem;color:var(--navy);font-weight:500;text-align:center;
+    transition:all .14s;
+  }
+  .wh-mini__edit:hover{border-color:var(--blue);color:var(--blue)}
+
+  /* ============ Week / Day grid ============ */
+  .view{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+  .view[hidden]{display:none}
+  .view__head{
+    display:grid;
+    border-bottom:1px solid var(--line);
+    background:#fff;flex:none;
+  }
+  .view__head__cell{
+    text-align:center;padding:10px 0 11px;
+    border-inline-start:1px solid var(--line);
+    font-size:.8rem;color:var(--muted);font-weight:500;
+  }
+  .view__head__cell:first-child{border:none}
+  .view__head__cell.is-today .vh__day{
+    background:var(--blue);color:#fff;
+  }
+  .vh__dow{font-size:.72rem;color:var(--muted);font-weight:400;letter-spacing:.2px}
+  .vh__day{
+    display:inline-block;font-size:1.18rem;font-weight:500;color:var(--navy);
+    margin-top:3px;width:34px;height:34px;border-radius:50%;line-height:34px;
+  }
+  .view__head__gutter{padding:0}
+
+  .view__scroll{flex:1;overflow-y:auto;background:#fff;position:relative}
+  .grid{
+    display:grid;position:relative;
+    min-height:calc(var(--hour-h) * 17);
+  }
+
+  .gutter{
+    border-inline-start:1px solid var(--line);
+    background:#fff;position:relative;
+  }
+  .gutter__hour{
+    height:var(--hour-h);
+    text-align:center;font-size:.7rem;color:var(--muted);
+    border-top:1px solid transparent;
+    padding-top:1px;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .day-col{
+    border-inline-start:1px solid var(--line);
+    position:relative;
+  }
+  .day-col__bg{
+    position:absolute;inset:0;
+    background-image:linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size:100% var(--hour-h);
+  }
+  .day-col.is-today{background:rgba(57,171,226,.035)}
+
+  /* Outside working hours */
+  .wh-overlay{
+    position:absolute;inset-inline:0;
+    background:repeating-linear-gradient(
+      135deg, rgba(0,0,0,.012) 0 6px, transparent 6px 12px
+    );
+    pointer-events:none;
+  }
+  .wh-break{
+    position:absolute;inset-inline:0;
+    background:repeating-linear-gradient(
+      135deg, rgba(180,110,14,.05) 0 6px, transparent 6px 12px
+    );
+    border-block:1px dashed rgba(180,110,14,.25);
+    pointer-events:none;
+  }
+
+  /* Now-line */
+  .now-line{
+    position:absolute;inset-inline:0;height:0;
+    border-top:2px solid var(--red);
+    z-index:5;pointer-events:none;
+  }
+  .now-line::before{
+    content:'';position:absolute;inset-inline-start:-5px;top:-5px;
+    width:10px;height:10px;border-radius:50%;background:var(--red);
+    box-shadow:0 0 0 3px rgba(168,48,42,.18);
+  }
+  .now-time{
+    position:absolute;inset-inline-end:calc(100% + 4px);top:-9px;
+    background:var(--red);color:#fff;font-size:.66rem;font-weight:600;
+    padding:1px 6px;border-radius:60px;font-variant-numeric:tabular-nums;
+    direction:ltr;
+  }
+
+  /* Events */
+  .event{
+    position:absolute;inset-inline:3px;
+    border-radius:8px;
+    padding:5px 8px 5px 10px;
+    background:#fff;
+    border-inline-start:3px solid currentColor;
+    box-shadow:0 1px 2px rgba(12,64,104,.06);
+    cursor:pointer;font-size:.78rem;
+    color:var(--navy);overflow:hidden;
+    transition:transform .12s, box-shadow .12s;
+    user-select:none;
+  }
+  .event:hover{box-shadow:0 4px 10px rgba(12,64,104,.14);transform:translateY(-1px);z-index:3}
+  .event.dragging{opacity:.7;cursor:grabbing;z-index:10;box-shadow:0 8px 18px rgba(12,64,104,.22)}
+  .event__title{font-weight:500;color:var(--navy);line-height:1.2;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden}
+  .event__title{min-width:0}
+  .event__meta{white-space:nowrap;overflow:hidden;min-width:0}
+  .event__time{font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:right}
+  .event__meta{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:2px}
+  .event__loc{
+    flex:none;width:9px;height:9px;border-radius:3px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.5);
+  }
+  .event__loc-name{
+    font-size:.68rem;color:var(--muted);font-weight:500;
+    background:rgba(255,255,255,.55);border-radius:60px;
+    padding:1px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:80px;
+  }
+  /* פס צבעוני דק שמסמן את שעות העבודה של המקום ביום נתון */
+  .loc-stripe{
+    position:absolute;inset-inline-start:0;width:4px;
+    opacity:.55;border-radius:0 4px 4px 0;pointer-events:none;
+  }
+  /* נקודת צבע בסיידבר */
+  .loc-dot{display:inline-block;width:9px;height:9px;border-radius:3px;vertical-align:middle;margin-inline-end:4px}
+  .event__icon{font-size:.72rem;margin-inline-end:3px;opacity:.9}
+  .event--intro    {color:var(--blue);   background:var(--blue-soft)}
+  .event--task     {color:#8b5cf6;       background:#f1ecfd}
+  .event--therapy  {color:var(--green);  background:var(--green-bg)}
+  .event--call     {color:var(--salmon); background:var(--salmon-soft)}
+  .event--personal {color:var(--gray);   background:var(--gray-bg)}
+  .event--block    {color:var(--red);    background:var(--red-bg);
+                    background-image:repeating-linear-gradient(135deg, rgba(168,48,42,.07) 0 6px, transparent 6px 12px)}
+  .event--google::after{
+    content:'';position:absolute;inset-inline-end:5px;top:4px;
+    width:8px;height:8px;border-radius:50%;
+    background:conic-gradient(from 220deg, #4285F4 0 25%, #34A853 25% 50%, #FBBC05 50% 75%, #EA4335 75% 100%);
+    border:1.5px solid #fff;
+  }
+
+  .event__resize{
+    position:absolute;inset-inline:6px;bottom:0;
+    height:6px;cursor:ns-resize;border-radius:3px;
+  }
+  .event__resize:hover{background:rgba(12,64,104,.12)}
+
+  /* Hover hint on empty cells */
+  .day-col__hover-time{
+    position:absolute;inset-inline:0;
+    background:rgba(57,171,226,.10);
+    border-block:1px dashed var(--blue);
+    pointer-events:none;display:none;
+    font-size:.7rem;color:var(--blue);
+    padding-inline-start:6px;font-weight:500;font-variant-numeric:tabular-nums;direction:ltr;
+  }
+
+  /* ============ Agenda view ============ */
+  .agenda{padding:18px 28px 28px;overflow-y:auto;flex:1}
+  .agenda__day{margin-bottom:22px}
+  .agenda__day-head{
+    display:flex;align-items:baseline;gap:10px;
+    padding:8px 4px 10px;border-bottom:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  .agenda__day-num{font-size:1.4rem;font-weight:600;color:var(--navy);letter-spacing:-.3px}
+  .agenda__day-dow{font-size:.88rem;color:var(--muted);font-weight:500}
+  .agenda__day-mon{font-size:.78rem;color:var(--muted-2);margin-inline-start:auto}
+  .agenda__day.is-today .agenda__day-num{color:var(--blue)}
+  .agenda__list{display:flex;flex-direction:column;gap:8px}
+  .agenda__item{
+    display:flex;gap:14px;align-items:flex-start;
+    padding:11px 14px;border-radius:12px;background:var(--off);
+    border-inline-start:4px solid var(--gray);
+    cursor:pointer;transition:all .14s;
+  }
+  .agenda__item:hover{background:var(--blue-soft)}
+  .agenda__item-time{
+    font-size:.86rem;font-weight:500;color:var(--navy);
+    min-width:96px;font-variant-numeric:tabular-nums;direction:ltr;
+  }
+  .agenda__item-body{flex:1}
+  .agenda__item-title{font-size:.95rem;font-weight:500;color:var(--navy);margin-bottom:1px}
+  .agenda__item-sub{font-size:.78rem;color:var(--muted)}
+  .agenda__item--intro   {border-color:var(--blue)}
+  .agenda__item--task    {border-color:#8b5cf6}
+  .agenda__item--therapy {border-color:var(--green)}
+  .agenda__item--call    {border-color:var(--salmon)}
+  .agenda__item--personal{border-color:var(--gray)}
+  .agenda__item--block   {border-color:var(--red)}
+  .agenda__empty{
+    padding:30px 18px;text-align:center;color:var(--muted);font-size:.92rem;
+    background:var(--off);border-radius:14px;
+  }
+
+  /* ============ Month view ============ */
+  .month{display:flex;flex-direction:column;flex:1;overflow-y:auto}
+  .month__dow{
+    display:grid;grid-template-columns:repeat(7,1fr);
+    border-bottom:1px solid var(--line);background:#fff;flex:none;
+  }
+  .month__dow > div{
+    padding:8px 6px;text-align:center;font-size:.78rem;color:var(--muted);
+    font-weight:500;border-inline-start:1px solid var(--line);
+  }
+  .month__dow > div:first-child{border:none}
+  .month__grid{
+    display:grid;grid-template-columns:repeat(7,1fr);
+    grid-template-rows:repeat(6,minmax(96px,1fr));flex:1;background:#fff;
+  }
+  .mcell{
+    border-inline-start:1px solid var(--line);
+    border-top:1px solid var(--line);
+    padding:5px 6px 7px;font-size:.82rem;color:var(--navy);
+    overflow:hidden;cursor:pointer;
+    display:flex;flex-direction:column;gap:3px;
+    transition:background .12s;
+  }
+  .mcell:hover{background:var(--off)}
+  .mcell.is-other{color:var(--muted-2);background:var(--off)}
+  .mcell__num{font-weight:500;font-size:.82rem;text-align:start}
+  .mcell.is-today .mcell__num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;
+  }
+  .mcell__evs{display:flex;flex-direction:column;gap:2px}
+  .mev{
+    display:flex;align-items:center;gap:5px;
+    background:#fff;padding:2px 6px;border-radius:5px;
+    border-inline-start:2px solid currentColor;font-size:.7rem;color:var(--navy);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .mev__t{font-variant-numeric:tabular-nums;font-size:.66rem;color:var(--muted);direction:ltr}
+  .mev--intro   {color:var(--blue)  ;background:var(--blue-soft)}
+  .mev--task    {color:#8b5cf6;background:#f1ecfd}
+  .mev--therapy {color:var(--green) ;background:var(--green-bg)}
+  .mev--call    {color:var(--salmon);background:var(--salmon-soft)}
+  .mev--personal{color:var(--gray)  ;background:var(--gray-bg)}
+  .mev--block   {color:var(--red)   ;background:var(--red-bg)}
+  .mcell__more{font-size:.7rem;color:var(--muted);padding:1px 4px}
+
+  /* ============ Event popover ============ */
+  .pop-back{
+    position:fixed;inset:0;z-index:90;display:none;
+  }
+  .pop-back.is-open{display:block}
+  .popover{
+    position:absolute;background:#fff;border-radius:14px;
+    box-shadow:var(--shadow-pop);
+    width:340px;padding:18px 20px 16px;
+    border-top:3px solid currentColor;
+    animation:pop .15s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .popover--intro   {color:var(--blue)}
+  .popover--task    {color:#8b5cf6}
+  .popover--therapy {color:var(--green)}
+  .popover--call    {color:var(--salmon)}
+  .popover--personal{color:var(--gray)}
+  .popover--block   {color:var(--red)}
+  .pop__head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+    margin-bottom:8px;
+  }
+  .pop__title{font-size:1.05rem;font-weight:500;color:var(--navy);line-height:1.3}
+  .pop__close{
+    width:26px;height:26px;border-radius:6px;color:var(--muted);
+    display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none;
+  }
+  .pop__close:hover{background:var(--off);color:var(--navy)}
+  .pop__meta{font-size:.86rem;color:var(--muted);direction:ltr;text-align:right;margin-bottom:11px}
+  .pop__row{
+    display:flex;gap:10px;align-items:flex-start;
+    font-size:.86rem;color:var(--navy);padding:5px 0;
+  }
+  .pop__row__icon{width:18px;flex:none;text-align:center;color:var(--muted);font-size:.86rem}
+  .pop__row b{font-weight:500}
+  .pop__tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .pop__tag{
+    font-size:.74rem;padding:2px 10px;border-radius:60px;
+    background:currentColor;color:#fff;font-weight:500;
+  }
+  .pop__tag--ghost{background:transparent;color:currentColor;border:1px solid currentColor}
+  .pop__foot{
+    display:flex;gap:6px;margin-top:14px;padding-top:12px;
+    border-top:1px solid var(--line);
+  }
+
+  /* ============ Modals ============ */
+  .modal-back{
+    position:fixed;inset:0;background:rgba(12,64,104,.5);
+    display:none;align-items:center;justify-content:center;
+    z-index:100;padding:20px;
+  }
+  .modal-back.is-open{display:flex}
+  .modal{
+    background:#fff;border-radius:18px;border-top:3px solid var(--blue);
+    box-shadow:var(--shadow-card);
+    width:100%;max-width:540px;overflow:hidden;
+    animation:pop .18s ease-out;
+  }
+  .modal--wide{max-width:680px}
+  .modal__head{
+    padding:18px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--divider);
+  }
+  .modal__head h3{color:var(--navy);font-size:1.18rem;font-weight:500;letter-spacing:-.2px}
+  .modal__close{
+    font-size:1.4rem;color:var(--muted);
+    width:32px;height:32px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .modal__close:hover{background:var(--blue-soft);color:var(--navy)}
+  .modal__body{padding:20px 24px;max-height:74vh;overflow-y:auto}
+  .modal__foot{
+    padding:13px 24px;background:var(--off);
+    display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--divider);
+  }
+  .modal__foot--split{justify-content:space-between}
+
+  /* Form */
+  .form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:12px}
+  .form-row--1{grid-template-columns:1fr}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:500}
+  .field input,.field select,.field textarea{
+    width:100%;padding:9px 12px;border-radius:10px;
+    border:1px solid var(--divider);background:#fff;
+    font-size:.9rem;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue)}
+  .field textarea{min-height:64px;resize:vertical}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{
+    padding:6px 14px;border-radius:60px;font-size:.82rem;
+    background:#fff;border:1px solid var(--divider);
+    color:var(--navy);cursor:pointer;transition:all .14s;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .chip:hover{border-color:var(--blue)}
+  .chip.is-active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .chip__dot{width:9px;height:9px;border-radius:3px;background:currentColor}
+  .chip.is-active .chip__dot{background:#fff}
+  .chip__lbl{color:var(--navy)}
+  .chip.is-active .chip__lbl{color:#fff}
+
+  /* Working-hours grid */
+  .wh-row{
+    display:grid;grid-template-columns:90px auto 1fr auto;
+    gap:10px;align-items:start;padding:11px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .wh-row:last-child{border-bottom:none}
+  .wh-row__day{font-weight:500;font-size:.94rem;color:var(--navy);padding-top:5px}
+  .wh-row__blocks{display:flex;flex-direction:column;gap:6px}
+  .wh-block{display:flex;align-items:center;gap:6px}
+  .wh-block input[type="time"]{
+    width:96px;padding:6px 9px;border-radius:8px;
+    border:1px solid var(--divider);font-variant-numeric:tabular-nums;direction:ltr;
+  }
+  .wh-block__del{
+    width:24px;height:24px;border-radius:6px;
+    color:var(--muted);font-size:.84rem;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;transition:all .14s;
+  }
+  .wh-block__del:hover{background:var(--red-bg);color:var(--red)}
+  .wh-row__off{color:var(--muted);font-size:.86rem;padding-top:6px}
+  .wh-row__sep{color:var(--muted)}
+  .wh-row.is-off{opacity:.55}
+  .wh-row.is-off .switch{opacity:1}  /* כיבוי לא משבית את ה-switch עצמו */
+  .wh-add-block{
+    font-size:.78rem;color:var(--blue);font-weight:500;
+    background:transparent;padding:5px 10px;border-radius:60px;
+    border:1px dashed var(--divider);align-self:flex-start;
+    transition:all .14s;
+  }
+  .wh-add-block:hover{border-style:solid;border-color:var(--blue);background:var(--blue-soft)}
+  .switch{
+    width:38px;height:22px;border-radius:60px;background:var(--divider);
+    position:relative;cursor:pointer;transition:background .14s;flex:none;
+  }
+  .switch::after{
+    content:'';position:absolute;top:2px;right:2px;
+    width:18px;height:18px;border-radius:50%;background:#fff;
+    transition:transform .16s;
+    box-shadow:0 1px 3px rgba(0,0,0,.16);
+  }
+  .switch.is-on{background:var(--green)}
+  .switch.is-on::after{transform:translateX(-16px)}
+  .wh-add-break{
+    font-size:.74rem;color:var(--blue);font-weight:500;
+    background:transparent;padding:3px 6px;border-radius:6px;
+  }
+  .wh-add-break:hover{background:var(--blue-soft)}
+
+  .field-divider{border-top:1px solid var(--line);margin:14px 0 10px}
+  .field-section-title{font-size:.74rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+
+  /* Selected time hint in form */
+  .form-hint{
+    background:var(--blue-soft);border-radius:10px;
+    padding:9px 12px;font-size:.86rem;color:var(--navy);
+    display:flex;align-items:center;gap:8px;
+  }
+  .form-hint[hidden]{display:none}
+
+  /* Selection rectangle (drag-to-create) */
+  .sel-rect{
+    position:absolute;inset-inline:3px;
+    background:rgba(57,171,226,.15);
+    border:1.5px solid var(--blue);
+    border-radius:8px;pointer-events:none;
+    font-size:.74rem;color:var(--blue);font-weight:500;
+    padding:3px 6px;font-variant-numeric:tabular-nums;direction:ltr;
+  }
+
+  /* Empty day-view */
+  .day-empty{padding:40px;text-align:center;color:var(--muted)}
+
+  @media(max-width:980px){
+    .side{display:none}
+    .range-label{min-width:auto;font-size:.95rem}
+    .toolbar{gap:8px;padding:0 12px;height:60px}
+  }
+  *{scrollbar-width:thin;scrollbar-color:#7557E3 #EFECFD}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#7557E3;border-radius:99px}
+  ::-webkit-scrollbar-thumb:hover{background:#37306B}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ TOOLBAR ============ -->
+  <header class="toolbar">
+    <div class="toolbar__group">
+      <button class="today-btn" id="todayBtn">היום</button>
+      <button class="nav-arrow" id="prevBtn" title="הקודם">›</button>
+      <button class="nav-arrow" id="nextBtn" title="הבא">‹</button>
+      <div class="range-label" id="rangeLabel">—</div>
+    </div>
+
+    <div class="toolbar__group">
+      <div class="views" id="viewSwitch">
+        <button class="view-btn" data-view="day">יום</button>
+        <button class="view-btn is-active" data-view="week">שבוע</button>
+        <button class="view-btn" data-view="month">חודש</button>
+        <button class="view-btn" data-view="agenda">סדר יום</button>
+      </div>
+    </div>
+
+    <div class="toolbar__spacer"></div>
+
+    <div class="toolbar__group">
+      <div class="user-pick-wrap">
+        <button class="user-pick" id="userPick">
+          <span class="user-pick__avatar" id="userAvatar">עש</span>
+          <span id="userName">ענת שלו</span>
+          <span class="user-pick__caret">▾</span>
+        </button>
+        <div class="user-pick-menu" id="userPickMenu"></div>
+      </div>
+      <button class="btn btn--primary" id="newEventBtn"><span>+</span> פגישה חדשה</button>
+      <button class="btn btn--ghost" id="newTaskBtn">+ משימה</button>
+      <button class="btn--icon" id="settingsBtn" title="הגדרות יומן">⚙</button>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- ============ SIDE PANEL ============ -->
+    <aside class="side">
+      <!-- Mini month -->
+      <div class="mini">
+        <div class="mini__head">
+          <div class="mini__title" id="miniTitle">—</div>
+          <div class="mini__nav">
+            <button id="miniPrev">›</button>
+            <button id="miniNext">‹</button>
+          </div>
+        </div>
+        <div class="mini__grid" id="miniGrid"></div>
+      </div>
+
+      <!-- Public booking links — לינקים פר מקום -->
+      <h4>🔗 לינקים לקביעת פגישות</h4>
+      <div class="booking-links" id="bookingLinksWrap"></div>
+
+      <!-- Sync -->
+      <h4>סנכרון</h4>
+      <div class="sync">
+        <div class="sync__g">G</div>
+        <div class="sync__body">
+          <div class="sync__title">מסונכרן עם גוגל</div>
+          <div class="sync__sub" id="syncSub">עודכן לפני 3 דק׳</div>
+        </div>
+        <button class="sync__btn" id="syncNow">סנכרון</button>
+      </div>
+
+      <!-- Locations — מקומות עבודה -->
+      <h4>🏥 מקומות עבודה</h4>
+      <ul class="loc-list" id="locList"></ul>
+
+      <!-- Accounts -->
+      <h4>היומנים שלי</h4>
+      <ul class="acct-list" id="acctList"></ul>
+
+      <!-- Legend -->
+      <h4>סוגי פגישה</h4>
+      <ul class="legend" id="legend"></ul>
+
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+      <div class="view" id="weekView"></div>
+      <div class="view" id="dayView" hidden></div>
+      <div class="view" id="monthView" hidden></div>
+      <div class="view" id="agendaView" hidden></div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ Event popover ============ -->
+<div class="pop-back" id="popBack">
+  <div class="popover" id="popover"></div>
+</div>
+
+<!-- ============ Event create/edit modal ============ -->
+<div class="modal-back" id="eventModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal__head">
+      <h3 id="evModalTitle">פגישה חדשה</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-hint" id="evHint" hidden></div>
+
+      <div class="form-row form-row--1" style="margin-top:12px">
+        <div class="field">
+          <label>כותרת</label>
+          <input id="evTitle" type="text" placeholder="לדוגמה: שיחת היכרות עם משפחת לוי">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>תאריך</label>
+          <input id="evDate" type="date">
+        </div>
+        <div class="field">
+          <label>אורך (דק׳)</label>
+          <input id="evDuration" type="number" min="5" max="600" step="5" value="50">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>התחלה</label>
+          <input id="evStart" type="time">
+        </div>
+        <div class="field">
+          <label>סיום</label>
+          <input id="evEnd" type="time">
+        </div>
+      </div>
+
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>סוג פגישה</label>
+          <div class="chips" id="evTypeChips"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>לקוח / משתתפים</label>
+          <div class="client-wrap">
+            <input id="evClient" type="text" placeholder="לקוח מהרשימה, או כל שם אחר — לא חובה" autocomplete="off">
+            <span class="client-caret">▾</span>
+            <div class="client-menu" id="clientMenu"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>מקום עבודה</label>
+          <select id="evLocId"></select>
+        </div>
+      </div>
+
+      <div class="form-row" id="extRow" style="display:none">
+        <div class="field">
+          <label>טלפון (לא חובה)</label>
+          <input id="evExtPhone" type="tel" placeholder="050-0000000" dir="ltr">
+        </div>
+        <div class="field">
+          <label>מייל (לא חובה)</label>
+          <input id="evExtMail" type="email" placeholder="name@company.co.il" dir="ltr">
+        </div>
+      </div>
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>הערה למיקום (לא חובה)</label>
+          <input id="evLocation" type="text" placeholder="לדוגמה: חדר 3, קומה 2, קישור מיוחד...">
+        </div>
+      </div>
+
+      <div class="field-divider"></div>
+      <div class="field-section-title">תזכורות וחזרה</div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>תזכורת לפני</label>
+          <select id="evRemind">
+            <option value="0">ללא</option>
+            <option value="10">10 דקות</option>
+            <option value="30" selected>30 דקות</option>
+            <option value="60">שעה</option>
+            <option value="1440">יום</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>חזרה</label>
+          <select id="evRepeat">
+            <option value="none" selected>ללא חזרה</option>
+            <option value="weekly">כל שבוע</option>
+            <option value="biweekly">כל שבועיים</option>
+            <option value="monthly">כל חודש</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row form-row--1">
+        <div class="field">
+          <label>הערות</label>
+          <textarea id="evNotes" placeholder="הערות פנימיות..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal__foot modal__foot--split">
+      <button class="btn btn--ghost btn--sm" id="evDelete" style="color:var(--red);border-color:var(--red-bg)">מחק</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="evSave">שמירה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Task modal — משימה של המתפעל ============ -->
+<div class="modal-back" id="taskModal">
+  <div class="modal" style="max-width:430px">
+    <div class="modal__head">
+      <h3 id="tkHead">משימה חדשה</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="form-row form-row--1"><div class="field">
+        <label>מה צריך לעשות?</label>
+        <input id="tkTitle" placeholder="לדוגמה: להכין דוח תזרים ליוסי">
+      </div></div>
+      <div class="form-row">
+        <div class="field"><label>תאריך</label><input id="tkDate" type="date"></div>
+        <div class="field"><label>שעה</label><input id="tkStart" type="time"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>משך</label>
+          <select id="tkDur"><option value="15">15 דק׳</option><option value="30" selected>30 דק׳</option><option value="45">45 דק׳</option><option value="60">שעה</option></select>
+        </div>
+        <div class="field"><label>לקוח (לא חובה)</label>
+          <input id="tkClient" list="tkClientsDL" placeholder="ללא לקוח">
+          <datalist id="tkClientsDL"></datalist>
+        </div>
+      </div>
+      <div class="form-row form-row--1"><div class="field">
+        <label>הערות</label><textarea id="tkNotes" placeholder="פרטים נוספים..."></textarea>
+      </div></div>
+    </div>
+    <div class="modal__foot modal__foot--split">
+      <button class="btn btn--ghost btn--sm" id="tkDelete" style="color:var(--red);border-color:var(--red-bg)">מחק</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn--ghost" data-close>ביטול</button>
+        <button class="btn btn--primary" id="tkSave" style="background:#8b5cf6">שמירת משימה</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Working hours modal ============ -->
+<div class="modal-back" id="whModal" role="dialog" aria-modal="true">
+  <div class="modal modal--wide">
+    <div class="modal__head">
+      <h3>הגדרות יומן ושעות עבודה</h3>
+      <button class="modal__close" data-close>×</button>
+    </div>
+    <div class="modal__body">
+      <div class="set-tabs" id="setTabs">
+        <button class="set-tab is-active" data-pane="places">מקומות ושעות</button>
+        <button class="set-tab" data-pane="ov">חריגות וחגים</button>
+        <button class="set-tab" data-pane="meet">פגישות</button>
+        <button class="set-tab" data-pane="types">סוגי פגישות</button>
+        <button class="set-tab" data-pane="link">לינק וסנכרון</button>
+      </div>
+      <div class="set-pane is-active" data-paneid="places">
+      <div class="field-section-title">מקומות עבודה</div>
+      <div id="locSettings"></div>
+      <button class="add-loc-btn" id="addLocBtn">+ הוספת מקום עבודה</button>
+
+      <div class="field-divider"></div>
+      <div class="field-section-title">שעות עבודה</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:9px">בחר מקום כדי לערוך את השעות שלו:</div>
+      <div class="loc-tabs" id="locTabs"></div>
+      <div id="whRows"></div>
+
+      </div>
+      <div class="set-pane" data-paneid="ov">
+      <div class="field-check" style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div class="switch is-on" id="holCloseSwitch" role="switch"></div>
+        <div>
+          <div style="font-weight:500">סגירה אוטומטית בחגי ישראל</div>
+          <div style="font-size:.78rem;color:var(--muted)">בחג לא יוצעו זמנים בלינק הציבורי והיום יסומן כסגור.</div>
+        </div>
+      </div>
+      <div class="ov-eve">
+        <div class="switch is-on" id="eveSwitch" role="switch"></div>
+        <span>עובדים בערב חג — עד</span>
+        <select id="eveEndSel" class="ov-inp">
+          <option value="12:00">12:00</option><option value="13:00">13:00</option>
+          <option value="14:00">14:00</option><option value="15:00">15:00</option>
+        </select>
+      </div>
+      <div class="ov-add">
+        <input type="date" id="ovDate" class="ov-inp">
+        <select id="ovKind" class="ov-inp">
+          <option value="closed">יום סגור</option>
+          <option value="swap">החלפת מקום ליום זה</option>
+        </select>
+        <select id="ovLoc" class="ov-inp" style="display:none"></select>
+        <button class="btn btn--ghost btn--sm" id="ovAdd">+ הוספת חריגה</button>
+      </div>
+      <div id="ovList"></div>
+
+      </div>
+      <div class="set-pane" data-paneid="meet">
+      <div class="set-note">ההגדרות כאן קובעות איך נבנים הזמנים <b>בלינק שהלקוח מקבל</b> — אורך הפגישה שתוצע, המרווחים בין פגישות, וכמה מראש אפשר לקבוע.</div>
+
+
+      <div class="form-row">
+        <div class="field">
+          <label>אורך פגישה ברירת מחדל</label>
+          <select id="setDefaultDur">
+            <option value="30">30 דקות</option>
+            <option value="45">45 דקות</option>
+            <option value="50" selected>50 דקות (טיפול)</option>
+            <option value="60">60 דקות</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>אזור זמן</label>
+          <select disabled>
+            <option>ישראל (Asia/Jerusalem)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>חיץ לפני פגישה</label>
+          <select id="setBufBefore">
+            <option value="0" selected>ללא</option>
+            <option value="5">5 דקות</option>
+            <option value="10">10 דקות</option>
+            <option value="15">15 דקות</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>חיץ אחרי פגישה</label>
+          <select id="setBufAfter">
+            <option value="0">ללא</option>
+            <option value="10" selected>10 דקות</option>
+            <option value="15">15 דקות</option>
+            <option value="30">30 דקות</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>מינימום הזמנה מראש</label>
+          <select id="setMinNotice">
+            <option value="60">שעה</option>
+            <option value="240" selected>4 שעות</option>
+            <option value="1440">יום</option>
+            <option value="2880">יומיים</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>חלון הזמנה (כמה ימים קדימה)</label>
+          <select id="setWindow">
+            <option value="14">שבועיים</option>
+            <option value="30" selected>חודש</option>
+            <option value="60">חודשיים</option>
+            <option value="90">3 חודשים</option>
+          </select>
+        </div>
+      </div>
+
+      </div>
+      <div class="set-pane" data-paneid="types">
+      <div class="set-note">הסוגים קובעים את הצבע והתיוג של הפגישות ביומן. סוג שכבר יש לו פגישות אי אפשר למחוק.</div>
+      <div id="typeList"></div>
+      <button class="add-loc-btn" id="typeAdd">+ סוג פגישה חדש</button>
+      </div>
+      <div class="set-pane" data-paneid="link">
+      <div class="field-section-title">לינק ציבורי לקביעת פגישות</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div class="switch is-on" id="publicBookingSwitch" role="switch"></div>
+        <div>
+          <div style="font-weight:500">הפעלת לינק ציבורי</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:2px">לקוחות יכולים להיכנס ולקבוע פגישה לבד מתוך הזמינות שלך — בלי שיחות תיאום.</div>
+        </div>
+      </div>
+      <div class="form-row form-row--1"><div class="field">
+        <label>שם הפגישה שמוצג ללקוח בעמוד הזימון</label>
+        <input id="bookTitleInp" placeholder="לדוגמה: פגישת תזרים · 50 דק׳">
+      </div></div>
+      <div class="booking-link" style="background:var(--off);border-color:var(--divider)">
+        <div class="booking-link__url" id="settingsBookingUrl">—</div>
+        <div class="booking-link__actions">
+          <button class="bl-btn" id="copyLinkBtn2">📋 העתק</button>
+          <button class="bl-btn" id="previewLinkBtn2">👁 תצוגה מקדימה</button>
+          <button class="bl-btn" id="shareLinkBtn2">📱 שלח בוואטסאפ</button>
+        </div>
+      </div>
+
+      <div class="field-divider"></div>
+      <div class="field-section-title">סנכרון Google</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="switch is-on" id="googleSyncSwitch" role="switch"></div>
+        <div>
+          <div style="font-weight:500">סנכרון דו-כיווני עם גוגל</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:2px">פגישות חדשות נכתבות גם ליומן גוגל, ואירועים מהיומן שלך נטענים אוטומטית.</div>
+        </div>
+      </div>
+      <div class="gc-acct">מחובר לחשבון <b>anat@jampa.ai</b> · <span class="gc-change">החלפת חשבון</span></div>
+      <div class="gc-title">אילו יומנים לסנכרן?</div>
+      <div id="gcList"></div>
+      </div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn btn--ghost" data-close>ביטול</button>
+      <button class="btn btn--primary" id="whSave">שמירת הגדרות</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================================================
+   DATE HELPERS
+   ===================================================== */
+const DOW_S = ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+const DOW_L = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const MON_L = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const MON_S = ['ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳'];
+function sod(d){const x=new Date(d);x.setHours(0,0,0,0);return x;}
+function add(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function addMon(d,n){const x=new Date(d);x.setMonth(x.getMonth()+n);return x;}
+function sunOf(d){const x=sod(d);x.setDate(x.getDate()-x.getDay());return x;}
+function keyOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+function parseTime(t){const [h,m]=t.split(':').map(Number);return h*60+m;}
+function fmtTime(min){const h=Math.floor(min/60),m=min%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+function fmtRangeLabel(start, end){
+  if(start.getMonth()===end.getMonth())
+    return start.getDate()+'–'+end.getDate()+' ב'+MON_L[start.getMonth()]+' '+start.getFullYear();
+  if(start.getFullYear()===end.getFullYear())
+    return start.getDate()+' ב'+MON_S[start.getMonth()]+' – '+end.getDate()+' ב'+MON_S[end.getMonth()]+' '+start.getFullYear();
+  return start.getDate()+' ב'+MON_S[start.getMonth()]+' '+start.getFullYear()+' – '+end.getDate()+' ב'+MON_S[end.getMonth()]+' '+end.getFullYear();
+}
+
+/* =====================================================
+   GRID CONSTANTS
+   ===================================================== */
+const HOUR_START = 6;      // השעה הראשונה שמוצגת בגריד
+const HOUR_END   = 24;     // השעה האחרונה — יום פתוח עד חצות
+const HOURS      = HOUR_END - HOUR_START;
+const HOUR_PX    = 48;     // חייב להתאים ל-var(--hour-h)
+const PX_PER_MIN = HOUR_PX / 60;
+const SNAP_MIN   = 15;
+function minToY(min){ return (min - HOUR_START*60) * PX_PER_MIN; }
+function yToMin(y){ return Math.round(y / PX_PER_MIN); }
+function snap(min){ return Math.round(min / SNAP_MIN) * SNAP_MIN; }
+
+/* =====================================================
+   DATA
+   ===================================================== */
+let TYPES = [
+  {key:'intro',    label:'פגישה ראשונה',  color:'var(--blue)',   icon:'✦'},
+  {key:'therapy',  label:'טיפול שוטף',    color:'var(--green)',  icon:'♥'},
+  {key:'call',     label:'ייעוץ טלפוני',  color:'var(--salmon)', icon:'📞'},
+  {key:'personal', label:'זמן אישי',      color:'var(--gray)',   icon:'•'},
+  {key:'block',    label:'חסום',          color:'var(--red)',    icon:'⊘'},
+];
+const TASK_META = {key:'task', label:'משימה', color:'#8b5cf6', icon:''};
+const TYPE_BY_KEY = {};
+function rebuildTypeMap(){
+  Object.keys(TYPE_BY_KEY).forEach(k => delete TYPE_BY_KEY[k]);
+  TYPES.forEach(t => TYPE_BY_KEY[t.key] = t);
+  TYPE_BY_KEY.task = TASK_META;
+}
+rebuildTypeMap();
+
+const USERS = [
+  {id:1, name:'ענת שלו',     initials:'עש', slug:'anat'},
+  {id:2, name:'רונן אביטל',  initials:'רא', slug:'ronen'},
+  {id:3, name:'תמר בן חיים', initials:'תב', slug:'tamar'},
+];
+/* חגי ישראל — תצוגה ביומן (דמו; בפרודקשן: פיד חגים) */
+const HOLIDAYS = {
+  '2026-07-23':{name:'תשעה באב', ic:'🕯', fast:true},
+  '2026-07-29':{name:'ט״ו באב', ic:'💜'},
+  '2026-09-11':{name:'ערב ראש השנה', ic:'🍎', eve:true},
+  '2026-09-12':{name:'ראש השנה', ic:'🍯'},
+  '2026-09-13':{name:'ראש השנה ב׳', ic:'🍯'},
+  '2026-09-20':{name:'ערב יום כיפור', ic:'🕊', eve:true},
+  '2026-09-21':{name:'יום כיפור', ic:'🕊'},
+  '2026-09-25':{name:'ערב סוכות', ic:'🌿', eve:true},
+  '2026-09-26':{name:'סוכות', ic:'🌿'},
+};
+function holidayOf(dateKey){ return HOLIDAYS[dateKey] || null; }
+function currentUser(){ return USERS.find(u => u.id === state.currentUser) || USERS[0]; }
+function bookingUrl(){ return 'jampa.ai/book/' + currentUser().slug; }
+
+/* מקומות עבודה — לכל מקום שעות פעילות משלו לפי ימי השבוע.
+   כל יום הוא מערך של טווחי זמן (blocks) — מאפשר לפצל יום אחד למספר חלקים, למשל בוקר וערב. */
+const LOCATIONS_DEFAULT = [
+  {
+    id:'yavne', name:'יבנה', address:'הרצל 12, יבנה',
+    color:'#1e8e5f', icon:'🏥',
+    hours: {
+      0:[{start:'09:00', end:'12:00'}, {start:'14:00', end:'19:00'}], // א׳ — בוקר וערב (מפוצל)
+      2:[{start:'09:00', end:'19:00'}],                                  // ג׳
+      4:[{start:'09:00', end:'19:00'}],                                  // ה׳
+    }
+  },
+  {
+    id:'tel-aviv', name:'תל אביב', address:'אבן גבירול 50, ת״א',
+    color:'#7557E3', icon:'🏥',
+    hours: {
+      1:[{start:'10:00', end:'20:00'}], // ב׳
+      3:[{start:'10:00', end:'20:00'}], // ד׳
+    }
+  },
+  {
+    id:'online', name:'מקוון', address:'Google Meet',
+    color:'#c97b6e', icon:'💻',
+    hours: {
+      5:[{start:'09:00', end:'14:00'}], // ו׳
+      6:[{start:'20:00', end:'22:00'}], // מוצ״ש — מקוון
+    }
+  },
+];
+
+/* טווחים פעילים של מקום נתון ביום נתון. מחזיר מערך של {start, end}. */
+function blocksOf(loc, dayOfWeek){
+  return loc.hours[dayOfWeek] || [];
+}
+/* כל הטווחים של כל המקומות ביום נתון, מסודרים, כולל מטא של המקום */
+function dayPlanOf(dateKey){
+  if (!dateKey) return null;
+  const ov = state.overrides[dateKey];
+  if (ov) return ov;                                    // חריגה ידנית — סגור או מקום מוחלף
+  const hol = (typeof holidayOf==='function') && holidayOf(dateKey);
+  if (hol && state.settings.closeOnHolidays){
+    if (hol.eve) return !state.settings.eveOpen
+      ? {closed:true, reason:hol.name}
+      : {shortDay:true, until:state.settings.eveEnd||'14:00', reason:hol.name};
+    return {closed:true, reason:hol.name};
+  }
+  return null;
+}
+function activeRangesForDay(dayOfWeek, dateKey){
+  const plan = dayPlanOf(dateKey);
+  if (plan){
+    if (plan.closed) return [];
+    if (plan.shortDay){
+      const cut = parseTime(plan.until), out = [];
+      state.locations.forEach(loc => {
+        blocksOf(loc, dayOfWeek).forEach(b => {
+          if (parseTime(b.start) >= cut) return;
+          out.push({start:b.start, end: parseTime(b.end)>cut?plan.until:b.end, color:loc.color, name:loc.name+' · ערב חג', locId:loc.id});
+        });
+      });
+      return out.sort((a,b)=>parseTime(a.start)-parseTime(b.start));
+    }
+    const loc = getLocation(plan.locId);
+    if (loc) return [{start:plan.start||'09:00', end:plan.end||'19:00', color:loc.color, name:loc.name+' · חריגה', locId:loc.id}];
+  }
+  const out = [];
+  state.locations.forEach(loc => {
+    blocksOf(loc, dayOfWeek).forEach(b => {
+      out.push({
+        start: b.start, end: b.end,
+        color: loc.color, name: loc.name, locId: loc.id,
+      });
+    });
+  });
+  return out.sort((a, b) => parseTime(a.start) - parseTime(b.start));
+}
+function getLocation(id){ return state.locations.find(l => l.id === id) || null; }
+function isActiveOnDay(loc, dayOfWeek){ return blocksOf(loc, dayOfWeek).length > 0; }
+
+const ACCOUNTS = [
+  {id:'mine',     name:'היומן שלי',  color:'var(--blue)',   on:true},
+  {id:'google',   name:'Google',     color:'var(--green)',  on:true},
+  {id:'vacation', name:'חופשות',     color:'var(--salmon)', on:true},
+];
+
+/* Sample events — dynamic relative to today */
+function buildSampleEvents(){
+  const today = sod(new Date());
+  const E = [];
+  // מיפוי יום-שבוע → מקום ברירת מחדל לפי השעות שהוגדרו
+  const LOC_BY_DOW = {0:'yavne', 1:'tel-aviv', 2:'yavne', 3:'tel-aviv', 4:'yavne', 5:'online', 6:null};
+  function ev(off, sh, sm, dur, type, title, opts){
+    opts = opts || {};
+    const d = add(today, off);
+    E.push({
+      id: 'e'+(E.length+1),
+      date: keyOf(d),
+      start: sh*60 + sm,
+      duration: dur,
+      type,
+      title,
+      client: opts.client || '',
+      locationId: opts.locationId !== undefined ? opts.locationId : LOC_BY_DOW[d.getDay()],
+      location: opts.location || '',   // טקסט חופשי (לאחור-תאימות)
+      notes: opts.notes || '',
+      google: opts.google !== false,
+      repeat: opts.repeat || 'none',
+      remind: opts.remind != null ? opts.remind : 30,
+    });
+  }
+  // היום
+  ev(0, 9, 0, 50, 'therapy', 'שרה לוינסון',            {client:'שרה לוינסון', repeat:'weekly'});
+  ev(0,13, 0, 30, 'call',    'מיכל אדרי — שיחת מעקב',  {client:'מיכל אדרי', locationId:'online'});
+  ev(0,14, 0, 60, 'personal','ארוחת צהריים',           {google:false, locationId:null});
+  ev(0,16, 0, 50, 'therapy', 'נועה ברק',               {client:'נועה ברק', repeat:'weekly'});
+  ev(0,17,30, 50, 'therapy', 'דניאל כהן',              {client:'דניאל כהן', repeat:'weekly'});
+
+  ev(1,10, 0, 50, 'therapy', 'יואב פרידמן',            {client:'יואב פרידמן', repeat:'weekly'});
+  ev(1,12, 0, 50, 'therapy', 'הילה ורדי',              {client:'הילה ורדי'});
+  ev(1,16, 0, 30, 'call',    'רונית כהן — שיחת הורים', {client:'דניאל כהן', locationId:'online'});
+
+  ev(2,10, 0, 50, 'therapy', 'בר אלימלך',              {client:'בר אלימלך', repeat:'weekly'});
+  ev(2,13, 0,120, 'block',   'הדרכה קבוצתית — לא זמינה',{google:false, locationId:null});
+
+  ev(3, 9, 0, 50, 'therapy', 'שרה לוינסון',            {client:'שרה לוינסון'});
+  ev(3,13, 0, 50, 'therapy', 'עומר גל',                {client:'עומר גל', repeat:'weekly'});
+  ev(3,16, 0, 50, 'intro',   'רותם הראל — פגישה ראשונה',{client:'רותם הראל', locationId:'online'});
+
+  ev(4,10, 0, 50, 'therapy', 'נועה ברק',               {client:'נועה ברק'});
+  ev(4,12, 0, 50, 'therapy', 'מיכל אדרי — פגישת סיכום',{client:'מיכל אדרי'});
+
+  ev(6, 9, 0, 50, 'therapy', 'שרה לוינסון',            {client:'שרה לוינסון'});
+  ev(6,10, 0, 50, 'intro',   'גיא נחמיאס — פגישה ראשונה',{client:'גיא נחמיאס'});
+  ev(6,11, 0, 30, 'call',    'דנה פרידמן — ייעוץ',      {client:'יואב פרידמן', locationId:'online'});
+  ev(6,12, 0, 60, 'personal','ארוחת צהריים',            {google:false, locationId:null});
+  ev(6,13, 0, 50, 'therapy', 'עומר גל',                 {client:'עומר גל'});
+  ev(6,15, 0, 50, 'therapy', 'יואב פרידמן',             {client:'יואב פרידמן'});
+  ev(6,17, 0, 30, 'call',    'הילה ורדי — מעקב',        {client:'הילה ורדי', locationId:'online'});
+
+  ev(-2, 16,0, 50, 'therapy', 'נועה ברק',               {client:'נועה ברק'});
+  ev(-1, 16,0, 50, 'therapy', 'דניאל כהן',              {client:'דניאל כהן'});
+  return E;
+}
+
+/* =====================================================
+   STATE
+   ===================================================== */
+const state = {
+  currentUser: USERS[0].id,
+  view: 'week',
+  cursor: sod(new Date()),     // התאריך הפעיל
+  miniCursor: sod(new Date()), // ניווט במיני-יומן
+  locations: JSON.parse(JSON.stringify(LOCATIONS_DEFAULT)),
+  accounts: ACCOUNTS.map(a => ({...a})),
+  events: buildSampleEvents(),
+  settings: {defaultDuration:50, bufBefore:0, bufAfter:10, minNotice:240, window:30, googleSync:true, activeLocId:'yavne', closeOnHolidays:true, eveOpen:true, eveEnd:'14:00'},
+  overrides: { '2026-07-28': {locId:'tel-aviv', start:'09:00', end:'19:00'} },  // דמו: שלישי הוחלף לת"א
+  gcals: [
+    {id:'work',    name:'ענת — קליניקה (ראשי)', color:'#7557E3', dir:'two',  on:true},
+    {id:'personal',name:'אישי',               color:'#1e8e5f', dir:'busy', on:true},
+    {id:'family',  name:'משפחה משותף',        color:'#9C89F2', dir:'busy', on:false},
+    {id:'holidays',name:'חגים בישראל',         color:'#C29A3B', dir:'in',   on:true},
+  ],
+  syncMinutesAgo: 3,
+  editingEventId: null,
+};
+
+const TODAY = sod(new Date());
+
+/* =====================================================
+   SHORTCUTS
+   ===================================================== */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+const el = (tag, cls, html) => { const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; };
+
+/* =====================================================
+   RANGE BY VIEW
+   ===================================================== */
+function viewRange(){
+  if (state.view === 'day') return {start: state.cursor, end: state.cursor, days:1};
+  if (state.view === 'week') return {start: sunOf(state.cursor), end: add(sunOf(state.cursor),6), days:7};
+  if (state.view === 'month'){
+    const first = new Date(state.cursor.getFullYear(), state.cursor.getMonth(), 1);
+    const last  = new Date(state.cursor.getFullYear(), state.cursor.getMonth()+1, 0);
+    return {start:first, end:last, days:last.getDate(), gridStart: sunOf(first), gridEnd: add(sunOf(last),6)};
+  }
+  // agenda
+  return {start: state.cursor, end: add(state.cursor, 13), days:14};
+}
+function updateRangeLabel(){
+  const r = viewRange();
+  let label;
+  if (state.view === 'day'){
+    label = 'יום ' + DOW_L[r.start.getDay()] + ', ' + r.start.getDate() + ' ב' + MON_L[r.start.getMonth()] + ' ' + r.start.getFullYear();
+  } else if (state.view === 'month'){
+    label = MON_L[r.start.getMonth()] + ' ' + r.start.getFullYear();
+  } else if (state.view === 'agenda'){
+    label = 'מ-' + r.start.getDate() + ' ב' + MON_S[r.start.getMonth()] + ' למשך שבועיים';
+  } else {
+    label = fmtRangeLabel(r.start, r.end);
+  }
+  $('#rangeLabel').textContent = label;
+}
+
+/* =====================================================
+   SIDE PANEL
+   ===================================================== */
+function renderMini(){
+  const c = state.miniCursor;
+  $('#miniTitle').textContent = MON_L[c.getMonth()] + ' ' + c.getFullYear();
+  const first = new Date(c.getFullYear(), c.getMonth(), 1);
+  const start = sunOf(first);
+  const eventDates = new Set(state.events.map(e => e.date));
+  const cells = [];
+  DOW_S.forEach(d => cells.push('<div class="mini__dow">'+d+'</div>'));
+  for (let i = 0; i < 42; i++){
+    const d = add(start, i);
+    const inMon = d.getMonth() === c.getMonth();
+    const isToday = sameDay(d, TODAY);
+    const isSel = sameDay(d, state.cursor);
+    const has = eventDates.has(keyOf(d));
+    const cls = ['mini__day'];
+    if (!inMon) cls.push('is-other');
+    if (isToday) cls.push('is-today');
+    if (isSel && !isToday) cls.push('is-selected');
+    if (has) cls.push('has-events');
+    cells.push(`<div class="${cls.join(' ')}" data-date="${keyOf(d)}">${d.getDate()}</div>`);
+  }
+  $('#miniGrid').innerHTML = cells.join('');
+}
+
+function renderAccounts(){
+  $('#acctList').innerHTML = state.accounts.map(a => `
+    <li class="acct ${a.on?'is-on':''}" data-id="${a.id}" style="color:${a.color}">
+      <span class="acct__sq"></span>
+      <span class="acct__name">${a.name}</span>
+    </li>`).join('');
+}
+
+function renderLegend(){
+  $('#legend').innerHTML = TYPES.map(t => `
+    <li class="legend__item">
+      <span class="legend__dot" style="background:${t.color}"></span>
+      <span>${t.label}</span>
+    </li>`).join('');
+}
+
+/* פורמט טווחים של יום אחד: "09:00–12:00, 15:00–18:00" */
+function fmtBlocks(blocks){
+  if (!blocks || !blocks.length) return 'סגור';
+  return blocks.map(b => `${b.start}–${b.end}`).join(', ');
+}
+function blocksSig(blocks){
+  return (blocks || []).map(b => b.start + '-' + b.end).join('|');
+}
+
+function renderWhMini(){
+  const c = $('#whMini');
+  if (!c) return;     // הסקציה הוסרה — הפכנו לפונקציה ריקה לבטיחות
+  c.innerHTML = '';
+  // לכל מקום: קיבוץ ימים שיש להם אותם בלוקים
+  state.locations.forEach(loc => {
+    const days = [0,1,2,3,4,5,6].filter(d => isActiveOnDay(loc, d));
+    if (days.length === 0) return;
+    // קבצי ימים לפי חתימת בלוקים זהה
+    const groups = [];
+    days.forEach(d => {
+      const sig = blocksSig(loc.hours[d]);
+      const last = groups[groups.length-1];
+      if (last && last.sig === sig) last.days.push(d);
+      else groups.push({sig, days:[d], blocks: loc.hours[d]});
+    });
+    groups.forEach((g, gi) => {
+      const dayLabels = g.days.map(d => DOW_S[d]).join('/');
+      const timeText = fmtBlocks(g.blocks);
+      const row = el('div','wh-mini__row');
+      row.innerHTML = `
+        <span class="wh-mini__day">${gi===0?`<span class="loc-dot" style="background:${loc.color}"></span> ${loc.name} · `:'<span style="opacity:0">. </span>'}${dayLabels}</span>
+        <span class="wh-mini__time">${timeText}</span>`;
+      c.appendChild(row);
+    });
+  });
+  const btn = el('button','wh-mini__edit','עריכת שעות עבודה');
+  btn.id = 'editWhBtn';
+  btn.addEventListener('click', openWhModal);
+  c.appendChild(btn);
+}
+
+function renderSync(){
+  $('#syncSub').textContent = 'עודכן לפני ' + state.syncMinutesAgo + ' דק׳';
+}
+
+function locDaysSummary(loc){
+  const days = [0,1,2,3,4,5,6].filter(d => isActiveOnDay(loc, d));
+  if (days.length === 0) return 'לא פעיל';
+  const first = loc.hours[days[0]];
+  const dayLabels = days.map(d => DOW_S[d]).join('/');
+  if (first.length === 1) return dayLabels + ' · ' + first[0].start + '–' + first[0].end;
+  return dayLabels + ' · ' + first[0].start + '–' + first[0].end + ' (+' + (first.length-1) + ' טווחים)';
+}
+
+function renderLocations(){
+  const c = $('#locList');
+  if (!c) return;
+  c.innerHTML = state.locations.map(loc => {
+    const days = [0,1,2,3,4,5,6].filter(d => isActiveOnDay(loc, d));
+    // קיבוץ ימים עם אותם טווחים
+    const groups = [];
+    days.forEach(d => {
+      const sig = blocksSig(loc.hours[d]);
+      const last = groups[groups.length-1];
+      if (last && last.sig === sig) last.days.push(d);
+      else groups.push({sig, days:[d], blocks: loc.hours[d]});
+    });
+    const hoursRows = groups.length ? groups.map(g => `
+      <div class="loc-card__hours-row">
+        <span class="loc-card__hours-day">${g.days.map(d => DOW_S[d]).join('/')}</span>
+        <span class="loc-card__hours-time">${fmtBlocks(g.blocks)}</span>
+      </div>`).join('') : '<div class="loc-card__hours-row" style="color:var(--muted)">לא פעיל</div>';
+    return `<li class="loc-card" style="color:${loc.color}">
+      <div class="loc-card__top">
+        <span class="loc-card__name">${loc.name}</span>
+        <button class="loc-card__edit" data-loc-edit-side="${loc.id}" title="עריכת מקום ושעות">✎</button>
+      </div>
+      <div class="loc-card__addr">${loc.address}</div>
+      <div class="loc-card__hours">${hoursRows}</div>
+    </li>`;
+  }).join('');
+}
+
+function renderBookingLinks(){
+  const c = $('#bookingLinksWrap');
+  if (!c) return;
+  const user = currentUser();
+  const url = 'jampa.ai/book/' + user.slug;
+  c.innerHTML = `
+    <div class="booking-row booking-row--main" style="color:var(--salmon)">
+      <div class="booking-row__url">${url}</div>
+      <div class="booking-row__actions">
+        <button class="bl-btn" data-action="copy" data-url="${url}">📋 העתק</button>
+        <button class="bl-btn" data-action="preview" data-url="${url}">👁 תצוגה</button>
+        <button class="bl-btn" data-action="share" data-url="${url}">📱 שלח</button>
+      </div>
+      <div class="booking-flow">
+        <div class="booking-flow__step"><span class="booking-flow__num">1</span> הלקוח בוחר מיקום</div>
+        <div class="booking-flow__step"><span class="booking-flow__num">2</span> בוחר זמן פנוי באותו מקום</div>
+        <div class="booking-flow__step"><span class="booking-flow__num">3</span> הפגישה נכנסת אוטומטית ליומן</div>
+      </div>
+    </div>`;
+}
+
+/* =====================================================
+   GRID HELPERS (WEEK / DAY)
+   ===================================================== */
+function buildGutterHtml(){
+  let html = '<div class="gutter">';
+  for (let h = HOUR_START; h < HOUR_END; h++){
+    html += `<div class="gutter__hour">${String(h).padStart(2,'0')}:00</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderHeadCells(days){
+  let html = '<div class="view__head__cell view__head__gutter"></div>';
+  days.forEach(d => {
+    const isToday = sameDay(d, TODAY);
+    const hol = holidayOf(keyOf(d));
+    const plan = dayPlanOf(keyOf(d));
+    let locChips = '';
+    if (!plan || plan.shortDay){
+      const seen = new Set();
+      const locs = activeRangesForDay(d.getDay(), keyOf(d)).filter(r => !seen.has(r.locId) && seen.add(r.locId));
+      locChips = locs.length ? `<div class="vh__locs">${locs.map(r =>
+        `<span class="vh__loc"><i style="background:${r.color}"></i>${(getLocation(r.locId)||{}).name||r.name}</span>`).join('')}</div>` : '';
+    }
+    const planChip = plan ? (plan.closed
+      ? `<div class="vh__holiday closed">⊘ סגור${plan.reason?' · '+plan.reason:''}</div>`
+      : plan.shortDay
+      ? `<div class="vh__holiday eve">◗ עד ${plan.until} · ${plan.reason}</div>`
+      : `<div class="vh__holiday swap">⇄ היום ב${(getLocation(plan.locId)||{}).name||''}</div>`) : '';
+    html += `<div class="view__head__cell ${isToday?'is-today':''} ${hol?'is-holiday':''}" data-date="${keyOf(d)}">
+      <div class="vh__dow">יום ${DOW_L[d.getDay()]}</div>
+      <div class="vh__day">${d.getDate()}</div>
+      ${hol&&!(plan&&plan.closed)?`<div class="vh__holiday" title="${hol.name}">${hol.ic} ${hol.name}</div>`:''}
+      ${planChip}
+      ${locChips}
+    </div>`;
+  });
+  return html;
+}
+
+function eventsForDay(dateKey){
+  return state.events.filter(e => e.date === dateKey).sort((a,b)=>a.start-b.start);
+}
+
+function eventHtml(e){
+  const t = TYPE_BY_KEY[e.type];
+  const loc = e.locationId ? getLocation(e.locationId) : null;
+  const top = minToY(e.start);
+  const height = e.duration * PX_PER_MIN;
+  const cls = ['event','event--'+e.type];
+  if (e.google) cls.push('event--google');
+  const title = e.title + (e.client && !e.title.includes(e.client) ? ' · ' + e.client : '');
+  const locChip = loc ? `<span class="event__loc" style="background:${loc.color}"></span>` : '';
+  const locText = loc ? `<span class="event__loc-name">${loc.name}</span>` : (e.location ? `<span class="event__loc-name">${e.location}</span>` : '');
+  const preset = ['intro','therapy','call','personal','block','task'].includes(e.type);
+  return `<div class="${cls.join(' ')}" data-id="${e.id}"
+            style="top:${top}px;height:${height}px${preset?'':';color:'+t.color}">
+    <div class="event__title">${locChip}${title}</div>
+    <div class="event__meta">
+      <span class="event__time">${fmtTime(e.start)}–${fmtTime(e.start+e.duration)}</span>
+      ${locText}
+    </div>
+    <div class="event__resize" data-resize="${e.id}"></div>
+  </div>`;
+}
+
+function whOverlayHtml(day){
+  // איחוד טווחי השעות של כל המקומות שפעילים ביום זה (לטשטוש שטחים מחוץ לשעות העבודה)
+  const ranges = activeRangesForDay(day.getDay(), keyOf(day));
+  const topMin = HOUR_START * 60, botMin = HOUR_END * 60;
+  if (ranges.length === 0){
+    return `<div class="wh-overlay" style="top:0;bottom:0"></div>`;
+  }
+  // מיזוג טווחים חופפים
+  const merged = [];
+  ranges.map(r => ({s:parseTime(r.start), e:parseTime(r.end), color:r.color, loc:r.locId, name:r.name}))
+    .sort((a,b)=>a.s-b.s)
+    .forEach(r => {
+      const last = merged[merged.length-1];
+      if (last && r.s <= last.e) last.e = Math.max(last.e, r.e);
+      else merged.push({...r});
+    });
+  let parts = '';
+  // שטחים מחוץ לטווחי העבודה
+  let cursor = topMin;
+  merged.forEach(r => {
+    if (r.s > cursor) parts += `<div class="wh-overlay" style="top:${(cursor-topMin)*PX_PER_MIN}px;height:${(r.s-cursor)*PX_PER_MIN}px"></div>`;
+    cursor = Math.max(cursor, r.e);
+  });
+  if (cursor < botMin) parts += `<div class="wh-overlay" style="top:${(cursor-topMin)*PX_PER_MIN}px;bottom:0"></div>`;
+  // פס צבעוני עדין לפי המקום (לאיתור מהיר של "איפה אני היום")
+  ranges.forEach(r => {
+    const s = parseTime(r.start), e = parseTime(r.end);
+    parts += `<div class="loc-stripe" title="${r.name}" style="top:${(s-topMin)*PX_PER_MIN}px;height:${(e-s)*PX_PER_MIN}px;background:${r.color}"></div>`;
+  });
+  return parts;
+}
+
+function nowLineHtml(day){
+  if (!sameDay(day, new Date())) return '';
+  const now = new Date();
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  if (nowMin < HOUR_START*60 || nowMin > HOUR_END*60) return '';
+  const y = minToY(nowMin);
+  return `<div class="now-line" style="top:${y}px">
+    <span class="now-time">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</span>
+  </div>`;
+}
+
+function dayColumnHtml(d){
+  const evs = eventsForDay(keyOf(d));
+  const isToday = sameDay(d, TODAY);
+  return `<div class="day-col ${isToday?'is-today':''}" data-date="${keyOf(d)}">
+    <div class="day-col__bg"></div>
+    ${whOverlayHtml(d)}
+    ${nowLineHtml(d)}
+    ${evs.map(eventHtml).join('')}
+    <div class="day-col__hover-time" id="hoverHint-${keyOf(d)}" style="display:none"></div>
+  </div>`;
+}
+
+/* =====================================================
+   VIEW RENDERS
+   ===================================================== */
+function renderWeek(){
+  const r = viewRange();
+  const days = [];
+  for (let i = 0; i < 7; i++) days.push(add(r.start, i));
+
+  const view = $('#weekView');
+  view.innerHTML = `
+    <div class="view__head" style="grid-template-columns: 60px repeat(7, 1fr)">
+      ${renderHeadCells(days)}
+    </div>
+    <div class="view__scroll" id="weekScroll">
+      <div class="grid" style="grid-template-columns: 60px repeat(7, 1fr)">
+        ${buildGutterHtml()}
+        ${days.map(dayColumnHtml).join('')}
+      </div>
+    </div>`;
+
+  wireGrid(view);
+  scrollToCurrentTime();
+}
+
+function renderDay(){
+  const view = $('#dayView');
+  const d = state.cursor;
+  view.innerHTML = `
+    <div class="view__head" style="grid-template-columns: 60px 1fr">
+      ${renderHeadCells([d])}
+    </div>
+    <div class="view__scroll">
+      <div class="grid" style="grid-template-columns: 60px 1fr">
+        ${buildGutterHtml()}
+        ${dayColumnHtml(d)}
+      </div>
+    </div>`;
+  wireGrid(view);
+  scrollToCurrentTime();
+}
+
+function renderMonth(){
+  const view = $('#monthView');
+  const r = viewRange();
+  const start = r.gridStart;
+  const cells = [];
+  for (let i = 0; i < 42; i++){
+    const d = add(start, i);
+    const inMon = d.getMonth() === state.cursor.getMonth();
+    const isToday = sameDay(d, TODAY);
+    const evs = eventsForDay(keyOf(d));
+    const show = evs.slice(0,3);
+    const more = evs.length - show.length;
+    const evsHtml = show.map(e => `
+      <div class="mev mev--${e.type}">
+        <span class="mev__t">${fmtTime(e.start)}</span>
+        <span>${e.title}</span>
+      </div>`).join('');
+    const hol = holidayOf(keyOf(d));
+    cells.push(`<div class="mcell ${inMon?'':'is-other'} ${isToday?'is-today':''} ${hol?'is-holiday':''}" data-date="${keyOf(d)}">
+      <div class="mcell__num">${d.getDate()}</div>
+      ${hol?`<div class="mcell__holiday">${hol.ic} ${hol.name}</div>`:''}
+      <div class="mcell__evs">${evsHtml}</div>
+      ${more > 0 ? `<div class="mcell__more">עוד ${more}</div>` : ''}
+    </div>`);
+  }
+  view.innerHTML = `
+    <div class="month">
+      <div class="month__dow">
+        ${DOW_S.map(d=>`<div>יום ${d}</div>`).join('')}
+      </div>
+      <div class="month__grid">${cells.join('')}</div>
+    </div>`;
+
+  view.querySelectorAll('.mcell').forEach(c => {
+    c.addEventListener('click', () => {
+      state.cursor = new Date(c.dataset.date+'T00:00:00');
+      setView('day');
+    });
+  });
+  view.querySelectorAll('.mev').forEach(m => {
+    m.addEventListener('click', e => e.stopPropagation());
+  });
+}
+
+function renderAgenda(){
+  const view = $('#agendaView');
+  const r = viewRange();
+  const days = [];
+  for (let i = 0; i < r.days; i++) days.push(add(r.start, i));
+  const sections = days.map(d => {
+    const evs = eventsForDay(keyOf(d));
+    if (!evs.length) return '';
+    const isToday = sameDay(d, TODAY);
+    return `<div class="agenda__day ${isToday?'is-today':''}">
+      <div class="agenda__day-head">
+        <div class="agenda__day-num">${d.getDate()}</div>
+        <div class="agenda__day-dow">יום ${DOW_L[d.getDay()]}${isToday?' · היום':''}${holidayOf(keyOf(d))?' · '+holidayOf(keyOf(d)).ic+' '+holidayOf(keyOf(d)).name:''}</div>
+        <div class="agenda__day-mon">${MON_L[d.getMonth()]}</div>
+      </div>
+      <div class="agenda__list">
+        ${evs.map(e => `
+          <div class="agenda__item agenda__item--${e.type}" data-id="${e.id}">
+            <div class="agenda__item-time">${fmtTime(e.start)}–${fmtTime(e.start+e.duration)}</div>
+            <div class="agenda__item-body">
+              <div class="agenda__item-title">${e.title}</div>
+              <div class="agenda__item-sub">${TYPE_BY_KEY[e.type].label}${e.location?' · '+e.location:''}${e.google?' · גוגל':''}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  view.innerHTML = `<div class="agenda">${sections || '<div class="agenda__empty">אין פגישות בטווח הזה.<br>לחיצה על "+" תיצור פגישה חדשה.</div>'}</div>`;
+
+  view.querySelectorAll('.agenda__item').forEach(it => {
+    it.addEventListener('click', e => {
+      const id = it.dataset.id;
+      const event = state.events.find(x => x.id === id);
+      openEventPopover(event, it);
+    });
+  });
+}
+
+function scrollToCurrentTime(){
+  const sc = $('.view:not([hidden]) .view__scroll');
+  if (!sc) return;
+  const now = new Date();
+  const min = now.getHours()*60 + now.getMinutes();
+  const y = minToY(Math.max(min - 90, HOUR_START*60)); // 90 דק׳ לפני
+  sc.scrollTop = Math.max(y, 0);
+}
+
+/* =====================================================
+   GRID INTERACTIONS (drag-to-create, drag-to-move, resize, click)
+   ===================================================== */
+let drag = null;
+
+function wireGrid(view){
+  const cols = view.querySelectorAll('.day-col');
+
+  // קליק על אירוע → popover
+  view.addEventListener('click', e => {
+    const ev = e.target.closest('.event');
+    if (ev && !drag){
+      const event = state.events.find(x => x.id === ev.dataset.id);
+      if (event) openEventPopover(event, ev);
+      e.stopPropagation();
+    }
+  });
+
+  cols.forEach(col => {
+    // Hover hint
+    col.addEventListener('mousemove', e => {
+      if (drag) return;
+      const rect = col.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const min = snap(yToMin(y) + HOUR_START*60);
+      if (min < HOUR_START*60 || min > HOUR_END*60) return;
+      const hint = col.querySelector('.day-col__hover-time');
+      hint.style.display = 'block';
+      hint.style.top = ((min - HOUR_START*60) * PX_PER_MIN) + 'px';
+      hint.style.height = (state.settings.defaultDuration * PX_PER_MIN) + 'px';
+      hint.textContent = fmtTime(min) + ' – ' + fmtTime(min + state.settings.defaultDuration);
+    });
+    col.addEventListener('mouseleave', () => {
+      const hint = col.querySelector('.day-col__hover-time');
+      if (hint) hint.style.display = 'none';
+    });
+
+    // Mousedown — אפשרי: drag-to-create על תא ריק, או drag-to-move/resize על אירוע
+    col.addEventListener('mousedown', e => {
+      const resizer = e.target.closest('.event__resize');
+      if (resizer){
+        startResize(e, resizer.dataset.resize);
+        return;
+      }
+      const ev = e.target.closest('.event');
+      if (ev){
+        startMove(e, ev.dataset.id);
+        return;
+      }
+      // לחיצה על תא ריק — drag-to-create
+      startCreate(e, col);
+    });
+  });
+}
+
+function startCreate(e, col){
+  const rect = col.getBoundingClientRect();
+  // הערה: getBoundingClientRect().top כבר משקף את ה-scroll — אסור להוסיף scrollTop שוב
+  const startMin = snap(yToMin(e.clientY - rect.top) + HOUR_START*60);
+  drag = {kind:'create', col, dateKey: col.dataset.date, startMin, endMin: startMin + state.settings.defaultDuration};
+  const sel = el('div','sel-rect');
+  sel.style.top = minToY(drag.startMin) + 'px';
+  sel.style.height = (drag.endMin - drag.startMin) * PX_PER_MIN + 'px';
+  sel.textContent = fmtTime(drag.startMin) + ' – ' + fmtTime(drag.endMin);
+  col.appendChild(sel);
+  drag.el = sel;
+  document.addEventListener('mousemove', onCreateMove);
+  document.addEventListener('mouseup', onCreateUp, {once:true});
+}
+function onCreateMove(e){
+  if (!drag) return;
+  const rect = drag.col.getBoundingClientRect();
+  let cur = snap(yToMin(e.clientY - rect.top) + HOUR_START*60);
+  cur = Math.max(HOUR_START*60+SNAP_MIN, Math.min(cur, HOUR_END*60));
+  drag.endMin = Math.max(cur, drag.startMin + SNAP_MIN);
+  drag.el.style.top = minToY(drag.startMin) + 'px';
+  drag.el.style.height = (drag.endMin - drag.startMin) * PX_PER_MIN + 'px';
+  drag.el.textContent = fmtTime(drag.startMin) + ' – ' + fmtTime(drag.endMin);
+}
+function onCreateUp(){
+  document.removeEventListener('mousemove', onCreateMove);
+  if (!drag) return;
+  const {dateKey, startMin, endMin, el: rect} = drag;
+  if (rect && rect.parentNode) rect.parentNode.removeChild(rect);
+  drag = null;
+  // אם המשתמש רק לחץ (בלי גרירה) — אורך ברירת המחדל
+  const dur = Math.max(endMin - startMin, state.settings.defaultDuration);
+  openEventModal(null, {date: dateKey, start: startMin, duration: dur});
+}
+
+function startMove(e, id){
+  const event = state.events.find(x => x.id === id);
+  if (!event) return;
+  const node = e.currentTarget.querySelector('.event[data-id="'+id+'"]') || e.target.closest('.event');
+  if (!node) return;
+  const rect = node.getBoundingClientRect();
+  drag = {
+    kind:'move', id, node,
+    grabOffsetY: e.clientY - rect.top,
+    startMinOriginal: event.start,
+    dateKeyOriginal: event.date,
+    duration: event.duration,
+  };
+  node.classList.add('dragging');
+  document.addEventListener('mousemove', onMoveDrag);
+  document.addEventListener('mouseup', onMoveUp, {once:true});
+}
+function onMoveDrag(e){
+  if (!drag) return;
+  const cols = $$('.day-col');
+  let targetCol = null;
+  cols.forEach(c => {
+    const r = c.getBoundingClientRect();
+    if (e.clientX >= r.left && e.clientX <= r.right) targetCol = c;
+  });
+  if (!targetCol) return;
+  const rect = targetCol.getBoundingClientRect();
+  // הערה: rect.top כבר משקף את ה-scroll — אסור להוסיף scrollTop שוב (היה גורם לקפיצה כלפי מטה)
+  let topY = e.clientY - rect.top - drag.grabOffsetY;
+  let startMin = snap(yToMin(topY) + HOUR_START*60);
+  startMin = Math.max(HOUR_START*60, Math.min(startMin, HOUR_END*60 - drag.duration));
+  // Move the DOM node
+  if (drag.node.parentNode !== targetCol) targetCol.appendChild(drag.node);
+  drag.node.style.top = minToY(startMin) + 'px';
+  drag.node.querySelector('.event__time').textContent = fmtTime(startMin) + '–' + fmtTime(startMin + drag.duration);
+  drag.newDate = targetCol.dataset.date;
+  drag.newStart = startMin;
+}
+function onMoveUp(){
+  document.removeEventListener('mousemove', onMoveDrag);
+  if (!drag) return;
+  if (drag.node) drag.node.classList.remove('dragging');
+  const moved = drag.newDate != null && drag.newStart != null
+    && (drag.newDate !== drag.dateKeyOriginal || drag.newStart !== drag.startMinOriginal);
+  if (moved){
+    const event = state.events.find(x => x.id === drag.id);
+    event.date = drag.newDate;
+    event.start = drag.newStart;
+  }
+  drag = null;
+  if (moved) renderCurrentView();   // בלי גרירה — משאירים את ה-DOM כדי שהקליק ייפתח כפופאובר
+}
+
+function startResize(e, id){
+  const event = state.events.find(x => x.id === id);
+  if (!event) return;
+  const node = e.currentTarget.parentNode || e.target.closest('.event');
+  drag = {kind:'resize', id, node, startY:e.clientY, startDur:event.duration};
+  e.stopPropagation();
+  document.addEventListener('mousemove', onResizeMove);
+  document.addEventListener('mouseup', onResizeUp, {once:true});
+}
+function onResizeMove(e){
+  if (!drag) return;
+  const dy = e.clientY - drag.startY;
+  let dur = snap(drag.startDur + yToMin(dy));
+  dur = Math.max(SNAP_MIN, dur);
+  const event = state.events.find(x => x.id === drag.id);
+  event.duration = dur;
+  drag.node.style.height = (dur * PX_PER_MIN) + 'px';
+  drag.node.querySelector('.event__time').textContent = fmtTime(event.start) + '–' + fmtTime(event.start + dur);
+}
+function onResizeUp(){
+  document.removeEventListener('mousemove', onResizeMove);
+  drag = null;
+  renderCurrentView();
+}
+
+/* =====================================================
+   EVENT POPOVER
+   ===================================================== */
+function openEventPopover(event, anchor){
+  if (!event) return;
+  const back = $('#popBack');
+  const pop = $('#popover');
+  const t = TYPE_BY_KEY[event.type];
+  pop.className = 'popover popover--' + event.type;
+  pop.innerHTML = `
+    <div class="pop__head">
+      <div class="pop__title">${event.title}</div>
+      <button class="pop__close" id="popClose">×</button>
+    </div>
+    <div class="pop__meta">${fmtTime(event.start)} – ${fmtTime(event.start+event.duration)} · ${new Date(event.date+'T00:00:00').getDate()} ב${MON_L[new Date(event.date+'T00:00:00').getMonth()]}</div>
+    <div class="pop__tags">
+      <span class="pop__tag">${t.label}</span>
+      ${event.repeat && event.repeat!=='none' ? '<span class="pop__tag pop__tag--ghost">↻ '+(event.repeat==='weekly'?'שבועי':event.repeat==='biweekly'?'דו-שבועי':'חודשי')+'</span>' : ''}
+      ${event.google ? '<span class="pop__tag pop__tag--ghost">G מסונכרן</span>' : ''}
+    </div>
+    ${event.client    ? '<div class="pop__row"><span class="pop__row__icon">👤</span><span><b>'+(isKnownClient(event.client)?'לקוח':'משתתף')+':</b> '+event.client+'</span></div>'    : ''}
+    ${event.extMail   ? '<div class="pop__row"><span class="pop__row__icon">📧</span><span dir="ltr">'+event.extMail+'</span></div>'  : ''}
+    ${event.extPhone  ? '<div class="pop__row"><span class="pop__row__icon">📞</span><span dir="ltr">'+event.extPhone+'</span></div>' : ''}
+    ${(() => {
+      const loc = event.locationId ? getLocation(event.locationId) : null;
+      if (loc) return '<div class="pop__row"><span class="pop__row__icon">📍</span><span><b>'+loc.name+'</b> · '+loc.address+(event.location?(' · '+event.location):'')+'</span></div>';
+      if (event.location) return '<div class="pop__row"><span class="pop__row__icon">📍</span><span><b>מיקום:</b> '+event.location+'</span></div>';
+      return '';
+    })()}
+    ${event.remind    ? '<div class="pop__row"><span class="pop__row__icon">🔔</span><span>תזכורת '+(event.remind>=60? (event.remind/60)+' שעות' : event.remind+' דקות')+' לפני</span></div>' : ''}
+    ${event.notes     ? '<div class="pop__row"><span class="pop__row__icon">📝</span><span>'+event.notes+'</span></div>' : ''}
+    <div class="pop__foot">
+      <button class="btn btn--ghost btn--sm" id="popEdit">עריכה</button>
+      <button class="btn btn--ghost btn--sm" id="popDup">שכפול</button>
+      <button class="btn btn--ghost btn--sm" id="popDel" style="color:var(--red)">מחיקה</button>
+    </div>
+  `;
+  // מיקום
+  const ar = anchor.getBoundingClientRect();
+  let left = ar.left - 360;
+  if (left < 8) left = ar.right + 12;
+  if (left + 340 > window.innerWidth - 8) left = window.innerWidth - 348;
+  let top = ar.top;
+  if (top + 280 > window.innerHeight) top = window.innerHeight - 290;
+  if (top < 8) top = 8;
+  pop.style.left = left + 'px';
+  pop.style.top  = top + 'px';
+  back.classList.add('is-open');
+
+  $('#popClose').addEventListener('click', closePopover);
+  $('#popEdit').addEventListener('click', () => { closePopover(); openEventModal(event); });
+  $('#popDel').addEventListener('click', () => { closePopover(); deleteEvent(event.id); });
+  $('#popDup').addEventListener('click', () => {
+    closePopover();
+    const copy = {...event, id:'e'+(state.events.length+100), title: event.title+' (שכפול)'};
+    state.events.push(copy);
+    renderAll();
+  });
+}
+function closePopover(){ $('#popBack').classList.remove('is-open'); }
+
+$('#popBack').addEventListener('click', e => { if (e.target.id === 'popBack') closePopover(); });
+
+/* =====================================================
+   EVENT MODAL (create/edit)
+   ===================================================== */
+/* --- משימות: טופס נפרד --- */
+let tkEditId = null;
+function openTaskModal(event, defaults){
+  tkEditId = event ? event.id : null;
+  $('#tkHead').textContent = event ? 'עריכת משימה' : 'משימה חדשה';
+  $('#tkDelete').style.display = event ? '' : 'none';
+  $('#tkTitle').value = event ? event.title : '';
+  $('#tkDate').value  = event ? event.date : (defaults && defaults.date) || keyOf(state.cursor);
+  $('#tkStart').value = fmtTime(event ? event.start : (defaults && defaults.start) || 9*60);
+  $('#tkDur').value   = event ? event.duration : 30;
+  $('#tkClient').value= event ? (event.client||'') : '';
+  $('#tkNotes').value = event ? (event.notes||'') : '';
+  $('#tkClientsDL').innerHTML = CLIENT_BOOK.map(c=>`<option value="${c.name}">`).join('');
+  $('#taskModal').classList.add('is-open');
+}
+$('#newTaskBtn').addEventListener('click', () => openTaskModal(null));
+$('#tkSave').addEventListener('click', () => {
+  const title = $('#tkTitle').value.trim() || 'משימה';
+  if (tkEditId){
+    const ev = state.events.find(x => x.id === tkEditId);
+    Object.assign(ev, {title, date:$('#tkDate').value, start:parseTime($('#tkStart').value||'09:00'),
+      duration:+$('#tkDur').value, client:$('#tkClient').value.trim(), notes:$('#tkNotes').value.trim()});
+  } else {
+    state.events.push({id:'tk'+(state.events.length+900), type:'task', title,
+      date:$('#tkDate').value, start:parseTime($('#tkStart').value||'09:00'),
+      duration:+$('#tkDur').value, client:$('#tkClient').value.trim(), notes:$('#tkNotes').value.trim(),
+      locationId:null, repeat:'none', remind:0, google:false});
+  }
+  $('#taskModal').classList.remove('is-open');
+  renderAll();
+});
+$('#tkDelete').addEventListener('click', () => {
+  if (tkEditId) state.events = state.events.filter(x => x.id !== tkEditId);
+  $('#taskModal').classList.remove('is-open');
+  renderAll();
+});
+
+/* --- ניהול סוגי פגישות --- */
+function typeInUse(key){ return state.events.some(e => e.type === key); }
+const TYPE_PALETTE = ['#7557E3','#5b3fd6','#1e8e5f','#5a7d1a','#C29A3B','#e8a13a','#9C89F2','#dc2626','#8E4BA8','#8a8f98'];
+function renderTypeList(){
+  $('#typeList').innerHTML = TYPES.map((t,i) => `
+    <div class="type-row">
+      <div class="type-sw-wrap">
+        <button class="type-sw" data-ti="${i}" style="background:${colorToHex(t.color)}" title="בחירת צבע"></button>
+        <div class="type-pal" data-pi="${i}">
+          ${TYPE_PALETTE.map(c => `<button class="type-pal-c ${colorToHex(t.color)===c?'on':''}" data-ti="${i}" data-c="${c}" style="background:${c}"></button>`).join('')}
+        </div>
+      </div>
+      <input class="type-name" data-ti="${i}" value="${t.label}">
+      <button class="type-del" data-ti="${i}" title="${typeInUse(t.key)?'קיימות פגישות מסוג זה':'מחיקה'}" ${typeInUse(t.key)||TYPES.length<=1?'disabled':''}>✕</button>
+    </div>`).join('');
+  $('#typeList').querySelectorAll('.type-name').forEach(inp => inp.addEventListener('input', () => {
+    TYPES[+inp.dataset.ti].label = inp.value.trim() || 'סוג';
+    rebuildTypeMap(); renderLegend(); renderAll();
+  }));
+  $('#typeList').querySelectorAll('.type-sw').forEach(sw => sw.addEventListener('click', () => {
+    const pal = sw.parentElement.querySelector('.type-pal');
+    $('#typeList').querySelectorAll('.type-pal.show').forEach(p => { if (p!==pal) p.classList.remove('show'); });
+    pal.classList.toggle('show');
+  }));
+  $('#typeList').querySelectorAll('.type-pal-c').forEach(b => b.addEventListener('click', () => {
+    TYPES[+b.dataset.ti].color = b.dataset.c;
+    rebuildTypeMap(); renderTypeList(); renderLegend(); renderAll();
+  }));
+  $('#typeList').querySelectorAll('.type-del').forEach(b => b.addEventListener('click', () => {
+    TYPES.splice(+b.dataset.ti, 1);
+    rebuildTypeMap(); renderTypeList(); renderLegend(); renderAll();
+  }));
+}
+function colorToHex(c){
+  if (c.startsWith('#')) return c;
+  const M = {'var(--blue)':'#7557E3','var(--green)':'#1e8e5f','var(--salmon)':'#9C89F2','var(--gray)':'#8a8f98','var(--red)':'#dc2626'};
+  return M[c] || '#7557E3';
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.type-sw-wrap'))
+    document.querySelectorAll('.type-pal.show').forEach(p => p.classList.remove('show'));
+});
+$('#typeAdd').addEventListener('click', () => {
+  TYPES.push({key:'t'+Date.now(), label:'סוג חדש', color:'#0369a1', icon:''});
+  rebuildTypeMap(); renderTypeList(); renderLegend();
+});
+
+function openEventModal(event, defaults){
+  if (event && event.type === 'task') return openTaskModal(event);
+  state.editingEventId = event ? event.id : null;
+  $('#evModalTitle').textContent = event ? 'עריכת פגישה' : 'פגישה חדשה';
+  $('#evDelete').style.display = event ? '' : 'none';
+  const e = event || {
+    date: defaults?.date || keyOf(state.cursor),
+    start: defaults?.start || 9*60,
+    duration: defaults?.duration || state.settings.defaultDuration,
+    type: 'therapy',
+    title:'', client:'', location:'', notes:'',
+    repeat:'none', remind:30, google: state.settings.googleSync,
+  };
+  $('#evTitle').value = e.title || '';
+  $('#evDate').value = e.date;
+  $('#evDuration').value = e.duration;
+  $('#evStart').value = fmtTime(e.start);
+  $('#evEnd').value = fmtTime(e.start + e.duration);
+  $('#evClient').value = e.client || '';
+  $('#evExtMail').value = e.extMail || '';
+  $('#evExtPhone').value = e.extPhone || '';
+  updateExtRow();
+  $('#evLocation').value = e.location || '';
+  // Populate location dropdown
+  const evLocSel = $('#evLocId');
+  evLocSel.innerHTML =
+    '<option value="">— ללא מקום —</option>' +
+    state.locations.map(loc => {
+      const sel = e.locationId === loc.id ? 'selected' : '';
+      return `<option value="${loc.id}" ${sel}>${loc.name} · ${loc.address}</option>`;
+    }).join('');
+  $('#evRemind').value = e.remind ?? 30;
+  $('#evRepeat').value = e.repeat || 'none';
+  $('#evNotes').value = e.notes || '';
+
+  // Type chips
+  const chips = $('#evTypeChips');
+  chips.innerHTML = TYPES.map(t => `
+    <button type="button" class="chip ${t.key===e.type?'is-active':''}" data-type="${t.key}" style="color:${t.color}">
+      <span class="chip__dot"></span><span class="chip__lbl">${t.label}</span>
+    </button>`).join('');
+  chips.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      chips.querySelectorAll('.chip').forEach(x => x.classList.remove('is-active'));
+      c.classList.add('is-active');
+    });
+  });
+
+  // Hint
+  if (defaults && !event){
+    const d = new Date(e.date+'T00:00:00');
+    $('#evHint').hidden = false;
+    $('#evHint').innerHTML = '📅 <span>יום ' + DOW_L[d.getDay()] + ', ' + d.getDate() + ' ב' + MON_L[d.getMonth()] + ' · ' + fmtTime(e.start) + ' – ' + fmtTime(e.start + e.duration) + '</span>';
+  } else $('#evHint').hidden = true;
+
+  $('#eventModal').classList.add('is-open');
+}
+
+['change','input'].forEach(evt => $('#evDuration').addEventListener(evt, () => {
+  const s = parseTime($('#evStart').value || '09:00');
+  $('#evEnd').value = fmtTime(s + Math.max(5, Number($('#evDuration').value) || 0));
+}));
+/* לקוח — דרופדאון דו-שלבי: בחירת לקוח, ואם יש כמה אנשי קשר — בחירת המשתתפים */
+/* פנקס המטופלים — הששה של PATIENTS ב-jampa/js/data.js, ועוד מהקליניקה.
+   למטופל קטין נשמרים גם ההורים, כי הם משתתפים בחלק מהפגישות. */
+const CLIENT_BOOK = [
+  {name:'נועה ברק',     contacts:['נועה ברק']},
+  {name:'יואב פרידמן',  contacts:['יואב פרידמן','דנה פרידמן']},
+  {name:'מיכל אדרי',    contacts:['מיכל אדרי']},
+  {name:'דניאל כהן',    contacts:['דניאל כהן','רונית כהן — אם']},
+  {name:'שרה לוינסון',  contacts:['שרה לוינסון']},
+  {name:'עומר גל',      contacts:['עומר גל']},
+  {name:'הילה ורדי',    contacts:['הילה ורדי']},
+  {name:'בר אלימלך',    contacts:['בר אלימלך']},
+];
+let _cliStep = null;   // null = רשימת לקוחות · אחרת: הלקוח שנבחר (שלב אנשי קשר)
+function renderClientMenu(){
+  const m = $('#clientMenu');
+  if (_cliStep){
+    const c = _cliStep;
+    m.innerHTML = `<div class="client-back" data-back="1">‹ ${c.name} — בחירת משתתפים</div>`
+      + c.contacts.map(n => `<label class="client-contact" style="display:flex;align-items:center;gap:8px"><input type="checkbox" value="${n}" checked style="width:16px;flex:0 0 auto;margin:0;padding:0"><span style="flex:1 1 auto;min-width:0;font-size:.85rem;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">👤 ${n}</span></label>`).join('')
+      + `<div class="client-ok" data-ok="1">אישור המשתתפים</div>`;
+    return;
+  }
+  const q = $('#evClient').value.trim();
+  const list = CLIENT_BOOK.filter(c => !q || c.name.includes(q) || c.contacts.some(n=>n.includes(q)));
+  m.innerHTML = (list.length
+    ? list.map((c,i) => `<div class="client-item" data-ix="${CLIENT_BOOK.indexOf(c)}">👤 ${c.name}${c.contacts.length>1?`<span class="client-cnt">${c.contacts.length} אנשי קשר</span>`:''}</div>`).join('')
+    : '')
+    + (q && !CLIENT_BOOK.some(c => c.name === q)
+      ? `<div class="client-item is-new">＋ הוספת "${q}" כמשתתף שאינו לקוח</div>` : '');
+}
+function isKnownClient(v){
+  if (!v) return false;
+  const base = v.split(' · ')[0].trim();
+  return CLIENT_BOOK.some(c => c.name === base || c.name === v);
+}
+function updateExtRow(){
+  const v = $('#evClient').value.trim();
+  $('#extRow').style.display = (v && !isKnownClient(v)) ? 'grid' : 'none';
+}
+function placeClientMenu(){
+  const r = $('#evClient').getBoundingClientRect(), m = $('#clientMenu');
+  m.style.position='fixed';
+  m.style.right='auto'; m.style.left=r.left+'px'; m.style.width=r.width+'px';
+  const below = window.innerHeight - r.bottom - 16;
+  if (below < 180){ m.style.top='auto'; m.style.bottom=(window.innerHeight-r.top+6)+'px'; m.style.maxHeight=Math.min(260,r.top-16)+'px'; }
+  else { m.style.bottom='auto'; m.style.top=(r.bottom+6)+'px'; m.style.maxHeight=Math.min(260,below)+'px'; }
+}
+['focus','input'].forEach(evt => $('#evClient').addEventListener(evt, () => {
+  _cliStep = null;
+  renderClientMenu();
+  placeClientMenu();
+  $('#clientMenu').classList.add('show');
+  updateExtRow();
+}));
+$('#clientMenu').addEventListener('mousedown', (e) => {
+  if (e.target.closest('.client-contact')) return;        // צ'קבוקס — לא סוגרים
+  const back = e.target.closest('.client-back');
+  if (back){ _cliStep = null; renderClientMenu(); e.preventDefault(); return; }
+  const ok = e.target.closest('.client-ok');
+  if (ok){
+    const picked = [...$('#clientMenu').querySelectorAll('input:checked')].map(x => x.value);
+    $('#evClient').value = _cliStep.name + (picked.length && picked.length < _cliStep.contacts.length+1 ? ' · ' + picked.join(', ') : '');
+    _cliStep = null;
+    $('#clientMenu').classList.remove('show');
+    e.preventDefault(); return;
+  }
+  const it = e.target.closest('.client-item'); if(!it) return;
+  if (it.dataset.ix != null){
+    const c = CLIENT_BOOK[+it.dataset.ix];
+    if (c.contacts.length > 1){ _cliStep = c; renderClientMenu(); placeClientMenu(); e.preventDefault(); return; }
+    $('#evClient').value = c.name;
+  }
+  $('#clientMenu').classList.remove('show');
+  updateExtRow();
+  e.preventDefault();
+});
+document.addEventListener('click', (e) => {
+  const m = $('#clientMenu');
+  if (m && m.classList.contains('show') && !e.target.closest('.client-wrap')) m.classList.remove('show');
+});
+$('#evEnd').addEventListener('change', () => {
+  const s = parseTime($('#evStart').value || '09:00');
+  let e = parseTime($('#evEnd').value || '');
+  if (isNaN(e)) return;
+  if (e <= s) e = s + 5;                       // סיום לפני התחלה — מינימום 5 דק׳
+  $('#evDuration').value = e - s;
+  $('#evEnd').value = fmtTime(s + (e - s));
+});
+$('#evStart').addEventListener('change', () => {
+  const s = parseTime($('#evStart').value || '09:00');
+  $('#evEnd').value = fmtTime(s + Number($('#evDuration').value));
+});
+
+$('#evSave').addEventListener('click', () => {
+  const data = {
+    title:    $('#evTitle').value.trim() || 'ללא כותרת',
+    date:     $('#evDate').value,
+    start:    parseTime($('#evStart').value || '09:00'),
+    duration: Number($('#evDuration').value),
+    type:     document.querySelector('#evTypeChips .chip.is-active')?.dataset.type || 'therapy',
+    client:   $('#evClient').value.trim(),
+    extMail:  $('#extRow').style.display!=='none' ? $('#evExtMail').value.trim() : '',
+    extPhone: $('#extRow').style.display!=='none' ? $('#evExtPhone').value.trim() : '',
+    locationId: $('#evLocId').value || null,
+    location: $('#evLocation').value.trim(),
+    remind:   Number($('#evRemind').value),
+    repeat:   $('#evRepeat').value,
+    notes:    $('#evNotes').value.trim(),
+    google:   state.settings.googleSync,
+  };
+  if (state.editingEventId){
+    const e = state.events.find(x => x.id === state.editingEventId);
+    Object.assign(e, data);
+  } else {
+    data.id = 'e' + (Date.now());
+    state.events.push(data);
+  }
+  $('#eventModal').classList.remove('is-open');
+  renderAll();
+});
+
+$('#evDelete').addEventListener('click', () => {
+  if (!state.editingEventId) return;
+  if (!confirm('למחוק את הפגישה?')) return;
+  deleteEvent(state.editingEventId);
+  $('#eventModal').classList.remove('is-open');
+});
+
+function deleteEvent(id){
+  state.events = state.events.filter(e => e.id !== id);
+  renderAll();
+}
+
+/* =====================================================
+   WORKING HOURS MODAL
+   ===================================================== */
+function renderLocSettings(){
+  $('#locSettings').innerHTML = state.locations.map(loc => `
+    <div class="loc-settings-row" data-id="${loc.id}" style="color:${loc.color}">
+      <div class="loc-settings-row__body">
+        <input class="loc-edit-name" data-loc-name="${loc.id}" value="${loc.name}" placeholder="שם המקום">
+        <div class="loc-settings-row__addr">
+          <input class="loc-edit-addr" data-loc-addr="${loc.id}" value="${loc.address==='הוסף כתובת'?'':loc.address}" placeholder="כתובת (למשל: הרצל 12, יבנה)">
+          <span class="loc-days-sum">· ${locDaysSummary(loc)}</span>
+        </div>
+      </div>
+      <button class="loc-settings-row__edit" data-loc-edit="${loc.id}" title="עריכת שעות">✎</button>
+      <button class="loc-settings-row__del"  data-loc-del="${loc.id}"  title="מחיקה" ${state.locations.length<=1?'disabled':''}>🗑</button>
+    </div>
+  `).join('');
+  $('#locSettings').querySelectorAll('[data-loc-name]').forEach(inp => inp.addEventListener('input', () => {
+    const loc = getLocation(inp.dataset.locName); if (!loc) return;
+    loc.name = inp.value.trim() || 'מקום חדש';
+    renderLocTabs(); renderLocations(); renderAll();
+  }));
+  $('#locSettings').querySelectorAll('[data-loc-addr]').forEach(inp => inp.addEventListener('input', () => {
+    const loc = getLocation(inp.dataset.locAddr); if (!loc) return;
+    loc.address = inp.value.trim() || 'הוסף כתובת';
+    renderLocations();
+  }));
+}
+
+function renderLocTabs(){
+  $('#locTabs').innerHTML = state.locations.map(loc => `
+    <button class="loc-tab ${loc.id===state.settings.activeLocId?'is-active':''}" data-loc-tab="${loc.id}">
+      <span class="loc-dot" style="background:${loc.color}"></span>${loc.name}
+    </button>
+  `).join('');
+}
+
+function renderWhRowsForActiveLoc(){
+  const loc = getLocation(state.settings.activeLocId) || state.locations[0];
+  if (!loc) { $('#whRows').innerHTML = ''; return; }
+  state.settings.activeLocId = loc.id;
+
+  const rows = [0,1,2,3,4,5,6].map(d => {
+    const blocks = blocksOf(loc, d);
+    const off = blocks.length === 0;
+    const blocksHtml = blocks.map((b, i) => `
+      <div class="wh-block" data-block-idx="${i}">
+        <input type="time" value="${b.start}" data-field="start" data-day="${d}" data-block="${i}">
+        <span class="wh-row__sep">–</span>
+        <input type="time" value="${b.end}"   data-field="end"   data-day="${d}" data-block="${i}">
+        <button class="wh-block__del" data-del-block data-day="${d}" data-block="${i}" title="הסר טווח" ${blocks.length===1?'style="visibility:hidden"':''}>✕</button>
+      </div>`).join('');
+    return `<div class="wh-row ${off?'is-off':''}" data-day="${d}">
+      <div class="wh-row__day">יום ${DOW_L[d]}</div>
+      <div class="switch ${off?'':'is-on'}" data-day="${d}"></div>
+      <div class="wh-row__blocks">${off ? '<div class="wh-row__off">לא עובד</div>' : blocksHtml}</div>
+      <button class="wh-add-block" data-add-block data-day="${d}" ${off?'style="visibility:hidden"':''}>+ טווח</button>
+    </div>`;
+  }).join('');
+  $('#whRows').innerHTML = rows;
+
+  // Switch — הפעלה/כיבוי יום
+  $('#whRows').querySelectorAll('.switch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const d = +sw.dataset.day;
+      if (blocksOf(loc, d).length > 0){
+        loc.hours[d] = [];
+      } else {
+        loc.hours[d] = [{start:'09:00', end:'18:00'}];
+      }
+      renderWhRowsForActiveLoc();
+    });
+  });
+  // הוספת טווח חדש ליום
+  $('#whRows').querySelectorAll('[data-add-block]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = +btn.dataset.day;
+      if (!loc.hours[d]) loc.hours[d] = [];
+      // הוסף טווח חדש בהמשך — אם יש טווח קיים, נתחיל שעה אחריו
+      const last = loc.hours[d][loc.hours[d].length - 1];
+      const startMin = last ? Math.min(parseTime(last.end) + 60, HOUR_END*60 - 60) : 14*60;
+      loc.hours[d].push({start: fmtTime(startMin), end: fmtTime(Math.min(startMin + 180, HOUR_END*60))});
+      renderWhRowsForActiveLoc();
+    });
+  });
+  // הסרת טווח
+  $('#whRows').querySelectorAll('[data-del-block]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = +btn.dataset.day;
+      const i = +btn.dataset.block;
+      loc.hours[d].splice(i, 1);
+      if (loc.hours[d].length === 0) loc.hours[d] = [];
+      renderWhRowsForActiveLoc();
+    });
+  });
+  // שמירה אינסטנט של הקלט בזמן עריכה (לא רק על Save)
+  $('#whRows').querySelectorAll('input[type="time"]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const d = +inp.dataset.day;
+      const i = +inp.dataset.block;
+      const field = inp.dataset.field;
+      if (loc.hours[d] && loc.hours[d][i]) loc.hours[d][i][field] = inp.value;
+    });
+  });
+}
+
+document.getElementById('setTabs').addEventListener('click', (e) => {
+  const t = e.target.closest('.set-tab'); if (!t) return;
+  document.querySelectorAll('#setTabs .set-tab').forEach(x => x.classList.toggle('is-active', x===t));
+  document.querySelectorAll('#whModal .set-pane').forEach(p => p.classList.toggle('is-active', p.dataset.paneid===t.dataset.pane));
+});
+function openWhModal(){
+  renderLocSettings();
+  renderLocTabs();
+  renderWhRowsForActiveLoc();
+
+  // Settings values
+  $('#setDefaultDur').value = state.settings.defaultDuration;
+  $('#setBufBefore').value  = state.settings.bufBefore;
+  $('#setBufAfter').value   = state.settings.bufAfter;
+  $('#setMinNotice').value  = state.settings.minNotice;
+  $('#setWindow').value     = state.settings.window;
+  $('#googleSyncSwitch').classList.toggle('is-on', state.settings.googleSync);
+  renderGcals();
+  renderOverrides();
+  if (!$('#ovDate').value) $('#ovDate').value = keyOf(add(TODAY,1));
+
+  renderTypeList();
+  try { $('#bookTitleInp').value = localStorage.getItem('jampa_book_title') || 'פגישה עם ענת שלו'; } catch(e){}
+  // עדכון הלינק הציבורי בכרטיס שבתוך ההגדרות
+  refreshBookingLink();
+
+  $('#whModal').classList.add('is-open');
+}
+
+// Delegation: tab switching, edit jump, delete location
+document.addEventListener('click', (e) => {
+  const tab = e.target.closest('[data-loc-tab]');
+  if (tab){
+    state.settings.activeLocId = tab.dataset.locTab;
+    renderLocTabs();
+    renderWhRowsForActiveLoc();
+    return;
+  }
+  const edit = e.target.closest('[data-loc-edit]');
+  if (edit){
+    state.settings.activeLocId = edit.dataset.locEdit;
+    renderLocTabs();
+    renderWhRowsForActiveLoc();
+    // scroll to hours editor
+    document.getElementById('whRows').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  // קיצור-דרך מהסיידבר: ✎ על כרטיס מקום → פותח את ההגדרות עם המקום הפעיל
+  const sideEdit = e.target.closest('[data-loc-edit-side]');
+  if (sideEdit){
+    state.settings.activeLocId = sideEdit.dataset.locEditSide;
+    openWhModal();
+    return;
+  }
+  const del = e.target.closest('[data-loc-del]');
+  if (del){
+    if (state.locations.length <= 1) return;
+    const locId = del.dataset.locDel;
+    const loc = getLocation(locId);
+    if (!loc) return;
+    if (!confirm(`למחוק את המקום "${loc.name}"? כל ההגדרות שלו ימחקו.`)) return;
+    state.locations = state.locations.filter(l => l.id !== locId);
+    if (state.settings.activeLocId === locId) state.settings.activeLocId = state.locations[0].id;
+    renderLocSettings();
+    renderLocTabs();
+    renderWhRowsForActiveLoc();
+    renderAll();
+    refreshBookingLink();
+    return;
+  }
+});
+
+$('#addLocBtn').addEventListener('click', () => {
+  const palette = ['#7a4ea0','#b46e0e','#0369a1','#5a7d1a','#be185d'];
+  const used = state.locations.map(l => l.color);
+  const color = palette.find(c => !used.includes(c)) || palette[0];
+  const id = 'loc_' + Date.now();
+  state.locations.push({
+    id, name:'מקום חדש', address:'הוסף כתובת',
+    color, icon:'🏥', hours: {0:[{start:'09:00', end:'15:00'}]}
+  });
+  state.settings.activeLocId = id;
+  renderLocSettings();
+  renderLocTabs();
+  renderWhRowsForActiveLoc();
+  const inp = $('#locSettings').querySelector(`[data-loc-name="${id}"]`);
+  if (inp){ inp.focus(); inp.select(); }
+});
+
+/* חריגות: יום סגור / החלפת מקום לתאריך מסוים */
+function renderOverrides(){
+  $('#holCloseSwitch').classList.toggle('is-on', state.settings.closeOnHolidays);
+  $('#eveSwitch').classList.toggle('is-on', state.settings.eveOpen);
+  $('#eveEndSel').value = state.settings.eveEnd || '14:00';
+  $('#eveEndSel').disabled = !state.settings.eveOpen;
+  $('#eveEndSel').style.opacity = state.settings.eveOpen ? '' : '.45';
+  $('#ovLoc').innerHTML = state.locations.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+  const keys = Object.keys(state.overrides).sort();
+  $('#ovList').innerHTML = keys.length ? keys.map(k => {
+    const ov = state.overrides[k];
+    const d = new Date(k+'T00:00:00');
+    const what = ov.closed ? '⊘ סגור'+(ov.reason?' · '+ov.reason:'') : '⇄ '+((getLocation(ov.locId)||{}).name||'')+' '+(ov.start||'')+'–'+(ov.end||'');
+    return `<div class="ov-row"><b>${d.getDate()}.${d.getMonth()+1} · יום ${DOW_L[d.getDay()]}</b><span>${what}</span><button class="ov-del" data-ov="${k}">✕</button></div>`;
+  }).join('') : '<div style="font-size:.78rem;color:var(--muted)">אין חריגות — התבנית השבועית חלה על כל השבועות.</div>';
+  $('#ovList').querySelectorAll('[data-ov]').forEach(b => b.addEventListener('click', () => {
+    delete state.overrides[b.dataset.ov]; renderOverrides(); renderAll();
+  }));
+}
+$('#holCloseSwitch').addEventListener('click', () => {
+  state.settings.closeOnHolidays = !state.settings.closeOnHolidays;
+  renderOverrides(); renderAll();
+});
+$('#eveSwitch').addEventListener('click', () => {
+  state.settings.eveOpen = !state.settings.eveOpen;
+  renderOverrides(); renderAll();
+});
+$('#eveEndSel').addEventListener('change', () => {
+  state.settings.eveEnd = $('#eveEndSel').value; renderAll();
+});
+$('#ovKind').addEventListener('change', () => {
+  $('#ovLoc').style.display = $('#ovKind').value==='swap' ? '' : 'none';
+});
+$('#ovAdd').addEventListener('click', () => {
+  const k = $('#ovDate').value;
+  if (!k){ $('#ovDate').style.borderColor='var(--red)'; $('#ovDate').focus(); return; }
+  $('#ovDate').style.borderColor='';
+  state.overrides[k] = $('#ovKind').value==='closed'
+    ? {closed:true}
+    : {locId: $('#ovLoc').value, start:'09:00', end:'19:00'};
+  $('#ovDate').value='';
+  renderOverrides(); renderAll();
+});
+$('#googleSyncSwitch').addEventListener('click', () => {
+  $('#googleSyncSwitch').classList.toggle('is-on');
+  renderGcals();
+});
+const GC_DIR = {two:'דו-כיווני — נכתב ונקרא', busy:'חסימת זמנים — נחסם כ"לא זמין"', in:'תצוגה בלבד — מוצג ביומן'};
+function renderGcals(){
+  const off = !$('#googleSyncSwitch').classList.contains('is-on');
+  $('#gcList').innerHTML = state.gcals.map(g => `
+    <div class="gc-row ${off?'is-off':''}">
+      <div class="switch ${g.on&&!off?'is-on':''}" data-gcal="${g.id}" ${off?'style="pointer-events:none;opacity:.4"':''}></div>
+      <span class="gc-dot" style="background:${g.color}"></span>
+      <div class="gc-body">
+        <div class="gc-name">${g.name}</div>
+        <select class="gc-dir" data-gcal-dir="${g.id}" ${off||!g.on?'disabled':''}>
+          ${Object.entries(GC_DIR).map(([k,v])=>`<option value="${k}" ${g.dir===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+      </div>
+    </div>`).join('');
+  $('#gcList').querySelectorAll('[data-gcal]').forEach(sw => sw.addEventListener('click', () => {
+    const g = state.gcals.find(x => x.id === sw.dataset.gcal); if (!g) return;
+    g.on = !g.on; renderGcals();
+  }));
+  $('#gcList').querySelectorAll('[data-gcal-dir]').forEach(sel => sel.addEventListener('change', () => {
+    const g = state.gcals.find(x => x.id === sel.dataset.gcalDir); if (g) g.dir = sel.value;
+  }));
+}
+$('#publicBookingSwitch').addEventListener('click', () => {
+  $('#publicBookingSwitch').classList.toggle('is-on');
+});
+
+$('#whSave').addEventListener('click', () => {
+  // שעות העבודה כבר נשמרות בלייב בזמן עריכה (input listeners ב-renderWhRowsForActiveLoc),
+  // כך שכאן רק שומרים את שאר ההגדרות.
+  state.settings.defaultDuration = +$('#setDefaultDur').value;
+  state.settings.bufBefore = +$('#setBufBefore').value;
+  state.settings.bufAfter  = +$('#setBufAfter').value;
+  state.settings.minNotice = +$('#setMinNotice').value;
+  state.settings.window    = +$('#setWindow').value;
+  state.settings.googleSync = $('#googleSyncSwitch').classList.contains('is-on');
+  try { localStorage.setItem('jampa_book_title', $('#bookTitleInp').value.trim() || 'פגישה עם ענת שלו'); } catch(e){}
+  $('#whModal').classList.remove('is-open');
+  renderAll();
+  refreshBookingLink();
+});
+
+/* =====================================================
+   VIEW SWITCH
+   ===================================================== */
+function setView(v){
+  state.view = v;
+  $$('.view-btn').forEach(b => b.classList.toggle('is-active', b.dataset.view === v));
+  ['weekView','dayView','monthView','agendaView'].forEach(id => {
+    $('#'+id).hidden = (id !== v+'View');
+  });
+  renderCurrentView();
+  updateRangeLabel();
+}
+
+function renderCurrentView(){
+  if (state.view === 'week')   renderWeek();
+  else if (state.view === 'day')   renderDay();
+  else if (state.view === 'month') renderMonth();
+  else if (state.view === 'agenda') renderAgenda();
+}
+
+function renderAll(){
+  renderCurrentView();
+  updateRangeLabel();
+  renderMini();
+  renderLocations();
+}
+
+/* =====================================================
+   NAVIGATION
+   ===================================================== */
+function shiftBy(dir){
+  if (state.view === 'day')   state.cursor = add(state.cursor, dir);
+  else if (state.view === 'week') state.cursor = add(state.cursor, dir*7);
+  else if (state.view === 'month') state.cursor = addMon(state.cursor, dir);
+  else state.cursor = add(state.cursor, dir*14);
+  state.miniCursor = new Date(state.cursor);
+  renderAll();
+}
+
+$('#todayBtn').addEventListener('click', () => {
+  state.cursor = sod(new Date());
+  state.miniCursor = sod(new Date());
+  renderAll();
+});
+$('#prevBtn').addEventListener('click', () => shiftBy(-1));
+$('#nextBtn').addEventListener('click', () => shiftBy(1));
+$('#viewSwitch').addEventListener('click', e => {
+  const b = e.target.closest('.view-btn');
+  if (b) setView(b.dataset.view);
+});
+
+$('#newEventBtn').addEventListener('click', () => openEventModal(null, {date: keyOf(state.cursor), start: 9*60, duration: state.settings.defaultDuration}));
+$('#settingsBtn').addEventListener('click', openWhModal);
+
+/* Mini cal nav */
+$('#miniPrev').addEventListener('click', () => { state.miniCursor = addMon(state.miniCursor, -1); renderMini(); });
+$('#miniNext').addEventListener('click', () => { state.miniCursor = addMon(state.miniCursor,  1); renderMini(); });
+$('#miniGrid').addEventListener('click', e => {
+  const c = e.target.closest('.mini__day');
+  if (!c) return;
+  state.cursor = new Date(c.dataset.date+'T00:00:00');
+  renderAll();
+});
+
+/* Accounts toggle */
+$('#acctList').addEventListener('click', e => {
+  const li = e.target.closest('.acct');
+  if (!li) return;
+  const a = state.accounts.find(x => x.id === li.dataset.id);
+  a.on = !a.on;
+  renderAccounts();
+});
+
+/* Sync */
+$('#syncNow').addEventListener('click', () => {
+  const btn = $('#syncNow');
+  btn.textContent = 'מסנכרן...';
+  btn.disabled = true;
+  setTimeout(() => {
+    state.syncMinutesAgo = 0;
+    $('#syncSub').textContent = 'עודכן כרגע';
+    btn.textContent = 'סנכרון';
+    btn.disabled = false;
+  }, 900);
+});
+
+/* User pick — דרופדאון לבחירת יומן של איש צוות */
+function renderUserMenu(){
+  $('#userPickMenu').innerHTML = USERS.map(u => `
+    <div class="user-pick-item ${u.id===state.currentUser?'on':''}" data-uid="${u.id}">
+      <span class="user-pick__avatar">${u.initials}</span>
+      <span class="upi-name">${u.name}</span>
+      ${u.id===state.currentUser?'<span class="upi-check">✓</span>':''}
+    </div>`).join('');
+}
+$('#userPick').addEventListener('click', (e) => {
+  e.stopPropagation();
+  renderUserMenu();
+  $('#userPickMenu').classList.toggle('show');
+});
+$('#userPickMenu').addEventListener('click', (e) => {
+  const it = e.target.closest('.user-pick-item'); if(!it) return;
+  const u = USERS.find(x => x.id === +it.dataset.uid); if(!u) return;
+  state.currentUser = u.id;
+  $('#userAvatar').textContent = u.initials;
+  $('#userName').textContent = u.name;
+  refreshBookingLink();
+  $('#userPickMenu').classList.remove('show');
+  if(typeof toast==='function') toast('עברת ליומן של ' + u.name);
+});
+document.addEventListener('click', (e) => {
+  const m = $('#userPickMenu');
+  if(m && m.classList.contains('show') && !e.target.closest('.user-pick-wrap')) m.classList.remove('show');
+});
+
+/* =====================================================
+   PUBLIC BOOKING LINK
+   ===================================================== */
+function refreshBookingLink(){
+  renderBookingLinks(); // הלינקים פר-מקום מתעדכנים אוטומטית
+  const s = $('#settingsBookingUrl'); if (s) s.textContent = bookingUrl();
+}
+
+function flashCopied(btn){
+  const original = btn.textContent;
+  btn.textContent = '✓ הועתק';
+  btn.classList.add('is-copied');
+  setTimeout(() => {
+    btn.textContent = original;
+    btn.classList.remove('is-copied');
+  }, 1600);
+}
+
+async function copyBookingUrl(btn){
+  const url = 'https://' + bookingUrl();
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(url);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    flashCopied(btn);
+  } catch (e) {
+    alert('לא הצלחתי להעתיק. הלינק: ' + url);
+  }
+}
+
+function previewBookingUrl(){
+  // ב-mock: פותח את meeting.html כדוגמה
+  window.open('meeting.html?lead=demo', '_blank');
+}
+
+function shareBookingUrl(){
+  const user = currentUser();
+  const url = 'https://' + bookingUrl();
+  const msg = `היי, אפשר לקבוע איתי פגישה דרך הלינק הבא — בחר/י זמן שמתאים לך:\n${url}\n\n${user.name}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// כפתורי הלינקים בהגדרות (לינק ראשי)
+['copyLinkBtn2'].forEach(id => {
+  const b = document.getElementById(id);
+  if (b) b.addEventListener('click', () => copyBookingUrl(b));
+});
+['previewLinkBtn2'].forEach(id => {
+  const b = document.getElementById(id);
+  if (b) b.addEventListener('click', previewBookingUrl);
+});
+['shareLinkBtn2'].forEach(id => {
+  const b = document.getElementById(id);
+  if (b) b.addEventListener('click', shareBookingUrl);
+});
+
+// Event delegation על כרטיסי הלינקים פר-מקום בסיידבר
+async function copyUrlText(btn, url){
+  try {
+    const full = url.startsWith('http') ? url : 'https://' + url;
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(full);
+    else {
+      const ta = document.createElement('textarea');
+      ta.value = full; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    flashCopied(btn);
+  } catch (e) { alert('לא הצלחתי להעתיק. הלינק: ' + url); }
+}
+function previewUrl(url){ window.open('meeting.html?lead=demo&from=' + encodeURIComponent(url), '_blank'); }
+
+function shareUrl(url, locName){
+  const user = currentUser();
+  const full = 'https://' + url;
+  const locTxt = locName ? ` (${locName})` : '';
+  const msg = `היי, אפשר לקבוע איתי פגישה${locTxt} דרך הלינק הבא — בחר/י זמן שמתאים לך:\n${full}\n\n${user.name}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('.booking-row .bl-btn[data-action]');
+  if (b && b.dataset.action === 'share') { b.textContent = '✓ נפתח בוואטסאפ'; setTimeout(()=>b.textContent='📱 שלח',1600); }
+  if (!b) return;
+  const action = b.dataset.action;
+  const url = b.dataset.url;
+  if (action === 'copy') copyUrlText(b, url);
+  else if (action === 'preview') previewUrl(url);
+  else if (action === 'share') shareUrl(url, b.dataset.loc);
+});
+
+/* Close modals on backdrop + close button + Escape */
+document.addEventListener('click', e => {
+  if (e.target.dataset && e.target.dataset.close !== undefined){
+    e.target.closest('.modal-back').classList.remove('is-open');
+  } else if (e.target.classList && e.target.classList.contains('modal-back')){
+    e.target.classList.remove('is-open');
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    $$('.modal-back.is-open').forEach(m => m.classList.remove('is-open'));
+    closePopover();
+  }
+});
+
+/* Now-line live refresh every minute */
+setInterval(() => {
+  if (state.view === 'week' || state.view === 'day') renderCurrentView();
+}, 60*1000);
+
+/* =====================================================
+   INIT
+   ===================================================== */
+renderMini();
+renderLocations();
+renderAccounts();
+renderLegend();
+renderSync();
+refreshBookingLink();
+renderAll();
+setView('week');
+
+})();
+</script>
+
+<script id="hk-embed-js">
+/* ===== הטמעה במעטפת (?embed=1) =====
+   ליומן יש טולבר משלו ואין לו ניווט אתר — לכן אין מה להסתיר. הוא מסך
+   נעול-גובה: המעטפת מותחת את המסגרת לגובה החלון והגלילה קורית בפנים. */
+(function(){
+  if(!/[?&]embed=1/.test(location.search)) return;
+  document.documentElement.classList.add('embed');
+  function report(){ parent.postMessage({hkAdvLock:'calendar'},'*'); }
+  addEventListener('load',function(){ report(); setTimeout(report,300); setTimeout(report,900); });
+  addEventListener('resize',report);
+  setInterval(report,1500);
+})();
+</script>
+</body>
+</html>

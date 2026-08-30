@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>נועה ברק · פגישות · JAMPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
+<style>
+/* =====================================================================
+   פגישות · נועה ברק — מסך המטופל של המטפלת
+   שני חלקים בלבד:
+   1. הפגישה הבאה פרושה — הכרטיס הכהה (מועד · עם מי · נושא · הקלטה מהירה)
+      ולצידו דף ההכנה פתוח. אין פגישה — במקומו התרעה עם שתי הדרכים לתקן.
+   2. זירת הפגישות של החברה — כל הפגישות בצינור אחד:
+      הקלטה ← תמלול ← סיכום ← עדכון זיכרון.
+   צבע: קורל = פעולה (הקלטה, אישור ושליחה) · אדום עמוק = סכנה כספית בלבד
+   (המספרים שצריך להביא) · נייבי = מצב ומבנה. בלוק כהה אחד — כרטיס הפגישה.
+   ===================================================================== */
+
+/* ---------- 1 · הפגישה הבאה ---------- */
+.hero{overflow:hidden;margin-bottom:22px}
+.hero .ph .when{font-size:12.5px;color:var(--ink3)}
+.hero .ph .when b{color:var(--ink2);font-weight:600}
+.hero-g{display:grid;grid-template-columns:326px minmax(0,1fr)}
+@media(max-width:1080px){.hero-g{grid-template-columns:1fr}}
+
+/* הכרטיס הכהה — הפגישה עצמה. כאן פועלים. */
+.mcard{background:var(--navy);color:#fff;padding:20px 22px 22px;display:flex;flex-direction:column}
+.mcard .day{font-size:12px;font-weight:600;color:var(--on-navy3);letter-spacing:.2px}
+.mcard .clock{font-size:34px;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-top:2px}
+.mcard .in{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:9px;
+  font-size:11.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.12);
+  border-radius:999px;padding:4px 11px}
+.mcard .in::before{content:"";width:6px;height:6px;border-radius:50%;background:#7CC9F2}
+.mcard .name{font-size:17.5px;font-weight:700;line-height:1.4;margin-top:16px}
+.mcard .who{font-size:13px;color:var(--on-navy2);margin-top:6px;display:flex;align-items:center;gap:7px}
+.mcard .who svg{opacity:.7;flex:none}
+.mcard .ln{height:1px;background:rgba(255,255,255,.14);margin:18px 0 16px}
+.mcard .rec{width:100%;justify-content:center;font-size:14px;padding:11px 20px}
+.mcard .rec i{width:9px;height:9px;border-radius:50%;background:#fff;flex:none;
+  box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.mcard .note{font-size:11.5px;line-height:1.6;color:var(--on-navy3);margin-top:9px}
+.mcard .acts{display:flex;gap:8px;margin-top:16px}
+.mcard .acts .btn{flex:1;justify-content:center}
+/* מה שהמטופלת כבר העלתה בשיחה ומחכה לפגישה הזאת */
+.mcard .ask{margin-top:18px;background:rgba(255,255,255,.08);border-radius:12px;padding:12px 14px}
+.mcard .ask .lb{font-size:11px;color:var(--on-navy3);letter-spacing:.2px}
+.mcard .ask q{display:block;font-size:13.5px;line-height:1.6;margin-top:5px;quotes:'״' '״'}
+.mcard .ask a{display:inline-block;font-size:12px;font-weight:600;color:#7CC9F2;margin-top:8px}
+.mcard .ask a:hover{text-decoration:underline}
+/* רגל הכרטיס — הפגישה הקודמת, כדי שהמשכיות הפגישות תישאר מול העיניים */
+.mcard .prev{margin-top:auto;padding-top:20px}
+.mcard .prev .ln2{height:1px;background:rgba(255,255,255,.14);margin-bottom:13px}
+.mcard .prev .lb{font-size:11px;color:var(--on-navy3);letter-spacing:.2px}
+.mcard .prev b{display:block;font-size:13.5px;font-weight:600;margin-top:3px}
+.mcard .prev .s{display:block;font-size:11.5px;color:var(--on-navy2);margin-top:3px}
+.mcard .prev .go{font-size:12px;font-weight:600;color:#7CC9F2;margin-top:8px;
+  display:inline-flex;align-items:center;gap:5px}
+.mcard .prev .go:hover{text-decoration:underline}
+.mcard .off{margin-top:14px;font-size:12px;color:var(--on-navy3);
+  align-self:flex-start;border-bottom:1px solid transparent}
+.mcard .off:hover{color:#fff;border-bottom-color:rgba(255,255,255,.5)}
+/* אישור פנימי — בלי dialog של דפדפן */
+.mcard .conf{margin-top:14px;background:rgba(255,255,255,.09);border-radius:12px;padding:12px 14px}
+.mcard .conf p{font-size:12.5px;line-height:1.6;color:var(--on-navy);margin-bottom:10px}
+.mcard .conf .row{display:flex;gap:8px}
+
+/* דף ההכנה — פתוח, לא כפתור */
+.prep{padding:16px 20px 20px;min-width:0}
+.prep-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.prep-h b{font-size:14.5px;font-weight:700;color:var(--navy)}
+.prep-h .src{font-size:11.5px;color:var(--ink3)}
+.prep-h .sp{margin-inline-start:auto}
+.prep-ai{background:var(--tint);border-radius:12px;padding:13px 16px;display:flex;gap:11px;
+  font-size:13.5px;line-height:1.72;color:var(--ink)}
+.prep-ai svg{flex:none;margin-top:3px;color:var(--sky)}
+.prep-ai b{color:var(--navy);font-weight:600}
+.prep-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(304px,1fr));gap:18px;margin-top:16px}
+.pblk{min-width:0}
+.pblk+.pblk .sect:first-child{margin-top:0}
+.pt{display:flex;gap:9px;font-size:13.5px;line-height:1.6;color:var(--ink);
+  padding:9px 12px;border:1px solid var(--cardbd);border-radius:10px;margin-bottom:7px}
+.pt::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--sky);flex:none;margin-top:8px}
+.pt em{font-style:normal;font-size:11px;font-weight:600;color:var(--ink3);
+  background:var(--chip);border-radius:99px;padding:2px 8px;margin-inline-start:auto;flex:none;align-self:center}
+.goal{border:1px solid var(--bd);border-inline-start:3px solid var(--sky);border-radius:10px;
+  padding:11px 14px;background:#fff}
+.goal b{display:block;font-size:13.5px;font-weight:600;color:var(--navy);line-height:1.55}
+.goal span{display:block;font-size:12px;color:var(--ink3);margin-top:5px;line-height:1.55}
+/* משימות מהפגישות הקודמות */
+.tsk{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.55;padding:6px 2px}
+.tsk .mk{width:17px;height:17px;border-radius:50%;flex:none;display:grid;place-items:center;
+  border:1px solid var(--bd);color:var(--faint);font-size:10px;margin-top:1px}
+.tsk.ok .mk{background:var(--good);border-color:var(--good);color:#fff}
+.tsk.ok span{color:var(--ink3);text-decoration:line-through;text-decoration-color:var(--faint)}
+.tsk .frm{font-size:11px;color:var(--ink3);margin-inline-start:auto;flex:none;align-self:center}
+.tsk.op .mk{border-color:#E0B36A;color:#B07A00}
+.pnote{font-size:11.5px;color:var(--ink3);line-height:1.6;margin-top:8px;
+  border-top:1px dashed var(--bd);padding-top:9px}
+.mrow{display:flex;gap:9px;font-size:12.5px;line-height:1.6;color:var(--ink2);padding:7px 0}
+.mrow+.mrow{border-top:1px solid var(--tint)}
+.mrow .cat{flex:none;font-size:10.5px;font-weight:600;color:var(--navy);background:var(--chip);
+  border-radius:99px;padding:2px 9px;align-self:flex-start;margin-top:1px}
+/* המספרים שצריך להביא */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:8px}
+.ntile{border:1px solid var(--cardbd);border-radius:11px;padding:10px 13px;background:#fff}
+.ntile span{display:block;font-size:11.5px;color:var(--ink3);line-height:1.4}
+.ntile b{display:block;font-size:16.5px;font-weight:700;color:var(--navy);letter-spacing:-.3px;margin-top:4px}
+.ntile.bad{border-color:#F0D5D1;background:#FDF7F6}
+.ntile.bad b{color:var(--bad)}
+
+/* התרעה — כשאין פגישה מתואמת */
+.alert{border-inline-start:3px solid var(--warn);margin-bottom:22px}
+.alert .pb{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:20px}
+.alert h2{font-size:19px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
+.alert p{font-size:13.5px;color:var(--ink2);line-height:1.65;margin-top:5px;max-width:640px}
+.alert .acts{margin-inline-start:auto;display:flex;gap:9px;flex-wrap:wrap}
+
+/* ---------- 2 · זירת הפגישות ---------- */
+.arena .ph{flex-wrap:wrap}
+.arena .cnt{font-size:12px;color:var(--ink3)}
+.fl{display:flex;gap:6px;margin-inline-start:auto}
+.cad{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:11px 20px;
+  background:var(--tint);border-bottom:1px solid var(--cardbd);font-size:12.5px;color:var(--ink2)}
+.cad b{color:var(--navy);font-weight:600}
+.cad .lb{font-size:11.5px;color:var(--ink3)}
+.cad .dot{width:4px;height:4px;border-radius:50%;background:var(--faint)}
+
+.grp{font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.3px;
+  padding:14px 20px 7px;display:flex;align-items:center;gap:8px}
+.grp i{font-style:normal;font-weight:400;color:var(--faint);font-size:11.5px}
+
+.row{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:0 14px;
+  padding:12px 20px;border-top:1px solid var(--tint);cursor:pointer}
+.row:hover{background:#FBFCFE}
+.row .dt{text-align:center;border:1px solid var(--bd);border-radius:10px;padding:5px 0;background:#fff}
+.row .dt b{display:block;font-size:15px;font-weight:700;color:var(--navy);line-height:1.1}
+.row .dt i{display:block;font-style:normal;font-size:10.5px;color:var(--ink3)}
+.row.now .dt{border-color:var(--sky);background:var(--tint)}
+.row .t{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;
+  gap:8px;flex-wrap:wrap;line-height:1.4}
+.row .mt{font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:7px;
+  flex-wrap:wrap;margin-top:4px}
+.row .mt svg{opacity:.75}
+.row .mt .sp{display:inline-flex;align-items:center;gap:5px}
+.row .mt .nw{color:var(--warn);font-weight:600}
+.row .acts{display:flex;align-items:center;gap:8px}
+.row .cv{color:var(--faint);transition:transform .15s}
+.row.open .cv{transform:rotate(180deg)}
+
+.chip{font-size:11px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:6px}
+.chip.up{background:var(--tint);color:var(--navy)}
+.chip.ai{background:#EEF6FC;color:#1D6FA5}
+.chip.ai::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:bp 1.4s infinite}
+@keyframes bp{0%,100%{opacity:.25}50%{opacity:1}}
+.chip.sum{background:#FDF4E3;color:var(--warn)}
+.chip.done{background:#EDF7F2;color:var(--good)}
+.chip.no{background:var(--chip);color:var(--ink2)}
+.chip.rec{background:#fff;border:1px solid var(--bd);color:var(--ink2);font-weight:500}
+.chip.rec svg{opacity:.6}
+
+/* גוף הפגישה הפתוחה */
+.det{padding:2px 20px 20px;background:#FBFCFE;border-top:1px solid var(--tint)}
+.det-g{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:20px;padding-top:14px}
+@media(max-width:1080px){.det-g{grid-template-columns:1fr}}
+.dh{font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.3px;margin:0 0 9px}
+.dh.t2{margin-top:16px}
+.pnt{display:flex;gap:9px;font-size:13.5px;line-height:1.68;color:var(--ink);padding:5px 0}
+.pnt .n{font-weight:700;color:var(--sky);flex:none}
+.side{background:#fff;border:1px solid var(--cardbd);border-radius:12px;padding:14px 16px;align-self:start}
+.pipe{display:flex;align-items:center;gap:0;margin:4px 0 14px;flex-wrap:wrap}
+.pipe .st{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--ink3)}
+.pipe .st b{font-weight:600}
+.pipe .st .i{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;flex:none;
+  border:1px solid var(--bd);color:var(--faint);font-size:10px;background:#fff}
+.pipe .st.ok{color:var(--ink2)}
+.pipe .st.ok .i{background:var(--good);border-color:var(--good);color:#fff}
+.pipe .st.run .i{background:#EEF6FC;border-color:#9CCBE9;color:#1D6FA5}
+.pipe .arm{width:34px;height:1px;background:var(--bd);margin:0 9px;flex:none}
+@media(max-width:700px){.pipe .arm{width:14px;margin:0 6px}}
+.note{font-size:13px;line-height:1.7;color:var(--ink2);background:#fff;border:1px solid var(--cardbd);
+  border-radius:11px;padding:12px 15px}
+.note b{color:var(--navy);font-weight:600}
+.dacts{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+/* שיוך משתתף — חובה לפני אישור הסיכום */
+.whobox{border:1px solid #EBD9B4;background:#FFFBF2;border-radius:11px;padding:12px 15px;margin-top:12px}
+.whobox.ok{border-color:var(--cardbd);background:#fff}
+.whobox b{display:block;font-size:13px;color:var(--navy);font-weight:600}
+.whobox p{font-size:12px;color:var(--warn);line-height:1.6;margin-top:3px}
+.whobox.ok p{color:var(--ink3)}
+.whorow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.wchip{display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:#fff;
+  border-radius:999px;padding:4px 6px 4px 12px;font-size:12px;font-weight:600}
+.wchip button{width:17px;height:17px;border-radius:50%;background:rgba(255,255,255,.18);
+  color:#fff;font-size:9px;display:grid;place-items:center}
+.wchip button:hover{background:rgba(255,255,255,.34)}
+.memr{display:flex;gap:9px;font-size:12.5px;line-height:1.6;color:var(--ink2);padding:8px 0}
+.memr+.memr{border-top:1px solid var(--tint)}
+.memr .cat{flex:none;font-size:10.5px;font-weight:600;color:var(--navy);background:var(--chip);
+  border-radius:99px;padding:2px 9px;align-self:flex-start;margin-top:1px}
+.empty{padding:26px 20px;text-align:center;font-size:13px;color:var(--ink3)}
+
+/* ---------- הקלטה ---------- */
+.srcs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0 4px}
+@media(max-width:560px){.srcs{grid-template-columns:1fr}}
+.src{border:1px solid var(--bd);border-radius:12px;padding:14px 12px;text-align:center;
+  color:var(--ink2);transition:border-color .15s,background .15s}
+.src:hover{border-color:var(--sky);background:var(--tint)}
+.src svg{color:var(--navy)}
+.src b{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-top:7px}
+.src span{display:block;font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.tie{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--ink3);margin-top:16px}
+.tie .pill{cursor:pointer}
+
+.recbar{position:fixed;inset-inline:0;bottom:0;z-index:75;background:var(--navy2);color:#fff;
+  display:none;align-items:center;gap:16px;padding:11px 30px;
+  box-shadow:0 -8px 30px rgba(12,64,104,.22)}
+.recbar.on{display:flex}
+.recbar .live{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600}
+.recbar .live i{width:10px;height:10px;border-radius:50%;background:#FF6B5B;flex:none;animation:bp 1.2s infinite}
+.recbar.pz .live i{animation:none;background:var(--on-navy3)}
+.recbar .clk{font-size:19px;font-weight:600;letter-spacing:.5px;min-width:62px}
+.recbar .sub{font-size:11.5px;color:var(--on-navy3)}
+.recbar .sp{margin-inline-start:auto}
+.recbar .marks{font-size:11.5px;color:var(--on-navy2)}
+body.rec-on{padding-bottom:62px}
+/* בזמן הקלטה הטוסט עולה מעל הבר במקום להיבלע בו */
+body.rec-on #toast{bottom:84px}
+
+/* תמלול */
+.md.wide{width:min(760px,94vw)}
+.trs{max-height:52vh;overflow:auto;margin-top:4px;padding-inline-end:4px}
+.tr{display:flex;gap:9px;font-size:13px;line-height:1.65;padding:8px 0;border-top:1px solid var(--tint)}
+.tr b{flex:none;font-weight:600;color:var(--ink3);min-width:42px}
+.tr.adv b{color:var(--navy)}
+.player{display:flex;align-items:center;gap:12px;background:var(--tint);border-radius:11px;padding:10px 14px}
+.player .pl{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;flex:none;
+  display:grid;place-items:center;font-size:12px}
+.player .track{flex:1;height:4px;border-radius:99px;background:#D3E2EE;position:relative;overflow:hidden}
+.player .track i{position:absolute;inset-block:0;inset-inline-start:0;width:34%;background:var(--sky);border-radius:99px}
+.player .tm{font-size:12px;color:var(--ink2);font-weight:500}
+
+/* תיאום פגישה */
+.slots{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+.slot{display:flex;align-items:center;gap:10px;border:1px solid var(--bd);border-radius:10px;
+  padding:9px 13px;font-size:13px;color:var(--ink);text-align:start}
+.slot:hover{border-color:var(--sky);background:var(--tint)}
+.slot.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.slot .d{font-weight:600}
+.slot .h{margin-inline-start:auto;font-weight:600}
+.fld{font-size:12px;font-weight:600;color:var(--ink3);margin:14px 0 6px}
+
+/* =====================================================================
+   ציר הזמן + הזירה (29.08)
+   הפגישה הבאה היא שורה על הציר כמו כל פגישה, וההכנה שלה נפתחת בזירה
+   שלצידה — במקום פאנל נפרד מעל שדוחף את הפגישות מתחת לקפל.
+   ===================================================================== */
+.mt{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:18px;align-items:start}
+/* 1000 ולא 1240 — בהטמעה המסגרת צרה מהחלון (1316 כשהחלון 1600) */
+@media(max-width:1000px){.mt{grid-template-columns:minmax(0,1fr)}}
+.phacts{display:inline-flex;align-items:center;gap:8px;flex:none}
+.tl-wrap{padding:4px 20px 14px}
+.tl-grp{display:flex;align-items:center;gap:9px;width:100%;text-align:start;
+  padding:12px 2px 8px;font-size:12px;font-weight:700;color:var(--ink3);letter-spacing:.3px}
+.tl-grp .cv{color:var(--faint);transition:transform .15s}
+.tl-grp[aria-expanded="false"] .cv{transform:rotate(-90deg)}
+.tl-grp .n{font-weight:700;color:var(--navy);background:var(--chip);border-radius:999px;padding:1px 8px;font-size:11px}
+.tl-grp .sum{margin-inline-start:auto;font-weight:400;color:var(--faint);font-size:11.5px}
+.tl-body{position:relative;padding-inline-start:26px}
+.tl-body::before{content:"";position:absolute;inset-inline-start:6px;top:2px;bottom:2px;
+  border-inline-start:2px solid var(--bd)}
+.tl-body.fut::before{border-inline-start-style:dashed;border-inline-start-color:#D3E2EE}
+.tl-body.hid{display:none}
+.tl-row{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr) auto;
+  gap:2px 12px;align-items:center;width:100%;text-align:start;
+  padding:9px 11px;border-radius:11px;transition:background .12s}
+.tl-row:hover{background:var(--tint)}
+.tl-row.on{background:#ECF4FA;box-shadow:inset 0 0 0 1px #C9DDEC}
+.tl-row::before{content:"";position:absolute;inset-inline-start:-25px;top:calc(50% - 6px);
+  width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid var(--faint);box-sizing:border-box}
+.tl-row.up::before{border-color:var(--coral)}
+.tl-row.next::before{background:var(--coral);border-color:var(--coral);box-shadow:0 0 0 4px rgba(228,130,110,.16)}
+.tl-row.past::before{background:var(--navy);border-color:var(--navy)}
+.tl-row.act::before{background:#E0A32B;border-color:#E0A32B;box-shadow:0 0 0 4px rgba(224,163,43,.15)}
+.tl-d{text-align:center;line-height:1.15}
+.tl-d b{display:block;font-size:13px;font-weight:700;color:var(--navy)}
+.tl-d i{display:block;font-style:normal;font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.tl-t{min-width:0;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.4}
+.tl-t em{display:block;font-style:normal;font-size:11.5px;font-weight:400;color:var(--ink3);margin-top:2px}
+.tl-s{font-size:11px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap;
+  border:1px solid var(--bd);color:var(--ink3)}
+.tl-s.wait{color:#8A6100;border-color:#EADDBF;background:#FCF7EC}
+.tl-s.soon{color:var(--coral-d);border-color:#F2D3C9;background:#FDF3F0}
+.tl-s.ok{color:var(--good);border-color:#CFE6DA;background:#F1F9F5}
+.tl-now{position:relative;display:flex;align-items:center;gap:10px;margin:8px 0;padding-inline-start:26px}
+.tl-now::before{content:"";position:absolute;inset-inline-start:2px;top:calc(50% - 5px);
+  width:11px;height:11px;border-radius:50%;background:var(--coral);
+  box-shadow:0 0 0 3px #fff,0 0 0 5px rgba(228,130,110,.3)}
+.tl-now b{font-size:11.5px;font-weight:700;color:var(--coral-d);white-space:nowrap}
+.tl-now .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--coral) 0,transparent 90%);opacity:.45}
+.tl-empty{padding:14px 11px;font-size:12.5px;color:var(--ink3)}
+.lnk{color:var(--sky);font-weight:600;text-decoration:underline}
+/* ---------- הזירה ---------- */
+.arn{position:sticky;top:16px;overflow:hidden}
+.arn-h{background:var(--navy);color:#fff;padding:17px 22px 18px}
+.arn-h .day{font-size:12px;color:var(--on-navy3)}
+.arn-h .clock{font-size:31px;font-weight:800;letter-spacing:.5px;line-height:1.15;margin-top:1px}
+.arn-h .in{display:inline-block;font-size:11.5px;font-weight:600;color:#FFD9CE;
+  border:1px solid rgba(255,217,206,.35);border-radius:999px;padding:2px 11px;margin-top:7px}
+.arn-h .name{font-size:17px;font-weight:700;margin-top:11px;line-height:1.35}
+.arn-h .who{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--on-navy2);margin-top:5px}
+.arn-h .acts{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:15px}
+.arn-h .rec{background:var(--coral);color:#fff;font-size:13px;padding:8px 18px}
+.arn-h .rec:hover{background:var(--coral-d)}
+.arn-h .rec i{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block}
+.arn-h .note{font-size:11.5px;color:var(--on-navy3);line-height:1.6;margin-top:9px;max-width:60ch}
+.arn-b{padding:16px 22px 20px}
+.arn-b .det{padding:0}
+.arn-b .prep{border:0;padding:0;background:none;box-shadow:none}
+.arn-b .prep-g{grid-template-columns:minmax(0,1fr);gap:0}
+.arn-b .prep-g .pblk+.pblk{margin-top:16px;padding-top:16px;border-top:1px solid var(--tint)}
+.arn-b .nums{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1000px){.arn-b .nums{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}}
+/* ההכנה החיה — חותמת "חי" במקום שעון פגישה */
+.prep-h2 .live{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:#9FD9F5;margin-top:6px}
+.prep-h2 .live i{width:7px;height:7px;border-radius:50%;background:#4FCB92;
+  box-shadow:0 0 0 3px rgba(79,203,146,.25);animation:lv 2.2s infinite}
+@keyframes lv{0%,100%{opacity:1}50%{opacity:.45}}
+.prep-h2 .name{font-size:19px;margin-top:12px}
+/* חזרה מהזירה אל ההכנה */
+.arn-back{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+  color:#9FD9F5;margin-bottom:11px}
+.arn-back:hover{text-decoration:underline}
+/* נגן ההקלטה בכותרת — כמו בזירה הרוחבית */
+.arn-play{display:inline-flex;align-items:center;gap:9px;margin-top:13px;
+  border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:5px 13px 5px 10px;color:#fff}
+.arn-play:hover{background:rgba(255,255,255,.09)}
+.arn-play .wave{display:flex;align-items:center;gap:2px;height:14px}
+.arn-play .wave i{width:2px;border-radius:99px;background:rgba(255,255,255,.55)}
+.arn-play .wave i:nth-child(odd){height:12px}
+.arn-play .wave i:nth-child(even){height:7px}
+.arn-play b{font-size:11.5px;font-weight:600;color:var(--on-navy2)}
+/* טאבים של הזירה */
+.arn-tabs{display:flex;gap:2px;padding:0 16px;border-bottom:1px solid var(--tint);background:#FCFDFE}
+.arn-tabs button{position:relative;padding:12px 14px;font-size:13px;font-weight:600;color:var(--ink3)}
+.arn-tabs button:hover{color:var(--navy)}
+.arn-tabs button.on{color:var(--navy)}
+.arn-tabs button.on::after{content:"";position:absolute;inset-inline:12px;bottom:-1px;height:2px;
+  border-radius:99px;background:var(--coral)}
+/* משימות הזירה — אישור פר משימה */
+.tksub{font-size:12.5px;color:var(--ink3);line-height:1.6;margin-bottom:12px}
+.artk{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:11px;align-items:center;
+  padding:11px 0;border-top:1px solid var(--tint)}
+.artk:first-of-type{border-top:0}
+.artk .cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--bd);background:#fff;
+  display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
+.artk.done .cb{background:var(--good);border-color:var(--good)}
+.artk .b b{display:block;font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.4}
+.artk .b span{font-size:11.5px;color:var(--ink3)}
+.artk.done .b b{color:var(--ink3);text-decoration:line-through}
+.artk .ari{width:28px;height:28px;border-radius:8px;border:1px solid var(--bd);background:#fff;
+  display:grid;place-items:center;color:var(--ink3)}
+.artk .ari:hover{border-color:var(--sky);color:var(--navy)}
+.artk-add{display:flex;gap:8px;margin-top:13px}
+.artk-add input{flex:1;border:1px solid var(--bd);border-radius:10px;padding:9px 13px;font-size:13px}
+.artk-add input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+/* תמלול בזירה */
+.txr{font-size:13.5px;line-height:1.7;color:var(--ink);padding:7px 0;border-top:1px solid var(--tint)}
+.txr:first-of-type{border-top:0}
+.txr b{color:var(--navy);font-weight:600}
+/* רגל הזירה — הפעולות */
+.arn-f{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:14px 22px;
+  border-top:1px solid var(--tint);background:#FCFDFE}
+.whowarn{flex:1 0 100%;font-size:12.5px;color:#8A6100;background:#FCF7EC;border:1px solid #EADDBF;
+  border-radius:10px;padding:10px 13px;line-height:1.6}
+.whowarn .whorow{display:inline-flex;gap:6px;margin-inline-start:8px}
+/* משוב — סעיף סעיף, נפתח בלחיצה */
+.fbs{border-top:1px solid var(--tint)}
+.fbs:first-of-type{border-top:0}
+.fbh{display:flex;align-items:center;gap:9px;width:100%;text-align:start;padding:12px 0}
+.fbh b{font-size:13.5px;font-weight:600;color:var(--ink)}
+.fbh .cv{color:var(--faint);transition:transform .15s;flex:none}
+.fbs.open .fbh .cv{transform:rotate(180deg)}
+.fbs.open .fbh b{color:var(--navy)}
+.fbs p{font-size:13.5px;line-height:1.75;color:var(--ink2);padding:0 20px 13px 0;max-width:72ch}
+/* בלוקי ההכנה — קטגוריה אחרי קטגוריה */
+.pcb.sep{margin-top:18px;padding-top:16px;border-top:1px solid var(--tint)}
+/* הגדרות הבריף */
+.pclist{margin-top:4px;max-height:52vh;overflow-y:auto}
+.pcrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px 12px;align-items:center;
+  padding:12px 2px;border-top:1px solid var(--tint)}
+.pcrow:first-child{border-top:0}
+.pcrow.off .pcb2 b,.pcrow.off .pcb2 span{color:var(--faint)}
+.pcb2 b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+.pcb2 span{display:block;font-size:11.5px;color:var(--ink3);margin-top:1px}
+.pcacts{display:flex;align-items:center;gap:5px}
+.pcacts .ib{width:26px;height:26px;border:1px solid var(--bd);border-radius:8px;display:grid;
+  place-items:center;color:var(--ink2);background:#fff}
+.pcacts .ib.txt{width:auto;padding:0 10px;font-size:11.5px;font-weight:600}
+.pcacts .ib:hover:not(:disabled){border-color:var(--sky);color:var(--navy)}
+.pcacts .ib.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pcacts .ib.dg:hover{border-color:var(--bad);color:var(--bad)}
+.pcacts .ib:disabled{opacity:.35;cursor:default}
+.pcp{grid-column:1/-1;background:var(--bg);border:1px solid var(--cardbd);border-radius:11px;padding:12px 14px}
+.pcp label{display:block;font-size:11.5px;font-weight:700;color:var(--ink3);margin-bottom:7px}
+.pcp textarea{width:100%;font-size:12.5px;line-height:1.7;border:1px solid var(--bd);border-radius:9px;
+  padding:10px 12px;resize:vertical;background:#fff}
+.pcp textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.pcp .hint{font-size:11px;color:var(--ink3);margin-top:7px;line-height:1.6}
+.pcadd{display:flex;gap:9px;margin-top:14px;padding-top:13px;border-top:1px solid var(--tint)}
+.pcadd input{flex:1;font-size:13px;border:1px solid var(--bd);border-radius:10px;padding:9px 13px}
+.pcadd input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.tog{width:38px;height:21px;border-radius:99px;background:var(--bd);position:relative;flex:none;transition:background .15s}
+.tog::after{content:"";position:absolute;top:2px;inset-inline-end:2px;width:17px;height:17px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(12,64,104,.25);transition:transform .18s}
+.tog.on{background:var(--sky)}
+.tog.on::after{transform:translateX(-17px)}
+.btn.dang{background:var(--bad);color:#fff}
+
+/* פעולה חסומה — האישור נעול עד ששויך משתתף */
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+</style>
+</head>
+<body data-cli="meets">
+<main class="wrap">
+  <div class="mt">
+
+    <!-- ציר הזמן — כל הפגישות של החברה, הבאה ביניהן -->
+    <section class="panel">
+      <div class="ph">
+        <h3>זירת הפגישות</h3>
+        <span class="cnt" id="tlCnt"></span>
+        <div class="sp"></div>
+        <span class="phacts">
+          <button class="btn pln" onclick="askAI('מה עלה בפגישות של נועה?')">שאל את העוזר</button>
+          <button class="btn pln" onclick="schedOpen()">+ תיאום פגישה</button>
+        </span>
+      </div>
+      <div class="cad" id="tlCad"></div>
+      <div class="tl-wrap" id="tl"></div>
+    </section>
+
+    <!-- הזירה — הפגישה שנבחרה: הכנה לעתידית, סיכום לשהתקיימה -->
+    <section id="arena"></section>
+
+  </div>
+</main>
+
+<!-- הגדרת הבריף — קטגוריות ופרומפטים, פר מטפלת -->
+<div class="ov" id="pcOv" onclick="if(event.target===this)pcClose()">
+  <div class="md wide">
+    <button class="x" onclick="pcClose()" aria-label="סגירה">✕</button>
+    <h3>דף ההכנה שלי</h3>
+    <div class="s">אלה הקטגוריות שייכנסו לדף ההכנה שלך, בסדר שתקבע. לכל קטגוריה פרומפט משלה —
+      בדיוק כמו בפרופיל המטופל. ההגדרה היא שלך: היא חלה על כל המטופלים שלך.</div>
+    <div class="pclist" id="pcList"></div>
+    <div class="pcadd">
+      <input id="pcNew" placeholder="שם קטגוריה חדשה — למשל: סיכונים רגולטוריים"
+        onkeydown="if(event.key==='Enter')pcAdd()">
+      <button class="btn pln" onclick="pcAdd()">+ הוספה</button>
+    </div>
+    <div class="ft">
+      <button class="btn pri" onclick="pcClose();toast('דף ההכנה שלך עודכן')">שמירה</button>
+      <button class="btn pln" onclick="pcClose()">סגירה</button>
+      <span class="to">חל על כל המטופלים שלך</span>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="cfOv" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="md">
+    <button class="x" onclick="document.getElementById('cfOv').classList.remove('on')" aria-label="סגירה">✕</button>
+    <h3 id="cfT"></h3><div class="s" id="cfM"></div>
+    <div class="ft"><button class="btn dang" id="cfY">הסרה</button>
+      <button class="btn pln" onclick="document.getElementById('cfOv').classList.remove('on')">ביטול</button></div>
+  </div>
+</div>
+
+<!-- בורר מקור ההקלטה -->
+<div class="ov" id="srcOv" onclick="if(event.target===this)srcClose()">
+  <div class="md">
+    <button class="x" onclick="srcClose()" aria-label="סגירה">✕</button>
+    <h3>הקלטה מהירה</h3>
+    <div class="s">בחרו מאיפה לקלוט את האודיו — התמלול, הסיכום, המשימות ועדכוני הזיכרון נוצרים אוטומטית בסיום.</div>
+    <div class="srcs" id="srcList"></div>
+    <div class="tie">
+      <span>שיוך ההקלטה:</span>
+      <button class="pill on" id="tieFree" onclick="tieSet(0)">הקלטה חופשית</button>
+      <button class="pill" id="tieMeet" onclick="tieSet(1)">לפגישה הבאה</button>
+    </div>
+  </div>
+</div>
+
+<!-- סיום הקלטה — אישור במסך, לא dialog של דפדפן -->
+<div class="ov" id="stopOv" onclick="if(event.target===this)stopClose()">
+  <div class="md">
+    <button class="x" onclick="stopClose()" aria-label="סגירה">✕</button>
+    <h3>לסיים את ההקלטה?</h3>
+    <div class="s">אחרי הסיום לא ניתן להמשיך להקליט. ההקלטה תישלח לתמלול, לסיכום, לסופרוויזיון ולעדכון הפרופיל.</div>
+    <div class="ft">
+      <button class="btn pri" onclick="recStop()">סיום ושליחה לעיבוד</button>
+      <button class="btn pln" onclick="stopClose()">המשך הקלטה</button>
+    </div>
+  </div>
+</div>
+
+<!-- תמלול -->
+<div class="ov" id="trOv" onclick="if(event.target===this)trClose()">
+  <div class="md wide">
+    <button class="x" onclick="trClose()" aria-label="סגירה">✕</button>
+    <h3 id="trTtl">תמלול הפגישה</h3>
+    <div class="s" id="trSub"></div>
+    <div class="player">
+      <button class="pl" id="plBtn" onclick="plTg()" aria-label="השמעה"></button>
+      <div class="track"><i></i></div>
+      <span class="tm num" id="plTm" dir="ltr">46:12</span>
+      <button class="btn pln" onclick="toast('התמלול הורד כקובץ')">הורדת התמלול</button>
+    </div>
+    <div class="trs" id="trBody"></div>
+  </div>
+</div>
+
+<!-- תיאום פגישה -->
+<div class="ov" id="schOv" onclick="if(event.target===this)schedClose()">
+  <div class="md">
+    <button class="x" onclick="schedClose()" aria-label="סגירה">✕</button>
+    <h3>תיאום פגישה</h3>
+    <div class="s">נועה ברק · CBT חרדה חברתית — פגישה שבועית קבועה</div>
+    <input id="schTtl" value="פגישה חודשית — יולי">
+    <div class="fld">עם מי</div>
+    <div class="whorow" id="schWho"></div>
+    <div class="fld">מועד</div>
+    <div class="slots" id="schSlots"></div>
+    <div class="ft">
+      <button class="btn pri" onclick="schedSave()">קביעת הפגישה</button>
+      <button class="btn pln" onclick="schedLink()">שליחת מועדים למטופלת</button>
+      <span class="to">סנכרון ליומן ותזכורת למטופלת — אוטומטי</span>
+    </div>
+  </div>
+</div>
+
+<!-- בר ההקלטה — מלווה את המסך, אפשר להמשיך לעבוד -->
+<div class="recbar" id="recBar">
+  <div class="live"><i></i><span id="recWho">מקליט</span></div>
+  <div class="clk num" id="recClk" dir="ltr">00:00</div>
+  <span class="sub" id="recSub">התמלול נצבר ברקע</span>
+  <span class="marks" id="recMk"></span>
+  <div class="sp"></div>
+  <button class="btn gh" onclick="recMark()">סימון רגע חשוב</button>
+  <button class="btn gh" onclick="recPause()" id="recPz">השהיה</button>
+  <button class="btn pri" onclick="stopOpen()">סיום הקלטה</button>
+</div>
+
+<script src="cli.js"></script>
+<script>
+hkChrome('meets',{strip:false});
+
+/* =====================================================================
+   הנתונים — הפגישות של נועה ברק. אותו מודל בדיוק של HK:
+   פגישה נושאת סטטוס, סיכום, משימות ועדכוני פרופיל.
+   ההכנה — הבריף של 60 השניות, בנוי מקטגוריות שהמטפלת מגדירה בעצמה.
+   ===================================================================== */
+const TODAY='02.07.2026', NOW='10:54';
+const MON=['','ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳'];
+
+let MT=[
+  {id:'m0', name:'פגישה שבועית — חשיפה מדורגת', date:'26.06.2026', time:'16:00-16:50',
+   who:['נועה ברק'], status:'summary', rec:'50 דק׳', tr:1,
+   sum:['נועה זיהתה לבד שהיא מתארת את עצמה במילים שלא הייתה משתמשת בהן לגבי אף אחד אחר',
+        'אמונת הליבה "כולם רואים שאני לחוצה" נבחנה מול עדויות ונחלשה משמעותית',
+        'סוכם על חשיפה מדורגת: משפט אחד בישיבת הצוות הקרובה, בלי הכנה מוקדמת של שבוע',
+        'הנשימות הפכו לכלי שהיא מיישמת מיוזמתה — לפני החשיפה ולא אחריה'],
+   tasks:[{t:'לומר משפט אחד בישיבת הצוות',done:false},
+          {t:'יומן מצבים חברתיים — שלושה אירועים בשבוע',done:false},
+          {t:'המשך נשימות 4-7-8 פעמיים ביום',done:false}],
+   memUpd:[{c:'דפוסים',t:'ביקורת עצמית מיד אחרי הצלחה — מנטרלת את החיזוק'},
+           {c:'אמונות ליבה',t:'"כולם רואים שאני לחוצה" — נחלשה מול עדויות'},
+           {c:'כלים שעובדים',t:'נשימות 4-7-8 — מיושמות לפני החשיפה, מיוזמתה'}]},
+  {id:'m1', name:'פגישה שבועית', date:'02.07.2026', time:'16:00-16:50',
+   who:['נועה ברק'], status:'upcoming'},
+  {id:'m2', name:'פגישה שבועית — עיבוד הישיבה', date:'19.06.2026', time:'16:00-16:50',
+   who:[], status:'summary', rec:'47 דק׳'},          /* ללא משתתף — חוסם את אישור הסיכום */
+  {id:'m3', name:'פגישה שבועית', date:'09.07.2026', time:'16:00-16:50',
+   who:['נועה ברק'], status:'upcoming'},
+  {id:'m4', name:'שלב 3 — כלים להתמודדות', date:'05.06.2026', time:'16:00-16:50',
+   who:['נועה ברק'], status:'done', rec:'52 דק׳', sent:true,
+   sum:['נבנה סולם המצבים החברתיים — מהקל (שיחת מסדרון) עד המאיים (הצגה בישיבת הנהלה)',
+        'נלמד תרגול נשימות 4-7-8 · נועה תרגלה בפגישה והרגישה ירידה בלחץ בחזה',
+        'זוהתה השתיקה כמשאב: כשמחכים כמה שניות נועה מביאה את המשפט האמיתי',
+        'סוכם על תרגול מדורג בסביבה בטוחה לפני מעבר לישיבות הצוות'],
+   tasks:[{t:'תרגול נשימות יומי',done:true},{t:'סולם מצבים — דירוג עצמי',done:true},
+          {t:'שיחת מסדרון יזומה אחת בשבוע',done:true},{t:'קריאת דף ההסבר על הימנעות',done:true}],
+   memUpd:[{c:'כלים שעובדים',t:'ויסות דרך הגוף — הכלי שנועה מיישמת הכי טוב'},
+           {c:'סגנון עבודה',t:'שתיקה של כמה שניות מביאה את המשפט האמיתי'},
+           {c:'דפוסים',t:'ההימנעות רגישה להקשר — נחלשת עם הכנה מראש'}]},
+  {id:'m5', name:'שלב 2 — מיפוי צרכים ומצבים', date:'08.05.2026', time:'16:00-16:50',
+   who:['נועה ברק'], status:'done', rec:'55 דק׳', sent:true,
+   sum:['מופו המצבים המעוררים והמחשבות האוטומטיות שנלוות לכל אחד מהם',
+        'עלתה אמונת הליבה "אם אני לא מושלמת, עדיף שלא אדבר בכלל"',
+        'זוהו ההתנהגויות הבטוחות: הכנה של שבוע מראש, ישיבה בקצה השולחן'],
+   tasks:[{t:'התחלת יומן מצבים חברתיים',done:true},{t:'זיהוי שלוש מחשבות אוטומטיות',done:true},
+          {t:'ויתור על הכנה מוקדמת בישיבה אחת',done:false}],
+   memUpd:[{c:'אמונות ליבה',t:'"אם אני לא מושלמת, עדיף שלא אדבר בכלל"'},
+           {c:'סגנון עבודה',t:'נוטה להסכים מהר כדי לא לאכזב — לוודא שההסכמה אמיתית'}]},
+];
+
+/* =====================================================================
+   דף ההכנה — הבריף של 60 השניות. קטגוריות פר מטפלת, בדיוק במודל של
+   פרופיל המטופל: לכל קטגוריה שם, תיאור ו**פרומפט שהמטפלת כותבת**.
+   היא בוחרת אילו קטגוריות ייכנסו לבריף שלה ובאיזה סדר. התוכן נבנה
+   מהפרופיל ומהפגישות לפי הפרומפט — הבריף חי, הוא לא נכתב פר פגישה.
+   ===================================================================== */
+let PREP_CATS=[
+  {key:'nums', name:'תמונת מצב מהירה', on:true,
+   desc:'מה שהמטפלת רוצה מול העיניים כשהיא נכנסת',
+   prompt:`אתה בונה את בלוק "תמונת מצב מהירה" בבריף של המטפלת.
+קלט: השלב בתוכנית הטיפול, השיחה שבין הפגישות, סטטוס המשימות והפגישה הקודמת.
+בחר עד 6 עובדות שהמטפלת צריכה מול העיניים — כאלה שישפיעו על מהלך הפגישה.
+סמן באדום רק סימן אזהרה קליני אמיתי. בלי פרשנות, רק העובדה והכותרת שלה.`},
+
+  {key:'brief', name:'תמונת פתיחה', on:true,
+   desc:'שלושה משפטים על המצב שאיתו נכנסים לפגישה',
+   prompt:`אתה כותב את פסקת הפתיחה של הבריף — עד שלושה משפטים.
+קלט: פרופיל המטופל והשיחה מאז הפגישה הקודמת.
+נסח את המצב שאיתו נכנסים לפגישה ואת הנושא המרכזי שדורש עבודה.
+עובדות בלבד, בלי פרשנות טיפולית ובלי חזרה על מה שכתוב בבלוקים האחרים.`},
+
+  {key:'points', name:'הנקודות לפגישה', on:true,
+   desc:'מה להעלות, כל נקודה עם המקור שלה',
+   prompt:`אתה בונה את רשימת הנקודות לפגישה.
+קלט: הדפוסים, המשימות והשיחה שבין הפגישות.
+החזר עד 5 נקודות, כל אחת משפט אחד + המקור שממנו עלתה (דפוסים / משימות / דיווחים / שיחה).
+דרג לפי מה שיקדם הכי הרבה את המטופל. אל תכלול נקודה שכבר עובדה.`},
+
+  {key:'goal', name:'מטרה מוצעת לפגישה', on:true,
+   desc:'הדבר האחד שכדאי לצאת איתו',
+   prompt:`אתה מציע מטרה אחת לפגישה.
+קלט: הנקודות לפגישה, השלב בתוכנית הטיפול והדפוס המרכזי.
+החזר משפט מטרה אחד, ומתחתיו משפט "למה" שמחבר אותה לחוט שעובר בין הנתונים.`},
+
+  {key:'closed', name:'מה התקדם מאז הפגישה הקודמת', on:true,
+   desc:'משימות ותרגולים שבוצעו',
+   prompt:`אתה מרכז את מה שהתקדם מאז הפגישה הקודמת.
+קלט: המשימות שניתנו ומה שהמטופל כתב עליהן בשיחה.
+החזר רק מה שבוצע, כל אחד עם הפגישה שממנה ניתן. אם אין — החזר "אין עדכון".`},
+
+  {key:'open', name:'מה נשאר פתוח', on:true,
+   desc:'משימות שלא בוצעו — להעלות בעדינות',
+   prompt:`אתה מרכז את מה שנשאר פתוח.
+קלט: המשימות מפגישות קודמות שטרם בוצעו.
+החזר כל משימה פתוחה עם הפגישה שממנה ניתנה. סמן משימה שלא בוצעה פעמיים ברצף —
+היא כנראה חלק מהדפוס ולא כישלון ביצוע.`},
+
+  {key:'talk', name:'מהפרופיל — איך לדבר איתה', on:true,
+   desc:'סגנון, רגישויות והסכמות מהפרופיל',
+   prompt:`אתה שולף מהפרופיל את מה שמשפיע על אופן ניהול הפגישה.
+קלט: קטגוריות "סגנון עבודה", "ברית טיפולית", "דפוסים" ו"אמונות ליבה".
+החזר עד 3 שורות: קטגוריה + ההנחיה המעשית.`},
+];
+let PC_OPEN=null;   /* הפרומפט שפתוח כרגע בהגדרות */
+const PC_ON=k=>{const c=PREP_CATS.find(x=>x.key===k);return c&&c.on;};
+
+/* ההכנה — נגזרת מהפרופיל ומהדיווחים בזמן אמת */
+const PREP={
+  ai:'נועה מגיעה אחרי שבוע חזק: היא <b>נשארה בישיבה ואמרה משפט</b> — הפעם הראשונה שהיא מדווחת על כך בזמן אמת. הנושא המרכזי: <b>הביקורת העצמית שהגיעה מיד אחרי</b>, דפוס חדש שמנטרל לה את החיזוק. נועה עצמה ביקשה הבוקר להעלות אותו.',
+  pts:[['נשארה בישיבה ואמרה משפט — לפתוח מזה, לא מהחוסר','שיחה'],
+       ['ביקורת עצמית מיד אחרי ההצלחה — הדפוס החדש, שווה לתת לו שם משותף','דפוסים'],
+       ['יומן המצבים לא מולא שבוע שני — לברר בסקרנות, זו אותה הימנעות','משימות'],
+       ['נועה ביקשה בעצמה להעלות למה היא מוצאת פגם בכל הצלחה','שיחה']],
+  goal:'לתת שם משותף לדפוס הביקורת שאחרי ההצלחה, ולבנות איתה דרך אחת לעצור אותו',
+  why:'זה החוט שמחבר את החשיפה שהצליחה, את היומן שלא מולא ואת מה שנועה עצמה ביקשה להעלות',
+  closed:[['לומר משפט אחד בישיבת הצוות','26.06'],['תרגול נשימות 4-7-8','26.06'],
+          ['סולם מצבים — דירוג עצמי','05.06'],['שיחת מסדרון יזומה','05.06']],
+  open:[['יומן מצבים חברתיים — שבוע שני שלא מולא','26.06'],['ויתור על הכנה מוקדמת בישיבה','08.05']],
+  mem:[['סגנון עבודה','לתת לה לסיים — היא עוצרת באמצע כשמתערבים'],
+       ['רגישות','שבחים ישירים מפעילים ביקורת עצמית — לתאר, לא לשבח'],
+       ['ברית טיפולית','נוטה להסכים מהר כדי לא לאכזב — לוודא שההסכמה אמיתית']],
+  nums:[['שלב בתוכנית הטיפול','4 מתוך 6 · עבודה על דפוסים',0],
+        ['מאז הפגישה האחרונה','7 ימים',0],
+        ['יומן המצבים','לא מולא · שבוע שני',1],
+        ['ענתה לפניות השבוע','על כל אחת · שתיים ביוזמתה',0],
+        ['נשימות 4-7-8','4 מתוך 7 ימים',0],
+        ['סיכום 26.06','ממתין לאישורך',1]],
+};
+
+/* התמלול של הפגישה האחרונה */
+const TRANS=[
+  ['מטפלת','ספרי לי מה קרה בישיבה ביום שלישי.'],
+  ['מטופלת','אמרתי משפט אחד. הלב דפק חזק אבל לא יצאתי מהחדר.'],
+  ['מטפלת','נשארת. זה בדיוק מה שסיכמנו. איך זה הרגיש אחרי?'],
+  ['מטופלת','אני מניחה שבסדר. אבל חשבתי שיכולתי להגיד את זה יותר טוב.'],
+  ['מטפלת','שמת לב שהתחלת מ"בסדר" ותוך משפט הגעת ל"יכולתי יותר טוב"?'],
+  ['מטופלת','אני יודעת שזה לא נורא. פשוט בזמן אמת אני לא מצליחה להזכיר לעצמי את זה.'],
+  ['מטפלת','אם חברה שלך הייתה מספרת לך בדיוק את מה שסיפרת לי — מה היית אומרת לה?'],
+  ['מטופלת','שהיא עשתה משהו גדול. אלה מילים שלא הייתי משתמשת בהן לגבי עצמי.'],
+];
+/* מי בטיפול */
+const USERS=[['נועה ברק','מטופלת']];
+
+/* ---------- עזרי תאריך ---------- */
+const dnum=d=>{const p=d.split('.');return new Date(+p[2],p[1]-1,+p[0]);};
+const dayDiff=d=>Math.round((dnum(d)-dnum(TODAY))/864e5);
+const mins=t=>{const p=t.split(':');return +p[0]*60+ +p[1];};
+const from=m=>m.time.split('-')[0];
+/* דקות מ"עכשיו" — מה שקובע מי הפגישה הבאה */
+const untilM=m=>dayDiff(m.date)*1440+mins(from(m))-mins(NOW);
+const timeTxt=m=>{const p=m.time.split('-');return p[0]+'–'+(p[1]||'');};
+function inTxt(m){
+  const t=untilM(m);
+  if(t<0)return 'עברה';
+  const d=dayDiff(m.date);
+  if(d===0){const h=Math.floor(t/60),mm=t%60;
+    return h?`בעוד ${h===1?'שעה':h+' שעות'}${mm?` ו-${mm} דק׳`:''}`:`בעוד ${mm} דק׳`;}
+  return d===1?'מחר':`בעוד ${d} ימים`;
+}
+const dayName=d=>['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'][dnum(d).getDay()];
+const whoTxt=m=>m.who.length?m.who.join(' + '):'';
+
+const ICONS={
+  usr:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.6"/><path d="M4.6 21c0-3.9 3.7-5.9 7.4-5.9s7.4 2 7.4 5.9"/></svg>',
+  clk:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  mic:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  spark:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2 5.6L19.6 11 14 13.4 12 19l-2-5.6L4.4 11 10 8.6z"/></svg>',
+};
+
+/* ---------- 1 · הפגישה הבאה ---------- */
+const nextMeet=()=>MT.filter(m=>m.status==='upcoming'&&untilM(m)>=0).sort((a,b)=>untilM(a)-untilM(b))[0];
+let CONF=false;                       // אישור "לא תתקיים" פתוח בתוך הכרטיס
+
+let SEL=null, GRP={up:true, past:true}, MTAB='sum';
+
+/* =====================================================================
+   הזירה — שני מצבים:
+   ברירת מחדל היא **ההכנה החיה**: היא לא שייכת לפגישה מסוימת אלא מתעדכנת
+   מהפרופיל ומהשיחה כל הזמן, וזה המקום שסורקים בו הכל לפני פגישה.
+   לחיצה על פגישה בציר פותחת את **זירת הפגישה** המלאה — סטטוס, הקלטה,
+   וטאבים: סיכום · משימות · זיכרון · תמלול, כמו בזירה הרוחבית.
+   ===================================================================== */
+function arenaShow(id){
+  const host=document.getElementById('arena');
+  const m=id&&MT.find(x=>x.id===id);
+  SEL=m?id:null;
+  document.querySelectorAll('.tl-row').forEach(r=>r.classList.toggle('on',r.dataset.id===SEL));
+  host.innerHTML = m ? meetArena(m) : prepPanel();
+}
+function toPrep(){ arenaShow(null); }
+
+/* ---------- ההכנה החיה ---------- */
+function prepPanel(){
+  const nx=nextMeet();
+  return `<div class="panel arn">
+    <div class="arn-h prep-h2">
+      <div class="day">ההכנה לפגישה</div>
+      <div class="live"><i></i>חי · נבנה מהפרופיל ומהשיחה · עודכן ${NOW}</div>
+      <div class="name">${nx?'לקראת '+nx.name:'אין פגישה מתואמת — ההכנה ממשיכה להתעדכן'}</div>
+      <div class="who">${ICONS.usr} ${nx?(dayDiff(nx.date)===0?'היום':nx.date.slice(0,5))+' · '+from(nx)+' · עם '+whoTxt(nx)
+                                     :'ברגע שתתואם פגישה — ההכנה כבר תהיה מוכנה'}</div>
+      <div class="acts">
+        <button class="btn pri rec" onclick="srcOpen('${nx?nx.id:''}')"><i></i> הקלטה מהירה</button>
+        ${nx?`<button class="btn gh" onclick="toast('אזכור נשלח ל${whoTxt(nx)} בוואטסאפ')">שליחת תזכורת</button>`
+            :`<button class="btn gh" onclick="schedOpen()">תיאום פגישה</button>`}
+        <button class="btn gh" onclick="toast('הבריף נבנה מחדש מהפרופיל ומהשיחה העדכניים')">רענון</button>
+        <button class="btn gh" onclick="pcOpen()">הגדרת ההכנה</button>
+      </div>
+    </div>
+    <div class="arn-b">${prepBody()}</div>
+  </div>`;
+}
+
+/* בלוק לכל קטגוריה. הקטגוריות שהמטפלת הגדירה ואין להן עדיין תוכן — מסומנות ככאלה. */
+function prepBlock(c){
+  if(c.key==='nums') return '<div class="nums">'+
+    PREP.nums.map(n=>'<div class="ntile '+(n[2]?'bad':'')+'"><span>'+n[0]+'</span><b class="num">'+n[1]+'</b></div>').join('')+'</div>';
+  if(c.key==='brief') return '<div class="prep-ai">'+ICONS.spark+'<p>'+PREP.ai+'</p></div>';
+  if(c.key==='points') return PREP.pts.map(x=>'<div class="pt"><span>'+x[0]+'</span><em>'+x[1]+'</em></div>').join('');
+  if(c.key==='goal') return '<div class="goal"><b>'+PREP.goal+'</b><span>למה: '+PREP.why+'</span></div>';
+  if(c.key==='closed') return PREP.closed.map(x=>'<div class="tsk ok"><span class="mk">✓</span><span>'+x[0]+'</span><span class="frm">'+x[1]+'</span></div>').join('');
+  if(c.key==='open') return PREP.open.map(x=>'<div class="tsk op"><span class="mk">○</span><span>'+x[0]+'</span><span class="frm">'+x[1]+'</span></div>').join('')+
+    '<div class="pnote">שלוש המשימות מפגישת הבוקר ממתינות לאישור הסיכום — אחרי האישור הן ייפתחו וייכנסו לכאן.</div>';
+  if(c.key==='talk') return PREP.mem.map(r=>'<div class="memr"><span class="cat">'+r[0]+'</span><span>'+r[1]+'</span></div>').join('');
+  return '<div class="pnote">הקטגוריה תתמלא בהרצה הבאה של ההכנה, לפי הפרומפט שכתבת.</div>';
+}
+function prepBody(){
+  const on=PREP_CATS.filter(c=>c.on);
+  if(!on.length) return '<div class="prep"><div class="pnote">לא נבחרה אף קטגוריה. פתחו את הגדרות הבריף ובחרו מה ייכנס.</div></div>';
+  return '<div class="prep">'+on.map((c,i)=>
+    '<div class="pcb'+(i?' sep':'')+'"><div class="sect">'+c.name+'</div>'+prepBlock(c)+'</div>').join('')+'</div>';
+}
+
+/* ---------- הגדרות הבריף — פר מטפלת ---------- */
+function pcOpen(){document.getElementById('pcOv').classList.add('on');pcDraw();}
+function pcClose(){document.getElementById('pcOv').classList.remove('on');PC_OPEN=null;}
+function pcTg(k){const c=PREP_CATS.find(x=>x.key===k);c.on=!c.on;pcDraw();arenaShow(SEL);}
+function pcPrompt(k){PC_OPEN=(PC_OPEN===k?null:k);pcDraw();}
+function pcMove(k,d){
+  const i=PREP_CATS.findIndex(x=>x.key===k), j=i+d;
+  if(j<0||j>=PREP_CATS.length)return;
+  const a=PREP_CATS[i];PREP_CATS[i]=PREP_CATS[j];PREP_CATS[j]=a;
+  pcDraw();arenaShow(SEL);
+}
+function pcSave(k,v){const c=PREP_CATS.find(x=>x.key===k);if(c)c.prompt=v;}
+function pcAdd(){
+  const el=document.getElementById('pcNew'),v=(el.value||'').trim();if(!v)return;
+  const k='c'+PREP_CATS.length+Math.floor(performance.now());
+  PREP_CATS.push({key:k,name:v,on:true,desc:'קטגוריה שהגדרת',
+    prompt:'אתה מתחזק את הקטגוריה "'+v+'" בבריף של המטפלת.\nקלט: פרופיל המטופל, השיחה שבין הפגישות והפגישות הקודמות.\nכתוב כאן מה בדיוק לחלץ, כמה שורות להחזיר ובאיזה מבנה.'});
+  el.value='';PC_OPEN=k;pcDraw();arenaShow(SEL);
+  toast('הקטגוריה נוספה לדף ההכנה שלך');
+}
+function pcDel(k){
+  const c=PREP_CATS.find(x=>x.key===k);if(!c)return;
+  hkConf('הסרת קטגוריה','"'+c.name+'" תרד מדף ההכנה שלך. הפרומפט שכתבת יימחק.','הסרה',function(){
+    PREP_CATS=PREP_CATS.filter(x=>x.key!==k);pcDraw();arenaShow(SEL);toast('הקטגוריה הוסרה');});
+}
+function pcDraw(){
+  document.getElementById('pcList').innerHTML=PREP_CATS.map((c,i)=>`
+    <div class="pcrow ${c.on?'':'off'}">
+      <button class="tog ${c.on?'on':''}" onclick="pcTg('${c.key}')" role="switch"
+        aria-checked="${c.on}" aria-label="הצגת ${c.name}"></button>
+      <div class="pcb2"><b>${c.name}</b><span>${c.desc}</span></div>
+      <div class="pcacts">
+        <button class="ib" onclick="pcMove('${c.key}',-1)" ${i===0?'disabled':''} aria-label="העלאה">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg></button>
+        <button class="ib" onclick="pcMove('${c.key}',1)" ${i===PREP_CATS.length-1?'disabled':''} aria-label="הורדה">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="ib txt ${PC_OPEN===c.key?'on':''}" onclick="pcPrompt('${c.key}')">הפרומפט</button>
+        <button class="ib dg" onclick="pcDel('${c.key}')" aria-label="הסרה">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+      </div>
+      ${PC_OPEN===c.key?`<div class="pcp">
+        <label>הפרומפט של "${c.name}"</label>
+        <textarea rows="7" onchange="pcSave('${c.key}',this.value)">${c.prompt}</textarea>
+        <div class="hint">זה מה שה-AI מקבל כשהוא בונה את הבלוק — יחד עם פרופיל המטופל, השיחה שבין הפגישות והפגישות הקודמות.</div>
+      </div>`:''}
+    </div>`).join('');
+}
+/* אישור מערכתי קטן — אין confirm של דפדפן */
+function hkConf(ttl,msg,btn,cb){
+  const o=document.getElementById('cfOv');
+  document.getElementById('cfT').textContent=ttl;
+  document.getElementById('cfM').textContent=msg;
+  const y=document.getElementById('cfY');y.textContent=btn;
+  y.onclick=function(){o.classList.remove('on');cb();};
+  o.classList.add('on');
+}
+
+/* ---------- זירת הפגישה ---------- */
+function meetArena(m){
+  const d=dayDiff(m.date), up=m.status==='upcoming', c=CHIP[m.status];
+  const tabs=[['sum','סיכום הפגישה',!!(m.sum&&m.sum.length)],
+              ['tasks','משימות',!!(m.tasks&&m.tasks.length)],
+              ['mem','זיכרון',!!(m.memUpd&&m.memUpd.length)],
+              ['fb','משוב',!!m.rec],
+              ['tx','תמלול',!!m.tr]].filter(x=>x[2]);
+  if(!tabs.some(x=>x[0]===MTAB)) MTAB=tabs.length?tabs[0][0]:'';
+
+  const head=`<div class="arn-h">
+    <button class="arn-back" onclick="toPrep()">→ להכנה החיה</button>
+    <div class="day">${d===0?'היום':dayName(m.date)} · ${m.date}</div>
+    <div class="clock num" dir="ltr">${timeTxt(m)}</div>
+    <span class="in">${up?inTxt(m):c[0]}</span>
+    <div class="name">${m.name}</div>
+    <div class="who">${ICONS.usr} ${m.who.length?'עם '+whoTxt(m):'ללא משתתף משויך'}</div>
+    ${m.rec?`<button class="arn-play" onclick="trOpen('${m.id}')">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <span class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <b class="num" dir="ltr">${m.rec}</b></button>`:''}
+    ${up?`<div class="acts">
+      <button class="btn pri rec" onclick="srcOpen('${m.id}')"><i></i> הקלטה מהירה</button>
+      <button class="btn gh" onclick="schedOpen()">שינוי מועד</button>
+      <button class="btn gh" onclick="toast('אזכור נשלח ל${whoTxt(m)} בוואטסאפ')">שליחת תזכורת</button></div>`:''}
+  </div>`;
+
+  if(up) return `<div class="panel arn">${head}<div class="arn-b">
+    <div class="dh">הפגישה עוד לא התקיימה</div>
+    <div class="note">אין עדיין סיכום, משימות או תמלול. ההכנה לפגישה הזאת חיה ומתעדכנת —
+      <button class="lnk" onclick="toPrep()">לדף ההכנה</button>.</div></div></div>`;
+
+  if(m.status==='noshow') return `<div class="panel arn">${head}<div class="arn-b">
+    <div class="note">הפגישה לא התקיימה — לא הוקלטה, ולכן <b>הזיכרון לא התעדכן</b>.
+      תיאום מחדש שומר על הרצף השבועי.</div>
+    <div class="dacts"><button class="btn pri" onclick="schedOpen()">תיאום מחדש</button>
+      <button class="btn pln" onclick="schedLink()">שליחת מועדים למטופלת</button></div></div></div>`;
+
+  return `<div class="panel arn">${head}
+    <div class="arn-tabs">${tabs.map(x=>
+      `<button class="${MTAB===x[0]?'on':''}" onclick="mtTab('${x[0]}')">${x[1]}</button>`).join('')}</div>
+    <div class="arn-b">${tabBody(m)}</div>
+    ${arnActs(m)}</div>`;
+}
+function mtTab(k){MTAB=k;arenaShow(SEL);}
+
+function tabBody(m){
+  if(MTAB==='sum'){
+    return `${pipeHTML(m)}
+      <div class="dh">מה סוכם בפגישה</div>
+      ${(m.sum||[]).map((x,i)=>`<div class="pnt"><span class="n num">${i+1}.</span><span>${x}</span></div>`).join('')}
+      ${m.tasks&&m.tasks.length?`<div class="dh t2">משימות שנפתחו</div>
+        ${m.tasks.map(k=>`<div class="tsk ${k.done?'ok':'op'}"><span class="mk">${k.done?'✓':'○'}</span><span>${k.t}</span></div>`).join('')}`:''}`;
+  }
+  if(MTAB==='tasks'){
+    return `<div class="tksub">אלה המשימות שהעוזר הציע מהתמלול. אישור מפעיל אותן — המערכת תפנה איתן לנועה בתזמון שהגדרת.</div>
+      ${m.tasks.map((k,i)=>`<div class="artk ${k.done?'done':''}">
+        <button class="cb" onclick="mtTk('${m.id}',${i})" aria-label="אישור: ${k.t}">${k.done?'✓':''}</button>
+        <div class="b"><b>${k.t}</b><span>${k.done?'אושרה':'ממתינה לאישור'}</span></div>
+        <button class="ari" onclick="toast('צירוף מסמך למשימה')" aria-label="צירוף מסמך">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <button class="ari" onclick="mtTkDel('${m.id}',${i})" aria-label="מחיקה">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>
+      </div>`).join('')}
+      <form class="artk-add" onsubmit="event.preventDefault();mtTkNew('${m.id}')">
+        <input id="mtTkIn" placeholder="משימה נוספת מהפגישה…" autocomplete="off">
+        <button class="btn pln" type="submit">הוספה</button>
+      </form>`;
+  }
+  if(MTAB==='fb'){
+    return `<div class="tksub">סופרוויזיון — ניתוח הפגישה ב-360°, <b>לעינייך בלבד</b>. לא נשלח למטופלת.</div>
+      ${FB.map((f,i)=>`<div class="fbs ${FBO.has(i)?'open':''}">
+        <button class="fbh" onclick="fbTg(${i})" aria-expanded="${FBO.has(i)}">
+          <svg class="cv" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          <b>${i+1}. ${f[0]}</b></button>
+        ${FBO.has(i)?`<p>${f[1]}</p>`:''}
+      </div>`).join('')}`;
+  }
+  if(MTAB==='mem'){
+    return `<div class="dh">מה נכנס לפרופיל של נועה מהפגישה</div>
+      ${(m.memUpd||[]).map(u=>`<div class="memr"><span class="cat">${u.c}</span><span>${u.t}</span></div>`).join('')}
+      <button class="btn pln" style="margin-top:12px" onclick="askAI('מה בפרופיל של נועה?')">הפרופיל המלא ←</button>`;
+  }
+  return `<div class="dh">התמלול המלא · ${m.rec}</div>
+    ${TRANS.map(x=>`<div class="txr"><b>${x[0]}:</b> ${x[1]}</div>`).join('')}
+    <div class="dacts"><button class="btn pln" onclick="toast('התמלול הורד כקובץ')">הורדת התמלול</button></div>`;
+}
+
+function arnActs(m){
+  const noWho=!m.who.length;
+  if(m.status==='summary') return `<div class="arn-f">
+    ${noWho?`<div class="whowarn">חובה לשייך משתתף לפני אישור — הזיכרון מתעדכן פר אדם.
+      <span class="whorow">${USERS.map(u=>`<button class="pill" onclick="whoAdd('${m.id}','${u[0]}')">+ ${u[0]}</button>`).join('')}</span></div>`:''}
+    <button class="btn pri" ${noWho?'disabled':''} onclick="${noWho?'':`approve('${m.id}',1)`}">אישור ושליחת הסיכום בוואטסאפ</button>
+    <button class="btn pln" ${noWho?'disabled':''} onclick="${noWho?'':`approve('${m.id}',0)`}">אישור ללא שליחה</button>
+  </div>`;
+  return `<div class="arn-f">
+    <button class="btn pln" onclick="toast('הסיכום נשלח מחדש ל${whoTxt(m)} בוואטסאפ')">שליחה חוזרת</button>
+    <button class="btn pln" onclick="toast('הסיכום והמשימות נשמרו כ-PDF')">ייצוא ל-PDF</button>
+  </div>`;
+}
+
+function mtTk(id,i){const m=MT.find(x=>x.id===id);if(!m)return;
+  m.tasks[i].done=!m.tasks[i].done;arenaShow(id);
+  toast(m.tasks[i].done?'המשימה אושרה':'האישור בוטל');}
+function mtTkDel(id,i){const m=MT.find(x=>x.id===id);if(!m)return;
+  m.tasks.splice(i,1);arenaShow(id);toast('המשימה נמחקה');}
+function mtTkNew(id){const el=document.getElementById('mtTkIn'),v=(el.value||'').trim();if(!v)return;
+  const m=MT.find(x=>x.id===id);m.tasks.push({t:v,done:false});arenaShow(id);
+  toast('המשימה נוספה — ממתינה לאישור');}
+
+function alertCard(){
+  const last=MT.filter(m=>['done','summary','ai'].includes(m.status))
+               .sort((a,b)=>dnum(b.date)-dnum(a.date))[0];
+  const gap=last?Math.abs(dayDiff(last.date)):0;
+  return `<div class="panel alert">
+    <div class="pb">
+      <div>
+        <span class="flag warn">אין פגישה מתואמת</span>
+        <h2 style="margin-top:7px">לנועה אין פגישה ביומן</h2>
+        <p>הפרוטוקול הוא CBT שבועי — רצף הפגישות הוא חלק מהטיפול.
+           הפגישה האחרונה: ${last?`${last.name} · ${last.date}${gap?` · לפני ${gap===0?'היום':gap+' ימים'}`:' · היום'}`:'—'}.
+           כל שבוע בלי פגישה מתואמת הוא שבוע שבו הרצף נשבר והתהליך מאבד תאוצה.</p>
+      </div>
+      <div class="acts">
+        <button class="btn pri big" onclick="schedOpen()">תיאום פגישה</button>
+        <button class="btn pln big" onclick="schedLink()">שליחת מועדים למטופלת</button>
+      </div>
+    </div>
+  </div>`;
+}
+function noShow(id){const m=MT.find(x=>x.id===id);if(m)m.status='noshow';CONF=false;
+  toast('סומן — הפגישה תופיע בציר לתיאום מחדש');renderAll();}
+
+/* ---------- 2 · זירת הפגישות ---------- */
+/* ---------- ציר הזמן ---------- */
+const CHIP={upcoming:['מתוכננת','up'],ai:['הסיכום בדרך — חוזר תוך דקות','ai'],
+  summary:['הסיכום ממתין לאישורך','sum'],done:['אושר ונשלח למטופלת','done'],noshow:['לא התקיימה','no']};
+
+function grpH(k,ttl,n,sum){
+  return `<button class="tl-grp" aria-expanded="${GRP[k]}" onclick="grpTg('${k}')">
+    <svg class="cv" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+    ${ttl}<span class="n num">${n}</span>${!GRP[k]&&sum?`<span class="sum">${sum}</span>`:''}</button>`;
+}
+function grpTg(k){GRP[k]=!GRP[k];renderTL();}
+
+function tlRow(m){
+  const d=dayDiff(m.date), up=m.status==='upcoming'&&untilM(m)>=0, nx=nextMeet();
+  const cls=up?('up'+(nx&&nx.id===m.id?' next':''))
+              :(['summary','ai','noshow'].includes(m.status)?'past act':'past');
+  const p=m.date.split('.');
+  let s,sc;
+  if(up){ s=inTxt(m); sc='soon'; }
+  else if(m.status==='summary'||m.status==='ai'){ s='ממתין לאישורך'; sc='wait'; }
+  else if(m.status==='noshow'){ s='לא התקיימה'; sc='wait'; }
+  else { s='אושר ונשלח'; sc='ok'; }
+  return `<button class="tl-row ${cls}" data-id="${m.id}" onclick="arenaShow('${m.id}')">
+    <span class="tl-d"><b>${d===0?'היום':p[0]+'.'+p[1]}</b><i dir="ltr">${from(m)}</i></span>
+    <span class="tl-t">${m.name}<em>${m.who.length?whoTxt(m):'ללא משתתף משויך'}${m.rec?' · '+m.rec:''}</em></span>
+    <span class="tl-s ${sc}">${s}</span>
+  </button>`;
+}
+
+function renderTL(){
+  const up=MT.filter(m=>m.status==='upcoming'&&untilM(m)>=0).sort((a,b)=>untilM(a)-untilM(b));
+  const past=MT.filter(m=>!(m.status==='upcoming'&&untilM(m)>=0))
+               .sort((a,b)=>dnum(b.date)-dnum(a.date)||mins(from(b))-mins(from(a)));
+  document.getElementById('tlCnt').textContent=MT.length+' פגישות · מ-03.04.2026 עד היום';
+
+  const last=past.filter(m=>m.status!=='noshow')[0], nx=up[0];
+  document.getElementById('tlCad').innerHTML=
+    '<span class="lb">מקצב</span><b>פגישה שבועית · לפי הפרוטוקול</b>'
+    +'<span class="dot"></span><span class="lb">האחרונה</span>'
+    +'<b class="num">'+(last?(dayDiff(last.date)===0?'היום '+from(last):last.date.slice(0,5)):'—')+'</b>'
+    +'<span class="dot"></span><span class="lb">הבאה</span>'
+    +(nx?'<span class="flag ok">'+(dayDiff(nx.date)===0?'היום '+from(nx):nx.date.slice(0,5)+' '+from(nx))+'</span>'
+        :'<span class="flag warn">לא מתואמת</span>');
+
+  document.getElementById('tl').innerHTML=
+    grpH('up','פגישות עתידיות',up.length,
+         nx?'הקרובה: '+(dayDiff(nx.date)===0?'היום ':nx.date.slice(0,5)+' ')+from(nx):'אין פגישה מתואמת')
+   +'<div class="tl-body fut '+(GRP.up?'':'hid')+'">'
+   +(up.length?up.map(tlRow).join('')
+     :'<div class="tl-empty">אין פגישה מתואמת · <button class="lnk" onclick="schedOpen()">לתאם עכשיו</button></div>')
+   +'</div>'
+   +'<div class="tl-now"><b>עכשיו · '+dayName(TODAY)+' '+TODAY.slice(0,5)+' '+NOW+'</b><span class="ln"></span></div>'
+   +grpH('past','פגישות שהתקיימו',past.length,'')
+   +'<div class="tl-body '+(GRP.past?'':'hid')+'">'+past.map(tlRow).join('')+'</div>';
+
+  if(SEL) document.querySelectorAll('.tl-row').forEach(r=>r.classList.toggle('on',r.dataset.id===SEL));
+}
+
+/* צינור העיבוד — הקלטה ← תמלול ← סיכום ← זיכרון */
+function pipeHTML(m){
+  const S=(lb,st)=>`<span class="st ${st}"><span class="i">${st==='ok'?'✓':st==='run'?'●':''}</span>${lb}</span>`;
+  const arm='<span class="arm"></span>';
+  const rec=m.rec?S('הוקלטה · '+m.rec,'ok'):S('לא הוקלטה','');
+  const tr=m.rec?S('תמלול','ok'):S('תמלול','');
+  const sum=m.status==='done'?S('סיכום אושר','ok'):m.status==='summary'?S('סיכום ממתין לאישור','run'):
+            m.status==='ai'?S('סיכום נוצר עכשיו','run'):S('סיכום','');
+  const mem=m.memUpd?S('זיכרון עודכן ('+m.memUpd.length+')','ok'):S('עדכון זיכרון','');
+  return `<div class="pipe">${rec}${arm}${tr}${arm}${sum}${arm}${mem}</div>`;
+}
+
+function whoAdd(id,w){const m=MT.find(x=>x.id===id);if(!m||m.who.includes(w))return;
+  m.who.push(w);arenaShow(SEL);toast('המשתתף שויך — הזיכרון יתעדכן עבורו');}
+function whoRm(id,w){const m=MT.find(x=>x.id===id);if(!m)return;
+  m.who=m.who.filter(x=>x!==w);arenaShow(SEL);}
+function approve(id,send){const m=MT.find(x=>x.id===id);if(!m)return;
+  m.status='done';m.sent=!!send;renderAll();
+  toast(send?'הסיכום אושר ונשלח ל'+whoTxt(m)+' בוואטסאפ':'הסיכום אושר — לא נשלח למטופלת');}
+/* מעבר לפגישה מתוך טקסט אחר במסך */
+function goRow(id){arenaShow(id);}
+
+/* ---------- תמלול ---------- */
+let PLAY=false, TR_M=null;
+/* אייקוני הנגן — SVG, לא תווים */
+const PLAY_ICO='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>';
+const PAUSE_ICO='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>';
+function trOpen(id){TR_M=MT.find(x=>x.id===id);if(!TR_M)return;
+  PLAY=false;document.getElementById('plBtn').innerHTML=PLAY_ICO;
+  document.getElementById('trTtl').textContent='תמלול · '+TR_M.name;
+  document.getElementById('trSub').textContent=TR_M.date+' · '+timeTxt(TR_M)+' · '+(TR_M.rec||'')+
+    ' · '+(TR_M.who.length?'עם '+whoTxt(TR_M):'ללא משתתף משויך');
+  document.getElementById('plTm').textContent=(TR_M.rec||'').replace(' דק׳','')+':12';
+  document.getElementById('trBody').innerHTML=TRANS.map(t=>
+    `<div class="tr ${t[0]==='מטפלת'?'adv':''}"><b>${t[0]}:</b><span>${t[1]}</span></div>`).join('');
+  document.getElementById('trOv').classList.add('on');}
+function trClose(){document.getElementById('trOv').classList.remove('on');PLAY=false;
+  document.getElementById('plBtn').innerHTML=PLAY_ICO;}
+function plTg(){PLAY=!PLAY;document.getElementById('plBtn').innerHTML=PLAY?PAUSE_ICO:PLAY_ICO;
+  toast(PLAY?'הקלטת הפגישה מתנגנת':'ההשמעה הושהתה');}
+
+/* ---------- הקלטה מהירה ---------- */
+const SRC=[['מיקרופון','פגישה פיזית בחדר','<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>'],
+  ['טאב או מסך','זום, מיט או שיחת טלפון','<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8"/></svg>'],
+  ['העלאת קובץ','אודיו שהוקלט כבר','<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 16V4m0 0 4 4m-4-4-4 4M4 20h16"/></svg>']];
+let TIE=0, SRC_MID=null;
+document.getElementById('srcList').innerHTML=SRC.map((s,i)=>
+  `<button class="src" onclick="recStart(${i})">${s[2]}<b>${s[0]}</b><span>${s[1]}</span></button>`).join('');
+function srcOpen(id){SRC_MID=id||null;TIE=0;tieSet(0);
+  const m=MT.find(x=>x.id===id);
+  document.getElementById('tieMeet').textContent=m?'לפגישה: '+m.name:'לפגישה הבאה';
+  document.getElementById('tieMeet').style.display=m?'':'none';
+  document.getElementById('srcOv').classList.add('on');}
+function srcClose(){document.getElementById('srcOv').classList.remove('on');}
+function tieSet(v){TIE=v;
+  document.getElementById('tieFree').classList.toggle('on',!v);
+  document.getElementById('tieMeet').classList.toggle('on',!!v);}
+
+let REC=null;
+function recStart(srcIx){
+  srcClose();
+  if(REC){toast('כבר מתבצעת הקלטה');return;}
+  const m=TIE&&SRC_MID?MT.find(x=>x.id===SRC_MID):null;
+  REC={s:0,marks:0,mid:m?m.id:null,pz:false};
+  document.getElementById('recWho').textContent=(m?'מקליט · '+m.name:'הקלטה חופשית · נועה ברק')+' · '+SRC[srcIx][0];
+  document.getElementById('recClk').textContent='00:00';
+  document.getElementById('recMk').textContent='';
+  document.getElementById('recPz').textContent='השהיה';
+  document.getElementById('recBar').classList.add('on');
+  document.getElementById('recBar').classList.remove('pz');
+  document.body.classList.add('rec-on');
+  REC.iv=setInterval(()=>{if(!REC||REC.pz)return;REC.s++;
+    document.getElementById('recClk').textContent=fmt(REC.s);},1000);
+  toast('ההקלטה החלה — אפשר להמשיך לעבוד במסך');
+}
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function recPause(){if(!REC)return;REC.pz=!REC.pz;
+  document.getElementById('recPz').textContent=REC.pz?'המשך':'השהיה';
+  document.getElementById('recBar').classList.toggle('pz',REC.pz);
+  toast(REC.pz?'ההקלטה מושהית':'ההקלטה ממשיכה');}
+function recMark(){if(!REC)return;REC.marks++;
+  document.getElementById('recMk').textContent=REC.marks+' רגעים מסומנים';
+  toast('סומן רגע חשוב ('+fmt(REC.s)+') — ה-AI יתייחס אליו בסיכום ובמשימות');}
+function stopOpen(){document.getElementById('stopOv').classList.add('on');}
+function stopClose(){document.getElementById('stopOv').classList.remove('on');}
+function recStop(){
+  stopClose(); if(!REC)return;
+  clearInterval(REC.iv);
+  const d=Math.max(1,Math.round(REC.s/60))+' דק׳';
+  const m=REC.mid?MT.find(x=>x.id===REC.mid):null;
+  if(m){m.status='ai';m.rec=d;}
+  else MT.unshift({id:'r'+Date.now(), name:'הקלטה חופשית — ללא פגישה מתואמת',
+    date:TODAY, time:NOW+'-'+NOW, who:['נועה ברק'], status:'ai', rec:d});
+  REC=null;
+  document.getElementById('recBar').classList.remove('on');
+  document.body.classList.remove('rec-on');
+  renderAll();
+  toast('ההקלטה נשלחה לעיבוד — תמלול, סיכום, משימות ועדכוני זיכרון בדרך');
+}
+
+/* ---------- תיאום פגישה ---------- */
+const SLOTS=[['יום ראשון · 05.07','10:00'],['יום שני · 06.07','09:30'],['יום רביעי · 08.07','16:00']];
+let SLOT=0, SCH_WHO='נועה ברק';
+function schedOpen(){
+  document.getElementById('schWho').innerHTML=USERS.map(u=>
+    `<button class="pill ${SCH_WHO===u[0]?'on':''}" onclick="schWho('${u[0]}')">${u[0]} · ${u[1]}</button>`).join('');
+  document.getElementById('schSlots').innerHTML=SLOTS.map((s,i)=>
+    `<button class="slot ${SLOT===i?'on':''}" onclick="schSlot(${i})"><span class="d">${s[0]}</span><span class="h num" dir="ltr">${s[1]}</span></button>`).join('');
+  document.getElementById('schOv').classList.add('on');
+}
+function schedClose(){document.getElementById('schOv').classList.remove('on');}
+function schWho(w){SCH_WHO=w;schedOpen();}
+function schSlot(i){SLOT=i;schedOpen();}
+function schedSave(){
+  const t=document.getElementById('schTtl').value.trim()||'פגישה חודשית';
+  const d=SLOTS[SLOT][0].split('· ')[1]+'.2026', h=SLOTS[SLOT][1];
+  const end=String(+h.split(':')[0]+1).padStart(2,'0')+':'+h.split(':')[1];
+  MT.push({id:'n'+Date.now(), name:t, date:d, time:h+'-'+end, who:[SCH_WHO], status:'upcoming'});
+  schedClose(); renderAll();
+  toast('הפגישה נקבעה ל-'+d+' '+h+' · סונכרנה ליומן ונשלח אזכור ל'+SCH_WHO);
+}
+function schedLink(){schedClose();
+  toast('לינק לבחירת מועד נשלח ל'+SCH_WHO+' בוואטסאפ — שלושה חלונות פנויים');}
+
+/* ---------- ריצה ---------- */
+function renderAll(){renderTL();arenaShow(SEL);}
+renderAll();
+/* Escape סוגר גם את האישור הפנימי בכרטיס הפגישה · שורת פגישה נפתחת גם מהמקלדת */
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&CONF){CONF=false;arenaShow(SEL);return;}
+  const r=e.target.closest&&e.target.closest('.row');
+  if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();r.click();}
+});
+</script>
+</body>
+</html>
