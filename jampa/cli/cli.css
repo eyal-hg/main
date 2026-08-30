@@ -6,24 +6,44 @@
    ===================================================================== */
 @import url("../../docs/cli/cli.css");
 
+/* ---------------------------------------------------------------------
+   הטוקנים של JAMPA — מקור: Jampa-Fig בפיגמה (משתני הקובץ), לא נבחרו כאן.
+     Purple 01 #7557E3 · Purple 02 #989EF5 · Purple 03 #C8CCFF · Purple 04 #E5E7FF
+     NLP/Purple 01 #9481DA · NLP/Purple 02 #CBC0F7 · NLP/Purple 04 #F0EBFF
+     Background #FFFBF3 · Text #696971 · Grey Text #9B9BA6 · Grey text #949494
+     Light grey #D7D7D7 · Light Grey #C8C8CF · Divider #E3E3E3 · Yellow #FFD096
+     Gentle (צל) 0 0 6.7 rgba(12,64,104,.15)
+   שני ערכים אינם בקובץ ומסומנים כנגזרים: המשטח הכהה (בפיגמה אין משטח
+   כהה, אבל הוא קיים במבנה שלנו) והירוק של "בוצע".
+   --------------------------------------------------------------------- */
 :root{
-  --navy:#37306B;        /* דיו כהה סגלגל — במקום הנייבי */
-  --navy2:#2C265A;       /* הפס העליון */
-  --sky:#7557E3;         /* הסגול של JAMPA — במקום התכלת */
-  --coral:#9C89F2;       /* אקצנט פעולה */
-  --coral-d:#7557E3;
-  --bad:#C4453B;--bad-on-navy:#FFA9A0;--good:#16a34a;--warn:#B07A1E;
-  --ink:#3A3552;--ink2:#655F82;--ink3:#8B86A3;--faint:#B6B1C7;
-  --bd:#E6E1F2;--cardbd:#F0ECF8;--bg:#FBF8F2;--tint:#F5F1FB;--chip:#EFECFD;
-  --on-navy:#E6E1F7;--on-navy2:#C9C1E8;--on-navy3:#ABA2D4;
-  --lift:0 1px 2px rgba(72,57,150,.05),0 10px 28px rgba(72,57,150,.07);
+  /* המשטח הכהה — Purple 01 עצמו. בפיגמה אין משטח כהה, אבל הוא
+     קיים במבנה שלנו; במקום להמציא צבע, לוקחים את הראשי. */
+  --navy:#6F62AC; --navy2:#5C5192;
+  --sky:#7557E3;         /* Purple 01 — הצבע הראשי */
+  --coral:#7557E3;       /* פעולה — בפיגמה כפתור מלא הוא Purple 01 */
+  --coral-d:#5F45C4;     /* hover — Purple 01 מוכהה */
+  --good:#16a34a;        /* נגזר — "ליד חדש" בפיגמה הוא גלולה ירוקה */
+  --warn:#FFD096;        /* Yellow */
+  --bad:#C4453B;--bad-on-navy:#FFA9A0;
+  --ink:#696971;         /* Text */
+  --ink2:#949494;        /* Grey text */
+  --ink3:#9B9BA6;        /* Grey Text */
+  --faint:#C8C8CF;       /* Light Grey */
+  --bd:#E3E3E3;          /* Divider */
+  --cardbd:#EFEFEF;      /* נגזר — קו השיער של הכרטיס, בהיר מ-Divider */
+  --bg:#FFFBF3;          /* Background */
+  --tint:#F0EBFF;        /* NLP/Purple 04 */
+  --chip:#E5E7FF;        /* Purple 04 */
+  --on-navy:#F1EEFB;--on-navy2:#DAD3F2;--on-navy3:#BCB2E4;   /* NLP/Purple */
+  --lift:0 0 6.7px rgba(12,64,104,.15);                       /* Gentle */
 }
 
 /* הערכים הקשיחים הבודדים שלא עברו דרך הטוקנים */
 .nav .brand i{background:var(--navy);box-shadow:inset 0 -8px 14px rgba(117,87,227,.4)}
-.nav .brand i b{color:#B9A9F7}
-.nav .crumb:hover{border-color:#D6CEEE}
-.bar .late{color:#E8B860}
+.nav .brand i b{color:#CBC0F7}
+.nav .crumb:hover{border-color:#D7D7D7}
+.bar .late{color:#FFD096}
 .bar .ok30::before{background:#4FCB92}
 .tklist{box-shadow:0 18px 46px -14px rgba(72,57,150,.32)}
 .tk-m b{color:#8A6A12}
@@ -34,7 +54,7 @@
 *::-webkit-scrollbar-thumb:hover{background:#BFB4E4;background-clip:content-box}
 
 /* הדגשות שנשארו כחולות ב-core */
-.ml-row.on,.tl-row.on{background:#F2EEFC;box-shadow:inset 0 0 0 1px #DCD3F4}
+.ml-row.on,.tl-row.on{background:#F0EBFF;box-shadow:inset 0 0 0 1px #DCD3F4}
 .mg-sh a,.brief .stamp a,.story .more{color:var(--sky)}
 
 /* ---------------------------------------------------------------------
@@ -44,6 +64,6 @@
    --------------------------------------------------------------------- */
 .bar .scale{display:inline-flex;gap:3px;align-items:center;margin-inline-start:2px}
 .bar .scale i{width:13px;height:4px;border-radius:99px;background:rgba(230,225,247,.26)}
-.bar .scale i.on{background:#B9A9F7}
+.bar .scale i.on{background:#CBC0F7}
 .bar .ok30.plain::before{display:none}
 .bar .ok30.plain{padding-inline-start:0;color:var(--on-navy3)}

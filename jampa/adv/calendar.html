@@ -41,21 +41,22 @@
      נייבי → דיו סגלגל · תכלת → סגול · סלמון → לבנדר · קרקע → קרם.
      ===================================================================== */
   :root{
-    --navy:#37306B;
-    --blue:#7557E3;
-    --blue-soft:#EFECFD;
-    --salmon:#9C89F2;
-    --salmon-soft:#EDE9FB;
-    --purple:#8E4BA8;
-    --purple-bg:#F3E8F8;
-    --divider:#E6E1F2;
-    --line:#EFECF6;
-    --muted:#8B86A3;
-    --muted-2:#B6B1C7;
-    --bg:#FBF8F2;
-    --off:#FCFBFE;
-    --shadow-card:7px 5px 21.4px rgba(72,57,150,.10), -3px -6px 19.3px rgba(96,90,140,.11);
-    --shadow-pop:0 8px 24px rgba(55,48,107,.18), 0 2px 6px rgba(55,48,107,.09);
+    --navy:#6F62AC;            /* Purple 01 */
+    --blue:#7557E3;            /* Purple 01 */
+    --blue-soft:#E5E7FF;       /* Purple 04 */
+    --salmon:#989EF5;          /* Purple 02 */
+    --salmon-soft:#F0EBFF;     /* NLP/Purple 04 */
+    --purple:#9481DA;          /* NLP/Purple 01 */
+    --purple-bg:#CBC0F7;       /* NLP/Purple 02 */
+    --divider:#E3E3E3;         /* Divider */
+    --line:#EFEFEF;
+    --muted:#9B9BA6;           /* Grey Text */
+    --muted-2:#C8C8CF;         /* Light Grey */
+    --bg:#FFFBF3;              /* Background */
+    --off:#FFFDF8;
+    --amber:#FFD096;           /* Yellow */
+    --shadow-card:0 0 6.7px rgba(12,64,104,.15);    /* Gentle */
+    --shadow-pop:0 8px 24px rgba(12,64,104,.18), 0 2px 6px rgba(12,64,104,.09);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   html,body{direction:rtl;height:100%}
@@ -938,11 +939,11 @@
     .range-label{min-width:auto;font-size:.95rem}
     .toolbar{gap:8px;padding:0 12px;height:60px}
   }
-  *{scrollbar-width:thin;scrollbar-color:#7557E3 #EFECFD}
+  *{scrollbar-width:thin;scrollbar-color:#7557E3 #E5E7FF}
   ::-webkit-scrollbar{width:9px;height:9px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:#7557E3;border-radius:99px}
-  ::-webkit-scrollbar-thumb:hover{background:#37306B}
+  ::-webkit-scrollbar-thumb:hover{background:#7557E3}
 </style>
 </head>
 <body>
@@ -1611,7 +1612,7 @@ const state = {
   gcals: [
     {id:'work',    name:'ענת — קליניקה (ראשי)', color:'#7557E3', dir:'two',  on:true},
     {id:'personal',name:'אישי',               color:'#1e8e5f', dir:'busy', on:true},
-    {id:'family',  name:'משפחה משותף',        color:'#9C89F2', dir:'busy', on:false},
+    {id:'family',  name:'משפחה משותף',        color:'#989EF5', dir:'busy', on:false},
     {id:'holidays',name:'חגים בישראל',         color:'#C29A3B', dir:'in',   on:true},
   ],
   syncMinutesAgo: 3,
@@ -2331,7 +2332,7 @@ $('#tkDelete').addEventListener('click', () => {
 
 /* --- ניהול סוגי פגישות --- */
 function typeInUse(key){ return state.events.some(e => e.type === key); }
-const TYPE_PALETTE = ['#7557E3','#5b3fd6','#1e8e5f','#5a7d1a','#C29A3B','#e8a13a','#9C89F2','#dc2626','#8E4BA8','#8a8f98'];
+const TYPE_PALETTE = ['#7557E3','#5F45C4','#1e8e5f','#5a7d1a','#C29A3B','#FFD096','#989EF5','#dc2626','#9481DA','#9B9BA6'];
 function renderTypeList(){
   $('#typeList').innerHTML = TYPES.map((t,i) => `
     <div class="type-row">
@@ -2364,7 +2365,7 @@ function renderTypeList(){
 }
 function colorToHex(c){
   if (c.startsWith('#')) return c;
-  const M = {'var(--blue)':'#7557E3','var(--green)':'#1e8e5f','var(--salmon)':'#9C89F2','var(--gray)':'#8a8f98','var(--red)':'#dc2626'};
+  const M = {'var(--blue)':'#7557E3','var(--green)':'#1e8e5f','var(--salmon)':'#989EF5','var(--gray)':'#9B9BA6','var(--red)':'#dc2626'};
   return M[c] || '#7557E3';
 }
 document.addEventListener('click', (e) => {
