@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* =====================================================================
-   HK · מסך היועץ · לקוחות — לפי מפרט העיצוב המאוחד v1
+   JAMPA · מסך המטפלת · מטופלים, לפי מפרט העיצוב המאוחד v1
    רצועה 68px navy (כותרת + תאריך | שני המספרים החיים | שעה)
-   בלוק כהה אחד בגוף: כותרת כרטיס הלקוח — ובתוכו הפעולה (שינוי סטטוס).
+   בלוק כהה אחד בגוף: כותרת כרטיס המטופל — ובתוכו הפעולה (שינוי סטטוס).
    טבלה: 5 עמודות, שורה 44px (38px ≤1450), בלי גלילה אופקית פנימית.
    ===================================================================== */
 :root{
@@ -159,7 +159,10 @@ td .no{color:var(--red);font-weight:500}
 td .lnk{font-size:12.5px;color:var(--sky);font-weight:500;margin-inline-start:8px;border-bottom:1px solid transparent}
 td .lnk:hover{border-color:var(--sky)}
 .als{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
-.tb th.alc,.tb td.alc{width:126px}
+/* שני חיווים באותה עמודה — כל אחד בשורה משלו, בלי שבירת מילים */
+.tb th.alc,.tb td.alc{width:186px}
+.tb td.alc .als{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.tb td.alc .al{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 /* החלפת סטטוס ישירות מהשורה */
 .tb td.stc{position:relative}
 .stg .cv{width:0;height:0;border:3.5px solid transparent;border-top-color:currentColor;opacity:.55;margin-inline-start:1px;flex:none}
@@ -176,6 +179,8 @@ button.stg:hover{background:color-mix(in srgb,var(--sc) 24%,#fff)}
 .al.bad{color:var(--red)}
 .al.warn{color:var(--orange)}
 .al.ok{color:var(--green)}
+.al.apr{color:var(--coral);font-weight:500}
+.al.apr:hover{text-decoration:underline}
 .al.info{color:var(--ink3)}
 /* תאריך יעד לשלב — לחיץ */
 .due{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);border-radius:6px;padding:2px 7px;cursor:pointer}
@@ -317,7 +322,7 @@ aside.left{display:flex;flex-direction:column;gap:14px;min-height:0}
 @media (max-width:1080px){
   .wrap{grid-template-columns:minmax(0,1fr) 300px;gap:10px}
   .tb td,.tb th{padding:8px 5px}
-  .tb th.alc,.tb td.alc{width:112px}
+  .tb th.alc,.tb td.alc{width:150px}
   .al{font-size:11px;gap:5px}
   /* "לפני N ימים" יורד — התאריך עצמו נשאר, והפירוט יושב בכרטיס */
   .tb td .sub{display:none}
@@ -345,7 +350,7 @@ aside.left{display:flex;flex-direction:column;gap:14px;min-height:0}
     <li><a href="tasks.html">משימות</a></li>
     <li><a class="on" href="clients.html">מטופלים</a></li>
     <li><a href="meetings.html">פגישות</a></li>
-    <li><a href="memory.html">פרופילי מטופלים</a></li>
+    <li><a href="calendar.html">יומן</a></li>
   </ul>
   <div class="me"><div><b>ענת שלו</b>פסיכולוגית קלינית</div><i>עש</i></div>
 </nav>
@@ -383,7 +388,7 @@ aside.left{display:flex;flex-direction:column;gap:14px;min-height:0}
     <div class="tw">
     <table class="tb">
       <thead><tr>
-        <th>מטופל</th><th>סטטוס</th><th>יעד</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th class="alc">תשומת לב</th>
+        <th>מטופל</th><th>סטטוס</th><th>יעד</th><th>פגישה אחרונה</th><th>פגישה הבאה</th><th class="alc">חיווי</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
@@ -405,34 +410,39 @@ aside.left{display:flex;flex-direction:column;gap:14px;min-height:0}
 <script>
 /* ===== נתוני הקליניקה ===== */
 /* הסטטוסים מוגדרים ברמת הקליניקה — ניתנים לעריכה בפופאפ ההגדרות */
+/* הסטטוס הוא ציר אחד: **מה הצעד הבא שלי עם המטופל הזה**.
+   קודם הוא ערבב שני מנועים — תיאום (יש פגישה ביומן) וניירת (הסיכום
+   בדרך למטופל) — ומטופל אמיתי נמצא בשניהם בו-זמנית, כך שסטטוס יחיד
+   נאלץ לבחור. הניירת עברה לחיווי "ממתין לאישורך", והתיאום ממילא
+   נקרא מעמודת "פגישה הבאה". */
 let STATUSES=[null,
-  {n:'ממתין לתיאום',  c:'#D7D7D7', days:5},
-  {n:'פגישה נקבעה',   c:'#989EF5', days:5},
-  {n:'בטיפול פעיל',   c:'#9481DA', days:5},
-  {n:'סיכום לאישור',  c:'#B07A1E', days:5},
-  {n:'סיכום נשלח',    c:'#7557E3', days:5},
+  {n:'לתאם פגישה',    c:'#D7D7D7', days:5},
+  {n:'להתכונן',       c:'#989EF5', days:3},
+  {n:'בטיפול שוטף',   c:'#9481DA', days:7},
+  {n:'לחזור אליו',    c:'#FFD096', days:3},
+  {n:'לסכם תהליך',    c:'#7557E3', days:5},
 ];
 const stName=s=>STATUSES[s]?STATUSES[s].n:'';
 const stColor=s=>STATUSES[s]?STATUSES[s].c:'#D7D7D7';
 /* ששת המטופלים של PATIENTS ב-jampa/js/data.js. pk = שלב בתוכנית הטיפול.
    al.cf = דורש תשומת לב · al.sat = ירידה במעקב היומי. */
 const C=[
- {id:'p1',n:'נועה ברק',pk:'חרדה חברתית',s:3,last:'26.06',next:{t:'היום 16:00'},al:{cf:1},mg:'שלב 4 · דפוסים',
+ {id:'p1',n:'נועה ברק',pk:'חרדה חברתית',s:2,ap:'סיכום 26.06',last:'26.06',next:{t:'היום 16:00'},al:{cf:1},mg:'שלב 4 · דפוסים',
   tasks:['יומן מצבים חברתיים · באיחור','אישור סיכום — 26.06 · היום'],
   mem:[['דפוסים','ביקורת עצמית מיד אחרי הצלחה — מנטרלת את החיזוק','30.06'],['כלים שעובדים','נשימות 4-7-8 — מיושמות מיוזמתה','26.06']]},
- {id:'p3',n:'מיכל אדרי',pk:'ביטחון עצמי בעבודה',s:1,last:'19.06',next:{none:1},al:{cf:1},mg:'שלב 5 · הטמעה',
+ {id:'p3',n:'מיכל אדרי',pk:'ביטחון עצמי בעבודה',s:5,ap:'הצעת מועדים',last:'19.06',next:{none:1},al:{cf:1},mg:'שלב 5 · הטמעה',
   tasks:['לקבוע פגישת סיכום · היום'],
   mem:[['נקודות מפנה','הציגה בישיבת צוות בלי הכנה מוקדמת','אתמול 15:20']]},
- {id:'p4',n:'דניאל כהן',pk:'ויסות רגשי · מתבגרים',s:2,last:'27.06',next:{t:'היום 17:30'},al:{sat:1},mg:'שלב 3 · כלים',
+ {id:'p4',n:'דניאל כהן',pk:'ויסות רגשי · מתבגרים',s:4,ap:'הודעה בין הפגישות',last:'27.06',next:{t:'היום 17:30'},al:{sat:1},mg:'שלב 3 · כלים',
   tasks:['הסכמת הורים לטיפול קבוצתי · באיחור'],
   mem:[['שיתוף פעולה','לא ענה לשתי הפניות האחרונות — שבוע ברציפות','אתמול 20:15']]},
- {id:'p5',n:'שרה לוינסון',pk:'אבל ואובדן',s:4,last:'02.07',next:{t:'ראשון 09:00'},al:{},mg:'שלב 1 · בניית קשר',
+ {id:'p5',n:'שרה לוינסון',pk:'אבל ואובדן',s:3,ap:'סיכום 02.07',last:'02.07',next:{t:'ראשון 09:00'},al:{},mg:'שלב 1 · בניית קשר',
   tasks:['אישור סיכום — פגישה שבועית · היום'],
   mem:[['דפוסים','נמנעת מלבקש עזרה — "לא רוצה להעמיס על הילדים"','היום 09:52']]},
- {id:'p2',n:'יואב פרידמן',pk:'משבר זוגי',s:2,last:'29.06',next:{t:'מחר 10:00'},al:{},mg:'שלב 2 · מיפוי',
+ {id:'p2',n:'יואב פרידמן',pk:'משבר זוגי',s:3,ap:'שתי משימות',last:'29.06',next:{t:'מחר 10:00'},al:{},mg:'שלב 2 · מיפוי',
   tasks:['דף תרגול — תקשורת זוגית · באיחור'],
   mem:[['כלים שעובדים','שיחת 20 דקות בלי מסכים — בוצעה','29.06']]},
- {id:'p6',n:'עומר גל',pk:'דחיינות ומיקוד',s:5,last:'25.06',next:{t:'רביעי 13:00'},al:{},mg:'שלב 4 · דפוסים',
+ {id:'p6',n:'עומר גל',pk:'דחיינות ומיקוד',s:3,last:'25.06',next:{t:'רביעי 13:00'},al:{},mg:'שלב 4 · דפוסים',
   tasks:[],
   mem:[['סגנון עבודה','מגיב טוב למשימות קצרות עם דדליין ברור','25.06']]},
  ...[['אורי שביט',1,'התקף חרדה','שלב 1 · בניית קשר','18.06','','ממתין לתיאום מ-25.06',1,'05.07'],
@@ -487,6 +497,9 @@ const isLate=c=>!!(c.due&&c.due!=='—'&&c.s<STATUSES.length-1&&cmpD(c.due,TODAY
 const FLAGS={nom:c=>!!c.next.none, lt:isLate};
 const FLAGN={nom:'בלי פגישה הבאה', lt:'עברו יעד לסטטוס'};
 const ALN={cf:'דורש תשומת לב', sat:'לא עונה בשיחה'};
+/* שני חיווים קבועים לצד הסטטוס, כי הם עובדות ולא שלב בתהליך:
+   מתי הפגישה הבאה (עמודה משלה), ומה ממתין לאישורי. */
+const apr=c=>c.ap?`<a class="al apr" href="tasks.html" onclick="event.stopPropagation()">ממתין לאישורך · ${esc(c.ap)}</a>`:'';
 
 /* ===== מצב המסך ===== */
 let F={stage:0,alert:null,flag:null,pk:null,mg:null};
@@ -514,7 +527,10 @@ const SORTS={
 /* ===== טבלה ===== */
 function row(c){
   const ag=daysAgo(c.last);
-  const lastSub=c.lastSub?c.lastSub:(ag!==null?'לפני '+ag+' ימים':'');
+  /* בשפה, לא בחשבון: "לפני 0 ימים" ו"לפני 1 ימים" מזכירים שזו מכונה. */
+  const agoTxt=n=>n===0?'היום':n===1?'אתמול':n===2?'שלשום':n<14?'לפני '+n+' ימים'
+                :n<21?'לפני שבועיים':n<30?'לפני '+Math.round(n/7)+' שבועות':'לפני יותר מחודש';
+  const lastSub=c.lastSub?c.lastSub:(ag!==null?agoTxt(ag):'');
   const last=c.last&&c.last!=='—'
     ? `<span class="num">${c.last}</span>${lastSub?`<span class="sub">${esc(lastSub)}</span>`:''}`
     : `<span class="sub">טרם נפגשתם</span>`;
@@ -523,7 +539,7 @@ function row(c){
   else next=`<span class="no">לא נקבעה</span><a class="lnk" href="#" onclick="event.stopPropagation();return sendLink('${c.id}')">הצעת מועדים</a>`;
   const late=isLate(c);
   const due=c.s===STATUSES.length-1?'':`<span class="due ${late?'late':''}" onclick="event.stopPropagation();dueEdit(this,'${c.id}')" title="תאריך יעד לסטטוס הבא — לחיצה לעריכה"><span class="num">${c.due||'—'}</span></span>`;
-  const al=[c.al.cf?`<span class="al bad">${ALN.cf}</span>`:'',c.al.sat?`<span class="al warn">${ALN.sat}</span>`:''].join('');
+  const al=[apr(c),c.al.cf?`<span class="al bad">${ALN.cf}</span>`:'',c.al.sat?`<span class="al warn">${ALN.sat}</span>`:''].join('');
   return `<tr data-id="${c.id}" tabindex="0" role="button" onclick="openCard('${c.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCard('${c.id}')}">
     <td class="n">${esc(c.n)}<small>${esc(c.pk)}</small><a class="dash" href="#" onclick="event.stopPropagation();parent.postMessage({hkAdvOpen:'${c.id}'},'*');return false" title="הכרטיס של המטופל">↗</a></td>
     <td class="stc"><button class="stg" data-c="${stColor(c.s)}" title="החלפת סטטוס" onclick="event.stopPropagation();rowStat(this,'${c.id}')">${esc(stName(c.s))}<i class="cv"></i></button></td>
@@ -606,7 +622,7 @@ function dueSet(id,v){
   render(); if(SELID===id)openCard(id);
 }
 
-/* ===== כרטיס הלקוח ===== */
+/* ===== כרטיס המטופל ===== */
 function openCard(id){
   const c=byId(id); if(!c)return false; SELID=id;
   const al=(c.al.cf||c.al.sat)
@@ -635,7 +651,10 @@ function openCard(id){
       <div class="row"><span class="k">אנשים</span><div class="v">${(c.ppl||[]).map(p=>`<div class="pp"><b>${esc(p[0])}</b><span>${esc(p[1])}</span></div>`).join('')||'<span class="none">—</span>'}</div></div>
       <div class="row"><span class="k">פגישה אחרונה</span><div class="v">${lastV}</div></div>
       <div class="row"><span class="k">פגישה הבאה</span><div class="v">${next}</div></div>
-      <div class="row"><span class="k">התראות</span><div class="v">${al}</div></div>
+      <div class="row"><span class="k">ממתין לאישורך</span><div class="v">${apr(c)||'<span class="none">אין</span>'}</div></div>
+      <div class="row"><span class="k">תשומת לב</span><div class="v">${
+        [c.al.cf?`<span class="al bad">${ALN.cf}</span>`:'',c.al.sat?`<span class="al warn">${ALN.sat}</span>`:''].join('')
+        ||'<span class="none">אין</span>'}</div></div>
       <div class="row"><span class="k">משימות פתוחות</span><div class="v">${tk(c.tasks,false)}</div></div>
     </div>
     <div class="bd tab ${tab('tk')}" data-t="tk">${tk(c.tasks,true)}<a class="addlnk" href="tasks.html?c=${c.id}">+ משימה למטופל</a></div>
@@ -697,7 +716,7 @@ function stRender(){
       </div>`;}).join('')}
     </div>
     <button class="st-add" onclick="stAdd()">+ סטטוס חדש</button>
-    <div class="st-note">היעד קובע את ברירת המחדל של "יעד לסטטוס הבא" — היועץ יכול לדרוס פר לקוח.</div>`;
+    <div class="st-note">היעד קובע את ברירת המחדל של "יעד לסטטוס הבא". אפשר לדרוס אותו פר מטופל.</div>`;
   paint($('#stBody'));
 }
 let ST_PICK=null;
@@ -732,7 +751,7 @@ if(pf){
        else if(PKS0.indexOf(pf)>-1)F.pk=pf; else if(MGS0.indexOf(pf)>-1)F.mg=pf;}
 }
 render();
-/* ברירת מחדל: הלקוח הראשון בסדר התצוגה — הכרטיס אף פעם לא ריק */
+/* ברירת מחדל: המטופל הראשון בסדר התצוגה. הכרטיס אף פעם לא ריק */
 const pc=P.get('c');
 openCard(pc&&C.some(c=>c.id===pc)?pc:SORTED[0]);
 </script>

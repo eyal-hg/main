@@ -299,7 +299,7 @@ table.ml{width:100%;border-collapse:collapse}
     <li><a href="tasks.html">משימות</a></li>
     <li><a href="clients.html">מטופלים</a></li>
     <li><a class="on" href="meetings.html">פגישות</a></li>
-    <li><a href="memory.html">פרופילי מטופלים</a></li>
+    <li><a href="calendar.html">יומן</a></li>
   </ul>
   <div class="me"><div><b>ענת שלו</b>פסיכולוגית קלינית</div><i>עש</i></div>
 </nav>
@@ -452,7 +452,7 @@ table.ml{width:100%;border-collapse:collapse}
         +(extra||'')+'</span>';
     };
     build(TOPICS,'topRow','topicGo','_topMore','נושאים שחזרו לאחרונה',S.q);
-    build(FBTS,'fbtRow','fbtGo','_fbtMore','מה חוזר במשובים על היועץ',S.fbt,
+    build(FBTS,'fbtRow','fbtGo','_fbtMore','מה חוזר בסופרוויזיון עלייך',S.fbt,
       '<a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>');
     const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(S.q||S.fbt||S.f||S.c));
   }
@@ -645,13 +645,13 @@ table.ml{width:100%;border-collapse:collapse}
           </form>
         </div></div>`;
     }else if(_arTab==='mem'){
-      body=`<div class="ar-sec"><h4>מה נכנס לזיכרון הלקוח מהפגישה</h4>
+      body=`<div class="ar-sec"><h4>מה נכנס לפרופיל של המטופל מהפגישה</h4>
         ${a.mem.map(m=>`<div class="ar-mem"><span class="k">${m[0]}</span><span>${m[1]}</span></div>`).join('')}
-        <a class="ar-memfull" href="memory.html">זיכרון הלקוח המלא ←</a></div>`;
+        <a class="ar-memfull" href="memory.html">הפרופיל המלא ←</a></div>`;
     }else if(_arTab==='fb'){
       const F=a.fbTab;
       body=F.sections
-        ?`<div class="ar-sec"><h4>משוב על היועץ · ${F.d}</h4>
+        ?`<div class="ar-sec"><h4>סופרוויזיון · ${F.d}</h4>
             ${F.sections.map((s,i)=>`<div class="ar-fbs ${s.open?'open':''}">
               <button class="ar-fbh" onclick="this.parentNode.classList.toggle('open')"><b>${i+1}. ${s.t}</b><span>▾</span></button>
               <div class="ar-fbb">
@@ -690,14 +690,14 @@ table.ml{width:100%;border-collapse:collapse}
     const made=(a.tasks||[]).filter(k=>k.ok).length;
     (a.tasks||[]).forEach(k=>{ if(send&&k.ok) k.made=1; });
     if(send){ a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
-      toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ'+(made?' · נוצרו '+made+' משימות':' · לא נוצרו משימות')); arRowClose(); }
+      toast('הסיכום נשלח ל'+(a.contact||'המטופל')+' בוואטסאפ'+(made?' · נוצרו '+made+' משימות':' · לא נוצרו משימות')); arRowClose(); }
     else{ a.st='אושר — לא נשלח'; a.stc='wait'; a.acts='send'; toast('הסיכום אושר · לא נשלח ללקוח'); arRowSendBtn(); }
     arenaShow(window._arSel);
   }
   function arSend(){
     const a=ARENA[window._arSel];
     a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
-    toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ');
+    toast('הסיכום נשלח ל'+(a.contact||'המטופל')+' בוואטסאפ');
     arRowClose(); arenaShow(window._arSel);
   }
   function arRowState(tags,st,ac){

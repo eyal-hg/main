@@ -25,7 +25,7 @@
   --tint:#F0EBFF;--chip:#E5E7FF;     /* NLP/Purple 04 · Purple 04 */
   --on-navy:#F1EEFB;--on-navy2:#DAD3F2;--on-navy3:#BCB2E4;
   --lift:0 0 6.7px rgba(12,64,104,.15);   /* Gentle */
-  --rail:264px;--top:60px;
+  --rail:276px;--top:64px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
@@ -47,25 +47,37 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .top{position:fixed;inset-inline:0;top:0;height:var(--top);z-index:30;background:#fff;
   border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:18px;padding:0 20px}
 .top .sp{flex:1}
+/* ההקשר: בתוך מטופל הפס אומר במי מדובר. ברמה הגלובלית הוא נשאר ריק —
+   שם ההקשר הוא כל הקליניקה, וכותרת המסך כבר אומרת את זה. */
+.top-ctx{display:flex;align-items:center;gap:11px;min-width:0;
+  padding-inline-start:20px;border-inline-start:1px solid var(--bd)}
+.top-ctx:empty{display:none}
+.top-ctx .tx{min-width:0}
+/* השם הוא ההקשר של כל המסך — הוא צריך להיות הדבר שקוראים ראשון. */
+.top-ctx b{display:block;font-size:21px;font-weight:600;color:var(--sky);letter-spacing:-.3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-ctx .out{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;
+  font-weight:500;color:var(--sky);padding:5px 11px;border-radius:999px;margin-inline-end:2px}
+.top-ctx .out:hover{background:var(--tint)}
 .brand{flex:none;display:flex;align-items:center}
 /* הלוגו המקורי (Logo.png · 299×108). הגובה קובע, הרוחב נגזר —
    34px מציגים אותו ב-2x מתוך 108, כלומר חד גם ברטינה. */
 .brand img{height:34px;width:auto;display:block}
-/* הפעולה הראשית — גלולה מתוארת, כמו בפיגמה */
-.top-act{flex:none;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 18px;
-  border:1px solid var(--sky);border-radius:999px;color:var(--sky);
-  font-size:14px;font-weight:500;transition:.14s}
-.top-act:hover{background:var(--tint)}
-.top-act svg{flex:none}
-
-.me-wrap{flex:none;position:relative;border-top:1px solid var(--cardbd)}
-.me{width:100%;display:flex;align-items:center;gap:10px;padding:11px 16px;text-align:start;
-  transition:background .12s}
+/* המטפלת — בפס, לא בתחתית הסרגל. האווטאר הוא ראשי תיבות; במוצר
+   אמיתי נכנסת כאן תמונת הפרופיל שלה במקום. */
+.me-wrap{flex:none;position:relative}
+.me{display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:999px;
+  text-align:start;transition:background .12s}
 .me:hover{background:var(--bg)}
-.me .chev{margin-inline-start:auto;flex:none;color:var(--faint);transition:transform .15s}
+.me div{min-width:0;line-height:1.3;text-align:end}
+.me i{flex:none;width:36px;height:36px;border-radius:50%;background:var(--chip);color:var(--sky);
+  font-style:normal;font-size:13.5px;font-weight:600;display:grid;place-items:center;overflow:hidden}
+.me i img{width:100%;height:100%;object-fit:cover;display:block}
+.me .chev{flex:none;color:var(--faint);transition:transform .15s}
 .me[aria-expanded="true"] .chev{transform:rotate(180deg)}
-/* התפריט נפתח כלפי מעלה — הוא יושב בתחתית המסך */
-.me-menu{position:absolute;inset-inline:10px;bottom:calc(100% + 6px);background:#fff;
+
+/* נפתח כלפי מטה — הוא יושב בראש המסך */
+.me-menu{position:absolute;inset-inline-start:0;top:calc(100% + 7px);min-width:196px;background:#fff;
   border:1px solid var(--bd);border-radius:12px;box-shadow:0 8px 24px rgba(12,64,104,.18);
   padding:6px;display:none;z-index:40}
 .me-menu.on{display:block}
@@ -76,11 +88,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* לא אדום: אדום שמור לסכנה, ויציאה היא לא סכנה. אפור-דיו, כמו
    פריט ההסרה בתפריט של "התהליך הטיפולי" (.pr-menu button.rm). */
 .me-menu .out{color:var(--ink2)}
-.me i{flex:none;width:31px;height:31px;border-radius:50%;background:var(--chip);color:#7557E3;
-  font-style:normal;font-size:12px;font-weight:600;display:grid;place-items:center}
-.me div{min-width:0;line-height:1.35}
-.me b{display:block;font-size:12.5px;font-weight:500;color:var(--navy)}
-.me span{display:block;font-size:11px;color:var(--ink3)}
+.me b{display:block;font-size:13.5px;font-weight:500;color:var(--navy)}
+.me span{display:block;font-size:12px;color:var(--ink2)}
 
 /* ---------- הפריסה ----------
    grid ולא מיקום קבוע: ב-RTL העמודה הראשונה היא הימנית, ולכן הסרגל
@@ -96,7 +105,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .rail-body{flex:1;min-height:0;display:flex;flex-direction:column}
 .rail-nav{flex:none;padding:12px 10px}
 .rail-nav.solo{flex:1;overflow-y:auto}
-.rail-pt{flex:1;min-height:0;display:flex;flex-direction:column;border-top:1px solid var(--cardbd)}
+.rail-pt{flex:1;min-height:0;display:flex;flex-direction:column;
+  border-top:1px solid var(--cardbd);padding-top:12px}
 
 /* פריט ניווט */
 .gn-item{width:100%;display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:12px;
@@ -105,7 +115,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .gn-item:hover{background:var(--bg)}
 .gn-item.on{background:var(--navy);color:#fff;font-weight:600}
 .gn-item.on svg{color:#CBC0F7}
-.gn-item.sec{padding:9.5px 14px;font-size:13.5px}
+/* הסקציות של המטופל — קצת יותר אוויר; זו רשימה קצרה שממלאת סרגל שלם */
+.gn-item.sec{padding:11px 14px;font-size:13.5px;margin-bottom:2px}
 .gn-item em{margin-inline-start:auto;font-style:normal;min-width:18px;height:18px;padding:0 5px;
   border-radius:999px;background:var(--coral);color:#fff;font-size:11px;font-weight:600;
   display:flex;align-items:center;justify-content:center}
@@ -115,23 +126,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .gn-back{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#7557E3;
   padding:6px 12px;border-radius:999px;margin:0 2px 2px}
 .gn-back:hover{background:var(--chip)}
-.gn-co.big{font-size:15px;font-weight:700;color:var(--navy);padding:4px 14px 2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gn-sub{font-size:11.5px;color:var(--ink3);padding:0 14px 12px;line-height:1.5;
-  border-bottom:1px solid var(--cardbd);margin-bottom:8px}
 
 /* כותרת הרשימה */
 .rail-head{display:flex;align-items:center;gap:8px;padding:14px 16px 10px}
-.rail-head .rt{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap}
-.rail-head .badge{background:var(--chip);color:var(--navy);font-size:11px;font-weight:600;
+.rail-head .rt{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap}
+.rail-head .badge{background:var(--chip);color:var(--navy);font-size:12px;font-weight:600;
   padding:1px 8px;border-radius:999px}
-.allbtn{margin-inline-start:auto;font-size:11.5px;font-weight:500;color:var(--ink3);
+.allbtn{margin-inline-start:auto;font-size:12.5px;font-weight:500;color:var(--ink2);
   padding:4px 9px;border-radius:999px;transition:.12s;white-space:nowrap}
 .allbtn:hover{background:var(--bg);color:var(--navy)}
 .allbtn.on{background:var(--chip);color:var(--navy)}
 
 /* חיפוש */
-.rail-search{margin:0 16px 8px;display:flex;align-items:center;gap:8px;background:var(--bg);
+.rail-search{margin:0 12px 8px;display:flex;align-items:center;gap:8px;background:var(--bg);
   border:1px solid var(--bd);border-radius:10px;padding:8px 11px}
 .rail-search input{border:none;outline:none;background:transparent;font-family:inherit;
   font-size:13px;width:100%;color:var(--ink)}
@@ -140,13 +147,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* שורת מטופל — .cli של המערכת */
 .rail-list{flex:1;overflow-y:auto;padding:2px 10px 16px}
-.cli{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;
+.cli{width:100%;display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:11px;
   margin-bottom:2px;border:1px solid transparent;text-align:start;transition:.12s}
 .cli:hover{background:var(--bg)}
+.cli.on{background:var(--tint);border-color:var(--chip)}
+.cli.on .cn{color:var(--sky);font-weight:600}
 .cli .ci{min-width:0;flex:1}
-.cli .cn{font-size:13.5px;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cli .cs{font-size:11px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.cli-none{padding:18px 12px;text-align:center;font-size:12px;color:var(--ink3);line-height:1.9}
+.cli .cn{font-size:14px;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cli .cs{font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.cli-none{padding:18px 12px;text-align:center;font-size:12.5px;color:var(--ink2);line-height:1.9}
 .cli-none .lnk{font-size:12px;font-weight:500;color:#7557E3}
 .cli-none .lnk:hover{text-decoration:underline}
 
@@ -165,9 +174,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     flex-direction:row;align-items:center;overflow-x:auto;padding:8px 12px;gap:8px}
   .top{position:static;height:auto;padding:9px 14px}
   .top-act{height:34px;padding:0 14px;font-size:13px}
-  .me{border:0}
   .me div,.me .chev{display:none}
-  .me{width:auto;padding:0}
+  .me{padding:0}
   .rail-body{flex-direction:row;align-items:center;gap:8px;flex:1}
   .rail-nav,.rail-pt{padding:0;border:0;margin:0;flex:none;display:flex;gap:6px;align-items:center}
   .rail-head,.rail-search,.gn-sub{display:none}
@@ -186,28 +194,27 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <header class="top">
   <a class="brand" href="#" onclick="go('today');return false" aria-label="JAMPA — לדף הבית">
     <img src="Logo.png" alt="JAMPA" width="299" height="108"></a>
+  <div class="top-ctx" id="topCtx"></div>
   <div class="sp"></div>
-  <button class="top-act" onclick="toast('בדמו: קביעת פגישה')">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke-linecap="round"/></svg>
-    קביעת פגישה</button>
+
+  <div class="me-wrap">
+    <button class="me" id="meBtn" onclick="meTg(event)" aria-haspopup="menu" aria-expanded="false">
+      <div><b>ענת שלו</b><span>פסיכולוגית קלינית</span></div>
+      <i>עש</i>
+      <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="me-menu" id="meMenu" role="menu">
+      <button role="menuitem" onclick="meGo('איזור אישי')">איזור אישי</button>
+      <button role="menuitem" onclick="meGo('הגדרות הקליניקה')">הגדרות הקליניקה</button>
+      <div class="sep"></div>
+      <button role="menuitem" class="out" onclick="meGo('יציאה')">יציאה מהמערכת</button>
+    </div>
+  </div>
 </header>
 
 <div class="shell">
   <nav class="rail">
     <div class="rail-body" id="rail"></div>
-    <div class="me-wrap">
-      <div class="me-menu" id="meMenu" role="menu">
-        <button role="menuitem" onclick="meGo('איזור אישי')">איזור אישי</button>
-        <button role="menuitem" onclick="meGo('הגדרות הקליניקה')">הגדרות הקליניקה</button>
-        <div class="sep"></div>
-        <button role="menuitem" class="out" onclick="meGo('יציאה')">יציאה מהמערכת</button>
-      </div>
-      <button class="me" id="meBtn" onclick="meTg(event)" aria-haspopup="menu" aria-expanded="false">
-        <i>עש</i>
-        <div><b>ענת שלו</b><span>פסיכולוגית קלינית</span></div>
-        <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-    </div>
   </nav>
   <main class="stage" id="stage"></main>
 </div>
@@ -235,6 +242,7 @@ const I={
   people:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.6"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>',
   meets:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
   mem:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
+  inbox:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 12h5l2 3h4l2-3h5"/><path d="M5.5 5h13l2.5 7v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"/></svg>',
   cal:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8.5" cy="14.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="14.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="14.5" r="1.1" fill="currentColor" stroke="none"/></svg>',
   dash:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
   msgs:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.9-.9L3 21l1.9-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>',
@@ -246,12 +254,19 @@ const I={
 /* הניווט הרוחבי. "כל המטופלים" (adv/clients.html) לא יושב כאן אלא
    בראש רשימת המטופלים — הוא הלוח שלה, לא עוד יעד ברשימת יעדים. */
 const ADV=[
-  {k:'today', f:'adv/today.html',    l:'היום',            i:'today'},
-  {k:'tasks', f:'adv/tasks.html',    l:'משימות',          i:'tasks'},
-  {k:'meetings',f:'adv/meetings.html',l:'פגישות',         i:'meets'},
-  {k:'memory',f:'adv/memory.html',   l:'פרופילי מטופלים', i:'mem'},
-  {k:'cal',   f:'adv/calendar.html', l:'יומן',            i:'cal'},
+  {k:'today', f:'adv/today.html',    l:'היום',           i:'today'},
+  {k:'tasks', f:'adv/tasks.html',    l:'משימות',         i:'tasks', badge:()=>5},
+  {k:'clients',f:'adv/clients.html', l:'מטופלים',        i:'people'},
+  {k:'meetings',f:'adv/meetings.html',l:'פגישות',        i:'meets'},
+  {k:'cal',   f:'adv/calendar.html', l:'יומן',           i:'cal'},
 ];
+/* "פרופילי מטופלים" ירד מכאן: הוא היה דלת שנייה לאותו אדם. הפרופיל
+   הוא רובד בתוך המטופל, ולכן הוא חי ברשימת הסקציות שלו.
+   "ממתין לאישורך" גם הוא לא מסך נפרד: אישור הוא משימה שעליי, ולכן
+   הוא הטאב הראשון בתוך "משימות". הבאדג' סופר את שניהם יחד.
+   "מטופלים" הוא הלוח: ניהול — סטטוסים, יעדים ומי דורש תשומת לב.
+   הרשימה בסרגל היא ניווט לאותו סט אנשים, ולכן אין לה כותרת משלה:
+   כותרת הייתה גורמת לה להיקרא כישות שנייה. */
 const BOARD={k:'clients', f:'adv/clients.html', l:'כל המטופלים', i:'people'};
 /* הרובד של מטופל אחד */
 const CLI=[
@@ -260,6 +275,7 @@ const CLI=[
   {k:'meets', f:'cli/meetings.html',  l:'פגישות',           i:'meets'},
   {k:'ai',    f:'cli/ai.html',        l:'עוזר AI',          i:'ai'},
   {k:'flow',  f:'cli/process.html',   l:'התהליך הטיפולי',   i:'flow'},
+  {k:'prof',  f:'adv/memory.html',     l:'הפרופיל',          i:'mem'},
 ];
 
 let SCOPE='adv';     /* adv = כל המטופלים · cli = מטופל אחד */
@@ -268,20 +284,20 @@ let CUR=null;        /* המטופל הפתוח */
 
 /* ---------- הבמה: מסגרת אחת לכל מסך, נטענת בכניסה הראשונה ---------- */
 const stage=document.getElementById('stage');
-function frame(k,src){
+function frame(k,src,q){
   let f=document.getElementById('f_'+k);
   if(!f){
     f=document.createElement('iframe');
     f.id='f_'+k; f.className='fr'; f.title=k; f.loading='lazy';
     f.style.minHeight='calc(100vh - var(--top))';
-    f.src=src+(src.indexOf('?')>-1?'&':'?')+'embed=1';
+    f.src=src+(src.indexOf('?')>-1?'&':'?')+'embed=1'+(q||'');
     stage.appendChild(f);
   }
   return f;
 }
-function show(k,src){
+function show(k,src,q){
   stage.querySelectorAll('.fr').forEach(x=>x.classList.remove('on'));
-  frame(k,src).classList.add('on');
+  frame(k,src,q).classList.add('on');
 }
 
 /* ---------- ניווט ---------- */
@@ -297,7 +313,11 @@ function openPt(id,k){                /* רובד המטופל */
   SCOPE='cli'; VIEW=it.k; CUR=p;
   /* בדמו כל המסכים בנויים סביב נועה — המעטפת אומרת את זה במפורש
      במקום להעמיד פנים שהתוכן מתחלף. */
-  show('cli_'+it.k,it.f); rail(); 
+  /* הפרופיל הוא מסך הרובד הגלובלי מסונן לאדם אחד — לכן הוא מקבל את
+     המזהה, והמסגרת נבנית מחדש כשמחליפים מטופל. */
+  if(it.k==='prof'){ const old=document.getElementById('f_cli_prof'); if(old) old.remove(); }
+  show('cli_'+it.k, it.f, it.k==='prof'?('&c='+p.id):'');
+  rail();
   scrollTo({top:0,behavior:'instant'});
 }
 function cliGo(k){ if(CUR) openPt(CUR.id,k); }
@@ -319,40 +339,45 @@ function ptRow(p){
   </button>`;
 }
 
+function topCtx(){
+  const el=document.getElementById('topCtx');
+  el.innerHTML = SCOPE!=='cli' ? '' :
+    `<button class="out" onclick="go('clients')">
+       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+       כל המטופלים</button>
+     <div class="tx"><b>${CUR.n}</b></div>`;
+}
+
 function rail(){
   const r=document.getElementById('rail');
+  topCtx();
 
-  if(SCOPE==='cli'){
-    r.innerHTML=`<div class="rail-nav solo">
-      <button class="gn-back" onclick="go('clients')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
-        כל המטופלים</button>
-      <div class="gn-co big">${CUR.n}</div>
-      <div class="gn-sub">${CUR.f} · ${CUR.st}</div>`+
-      CLI.map(c=>{const b=c.badge&&c.badge(CUR);
-        return `<button class="gn-item sec ${VIEW===c.k?'on':''}" onclick="cliGo('${c.k}')">${I[c.i]}<span>${c.l}</span>${b?`<em>${b}</em>`:''}</button>`}).join('')+
-      `</div>`;
-    return;
-  }
+  /* הבלוק העליון מתחלף: ברמה הגלובלית — הניווט הרוחבי; בתוך מטופל —
+     הסקציות שלו. הרשימה שמתחת נשארת תמיד, כי היא הדלת וגם המקום שבו
+     רואים מי עוד מחכה. השם והמוקד עברו לפס העליון, ולכן אין כאן
+     בלוק כותרת שחוזר על עצמו. */
+  const top = SCOPE==='cli'
+    ? CLI.map(c=>{const b=c.badge&&c.badge(CUR);
+        return `<button class="gn-item sec ${VIEW===c.k?'on':''}" onclick="cliGo('${c.k}')">${I[c.i]}<span>${c.l}</span>${b?`<em>${b}</em>`:''}</button>`}).join('')
+    : ADV.map(a=>{const b=a.badge&&a.badge();
+        return `<button class="gn-item ${VIEW===a.k?'on':''}" onclick="go('${a.k}')">${I[a.i]}<span>${a.l}</span>${b?`<em>${b}</em>`:''}</button>`}).join('');
 
-  const nav = ADV.map(a=>
-    `<button class="gn-item ${VIEW===a.k?'on':''}" onclick="go('${a.k}')">${I[a.i]}<span>${a.l}</span></button>`).join('');
+  /* הרשימה שייכת לרובד הגלובלי. בתוך מטופל היא רעש — המעבר למטופל
+     אחר הוא לחיצה אחת על "כל המטופלים" בפס העליון. */
+  if(SCOPE==='cli'){ r.innerHTML=`<div class="rail-nav solo">${top}</div>`; return; }
+
   const hits = PT.filter(p=>!RQ||p.n.includes(RQ)||p.f.includes(RQ)||p.sub.includes(RQ));
 
   r.innerHTML =
-    `<div class="rail-nav">${nav}</div>
+    `<div class="rail-nav">${top}</div>
      <div class="rail-pt">
-       <div class="rail-head">
-         <span class="rt">מטופלים</span><span class="badge num">${PT.length}</span>
-         <button class="allbtn ${VIEW==='clients'?'on':''}" onclick="go('clients')">כל 23 בלוח</button>
-       </div>
        <div class="rail-search">
          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
          <input id="rq" placeholder="חיפוש מטופל" autocomplete="off" value="${RQ}" oninput="rqSet(this.value)">
        </div>
        <div class="rail-list">${
          hits.length ? hits.map(ptRow).join('')
-                     : `<div class="cli-none">אין מטופל פעיל שמתאים ל"${RQ}"<br><button class="lnk" onclick="go('clients')">לחיפוש בלוח המלא</button></div>`}</div>
+                     : `<div class="cli-none">אין מטופל פעיל שמתאים ל"${RQ}"<br><button class="lnk" onclick="go('clients')">לחיפוש בכל 23</button></div>`}</div>
      </div>`;
 }
 function rqSet(v){

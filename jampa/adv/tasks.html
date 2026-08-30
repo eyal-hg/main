@@ -324,6 +324,30 @@ aside.left .panel.det.on{display:flex;flex-direction:column}
   .strip .next .t{max-width:26ch}
   .strip .next .cl,.strip .next .c{display:none}
 }
+
+/* ---------- ממתין לאישורך ----------
+   הפעולה המרכזית של המטפלת. הכלל: לכל פריט שלוש אפשרויות אמיתיות,
+   והמערכת אף פעם לא שולחת לבד. ממוין מהוותיק לחדש. */
+.ib{padding:16px 20px;border-bottom:1px solid var(--bd)}
+.ib:last-child{border-bottom:0}
+.ib.done{opacity:.5}
+.ib-t{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ib-t .who{font-size:15px;font-weight:600;color:var(--navy)}
+.ib-t .kind{font-size:12.5px;color:var(--ink2)}
+.ib-t .when{margin-inline-start:auto;font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ib-b{margin-top:9px;font-size:13.5px;line-height:1.75;color:var(--ink)}
+.ib-b .q{border-inline-start:2px solid var(--chip);padding-inline-start:12px;color:var(--ink2)}
+.ib-b ul{list-style:none;margin-top:4px}
+.ib-b li{position:relative;padding-inline-start:15px;padding-block:2px}
+.ib-b li::before{content:"";position:absolute;inset-inline-start:0;top:11px;width:4px;height:4px;
+  border-radius:50%;background:var(--bd2)}
+.ib-a{display:flex;align-items:center;gap:8px;margin-top:13px;flex-wrap:wrap}
+.ib-a .note{font-size:12px;color:var(--ink3)}
+.ib-age{font-size:12px;font-weight:500}
+.ib-age.wait{color:var(--orange)}
+.ib-age.ok{color:var(--green)}
+.ib-empty{padding:44px 20px;text-align:center;color:var(--ink3);font-size:13.5px;line-height:1.9}
+.ib-empty b{display:block;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px}
 </style>
 <link rel="stylesheet" href="brand.css">
 </head>
@@ -336,7 +360,7 @@ aside.left .panel.det.on{display:flex;flex-direction:column}
     <li><a class="on" href="tasks.html">משימות</a></li>
     <li><a href="clients.html">מטופלים</a></li>
     <li><a href="meetings.html">פגישות</a></li>
-    <li><a href="memory.html">פרופילי מטופלים</a></li>
+    <li><a href="calendar.html">יומן</a></li>
   </ul>
   <div class="me"><div><b>ענת שלו</b>פסיכולוגית קלינית</div><i>עש</i></div>
 </nav>
@@ -354,11 +378,17 @@ aside.left .panel.det.on{display:flex;flex-direction:column}
 
   <!-- ===== main: tasks ===== -->
   <section class="panel main">
-    <!-- בג'מפה אין מנהל תזרים — אין למי לבקש, ולכן אין טאב שני. -->
+    <!-- אישור הוא משימה שעליי, ולכן הוא כאן ולא במסך נפרד. שני מסכים
+         ל"מה עליי" היו יוצרים בדיוק את הכפילות שאנחנו מנסים להוריד.
+         המשימות ראשונות — הן ברירת המחדל של המסך. -->
     <div class="tabs">
       <button class="on" id="tabMine" onclick="setTab('mine')">המשימות שלי <i id="cMine">7</i></button>
+      <button id="tabAppr" onclick="setTab('appr')">ממתין לאישורך <i id="cAppr">5</i></button>
       <span class="note" id="tabNote"></span>
     </div>
+
+    <!-- ---- ממתין לאישורך ---- -->
+    <div id="appr" style="display:none"><div class="ib-list" id="ibList"></div></div>
 
     <!-- ---- my tasks ---- -->
     <div id="mine">
@@ -566,8 +596,81 @@ function tog(cb){const tk=cb.closest('.tk');tk.classList.toggle('done');const d=
   applyF();bycCount()}
 
 /* ---------- טאבים — הטור הצדדי מתחלף עם הטאב ---------- */
-/* טאב אחד בלבד — נשאר כפונקציה כדי שלא לשנות את הקריאות אליה */
-function setTab(){applyF()}
+function setTab(k){
+  const mine=k==='mine';
+  document.getElementById('tabMine').classList.toggle('on',mine);
+  document.getElementById('tabAppr').classList.toggle('on',!mine);
+  document.getElementById('mine').style.display=mine?'':'none';
+  document.getElementById('appr').style.display=mine?'none':'';
+  document.getElementById('bycP').classList.toggle('hide',!mine);
+  document.getElementById('det').classList.toggle('on',mine);
+  if(mine)applyF(); else ibRender();
+}
+
+/* ---------- ממתין לאישורך ---------- */
+/* סיכומי פגישות, משימות שנגזרו מתמלול, והודעות שהמעטפת הכינה.
+   age = כמה ימים הפריט ממתין; הוא שקובע את הסדר. */
+const IB=[
+ {id:'i1',kind:'summary',who:'שרה לוינסון',what:'סיכום פגישה · אבל ואובדן',when:'היום 09:52',age:0,
+  body:'<ul><li>נמנעת מלבקש עזרה, גם כשמציעים</li><li>הביאה נושא מיוזמתה לראשונה</li><li>כתיבת מכתב שלא נשלח הביאה הקלה ניכרת</li></ul>',
+  note:'שלוש שורות ייכנסו לפרופיל · שלוש משימות ייפתחו'},
+ {id:'i2',kind:'summary',who:'נועה ברק',what:'סיכום פגישה · חשיפה מדורגת',when:'26.06',age:6,
+  body:'<ul><li>זיהתה לבד שהיא מתארת את עצמה במילים שלא הייתה משתמשת בהן לגבי אחרים</li><li>אמונת הליבה "כולם רואים שאני לחוצה" נבחנה מול עדויות ונחלשה</li><li>סוכם על חשיפה מדורגת: משפט אחד בישיבת הצוות</li></ul>',
+  note:'ארבע שורות ייכנסו לפרופיל · שלוש משימות ייפתחו'},
+ {id:'i3',kind:'message',who:'דניאל כהן',what:'הודעה בין הפגישות',when:'היום 08:00',age:0,
+  body:'<div class="q">"היי דניאל, לא שמענו ממך שבוע. אין צורך לענות עכשיו, רק שתדע שרונן כאן ביום חמישי."</div>',
+  note:'נכתבה בטון ובגישה שלך · תישלח בוואטסאפ'},
+ {id:'i4',kind:'message',who:'מיכל אדרי',what:'הצעת מועדים לפגישת סיכום',when:'אתמול',age:1,
+  body:'<div class="q">"מיכל, שמחתי לקרוא על הישיבה. שווה שנעשה פגישת סיכום, יש לי מקום ביום שני 12:00 או ברביעי 16:00."</div>',
+  note:'שבועיים בלי פגישה · הרצף נשבר'},
+ {id:'i5',kind:'task',who:'יואב פרידמן',what:'שתי משימות מהפגישה של 29.06',when:'29.06',age:3,
+  body:'<ul><li>שיחת 20 דקות בלי מסכים, פעמיים בשבוע</li><li>לרשום מצב אחד שבו הרגיש שלא נשמע</li></ul>',
+  note:'המערכת תפנה איתן בתזמון שהגדרת'},
+];
+const IBDONE={};
+const ibAge=n=>n===0?'הגיע היום':n===1?'ממתין מאתמול':'ממתין '+n+' ימים';
+
+function ibRow(it){
+  const done=IBDONE[it.id];
+  const acts = done ? '<span class="ib-age ok">'+done+'</span>'
+    : it.kind==='message'
+      ? '<button class="btn pri sm" onclick="ibOk(\''+it.id+'\',1)">אישור ושליחה</button>'+
+        '<button class="btn sm" onclick="ibOk(\''+it.id+'\',2)">עריכה לפני שליחה</button>'+
+        '<button class="btn sm" onclick="ibOk(\''+it.id+'\',3)">לא רלוונטי</button>'
+    : it.kind==='task'
+      ? '<button class="btn pri sm" onclick="ibOk(\''+it.id+'\',4)">אישור המשימות</button>'+
+        '<button class="btn sm" onclick="ibOk(\''+it.id+'\',2)">עריכה</button>'
+      : '<button class="btn pri sm" onclick="ibOk(\''+it.id+'\',1)">אישור ושליחה</button>'+
+        '<button class="btn sm" onclick="ibOk(\''+it.id+'\',5)">אישור בלי שליחה</button>'+
+        '<button class="btn sm" onclick="ibOk(\''+it.id+'\',2)">עריכה</button>';
+  return '<div class="ib'+(done?' done':'')+'">'+
+    '<div class="ib-t"><span class="who">'+it.who+'</span><span class="kind">'+it.what+'</span>'+
+      '<span class="when">'+it.when+'</span></div>'+
+    '<div class="ib-b">'+it.body+'</div>'+
+    '<div class="ib-a">'+acts+(done?'':'<span class="note">'+it.note+'</span>'+
+      '<span class="ib-age wait" style="margin-inline-start:auto">'+ibAge(it.age)+'</span>')+'</div></div>';
+}
+function ibRender(){
+  const open=IB.filter(i=>!IBDONE[i.id]).sort((a,b)=>b.age-a.age);
+  const all=open.concat(IB.filter(i=>IBDONE[i.id]));
+  document.getElementById('ibList').innerHTML = all.length
+    ? all.map(ibRow).join('')
+    : '<div class="ib-empty"><b>אין מה לאשר</b>הכול טופל. סיכום חדש יופיע כאן תוך דקות מסיום הפגישה.</div>';
+  document.getElementById('cAppr').textContent=open.length;
+  document.getElementById('tabNote').textContent=open.length
+    ? 'שום דבר לא יוצא בלי שתאשרי' : '';
+}
+function ibOk(id,mode){
+  const it=IB.find(i=>i.id===id); if(!it) return;
+  if(mode===2){ toast('בדמו: נפתח לעריכה'); return; }
+  const first=it.who.split(' ')[0];
+  IBDONE[id]= mode===1?'אושר ונשלח':mode===5?'אושר · לא נשלח':mode===3?'סומן כלא רלוונטי':'המשימות אושרו';
+  ibRender();
+  toast(mode===1?'אושר ונשלח ל'+first
+      : mode===5?'אושר · נשמר בתיק בלי שליחה'
+      : mode===3?'ירד מהרשימה'
+      : 'המשימות נפתחו · המערכת תפנה איתן ל'+first);
+}
 
 function pickC(li){[...li.parentNode.children].forEach(x=>x.classList.remove('on'));li.classList.add('on');document.getElementById('fc').value=li.dataset.c==='none'?'none':li.dataset.c;applyF()}
 function bycCount(){document.querySelectorAll('#byc li').forEach(li=>{const c=li.dataset.c;
@@ -765,7 +868,7 @@ function hkApply(){}
 
 
 /* ---------- חוזה URL: ?c= ?q= ?f= ו-#hk ---------- */
-applyF();
+applyF(); ibRender(); setTab('mine');
 (function(){const p=new URLSearchParams(location.search);
   const q=p.get('q');if(q)document.getElementById('fq').value=q;
   const f=p.get('f');if(f){const b=document.querySelector('#fs [data-v="'+CSS.escape(f)+'"]');if(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on')}}
@@ -777,6 +880,30 @@ applyF();
 html.embed .nav{display:none !important}
 html.embed body{background:transparent}
 html.embed .strip{border-radius:0}
+
+/* ---------- ממתין לאישורך ----------
+   הפעולה המרכזית של המטפלת. הכלל: לכל פריט שלוש אפשרויות אמיתיות,
+   והמערכת אף פעם לא שולחת לבד. ממוין מהוותיק לחדש. */
+.ib{padding:16px 20px;border-bottom:1px solid var(--bd)}
+.ib:last-child{border-bottom:0}
+.ib.done{opacity:.5}
+.ib-t{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ib-t .who{font-size:15px;font-weight:600;color:var(--navy)}
+.ib-t .kind{font-size:12.5px;color:var(--ink2)}
+.ib-t .when{margin-inline-start:auto;font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.ib-b{margin-top:9px;font-size:13.5px;line-height:1.75;color:var(--ink)}
+.ib-b .q{border-inline-start:2px solid var(--chip);padding-inline-start:12px;color:var(--ink2)}
+.ib-b ul{list-style:none;margin-top:4px}
+.ib-b li{position:relative;padding-inline-start:15px;padding-block:2px}
+.ib-b li::before{content:"";position:absolute;inset-inline-start:0;top:11px;width:4px;height:4px;
+  border-radius:50%;background:var(--bd2)}
+.ib-a{display:flex;align-items:center;gap:8px;margin-top:13px;flex-wrap:wrap}
+.ib-a .note{font-size:12px;color:var(--ink3)}
+.ib-age{font-size:12px;font-weight:500}
+.ib-age.wait{color:var(--orange)}
+.ib-age.ok{color:var(--green)}
+.ib-empty{padding:44px 20px;text-align:center;color:var(--ink3);font-size:13.5px;line-height:1.9}
+.ib-empty b{display:block;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px}
 </style>
 <script id="hk-embed-js">
 /* ===== הטמעה במערכת =====
