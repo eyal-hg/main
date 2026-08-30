@@ -66,8 +66,9 @@
   }
   function selectClient(i){
     CUR=i; const c=CLIENTS[i];
-    document.getElementById('curName').textContent=c.name;
-    document.getElementById('curHp').textContent=c.hp;
+    /* המחפש בפס הוסר — ההקשר מגיע מ-#topCtx ומהסרגל */
+    const _cn=document.getElementById('curName'); if(_cn)_cn.textContent=c.name;
+    const _ch=document.getElementById('curHp');   if(_ch)_ch.textContent=c.hp;
     document.getElementById('headName').textContent=c.name;
     /* בתוך חברה — השם והח.פ כבר בשדה החיפוש ובסרגל; הכותרת כאן כפולה */
     document.querySelector('.client-head').classList.add('inco');
@@ -80,6 +81,7 @@
 
   /* top client-switcher dropdown — with live search */
   function toggleSwitcher(e){
+    if(!document.getElementById('swDD')) return;
     e.stopPropagation();
     const dd=document.getElementById('swDD');
     if(dd.classList.contains('show')){dd.classList.remove('show');return;}
@@ -105,6 +107,6 @@
       +(hits.length?hits.map(({c,i})=>`<div class="sw-item" onclick="pickSwitcher(${i})"><span class="sdot" style="background:${c.warn?'var(--coral)':'var(--green)'}"></span><div><div class="nm">${c.name}</div><div class="sb">${c.hp} · ${c.mgr}</div></div></div>`).join('')
         :'<div class="sw-empty">לא נמצאו חברות ל"'+q+'"</div>');
   }
-  function pickSwitcher(v){document.getElementById('swDD').classList.remove('show');if(v==='p')selectPortfolio();else selectClient(v);}
-  document.addEventListener('click',()=>document.getElementById('swDD').classList.remove('show'));
+  function pickSwitcher(v){const _d=document.getElementById('swDD');if(_d)_d.classList.remove('show');if(v==='p')selectPortfolio();else selectClient(v);}
+  document.addEventListener('click',()=>{const _d=document.getElementById('swDD');if(_d)_d.classList.remove('show');});
 

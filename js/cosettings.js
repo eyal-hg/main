@@ -4,8 +4,9 @@ const CO_TABS=[
   {k:'details', l:'פרטי לקוח'},
   {k:'contacts',l:'אנשי קשר'},
   {k:'ops',     l:'תפעולי'},
-  {k:'finance', l:'פיננסים'},
-  {k:'memory',  l:'זיכרון לקוח'},
+  /* "פיננסים" ו"זיכרון לקוח" ירדו: המוצרים והחיוב הם נתון מערכת ולא הגדרה
+     פר-חברה, והזיכרון חי כרובד בתוך החברה ("זיכרון החברה") ולא כטאב הגדרות.
+     הפונקציות coFinance ו-coMemory נשארו — הן עוד עשויות לחזור. */
 ];
 /* דמו — נתוני החברה (בפרודקשן מהשרת פר חברה) */
 const CO_DATA={};
@@ -14,7 +15,7 @@ function coData(i){
   const c=CLIENTS[i]||{};
   CO_DATA[i]={
     firstName:'חיים', company:c.name||'', phone:'054-5839787', kind:'company', taxId:c.hp||'',
-    field:'שיווק', mgr:c.mgr||'לירון בן כליפא', advisorCo:'HK', notes:'פעיל',
+    field:'שיווק', mgr:c.mgr||'טל מלקר', advisorCo:'HK', notes:'פעיל',
     reason:'', access:'', goals:[{t:'מטרה 1', due:''}],
     contacts:[{first:'חיים', last:'.', role:'CFO', phone:'054-5839787', mail:'haim@easy2success.co.il',
       primary:true, voice:false, toAi:true, app:{flow:false,metrics:false,media:false},
@@ -221,7 +222,7 @@ function coOps(d){
     <div class="cos-sub-h big" style="margin-top:0">מצב החברה</div>
     ${coStHtml()}
     ${coF('מנהל תזרים', `<select class="mx2-inp" style="width:100%">${[...new Set(CLIENTS.map(c=>c.mgr))].map(n=>`<option ${n===d.mgr?'selected':''}>${n}</option>`).join('')}</select>`)}
-    ${coF('חברת ייעוץ', `<select class="mx2-inp" style="width:100%"><option>HK</option><option>אשכנזי ייעוץ עסקי</option><option>ברק ושות׳</option></select>`)}
+    ${coF('חברת ייעוץ', `<select class="mx2-inp" style="width:100%"><option>HK</option><option>שחר ייעוץ עסקי</option><option>ברק ושות׳</option></select>`)}
 
     <div class="cos-sub-h big">סף מהותיות לפער — מעקב ופערים</div>
     <div class="cos-note">פער מעל הסף חייב הגדרה לפני סיום שלב הבדיקה, ומוצג בכתום. מתחתיו — אפור ושקט.

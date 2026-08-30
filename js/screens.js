@@ -4,29 +4,25 @@
     if(s==='portfolio'&&ROLE==='client1'){ selectClient(CUR||0); return; }
     if(OPSMODE) exitOps();
     SCOPE=s;
-    const hp=document.getElementById('headHp'), st=document.querySelector('.client-head .st');
+    const hp=document.getElementById('headHp');
     const acts=document.querySelector('.db-actions'), kpi=document.getElementById('kpiHero');
     const sub=document.querySelector('.sub-line');
     if(s==='portfolio'){
-      document.getElementById('curName').textContent='כל החברות';
+      /* המחפש בפס הוסר — שומרים על null כדי שהטעינה לא תיפול */
+      const _cn=document.getElementById('curName'); if(_cn)_cn.textContent='כל החברות';
       const _grp=(ROLE==='clientN');
-      document.getElementById('curHp').textContent=_grp?'מבט מאוחד':'תיק לקוחות';
+      const _ch=document.getElementById('curHp'); if(_ch)_ch.textContent=_grp?'מבט מאוחד':'תיק לקוחות';
       document.getElementById('headName').textContent=_grp?'החברות שלי':'כל החברות';
       document.querySelector('.client-head').classList.remove('inco');   /* במבט-על זו כן הכותרת */
-      hp.style.display='none'; st.style.display='none'; acts.style.display='none';
+      hp.style.display='none'; acts.style.display='none';
       if(kpi)kpi.style.display='none';
       sub.textContent=_grp
         ? 'מבט מאוחד · '+CLIENT_GROUP_N+' חברות · נכון ל-2.7.2026'
         : 'תיק לקוחות · '+CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length+' חברות · נכון ל-2.7.2026';
     }else{
-      hp.style.display=''; st.style.display=''; acts.style.display='flex'; acts.style.visibility='visible';
-      /* תג המצב (פעיל/בהקמה/ארכיון) הוא סטטוס ההתקשרות מול HK — לא עניינו של בעל העסק */
-      if(st&&(ROLE==='client1'||ROLE==='clientN')) st.style.display='none';
-      else if(st&&typeof coState==='function'){                  /* התג משקף את המצב האמיתי */
-        const k=coState(CLIENTS[CUR]);
-        st.className='st '+(k==='active'?'active':k==='setup'?'setup':'arch');
-        st.textContent=k==='active'?'פעיל':k==='setup'?'בהקמה':'ארכיון';
-      }
+      hp.style.display=''; acts.style.display='flex'; acts.style.visibility='visible';
+      /* תג המצב (פעיל/בהקמה/ארכיון) ירד מכותרת הלקוח — סטטוס ההתקשרות מול HK
+         חי ברשימת הלקוחות ובהגדרות החברה, ולא מעל כל מסך ומסך. */
       if(kpi)kpi.style.display='';
       /* בעל העסק לא רואה סיווג פנימי של החברה שלו — הוא רואה מי מלווה אותו */
       sub.textContent=(ROLE==='client1'||ROLE==='clientN')
@@ -186,7 +182,7 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון חשבונאי',past:'תזרים עבר',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
      את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */
@@ -212,6 +208,17 @@
       document.querySelector('.client-head').style.display='flex';
     }
   }
+  /* בתוך חברה השם עלה לפס העליון ותג המצב ירד. אם גם הפעולות מוסתרות
+     נשארת רצועה ריקה בגובה מלא — היא שנראתה כרווח מיותר מעל כל מסך מוטמע. */
+  function tidyClientHead(){
+    const ch=document.querySelector('.client-head'); if(!ch) return;
+    /* רק מכווץ — לעולם לא מחזיר להצגה. ההצגה נקבעת במקומות אחרים,
+       ודריסה שלהם כאן החזירה את הרצועה גם איפה שהיא לא צריכה. */
+    if(!ch.classList.contains('inco')) return;
+    if(CUR_TAB==='dash') return;
+    ch.style.display='none';
+  }
+  window.tidyClientHead=tidyClientHead;
   function showTab(t){
     CUR_TAB=t;
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
@@ -319,12 +326,17 @@
     }
     else if(t==='settings'){document.getElementById('viewSettings').style.display='';renderSettings();}
     else{document.getElementById('viewOther').style.display='';document.getElementById('otherName').textContent=TAB_LABELS[t]||t;}
-    document.querySelector('.db-actions').style.visibility = t==='dash' ? 'visible' : 'hidden';
+    const _showA = (t==='dash');
+    document.querySelector('.db-actions').style.visibility = _showA ? 'visible' : 'hidden';
+    /* בתוך חברה השם עלה לפס העליון ותג המצב ירד. אם גם הפעולות מוסתרות,
+       נשארת רצועה ריקה בגובה מלא — היא שנראתה כרווח מיותר מעל כל מסך מוטמע. */
+    tidyClientHead();
     document.getElementById('wbActions').style.display = (t==='dash'&&ROLE!=='client1'&&ROLE!=='clientN') ? 'flex' : 'none';
     // שורת "סונכרן אוטומטית…" — שייכת לנתוני הדשבורד, לא עוקבת לשאר הסקציות
     document.querySelector('.sub-line').style.display = t==='dash' ? '' : 'none';
     // יעד גלובלי: בלי כותרת חברה ופירור — זה לא עמוד של חברה
     document.querySelector('.client-head').style.display = isGlobal ? 'none' : 'flex';
+    tidyClientHead();   /* אחרי הקביעה למעלה — היא זו שדרסה את הכיווץ */
     if(isGlobal){GNAV=t;const c=document.getElementById('crumb');if(c)c.style.display='none';}
     else if(SCOPE==='client'){GNAV='client';renderCrumb();}
     renderGlobalRail();
@@ -357,14 +369,21 @@
     meets:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/></svg>',
     settings:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'};
   function gnavItems(){
+    /* "זיכרון לקוחות" ירד: הוא היה דלת שנייה לאותו לקוח — הזיכרון הוא
+       רובד בתוך החברה ("זיכרון החברה" בסקציות שלה). "הגדרות" ירדו לאיזור
+       הניהול בפס העליון. נשארו חמישה יעדים, כמו בג'מפה. */
     if(typeof ROLE==='undefined'||ROLE==='advisor') return [
       {k:'today',   l:'היום',    go:"gnavGo('today')"},
       {k:'tasks',   l:'משימות',  go:"gnavGo('tasks')"},
-      {k:'clients', l:'לקוחות',  go:"gnavGo('clients')"},
-      {k:'meets',   l:'פגישות',  go:"gnavGo('meets')"},
-      {k:'how',     l:'זיכרון לקוחות', go:"gnavGo('how')"},
       {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
-      {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
+      /* "כל הפגישות" ולא "פגישות": בתוך חברה יש פריט בשם "פגישות", ושם
+         ההקשר כבר נאמר — שם החברה יושב מעל הסרגל. הפריט הגלובלי הוא זה
+         שנשא הקשר סמוי ("של כולם"), והוא זה שקיבל את המילה. אותו טיפול
+         בדיוק כמו "כל הלקוחות" בקישור החזרה. */
+      {k:'meets',   l:'כל הפגישות',  go:"gnavGo('meets')"},
+      /* "התיק שלי" ולא "לקוחות": זה מסך ניהול (סטטוסים, יעדים, תשומת לב),
+         והרשימה שמתחתיו בסרגל היא הניווט. שני שמות זהים בלבלו. */
+      {k:'clients', l:'התיק שלי', go:"gnavGo('clients')"}];
     if(ROLE==='manager') return [
       {k:'ops',     l:'לקוחות',  go:"gnavGo('ops')"},
       {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
@@ -395,7 +414,33 @@
     flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7.5"/></svg>',
     mem:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
     fcast:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 14 4-4 3 3 5-6"/></svg>'};
+  /* סינון רשימת הלקוחות בסרגל של היועץ */
+  let ADVQ='';
+  function advQSet(v){
+    ADVQ=v; renderGlobalRail();
+    const el=document.getElementById('advQ');
+    if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); }
+  }
+  /* ההקשר בפס העליון — נקרא מתוך renderGlobalRail כדי שיישאר מסונכרן */
+  function renderTopCtx(){
+    const el=document.getElementById('topCtx'); if(!el) return;
+    const inCo=(SCOPE==='client'&&GNAV==='client')&&ROLE!=='client1';
+    /* בתוך לקוח שם החברה מחליף את מחפש הלקוחות — הוא כבר ההקשר,
+       והחיפוש חי בסרגל. גם מסנני התיק יורדים: הם שייכים למבט על
+       כל הלקוחות, ולא לתוך לקוח אחד. מחוץ ללקוח שניהם חוזרים. */
+    const sw=document.querySelector('.switcher-wrap');
+    if(sw) sw.style.display = inCo ? 'none' : '';
+    const tm=document.querySelector('.top-mid');
+    if(tm) tm.dataset.inco = inCo ? '1' : '';
+    el.innerHTML = !inCo ? '' :
+      `<button class="out" onclick="${ROLE==='manager'?"gnavGo('ops')":"gnavGo('clients')"}">
+         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+         כל הלקוחות</button>
+       <b>${(CLIENTS[CUR]||{}).name||''}</b>`;
+  }
+
   function renderGlobalRail(){
+    renderTopCtx();
     const list=document.getElementById('gnavList'); if(!list) return;
     let html;
     if(SCOPE==='client'&&GNAV==='client'){
@@ -403,9 +448,9 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['msgs',0],['chat',1],['metrics',1],['meetings',0],['mem',1],['prep',1]];
-      html=(ROLE==='client1'?'':`<div class="gn-back" onclick="${backGo}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg> ${backLbl}</div>`)+
-        `<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`+
+      const SEC=[['dash',0],['msgs',1],['chat',1],['metrics',1],['meetings',0],['mem',1],['prep',1]];
+      /* החזרה והשם עברו לפס העליון — כאן הם היו חוזרים על עצמם */
+      html=(ROLE==='client1'?`<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`:'')+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
         (typeof OPSMODE!=='undefined'&&OPSMODE?'<div class="gn-lock">מצב תפעול פעיל — הניווט נעול עד סיום או השהיה</div>':'')+
         (ROLE==='manager'&&!(typeof OPSMODE!=='undefined'&&OPSMODE)?(function(){
@@ -421,7 +466,7 @@
       if(!(typeof OPSMODE!=='undefined'&&OPSMODE)){
         const vis=k=>{const x=SEC.find(v=>v[0]===k);return x&&(!x[1]||!isClientP);};
         const item=k=>`<div class="gn-item sec ${CUR_TAB===k?'on':''}" onclick="showTab('${k}')">
-            ${SEC_ICO[k]}<span>${TAB_LABELS[k]}</span>${k==='meetings'&&ROLE==='advisor'?'<i class="gn-dot" title="סיכום פגישה ממתין לאישור"></i>':''}
+            ${SEC_ICO[k]}<span>${TAB_LABELS[k]}</span>
           </div>`;
         const seg=(title,keys)=>{
           const ks=keys.filter(vis);
@@ -432,19 +477,28 @@
       }
       // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
       if(typeof OPSMODE==='undefined'||!OPSMODE){
+      /* לבעל העסק הסרגל הוא שלושה יעדים בלבד: הדשבורד, הפגישות והתזרים שקרה.
+         מעקב ופערים ותזרים עתידי הם כלי העבודה של היועץ והמתפעל — לא שלו. */
+      if(!isClientP){
       html+=`<div class="gn-sec-h">תזרים</div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='budget'?'on':''}" onclick="showTab('budget')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           <span>מעקב ופערים</span></div>`;
-      html+=`<div class="gn-item sec ${CUR_TAB==='past'?'on':''}" onclick="showTab('past')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
-          <span>תזרים עבר</span></div>`;
-      html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
-      /* תכנון חשבונאי ותשלומי ספקים — כלי עבודה של היועץ והמתפעל, לא של בעל העסק */
-      if(!isClientP){
+      }
+      /* תכנון פיננסי לפני תמונת תזרים: קודם מגדירים ומתכננים, ואז מסתכלים
+         על מה שקרה. תכנון פיננסי ותשלומי ספקים הם כלי עבודה של היועץ
+         והמתפעל — לא של בעל העסק. */
+      if(!isClientP)
         html+=`<div class="gn-item sec ${CUR_TAB==='acct'?'on':''}" onclick="showTab('acct')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
             <span>${TAB_LABELS.acct}</span></div>`;
+      html+=`<div class="gn-item sec ${CUR_TAB==='past'?'on':''}" onclick="showTab('past')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
+          <span>${TAB_LABELS.past}</span></div>`;
+      /* תזרים עתידי ותשלומי ספקים ולקוחות הם כלי העבודה של מנהל התזרים.
+         ליועץ הם רעש בסרגל — הוא צורך את התוצאה, לא מזין אותה. */
+      if(ROLE!=='advisor'&&!isClientP){
+        html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
         html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
       }
       // ליווי — פריט בודד, בלי כותרת קבוצה
@@ -461,50 +515,87 @@
       /* למנהל התזרים הסרגל נושא גם את רשימת החברות, והיא העבודה עצמה.
          לכן היעדים שלו הם שורת אייקונים בגובה קבוע — אפשר להוסיף עוד בלי
          שהרשימה תרד. הפעיל נושא את שמו, והשאר נחשפים בריחוף. */
-      const iconNav=(ROLE==='manager');
-      html=iconNav
-        ? `<div class="gn-row">`+gnavItems().map(it=>`
-            <button class="gn-i ${GNAV===it.k?'on':''}" onclick="${it.go}" title="${it.l}" aria-label="${it.l}">
-              ${GNAV_ICO[it.k]}${GNAV===it.k?`<b>${it.l}</b>`:''}</button>`).join('')+`</div>`
-        : gnavItems().map(it=>`
+      /* אותו סרגל לשני התפקידים — אין הבדל. קודם למנהל הייתה שורת
+         אייקונים כדי לפנות מקום לתור, ועכשיו התור עצמו קומפקטי. */
+      html=gnavItems().map(it=>`
         <div class="gn-item ${GNAV===it.k?'on':''}" onclick="${it.go}">${GNAV_ICO[it.k]}<span>${it.l}</span></div>`).join('');
     }
-    // מנהל תזרים: תור התפעול בסרגל — רק במסך הראשי (בתוך חברה הסרגל שייך לחברה)
-    if(typeof ROLE!=='undefined'&&ROLE==='manager'&&GNAV==='ops'&&typeof qRule==='function'){
-      /* רשימה שטוחה של כל החברות — הסינון לפי סטטוס עבר לדרופדאון בסרגל העליון,
-         ולכן אין כאן יותר מתגי מצב, אין קיפול של "הושלמו", ואין קוביה מסביב לכל חברה. */
-      const order=CLIENTS.map((c,i)=>i)
-        .filter(i=>typeof firmOk!=='function'||firmOk(CLIENTS[i]))
-        .filter(i=>typeof statOk!=='function'||statOk(CLIENTS[i]))
-        .filter(i=>!MGR_FILTER||CLIENTS[i].mgr===MGR_FILTER)
-        .sort((a,b)=>opsqRank(a)-opsqRank(b));
-      const qrow=i=>{
-        const c=CLIENTS[i], k='c'+i, st0=coState(c);
-        const tot=(c.tasks||[]).length, doneT=(c.tasks||[]).filter(t=>t.done).length;
-        let st='wait';
-        if(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k) st='check';
-        else if(opsDoneSet.has(k)) st='done';
-        else if(opsAccum[k]||doneT>0) st='prog';
-        else if(c.opsAlert) st='alert';
-        else if(st0!=='active'&&st0!=='trial') st='off';
-        const sub = (st0==='active'||st0==='trial') ? (c.mgr||'') : (CO_ST_LBL[st0]||'');
-        return `<div class="gn-q flat ${opsDoneSet.has(k)?'is-done':''}" onclick="selectClient(${i})" title="${c.name} — לדשבורד החברה">
-          <span class="dbq-dot ${st}"></span>
-          <div class="gn-qb">
-            <div class="gn-qn"><span class="nm">${c.name}</span></div>
-            <div class="gn-qm"><span class="nm">${sub}</span>${c.product?prodLogo(c.product,'sm'):''}</div>
-          </div>
-          <span class="gn-biz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></span>
-        </div>`;};
-      const nDone=order.filter(i=>opsDoneSet.has('c'+i)).length;
-      html+=`<div class="gn-qwrap plain">
-        <div class="gn-qh"><span class="qh-t">${STAT_FILTER?(CO_ST_LBL[STAT_FILTER]||'חברות'):'כל החברות'}</span><b class="qh-n">${order.length}</b>
-          ${nDone?`<span class="qh-done">${nDone===1?'אחת הושלמה':nDone+' הושלמו'}</span>`:''}</div>
-        <div class="gn-qlist">
-          ${order.map(qrow).join('')||'<div class="gn-qempty">אין חברות בסינון הזה</div>'}
+
+    /* ===== רשימת הלקוחות בסרגל — הדלת לחברה =====
+       למנהל התזרים הרשימה כבר קיימת (תור התפעול למטה). ליועץ לא הייתה
+       אף דלת מכוונת: כדי להיכנס לחברה היה צריך לדעת לחפש אותה בפס
+       העליון, וזה לא מתגלה מעצמו. אותן שורות בדיוק (.gn-q flat) —
+       לא רכיב חדש, הרחבה של מה שקיים.
+       לא מוצג בתוך חברה (שם הסרגל שייך לחברה), לא במצב תפעול
+       (הניווט נעול) ולא לבעל העסק (הוא עצמו החברה). */
+    const inCo = (SCOPE==='client' && GNAV==='client');
+    const railList = (ROLE==='advisor'||ROLE==='manager') && !inCo
+                     && !(typeof OPSMODE!=='undefined'&&OPSMODE);
+    if(railList){
+      const q=(ADVQ||'').trim();
+      /* למנהל התזרים נשמרים הסינון והמיון שלו — התור הוא העבודה שלו.
+         מה שהשתנה זו רק הצורה: אותן שורות של הסרגל אצל היועץ. */
+      let list=CLIENTS.map((c,i)=>({c,i}));
+      if(ROLE==='manager'){
+        list=list.filter(x=>typeof firmOk!=='function'||firmOk(x.c))
+                 .filter(x=>typeof statOk!=='function'||statOk(x.c))
+                 .filter(x=>!MGR_FILTER||x.c.mgr===MGR_FILTER)
+                 .sort((a,b)=>opsqRank(a.i)-opsqRank(b.i));
+      }else{
+        /* אותם מסננים של הפס העליון — חברת הייעוץ, מנהל התזרים והסטטוס.
+           בלעדיהם הבורר בפס לא היה משפיע על הסרגל של היועץ. */
+        list=list.filter(x=>typeof coActive!=='function'||coActive(x.c))
+                 .filter(x=>typeof firmOk!=='function'||firmOk(x.c))
+                 .filter(x=>typeof statOk!=='function'||statOk(x.c))
+                 .filter(x=>typeof MGR_FILTER==='undefined'||!MGR_FILTER||x.c.mgr===MGR_FILTER);
+      }
+      list=list.filter(x=>!q||x.c.name.includes(q)||(x.c.mgr||'').includes(q)||String(x.c.hp||'').includes(q));
+      /* אותו מבנה של המעטפת בג'מפה: עוטף עם קו מפריד, בתוכו תיבת
+         חיפוש אחת (הזכוכית בתוך הקופסה) ומתחתיה הרשימה. */
+      html+=`<div class="cl-wrap">
+        <div class="rail-search cl-q">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+          <input id="advQ" placeholder="חיפוש לקוח" autocomplete="off" value="${q.replace(/"/g,'&quot;')}" oninput="advQSet(this.value)">
         </div>
-      </div>`;
+        <div class="cl-list">`;
+      /* הסרגל נקי: שם ושורת משנה. בלי נקודות, בלי מונים ובלי התראות —
+         ההתראות חיות במסכים שנועדו להן, לא בניווט. */
+      /* שורת המשנה נושאת את הפגישה הבאה — היא מה שמעניין את היועץ,
+         בדיוק כמו בג'מפה. אם אין פגישה, נופלים למנהל התזרים. */
+      const D=(d)=>{const p=String(d||'').split('.');return p.length===3?new Date(+p[2],p[1]-1,+p[0]):null;};
+      const TODAY=new Date(2026,6,2);
+      const nextOf=nm=>{
+        if(typeof MEETINGS==='undefined') return null;
+        return MEETINGS.filter(m=>m.client===nm&&m.status==='upcoming')
+          .map(m=>({m,d:D(m.date)})).filter(x=>x.d&&x.d>=TODAY)
+          .sort((a,b)=>a.d-b.d)[0];
+      };
+      const when=x=>{
+        const days=Math.round((x.d-TODAY)/864e5), t=(x.m.time||'').split('-')[0];
+        return days===0?'היום '+t : days===1?'מחר '+t : x.m.date.slice(0,5)+' '+t;
+      };
+      html+= list.length ? list.map(({c,i})=>{
+        const st0=(typeof coState==='function')?coState(c):'active';
+        const nx=nextOf(c.name);
+        /* ליועץ מעניינת רק הפגישה — לא מי מתפעל את החברה.
+           למנהל התפעול זה הפוך: המתפעל הוא העבודה שלו. */
+        const sub = ROLE==='advisor'
+          ? (nx ? when(nx) : 'לא נקבעה פגישה')
+          : (nx ? when(nx)
+               : (st0==='active'||st0==='trial') ? (c.mgr||'')
+               : ((typeof CO_ST_LBL!=='undefined'&&CO_ST_LBL[st0])||''));
+        /* מסומן רק כשבאמת נמצאים בלקוח — CUR הוא 0 כברירת מחדל,
+           ובלי התנאי הלקוח הראשון נראה נבחר גם במבט על כל התיק. */
+        const cur = (SCOPE==='client' && i===CUR);
+        return `<div class="cl-row ${cur?'on':''}" onclick="selectClient(${i})">
+          <div class="cl-n">${c.name}</div>
+          <div class="cl-s">${sub}</div>
+        </div>`;}).join('')
+        : `<div class="adv-cl-none">לא נמצאה חברה שמתאימה ל"${q}"</div>`;
+      html+=`</div></div>`;
     }
+    /* תור התפעול הישן הוסר: הרשימה שלמעלה מחליפה אותו ומשמרת את
+       הסינון והמיון. אותו סרגל לשני התפקידים. */
     list.innerHTML=html;
     // הכל למעלה, בתפריט אחד — אין אזור תחתון
     document.getElementById('gnavBottom').innerHTML='';

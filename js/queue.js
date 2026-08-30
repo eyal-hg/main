@@ -20,19 +20,36 @@
   let PROD_FILTER=new Set();
   /* פילטר מנהלי תזרים — הדרופדאון בסרגל העליון */
   let MGR_FILTER='', FIRM_FILTER='';
-  const firmOk=c=>!FIRM_FILTER||c.firm===FIRM_FILTER;
+  /* "יועץ אחראי" הוא adv — האדם שאחראי על הלקוח, לא firm שהוא המשרד.
+     לכל משרד יש כמה יועצים (ראו ADVS ב-js/data.js). */
+  /* המשרד של המשתמש המחובר. ליועץ זה גבול קשיח: הוא לא רואה לקוחות
+     של משרדי ייעוץ אחרים, גם כשאין סינון פעיל. */
+  const MY_ADV_FIRM='שחר ייעוץ עסקי';
+  const firmOk=c=>{
+    if(typeof ROLE!=='undefined'&&ROLE==='advisor'&&c.firm!==MY_ADV_FIRM) return false;
+    return !FIRM_FILTER||c.adv===FIRM_FILTER;
+  };
   function toggleFirm(e){
     e.stopPropagation();
     const m=document.getElementById('firmMenu');
-    const firms=[...new Set(CLIENTS.map(c=>c.firm).filter(Boolean))];
-    m.innerHTML=`<div class="prod-opt ${FIRM_FILTER===''?'on':''}" onclick="pickFirm('')">כל חברות הייעוץ</div>`+
-      firms.map(f=>`<div class="prod-opt ${FIRM_FILTER===f?'on':''}" onclick="pickFirm('${f}')">${f} <span class="mgr-n">${CLIENTS.filter(c=>c.firm===f).length}</span></div>`).join('');
+    /* יועץ רואה רק את המשרד שלו — ובלי כותרת קיבוץ, כי יש רק אחד.
+       מנהל התפעול משרת את כל המשרדים, ולכן אצלו הרשימה מקובצת. */
+    const MY_FIRM = (typeof MY_ADV_FIRM!=='undefined') ? MY_ADV_FIRM : 'שחר ייעוץ עסקי';
+    const solo = (ROLE==='advisor');
+    const pool = solo ? CLIENTS.filter(c=>c.firm===MY_FIRM) : CLIENTS;
+    const byFirm={};
+    pool.forEach(c=>{ if(!c.adv) return;
+      (byFirm[c.firm||'—'] = byFirm[c.firm||'—'] || {})[c.adv] = ((byFirm[c.firm||'—']||{})[c.adv]||0)+1; });
+    m.innerHTML=`<div class="prod-opt ${FIRM_FILTER===''?'on':''}" onclick="pickFirm('')">כל היועצים <span class="mgr-n">${pool.length}</span></div>`+
+      Object.keys(byFirm).map(f=>(solo?'':`<div class="prod-grp">${f}</div>`)+
+        Object.keys(byFirm[f]).sort().map(a=>`<div class="prod-opt ${FIRM_FILTER===a?'on':''}" onclick="pickFirm('${a}')">${a} <span class="mgr-n">${byFirm[f][a]}</span></div>`).join('')).join('');
     m.classList.toggle('show');
   }
   function pickFirm(f){
     FIRM_FILTER=f;
     document.getElementById('firmMenu').classList.remove('show');
-    document.getElementById('firmDdl').innerHTML=(f||'כל חברות הייעוץ')+' <span>▾</span>';
+    document.getElementById('firmDdl').innerHTML=(f==='—'?'לא משויך':(f||'כל היועצים'))+' <span>▾</span>';
+    if(typeof renderClientRow==='function') renderClientRow();
     if(typeof renderGlobalRail==='function')renderGlobalRail();
     if(document.getElementById('opsQueueView').style.display!=='none')renderOpsQueue();
     if(document.getElementById('clientsView').style.display!=='none'&&typeof renderClientsView==='function')renderClientsView();
@@ -343,7 +360,7 @@
     {time:'09:45', dur:'35 דק׳', kind:'ops',    title:'תפעול — מטעי גבעון',        sub:'הושלם · 2 קיטלוגים אושרו',  done:true,  co:2},
     {time:'10:30', dur:'30 דק׳', kind:'task',   title:'בדיקת נגררות יוני — 5 חברות', sub:'משימה שלי',               done:false, pri:'high'},
     {time:'11:30', dur:'20 דק׳', kind:'client', title:'עדכון תקציב שיווק ליולי',    sub:'משימת לקוח · אנרגי אינטרנשיונל', done:false},
-    {time:'13:00', dur:'45 דק׳', kind:'meet',   title:'פגישת צוות שבועית',          sub:'עם לירון בן כליפא · Zoom',  done:false, link:'Zoom'},
+    {time:'13:00', dur:'45 דק׳', kind:'meet',   title:'פגישת צוות שבועית',          sub:'עם טל מלקר · Zoom',  done:false, link:'Zoom'},
     {time:'15:00', dur:'45 דק׳', kind:'meet',   title:'פגישת תזרים — משה עובד',     sub:'מסונכרנת ללקוח · Google Meet', done:false, link:'Meet', client:'משה עובד'},
     {time:'14:30', dur:'25 דק׳', kind:'task',   title:'מעקב חוב — רימון יצחק',      sub:'משימה שלי · 421,050 ₪',    done:false, pri:'high'},
     {time:'16:00', dur:'30 דק׳', kind:'task',   title:'שליחת עדכוני תזרים ללקוחות', sub:'משימה שלי · 4 חברות נותרו', done:false, pri:'mid'},
@@ -363,7 +380,7 @@
     {d:2,time:'13:00',kind:'task',title:'סגירת דוחות יוני',done:true},
     {d:3,time:'09:00',kind:'ops', title:'תפעול — רימון יצחק',done:true},
     {d:4,time:'11:00',kind:'task',title:'עדכוני תזרים ללקוחות',done:true},
-    {d:4,time:'15:00',kind:'meet',title:'שיחת סיכום — לירון',done:true},
+    {d:4,time:'15:00',kind:'meet',title:'שיחת סיכום — טל',done:true},
   ];
   /* שבוע הבא — מתוכנן */
   const MC_WEEK_NEXT=[

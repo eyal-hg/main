@@ -74,12 +74,12 @@
       task:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
       ops:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'};
     const cards=[
-      {k:'meet', cls:'w25 h-low', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון אשכנזי · יועץ HK', badge:'10 יולי · 14:00', body:`
+      {k:'meet', cls:'w25 h-low', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון שחר · יועץ HK', badge:'10 יולי · 14:00', body:`
         <div class="cx-meet">
           <div class="cxm-date"><b>10</b><span>יולי</span></div>
           <div class="cxm-b">
             <div class="cxm-t">סקירת רבעון Q3</div>
-            <div class="cxm-d">עם אילון אשכנזי · יועץ HK</div>
+            <div class="cxm-d">עם אילון שחר · יועץ HK</div>
             <div class="cxm-meta"><span dir="ltr">14:00–15:00</span><span class="cxm-zoom">Zoom</span><span>בעוד 4 ימים</span></div>
           </div>
         </div>
@@ -184,7 +184,7 @@
       return {t:'השבוע ב-HK הושלם תפעול מלא (32 דק׳), קוטלגו 4 תנועות חדשות, טופלה חשבונית סונול, נשלח אליך עדכון תזרים והוסר חיוב כפול של 3,540 ₪. הפירוט המלא בכרטיס "מה HK עשתה עבורך החודש".'};
     }
     if(q.includes('פגישה')){
-      return {t:'הפגישה הבאה שלך: סקירת רבעון Q3 עם אילון אשכנזי ב-10.07 בשעה 14:00. רוצה שאשלח תזכורת יום לפני?'};
+      return {t:'הפגישה הבאה שלך: סקירת רבעון Q3 עם אילון שחר ב-10.07 בשעה 14:00. רוצה שאשלח תזכורת יום לפני?'};
     }
     return {t:'שאלה טובה. על בסיס נתוני התזרים של '+c.name+': היתרה הנוכחית '+(BAL[c.name]||'—')+' ₪, התקציב בניצול '+(c.budgetPct||0)+'%. אפשר לשאול אותי על יתרות, חריגות, תקציב, מסמכים או פגישות של החברה.'};
   }

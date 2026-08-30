@@ -104,8 +104,48 @@
       if(typeof REC!=='undefined'&&REC.on&&typeof recStop==='function') recStop();
     }
     document.querySelectorAll('.tab.advisor-only').forEach(t=>t.style.display=client?'none':'');
-    document.querySelector('.top-mid').style.display = isOperator ? 'flex' : 'none';   /* מנהלי תזרים / מוצרים — כלי משרד בלבד */
-    document.querySelector('.switcher').style.display = single ? 'none' : 'flex';   /* חברה אחת — אין מה להחליף */
+    /* הלוגו בפס העליון משתנה לפי מי מסתכל:
+       · יועץ  — HK Studio, שם המוצר שלו (studio_logo.png · 1572×412)
+       · לקוח  — הלוגו שלו. במוצר זו הטמעה לבנה: הלקוח רואה את המותג
+                 של עצמו, לא את שלנו. כאן מציין מקום, כדי שהיועץ יבין
+                 שזה מה שהלקוח שלו יראה.
+       · מנהל  — חזות קריספין */
+    const _lg=document.getElementById('hkLogo'), _lw=document.querySelector('.logo');
+    if(_lg&&_lw){
+      const isClient = (ROLE==='client1'||ROLE==='clientN');
+      let ph=document.getElementById('cliLogoPh');
+      if(isClient){
+        _lg.style.display='none';
+        if(!ph){ ph=document.createElement('span'); ph.id='cliLogoPh'; ph.className='logo-ph';
+          ph.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="9" cy="9" r="1.4"/></svg>הלוגו שלך';
+          _lw.appendChild(ph); }
+        ph.style.display='';
+      }else{
+        if(ph) ph.style.display='none';
+        _lg.style.display='';
+        const studio = (ROLE==='advisor');
+        _lg.src = studio ? 'studio_logo.png' : 'logo.b96db34a449db8db7eaea328a06ad8e2.svg';
+        _lg.alt = studio ? 'HK Studio' : 'HK חזות קריספין';
+      }
+    }
+    /* מי מסתכל — השם והתפקיד בפס העליון. האווטאר הוא ראשי תיבות;
+       במוצר אמיתי נכנסת כאן תמונת הפרופיל במקום (ה-<i> תומך ב-<img>). */
+    /* המשתמש המחובר קבוע — בורר התצוגה משנה מה רואים, לא מי מחובר. */
+    const _ma=document.getElementById('meAv');
+    /* תמונת הפרופיל: avatar.png אם הועלתה, אחרת האיור avatar.svg */
+    if(_ma&&!_ma.querySelector('img'))
+      _ma.innerHTML='<img src="avatar.png" alt="" onerror="this.onerror=null;this.src=\'avatar.svg\'">';
+
+    /* מנהלי תזרים / מוצרים / סטטוסים הם כלי המשרד של מנהל התפעול.
+       ליועץ נשאר רק "יועץ אחראי" — הוא רלוונטי לו בתיק. */
+    const advOnly = (ROLE==='advisor');
+    document.querySelector('.top-mid').style.display = (isOperator||advOnly) ? 'flex' : 'none';
+    ['mgrDdl','prodDdl','statDdl'].forEach(id=>{
+      const w=document.getElementById(id); if(w&&w.parentElement)
+        w.parentElement.style.display = advOnly ? 'none' : '';
+    });
+    /* מחפש הלקוחות הוסר מהפס — נשמר null כדי שהטעינה לא תיפול */
+    const _sw=document.querySelector('.switcher'); if(_sw)_sw.style.display = single ? 'none' : 'flex';
     if(r==='manager'||r==='advisor') selectPortfolio();   /* הבית: יועץ = היום, מנהל = תפעול */
     else if(r==='clientN') selectPortfolio();              /* לקוח רב-חברות = מבט מאוחד */
     else selectClient(0);                                  /* לקוח יחיד = דשבורד החברה */
@@ -1514,7 +1554,7 @@
       {type:'sheet', kind:'edit', sheet:'תקבולים מלקוחות · צפי', who:'רות אלמוג', time:'היום 08:55',
         field:'מרכז הבנייה · 12.08', desc:'תקבול מרכז הבנייה', old:'17,500', new:'19,800'},
       {type:'overdraft', text:'חשבון מרכנתיל 69855155 נמצא בחריגה ע"ס 42,445 ₪ ממסגרת האשראי. נא טיפול בהקדם.', time:'היום 09:14'},
-      {type:'msg', who:'לירון', thread:['תודה על העדכון!'], time:'אתמול', done:true, result:'טופל · ✓ נשלח ללקוח', handledAt:'אתמול 16:20'},
+      {type:'msg', who:'טל', thread:['תודה על העדכון!'], time:'אתמול', done:true, result:'טופל · ✓ נשלח ללקוח', handledAt:'אתמול 16:20'},
       {type:'ai', acct:'mz295', op:'הוצאת ביטוח · 890 ₪-', cur:'כללי', rec:'ביטוחים', reason:'לפי תיאור הספק.', src:'HISTORY', time:'אתמול', done:true, result:'אושר — קוטלג בביטוחים', handledAt:'אתמול 15:05'},
     ];
     CLIENTS[1].tasks=[
@@ -2978,8 +3018,8 @@
     if(ENT_TYPE2[key]==='שיק'&&!(rf&&rf.value.trim())){toast('שיק חייב אסמכתא — מספר השיק');rf&&rf.focus();return;}
     const dv=(dt&&dt.value.trim())||'';
     DATA_TABLES[name].rows.push(dv
-      ?{d:dv, t:d.value.trim(), a:a.value, pay:ENT_TYPE2[key], ref:ENT_TYPE2[key]==='שיק'?rf.value.trim():'', src:ENT_TYPE2[key]==='שיק'?'ידני':'', by:'לירון בן כליפא', ch:'mgr', st:'flow'}
-      :{d:'', t:d.value.trim(), a:a.value, pay:ENT_TYPE2[key], ref:ENT_TYPE2[key]==='שיק'?rf.value.trim():'', by:'לירון בן כליפא', ch:'mgr', st:'nodate', rec:'25.08.2026', recWhy:'לפי תנאי התשלום של המוטב'});
+      ?{d:dv, t:d.value.trim(), a:a.value, pay:ENT_TYPE2[key], ref:ENT_TYPE2[key]==='שיק'?rf.value.trim():'', src:ENT_TYPE2[key]==='שיק'?'ידני':'', by:'טל מלקר', ch:'mgr', st:'flow'}
+      :{d:'', t:d.value.trim(), a:a.value, pay:ENT_TYPE2[key], ref:ENT_TYPE2[key]==='שיק'?rf.value.trim():'', by:'טל מלקר', ch:'mgr', st:'nodate', rec:'25.08.2026', recWhy:'לפי תנאי התשלום של המוטב'});
     renderEntriesView(); toast(dv?'נוסף ונצבע בתזרים':'נוסף ללא מועד — קיבל המלצת תאריך');
   }
   function entOk(b){ b.outerHTML='<span class="ent-st ok">✓ בתזרים</span>'; toast('אושר ונצבע בתזרים קדימה'); }
@@ -2987,7 +3027,7 @@
     const d=document.getElementById('entDesc'), a=document.getElementById('entAmt'), r=document.getElementById('entRef');
     if(!d||!d.value.trim()||!a.value){toast('צריך תיאור וסכום');return;}
     if(ENT_NEWTYPE==='שיק'&&!(r&&r.value.trim())){toast('שיק חייב אסמכתא — מספר השיק');r&&r.focus();return;}
-    DATA_TABLES[ENTRIES_SEL].rows.push({d:'25.08.2026', t:d.value.trim(), a:a.value, pay:ENT_NEWTYPE, ref:ENT_NEWTYPE==='שיק'?r.value.trim():'', by:'לירון בן כליפא', ch:'mgr', st:'flow'});
+    DATA_TABLES[ENTRIES_SEL].rows.push({d:'25.08.2026', t:d.value.trim(), a:a.value, pay:ENT_NEWTYPE, ref:ENT_NEWTYPE==='שיק'?r.value.trim():'', by:'טל מלקר', ch:'mgr', st:'flow'});
     renderEntriesView(); toast('נוסף ונצבע בתזרים');
   }
   function openDataTable(name,ci){
@@ -3029,9 +3069,9 @@
      מוצגות בשלב ההודעות — אותו סוג חוב: מישהו ביקש ועדיין לא קיבל.
      רק מה שהיעד שלו היום או עבר; מה שרחוק יותר נשאר במסך המשימות. */
   const ADV_TASKS={
-    0:[{t:'בדיקת העברה מפועלים 112 ללאומי 604 — 42,000 ₪', by:'לירון בן כליפא', due:'היום', late:false},
-       {t:'פילוח עלות המכר לפי ספקים — לקראת הפגישה', by:'לירון בן כליפא', due:'30.06', late:true}],
-    2:[{t:'לוודא שהתקבול ממרכז הבנייה נכנס', by:'לירון בן כליפא', due:'היום', late:false}],
+    0:[{t:'בדיקת העברה מפועלים 112 ללאומי 604 — 42,000 ₪', by:'טל מלקר', due:'היום', late:false},
+       {t:'פילוח עלות המכר לפי ספקים — לקראת הפגישה', by:'טל מלקר', due:'30.06', late:true}],
+    2:[{t:'לוודא שהתקבול ממרכז הבנייה נכנס', by:'טל מלקר', due:'היום', late:false}],
   };
   function advTasksOf(){ return (ADV_TASKS[CUR]||[]).filter(x=>!x.done); }
   function advDone(k){ const a=advTasksOf()[k]; if(!a) return; a.done=true; toast('בוצע · '+a.by+' עודכן');
@@ -3761,12 +3801,12 @@ const S=(t,cat,sc,on)=>({t,cat,sc:sc||'co',on:on||''});
 const MSGS_THREADS={
   group:{name:'תפעול · אנרגי אינטרנשיונל', ppl:[
       {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'רות אלמוג',j:'מנהלת כספים',r:'cl'},
-      {n:'אילון אשכנזי',j:'יועץ',r:'adv'},{n:'לירון בן כליפא',j:'מנהל תזרים · HK',r:'me'},
+      {n:'אילון שחר',j:'יועץ',r:'adv'},{n:'טל מלקר',j:'מנהל תזרים · HK',r:'me'},
       {n:'054-771-2280',r:'unk',unk:1},{n:'בוט HK',j:'אוטומטי',r:'bot'}], unread:2, msgs:[
     {day:'אתמול', date:'רביעי · 01.07'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'מצרף את אישור ההעברה ללדובק 🙏 [קובץ]', time:'10:12', tag:'משימת הזנה'},
-    {who:'לירון בן כליפא', job:'מנהל תזרים · HK', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
-    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'צחי, מחר ב-16:00 עוברים על התקציב לקראת הרבעון', time:'12:40'},
+    {who:'טל מלקר', job:'מנהל תזרים · HK', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
+    {who:'אילון שחר', job:'יועץ', role:'adv', t:'צחי, מחר ב-16:00 עוברים על התקציב לקראת הרבעון', time:'12:40'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'סגור. דרך אגב — סגרנו את החוזה עם מרכז הבנייה 🎉', time:'12:44'},
     {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'אני אשלח את הדוח, צחי לא מעורב בזה בדרך כלל', time:'12:51'},
     {who:'054-771-2280', role:'unk', unk:1, t:'שלום, מצרף את הצעת המחיר לליסינג החדש [PDF]', time:'12:58'},
@@ -3779,23 +3819,23 @@ const MSGS_THREADS={
     {day:'היום', date:'חמישי · 02.07'},
     {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'מעבירה את צפי התשלומים לאוגוסט [טבלה]', time:'08:55', tag:'טבלת הזנה'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'ההוראה להראל יורדת מחר', time:'11:40', tag:'נגררת'},
-    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'בוא נדבר גם על התמחור מול רימון בפגישה', time:'12:10'},
+    {who:'אילון שחר', job:'יועץ', role:'adv', t:'בוא נדבר גם על התמחור מול רימון בפגישה', time:'12:10'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'התזרים נראה צפוף החודש, אני לא אוהב לגעת במסגרת', time:'12:30'},
     {who:'054-771-2280', role:'unk', unk:1, t:'מתי נוח לכם לדבר על ההצעה?', time:'13:15'},
     {sum:{pending:4}},
   ]},
   mgmt:{name:'הנהלה · אנרגי', ppl:[
-      {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'אילון אשכנזי',j:'יועץ',r:'adv'},
+      {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'אילון שחר',j:'יועץ',r:'adv'},
       {n:'בוט HK',j:'אוטומטי',r:'bot'}], unread:0, msgs:[
     {day:'שני', date:'שני · 29.06'},
-    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'צחי, לפני שנרחיב — כדאי שנסגור את המסגרת מול הבנק', time:'09:10'},
+    {who:'אילון שחר', job:'יועץ', role:'adv', t:'צחי, לפני שנרחיב — כדאי שנסגור את המסגרת מול הבנק', time:'09:10'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'אני לא רוצה להגדיל מסגרת, זה נראה לי כמו הודאה בכישלון', time:'09:25'},
-    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'זה כלי, לא הצהרה. נדבר על זה בפגישה', time:'09:31'},
+    {who:'אילון שחר', job:'יועץ', role:'adv', t:'זה כלי, לא הצהרה. נדבר על זה בפגישה', time:'09:31'},
     {sum:{ran:'02:10', n:6, lines:[
       S('מסרב להגדיל את המסגרת — רואה בהגדלה הודאה בכישלון','מצב תזרימי'),
       S('רו״ח חיצוני משפיע על החלטות מימון — לתאם לפני הצעות גדולות','הקשר אישי ואמון','pr','צחי עובד')]}},
     {day:'היום', date:'חמישי · 02.07'},
-    {who:'אילון אשכנזי', job:'יועץ', role:'adv', t:'העברתי לרו״ח את הנתונים לקראת הרבעון', time:'09:40'},
+    {who:'אילון שחר', job:'יועץ', role:'adv', t:'העברתי לרו״ח את הנתונים לקראת הרבעון', time:'09:40'},
     {sum:{pending:1}},
   ]},
 };

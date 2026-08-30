@@ -3,18 +3,18 @@
   // status: upcoming | ai (הוקלטה, ה-AI מעבד) | summary (סיכום ממתין לאישור) | done | noshow
   // rec = משך ההקלטה — כל פגישה מוקלטת ומתועדת אוטומטית
   const MEETINGS=[
-    {name:'פגישה שוטפת - סקירת תזרים', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'02.07.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'ai', rec:'46 דק׳'},
-    {name:'פגישה חודשית - יולי (Money+)', client:'משה עובד', who:'משה עובד', date:'02.07.2026', time:'16:00-17:00', adv:'אילון אשכנזי', status:'upcoming', link:'zoom'},
-    {name:'פ.ע - חודש יוני', client:'אנרגי אינטרנשיונל', who:null, date:'01.06.2026', time:'11:00-12:00', adv:'אילון אשכנזי', status:'summary', rec:'58 דק׳'},
-    {name:'פגישת עבודה - קורס מנחות', client:'מטעי גבעון', who:'יעל גבעון', date:'12.05.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'summary', rec:'52 דק׳'},
-    {name:'פגישה חודשית - יולי (Money+)', client:'מטעי גבעון', who:'יעל גבעון', date:'15.07.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'upcoming'},
-    {name:'סקירת רבעון Q3', client:'משה עובד', who:'משה עובד', date:'10.07.2026', time:'14:00-15:00', adv:'אילון אשכנזי', status:'upcoming'},
-    {name:'לימוד בנדל - לחיות בתשוקה', client:'אנרגי גולני', who:'דורון גולני', date:'05.05.2026', time:'09:00-10:00', adv:'אילון אשכנזי', status:'done', rec:'55 דק׳'},
-    {name:'פגישה חודשית - מרץ', client:'רימון יצחק', who:'רימון יצחק', date:'17.03.2026', time:'12:00-13:00', adv:'אילון אשכנזי', status:'done', rec:'61 דק׳'},
-    {name:'פ.ע - חודש יוני', client:'אנרגי גולני', who:'דורון גולני', date:'24.06.2026', time:'10:30-11:30', adv:'אילון אשכנזי', status:'noshow'},
-    {name:'המשך סקירה — החלטות תקציב', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'02.07.2026', time:'17:00-17:30', adv:'אילון אשכנזי', status:'upcoming'},
-    {name:'פגישה חודשית - אוגוסט', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'05.08.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'upcoming'},
-    {name:'פ.ע - חודש מאי', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'05.05.2026', time:'11:00-12:00', adv:'אילון אשכנזי', status:'done', rec:'49 דק׳',
+    {name:'פגישה שוטפת - סקירת תזרים', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'02.07.2026', time:'09:00-10:00', adv:'אילון שחר', status:'ai', rec:'46 דק׳'},
+    {name:'פגישה חודשית - יולי (Money+)', client:'משה עובד', who:'משה עובד', date:'02.07.2026', time:'16:00-17:00', adv:'אילון שחר', status:'upcoming', link:'zoom'},
+    {name:'פ.ע - חודש יוני', client:'אנרגי אינטרנשיונל', who:null, date:'01.06.2026', time:'11:00-12:00', adv:'אילון שחר', status:'summary', rec:'58 דק׳'},
+    {name:'פגישת עבודה - קורס מנחות', client:'מטעי גבעון', who:'יעל גבעון', date:'12.05.2026', time:'10:00-11:00', adv:'אילון שחר', status:'summary', rec:'52 דק׳'},
+    {name:'פגישה חודשית - יולי (Money+)', client:'מטעי גבעון', who:'יעל גבעון', date:'15.07.2026', time:'10:00-11:00', adv:'אילון שחר', status:'upcoming'},
+    {name:'סקירת רבעון Q3', client:'משה עובד', who:'משה עובד', date:'10.07.2026', time:'14:00-15:00', adv:'אילון שחר', status:'upcoming'},
+    {name:'לימוד בנדל - לחיות בתשוקה', client:'אנרגי גולני', who:'דורון גולני', date:'05.05.2026', time:'09:00-10:00', adv:'אילון שחר', status:'done', rec:'55 דק׳'},
+    {name:'פגישה חודשית - מרץ', client:'רימון יצחק', who:'רימון יצחק', date:'17.03.2026', time:'12:00-13:00', adv:'אילון שחר', status:'done', rec:'61 דק׳'},
+    {name:'פ.ע - חודש יוני', client:'אנרגי גולני', who:'דורון גולני', date:'24.06.2026', time:'10:30-11:30', adv:'אילון שחר', status:'noshow'},
+    {name:'המשך סקירה — החלטות תקציב', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'02.07.2026', time:'17:00-17:30', adv:'אילון שחר', status:'upcoming'},
+    {name:'פגישה חודשית - אוגוסט', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'05.08.2026', time:'10:00-11:00', adv:'אילון שחר', status:'upcoming'},
+    {name:'פ.ע - חודש מאי', client:'אנרגי אינטרנשיונל', who:'צחי עובד', date:'05.05.2026', time:'11:00-12:00', adv:'אילון שחר', status:'done', rec:'49 דק׳',
       sum:['ניתוח רבעון מרץ-מאי: הכנסות 116/140/120 אש״ח — יציבות תזרימית מלאה חרף גידול של 40% בהכנסות',
            'זוהה פער: כרטיס האשראי החדש של ״מקס״ אינו מחובר ל-Bizibox — מקשה על מעקב הוצאות השיווק',
            'הוחלט: החלפת פונקציית שירות הלקוחות — חיסכון של כ-2,880 ₪ לחודש',
@@ -23,7 +23,7 @@
       memUpd:[{c:'מצב תזרימי', t:'מסגרת 150K בניצול מלא — הוגדר יעד מסגרת נוספת'},
               {c:'כאבי לקוח', t:'נוסף: עומס תפעולי על צחי — מגייסים מחליפה'},
               {c:'יעדים והסכמות', t:'מסגרת 100 א׳ ₪ עד 15.7 · באחריות HK'}]},
-    {name:'פגישה חודשית - אפריל', client:'אנרגי אינטרנשיונל', who:'צחי עובד + רות אלמוג', date:'03.04.2026', time:'10:00-11:00', adv:'אילון אשכנזי', status:'done', rec:'57 דק׳',
+    {name:'פגישה חודשית - אפריל', client:'אנרגי אינטרנשיונל', who:'צחי עובד + רות אלמוג', date:'03.04.2026', time:'10:00-11:00', adv:'אילון שחר', status:'done', rec:'57 דק׳',
       sum:['עודכן תקציב אפריל עם הוצאות חד-פעמיות לריטריט (ירוק עז 7,500 ₪, קייטרינג 5,000 ₪)',
            'זוהה חיוב כפול מ-Payment טכנולוגיות — נפתח לבדיקה מול הספק',
            'רות הציגה את טבלת מעקב המכירות — הוחלט על עדכון שבועי קבוע'],
@@ -407,7 +407,7 @@
     MEETINGS.unshift({name:document.getElementById('mnTitle').value||'פגישה', client:c.name,
       who:window._mnWho||whoUsers()[0],
       date:d[2]+'.'+d[1]+'.'+d[0], time:document.getElementById('mnFrom').value+'-'+document.getElementById('mnTo').value,
-      adv:'אילון אשכנזי', status:'upcoming'});
+      adv:'אילון שחר', status:'upcoming'});
     meetNewClose(); renderMeetings();
     toast('הפגישה נקבעה'+(document.getElementById('mnRemind').checked?' · נשלח אזכור ללקוח':'')+(document.getElementById('mnSync').checked?' · סונכרנה ליומן':''));
     if(rec) startMeetRec(c.name);
@@ -505,7 +505,7 @@
       clearInterval(MREC.iv);
       const mins=Math.max(1,Math.round(MREC.sec/60));
       if(MREC.mi!=null&&MEETINGS[MREC.mi]){ MEETINGS[MREC.mi].status='ai'; MEETINGS[MREC.mi].rec=mins+' דק׳'; }
-      else MEETINGS.unshift({name:'פגישה מוקלטת', client:MREC.client, date:'02.07.2026', time:'עכשיו', adv:'אילון אשכנזי', status:'ai', rec:mins+' דק׳'});
+      else MEETINGS.unshift({name:'פגישה מוקלטת', client:MREC.client, date:'02.07.2026', time:'עכשיו', adv:'אילון שחר', status:'ai', rec:mins+' דק׳'});
       MREC=null;
       document.getElementById('mrecBar').style.display='none';
       document.body.classList.remove('bar-on');
@@ -620,9 +620,9 @@ const MEETS_CAD=[
   {ci:4, c:'רימון יצחק',        prod:'money+', last:'15.06',  next:'מחר 10:00',       ok:true},
 ];
 const MEETS_CALLS=[
-  {d:'היום 11:15',  c:'אנרגי גולני',  who:'לירון בן כליפא', t:'עדכון חומרים לתזרים', dur:'6 דק׳',  mem:1, st:'ok'},
+  {d:'היום 11:15',  c:'אנרגי גולני',  who:'טל מלקר', t:'עדכון חומרים לתזרים', dur:'6 דק׳',  mem:1, st:'ok'},
   {d:'היום 09:40',  c:'משה עובד',     who:'שמרית טובול',    t:'השלמת הרשאות בנק',    dur:'9 דק׳',  mem:0, st:'proc'},
-  {d:'אתמול 15:20', c:'מטעי גבעון',   who:'לירון בן כליפא', t:'בירור חריגת תקציב',   dur:'11 דק׳', mem:2, st:'ok'},
+  {d:'אתמול 15:20', c:'מטעי גבעון',   who:'טל מלקר', t:'בירור חריגת תקציב',   dur:'11 דק׳', mem:2, st:'ok'},
 ];
 /* שיחות היועץ — מהסים של HK: כל שיחה מוקלטת, מתומללת ומעדכנת זיכרון */
 const MEETS_CALLS_ADV=[

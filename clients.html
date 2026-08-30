@@ -456,16 +456,16 @@ const NUM = n => n.toLocaleString('en-US');
 const TOTAL = 2505858;
 
 let CO = [
- {id:'energy', nm:'אנרגי אינטרנשיונל', hp:'511327876', mgr:'לירון בן כליפא', prod:'Money', pc:'money',
+ {id:'energy', nm:'אנרגי אינטרנשיונל', hp:'511327876', mgr:'טל מלקר', prod:'Money', pc:'money',
   bal:1029208, trend:'dn', st:'חריגה צפויה בעו״ש בעוד 9 ימים', risk:'red', grp:'live', mat:'02.07', warn:null,
   focus:'cash'},
- {id:'givon', nm:'מטעי גבעון', hp:'514778220', mgr:'לירון בן כליפא', prod:'Money+', pc:'moneyp',
+ {id:'givon', nm:'מטעי גבעון', hp:'514778220', mgr:'טל מלקר', prod:'Money+', pc:'moneyp',
   bal:568900, trend:'dn', st:'חריגת תקציב — 114% מהיעד', risk:'red', grp:'live', mat:'30.06', warn:null,
   focus:'budget'},
  {id:'rimon', nm:'רימון יצחק', hp:'025664109', mgr:'שמרית טובול', prod:'Money+', pc:'moneyp',
   bal:421050, trend:'up', st:'תקין — עומד ביעדים', risk:'green', grp:'live', mat:'15.06', warn:'לא הביא חומר 17 יום',
   focus:'material'},
- {id:'golani', nm:'אנרגי גולני', hp:'511200341', mgr:'לירון בן כליפא', prod:'Meeting', pc:'meet',
+ {id:'golani', nm:'אנרגי גולני', hp:'511200341', mgr:'טל מלקר', prod:'Meeting', pc:'meet',
   bal:312400, trend:'up', st:'96% מתקרת התקציב — לבדיקה השבוע', risk:'orange', grp:'live', mat:'12.06',
   warn:'לא הביא חומר 20 יום', focus:'budget'},
  {id:'moshe', nm:'משה עובד', hp:'039112774', mgr:'שמרית טובול', prod:'Money', pc:'money',
@@ -486,7 +486,7 @@ const RK = {red:'#dc4436', orange:'#c98404', green:'#13895b', cyan:'#39ABE2', gr
 (function seedPortfolio(){
   const A=['אלפא','ברק','גל','דלתא','הדר','ורד','זוהר','חורש','טל','יובל','כרמל','לביא','מגן','נוף','סהר','עומר','פלג','צור','קדם','רימון','שחף','תמר','אביב','בזלת','גפן','דקל','הראל','ורדית','זית','חמדה'];
   const B=['תעשיות','שיווק','הנדסה','לוגיסטיקה','בנייה','אחזקות','מערכות','ייבוא','מזון','טכנולוגיות','אנרגיה','רהיטים','טקסטיל','דפוס','חשמל','פלסטיק','תקשורת','רכב','נדל״ן','מתכת','אריזות','כימיקלים','ספנות','תעופה','ביטחון'];
-  const MGRS=['לירון בן כליפא','שמרית טובול','נועה ברששת','אבי מזרחי','דנה שקד','יוסי אלימלך'];
+  const MGRS=['טל מלקר','שמרית טובול','נועה ברששת','אבי מזרחי','דנה שקד','יוסי אלימלך'];
   const PRODS=[['Money','money'],['Money+','moneyp'],['Meeting','meet']];
   let s=97;
   const rnd=()=>((s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff);
@@ -587,7 +587,7 @@ const MEM = {
   co:[
    {id:'cash', t:'מצב תזרימי', up:'02.07 · מתוך פגישה חודשית', units:[
      {k:'sys', tx:'ניצול המסגרת עומד על 107%. בקצב הנוכחי צפויה חריגה בעו״ש בעוד 9 ימים, והיתרה הצפויה לסוף החודש היא 495,490- ₪.',
-      src:SRC_MEET, state:'ok', stamp:'אושר ע״י לירון · 04.07',
+      src:SRC_MEET, state:'ok', stamp:'אושר ע״י טל · 04.07',
       replies:[{tx:'צחי יודע על החריגה. סיכמנו לחזור לזה ברגע שנכנס החומר של יולי — אין טעם לפתוח את זה שוב לפני שיש נתון.',
         dt:'04.07', asrc:'שיחה מחוץ לפגישה', vis:'team'}]}
    ]},
@@ -1123,7 +1123,7 @@ function unitHTML(u,tp){
     if(MEMF==='adv') return `<div class="ctxline">◆ <b>הגרסה שלך</b> · חולקת על מה שהמערכת שמעה בנושא ${tp.t}</div>`
       + entry({k:'adv',tx:u.adv.tx,dt:u.adv.dt,asrc:u.adv.asrc,vis:u.adv.vis});
     return `<div class="dis">
-      <div class="dh"><div class="fl">⚑</div><b>במחלוקת — לירון חולק על מה שהמערכת שמעה</b><span class="dt">${u.dt}</span></div>
+      <div class="dh"><div class="fl">⚑</div><b>במחלוקת — טל חולק על מה שהמערכת שמעה</b><span class="dt">${u.dt}</span></div>
       ${entry({k:'sys',tx:u.sys.tx,src:u.sys.src,state:'disputed'})}
       <div class="keep"><span class="ln"></span><span>נשמר — לא בשימוש · לא נמחק, כדי שנדע מה נשמע בחדר</span><span class="ln"></span></div>
       ${entry({k:'adv',tx:u.adv.tx,dt:u.adv.dt,asrc:u.adv.asrc,vis:u.adv.vis})}
@@ -1176,7 +1176,7 @@ function entry(u){
   /* advisor */
   const visT = u.vis==='me'?['🔒 רק אני רואה','lock']:['לא נשלח ללקוח · משותף לצוות','prv'];
   return `<div class="ent adv">
-    <div class="sig"><span class="who">◆ לירון בן כליפא · יועץ</span><span class="src">${u.dt}</span>
+    <div class="sig"><span class="who">◆ טל מלקר · יועץ</span><span class="src">${u.dt}</span>
       ${u.fixed?`<span class="stamp" style="background:#EAE2FB;color:#5C41C4">תיקון לרשומת המערכת</span>`:''}
       ${u.pin?`<span class="stamp pin">📌 מוצמד</span>`:''}
       <span class="stamp ${visT[1]}" style="margin-inline-start:${u.pin?'0':'auto'}">${visT[0]}</span></div>
@@ -1226,7 +1226,7 @@ function bindMem(){
   root.querySelectorAll('.ea').forEach(b=>b.onclick=e=>{e.stopPropagation();
     const t=b.textContent.trim();
     if(t.includes('מאיפה')) toast('מקור: <b>פגישה חודשית · 02.07</b> — נפתח בתמלול בנקודת האמירה');
-    else if(t.includes('מדויק')&&!t.includes('לא')) toast('<span class="ck">✓</span> סומן כמדויק · יתווסף חותם "אושר ע״י לירון"');
+    else if(t.includes('מדויק')&&!t.includes('לא')) toast('<span class="ck">✓</span> סומן כמדויק · יתווסף חותם "אושר ע״י טל"');
     else if(t.includes('לא מדויק')) toast('<span class="ck">⚑</span> נפתחה מחלוקת · כתוב את הגרסה שלך — היא זו שתקבע בתיק');
     else if(t.includes('תקן')||t.includes('עריכה')) toast('העורך נפתח עם הטקסט המקורי · בשמירה הרשומה עוברת לבעלותך');
     else if(t.includes('הוסף')) toast('נפתח פתיל תחת הרשומה של המערכת');

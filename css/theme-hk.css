@@ -40,8 +40,11 @@
 
   /* ===== סרגל ניווט — פריט פעיל בכחול-תינוק, לא מילוי כהה ===== */
   .gn-item{font-size:15px;color:#0C4068}
-  .gn-item.on{background:var(--blue-bg);color:#0C4068;font-weight:600}
-  .gn-item.on svg{color:#39ABE2}
+  /* הפריט הפעיל מלא, כמו בג'מפה — על המשטח הבהיר ולא על הנייבי המלא */
+  .gn-item{padding:12px 14px;border-radius:12px;font-size:14px;font-weight:500}
+  /* הפריט הפעיל מעט רך יותר — פינה גדולה ומעט אוויר, כמו בג'מפה */
+  .gn-item.on{background:var(--band,#104A76);color:#fff;font-weight:600;border-radius:12px}
+  .gn-item.on svg{color:#8EC9EC}
   .gn-item svg{color:#0C4068;opacity:.75}
   .gn-co{border-top-color:var(--line)}
 
@@ -117,7 +120,20 @@
   .sseg-bar .fill{background:#39ABE2}
 
   /* ===== חיפוש — פיל עם צל פנימי ===== */
-  .clv-q,.rail-search input{border-radius:40px;box-shadow:inset 0 0 4px rgba(0,0,0,.12);border:none;background:#fff}
+  .clv-q{border-radius:40px;box-shadow:inset 0 0 4px rgba(0,0,0,.12);border:none;background:#fff}
+  /* תיבת החיפוש — בדיוק המבנה של ג'מפה: הקופסה נושאת את המסגרת והרקע,
+     והזכוכית יושבת בתוכה. שם הרקע קרם, כאן תכלת. */
+  /* עדין כמו בג'מפה — שם הרקע קרם כמעט־לבן, לא צבע מלא. --blue-bg
+     מוגדר מחדש בקובץ הזה ויצא רווי מדי, לכן ערך מפורש. */
+  /* המידות המדויקות של ג'מפה: 251 רוחב (מרג'ין 12 בתוך עמודה של 276),
+     גובה 33, ריפוד 8/11, פינה 10. נכתב כאן כי הקובץ הזה נטען אחרון. */
+  .rail-search{background:#F7FAFC;border:1px solid #E3E3E3;border-radius:10px;
+    padding:8px 11px;gap:8px;margin:0 12px 8px}
+  .rail-search:focus-within{border-color:var(--blue);background:#fff}
+  .rail-search svg{opacity:.55;color:var(--navy)}
+  .rail-search input{border-radius:0;box-shadow:none;border:none;background:transparent;
+    font-size:13px;line-height:normal;color:var(--ink)}
+  .rail-search input::placeholder{color:#8FA3B4}
   .clv-q::placeholder{color:#949494}
 
   /* ===== קוביות סטטיסטיקה — אווריריות, מספר navy ===== */
@@ -986,14 +1002,14 @@
   /* תזרים עתידי — iframe בגובה מלא */
   #viewFcast{height:calc(100vh - 150px)}
   #fcastFrame{width:100%;height:100%;border:0;border-radius:16px;background:#fff;box-shadow:0 6px 18px rgba(12,64,104,.08)}
-  /* תזרים עבר — iframe בגובה מלא */
+  /* תמונת תזרים — iframe בגובה מלא */
   #viewPast{height:calc(100vh - 150px)}
   #pastFrame{width:100%;height:100%;border:0;border-radius:16px;background:#fff;box-shadow:0 6px 18px rgba(12,64,104,.08)}
   /* תקציב תזרימי — iframe בגובה מלא */
   #viewBudget{height:calc(100vh - 150px)}
   #budgetFrame{width:100%;height:100%;border:0;border-radius:16px;background:#fff;box-shadow:0 6px 18px rgba(12,64,104,.08)}
   /* כותרות נושא בסרגל */
-  .gn-sec-h{font-size:10px;font-weight:700;color:#9AA6B2;letter-spacing:.4px;padding:13px 16px 3px}
+  .gn-sec-h{font-size:11px;font-weight:600;color:#8B9AA8;letter-spacing:.2px;padding:18px 16px 6px}
   /* מדדים מקובצים לפי סוג */
   .mgrp-h{grid-column:1/-1;font-size:13px;font-weight:700;color:#0C4068;padding:14px 4px 2px;display:flex;align-items:baseline;gap:10px}
   .mgrp-h:first-child{padding-top:0}
@@ -4341,3 +4357,7 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 /* ===== כותרת החברה — לא פעמיים =====
    בתוך חברה השם והח.פ כבר מופיעים בשדה החיפוש ובסרגל הצדדי. */
 .client-head.inco #headName,.client-head.inco #headHp{display:none}
+/* בתוך חברה שם החברה עלה לפס העליון, ותג המצב ירד — מה שנשאר כאן הוא
+   שורת הפעולות בלבד. בלי הכיווץ נשארת רצועה ריקה מעל כל מסך מוטמע. */
+.client-head.inco{margin-bottom:0;min-height:0}
+.client-head.inco:not(:has(.db-actions > *:not([style*="display: none"]))){margin-bottom:0}

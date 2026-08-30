@@ -1,6 +1,6 @@
 /* HK Dashboard — seed data: CLIENTS (בפרודקשן: שכבת API) */
   const CLIENTS = [
-    { name:'אנרגי אינטרנשיונל', hp:'511327876', price:1850, lastOps:'02.07', coopLast:'02.07', coopDays:0, spark:[242,268,255,300,307,301], hl:{sev:'high',t:'חריגה צפויה בעו״ש בעוד 9 ימים'}, advStatus:'פעיל', mgr:'לירון בן כליפא', firm:'אשכנזי ייעוץ עסקי', status:'active', unread:5, sync:'01.07 10:54', warn:true, opsPending:7, opsAlert:true, reqBy:'10:00', mReport:true, bankDown:true,
+    { name:'אנרגי אינטרנשיונל', hp:'511327876', price:1850, lastOps:'02.07', coopLast:'02.07', coopDays:0, spark:[242,268,255,300,307,301], hl:{sev:'high',t:'חריגה צפויה בעו״ש בעוד 9 ימים'}, advStatus:'פעיל', mgr:'טל מלקר', firm:'שחר ייעוץ עסקי', status:'active', unread:5, sync:'01.07 10:54', warn:true, opsPending:7, opsAlert:true, reqBy:'10:00', mReport:true, bankDown:true,
       thread:[
         {from:'hk', name:'HK', auto:true, t:'היי צחי, סיימתי כעת לעדכן ולנהל עבורך את תזרים המזומנים להיום. רוצה לראות מה חדש?', when:'02.06 13:05'},
         {from:'user', name:'צחי עובד', t:'צפייה בתזרים שלי', when:'02.06 13:11'},
@@ -8,8 +8,8 @@
         {from:'user', name:'צחי עובד', t:'ראיתי את החריגה הצפויה — אפשר לדחות את התשלום לספק הגדול?', when:'היום 08:40'},
         {from:'user', name:'צחי עובד', t:'וגם צריך להוסיף את החשבונית של יולי מהמוסך', when:'היום 08:52'},
         {from:'user', name:'צחי עובד', t:'מתי נוח לך שיחה קצרה היום?', when:'היום 09:05'} ] },
-    { name:'אנרגי גולני', hp:'511200341', price:950, lastOps:'01.07', coopLast:'12.06', coopDays:20, spark:[180,195,210,205,220,228], hl:{sev:'mid',t:'96% מתקרת התקציב — לבדיקה השבוע'}, advStatus:'פעיל', mgr:'לירון בן כליפא', firm:'אשכנזי ייעוץ עסקי', status:'active', unread:0, sync:'01.07 10:27', opsPending:2, mReport:true },
-    { name:'מטעי גבעון', hp:'514778220', price:1450, lastOps:'02.07', coopLast:'30.06', coopDays:2, spark:[420,460,430,445,470,466], hl:{sev:'high',t:'חריגת תקציב — 114% מהיעד'}, advStatus:'פעיל', mgr:'לירון בן כליפא', firm:'אשכנזי ייעוץ עסקי', status:'active', unread:0, sync:'01.07 10:26', opsPending:3, opsAlert:true, group:true,
+    { name:'אנרגי גולני', hp:'511200341', price:950, lastOps:'01.07', coopLast:'12.06', coopDays:20, spark:[180,195,210,205,220,228], hl:{sev:'mid',t:'96% מתקרת התקציב — לבדיקה השבוע'}, advStatus:'פעיל', mgr:'טל מלקר', firm:'שחר ייעוץ עסקי', status:'active', unread:0, sync:'01.07 10:27', opsPending:2, mReport:true },
+    { name:'מטעי גבעון', hp:'514778220', price:1450, lastOps:'02.07', coopLast:'30.06', coopDays:2, spark:[420,460,430,445,470,466], hl:{sev:'high',t:'חריגת תקציב — 114% מהיעד'}, advStatus:'פעיל', mgr:'טל מלקר', firm:'שחר ייעוץ עסקי', status:'active', unread:0, sync:'01.07 10:26', opsPending:3, opsAlert:true, group:true,
       thread:[
         {from:'user', name:'יוסי גבעון', t:'היי, אפשר לקבל עדכון על מצב החשבון?', when:'היום 09:12'},
         {from:'user', name:'יוסי גבעון', t:'וגם — הגיע צ׳ק מלקוח חדש, לאן לשלוח צילום?', when:'היום 09:15'} ] },
@@ -21,12 +21,12 @@
     /* ארכיון — חברות שיצאו. לא בתור, לא בחיוב, לא בהתראות.
        נשלפות רק כשבוחרים "ארכיון" במסך הלקוחות. */
     { name:'דלתא ריהוט', hp:'513994201', price:0, lastOps:'14.03', coopLast:'12.03', coopDays:null,
-      spark:[210,198,176,150,120,0], hl:null, advStatus:'ארכיון', mgr:'לירון בן כליפא',
-      firm:'אשכנזי ייעוץ עסקי', unread:0, sync:'—', opsPending:0,
+      spark:[210,198,176,150,120,0], hl:null, advStatus:'ארכיון', mgr:'טל מלקר',
+      firm:'שחר ייעוץ עסקי', adv:'אילון שחר', unread:0, sync:'—', opsPending:0,
       archOn:'20.03.2026', archWhy:'סיום התקשרות ביוזמת הלקוח' },
     { name:'שחר לוגיסטיקה', hp:'514003877', price:0, lastOps:'02.01', coopLast:'28.12', coopDays:null,
       spark:[95,102,88,74,60,0], hl:null, advStatus:'ארכיון', mgr:'שמרית טובול',
-      firm:'ברק ושות׳', unread:0, sync:'—', opsPending:0,
+      firm:'ברק ושות׳', adv:'עופר ברק', unread:0, sync:'—', opsPending:0,
       archOn:'08.01.2026', archWhy:'החברה נסגרה' },
   ];
   /* מצב החברה — שדה אחד. status הישן היה שדה מת (הכל 'active').
@@ -50,8 +50,16 @@
   (function seedPortfolio(){
     const A=['אלפא','ברק','גל','דלתא','הדר','ורד','זוהר','חורש','טל','יובל','כרמל','לביא','מגן','נוף','סהר','עומר','פלג','צור','קדם','רימון','שחף','תמר','אביב','בזלת','גפן','דקל','הראל','ורדית','זית','חמדה'];
     const B=['תעשיות','שיווק','הנדסה','לוגיסטיקה','בנייה','אחזקות','מערכות','ייבוא','מזון','טכנולוגיות','אנרגיה','רהיטים','טקסטיל','דפוס','חשמל','פלסטיק','תקשורת','רכב','נדל״ן','מתכת','אריזות','כימיקלים','ספנות','תעופה','ביטחון'];
-    const MGRS=['לירון בן כליפא','שמרית טובול','נועה ברששת','אבי מזרחי','דנה שקד','יוסי אלימלך'];
-    const FIRMS=['אשכנזי ייעוץ עסקי','ברק ושות׳','מ.ג. פיננסים','רוזן ייעוץ'];
+    const MGRS=['טל מלקר','שמרית טובול','נועה ברששת','אבי מזרחי','דנה שקד','יוסי אלימלך'];
+    const FIRMS=['שחר ייעוץ עסקי','ברק ושות׳','מ.ג. פיננסים','רוזן ייעוץ'];
+    /* היועצים של כל חברת ייעוץ. ה-firm הוא המשרד, ה-adv הוא האדם
+       שאחראי על הלקוח בפועל — וזה מה שמסננים לפיו. */
+    const ADVS={
+      'שחר ייעוץ עסקי':['אילון שחר','מיכל דגן','רון גבירץ'],
+      'ברק ושות׳'        :['עופר ברק','שירן דוידי'],
+      'מ.ג. פיננסים'     :['גיא מרום','טל בן שושן','אורית לוי'],
+      'רוזן ייעוץ'       :['דניאל רוזן','ליאת שגב'],
+    };
     const PRODS=['money','money+','meeting'];
     const WHY=['סיום התקשרות ביוזמת הלקוח','החברה נסגרה','מעבר למשרד אחר','אי-תשלום'];
     let s=97;                                   // LCG — רצף קבוע
@@ -74,7 +82,8 @@
         lastOps:st==='פעיל'?'02.07':'—',
         coopLast:st==='פעיל'?(coop>14?'12.06':'01.07'):null, coopDays:coop,
         spark:sp, hl:alert?{sev:rnd()<0.4?'high':'mid',t:rnd()<0.5?'חריגה צפויה בעו״ש':'חריגת תקציב — מעל היעד'}:null,
-        advStatus:st, mgr:pick(MGRS), firm:pick(FIRMS), product:pick(PRODS),
+        advStatus:st, mgr:pick(MGRS), ...(function(){const f=pick(FIRMS);
+          return {firm:f, adv:pick(ADVS[f])};})(), product:pick(PRODS),
         unread:st==='פעיל'&&rnd()<0.3?1+Math.floor(rnd()*4):0,
         sync:st==='פעיל'?'01.07 10:2'+Math.floor(rnd()*9):'—',
         opsPending:st==='פעיל'?Math.floor(rnd()*6):0, opsAlert:alert,

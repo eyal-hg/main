@@ -9,7 +9,7 @@
 const CO = {
   name:'אנרגי אינטרנשיונל', hp:'511327876',
   product:'HK Money+',                  // כמו ב-js/queue.js. meeting+money — לכן כל סלוטי הפס מוצגים
-  mgr:'לירון בן כליפא',                 // מנהלת התזרים
+  mgr:'טל מלקר',                 // מנהלת התזרים
   contact:'צחי עובד',                   // איש הקשר בחברה
   status:'פעיל',
   today:'יום חמישי · 02.07.2026', clock:'10:54',
@@ -32,7 +32,7 @@ const NAVI = [
   {k:'meets',  f:'meetings.html',  l:'פגישות'},
   {k:'ai',     f:'ai.html',        l:'עוזר AI'},
   {k:'metric', f:'metrics.html',   l:'מדדים'},
-  {k:'past',   f:'cashflow-past.html', l:'תזרים עבר'},
+  {k:'past',   f:'cashflow-past.html', l:'תמונת תזרים'},
   {k:'flow',   f:'process.html',       l:'התהליך שלי'},
 ];
 
@@ -59,7 +59,7 @@ function hkChrome(active, opts){
     ${withStrip?'':`<a class="crumb" href="dashboard.html"><span class="d"></span>${CO.name}</a>`}
     <ul>${NAVI.map(n=>{const b=n.badge&&n.badge();
       return `<li><a class="${n.k===active?'on':''}" href="${n.f}">${n.l}${b?`<em>${b}</em>`:''}</a></li>`}).join('')}</ul>
-    <div class="me"><div><b>אילון אשכנזי</b>אשכנזי ייעוץ עסקי</div><i>אא</i></div>
+    <div class="me"><div><b>אילון שחר</b>שחר ייעוץ עסקי</div><i>אש</i></div>
   </nav>`;
 
   const strip = !withStrip ? '' : `<header class="strip">
@@ -140,7 +140,7 @@ function toast(m){const t=document.getElementById('toast');if(!t)return;
 
 /* ---------- משימה חדשה למנהלת התזרים ---------- */
 /* המסמכים והמשימה הם פעולה אחת: אין העלאה ערומה — כל קובץ נכנס עם ההקשר
-   שלו, כמשימה ללירון. גרירה לכל מקום פותחת את המשימה עם הקובץ מצורף. */
+   שלו, כמשימה לטל. גרירה לכל מקום פותחת את המשימה עם הקובץ מצורף. */
 let TK_FILES=[];
 function tkOpen(files){document.getElementById('tkOv').classList.add('on');
   if(files&&files.length) TK_FILES=TK_FILES.concat([...files].map(f=>f.name||'מסמך'));

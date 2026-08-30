@@ -6,15 +6,24 @@
    שפה: hak.co.il — קורל=פעולה · אדום עמוק=סכנה כספית · נייבי=מצב ומבנה.
    ===================================================================== */
 :root{
-  --navy:#0C4068;--navy2:#0A3557;--sky:#39ABE2;
+  /* --navy הוא גם טקסט וגם משטח. הפרדנו: הכותרות נשארות על Main #0C4068
+     של הפיגמה, והמשטחים הגדולים (הרצועה והפס) עברו ל-navy-soft #1a6194 —
+     צבע שכבר מוגדר ב-css/base.css ולא היה בשימוש. בפיגמה של HK אין בכלל
+     משטח כהה; זו הדרך להתקרב לזה בלי להפוך מאה כללי טקסט לבן. */
+  --navy:#0C4068;--navy2:#0A3557;
+  /* שניהם על navy-soft. ההיררכיה בין הרצועה לפס נשמרת בקו מפריד,
+     לא בגוון כהה יותר — כך שני המשטחים באמת בהירים. */
+  --band:#104A76;--band2:#104A76;
+  --sky:#39ABE2;
   --coral:#E4826E;--coral-d:#D96A55;
   --bad:#C43D30;--bad-on-navy:#FF9E93;--good:#13895b;--warn:#9A6300;
   --ink:#28425C;--ink2:#54708C;--ink3:#93A3B2;--faint:#B7C3CF;
   --bd:#E3EAF3;--cardbd:#eef2f6;--bg:#F6F8FB;--tint:#F0F5FA;--chip:#EDF2F8;
-  --on-navy:#DCEBF5;--on-navy2:#B9D3E6;--on-navy3:#9FC0DA;
+  --on-navy:#FFFFFF;--on-navy2:rgba(255,255,255,.92);
+  --on-navy3:rgba(255,255,255,.84);--on-navy4:rgba(255,255,255,.74);
   /* אותה הרמה בדיוק של כרטיס הווידג'ט במערכת — כדי שהכל ייראה משפחה אחת */
   --lift:0 1px 2px rgba(12,64,104,.05),0 10px 28px rgba(12,64,104,.05);
-  --nav-h:58px;--strip-h:72px;--bar-h:52px;
+  --nav-h:58px;--strip-h:60px;--bar-h:60px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--ink);
@@ -33,7 +42,7 @@ input,textarea{font:inherit;color:inherit}
 @media(max-width:1500px){.nav li a{padding:8px 10px;font-size:13px}.nav{gap:16px}}
 .nav .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--navy);font-size:14.5px;letter-spacing:-.2px}
 .nav .brand i{display:inline-flex;align-items:center;justify-content:center;direction:ltr;
-  width:30px;height:30px;border-radius:9px;background:var(--navy);color:#fff;font-style:normal;
+  width:30px;height:30px;border-radius:9px;background:var(--band);color:#fff;font-style:normal;
   font-size:12.5px;font-weight:700;box-shadow:inset 0 -8px 14px rgba(57,171,226,.35)}
 .nav .brand i b{color:#7CC9F2}
 /* פירורית החברה — מחליפה את הרצועה בארבעת המסכים שאינם הדשבורד.
@@ -57,7 +66,7 @@ input,textarea{font:inherit;color:inherit}
   border:1px solid var(--bd);color:var(--navy);font-style:normal;font-weight:600;font-size:12.5px}
 
 /* ---------- רצועת החברה ---------- */
-.strip{height:var(--strip-h);background:var(--navy);color:#fff;display:flex;align-items:center;padding:0 30px;gap:22px}
+.strip{height:var(--strip-h);background:var(--band);color:#fff;display:flex;align-items:center;padding:0 30px;gap:22px}
 .strip h1{font-weight:800;font-size:26px;letter-spacing:-.5px;position:relative;padding-bottom:3px}
 .strip h1::after{content:"";position:absolute;inset-inline-start:1px;bottom:-3px;width:26px;height:4px;border-radius:99px;background:var(--coral)}
 .strip .sub{font-size:12.5px;color:var(--on-navy2);font-weight:300;margin-top:2px}
@@ -69,13 +78,14 @@ input,textarea{font:inherit;color:inherit}
 .strip .now b{display:block;color:#fff;font-weight:500;font-size:19px;letter-spacing:.4px}
 
 /* ---------- הפס הכחול: כל מה שעושים מול HK ---------- */
-.bar{background:var(--navy2);color:#fff;display:flex;align-items:center;gap:20px;
-  padding:0 30px;height:var(--bar-h);border-top:1px solid rgba(255,255,255,.11);font-size:13px}
+.bar{background:var(--band2);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.14);display:flex;align-items:center;
+  column-gap:18px;row-gap:10px;padding:0 26px;min-height:var(--bar-h);
+  border-top:1px solid rgba(255,255,255,.11);font-size:13px}
 .bar .sep{width:1px;height:22px;background:rgba(255,255,255,.13);flex:none}
 .bar .cell{display:flex;align-items:center;gap:9px;min-width:0;white-space:nowrap}
 .bar .lb{font-size:11.5px;color:var(--on-navy3)}
 .bar .v{font-weight:600;color:#fff}
-.bar .cnt{font-size:16px;font-weight:600}
+.bar .cnt{font-size:19px;font-weight:600;line-height:1}
 /* משימה באיחור היא מצב, לא כסף בסכנה — ענבר, לא האדום של החריגה */
 .bar .late{font-size:11.5px;font-weight:500;color:#F2B75E}
 .bar .risk{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--bad-on-navy)}
@@ -88,8 +98,10 @@ input,textarea{font:inherit;color:inherit}
 .bar .spacer{margin-inline-start:auto}
 .bar .sep.ms{display:none}
 /* מונה המשימות הוא הכניסה לרשימה עצמה — לא רק מספר */
-.tkbtn{display:flex;align-items:center;gap:9px;border-radius:999px;padding:4px 10px;margin-inline-start:-10px;color:inherit}
-.tkbtn:hover{background:rgba(255,255,255,.08)}
+.tkbtn{display:flex;align-items:center;gap:9px;border-radius:999px;padding:5px 14px 5px 11px;color:inherit;
+  background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.20);transition:.14s}
+.tkbtn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.34)}
+.tkbtn .lb{color:#fff}
 .tkbtn .chev{color:var(--on-navy3);transition:transform .15s}
 .tkbtn[aria-expanded="true"] .chev{transform:rotate(180deg)}
 .tkbtn .late:empty{display:none}
@@ -114,9 +126,10 @@ input,textarea{font:inherit;color:inherit}
 .tk-empty{padding:22px 18px;text-align:center;font-size:13px;color:var(--ink3)}
 .tklist .tk-f{display:flex;align-items:center;gap:12px;padding:12px 18px}
 .tklist .tk-f .muted{font-size:11.5px}
-/* מתחת ל-3 עמודות אין רוחב לארבעת הסלוטים בשורה — נשבר לשתיים במקום להיחתך */
-@media(max-width:1399px){
-  .bar{flex-wrap:wrap;height:auto;padding:8px 30px;row-gap:9px}
+/* אין רוחב לכל הסלוטים בשורה — נשבר לשתיים במקום להיחתך. הסף נמדד:
+   התוכן נכנס בשורה אחת מ-1280 ומעלה, ולכן קודם הוא נשבר גם כשהיה מקום. */
+@media(max-width:1279px){
+  .bar{flex-wrap:wrap;padding:11px 26px;row-gap:11px}
   .bar .spacer{display:none}
   .bar .sep.ms{display:block}
 }
@@ -149,7 +162,7 @@ input,textarea{font:inherit;color:inherit}
 .flag.warn{color:var(--warn)}
 .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;border:1px solid var(--bd);
   background:#fff;color:var(--ink2);font-size:12px;font-weight:500;padding:4px 12px}
-.pill.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600}
+.pill.on{background:var(--band);border-color:var(--navy);color:#fff;font-weight:600}
 .big{font-size:30px;font-weight:800;letter-spacing:-.5px;color:var(--navy);line-height:1.1}
 .big small{font-size:14px;font-weight:500;color:var(--ink3);letter-spacing:0}
 .muted{color:var(--ink3)}
@@ -201,7 +214,7 @@ html.dragging iframe{pointer-events:none}
 
 #toast{position:fixed;bottom:26px;inset-inline:0;margin-inline:auto;width:max-content;max-width:calc(100vw - 48px);
   transform:translateY(14px);
-  background:var(--navy);color:#fff;padding:10px 22px;border-radius:999px;font-size:13.5px;
+  background:var(--band);color:#fff;padding:10px 22px;border-radius:999px;font-size:13.5px;
   box-shadow:0 12px 30px rgba(12,64,104,.28);opacity:0;pointer-events:none;
   transition:opacity .2s,transform .2s;z-index:99}
 #toast.on{opacity:1;transform:none}
@@ -219,3 +232,17 @@ html.embed .wrap{padding-top:14px}
 *::-webkit-scrollbar-track{background:transparent}
 
 
+
+/* רצפת גודל למטא-טקסט על המשטח הכהה — 12.5px, כמו במעטפת. */
+.bar .lb,.bar .late,.bar .ok30,.strip .sub,.strip .now{font-size:12.5px}
+
+/* משקל מינימלי על הפס והרצועה — אותה סיבה. */
+.bar,.bar *,.strip,.strip *{font-weight:inherit}
+.bar .lb,.bar .ok30,.bar .late,.strip .sub,.strip .now{font-weight:400}
+.bar .v,.bar .cnt,.bar .meet b,.strip h1{font-weight:600}
+
+/* רצועה ופס באותו גובה ופינות תחתונות מעוגלות — אותה שפה בכל המסכים.
+   בהטמעה הרצועה מוסתרת והפס הוא זה שנושא את הפינות. */
+.strip{border-radius:14px}
+.bar{border-radius:14px}
+html.embed .bar{border-radius:14px}

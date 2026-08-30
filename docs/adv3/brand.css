@@ -8,6 +8,10 @@
   --bk-coral-d:#D96A55;      /* hover */
   --bk-coral-soft:#FBEDE9;
   --bk-navy:#0C4068; --bk-navy-2:#0A3557;
+  /* המשטחים הגדולים — בהיר יותר. הכותרות נשארות על Main.
+     שניהם באותו גוון: surface2 היה כהה יותר ויצר שני כחולים
+     צמודים באותו פאנל (הכותרת מול שורת ההוספה). */
+  --band:#104A76;--band2:#104A76;
   --bk-sky:#39ABE2;
   --bk-bg:#F6F8FB;           /* קרקע בהירה ואוורירית */
   --bk-line:#E3EAF3;
@@ -86,3 +90,39 @@ input,select,textarea{font-family:'Heebo',sans-serif}
   background:var(--bk-coral-d);border-color:var(--bk-coral-d)}
 .nav .brand i{display:inline-flex;align-items:center;justify-content:center;letter-spacing:0}
 .nav .brand i{direction:ltr}
+
+/* ---------------------------------------------------------------------
+   הרצועה — בהירה יותר. בפיגמה של HK אין משטח כהה כלל; הצבע כאן הוא
+   navy-soft שכבר מוגדר ב-css/base.css, ולכן זו הבהרה בתוך הפלטה ולא
+   צבע חדש. הסולם שעליה מוגבה כדי שטקסט משני לא ייבלע.
+   --------------------------------------------------------------------- */
+/* רצועה אחידה בכל המסכים: 60px, פינות תחתונות מעוגלות. */
+.strip{background:var(--band);height:60px;border-radius:14px}
+/* הסולם שעל המשטח. אחרי שהמשטח הובהר ל-navy-soft, הגוונים הישנים
+   (שנבנו לרקע #0C4068) נבלעים בו — לכן כולם הועלו קרוב ללבן.
+   הרצפה: on-navy4, הכי חלש, עדיין קריא על #1a6194. */
+/* הסולם שעל המשטח — לבן עם שקיפות, לא גוונים כחלחלים.
+   גוון מתוח לכיוון הרקע תמיד נקרא עכור עליו; לבן שקוף נשאר ניטרלי
+   וחד בכל עוצמה. הרצפה: on-navy4, עדיין קריא על #1a6194. */
+:root{--on-navy:#FFFFFF;
+      --on-navy2:rgba(255,255,255,.92);
+      --on-navy3:rgba(255,255,255,.84);
+      --on-navy4:rgba(255,255,255,.74)}
+
+/* ורצפת גודל, כמו במעטפת: מטא-טקסט על משטח כהה לא יורד מ-12.5px.
+   על רקע צבעוני טקסט קטן נבלע מהר יותר מאשר על לבן. */
+.strip .next .cap,.strip .date,.strip .now,
+.born .cap,.born .col h4,.born .mu .tm,.born .mu .k,
+.spot .cap,.spot .sub,.hd.dark .s{font-size:12.5px}
+.born .mu{font-size:13.5px}
+
+/* ---------------------------------------------------------------------
+   משקל מינימלי על המשטח הכהה. הבעיה לא הייתה הצבע (הוא כבר לבן ב-92%)
+   אלא font-weight:300 — קו דק בלבן על רקע צבעוני נקרא חלש בכל אטימות.
+   על לבן זה עובד, על כחול לא.
+   --------------------------------------------------------------------- */
+.strip,.strip *,.born,.born *,.spot,.spot *{font-weight:inherit}
+.strip .date,.strip .now,.strip .next .cap,.strip .next .hint,
+.born .cap,.born .col h4,.born .mu,.born .mu .tm,
+.spot .sub,.spot .cap{font-weight:400}
+.strip h1,.born .sum b,.born .mu .k{font-weight:600}

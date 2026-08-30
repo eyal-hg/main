@@ -1,12 +1,17 @@
 /* HK Dashboard — design tokens, reset, top bar, shell layout, client rail, dashboard head, tabs */
   :root{
     --navy:#0C4068; --navy-soft:#1a6194; --coral:#E48375; --coral-deep:#d96a5a; --coral-ink:#bd4a35;
+    /* המשטחים הכהים. --navy נשאר לטקסט (187 מופעים) ולא הובהר; המשטחים
+       עברו ל-navy-soft, צבע שכבר היה מוגדר כאן ולא היה בשימוש.
+       השם --band ולא --surface: הקבצים כבר הכילו הצהרות מתות על
+       var(--surface2), והגדרת השם הזה החייתה אותן וצבעה טאבים בכחול. */
+    --band:#104A76; --band2:#104A76;
     --blue:#39ABE2; --blue-bg:#EBF7FD; --green:#16a34a; --green-bg:#e8f6ee;
     --wa:#25D366; --wa-bg:#e7f8ef; --bg:#f4f7fa; --card:#ffffff; --line:#e6ecf2;
     --ink:#243748; --muted:#7d8ea0; --amber:#e8a13a; --amber-bg:#fdf4e3;
     --red:#dc2626; --red-bg:#fdecec;
     --shadow:0 2px 14px rgba(12,64,104,.06); --shadow-lg:0 12px 40px rgba(12,64,104,.18);
-    --rail:240px; --rail-collapsed:66px;
+    --rail:252px; --rail-collapsed:66px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -40,7 +45,29 @@
   .switcher .hp{font-size:12px;color:var(--muted);flex:0 0 auto}
   .switcher .chev{margin-inline-start:auto;color:var(--muted);flex:0 0 auto}
 
-  .top-mid{display:flex;gap:8px;flex:0 0 auto}
+  .top-mid{display:flex;gap:8px;flex:0 0 auto;margin-inline-start:22px}
+  .logo{cursor:default;user-select:none}
+
+  /* מציין מקום ללוגו הלקוח — הטמעה לבנה: הלקוח רואה את המותג שלו */
+  .logo-ph{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 15px;
+    border:1.5px dashed #C3D2DE;border-radius:10px;color:#7F94A6;
+    font-size:13px;font-weight:500;white-space:nowrap}
+  .logo-ph svg{opacity:.75;flex:none}
+  .prod-grp{font-size:10.5px;font-weight:600;color:#9AA6B2;letter-spacing:.2px;
+    padding:10px 12px 4px;pointer-events:none}
+  .prod-menu .prod-grp:first-child{padding-top:4px}
+  /* ---- ההקשר בפס העליון (שם החברה), כמו בג'מפה ---- */
+  .top-ctx{display:flex;align-items:center;gap:12px;min-width:0;flex:0 1 auto;
+    padding-inline-start:18px;border-inline-start:1px solid var(--line)}
+  .top-ctx:empty{display:none}
+  /* קישור, לא כפתור — הסגנון הגלובלי של button ב-HK נתן לו מסגרת ורקע
+     אפור, וזה נראה כמו תג תקוע. אותו מראה של הקישור בג'מפה. */
+  .top-ctx .out{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;
+    font-weight:500;color:var(--blue);padding:5px 10px;border-radius:999px;cursor:pointer;
+    border:0;background:none;box-shadow:none;font-family:inherit;line-height:1.2;transition:.12s}
+  .top-ctx .out:hover{background:var(--blue-bg)}
+  .top-ctx b{font-size:21px;font-weight:600;color:var(--navy);letter-spacing:-.3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ddl-wrap{position:relative}
   .prod-menu{position:absolute;top:calc(100% + 8px);inset-inline-start:0;min-width:268px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-lg);padding:9px;z-index:45;display:none}
   .prod-menu.show{display:block}
@@ -58,6 +85,31 @@
   .ddl span{color:var(--muted)}
   .top-right{margin-inline-start:auto;display:flex;align-items:center;gap:12px;flex:0 0 auto}
   .who{font-size:12.5px;color:var(--muted);text-align:left;line-height:1.35}
+  /* בלוק המשתמש — אותו מבנה של ג'מפה: שם, תפקיד ואווטאר */
+  .topbar .me{display:flex;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-radius:999px;
+    border:0;background:none;font-family:inherit;cursor:pointer;transition:background .12s}
+  .topbar .me:hover{background:var(--bg)}
+  .topbar .me>div{min-width:0;line-height:1.3;text-align:end}
+  .topbar .me b{display:block;font-size:13.5px;font-weight:500;color:var(--navy)}
+  .topbar .me span{display:block;font-size:12px;color:var(--muted)}
+  /* display מפורש — <i> הוא inline ומתעלם מ-width/height, ואז התמונה
+     נפרסה בגודלה הטבעי (135px) וגלשה מהפס. */
+  .topbar .me .avatar{flex:none;display:block;width:36px;height:36px;min-width:36px;
+    font-size:13.5px;line-height:36px;text-align:center;overflow:hidden;border-radius:50%}
+  .topbar .me .avatar img{width:36px;height:36px;object-fit:cover;display:block;border-radius:50%}
+  .topbar .me .chev{flex:none;color:#A9B7C4;transition:transform .15s}
+  .topbar .me[aria-expanded="true"] .chev{transform:rotate(180deg)}
+  /* תפריט המשתמש — נפתח כלפי מטה מהפס */
+  .me-wrap{position:relative;flex:0 0 auto}
+  .me-menu{position:absolute;inset-inline-start:0;top:calc(100% + 7px);min-width:190px;background:#fff;
+    border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px -10px rgba(12,64,104,.28);
+    padding:6px;display:none;z-index:60}
+  .me-menu.on{display:block}
+  .me-menu button{width:100%;text-align:start;padding:10px 12px;border-radius:8px;font-size:13.5px;
+    font-family:inherit;border:0;background:none;color:var(--ink);cursor:pointer;transition:background .12s}
+  .me-menu button:hover{background:var(--bg);color:var(--navy)}
+  .me-menu .sep{height:1px;background:var(--line);margin:5px 4px}
+  .me-menu .out{color:var(--muted)}
   .who b{color:var(--navy);font-weight:600}
   .avatar{width:34px;height:34px;border-radius:50%;background:var(--blue-bg);color:var(--navy);
     display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
@@ -71,11 +123,18 @@
 
   /* ===== ניווט גלובלי — הסרגל קבוע וזהה בכל מסך ===== */
   .rail.gnav{padding:14px 10px;justify-content:space-between}
-  .gnav-list,.gnav-bottom{display:flex;flex-direction:column;gap:4px}
+  /* בלי gap — הפריטים נערמים ישירות, כמו בג'מפה (מרווח 41px ולא 45) */
+  .gnav-list,.gnav-bottom{display:flex;flex-direction:column;gap:0}
+  /* line-height מפורש — בלעדיו הוא יורש מה-body (1.6) והפריט גדל
+     ל-49px במקום 41px, וזה מה שהרגיש צפוף/מרווח שונה מג'מפה. */
+  /* תווית ניווט באפור Grey text #7E7E7E של הפיגמה, לא בנייבי —
+     נייבי על כל פריט הופך את הבלוק כולו לכבד, והפעיל מפסיק לבלוט. */
   .gn-item{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:12px;cursor:pointer;
-    color:var(--ink);font-size:14px;font-weight:500;transition:.12s}
-  .gn-item svg{color:var(--muted);flex:0 0 auto}
-  .gn-item:hover{background:var(--bg)}
+    color:#7E7E7E;font-size:14px;line-height:normal;font-weight:500;transition:.12s}
+  .gn-item svg{opacity:.78}
+  .gn-item.on svg{opacity:1}
+  .gn-item svg{color:#A8A8A8;flex:0 0 auto}
+  .gn-item:hover{background:var(--bg);color:var(--navy)}
   .gn-item.on{background:var(--navy);color:#fff;font-weight:600}
   .gn-item.on svg{color:#8EC9EC}
   /* הסקציות של החברה — הסרגל המתחלף */
@@ -85,12 +144,43 @@
   .gn-co{font-size:12px;font-weight:700;color:var(--muted);padding:16px 14px 6px;margin-top:8px;border-top:1px solid var(--line);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .gn-co.big{font-size:15px;color:var(--navy);border-top:none;margin-top:0;padding:4px 14px 10px}
-  .gn-item.sec{padding:9.5px 14px;font-size:13.5px}
+  /* הסקציות של הלקוח — יותר אוויר. זו רשימה שממלאת סרגל שלם,
+     והצפיפות של 9.5px הפכה אותה לגוש. */
+  .gn-item.sec{padding:11.5px 14px;font-size:13.5px;line-height:1.2}
   .gn-dot{width:7px;height:7px;border-radius:50%;background:var(--coral);margin-inline-start:auto;flex:0 0 auto}
   .gn-item.on .gn-dot{background:#fff}
 
   /* תור התפעול בסרגל — של מנהל התזרים */
   .gn-q{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;cursor:pointer;transition:.12s}
+
+  /* ---- רשימת הלקוחות בסרגל של היועץ ----
+     אותו עיצוב של ג'מפה: קו מפריד, חיפוש, ושורות של שתי שורות —
+     שם ומתחתיו הדבר שרלוונטי עכשיו. בלי נקודות ובלי מונים: שורת
+     המשנה אומרת את המצב בעצמה, וסימן נוסף מעליה הוא רעש. */
+  /* אותן מידות בדיוק של הסרגל בג'מפה. הערכים אומתו מול הרינדור:
+     שורה 55px, רווח 2px, תיבת חיפוש 33px בכל רוחב העמודה.
+     ה-wrap פורץ את הריפוד האופקי של .rail.gnav (10px) כדי שהחיפוש
+     והרשימה יקבלו את אותו רוחב כמו בג'מפה. */
+  .cl-wrap{display:flex;flex-direction:column;min-height:0;flex:1;
+    margin:16px -10px 0;padding-top:14px;border-top:1px solid var(--line)}
+  .cl-q{margin:0 2px 8px}
+  .cl-q input{font-size:13px;line-height:normal}
+  .cl-q:focus-within{border-color:var(--blue);background:#fff}
+  .cl-list{flex:1;min-height:0;overflow-y:auto;padding:2px 10px 16px}
+  .cl-row{padding:10px 11px;margin-bottom:2px;border-radius:11px;cursor:pointer;transition:.12s;
+    border:1px solid transparent;line-height:normal}
+  .cl-row:hover{background:var(--bg)}
+  .cl-row.on{background:var(--blue-bg);border-color:#cfe8fa}
+  .cl-row.on .cl-n{color:var(--navy)}
+  /* line-height מפורש — בלעדיו הוא יורש מה-body ומנפח את השורה ל-64px.
+     השם בכחול המותג ולא בנייבי הכהה: הנייבי קורא כמעט כשחור ומשטיח את
+     הרשימה, והכחול נותן לה את הקצב שיש לסגול בג'מפה. */
+  .cl-n{font-size:14px;line-height:normal;font-weight:500;color:#14618F;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cl-s{font-size:12.5px;line-height:normal;color:#949494;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+  .cl-row.on .cl-n{font-weight:600}
+  .adv-cl-none{padding:16px 14px;font-size:12.5px;color:var(--muted);line-height:1.8;text-align:center}
   .gn-q:hover{background:var(--bg)}
   .gn-q.on{background:var(--blue-bg)}
   .gn-qdot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
