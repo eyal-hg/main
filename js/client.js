@@ -48,10 +48,10 @@
     if(!subj){document.getElementById('ctErr').style.display='';return;}
     const urgent=document.querySelector('input[name="ctUrg"]:checked').value==='urgent';
     const k={t:subj, st:'new', when:'עכשיו', urgent};
-    CLIENT_TASKS.unshift(k); renderCxTasks(); closeCt();
+    CLIENT_TASKS.unshift(k); renderCxTasks(); refreshHero(); closeCt();
     const c=CLIENTS[CUR]||{};
     toast('המשימה נשלחה ל'+(c.mgr||'מנהל התזרים'));
-    setTimeout(()=>{k.st='prog';renderCxTasks();},3200);   // סימולציה: המנהל קיבל והתחיל לטפל
+    setTimeout(()=>{k.st='prog';renderCxTasks();refreshHero();},3200);   // סימולציה: המנהל קיבל והתחיל לטפל
   }
 
   /* ---- client documents ---- */
@@ -79,10 +79,86 @@
       <button class="clibar-btn gh" onclick="toast('נשלחה בקשה לתיאום מחדש')">תיאום מחדש</button>
     </div>`;
   }
+  /* ===== הפס הקבוע של בעל העסק =====
+     ארבעה דברים שהוא צריך בלי ללחוץ: כמה יש, מתי נגמר, מה ביקש ומה קורה
+     איתו, ואיפה מעלים מסמך. המספרים הם אותם מספרים של הווידג'טים —
+     היתרה מ-BAL לפי חברה, והחריגה מהתחזית המאוחדת. */
+  const OD={amt:'-289,161', date:'13.7.2026', days:12};
+  const CF_ST={ai:['ai','בקיטלוג AI'],ops:['ops','אצל המתפעל'],done:['done','✓ קוטלג']};
+  const HICO={
+    bal:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 11h20M6 15h4"/></svg>',
+    od:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'};
+  function heroTasksHTML(){
+    if(!CLIENT_TASKS.length) return '<div class="ct-row"><span class="t2">אין משימות פתוחות</span></div>';
+    return CLIENT_TASKS.slice(0,4).map(k=>`
+      <div class="ct-row">
+        <span class="ct-st ${k.st}">${CT_ST[k.st]}</span>
+        <span class="t2">${k.t}</span>
+        ${k.urgent&&k.st!=='done'?'<span class="ur">דחוף</span>':''}
+        <span class="w2">${k.when}</span>
+      </div>`).join('');
+  }
+  function heroFilesHTML(){
+    return CLIENT_DOCS.slice(0,3).map(f=>{
+      const [c,l]=CF_ST[f.st]||CF_ST.ai;
+      return `<div class="cf-row"><span class="fn">${f.name}</span>
+        <span class="fs ${c}">${l}</span><span class="w2">${f.when}</span></div>`;}).join('');
+  }
+  /* רענון הרשימות בלבד — בלי לצייר מחדש את כל הפס ולאבד את מצב הגרירה */
+  function refreshHero(){
+    const a=document.getElementById('heroTasks'), b=document.getElementById('heroFiles'),
+          n=document.getElementById('heroTaskN');
+    if(a) a.innerHTML=heroTasksHTML();
+    if(b) b.innerHTML=heroFilesHTML();
+    if(n){const k=CLIENT_TASKS.filter(x=>x.st!=='done').length;
+      n.textContent=k===0?'הכול סגור':k===1?'פתוחה אחת':k+' פתוחות';}
+  }
+  function renderCliHero(){
+    const el=document.getElementById('cliHero'); if(!el) return;
+    const isCli=(ROLE==='client1'||ROLE==='clientN');
+    if(!isCli||SCOPE!=='client'||CUR_TAB!=='dash'){el.style.display='none';return;}
+    el.style.display='';
+    const c=CLIENTS[CUR]||{};
+    const open=CLIENT_TASKS.filter(x=>x.st!=='done').length;
+    const openTxt=n=>n===0?'הכול סגור':n===1?'פתוחה אחת':n+' פתוחות';
+    el.innerHTML=`<div class="chero">
+      <div class="chero-n">
+        <div class="chero-f">
+          <div class="chero-k">${HICO.bal}יתרה נוכחית</div>
+          <div class="chero-v">${BAL[c.name]||'—'}<span class="cur">₪</span></div>
+          <div class="chero-s">עו״ש · מסגרת <b>0 ₪</b> · עודכן היום 10:54</div>
+        </div>
+        <div class="chero-f">
+          <div class="chero-k">${HICO.od}חריגה צפויה</div>
+          <div class="chero-v bad" dir="ltr">${OD.amt}<span class="cur">₪</span></div>
+          <div class="chero-s">${OD.date} · עו״ש מאוחד</div>
+          <span class="chero-pill">בעוד ${OD.days} ימים</span>
+        </div>
+      </div>
+      <div class="chero-a">
+        <div class="chero-p">
+          <div class="chero-h"><b>המשימות שלי</b>
+            <span class="n2" id="heroTaskN">${openTxt(open)}</span><span class="sp"></span>
+            <button class="chero-add" onclick="openCt()">＋ משימה חדשה</button></div>
+          <div class="chero-list" id="heroTasks">${heroTasksHTML()}</div>
+        </div>
+        <div class="chero-p">
+          <div class="chero-h"><b>העלאת מסמכים</b><span class="sp"></span></div>
+          <div class="chero-drop" id="cxDrop"
+               ondragover="event.preventDefault();this.classList.add('over')"
+               ondragleave="this.classList.remove('over')"
+               ondrop="cxDrop(event)" onclick="cxPick()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+            <b>גררו קובץ לכאן</b><span>PDF · Excel · תמונות</span></div>
+          <div class="chero-files" id="heroFiles">${heroFilesHTML()}</div>
+        </div>
+      </div>
+    </div>`;
+  }
   function renderClientRow(){
     const el=document.getElementById('clientRow'); if(!el) return;
     /* כרטיסי השירות ירדו לבעל העסק — נשארים רק הווידג'טים הפיננסיים */
-    if(ROLE==='client1'||ROLE==='clientN'){el.style.display='none';renderCliMeetBar();return;}
+    if(ROLE==='client1'||ROLE==='clientN'){el.style.display='none';renderCliMeetBar();renderCliHero();return;}
     const show=(SCOPE==='client')&&(typeof ROLE==='undefined'||ROLE!=='manager');
     if(!show){el.style.display='none';return;}
     el.style.display='';
@@ -171,9 +247,9 @@
   }
   function cxAdd(name){
     const f={name, when:'עכשיו', st:'ai'};
-    CLIENT_DOCS.unshift(f); renderCxFiles();
+    CLIENT_DOCS.unshift(f); renderCxFiles(); refreshHero();
     toast('הקובץ הועלה — נשלח לקיטלוג AI');
-    setTimeout(()=>{f.st='ops';renderCxFiles();},2600);   // סימולציה: AI סיים → עבר למתפעל
+    setTimeout(()=>{f.st='ops';renderCxFiles();refreshHero();},2600);   // סימולציה: AI סיים → עבר למתפעל
   }
   function cxDrop(e){
     e.preventDefault(); document.getElementById('cxDrop').classList.remove('over');

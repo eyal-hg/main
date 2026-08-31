@@ -116,8 +116,7 @@
     if(_isCli&&_wt) _wt.style.display='none';
     const _sl=document.querySelector('.sub-line'); if(_sl&&_isCli) _sl.style.display='none';
     const _rf=document.getElementById('btnRefresh'); if(_rf) _rf.style.display=_isCli?'none':'';
-    const _mb=document.getElementById('cliMeetBar');
-    if(_mb) _mb.style.display=(_isCli&&showBoard&&SCOPE==='client')?'':'none';
+    const _cb=(_isCli&&showBoard&&SCOPE==='client')?'':'none';
     // ללקוחות אין עריכת לוח — HK מגדירה את הלוח עבורם
     const canEdit=!(ROLE==='client1'||ROLE==='clientN');
     document.getElementById('wbActions').style.display=(showBoard&&canEdit)?'flex':'none';
@@ -136,6 +135,9 @@
     renderCoAlerts();
     if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();
+    /* אחרי renderClientRow ולא לפניו: הוא מצייר את הפסים לפי CUR_TAB,
+       ש-showTab עוד לא הספיק לעדכן — ולכן ההחלטה הסופית שייכת ל-t. */
+    ['cliMeetBar','cliHero'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=_cb});
     /* הכדור ירד: לבעל העסק יש מסך "עוזר AI" מלא — אותו מסך של היועץ,
        עם שיחות והיסטוריה. בועה צפה לצד מסך שלם היא שתי דלתות לאותו דבר. */
     const aiOn=false;
@@ -191,7 +193,7 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
      את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */
@@ -263,6 +265,10 @@
   window.tidyClientHead=tidyClientHead;
   function showTab(t){
     CUR_TAB=t;
+    /* הפסים של בעל העסק חיים בדשבורד בלבד. הם בודקים את CUR_TAB בעצמם,
+       ולכן הם נקראים כאן — אחרי ההשמה ולפני הענפים שיוצאים ב-return. */
+    if(typeof renderCliMeetBar==='function') renderCliMeetBar();
+    if(typeof renderCliHero==='function') renderCliHero();
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
     ['viewDash','viewMetrics','viewChat','viewMeetings','viewCal','viewFcast','viewAcct','viewPast','viewBudget','viewCoSet','viewPrep','viewEntries','viewMsgs','viewFlowLog','viewFlow','viewMem','viewSettings','viewOther','viewCli'].forEach(v=>{const e=document.getElementById(v);if(e)e.style.display='none';});
     const isGlobal=(t==='cal'||t==='settings');   // יעדים גלובליים — לא טאב של חברה
@@ -539,10 +545,10 @@
       }
       // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
       if(typeof OPSMODE==='undefined'||!OPSMODE){
-      /* לבעל העסק הסרגל הוא שלושה יעדים בלבד: הדשבורד, הפגישות והתזרים שקרה.
-         מעקב ופערים ותזרים עתידי הם כלי העבודה של היועץ והמתפעל — לא שלו. */
-      if(!isClientP){
+      /* הכותרת נכונה לכולם — גם לבעל העסק, שיש לו כאן תכנון תזרימי
+         ותמונת תזרים. מעקב ופערים וקליטת מסמכים הם עבודה פנימית. */
       html+=`<div class="gn-sec-h">תזרים</div>`;
+      if(!isClientP){
       /* קליטת המסמכים ראשונה: היא השער לתזרים. אין טעם להסתכל על מעקב,
          תכנון או תמונה לפני שיודעים מה עוד ממתין לאישור ולא נכנס. */
       html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
@@ -550,20 +556,19 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           <span>מעקב ופערים</span></div>`;
       }
-      /* תכנון פיננסי לפני תמונת תזרים: קודם מגדירים ומתכננים, ואז מסתכלים
-         על מה שקרה. תכנון פיננסי ותשלומי ספקים הם כלי עבודה של היועץ
-         והמתפעל — לא של בעל העסק. */
+      /* שני התכנונים צמודים, ותמונת התזרים אחריהם: קודם מגדירים ומתכננים,
+         ואז מסתכלים על מה שקרה. תכנון פיננסי הוא עבודה של היועץ והמתפעל;
+         תכנון תזרימי הוא גם של בעל העסק — זה התזרים שלו קדימה. */
       if(!isClientP)
         html+=`<div class="gn-item sec ${CUR_TAB==='acct'?'on':''}" onclick="showTab('acct')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
             <span>${TAB_LABELS.acct}</span></div>`;
+      /* ליועץ זה עדיין רעש — הוא צורך את התוצאה ולא מזין אותה */
+      if(ROLE!=='advisor')
+        html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='past'?'on':''}" onclick="showTab('past')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
           <span>${TAB_LABELS.past}</span></div>`;
-      /* תזרים עתידי ותשלומי ספקים ולקוחות הם כלי העבודה של מנהל התזרים.
-         ליועץ הם רעש בסרגל — הוא צורך את התוצאה, לא מזין אותה. */
-      if(ROLE!=='advisor'&&!isClientP)
-        html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
       // ניהול — התהליך וההגדרות של החברה, תחת כותרת משלהם
       if(!(ROLE==='client1'||ROLE==='clientN')){
         html+=`<div class="gn-sec-h">ניהול</div>`;
