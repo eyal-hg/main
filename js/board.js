@@ -47,6 +47,18 @@
   const sizeOf=f=>SIZE[f]||(wmeta(f).s==='sm'?'sm':wmeta(f).s==='xl'?'xl':'lg');
   function toggleSize(f){SIZE[f]=sizeOf(f)==='sm'?'lg':'sm';renderBoard();}
 
+  /* מסגרת מוטמעת נמתחת ל-max(גובה התוכן שדווח, מה שנשאר על המסך). המדידה
+     חוזרת ב-rAF ובכל resize, כי המיקום של המסגרת משתנה גם בלי שהתוכן משתנה. */
+  function fitFrame(f){
+    if(!f||!f.dataset.h) return;
+    requestAnimationFrame(()=>{
+      const top=f.getBoundingClientRect().top+(window.scrollY||0);
+      f.style.minHeight=Math.max(+f.dataset.h, innerHeight-top-16)+'px';
+    });
+  }
+  function fitFrames(){ document.querySelectorAll('iframe[data-h]').forEach(fitFrame); }
+  window.fitFrames=fitFrames;
+  addEventListener('resize',fitFrames);
   function renderBoard(){
     const active=BOARDS[SCOPE];
     const b=document.getElementById('wboard');
@@ -155,14 +167,19 @@
       /* לא פחות מגובה המסך — אחרת מסך קצר משאיר חצי עמוד ריק מתחתיו.
          ה-max נעשה כאן ולא בתוך המסגרת, כי שם 100vh הוא גובה המסגרת עצמה. */
       const f=document.getElementById(MAP[d.hkAdv]);
-      if(f){ const top=f.getBoundingClientRect().top+(window.scrollY||0);
-        f.style.minHeight=Math.max(d.h, innerHeight-top-16)+'px'; }
+      if(f){ f.dataset.h=d.h; fitFrame(f); }
       return; }
     /* מסכי החברה (docs/cli) — דיווח גובה והחלפת טאב מתוך המסגרת */
     if(d.hkCli&&d.h>200){
       const M={dash:'cliDashFrame',msgs:'cliMsgsFrame',meets:'cliMeetsFrame',ai:'cliAiFrame',
-               metric:'cliMetricFrame',past:'cliPastFrame',flow:'cliFlowFrame'};
-      const f=document.getElementById(M[d.hkCli]); if(f) f.style.minHeight=d.h+'px'; return; }
+               metric:'cliMetricFrame',past:'cliPastFrame',flow:'cliFlowFrame',
+               intake:'cliIntakeFrame'};
+      /* כמו במסכי adv3: לא פחות מגובה המסך, אחרת מסך קצר משאיר פס לבן מתחתיו.
+         הגובה נשמר על האלמנט, כי המסגרת מדווחת רק כשהתוכן משתנה — ובלי זה
+         חישוב מוקדם אחד (לפני שהפריסה התייצבה) היה נתקע לתמיד. */
+      const f=document.getElementById(M[d.hkCli]);
+      if(f){ f.dataset.h=d.h; fitFrame(f); }
+      return; }
     if(d.hkCliGo){
       const G={dashboard:'dash',messages:'msgs',meetings:'meetings',ai:'chat',
                metrics:'metrics','cashflow-past':'past',process:'flow'};

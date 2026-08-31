@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנרגי אינטרנשיונל · קליטת מסמכים · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
+<style>
+/* =====================================================================
+   קליטת מסמכים — השער בין הנהלת החשבונות לתזרים.
+   המסך עונה על שלוש שאלות, בסדר הזה:
+     1. מה נכנס, ומאיפה — כל שורה נושאת את מקור האוטומציה ואת שעת הקליטה.
+     2. מי עבר על זה — מנהלת התזרים מאשרת שורה-שורה; בלי אישור אין תזרים.
+     3. מתי זה ייפול על התזרים — הציר משמאל, ומה שלא אושר מצויר מקווקו.
+   הציר הוא אותו רעיון שבמסך ניהול החומר, אבל הוא לא מודד פערי גבייה —
+   הוא מודד את המרחק שבין "נקלט" ל"בתזרים".
+   ===================================================================== */
+:root{ --sidew:340px }
+.wrap{max-width:1580px;margin:0 auto;padding:16px 20px 28px}
+
+/* ---------- הגריד: טבלה מימין, ציר משמאל ---------- */
+.igrid{display:grid;grid-template-columns:minmax(0,1fr) var(--sidew);gap:16px;align-items:stretch}
+@media(max-width:1180px){.igrid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- הציר — אנכי, מתחיל בראש העמודה ורץ עד למטה ---------- */
+.ax{display:flex;flex-direction:column;min-height:0}
+.ax-h{padding:12px 15px 9px}
+.ax-h b{display:block;font-size:13px;font-weight:600;color:var(--navy)}
+.ax-h span{display:block;font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5}
+.ax-w{display:flex;align-items:baseline;gap:7px;margin-top:7px}
+.ax-w b{font-size:17px;font-weight:600;color:var(--coral);font-variant-numeric:tabular-nums}
+.ax-w span{font-size:11px;color:var(--ink3)}
+.ax-lg{display:flex;gap:12px;padding:0 15px 11px;font-size:10.5px;color:var(--ink3)}
+.ax-lg i{display:inline-block;width:16px;height:7px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.ax-lg .a i{background:#39ABE2}
+.ax-lg .w i{background:repeating-linear-gradient(115deg,#E4826E 0 4px,#F6C9BE 4px 8px)}
+.ax-b{flex:1 1 auto;overflow-y:auto;padding:2px 0 10px;position:relative}
+.ax-b::before{content:"";position:absolute;top:6px;bottom:6px;inset-inline-start:56px;width:1.5px;background:var(--tint)}
+.nd{display:grid;grid-template-columns:46px minmax(0,1fr);gap:0 14px;padding:8px 15px;position:relative}
+.nd::after{content:"";position:absolute;inset-inline-start:52px;top:16px;width:9px;height:9px;border-radius:50%;
+  background:#fff;border:2px solid var(--bd2);z-index:1}
+.nd.has-w::after{border-color:var(--coral)}
+.nd.all-in::after{border-color:#39ABE2;background:#39ABE2}
+.nd .d{text-align:start}
+.nd .d b{display:block;font-size:15px;font-weight:600;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
+.nd .d em{display:block;font-style:normal;font-size:10.5px;color:var(--ink3);margin-top:1px}
+.nd .ik-bar{height:9px;border-radius:99px;background:var(--tint);overflow:hidden;display:flex;margin-top:5px}
+.nd .ik-bar .a{background:#39ABE2}
+.nd .ik-bar .w{background:repeating-linear-gradient(115deg,#E4826E 0 4px,#F6C9BE 4px 8px)}
+.nd .fig{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.nd .fig b{font-size:13.5px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
+.nd .fig span{font-size:10.5px;color:var(--ink3)}
+.nd .wtag{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:10.5px;font-weight:600;
+  color:#B85C48;background:#FDF3F1;border:1px solid #F6DCD5;border-radius:999px;padding:2px 9px}
+.nd .srcline{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap}
+.nd .srcline i{font-style:normal;font-size:10px;color:var(--ink3);background:var(--bg);
+  border-radius:999px;padding:1px 8px}
+
+/* ---------- מקורות האוטומציה ---------- */
+.srcs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;font-size:11.5px;color:var(--ink3)}
+.srcs .sp{flex:1}
+.src-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--cardbd);
+  border-radius:999px;padding:4px 12px 4px 9px;font-size:11.5px;font-weight:600;color:var(--navy)}
+.src-chip img{height:14px;width:auto;max-width:64px;object-fit:contain;display:block}
+.src-chip i{width:7px;height:7px;border-radius:50%;flex:none;background:#13895b}
+.newauto{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--sky);background:#fff;
+  color:#14618F;font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 13px;
+  cursor:pointer;transition:.13s}
+.newauto:hover{background:var(--tint);border-style:solid}
+.dest{font-size:11.5px;color:var(--ink3)}
+.dest b{color:var(--navy);font-weight:600}
+
+/* ---------- קטלוג האוטומציות ---------- */
+.aov{position:fixed;inset:0;background:rgba(12,64,104,.34);display:none;align-items:flex-start;
+  justify-content:center;padding:40px 20px;z-index:90;overflow:auto}
+.aov.on{display:flex}
+.abox{background:#fff;border-radius:18px;width:min(880px,96vw);box-shadow:0 24px 60px rgba(12,64,104,.28);overflow:hidden}
+.abox-h{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--tint)}
+.abox-h b{font-size:15px;color:var(--navy)}
+.abox-h span{display:block;font-size:12px;color:var(--ink3);margin-top:3px;max-width:560px;line-height:1.6}
+.abox-h .x{margin-inline-start:auto;border:0;background:#F1F5F9;color:#64748b;width:30px;height:30px;
+  border-radius:9px;font-size:14px;cursor:pointer;flex:none}
+.abox-h .x:hover{background:#E7EDF3;color:var(--navy)}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:12px;padding:18px 20px}
+.acard{border:1px solid var(--cardbd);border-radius:14px;padding:14px;display:flex;flex-direction:column;
+  gap:9px;transition:.13s;background:#fff}
+.acard:hover{border-color:var(--sky);box-shadow:var(--lift)}
+.acard.on{border-color:#BFE8D5;background:#F7FDFA}
+.acard .lg{height:30px;display:flex;align-items:center}
+.acard .lg img{max-height:30px;max-width:132px;width:auto;object-fit:contain;display:block}
+.acard b{font-size:13.5px;font-weight:600;color:var(--navy)}
+.acard p{font-size:11.5px;color:var(--ink3);line-height:1.55;flex:1}
+.acard .ft{display:flex;align-items:center;gap:8px}
+.acard .st-on{font-size:11px;font-weight:700;color:#0B6E4B;background:#E8FFE4;border-radius:999px;padding:3px 10px}
+.acard button{border:1px solid var(--band);background:#fff;color:var(--band);font:inherit;font-size:11.5px;
+  font-weight:600;border-radius:999px;padding:5px 14px;cursor:pointer;transition:.13s}
+.acard button:hover{background:var(--band);color:#fff}
+.abox-f{padding:12px 20px;border-top:1px solid var(--tint);background:#FBFDFF;font-size:11.5px;
+  color:var(--ink3);line-height:1.6}
+.abox-f b{color:var(--navy);font-weight:600}
+
+
+/* ---------- הטבלה ---------- */
+.card{background:#fff;border:1px solid var(--cardbd);border-radius:14px;box-shadow:var(--lift);overflow:hidden}
+/* ראש הטבלה כהה — אותה שפה של ראש הטבלה בתכנון פיננסי */
+.tbh{display:flex;align-items:center;gap:9px;padding:11px 16px;flex-wrap:wrap;
+  background:var(--band);border-radius:13px 13px 0 0}
+.tbh h2{font-size:13.5px;font-weight:600;color:#fff}
+.tbh .sp{flex:1}
+.fil{display:flex;gap:5px;flex-wrap:wrap}
+.fil button{border:1px solid rgba(255,255,255,.28);background:transparent;color:rgba(255,255,255,.86);
+  font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 12px;cursor:pointer;transition:.12s}
+.fil button:hover{border-color:rgba(255,255,255,.62);color:#fff}
+.fil button.on{background:#fff;border-color:#fff;color:var(--band)}
+.fil button i{font-style:normal;background:rgba(255,255,255,.18);border-radius:999px;padding:0 6px;
+  margin-inline-start:6px;font-size:10.5px}
+.fil button.on i{background:rgba(12,64,104,.10);color:var(--band)}
+.bulk{border:0;background:var(--coral);color:#fff;font:inherit;font-size:11.5px;font-weight:600;
+  border-radius:999px;padding:6px 14px;cursor:pointer;transition:.13s}
+.bulk:hover{background:var(--coral-d)}
+.bulk:disabled{background:#E7EDF3;color:var(--faint);cursor:default}
+
+.row{display:grid;grid-template-columns:118px minmax(0,1fr) 108px 92px 168px 132px;
+  gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--tint);transition:.12s}
+.row:last-child{border-bottom:0}
+.row:hover{background:#FBFDFF}
+.row.is-hold{background:#FFFCF5}
+.row.is-flow{opacity:.72}
+@media(max-width:1420px){.row{grid-template-columns:104px minmax(0,1fr) 96px 84px 140px 120px;gap:9px}}
+
+.dtype{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dtype .t{font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 7px;align-self:flex-start;white-space:nowrap}
+.dtype .t.tax{background:var(--tint);color:#14618F}
+.dtype .t.pro{background:#FFF6E6;color:#9A6300}
+.dtype .t.rec{background:#E8FFE4;color:#0B6E4B}
+.dtype .t.cred{background:#FDECEB;color:#C43D30}
+.dtype .no{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.pty{min-width:0}
+.pty b{display:block;font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pty span{display:block;font-size:11.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font-size:14px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;text-align:start}
+.amt.neg{color:var(--bad)}
+.due{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.due em{display:block;font-style:normal;font-size:10.5px;color:var(--faint)}
+.due.none{color:var(--warn)}
+
+/* מקור האוטומציה — הוא לא הערה, הוא עמודה */
+.src{display:flex;align-items:center;gap:8px;min-width:0}
+.src .dot{width:7px;height:7px;border-radius:50%;flex:none}
+.src.hs .dot{background:#39ABE2}
+.src.gi .dot{background:#0E9384}
+.src.cc .dot{background:#6C63E6}
+.src.pay .dot{background:#E4826E}
+.src.riv .dot{background:#C97B10}
+.src.mon .dot{background:#FF3D57}
+.src.man .dot{background:#B7C3CF}
+.src b{display:block;font-size:11.5px;font-weight:600;color:var(--navy);white-space:nowrap}
+.src span{display:block;font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+
+/* מצב = פעולה, בעמודה אחת */
+.act{display:flex;align-items:center;justify-content:flex-start;gap:7px}
+.ik-ok{border:0;background:var(--band);color:#fff;font:inherit;font-size:11.5px;font-weight:600;
+  border-radius:999px;padding:6px 15px;cursor:pointer;transition:.13s;white-space:nowrap}
+.ik-ok:hover{background:var(--navy)}
+.done{display:inline-flex;flex-direction:column;gap:1px}
+.done b{font-size:11.5px;font-weight:600;color:#0B6E4B}
+.done span{font-size:10px;color:var(--faint)}
+.inflow{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--ink3)}
+.inflow::before{content:"";width:6px;height:6px;border-radius:50%;background:#39ABE2}
+.hold{display:inline-flex;flex-direction:column;gap:2px;min-width:0}
+.hold b{font-size:11px;font-weight:700;color:#9A6300}
+.hold span{font-size:10px;color:var(--ink3);line-height:1.4}
+
+.empty{padding:26px 16px;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+/* ---------- קטלוג האוטומציות ---------- */
+.aov{position:fixed;inset:0;background:rgba(12,64,104,.34);display:none;align-items:flex-start;
+  justify-content:center;padding:40px 20px;z-index:90;overflow:auto}
+.aov.on{display:flex}
+.abox{background:#fff;border-radius:18px;width:min(880px,96vw);box-shadow:0 24px 60px rgba(12,64,104,.28);overflow:hidden}
+.abox-h{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--tint)}
+.abox-h b{font-size:15px;color:var(--navy)}
+.abox-h span{display:block;font-size:12px;color:var(--ink3);margin-top:3px;max-width:560px;line-height:1.6}
+.abox-h .x{margin-inline-start:auto;border:0;background:#F1F5F9;color:#64748b;width:30px;height:30px;
+  border-radius:9px;font-size:14px;cursor:pointer;flex:none}
+.abox-h .x:hover{background:#E7EDF3;color:var(--navy)}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:12px;padding:18px 20px}
+.acard{border:1px solid var(--cardbd);border-radius:14px;padding:14px;display:flex;flex-direction:column;
+  gap:9px;transition:.13s;background:#fff}
+.acard:hover{border-color:var(--sky);box-shadow:var(--lift)}
+.acard.on{border-color:#BFE8D5;background:#F7FDFA}
+.acard .lg{height:30px;display:flex;align-items:center}
+.acard .lg img{max-height:30px;max-width:132px;width:auto;object-fit:contain;display:block}
+.acard b{font-size:13.5px;font-weight:600;color:var(--navy)}
+.acard p{font-size:11.5px;color:var(--ink3);line-height:1.55;flex:1}
+.acard .ft{display:flex;align-items:center;gap:8px}
+.acard .st-on{font-size:11px;font-weight:700;color:#0B6E4B;background:#E8FFE4;border-radius:999px;padding:3px 10px}
+.acard button{border:1px solid var(--band);background:#fff;color:var(--band);font:inherit;font-size:11.5px;
+  font-weight:600;border-radius:999px;padding:5px 14px;cursor:pointer;transition:.13s}
+.acard button:hover{background:var(--band);color:#fff}
+.abox-f{padding:12px 20px;border-top:1px solid var(--tint);background:#FBFDFF;font-size:11.5px;
+  color:var(--ink3);line-height:1.6}
+.abox-f b{color:var(--navy);font-weight:600}
+
+
+/* ---------- הטבלה ---------- */
+/* ---------- הציר ---------- */
+/* הציר רץ לכל גובה העמודה — הוא ציר זמן, לא כרטיס שנגמר באמצע */
+.ax{display:flex;flex-direction:column;min-height:0}
+.ax .ax-b{flex:1 1 auto;overflow-y:auto}
+.ax-h{padding:12px 15px 9px}
+.ax-h b{display:block;font-size:13px;font-weight:600;color:var(--navy)}
+.ax-h span{display:block;font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5}
+.ax-lg{display:flex;gap:12px;padding:0 15px 11px;font-size:10.5px;color:var(--ink3)}
+.ax-lg i{display:inline-block;width:16px;height:7px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.ax-lg .a i{background:#39ABE2}
+.ax-lg .w i{background:repeating-linear-gradient(115deg,#E4826E 0 4px,#F6C9BE 4px 8px)}
+.ax-b{padding:2px 0 10px;position:relative}
+.ax-b::before{content:"";position:absolute;top:6px;bottom:6px;inset-inline-start:56px;width:1.5px;background:var(--tint)}
+.nd{display:grid;grid-template-columns:46px minmax(0,1fr);gap:0 14px;padding:8px 15px;position:relative}
+.nd::after{content:"";position:absolute;inset-inline-start:52px;top:16px;width:9px;height:9px;border-radius:50%;
+  background:#fff;border:2px solid var(--bd2);z-index:1}
+.nd.has-w::after{border-color:var(--coral)}
+.nd.all-in::after{border-color:#39ABE2;background:#39ABE2}
+.nd .d{text-align:start}
+.nd .d b{display:block;font-size:15px;font-weight:600;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
+.nd .d em{display:block;font-style:normal;font-size:10.5px;color:var(--ink3);margin-top:1px}
+.nd .ik-bar{height:9px;border-radius:99px;background:var(--tint);overflow:hidden;display:flex;margin-top:5px}
+.nd .ik-bar .a{background:#39ABE2}
+.nd .ik-bar .w{background:repeating-linear-gradient(115deg,#E4826E 0 4px,#F6C9BE 4px 8px)}
+.nd .fig{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.nd .fig b{font-size:13.5px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
+.nd .fig span{font-size:10.5px;color:var(--ink3)}
+.nd .wtag{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:10.5px;font-weight:600;
+  color:#B85C48;background:#FDF3F1;border:1px solid #F6DCD5;border-radius:999px;padding:2px 9px}
+.nd .srcline{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap}
+.nd .srcline i{font-style:normal;font-size:10px;color:var(--ink3);background:var(--bg);
+  border-radius:999px;padding:1px 8px}
+.ax-f{padding:11px 15px;border-top:1px solid var(--tint);font-size:11px;color:var(--ink3);line-height:1.6;background:#FBFDFF}
+.ax-f b{color:var(--navy);font-weight:600}
+</style>
+</head>
+<body data-cli="intake">
+<main class="wrap">
+
+  <div class="srcs">
+    <span>אוטומציות מחוברות:</span>
+    <span id="conn"></span>
+    <button class="newauto" onclick="autoOpen()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      אוטומציה חדשה</button>
+    <span class="sp"></span>
+    <span class="dest">אחרי האישור — נכתב ל־<b>Bizibox</b> ונכנס לתזרים</span>
+  </div>
+
+  <div class="igrid">
+    <section class="card">
+      <div class="tbh">
+        <h2>מסמכים שנקלטו</h2>
+        <span class="sp"></span>
+        <div class="fil" id="fil"></div>
+        <button class="bulk" id="bulk" onclick="approveAll()"></button>
+      </div>
+      <div id="rows"></div>
+    </section>
+
+    <aside class="card ax">
+      <div class="ax-h">
+        <b>מתי זה ייפול על התזרים</b>
+        <span>לפי מועד התשלום של כל מסמך. מה שעוד לא אושר מצויר מקווקו — הוא לא בתזרים.</span>
+        <div class="ax-w" id="axw"></div>
+      </div>
+      <div class="ax-lg">
+        <span class="a"><i></i>אושר · בתזרים</span>
+        <span class="w"><i></i>ממתין לאישור</span>
+      </div>
+      <div class="ax-b" id="axis"></div>
+    </aside>
+  </div>
+
+</main>
+
+<!-- קטלוג האוטומציות -->
+<div class="aov" id="aov" onclick="if(event.target===this)autoClose()">
+  <div class="abox">
+    <div class="abox-h">
+      <div><b>אוטומציה חדשה</b>
+        <span>אלה המערכות שאנחנו יודעים להתחבר אליהן. כל חיבור מזרים את המסמכים
+          לכאן אוטומטית — ומשם הם עוברים אישור לפני שהם נכנסים לתזרים.</span></div>
+      <button class="x" onclick="autoClose()" aria-label="סגירה">✕</button>
+    </div>
+    <div class="agrid" id="agrid"></div>
+    <div class="abox-f">החיבור נעשה פעם אחת מול הלקוח. אחרי זה המסמכים נכנסים לבד —
+      <b>מה שלא מחובר, מוזן ידנית</b>.</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="cli.js"></script>
+<script>
+/* ================= הנתונים =================
+   המקורות הם אלה שכבר מוגדרים לחברה במערכת: חשבשבת (הנה״ח, רו״ח מיכל שגב),
+   Bizibox (בנקים וכרטיסים) וקבוצת הוואטסאפ. הספקים והלקוחות הם אלה שכבר
+   מופיעים בתזרים של אנרגי — לא נולדו כאן. */
+const TODAY='02.07.2026';
+/* המקורות הם המערכות שהלקוח עובד איתן — משם המסמכים נכנסים.
+   Bizibox אינו מקור: הוא היעד. אחרי האישור המסמך נכתב אליו. */
+const SRC={
+  hs: {k:'hs', n:'חשבשבת',         s:'הנהלת חשבונות'},
+  gi: {k:'gi', n:'חשבונית ירוקה',  s:'חשבוניות שהחברה מוציאה'},
+  cc: {k:'cc', n:'קארדקום',        s:'סליקת אשראי'},
+  pay:{k:'pay',n:'פיימנט',         s:'תשלומים'},
+  riv:{k:'riv',n:'רווחית',         s:'הנהלת חשבונות'},
+  mon:{k:'mon',n:'מאנדיי',         s:'הזמנות ופרויקטים'},
+  /* לא כל מסמך מגיע מאוטומציה — מה שאין לו חיבור מוזן ידנית */
+  man:{k:'man',n:'הזנה ידנית',     s:'הוזן במערכת'},
+};
+/* type: tax=חשבונית מס · pro=חשבונית עסקה · rec=קבלה · cred=חשבונית זיכוי
+   st:   new=ממתין לאישור · ok=אושר · flow=כבר בתזרים · hold=עצור       */
+let DOCS=[
+  {id:'d1', type:'tax',  no:'1044', dir:'in',  party:'מרכז הבנייה',        desc:'אבן דרך ב׳ — פרויקט רמת השרון',
+   a:19800, due:'12.08', src:'gi', at:'היום 06:12', st:'new'},
+  {id:'d2', type:'tax',  no:'1045', dir:'in',  party:'רימון מוצרי אנרגיה', desc:'הזמנה 122 — נפתחה במאנדיי',
+   a:24000, due:'18.08', src:'mon', at:'היום 06:12', st:'new'},
+  {id:'d3', type:'pro',  no:'1047', dir:'in',  party:'מרכז הבנייה',        desc:'אבן דרך ג׳ — טרם הופקה חשבונית מס',
+   a:30000, due:'',      src:'hs', at:'היום 06:12', st:'hold',
+   why:'חשבונית עסקה אינה אירוע מס — היא נכנסת לתזרים רק כשמופקת ממנה חשבונית מס או קבלה.'},
+  {id:'d4', type:'rec',  no:'2231', dir:'in',  party:'אלקטרו סחר',         desc:'קבלה על חשבונית 4471',
+   a:14300, due:'02.07', src:'cc', at:'היום 07:40', st:'new'},
+  {id:'d5', type:'tax',  no:'88214',dir:'out', party:'פז חברת נפט',        desc:'דלקים — חיוב חודשי',
+   a:-11500,due:'25.08', src:'hs', at:'אתמול 06:11', st:'new'},
+  {id:'d6', type:'tax',  no:'50912',dir:'out', party:'סונול',              desc:'חשבונית ספק — הוצאות דלק',
+   a:-4820, due:'30.07', src:'man', at:'אתמול 09:05', st:'new'},
+  {id:'d7', type:'cred', no:'ז-118',dir:'out', party:'א.ל.מ שילוח',        desc:'זיכוי על חיוב כפול',
+   a:3540,  due:'10.07', src:'gi', at:'אתמול 07:40', st:'hold',
+   why:'זיכוי מול חשבונית שכבר נרשמה בתזרים — צריך לוודא שהחיוב המקורי לא יורד פעמיים.'},
+  {id:'d8', type:'tax',  no:'1041', dir:'in',  party:'מרכז הבנייה',        desc:'אבן דרך א׳',
+   a:22000, due:'05.08', src:'hs', at:'30.06 06:12', st:'ok', by:'טל מלקר', bat:'30.06 09:40'},
+  {id:'d9', type:'tax',  no:'1046', dir:'in',  party:'רימון מוצרי אנרגיה', desc:'הזמנה 123',
+   a:24000, due:'15.09', src:'hs', at:'30.06 06:12', st:'ok', by:'טל מלקר', bat:'30.06 09:41'},
+  {id:'d10',type:'tax',  no:'4471', dir:'in',  party:'אלקטרו סחר',         desc:'חשבונית מכירה',
+   a:14300, due:'28.07', src:'hs', at:'26.06 06:12', st:'flow'},
+  {id:'d11',type:'tax',  no:'77120',dir:'out', party:'בז״ן',               desc:'דלקים — משלוח יוני',
+   a:-38400,due:'20.07', src:'hs', at:'26.06 06:12', st:'flow'},
+  {id:'d12',type:'rec',  no:'2219', dir:'in',  party:'יהב תפעול',          desc:'קבלה — תשלום שוטף',
+   a:9600,  due:'01.07', src:'pay', at:'25.06 07:40', st:'flow'},
+];
+
+const TYPE={tax:['חשבונית מס','tax'], pro:['חשבונית עסקה','pro'],
+            rec:['קבלה','rec'], cred:['חשבונית זיכוי','cred']};
+const MON={'07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר'};
+const nf=new Intl.NumberFormat('he-IL');
+const money=v=>(v<0?'−':'')+nf.format(Math.abs(v))+' ₪';
+let FIL='new';
+
+/* ================= הציר =================
+   הוא גם הסיכום: כמה ממתין לאישור, ומתי כל דבר ייפול על התזרים. */
+function renderAxis(){
+  const map={};
+  DOCS.forEach(d=>{
+    if(!d.due||d.st==='hold') return;
+    const m=(map[d.due]=map[d.due]||{d:d.due, ok:0, wait:0, n:0, srcs:{}});
+    if(d.st==='new') m.wait+=Math.abs(d.a); else m.ok+=Math.abs(d.a);
+    m.n++; m.srcs[SRC[d.src].n]=1;
+  });
+  const key=x=>x.split('.')[1]+x.split('.')[0];
+  const list=Object.values(map).sort((a,b)=>key(a.d)<key(b.d)?-1:1);
+  const MX=Math.max(1,...list.map(x=>x.ok+x.wait));
+  document.getElementById('axis').innerHTML=list.map(x=>{
+    const tot=x.ok+x.wait, w=v=>((v/MX)*100).toFixed(1)+'%';
+    const a=x.d.split('.');
+    return `<div class="nd ${x.wait?'has-w':'all-in'}">
+      <div class="d"><b>${+a[0]}</b><em>${MON[a[1]]||''}</em></div>
+      <div>
+        <div class="fig"><b dir="ltr">${nf.format(tot)} ₪</b>
+          <span>${x.n===1?'מסמך אחד':x.n+' מסמכים'}</span></div>
+        <div class="ik-bar"><span class="a" style="width:${w(x.ok)}"></span><span class="w" style="width:${w(x.wait)}"></span></div>
+        ${x.wait?`<span class="wtag">${nf.format(x.wait)} ₪ ממתינים לאישור</span>`:''}
+        <div class="srcline">${Object.keys(x.srcs).map(s=>`<i>${s}</i>`).join('')}</div>
+      </div>
+    </div>`;}).join('');
+  const waitN=DOCS.filter(d=>d.st==='new').length;
+  const waitTot=list.reduce((s,x)=>s+x.wait,0);
+  const held=DOCS.filter(d=>d.st==='hold').length;
+  document.getElementById('axw').innerHTML=waitN
+    ? `<b>${waitN}</b><span>ממתינים לאישור טל · ${nf.format(waitTot)} ₪ עוד לא בתזרים`
+      +(held?` · ${held} נעצרו לבדיקה`:'')+`</span>`
+    : `<span>הכל אושר ונמצא בתזרים.`+(held?` ${held} נעצרו לבדיקה.`:'')+`</span>`;
+}
+
+/* ================= הטבלה ================= */
+const FILS=[['new','לאישור'],['ok','אושרו'],['flow','בתזרים'],['all','הכל']];
+function listOf(){
+  if(FIL==='new')  return DOCS.filter(d=>d.st==='new'||d.st==='hold');
+  if(FIL==='ok')   return DOCS.filter(d=>d.st==='ok');
+  if(FIL==='flow') return DOCS.filter(d=>d.st==='flow');
+  return DOCS;
+}
+function renderFil(){
+  const cnt=k=>k==='new'?DOCS.filter(d=>d.st==='new'||d.st==='hold').length
+            :k==='ok'?DOCS.filter(d=>d.st==='ok').length
+            :k==='flow'?DOCS.filter(d=>d.st==='flow').length:DOCS.length;
+  document.getElementById('fil').innerHTML=FILS.map(([k,l])=>
+    `<button class="${FIL===k?'on':''}" onclick="setFil('${k}')">${l}<i>${cnt(k)}</i></button>`).join('');
+  const n=DOCS.filter(d=>d.st==='new').length, b=document.getElementById('bulk');
+  b.textContent=n?`אישור ${n} השורות`:'אין מה לאשר';
+  b.disabled=!n;
+}
+function setFil(k){FIL=k;render();}
+
+function rowHtml(d){
+  const [tl,tc]=TYPE[d.type];
+  const s=SRC[d.src];
+  const due=d.due?`<div class="due">${d.due}<em>${MON[d.due.split('.')[1]]||''}</em></div>`
+                 :`<div class="due none">ללא מועד<em>לא ייכנס לתזרים</em></div>`;
+  let act='';
+  if(d.st==='new')  act=`<button class="ik-ok" onclick="approve('${d.id}')">אישור</button>`;
+  if(d.st==='ok')   act=`<span class="done"><b>✓ אושר</b><span>${d.by} · ${d.bat}</span></span>`;
+  if(d.st==='flow') act=`<span class="inflow">בתזרים</span>`;
+  if(d.st==='hold') act=`<span class="hold"><b>⚠ נעצר לבדיקה</b><span>${d.why}</span></span>`;
+  return `<div class="row ${d.st==='hold'?'is-hold':''} ${d.st==='flow'?'is-flow':''}">
+    <div class="dtype"><span class="t ${tc}">${tl}</span><span class="no">${d.no}</span></div>
+    <div class="pty"><b>${d.party}</b><span>${d.desc}</span></div>
+    <div class="amt ${d.a<0?'neg':''}" dir="ltr">${money(d.a)}</div>
+    ${due}
+    <div class="src ${s.k}"><span class="dot"></span>
+      <div><b>${s.n}</b><span>נקלט ${d.at}</span></div></div>
+    <div class="act">${act}</div>
+  </div>`;
+}
+function renderRows(){
+  const l=listOf();
+  document.getElementById('rows').innerHTML=l.length?l.map(rowHtml).join('')
+    :`<div class="empty">אין מסמכים בתצוגה הזאת.</div>`;
+}
+
+/* ================= פעולות ================= */
+function approve(id){
+  const d=DOCS.find(x=>x.id===id); if(!d) return;
+  d.st='ok'; d.by='טל מלקר'; d.bat='היום '+nowHHMM();
+  render(); toast(d.party+' · '+money(d.a)+' — אושר ונכנס לתזרים ב-'+d.due);
+}
+function approveAll(){
+  const n=DOCS.filter(d=>d.st==='new');
+  if(!n.length) return;
+  n.forEach(d=>{d.st='ok'; d.by='טל מלקר'; d.bat='היום '+nowHHMM();});
+  render(); toast(n.length+' מסמכים אושרו ונכנסו לתזרים');
+}
+function nowHHMM(){ return '10:54'; }   /* דמו — שעת המערכת קפואה */
+
+/* ================= קטלוג האוטומציות =================
+   הלוגואים הורדו מאתרי החברות ויושבים ב-docs/cli/logos. */
+const AUTOS=[
+  {k:'gi',  n:'חשבונית ירוקה', lg:'logos/greeninvoice.png',  d:'חשבוניות וקבלות שהחברה מוציאה — נכנסות ברגע ההפקה. (המותג היום: morning)', on:1},
+  {k:'hs',  n:'חשבשבת',        lg:'logos/hashavshevet.png',  d:'הנהלת החשבונות — חשבוניות ספק, זיכויים ותנועות יומן.', on:1},
+  {k:'cc',  n:'קארדקום',       lg:'logos/cardcom.svg',       d:'סליקת אשראי — עסקאות, תשלומים וזיכויים.', on:1},
+  {k:'mon', n:'מאנדיי',        lg:'logos/monday.svg',        d:'הזמנות ופרויקטים — אבני דרך שהופכות לחשבונית.', on:1},
+  {k:'pay', n:'פיימנט',        lg:'logos/payment.png',       d:'תשלומים והוראות קבע — מה שיוצא ומתי.', on:0},
+  {k:'riv', n:'רווחית',        lg:'logos/rivhit.svg',        d:'הנהלת חשבונות — לחברות שעובדות ברווחית.', on:0},
+];
+function renderConn(){
+  const on=AUTOS.filter(a=>a.on);
+  document.getElementById('conn').innerHTML=on.map(a=>
+    `<span class="src-chip"><i></i><img src="${a.lg}" alt="${a.n}"></span>`).join('');
+}
+function renderAutos(){
+  document.getElementById('agrid').innerHTML=AUTOS.map(a=>
+    `<div class="acard ${a.on?'on':''}">
+      <div class="lg"><img src="${a.lg}" alt="${a.n}"></div>
+      <b>${a.n}</b><p>${a.d}</p>
+      <div class="ft">${a.on?'<span class="st-on">✓ מחוברת</span>'
+        :`<button onclick="autoConnect('${a.k}')">חיבור</button>`}</div>
+    </div>`).join('');
+}
+function autoOpen(){ renderAutos(); document.getElementById('aov').classList.add('on'); }
+function autoClose(){ document.getElementById('aov').classList.remove('on'); }
+function autoConnect(k){
+  const a=AUTOS.find(x=>x.k===k); if(!a) return;
+  a.on=1; renderAutos(); renderConn();
+  toast(a.n+' חוברה — המסמכים יתחילו להיכנס לכאן');
+}
+addEventListener('keydown',e=>{ if(e.key==='Escape') autoClose(); });
+
+function render(){ renderConn(); renderFil(); renderRows(); renderAxis(); }
+render();
+</script>
+</body>
+</html>

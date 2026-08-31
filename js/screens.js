@@ -191,13 +191,13 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'תשלומי ספקים ולקוחות',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תזרים עתידי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
      את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */
   const CLI_TABS={dash:'cliDashFrame', msgs:'cliMsgsFrame', meetings:'cliMeetsFrame',
                   chat:'cliAiFrame',   metrics:'cliMetricFrame',
-                  past:'cliPastFrame', flow:'cliFlowFrame'};
+                  past:'cliPastFrame', flow:'cliFlowFrame', entries:'cliIntakeFrame'};
   /* כניסה לחברה מציגה דשבורד. ליועץ זה מסך docs/cli, למנהלת התזרים
      ולבעל העסק — הלוח הישן. הצהרת פונקציה כדי שתהיה זמינה גם למעלה. */
   function applyDashView(){
@@ -228,9 +228,28 @@
       const top=el.getBoundingClientRect().top+(window.scrollY||0);
       el.style.height=Math.max(360,innerHeight-top-16)+'px';
     });
+    /* מסגרות docs/cli נשענות על min-height:calc(100vh - 165px) ב-CSS — מספר
+       קסם שלא תואם את המיקום בפועל, ולכן נשאר פס לבן בתחתית. הגובה נגזר כאן
+       מהמיקום האמיתי, ולא פחות ממה שהמסגרת דיווחה על עצמה. */
+    document.querySelectorAll('.cliframe').forEach(f=>{
+      if(getComputedStyle(f).display==='none') return;
+      const top=f.getBoundingClientRect().top+(window.scrollY||0);
+      const want=Math.max(+(f.dataset.h||0), innerHeight-top-16);
+      /* רק כשיש הפרש אמיתי — אחרת ה-ResizeObserver מזין את עצמו */
+      const cur=parseFloat(f.style.minHeight)||0;   /* '' → NaN, וכל השוואה איתו false */
+      if(Math.abs(cur-want)>2) f.style.minHeight=want+'px';
+    });
   }
   window.fitTall=fitTall;
   addEventListener('resize',fitTall);
+  /* המיקום של המסגרת זז גם בלי resize — כיווץ הרצועה, רינדור הסרגל, טעינת
+     המסגרת. רדיפה אחרי טיימרים לא תפסה את כולם; תצפית כן. */
+  if(typeof ResizeObserver!=='undefined'){
+    let raf=0;
+    const ro=new ResizeObserver(()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(fitTall); });
+    addEventListener('DOMContentLoaded',()=>{ ro.observe(document.body); });
+    if(document.readyState!=='loading') ro.observe(document.body);
+  }
   function tidyClientHead(){
     const ch=document.querySelector('.client-head'); if(!ch) return;
     /* רק מכווץ — לעולם לא מחזיר להצגה. ההצגה נקבעת במקומות אחרים,
@@ -238,6 +257,8 @@
     if(!ch.classList.contains('inco')) return;
     if(CUR_TAB==='dash') return;
     ch.style.display='none';
+    /* הכיווץ מזיז את המסגרת למעלה — מי שנמדד לפניו נשאר עם גובה שגוי */
+    requestAnimationFrame(fitTall);
   }
   window.tidyClientHead=tidyClientHead;
   function showTab(t){
@@ -256,7 +277,7 @@
       const _cliRole=(ROLE==='client1'||ROLE==='clientN');
       const useCli=CLI_TABS[t]
                    &&!(_cliRole&&t!=='meetings'&&t!=='past'&&t!=='chat')
-                   &&!(t==='dash'&&ROLE==='manager');
+                   &&!((t==='dash'||t==='entries')&&ROLE==='manager');
       cliHost.style.display=useCli?'':'none';
       cliHost.querySelectorAll('.cliframe').forEach(f=>f.style.display='none');
       if(useCli){
@@ -275,6 +296,9 @@
         document.querySelector('.client-head').style.display='none';
         /* הסרגל מסמן את הטאב הפעיל — בלי זה הוא נשאר על "דשבורד" */
         if(typeof renderGlobalRail==='function') renderGlobalRail();
+        /* הענף הזה יוצא ב-return ולא מגיע למדידה שבסוף showTab — בלי הקריאה
+           כאן המסגרת נשארת על min-height מה-CSS ומשאירה פס לבן בתחתית. */
+        requestAnimationFrame(fitTall); setTimeout(fitTall,160);
         return;
       }
     }
@@ -368,7 +392,9 @@
     // יעד גלובלי: בלי כותרת חברה ופירור — זה לא עמוד של חברה
     document.querySelector('.client-head').style.display = isGlobal ? 'none' : 'flex';
     tidyClientHead();   /* אחרי הקביעה למעלה — היא זו שדרסה את הכיווץ */
-    requestAnimationFrame(fitTall);
+    /* שלוש פעימות: המיקום של המסגרת משתנה גם אחרי ה-rAF (כיווץ הרצועה,
+       טעינת המסגרת), ומדידה אחת מוקדמת נתקעת על גובה שגוי. */
+    requestAnimationFrame(fitTall); setTimeout(fitTall,140); setTimeout(fitTall,500); setTimeout(fitTall,1300);
     if(isGlobal){GNAV=t;const c=document.getElementById('crumb');if(c)c.style.display='none';}
     else if(SCOPE==='client'){GNAV='client';renderCrumb();}
     renderGlobalRail();
@@ -505,7 +531,11 @@
           if(!ks.length) return '';
           return (title?`<div class="gn-sec-h">${title}</div>`:'')+ks.map(item).join('');
         };
-        html+=seg('',['dash','msgs','meetings','mem','chat','metrics']);   // ההכנה לפגישה — לא בסרגל; מגיעים אליה מהפגישות ומהיומן
+        /* הדשבורד הוא הבית ועומד לבדו. אחריו שתי קבוצות: מה שזז מול החברה,
+           ומה שיודעים עליה. ההכנה לפגישה אינה בסרגל — מגיעים אליה מהפגישות. */
+        html+=seg('',['dash']);
+        html+=seg('שוטף',['msgs','meetings']);
+        html+=seg('ידע על החברה',['mem','chat','metrics']);
       }
       // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
       if(typeof OPSMODE==='undefined'||!OPSMODE){
@@ -513,6 +543,9 @@
          מעקב ופערים ותזרים עתידי הם כלי העבודה של היועץ והמתפעל — לא שלו. */
       if(!isClientP){
       html+=`<div class="gn-sec-h">תזרים</div>`;
+      /* קליטת המסמכים ראשונה: היא השער לתזרים. אין טעם להסתכל על מעקב,
+         תכנון או תמונה לפני שיודעים מה עוד ממתין לאישור ולא נכנס. */
+      html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='budget'?'on':''}" onclick="showTab('budget')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           <span>מעקב ופערים</span></div>`;
@@ -529,12 +562,11 @@
           <span>${TAB_LABELS.past}</span></div>`;
       /* תזרים עתידי ותשלומי ספקים ולקוחות הם כלי העבודה של מנהל התזרים.
          ליועץ הם רעש בסרגל — הוא צורך את התוצאה, לא מזין אותה. */
-      if(ROLE!=='advisor'&&!isClientP){
+      if(ROLE!=='advisor'&&!isClientP)
         html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
-        html+=`<div class="gn-item sec ${CUR_TAB==='entries'?'on':''}" onclick="showTab('entries')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg><span>${TAB_LABELS.entries}</span></div>`;
-      }
-      // ליווי — פריט בודד, בלי כותרת קבוצה
+      // ניהול — התהליך וההגדרות של החברה, תחת כותרת משלהם
       if(!(ROLE==='client1'||ROLE==='clientN')){
+        html+=`<div class="gn-sec-h">ניהול</div>`;
         html+=`<div class="gn-item sec ${CUR_TAB==='flow'?'on':''}" onclick="showTab('flow')">${SEC_ICO.flow}<span>${TAB_LABELS.flow}</span></div>`;
       }
       // הגדרות החברה — פר חברה, בתחתית, בלי כותרת
