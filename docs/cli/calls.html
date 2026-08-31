@@ -83,6 +83,40 @@ html.embed .cl-grid{flex:1;min-height:0}
 .cl-back .lnk2{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;
   color:#14618F;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
 .cl-macts{display:flex;gap:8px;margin-top:14px}
+
+/* ---------- מספר לא מזוהה, ושיוכו לנציג ---------- */
+.cl-unk{font-size:10.5px;font-weight:700;color:#9A6300;background:#FFF6E6;border:1px solid #F5E2BC;
+  border-radius:999px;padding:1px 8px;margin-inline-start:6px}
+.cl-cog{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--cardbd);background:#fff;
+  color:var(--navy);font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 11px;
+  cursor:pointer;transition:.13s;margin-inline-start:auto;flex:none}
+.cl-cog:hover{border-color:var(--sky);background:var(--tint);color:#14618F}
+.cl-cog i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#D9922B;
+  border-radius:999px;padding:0 6px;line-height:15px}
+.md.wide2{width:min(640px,94vw)}
+.ph-list{display:flex;flex-direction:column;gap:8px;max-height:min(52vh,420px);overflow-y:auto;padding:2px}
+.ph-row{border:1px solid var(--tint);border-radius:12px;padding:11px 13px;transition:.15s}
+.ph-row.unk{border-color:#F5E2BC;background:#FFFCF5}
+.ph-top{display:flex;align-items:center;gap:10px}
+.ph-num{font-size:13.5px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;flex:none}
+.ph-meta{font-size:11px;color:var(--ink3);flex:1;min-width:0}
+.ph-now{font-size:11.5px;font-weight:600;color:#0B6E4B;background:#E7F7EF;border-radius:999px;
+  padding:2px 10px;flex:none}
+.ph-now.no{color:#9A6300;background:#FFF6E6}
+.ph-pick{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.ph-pick button{border:1px solid var(--cardbd);background:#fff;color:var(--ink2);font:inherit;
+  font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 12px;cursor:pointer;transition:.12s}
+.ph-pick button:hover{border-color:var(--sky);color:#14618F}
+.ph-pick button.on{background:var(--band);border-color:var(--band);color:#fff}
+.ph-pick button.add{border-style:dashed;color:#14618F}
+.ph-new{display:flex;gap:7px;margin-top:9px}
+.ph-new input{flex:1;min-width:0;font-size:12.5px!important;padding:7px 11px!important}
+.ph-new button{border:0;background:var(--band);color:#fff;font:inherit;font-size:12px;font-weight:600;
+  border-radius:10px;padding:7px 15px;cursor:pointer;flex:none}
+.ph-new button:disabled{background:#E7EDF3;color:var(--faint);cursor:default}
+.ph-note{font-size:11.5px;color:var(--ink3);line-height:1.7;margin-top:13px;padding-top:12px;
+  border-top:1px solid var(--tint)}
+.ph-note b{color:var(--navy);font-weight:600}
 .cl-h h2{font-size:17px;font-weight:600;color:var(--navy);line-height:1.35}
 .cl-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:8px;
   font-size:12px;color:var(--ink3)}
@@ -144,6 +178,19 @@ html.embed .cl-grid{flex:1;min-height:0}
   </div>
 </main>
 
+<!-- שיוך מספרי טלפון לנציגי החברה -->
+<div class="ov" id="phOv" onclick="if(event.target===this)phClose()">
+  <div class="md wide2">
+    <button class="x" onclick="phClose()" aria-label="סגירה">✕</button>
+    <h3>מספרי הטלפון של החברה</h3>
+    <div class="s">שיוך מספר לנציג — וכל שיחה מהמספר הזה נרשמת על שמו, גם אחורה בזמן.
+      מספר שאינו משויך נשאר <b>לא מזוהה</b>, ומה שנאמר בו לא נכנס לזיכרון האישי של אף אחד.</div>
+    <div class="ph-list" id="phList"></div>
+    <div class="ph-note">הרשימה נבנית מהשיחות עצמן — <b>מספר חדש מופיע כאן ברגע שהתקשר</b>.
+      הנציגים משותפים לכל הערוצים: מי ששויך כאן מזוהה גם בקבוצת הוואטסאפ.</div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="cli.js"></script>
@@ -159,7 +206,7 @@ hkChrome('calls',{strip:false});
 /* נקרא מה-URL ולא מהמחלקה: cli.js מוסיף אותה אחרי שהסקריפט הזה כבר רץ */
 const KCLI=/[?&]r=cli/.test(location.search);
 const CALLS=[
- {id:'k1', dir:'in', who:'צחי עובד', role:'בעלים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+ {id:'k1', dir:'in', ph:'052-441-3908', side:'טל מלקר', sideRole:'מנהלת התזרים',
   date:'02.07.2026', at:'09:14', dur:'4:38', topic:'דחיית התשלום לבז״ן בגלל החריגה',
   sum:['צחי ראה את התראת החריגה וביקש לדחות את התשלום לבז״ן — 38,400 ₪ ב-30.07',
        'טל בדקה מול תנאי התשלום של בז״ן: שוטף+30, ודחייה של עשרה ימים אינה גוררת קנס',
@@ -174,11 +221,11 @@ const CALLS=[
       ['1:31','them','צחי עובד','אני אדבר איתה עכשיו.'],
       ['1:36','us','טל מלקר','מעולה. אני חוזרת אליך אחרי שאדבר עם בז״ן.']]},
 
- {id:'k0', dir:'in', miss:1, who:'צחי עובד', role:'בעלים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+ {id:'k0', dir:'in', miss:1, ph:'052-441-3908', side:'טל מלקר', sideRole:'מנהלת התזרים',
   date:'02.07.2026', at:'08:47', tries:2, topic:'לא נענתה — הוחזרה ב-09:14',
   backTo:'k1', backAt:'09:14'},
 
- {id:'k2', dir:'out', who:'רות אלמוג', role:'מנהלת כספים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+ {id:'k2', dir:'out', ph:'053-820-1174', side:'טל מלקר', sideRole:'מנהלת התזרים',
   date:'01.07.2026', at:'16:05', dur:'9:21', topic:'החשבוניות שלא נצבעו בתזרים',
   sum:['25,000 ₪ מקניות המלאי של יוני עדיין לא הועברו להנהלת החשבונות',
        'רות תסרוק ותעביר עד סוף השבוע — שלוש חשבוניות ספק',
@@ -194,7 +241,20 @@ const CALLS=[
       ['0:43','us','טל מלקר','תודה. ורק שנסגור לעתיד — במקום לצבור, תשלחי אותן לקבוצה ביום שהן מגיעות. זה נקלט אצלנו אוטומטית ואת לא צריכה לזכור.'],
       ['1:02','them','רות אלמוג','נשמע הגיוני. נתחיל ככה מיולי.']]},
 
- {id:'k3', dir:'in', who:'צחי עובד', role:'בעלים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+ {id:'ku', dir:'in', ph:'054-771-2280', side:'טל מלקר', sideRole:'מנהלת התזרים',
+  date:'01.07.2026', at:'13:20', dur:'3:12', topic:'הצעת המחיר לליסינג — המשך מהקבוצה',
+  sum:['התקשר בהמשך להצעת המחיר לליסינג ששלח לקבוצה ב-12:58',
+       'טל ביקשה לקבל את ההצעה גם כקובץ מסודר לפני שהיא נכנסת לתזרים',
+       'המספר אינו משויך לנציג — מה שנאמר בשיחה לא נכנס לזיכרון האישי של אף אחד'],
+  tasks:[{t:'שיוך המספר 054-771-2280 לנציג', done:false, who:'טל מלקר'}],
+  tr:[['0:05','them','054-771-2280','שלום, שלחתי לכם בקבוצה הצעת מחיר לליסינג. ראיתם?'],
+      ['0:12','us','טל מלקר','ראיתי את ההודעה. סליחה, עם מי אני מדברת?'],
+      ['0:18','them','054-771-2280','זה בקשר לרכבים החדשים, דיברנו על זה עם צחי.'],
+      ['0:26','us','טל מלקר','מצוין. תוכל לשלוח לי את ההצעה כקובץ מסודר? כרגע יש לי רק צילום מסך בקבוצה.'],
+      ['0:39','them','054-771-2280','אשלח היום.'],
+      ['0:43','us','טל מלקר','תודה. וברשותך אני מוסיפה אותך אצלנו במערכת, כדי שהשיחות יירשמו על שמך.']]},
+
+ {id:'k3', dir:'in', ph:'052-441-3908', side:'טל מלקר', sideRole:'מנהלת התזרים',
   date:'28.06.2026', at:'11:40', dur:'2:55', topic:'חיוב כפול ב-Payment',
   sum:['צחי זיהה חיוב כפול של 3,540 ₪ מ-Payment בכרטיס האשראי',
        'טל אישרה שהחיוב נרשם פעמיים גם בתזרים והתחילה בירור מול הספק',
@@ -206,11 +266,11 @@ const CALLS=[
       ['0:23','us','טל מלקר','כן, אני פותחת בירור מולם. שים לב שכשיגיע הזיכוי אני לא מכניסה אותו אוטומטית — קודם מוודאת שהחיוב המקורי לא ירד פעמיים, אחרת נוריד כפול ונקבל חור.'],
       ['0:44','them','צחי עובד','הבנתי. תעדכני אותי.']]},
 
- {id:'km', dir:'in', miss:1, who:'רות אלמוג', role:'מנהלת כספים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+ {id:'km', dir:'in', miss:1, ph:'053-820-1174', side:'טל מלקר', sideRole:'מנהלת התזרים',
   date:'26.06.2026', at:'17:32', tries:1, topic:'לא נענתה — טרם הוחזרה',
   backTo:null},
 
- {id:'k4', dir:'out', who:'צחי עובד', role:'בעלים', side:'אילון שחר', sideRole:'היועץ',
+ {id:'k4', dir:'out', ph:'052-441-3908', side:'אילון שחר', sideRole:'היועץ',
   date:'24.06.2026', at:'15:10', dur:'12:47', topic:'מסגרת אשראי נוספת מול הבנק',
   sum:['הבנק מוכן לדון במסגרת נוספת של 100 אש״ח',
        'נדרש תכנון תזרימי לשישה חודשים — יופק מהמערכת ויישלח לסניף',
@@ -224,6 +284,16 @@ const CALLS=[
       ['0:37','us','אילון שחר','שבועיים בערך. אם נסגור עד ה-15 ביולי אנחנו מסודרים לפני הרכש של אוגוסט.'],
       ['0:49','them','צחי עובד','בוא נכוון לזה.']]},
 ];
+/* הנציגים של החברה, והמספרים שמשויכים אליהם. מספר שלא שויך נשאר
+   "לא מזוהה" — בדיוק כמו בקבוצת הוואטסאפ, ששם אותו 054-771-2280
+   שולח הצעת מחיר ואיש לא יודע מי הוא. השיוך נעשה פעם אחת, כאן. */
+let PEOPLE=[{id:'p1',n:'צחי עובד',r:'בעלים'},{id:'p2',n:'רות אלמוג',r:'מנהלת כספים'}];
+let PHONES={'052-441-3908':'p1','053-820-1174':'p2','054-771-2280':null};
+const perOf=ph=>{const id=PHONES[ph];return id?PEOPLE.find(p=>p.id===id)||null:null};
+const whoOf=c=>{const p=perOf(c.ph);return p?p.n:c.ph};
+const roleOf=c=>{const p=perOf(c.ph);return p?p.r:'לא מזוהה'};
+const isUnk=c=>!perOf(c.ph);
+
 const KDIR={in:['נכנסת','in'],out:['יוצאת','out'],miss:['שלא נענתה','miss']};
 const kKind=c=>c.miss?'miss':c.dir;
 const KICO={
@@ -246,8 +316,13 @@ function kSum(){
   document.getElementById('clSum').innerHTML=
     `<b>${spoke.length}</b> שיחות<span class="dot"></span><b>${Math.round(tot/60)}</b> דקות בסך הכול`
    +`<span class="dot"></span>האחרונה <b>היום ${CALLS[0].at}</b>`
-   +(open?`<span class="dot"></span><span class="no">${open===1?'שיחה אחת לא הוחזרה':open+' שיחות לא הוחזרו'}</span>`:'');
+   +(open?`<span class="dot"></span><span class="no">${open===1?'שיחה אחת לא הוחזרה':open+' שיחות לא הוחזרו'}</span>`:'')
+   +`<button class="cl-cog" onclick="phOpen()">
+       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+       מספרים${unkPhones().length?`<i>${unkPhones().length}</i>`:''}</button>`;
 }
+/* מספרים שהופיעו בשיחות ואינם משויכים לאף נציג */
+const unkPhones=()=>[...new Set(CALLS.map(c=>c.ph))].filter(p=>!PHONES[p]);
 function kFil(){
   const n=k=>k==='all'?CALLS.length:k==='miss'?CALLS.filter(c=>c.miss).length
                                    :CALLS.filter(c=>c.dir===k&&!c.miss).length;
@@ -265,7 +340,8 @@ function kRows(){
     const k=kKind(c);
     h+=`<button class="cl-row ${k} ${KSEL===c.id?'on':''}" onclick="kPick('${c.id}')">
       <span class="cl-ico">${KICO[k]}</span>
-      <span class="cl-b"><b>${c.who}</b><span>${c.topic}</span></span>
+      <span class="cl-b"><b>${whoOf(c)}${isUnk(c)?'<span class="cl-unk">לא מזוהה</span>':''}</b>
+        <span>${c.topic}</span></span>
       <span class="cl-w"><b dir="ltr">${c.at}</b>
         <span ${c.miss?'class="no"':'dir="ltr"'}>${c.miss?'לא נענתה':c.dur}</span></span>
     </button>`;
@@ -285,9 +361,9 @@ function kOne(){
     host.innerHTML=`
       <div class="cl-h">
         <span class="cl-tag miss">${KICO.miss} שיחה שלא נענתה</span>
-        <h2>${c.who} חיפש${c.who==='רות אלמוג'?'ה':''} אותנו</h2>
+        <h2>${whoOf(c)} ${perOf(c.ph)&&perOf(c.ph).r.startsWith('מנהלת')?'חיפשה':'חיפש'} אותנו</h2>
         <div class="cl-meta">
-          <span><b>${c.who}</b> · ${c.role}</span><span class="dot"></span>
+          <span><b>${whoOf(c)}</b> · ${roleOf(c)}</span><span class="dot"></span>
           <span>${kDay(c.date)} ${c.at}</span><span class="dot"></span>
           <span>${c.tries===1?'ניסיון אחד':c.tries+' ניסיונות'}</span>
         </div>
@@ -307,8 +383,8 @@ function kOne(){
             <span>עברו <b>6 ימים</b> מאז. אם היה נושא — הוא עדיין פתוח.</span>`}
         </div>
         ${back?'':`<div class="cl-macts">
-          <button class="btn pri" onclick="toast('חיוג ל${c.who}')">חיוג חזרה</button>
-          <button class="btn pln" onclick="toast('הודעה נשלחה ל${c.who} בוואטסאפ')">שליחת הודעה</button>
+          <button class="btn pri" onclick="toast('חיוג ל${whoOf(c)}')">חיוג חזרה</button>
+          <button class="btn pln" onclick="toast('הודעה נשלחה ל${whoOf(c)} בוואטסאפ')">שליחת הודעה</button>
         </div>`}
       </div>`;
     return;
@@ -323,7 +399,7 @@ function kOne(){
       <span class="cl-tag ${dc}">${KICO[c.dir]} שיחה ${dl}</span>
       <h2>${c.topic}</h2>
       <div class="cl-meta">
-        <span>${c.dir==='in'?'מ־':'אל '}<b>${c.who}</b> · ${c.role}</span><span class="dot"></span>
+        <span>${c.dir==='in'?'מ־':'אל '}<b>${whoOf(c)}</b> · ${roleOf(c)}</span><span class="dot"></span>
         <span>${c.dir==='in'?'ענתה':'התקשר'} <b>${c.side}</b> · ${c.sideRole}</span><span class="dot"></span>
         <span>${kDay(c.date)} ${c.at}</span><span class="dot"></span>
         <span dir="ltr"><b>${c.dur}</b> דק׳</span>
@@ -359,6 +435,47 @@ function kBody(c){
       <span class="sp"></span>
       <button class="btn pln" onclick="toast('התמלול ירד כקובץ')">הורדת התמלול</button></div>`;
 }
+/* ================= שיוך מספר לנציג ================= */
+let phNew=null;                      /* המספר שנפתחה עבורו שורת "נציג חדש" */
+function phOpen(){phNew=null;phDraw();document.getElementById('phOv').classList.add('on');}
+function phClose(){document.getElementById('phOv').classList.remove('on');}
+function phDraw(){
+  const nums=[...new Set(CALLS.map(c=>c.ph))];
+  document.getElementById('phList').innerHTML=nums.map(ph=>{
+    const mine=CALLS.filter(c=>c.ph===ph), p=perOf(ph);
+    const last=mine[0];
+    return `<div class="ph-row ${p?'':'unk'}">
+      <div class="ph-top">
+        <span class="ph-num" dir="ltr">${ph}</span>
+        <span class="ph-meta">${mine.length===1?'שיחה אחת':mine.length+' שיחות'} · האחרונה ${kDay(last.date)} ${last.at}</span>
+        <span class="ph-now ${p?'':'no'}">${p?p.n:'לא מזוהה'}</span>
+      </div>
+      <div class="ph-pick">
+        ${PEOPLE.map(x=>`<button class="${p&&p.id===x.id?'on':''}" onclick="phSet('${ph}','${x.id}')">${x.n} · ${x.r}</button>`).join('')}
+        <button class="add" onclick="phAddRow('${ph}')">＋ נציג חדש</button>
+      </div>
+      ${phNew===ph?`<div class="ph-new">
+        <input id="phN" placeholder="שם הנציג" onkeydown="if(event.key==='Enter')phAdd('${ph}')">
+        <input id="phR" placeholder="תפקיד — למשל אחראי רכש" onkeydown="if(event.key==='Enter')phAdd('${ph}')">
+        <button onclick="phAdd('${ph}')">הוספה ושיוך</button></div>`:''}
+    </div>`;}).join('');
+  const n=document.getElementById('phN'); if(n) n.focus();
+}
+function phSet(ph,id){
+  PHONES[ph]=id; phNew=null; phDraw(); kRender();
+  const p=PEOPLE.find(x=>x.id===id);
+  toast(ph+' שויך ל'+p.n+' — כל השיחות מהמספר נרשמו על שמו');
+}
+function phAddRow(ph){phNew=(phNew===ph?null:ph);phDraw();}
+function phAdd(ph){
+  const n=document.getElementById('phN'), r=document.getElementById('phR');
+  const name=(n.value||'').trim(); if(!name){n.focus();return}
+  const id='p'+(PEOPLE.length+1);
+  PEOPLE.push({id,n:name,r:(r.value||'').trim()||'נציג'});
+  phSet(ph,id);
+}
+addEventListener('keydown',e=>{if(e.key==='Escape')phClose()});
+
 function kRender(){kSum();kFil();kRows();kOne();}
 kRender();
 </script>
