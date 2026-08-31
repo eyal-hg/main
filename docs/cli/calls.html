@@ -87,36 +87,7 @@ html.embed .cl-grid{flex:1;min-height:0}
 /* ---------- מספר לא מזוהה, ושיוכו לנציג ---------- */
 .cl-unk{font-size:10.5px;font-weight:700;color:#9A6300;background:#FFF6E6;border:1px solid #F5E2BC;
   border-radius:999px;padding:1px 8px;margin-inline-start:6px}
-.cl-cog{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--cardbd);background:#fff;
-  color:var(--navy);font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 11px;
-  cursor:pointer;transition:.13s;margin-inline-start:auto;flex:none}
-.cl-cog:hover{border-color:var(--sky);background:var(--tint);color:#14618F}
-.cl-cog i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#D9922B;
-  border-radius:999px;padding:0 6px;line-height:15px}
-.md.wide2{width:min(640px,94vw)}
-.ph-list{display:flex;flex-direction:column;gap:8px;max-height:min(52vh,420px);overflow-y:auto;padding:2px}
-.ph-row{border:1px solid var(--tint);border-radius:12px;padding:11px 13px;transition:.15s}
-.ph-row.unk{border-color:#F5E2BC;background:#FFFCF5}
-.ph-top{display:flex;align-items:center;gap:10px}
-.ph-num{font-size:13.5px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;flex:none}
-.ph-meta{font-size:11px;color:var(--ink3);flex:1;min-width:0}
-.ph-now{font-size:11.5px;font-weight:600;color:#0B6E4B;background:#E7F7EF;border-radius:999px;
-  padding:2px 10px;flex:none}
-.ph-now.no{color:#9A6300;background:#FFF6E6}
-.ph-pick{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
-.ph-pick button{border:1px solid var(--cardbd);background:#fff;color:var(--ink2);font:inherit;
-  font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 12px;cursor:pointer;transition:.12s}
-.ph-pick button:hover{border-color:var(--sky);color:#14618F}
-.ph-pick button.on{background:var(--band);border-color:var(--band);color:#fff}
-.ph-pick button.add{border-style:dashed;color:#14618F}
-.ph-new{display:flex;gap:7px;margin-top:9px}
-.ph-new input{flex:1;min-width:0;font-size:12.5px!important;padding:7px 11px!important}
-.ph-new button{border:0;background:var(--band);color:#fff;font:inherit;font-size:12px;font-weight:600;
-  border-radius:10px;padding:7px 15px;cursor:pointer;flex:none}
-.ph-new button:disabled{background:#E7EDF3;color:var(--faint);cursor:default}
-.ph-note{font-size:11.5px;color:var(--ink3);line-height:1.7;margin-top:13px;padding-top:12px;
-  border-top:1px solid var(--tint)}
-.ph-note b{color:var(--navy);font-weight:600}
+
 .cl-h h2{font-size:17px;font-weight:600;color:var(--navy);line-height:1.35}
 .cl-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:8px;
   font-size:12px;color:var(--ink3)}
@@ -177,19 +148,6 @@ html.embed .cl-grid{flex:1;min-height:0}
     <section class="panel" id="clOne"></section>
   </div>
 </main>
-
-<!-- שיוך מספרי טלפון לנציגי החברה -->
-<div class="ov" id="phOv" onclick="if(event.target===this)phClose()">
-  <div class="md wide2">
-    <button class="x" onclick="phClose()" aria-label="סגירה">✕</button>
-    <h3>מספרי הטלפון של החברה</h3>
-    <div class="s">שיוך מספר לנציג — וכל שיחה מהמספר הזה נרשמת על שמו, גם אחורה בזמן.
-      מספר שאינו משויך נשאר <b>לא מזוהה</b>, ומה שנאמר בו לא נכנס לזיכרון האישי של אף אחד.</div>
-    <div class="ph-list" id="phList"></div>
-    <div class="ph-note">הרשימה נבנית מהשיחות עצמן — <b>מספר חדש מופיע כאן ברגע שהתקשר</b>.
-      הנציגים משותפים לכל הערוצים: מי ששויך כאן מזוהה גם בקבוצת הוואטסאפ.</div>
-  </div>
-</div>
 
 <div id="toast"></div>
 
@@ -317,12 +275,8 @@ function kSum(){
     `<b>${spoke.length}</b> שיחות<span class="dot"></span><b>${Math.round(tot/60)}</b> דקות בסך הכול`
    +`<span class="dot"></span>האחרונה <b>היום ${CALLS[0].at}</b>`
    +(open?`<span class="dot"></span><span class="no">${open===1?'שיחה אחת לא הוחזרה':open+' שיחות לא הוחזרו'}</span>`:'')
-   +`<button class="cl-cog" onclick="phOpen()">
-       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
-       מספרים${unkPhones().length?`<i>${unkPhones().length}</i>`:''}</button>`;
+   ;
 }
-/* מספרים שהופיעו בשיחות ואינם משויכים לאף נציג */
-const unkPhones=()=>[...new Set(CALLS.map(c=>c.ph))].filter(p=>!PHONES[p]);
 function kFil(){
   const n=k=>k==='all'?CALLS.length:k==='miss'?CALLS.filter(c=>c.miss).length
                                    :CALLS.filter(c=>c.dir===k&&!c.miss).length;
@@ -435,47 +389,6 @@ function kBody(c){
       <span class="sp"></span>
       <button class="btn pln" onclick="toast('התמלול ירד כקובץ')">הורדת התמלול</button></div>`;
 }
-/* ================= שיוך מספר לנציג ================= */
-let phNew=null;                      /* המספר שנפתחה עבורו שורת "נציג חדש" */
-function phOpen(){phNew=null;phDraw();document.getElementById('phOv').classList.add('on');}
-function phClose(){document.getElementById('phOv').classList.remove('on');}
-function phDraw(){
-  const nums=[...new Set(CALLS.map(c=>c.ph))];
-  document.getElementById('phList').innerHTML=nums.map(ph=>{
-    const mine=CALLS.filter(c=>c.ph===ph), p=perOf(ph);
-    const last=mine[0];
-    return `<div class="ph-row ${p?'':'unk'}">
-      <div class="ph-top">
-        <span class="ph-num" dir="ltr">${ph}</span>
-        <span class="ph-meta">${mine.length===1?'שיחה אחת':mine.length+' שיחות'} · האחרונה ${kDay(last.date)} ${last.at}</span>
-        <span class="ph-now ${p?'':'no'}">${p?p.n:'לא מזוהה'}</span>
-      </div>
-      <div class="ph-pick">
-        ${PEOPLE.map(x=>`<button class="${p&&p.id===x.id?'on':''}" onclick="phSet('${ph}','${x.id}')">${x.n} · ${x.r}</button>`).join('')}
-        <button class="add" onclick="phAddRow('${ph}')">＋ נציג חדש</button>
-      </div>
-      ${phNew===ph?`<div class="ph-new">
-        <input id="phN" placeholder="שם הנציג" onkeydown="if(event.key==='Enter')phAdd('${ph}')">
-        <input id="phR" placeholder="תפקיד — למשל אחראי רכש" onkeydown="if(event.key==='Enter')phAdd('${ph}')">
-        <button onclick="phAdd('${ph}')">הוספה ושיוך</button></div>`:''}
-    </div>`;}).join('');
-  const n=document.getElementById('phN'); if(n) n.focus();
-}
-function phSet(ph,id){
-  PHONES[ph]=id; phNew=null; phDraw(); kRender();
-  const p=PEOPLE.find(x=>x.id===id);
-  toast(ph+' שויך ל'+p.n+' — כל השיחות מהמספר נרשמו על שמו');
-}
-function phAddRow(ph){phNew=(phNew===ph?null:ph);phDraw();}
-function phAdd(ph){
-  const n=document.getElementById('phN'), r=document.getElementById('phR');
-  const name=(n.value||'').trim(); if(!name){n.focus();return}
-  const id='p'+(PEOPLE.length+1);
-  PEOPLE.push({id,n:name,r:(r.value||'').trim()||'נציג'});
-  phSet(ph,id);
-}
-addEventListener('keydown',e=>{if(e.key==='Escape')phClose()});
-
 function kRender(){kSum();kFil();kRows();kOne();}
 kRender();
 </script>
