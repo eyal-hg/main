@@ -71,6 +71,49 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
 .ph .hint{font-size:12.5px;color:var(--ink3)}
+/* טאבים בראש הרשימה — פגישות מול שיחות שלא נקשרו לחברה */
+.mtabs{display:flex;gap:2px}
+.mtabs button{position:relative;border:0;background:none;font:inherit;padding:2px 12px 10px;
+  font-size:15px;font-weight:600;color:var(--ink3);cursor:pointer;display:flex;align-items:center;gap:7px}
+.mtabs button:hover{color:var(--navy)}
+.mtabs button.on{color:var(--navy)}
+.mtabs button.on::after{content:"";position:absolute;inset-inline:8px;bottom:-11px;height:2px;
+  border-radius:99px;background:var(--sal,#c97b6e)}
+.mtabs button i{font-style:normal;font-size:11px;font-weight:700;color:#fff;background:#D9922B;
+  border-radius:999px;padding:0 7px;line-height:17px}
+.mtabs button i:empty{display:none}
+
+/* התצוגה של השיחות — מחליפה את החיפוש, הצ׳יפים והטבלה */
+.list.calls .search,.list.calls .topics,.list.calls .tw,
+.list.calls .empty,.list.calls .lfoot,.list.calls .cfil{display:none!important}
+.list:not(.calls) .unid{display:none}
+.unid{padding:4px 20px 18px}
+.un-top{font-size:12.5px;color:var(--ink3);line-height:1.7;padding:10px 0 12px}
+.un-top b{color:var(--navy);font-weight:600}
+.un-list{display:flex;flex-direction:column;gap:9px}
+.un-row{border:1px solid var(--bd);border-radius:12px;padding:12px 14px;background:var(--white)}
+.un-row.two{border-color:#cfe0ef;background:#FBFDFF}
+.un-row.none{border-color:#F5E2BC;background:#FFFCF5}
+.un-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.un-ic{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;background:#EAF4FB;color:#14618F}
+.un-row.none .un-ic{background:#FBECD0;color:#b46e0e}
+.un-num{font-size:14px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
+.un-who{font-size:12.5px;color:var(--ink3)}
+.un-when{margin-inline-start:auto;font-size:11.5px;color:var(--muted-2,#a9a9a9);
+  font-variant-numeric:tabular-nums;flex:none}
+.un-tp{font-size:12.5px;color:var(--ink);margin:7px 0 0 40px;padding-inline-start:40px}
+.un-why{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;
+  padding-inline-start:40px}
+.un-why .lb{font-size:11.5px;font-weight:600;color:#b46e0e}
+.un-row.two .un-why .lb{color:#14618F}
+.un-pick{display:flex;gap:5px;flex-wrap:wrap;margin-inline-start:auto}
+.un-pick button{border:1px solid var(--bd);background:var(--white);color:var(--ink);font:inherit;
+  font-size:12px;font-weight:600;border-radius:999px;padding:4px 13px;cursor:pointer;transition:.12s}
+.un-pick button:hover{border-color:var(--navy);color:var(--navy)}
+.un-pick button.pri2{background:var(--navy);border-color:var(--navy);color:#fff}
+.un-done{padding:26px 10px;text-align:center;font-size:13px;color:var(--ink3)}
+.un-done b{display:block;font-size:14.5px;color:var(--navy);margin-bottom:4px}
 .ph .cfil{margin-inline-start:auto;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;background:var(--white);color:var(--ink)}
 
 /* ---- buttons ---- */
@@ -324,7 +367,12 @@ table.ml{width:100%;border-collapse:collapse}
 
   <!-- ===== all meetings ===== -->
   <section class="panel list">
-    <div class="ph"><h2>כל הפגישות</h2><span class="hint" id="hint"></span>
+    <div class="ph">
+      <div class="mtabs">
+        <button class="on" id="tbMeet" onclick="mtView('meet')">פגישות ושיחות</button>
+        <button id="tbUnid" onclick="mtView('unid')">שיחות טלפון לא מזוהות <i id="unidN"></i></button>
+      </div>
+      <span class="hint" id="hint"></span>
       <select class="cfil" id="cfil" aria-label="סינון לפי לקוח">
         <option value="">כל הלקוחות</option>
         <option>אנרגי אינטרנשיונל</option><option>אנרגי גולני</option><option>מטעי גבעון</option><option>משה עובד</option><option>רימון יצחק</option>
@@ -406,6 +454,13 @@ table.ml{width:100%;border-collapse:collapse}
       </tbody>
     </table>
     </div>
+
+    <!-- ===== שיחות שלא נקשרו לחברה ===== -->
+    <div class="unid" id="unidView">
+      <div class="un-top" id="unTop"></div>
+      <div class="un-list" id="unList"></div>
+    </div>
+
     <div class="empty" id="empty"><b id="emptyT"></b><span id="emptyS"></span><div><button class="btn sm" id="emptyR">ניקוי הסינון</button></div></div>
     <div class="lfoot"><span>משוב מהלקוח: <b>6 מתוך 8</b></span><span>הוקלטו: <b>6</b></span><span>הפגישה האחרונה שנשלחה ללקוח: <b class="num">12.05 מטעי גבעון</b></span></div>
   </section>
@@ -770,6 +825,76 @@ html.embed .wrap{height:calc(100vh - 68px)}
     e.preventDefault(); parent.postMessage({hkAdvGo:f},'*');
   },true);
 })();
+
+/* =====================================================================
+   שיחות טלפון שלא נקשרו לחברה
+   שיחה נכנסת מזוהה לפי המספר. שני מצבים שבהם המערכת לא יכולה להכריע
+   לבדה, ולכן היא לא מנחשת אלא שואלת:
+     none — המספר אינו מוכר לאף לקוח.
+     two  — המספר מוכר, אבל הנציג יושב בשתי חברות (אותו בעלים, שני עסקים),
+            ואי אפשר לדעת על איזו מהן דיברו.
+   עד שהשיחה משויכת היא לא נכנסת לזיכרון של אף חברה.
+   ===================================================================== */
+let UNID=[
+  {id:'u1', ph:'052-441-3908', who:'צחי עובד', when:'היום · 09:14', dur:'4:38',
+   why:'two', cos:['אנרגי אינטרנשיונל','אנרגי גולני'],
+   tp:'דחיית התשלום לבז״ן בגלל החריגה הצפויה'},
+  {id:'u2', ph:'054-771-2280', who:null, when:'אתמול · 13:20', dur:'3:12',
+   why:'none', tp:'הצעת מחיר לליסינג — המשך מהודעה בקבוצה'},
+  {id:'u3', ph:'052-441-3908', who:'צחי עובד', when:'01.07 · 08:12', dur:'6:04',
+   why:'two', cos:['אנרגי אינטרנשיונל','אנרגי גולני'],
+   tp:'סגירת שכר יוני והעברת התלושים'},
+  {id:'u4', ph:'050-338-9017', who:null, when:'28.06 · 15:47', dur:'1:52',
+   why:'none', tp:'שיחה קצרה — ביקש לחזור אליו'},
+];
+const ALL_CO=['אנרגי אינטרנשיונל','אנרגי גולני','מטעי גבעון','משה עובד','רימון יצחק'];
+const UN_ICO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>';
+
+function unidRender(){
+  const n=UNID.length;
+  const b=document.getElementById('unidN'); if(b) b.textContent=n||'';
+  const top=document.getElementById('unTop'), host=document.getElementById('unList');
+  if(!host) return;
+  if(!n){
+    top.innerHTML='';
+    host.innerHTML='<div class="un-done"><b>אין שיחות ממתינות</b>כל השיחות שנקלטו שויכו לחברה.</div>';
+    return;
+  }
+  const two=UNID.filter(u=>u.why==='two').length;
+  top.innerHTML='<b>'+n+' שיחות</b> נקלטו ולא נקשרו לחברה — '
+    +(two?'<b>'+two+'</b> מהן ממספר שמוכר לנו, אבל הנציג יושב בשתי חברות. ':'')
+    +'עד שהן משויכות הן לא נכנסות לזיכרון של אף חברה.';
+  host.innerHTML=UNID.map(u=>{
+    const opts=u.why==='two'?u.cos:ALL_CO;
+    return '<div class="un-row '+u.why+'">'
+      +'<div class="un-h"><span class="un-ic">'+UN_ICO+'</span>'
+      +'<span class="un-num" dir="ltr">'+u.ph+'</span>'
+      +'<span class="un-who">'+(u.who?u.who:'לא מזוהה')+'</span>'
+      +'<span class="un-when">'+u.when+' · '+u.dur+' דק׳</span></div>'
+      +'<div class="un-tp">'+u.tp+'</div>'
+      +'<div class="un-why"><span class="lb">'
+      +(u.why==='two'?'⚠ הנציג משויך לשתי חברות':'⚠ המספר לא מוכר לאף לקוח')
+      +'</span><span class="un-pick">'
+      +opts.map(function(c,i){return '<button class="'+(u.why==='two'&&i===0?'pri2':'')
+        +'" onclick="unidSet(\''+u.id+'\',\''+c+'\')">'+c+'</button>'}).join('')
+      +'</span></div></div>';
+  }).join('');
+}
+function unidSet(id,co){
+  const u=UNID.find(x=>x.id===id); if(!u) return;
+  UNID=UNID.filter(x=>x.id!==id);
+  unidRender();
+  toast(u.ph+' שויכה ל'+co+' — השיחה נכנסה לזיכרון החברה');
+}
+function mtView(v){
+  const sec=document.querySelector('.panel.list');
+  sec.classList.toggle('calls', v==='unid');
+  document.getElementById('tbMeet').classList.toggle('on', v!=='unid');
+  document.getElementById('tbUnid').classList.toggle('on', v==='unid');
+  if(v==='unid') unidRender();
+}
+unidRender();
+
 </script>
 </body>
 </html>
