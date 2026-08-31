@@ -383,7 +383,10 @@
     else if(t==='fcast'){
       document.getElementById('viewFcast').style.display='';
       const ff=document.getElementById('fcastFrame');
-      if(!ff.src) ff.src=ff.dataset.src;   // טעינה עצלה כמו היומן
+      /* אצל בעל העסק המסך לקריאה בלבד — התכנון נעשה מולו, לא על ידו.
+         נטען מחדש כשמחליפים תפקיד, כמו במסכי docs/cli. */
+      const _fw=(ROLE==='client1'||ROLE==='clientN')?'cli':'adv';
+      if(!ff.src||ff.dataset.role!==_fw){ ff.dataset.role=_fw; ff.src=ff.dataset.src+'&r='+_fw; }
     }
     else if(t==='settings'){document.getElementById('viewSettings').style.display='';renderSettings();}
     else{document.getElementById('viewOther').style.display='';document.getElementById('otherName').textContent=TAB_LABELS[t]||t;}

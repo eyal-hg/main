@@ -263,6 +263,14 @@ tr.subline.open th.cat,tr.subline.open .cell{color:var(--warn);font-weight:700}
 /* editable cell states */
 .cell.edit{cursor:pointer;position:relative;transition:.12s}
 .cell.edit:hover{box-shadow:inset 0 0 0 2px #bcd9f6;border-radius:8px}
+/* ===== קריאה בלבד אצל בעל העסק =====
+   כל מה שמשנה את התכנון יורד — לא מושבת ואפור, אלא לא קיים. */
+html.r-cli .cell.edit{cursor:default}
+html.r-cli .cell.edit:hover{box-shadow:none}
+html.r-cli .edithint,html.r-cli #reloadBtn,html.r-cli .excl,
+html.r-cli .clsbtn,html.r-cli .simbar{display:none!important}
+html.r-cli #startBal{pointer-events:none;border-color:transparent;background:transparent;
+  box-shadow:none;cursor:default}
 .cell.st-avg{color:var(--text-muted)}
 .cell.st-avg .v{border-bottom:1.5px dotted var(--border-strong);padding-bottom:1px}
 .cell.st-edit{background:linear-gradient(180deg,#f0f7fe,#eaf3fd)}
@@ -337,7 +345,12 @@ body.is-embedded .page-head{display:none}
 </style>
 </head>
 <body>
-<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');</script>
+<script>if(location.search.includes('embed=1'))document.body.classList.add('is-embedded');
+/* r=cli — בעל העסק. המסך שלו לקריאה בלבד: הוא רואה את התכנון, לא בונה אותו. */
+var RO=/[?&]r=cli/.test(location.search);
+if(RO){document.documentElement.classList.add('r-cli');
+  addEventListener('DOMContentLoaded',function(){
+    var b=document.getElementById('startBal'); if(b){b.readOnly=true;b.tabIndex=-1;}});}</script>
 <div class="app">
   <div class="page-head">
     <div class="brand"><div class="dot">HK</div></div>
@@ -818,7 +831,7 @@ function renderTable(){
   rows += compRow("רווח תזרימי", "profit big", ci=>cashflowProfit(ci), ()=>curCashflow(), "flow");
 
   document.getElementById("report").innerHTML = `<thead>${headHTML()}</thead><tbody>${rows}</tbody>`;
-  document.querySelectorAll("td.cell.edit").forEach(td=> td.addEventListener("click",()=>openEditor(td)));
+  if(!RO) document.querySelectorAll("td.cell.edit").forEach(td=> td.addEventListener("click",()=>openEditor(td)));
   document.querySelectorAll(".caret").forEach(el=> el.addEventListener("click",e=>{ e.stopPropagation(); toggle(el.dataset.key); }));
   document.querySelectorAll(".excl").forEach(b=> b.addEventListener("click",e=>{
     e.stopPropagation(); const id=b.dataset.id;
@@ -851,6 +864,7 @@ let editorEl=null, backdropEl=null;
 function closeEditor(){ if(editorEl){editorEl.remove();editorEl=null;} if(backdropEl){backdropEl.remove();backdropEl=null;} }
 
 function openEditor(td){
+  if(RO) return;                     /* בעל העסק צופה — אין עורך תא */
   closeEditor();
   const id=td.dataset.id, mk=td.dataset.mk;
   const col=COLS.find(c=>c.key===mk);
