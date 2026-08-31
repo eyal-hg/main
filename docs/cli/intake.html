@@ -70,6 +70,13 @@
   color:#14618F;font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 13px;
   cursor:pointer;transition:.13s}
 .newauto:hover{background:var(--tint);border-style:solid}
+/* תנאי תשלום אינם חיבור אלא הגדרה — מסגרת מלאה, לא מקווקוות */
+.terms-b{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--cardbd);background:#fff;
+  color:var(--navy);font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 13px;
+  cursor:pointer;transition:.13s}
+.terms-b:hover{border-color:var(--sky);background:var(--tint);color:#14618F}
+.terms-b i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:var(--coral);
+  border-radius:999px;padding:0 6px;line-height:15px}
 .dest{font-size:11.5px;color:var(--ink3)}
 .dest b{color:var(--navy);font-weight:600}
 
@@ -102,6 +109,22 @@
   color:var(--ink3);line-height:1.6}
 .abox-f b{color:var(--navy);font-weight:600}
 
+/* ---------- תנאי תשלום לפי ספק ---------- */
+.plist{padding:4px 20px 16px;max-height:min(56vh,470px);overflow-y:auto}
+.psec{font-size:10.5px;font-weight:700;color:var(--faint);letter-spacing:.04em;padding:13px 0 4px}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px;align-items:center;
+  padding:10px;border-radius:11px;border:1px solid transparent;transition:.25s}
+.prow+.prow{border-top:1px solid var(--tint)}
+.prow.hi{background:var(--tint);border-color:var(--sky)}
+.pn b{display:block;font-size:13px;font-weight:600;color:var(--navy)}
+.pn span{display:block;font-size:11px;color:var(--ink3);margin-top:1px}
+.pn .miss{color:#B85C48;font-weight:600}
+.tset{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.tset button{border:1px solid var(--bd2);background:#fff;color:var(--ink2);font:inherit;font-size:11px;
+  font-weight:600;border-radius:999px;padding:4px 11px;cursor:pointer;transition:.12s;white-space:nowrap}
+.tset button:hover{border-color:var(--sky);color:#14618F}
+.tset button.on{background:var(--band);border-color:var(--band);color:#fff}
+
 
 /* ---------- הטבלה ---------- */
 .card{background:#fff;border:1px solid var(--cardbd);border-radius:14px;box-shadow:var(--lift);overflow:hidden}
@@ -122,6 +145,10 @@
   border-radius:999px;padding:6px 14px;cursor:pointer;transition:.13s}
 .bulk:hover{background:var(--coral-d)}
 .bulk:disabled{background:#E7EDF3;color:var(--faint);cursor:default}
+/* פעולה שאינה אישור — קורל, כדי שלא תתבלבל עם הכפתור הכהה שמכניס לתזרים */
+.setterm{border:1px solid var(--coral);background:#fff;color:var(--coral-d);font:inherit;font-size:11.5px;
+  font-weight:600;border-radius:999px;padding:6px 13px;cursor:pointer;transition:.13s;white-space:nowrap}
+.setterm:hover{background:var(--coral);color:#fff}
 
 .row{display:grid;grid-template-columns:118px minmax(0,1fr) 108px 92px 168px 132px;
   gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--tint);transition:.12s}
@@ -146,6 +173,12 @@
 .due{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
 .due em{display:block;font-style:normal;font-size:10.5px;color:var(--faint)}
 .due.none{color:var(--warn)}
+/* התאריך אינו ניחוש — הוא נגזר מתנאי התשלום של הצד השני, והצ׳יפ אומר מאיזה */
+.tchip{margin-top:3px;border:1px solid var(--bd2);background:#fff;color:var(--ink2);font:inherit;
+  font-size:10px;font-weight:600;border-radius:999px;padding:1px 8px;cursor:pointer;transition:.12s;
+  white-space:nowrap;font-variant-numeric:normal}
+.tchip:hover{border-color:var(--sky);background:var(--tint);color:#14618F}
+.tchip.miss{border-color:#F6C9BE;background:#FDF3F1;color:#B85C48}
 
 /* מקור האוטומציה — הוא לא הערה, הוא עמודה */
 .src{display:flex;align-items:center;gap:8px;min-width:0}
@@ -176,71 +209,6 @@
 
 .empty{padding:26px 16px;text-align:center;font-size:12.5px;color:var(--ink3)}
 
-/* ---------- קטלוג האוטומציות ---------- */
-.aov{position:fixed;inset:0;background:rgba(12,64,104,.34);display:none;align-items:flex-start;
-  justify-content:center;padding:40px 20px;z-index:90;overflow:auto}
-.aov.on{display:flex}
-.abox{background:#fff;border-radius:18px;width:min(880px,96vw);box-shadow:0 24px 60px rgba(12,64,104,.28);overflow:hidden}
-.abox-h{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--tint)}
-.abox-h b{font-size:15px;color:var(--navy)}
-.abox-h span{display:block;font-size:12px;color:var(--ink3);margin-top:3px;max-width:560px;line-height:1.6}
-.abox-h .x{margin-inline-start:auto;border:0;background:#F1F5F9;color:#64748b;width:30px;height:30px;
-  border-radius:9px;font-size:14px;cursor:pointer;flex:none}
-.abox-h .x:hover{background:#E7EDF3;color:var(--navy)}
-.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:12px;padding:18px 20px}
-.acard{border:1px solid var(--cardbd);border-radius:14px;padding:14px;display:flex;flex-direction:column;
-  gap:9px;transition:.13s;background:#fff}
-.acard:hover{border-color:var(--sky);box-shadow:var(--lift)}
-.acard.on{border-color:#BFE8D5;background:#F7FDFA}
-.acard .lg{height:30px;display:flex;align-items:center}
-.acard .lg img{max-height:30px;max-width:132px;width:auto;object-fit:contain;display:block}
-.acard b{font-size:13.5px;font-weight:600;color:var(--navy)}
-.acard p{font-size:11.5px;color:var(--ink3);line-height:1.55;flex:1}
-.acard .ft{display:flex;align-items:center;gap:8px}
-.acard .st-on{font-size:11px;font-weight:700;color:#0B6E4B;background:#E8FFE4;border-radius:999px;padding:3px 10px}
-.acard button{border:1px solid var(--band);background:#fff;color:var(--band);font:inherit;font-size:11.5px;
-  font-weight:600;border-radius:999px;padding:5px 14px;cursor:pointer;transition:.13s}
-.acard button:hover{background:var(--band);color:#fff}
-.abox-f{padding:12px 20px;border-top:1px solid var(--tint);background:#FBFDFF;font-size:11.5px;
-  color:var(--ink3);line-height:1.6}
-.abox-f b{color:var(--navy);font-weight:600}
-
-
-/* ---------- הטבלה ---------- */
-/* ---------- הציר ---------- */
-/* הציר רץ לכל גובה העמודה — הוא ציר זמן, לא כרטיס שנגמר באמצע */
-.ax{display:flex;flex-direction:column;min-height:0}
-.ax .ax-b{flex:1 1 auto;overflow-y:auto}
-.ax-h{padding:12px 15px 9px}
-.ax-h b{display:block;font-size:13px;font-weight:600;color:var(--navy)}
-.ax-h span{display:block;font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5}
-.ax-lg{display:flex;gap:12px;padding:0 15px 11px;font-size:10.5px;color:var(--ink3)}
-.ax-lg i{display:inline-block;width:16px;height:7px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
-.ax-lg .a i{background:#39ABE2}
-.ax-lg .w i{background:repeating-linear-gradient(115deg,#E4826E 0 4px,#F6C9BE 4px 8px)}
-.ax-b{padding:2px 0 10px;position:relative}
-.ax-b::before{content:"";position:absolute;top:6px;bottom:6px;inset-inline-start:56px;width:1.5px;background:var(--tint)}
-.nd{display:grid;grid-template-columns:46px minmax(0,1fr);gap:0 14px;padding:8px 15px;position:relative}
-.nd::after{content:"";position:absolute;inset-inline-start:52px;top:16px;width:9px;height:9px;border-radius:50%;
-  background:#fff;border:2px solid var(--bd2);z-index:1}
-.nd.has-w::after{border-color:var(--coral)}
-.nd.all-in::after{border-color:#39ABE2;background:#39ABE2}
-.nd .d{text-align:start}
-.nd .d b{display:block;font-size:15px;font-weight:600;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
-.nd .d em{display:block;font-style:normal;font-size:10.5px;color:var(--ink3);margin-top:1px}
-.nd .ik-bar{height:9px;border-radius:99px;background:var(--tint);overflow:hidden;display:flex;margin-top:5px}
-.nd .ik-bar .a{background:#39ABE2}
-.nd .ik-bar .w{background:repeating-linear-gradient(115deg,#E4826E 0 4px,#F6C9BE 4px 8px)}
-.nd .fig{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
-.nd .fig b{font-size:13.5px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
-.nd .fig span{font-size:10.5px;color:var(--ink3)}
-.nd .wtag{display:inline-flex;align-items:center;gap:5px;margin-top:5px;font-size:10.5px;font-weight:600;
-  color:#B85C48;background:#FDF3F1;border:1px solid #F6DCD5;border-radius:999px;padding:2px 9px}
-.nd .srcline{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap}
-.nd .srcline i{font-style:normal;font-size:10px;color:var(--ink3);background:var(--bg);
-  border-radius:999px;padding:1px 8px}
-.ax-f{padding:11px 15px;border-top:1px solid var(--tint);font-size:11px;color:var(--ink3);line-height:1.6;background:#FBFDFF}
-.ax-f b{color:var(--navy);font-weight:600}
 </style>
 </head>
 <body data-cli="intake">
@@ -252,6 +220,9 @@
     <button class="newauto" onclick="autoOpen()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       אוטומציה חדשה</button>
+    <button class="terms-b" id="termsBtn" onclick="termsOpen()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 10h18M8 2.5v4M16 2.5v4"/></svg>
+      תנאי תשלום</button>
     <span class="sp"></span>
     <span class="dest">אחרי האישור — נכתב ל־<b>Bizibox</b> ונכנס לתזרים</span>
   </div>
@@ -298,6 +269,21 @@
   </div>
 </div>
 
+<!-- תנאי תשלום לפי ספק -->
+<div class="aov" id="pov" onclick="if(event.target===this)termsClose()">
+  <div class="abox">
+    <div class="abox-h">
+      <div><b>תנאי תשלום לפי ספק</b>
+        <span>לכל ספק ולקוח תנאי תשלום משלו. כשחשבונית נקלטת, המועד שלה בתזרים
+          נגזר מתאריך החשבונית ומהתנאי — לא נקבע בניחוש ולא מוקלד ידנית.</span></div>
+      <button class="x" onclick="termsClose()" aria-label="סגירה">✕</button>
+    </div>
+    <div class="plist" id="plist"></div>
+    <div class="abox-f">שינוי תנאי מחשב מחדש את כל המסמכים הפתוחים של אותו צד.
+      <b>מי שאין לו תנאי — החשבונית שלו נעצרת</b>, כי אין תאריך להפיל עליו את התזרים.</div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="cli.js"></script>
@@ -323,36 +309,79 @@ const SRC={
    st:   new=ממתין לאישור · ok=אושר · flow=כבר בתזרים · hold=עצור       */
 let DOCS=[
   {id:'d1', type:'tax',  no:'1044', dir:'in',  party:'מרכז הבנייה',        desc:'אבן דרך ב׳ — פרויקט רמת השרון',
-   a:19800, due:'12.08', src:'gi', at:'היום 06:12', st:'new'},
+   a:19800, idate:'01.07.2026', src:'gi', at:'היום 06:12', st:'new'},
   {id:'d2', type:'tax',  no:'1045', dir:'in',  party:'רימון מוצרי אנרגיה', desc:'הזמנה 122 — נפתחה במאנדיי',
-   a:24000, due:'18.08', src:'mon', at:'היום 06:12', st:'new'},
+   a:24000, idate:'01.07.2026', src:'mon', at:'היום 06:12', st:'new'},
   {id:'d3', type:'pro',  no:'1047', dir:'in',  party:'מרכז הבנייה',        desc:'אבן דרך ג׳ — טרם הופקה חשבונית מס',
-   a:30000, due:'',      src:'hs', at:'היום 06:12', st:'hold',
+   a:30000, idate:'01.07.2026', src:'hs', at:'היום 06:12', st:'hold',
    why:'חשבונית עסקה אינה אירוע מס — היא נכנסת לתזרים רק כשמופקת ממנה חשבונית מס או קבלה.'},
   {id:'d4', type:'rec',  no:'2231', dir:'in',  party:'אלקטרו סחר',         desc:'קבלה על חשבונית 4471',
-   a:14300, due:'02.07', src:'cc', at:'היום 07:40', st:'new'},
+   a:14300, idate:'02.07.2026', src:'cc', at:'היום 07:40', st:'new'},
   {id:'d5', type:'tax',  no:'88214',dir:'out', party:'פז חברת נפט',        desc:'דלקים — חיוב חודשי',
-   a:-11500,due:'25.08', src:'hs', at:'אתמול 06:11', st:'new'},
+   a:-11500,idate:'30.06.2026', src:'hs', at:'אתמול 06:11', st:'new'},
   {id:'d6', type:'tax',  no:'50912',dir:'out', party:'סונול',              desc:'חשבונית ספק — הוצאות דלק',
-   a:-4820, due:'30.07', src:'man', at:'אתמול 09:05', st:'new'},
+   a:-4820, idate:'30.06.2026', src:'man', at:'אתמול 09:05', st:'new'},
   {id:'d7', type:'cred', no:'ז-118',dir:'out', party:'א.ל.מ שילוח',        desc:'זיכוי על חיוב כפול',
-   a:3540,  due:'10.07', src:'gi', at:'אתמול 07:40', st:'hold',
+   a:3540,  idate:'01.07.2026', src:'gi', at:'אתמול 07:40', st:'hold',
    why:'זיכוי מול חשבונית שכבר נרשמה בתזרים — צריך לוודא שהחיוב המקורי לא יורד פעמיים.'},
   {id:'d8', type:'tax',  no:'1041', dir:'in',  party:'מרכז הבנייה',        desc:'אבן דרך א׳',
-   a:22000, due:'05.08', src:'hs', at:'30.06 06:12', st:'ok', by:'טל מלקר', bat:'30.06 09:40'},
+   a:22000, idate:'30.06.2026', src:'hs', at:'30.06 06:12', st:'ok', by:'טל מלקר', bat:'30.06 09:40'},
   {id:'d9', type:'tax',  no:'1046', dir:'in',  party:'רימון מוצרי אנרגיה', desc:'הזמנה 123',
-   a:24000, due:'15.09', src:'hs', at:'30.06 06:12', st:'ok', by:'טל מלקר', bat:'30.06 09:41'},
+   a:24000, idate:'30.06.2026', src:'hs', at:'30.06 06:12', st:'ok', by:'טל מלקר', bat:'30.06 09:41'},
   {id:'d10',type:'tax',  no:'4471', dir:'in',  party:'אלקטרו סחר',         desc:'חשבונית מכירה',
-   a:14300, due:'28.07', src:'hs', at:'26.06 06:12', st:'flow'},
+   a:14300, idate:'26.06.2026', src:'hs', at:'26.06 06:12', st:'flow'},
   {id:'d11',type:'tax',  no:'77120',dir:'out', party:'בז״ן',               desc:'דלקים — משלוח יוני',
-   a:-38400,due:'20.07', src:'hs', at:'26.06 06:12', st:'flow'},
+   a:-38400,idate:'26.06.2026', src:'hs', at:'26.06 06:12', st:'flow'},
   {id:'d12',type:'rec',  no:'2219', dir:'in',  party:'יהב תפעול',          desc:'קבלה — תשלום שוטף',
-   a:9600,  due:'01.07', src:'pay', at:'25.06 07:40', st:'flow'},
+   a:9600,  idate:'01.07.2026', src:'pay', at:'01.07 07:40', st:'flow'},
 ];
+
+/* ================= תנאי התשלום =================
+   זה מה שהופך את המסך ממסך קליטה למסך תזרים: לכל צד תנאי תשלום משלו,
+   והמועד בתזרים נגזר מתאריך החשבונית ומהתנאי — לא מוקלד ולא מנוחש.
+   סונול נשארת בלי תנאי בכוונה: כך רואים מה קורה לחשבונית שאין לה מועד. */
+const TERMOPT={
+  imm:{k:'imm',n:'מיידי', d:0},
+  n30:{k:'n30',n:'שוטף+30',d:30},
+  n45:{k:'n45',n:'שוטף+45',d:45},
+  n60:{k:'n60',n:'שוטף+60',d:60},
+  n90:{k:'n90',n:'שוטף+90',d:90},
+};
+const PARTY={
+  'מרכז הבנייה':       {role:'cust',term:'n60'},
+  'רימון מוצרי אנרגיה':{role:'cust',term:'n90'},
+  'אלקטרו סחר':        {role:'cust',term:'n30'},
+  'יהב תפעול':         {role:'cust',term:'n30'},
+  'א.ל.מ שילוח':       {role:'sup', term:'n30'},
+  'פז חברת נפט':       {role:'sup', term:'n45'},
+  'בז״ן':              {role:'sup', term:'n30'},
+  'סונול':             {role:'sup', term:''},
+};
+/* תנאי תשלום שייכים לחשבונית מס בלבד: קבלה היא כסף שכבר זז, חשבונית עסקה
+   אינה אירוע מס, וזיכוי הולך למועד של החשבונית שהוא מבטל. */
+const needTerm=d=>d.type==='tax';
+const termOf=d=>needTerm(d)?(PARTY[d.party]||{}).term||'':'';
+function calcDue(idate,tk){
+  const T=TERMOPT[tk]; if(!T) return '';
+  const [dd,mm,yy]=idate.split('.').map(Number);
+  const dt = T.d ? new Date(yy,mm,0) : new Date(yy,mm-1,dd);   /* שוטף = מסוף חודש החשבונית */
+  if(T.d) dt.setDate(dt.getDate()+T.d);
+  const z=n=>String(n).padStart(2,'0');
+  return z(dt.getDate())+'.'+z(dt.getMonth()+1);
+}
+function dueOf(d){
+  if(d.type==='pro') return '';                       /* אין אירוע מס — אין מועד */
+  if(!needTerm(d))  return d.idate.slice(0,5);        /* קבלה וזיכוי — במועד המסמך */
+  const tk=termOf(d); return tk?calcDue(d.idate,tk):'';
+}
+/* מסמך של צד בלי תנאי תשלום אינו "ממתין לאישור" — אין לו בכלל מועד לאשר */
+const stOf=d=>(d.st==='new'&&needTerm(d)&&!termOf(d))?'noterm':d.st;
+
 
 const TYPE={tax:['חשבונית מס','tax'], pro:['חשבונית עסקה','pro'],
             rec:['קבלה','rec'], cred:['חשבונית זיכוי','cred']};
-const MON={'07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר'};
+const MON={'01':'ינואר','02':'פברואר','03':'מרץ','04':'אפריל','05':'מאי','06':'יוני',
+           '07':'יולי','08':'אוגוסט','09':'ספטמבר','10':'אוקטובר','11':'נובמבר','12':'דצמבר'};
 const nf=new Intl.NumberFormat('he-IL');
 const money=v=>(v<0?'−':'')+nf.format(Math.abs(v))+' ₪';
 let FIL='new';
@@ -362,9 +391,10 @@ let FIL='new';
 function renderAxis(){
   const map={};
   DOCS.forEach(d=>{
-    if(!d.due||d.st==='hold') return;
-    const m=(map[d.due]=map[d.due]||{d:d.due, ok:0, wait:0, n:0, srcs:{}});
-    if(d.st==='new') m.wait+=Math.abs(d.a); else m.ok+=Math.abs(d.a);
+    const s=stOf(d), due=dueOf(d);
+    if(!due||s==='hold'||s==='noterm') return;
+    const m=(map[due]=map[due]||{d:due, ok:0, wait:0, n:0, srcs:{}});
+    if(s==='new') m.wait+=Math.abs(d.a); else m.ok+=Math.abs(d.a);
     m.n++; m.srcs[SRC[d.src].n]=1;
   });
   const key=x=>x.split('.')[1]+x.split('.')[0];
@@ -383,9 +413,9 @@ function renderAxis(){
         <div class="srcline">${Object.keys(x.srcs).map(s=>`<i>${s}</i>`).join('')}</div>
       </div>
     </div>`;}).join('');
-  const waitN=DOCS.filter(d=>d.st==='new').length;
+  const waitN=DOCS.filter(d=>stOf(d)==='new').length;
   const waitTot=list.reduce((s,x)=>s+x.wait,0);
-  const held=DOCS.filter(d=>d.st==='hold').length;
+  const held=DOCS.filter(d=>['hold','noterm'].includes(stOf(d))).length;
   document.getElementById('axw').innerHTML=waitN
     ? `<b>${waitN}</b><span>ממתינים לאישור טל · ${nf.format(waitTot)} ₪ עוד לא בתזרים`
       +(held?` · ${held} נעצרו לבדיקה`:'')+`</span>`
@@ -395,18 +425,18 @@ function renderAxis(){
 /* ================= הטבלה ================= */
 const FILS=[['new','לאישור'],['ok','אושרו'],['flow','בתזרים'],['all','הכל']];
 function listOf(){
-  if(FIL==='new')  return DOCS.filter(d=>d.st==='new'||d.st==='hold');
-  if(FIL==='ok')   return DOCS.filter(d=>d.st==='ok');
-  if(FIL==='flow') return DOCS.filter(d=>d.st==='flow');
+  if(FIL==='new')  return DOCS.filter(d=>['new','hold','noterm'].includes(stOf(d)));
+  if(FIL==='ok')   return DOCS.filter(d=>stOf(d)==='ok');
+  if(FIL==='flow') return DOCS.filter(d=>stOf(d)==='flow');
   return DOCS;
 }
 function renderFil(){
-  const cnt=k=>k==='new'?DOCS.filter(d=>d.st==='new'||d.st==='hold').length
-            :k==='ok'?DOCS.filter(d=>d.st==='ok').length
-            :k==='flow'?DOCS.filter(d=>d.st==='flow').length:DOCS.length;
+  const cnt=k=>k==='new'?DOCS.filter(d=>['new','hold','noterm'].includes(stOf(d))).length
+            :k==='ok'?DOCS.filter(d=>stOf(d)==='ok').length
+            :k==='flow'?DOCS.filter(d=>stOf(d)==='flow').length:DOCS.length;
   document.getElementById('fil').innerHTML=FILS.map(([k,l])=>
     `<button class="${FIL===k?'on':''}" onclick="setFil('${k}')">${l}<i>${cnt(k)}</i></button>`).join('');
-  const n=DOCS.filter(d=>d.st==='new').length, b=document.getElementById('bulk');
+  const n=DOCS.filter(d=>stOf(d)==='new').length, b=document.getElementById('bulk');
   b.textContent=n?`אישור ${n} השורות`:'אין מה לאשר';
   b.disabled=!n;
 }
@@ -414,15 +444,21 @@ function setFil(k){FIL=k;render();}
 
 function rowHtml(d){
   const [tl,tc]=TYPE[d.type];
-  const s=SRC[d.src];
-  const due=d.due?`<div class="due">${d.due}<em>${MON[d.due.split('.')[1]]||''}</em></div>`
-                 :`<div class="due none">ללא מועד<em>לא ייכנס לתזרים</em></div>`;
+  const s=SRC[d.src], st=stOf(d), dv=dueOf(d), tk=termOf(d);
+  /* מתחת לתאריך יושב הכלל שהוליד אותו — לחיצה פותחת אותו לעריכה */
+  const note = tk ? `<button class="tchip" onclick="termsOpen('${d.party}')">${TERMOPT[tk].n}</button>`
+    : d.type==='rec'  ? '<em>מועד הקבלה</em>'
+    : d.type==='cred' ? '<em>מועד הזיכוי</em>'
+    : d.type==='pro'  ? '<em>לא ייכנס לתזרים</em>'
+    :                   '<em>אין תנאי תשלום</em>';
+  const due=dv?`<div class="due">${dv}${note}</div>`:`<div class="due none">ללא מועד${note}</div>`;
   let act='';
-  if(d.st==='new')  act=`<button class="ik-ok" onclick="approve('${d.id}')">אישור</button>`;
-  if(d.st==='ok')   act=`<span class="done"><b>✓ אושר</b><span>${d.by} · ${d.bat}</span></span>`;
-  if(d.st==='flow') act=`<span class="inflow">בתזרים</span>`;
-  if(d.st==='hold') act=`<span class="hold"><b>⚠ נעצר לבדיקה</b><span>${d.why}</span></span>`;
-  return `<div class="row ${d.st==='hold'?'is-hold':''} ${d.st==='flow'?'is-flow':''}">
+  if(st==='new')  act=`<button class="ik-ok" onclick="approve('${d.id}')">אישור</button>`;
+  if(st==='ok')   act=`<span class="done"><b>✓ אושר</b><span>${d.by} · ${d.bat}</span></span>`;
+  if(st==='flow') act=`<span class="inflow">בתזרים</span>`;
+  if(st==='hold') act=`<span class="hold"><b>⚠ נעצר לבדיקה</b><span>${d.why}</span></span>`;
+  if(st==='noterm') act=`<button class="setterm" onclick="termsOpen('${d.party}')">הגדרת תנאי תשלום</button>`;
+  return `<div class="row ${st==='hold'||st==='noterm'?'is-hold':''} ${st==='flow'?'is-flow':''}">
     <div class="dtype"><span class="t ${tc}">${tl}</span><span class="no">${d.no}</span></div>
     <div class="pty"><b>${d.party}</b><span>${d.desc}</span></div>
     <div class="amt ${d.a<0?'neg':''}" dir="ltr">${money(d.a)}</div>
@@ -442,10 +478,10 @@ function renderRows(){
 function approve(id){
   const d=DOCS.find(x=>x.id===id); if(!d) return;
   d.st='ok'; d.by='טל מלקר'; d.bat='היום '+nowHHMM();
-  render(); toast(d.party+' · '+money(d.a)+' — אושר ונכנס לתזרים ב-'+d.due);
+  render(); toast(d.party+' · '+money(d.a)+' — אושר ונכנס לתזרים ב-'+dueOf(d));
 }
 function approveAll(){
-  const n=DOCS.filter(d=>d.st==='new');
+  const n=DOCS.filter(d=>stOf(d)==='new');
   if(!n.length) return;
   n.forEach(d=>{d.st='ok'; d.by='טל מלקר'; d.bat='היום '+nowHHMM();});
   render(); toast(n.length+' מסמכים אושרו ונכנסו לתזרים');
@@ -476,6 +512,50 @@ function renderAutos(){
         :`<button onclick="autoConnect('${a.k}')">חיבור</button>`}</div>
     </div>`).join('');
 }
+/* ================= תנאי תשלום לפי ספק =================
+   הפופאפ הוא המקום היחיד שבו נקבע מתי מסמך נופל על התזרים. */
+const ROLES=[['cust','לקוחות — מתי הכסף נכנס'],['sup','ספקים — מתי הכסף יוצא']];
+function partyRow(n,focus){
+  const P=PARTY[n], mine=DOCS.filter(d=>d.party===n);
+  const open=mine.filter(d=>['new','noterm'].includes(stOf(d)));
+  const next=mine.map(dueOf).filter(Boolean).sort((a,b)=>
+    a.split('.')[1]+a.split('.')[0] < b.split('.')[1]+b.split('.')[0] ? -1:1)[0];
+  const sub = P.term
+    ? `${mine.length} מסמכים${next?' · הקרוב '+next:''}`
+    : `<span class="miss">${open.length} ${open.length===1?'חשבונית ממתינה':'חשבוניות ממתינות'} בלי מועד</span>`;
+  return `<div class="prow ${focus===n?'hi':''}" id="p-${encodeURIComponent(n)}">
+    <div class="pn"><b>${n}</b><span>${sub}</span></div>
+    <div class="tset">${Object.values(TERMOPT).map(o=>
+      `<button class="${P.term===o.k?'on':''}" onclick="setTerm('${n}','${o.k}')">${o.n}</button>`).join('')}</div>
+  </div>`;
+}
+function renderTerms(focus){
+  const names=[...new Set(DOCS.map(d=>d.party))];
+  document.getElementById('plist').innerHTML=ROLES.map(([r,ttl])=>{
+    const l=names.filter(n=>(PARTY[n]||{}).role===r);
+    return l.length?`<div class="psec">${ttl}</div>`+l.map(n=>partyRow(n,focus)).join(''):'';
+  }).join('');
+}
+function setTerm(n,k){
+  PARTY[n].term=k;
+  const cnt=DOCS.filter(d=>d.party===n&&needTerm(d)&&stOf(d)!=='flow').length;
+  render(); renderTerms(n);
+  toast(n+' · '+TERMOPT[k].n+' — '+(cnt===1?'מסמך אחד חושב מחדש':cnt+' מסמכים חושבו מחדש'));
+}
+function termsOpen(focus){
+  renderTerms(focus);
+  document.getElementById('pov').classList.add('on');
+  if(focus){ const el=document.getElementById('p-'+encodeURIComponent(focus));
+             if(el) el.scrollIntoView({block:'center'}); }
+}
+function termsClose(){ document.getElementById('pov').classList.remove('on'); }
+function renderTermsBtn(){
+  const miss=[...new Set(DOCS.filter(d=>stOf(d)==='noterm').map(d=>d.party))].length;
+  document.getElementById('termsBtn').innerHTML=
+    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 10h18M8 2.5v4M16 2.5v4"/></svg>
+     תנאי תשלום`+(miss?`<i>${miss}</i>`:'');
+}
+
 function autoOpen(){ renderAutos(); document.getElementById('aov').classList.add('on'); }
 function autoClose(){ document.getElementById('aov').classList.remove('on'); }
 function autoConnect(k){
@@ -483,9 +563,9 @@ function autoConnect(k){
   a.on=1; renderAutos(); renderConn();
   toast(a.n+' חוברה — המסמכים יתחילו להיכנס לכאן');
 }
-addEventListener('keydown',e=>{ if(e.key==='Escape') autoClose(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ autoClose(); termsClose(); } });
 
-function render(){ renderConn(); renderFil(); renderRows(); renderAxis(); }
+function render(){ renderConn(); renderTermsBtn(); renderFil(); renderRows(); renderAxis(); }
 render();
 </script>
 </body>
