@@ -221,6 +221,8 @@ function wireChrome(){
    ===================================================================== */
 function hkEmbedWire(){
   document.documentElement.classList.add('embed');
+  /* r=cli — בעל העסק צופה באותו מסך של היועץ; מה ששייך ליועץ יורד */
+  if(/[?&]r=cli/.test(location.search)) document.documentElement.classList.add('r-cli');
   const key=document.body.dataset.cli||'';
   const send=()=>{
     const h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);

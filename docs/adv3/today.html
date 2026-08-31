@@ -35,7 +35,7 @@
   --row-hover:#F8FBFD;--row-sel:#EEF6FC;--bd2:#B7C3CF;--line:#C4CED8;--mark:#FFF1C2;
   --warn-bg:#FFF9F0;--warn-ink:#9A6300;--bad-bg:#FDEDEB;--bad-ink:#C43D30;
   --good-bg:#F1FAF5;--good-ink:#13895b;
-  --axis:96px;--daypad:20px;--mtpad:12px;
+  --axis:52px;--daypad:16px;--mtpad:13px;--sidew:296px;--attw:344px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -80,12 +80,28 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip .now b{color:var(--white);font-weight:500}
 
 /* ---------- body grid ---------- */
-.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:18px;align-items:stretch;min-height:calc(100vh - 120px)}
+/* המשימות בצד המוביל — כמו ביומן של מנהל התזרים. הן הדבר שנסרק ראשון
+   בבוקר, והיום עצמו נקרא אחריהן. */
+/* משימות · היום · תשומת לב — הצד המוביל הוא מה שעלי לעשות, והיום נקרא
+   מימינו. תשומת לב היא רקע, ולכן היא בקצה השני. */
+/* כרטיס אחד — משימות + ציר היום — ולצדו תשומת לב. אותה חלוקה שיש
+   ביומן של מנהל התזרים: אין שלושה כרטיסים, יש אחד עם שתי עמודות. */
+.wrap{width:100%;padding:18px 0 20px;display:grid;grid-template-columns:minmax(0,1fr) var(--attw);gap:16px;align-items:stretch;min-height:calc(100vh - 120px)}
+/* המעטפת קובעת גובה מסגרת = max(הגובה שדווח, מה שנשאר על המסך), והדף
+   נמתח אליו. min-height:100% על .wrap היה מנפח בלולאה, כי ה-header יושב
+   מחוץ ל-.wrap והגובה המדווח יצא גדול ב-60px בכל סבב. פלקס על body פותר:
+   הכותרת לוקחת את גובהה, ה-wrap את השאר, והסכום שווה בדיוק לגובה המסגרת. */
+html.embed,html.embed body{height:100%}
+html.embed body{display:flex;flex-direction:column}
+html.embed .wrap{flex:1 1 auto;min-height:0;padding-bottom:16px}
 .wrap>*{min-width:0;min-height:0}
 .panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
-.panel.meet{display:flex;flex-direction:column}
-.panel.meet .day{flex:1;display:flex;flex-direction:column}
-.panel.meet .day .nowline.end{margin-top:auto}
+.panel.cal{display:flex;flex-direction:column;overflow:hidden}
+.calwrap{flex:1;min-height:0;display:grid;grid-template-columns:var(--sidew) minmax(0,1fr)}
+.calside{background:#FAFCFE;border-inline-end:1px solid var(--bd);display:flex;flex-direction:column;min-height:0}
+.calmain{min-width:0;display:flex;flex-direction:column}
+.calmain .day{flex:1;display:flex;flex-direction:column}
+.calmain .day .nowline.end{margin-top:auto}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
 .ph .hint{font-size:12.5px;color:var(--ink3)}
@@ -119,60 +135,31 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
 /* ---------- meetings ---------- */
 .day{padding:8px var(--daypad) 8px;position:relative}
-.day::before{content:"";position:absolute;top:14px;bottom:14px;inset-inline-start:calc(var(--daypad) + var(--axis));width:1.5px;background:var(--bd)}
-.mt{display:grid;grid-template-columns:var(--axis) minmax(0,1fr);align-items:start;position:relative;gap:0 10px}
-.mt .t{padding:var(--mtpad) 0;position:relative;text-align:start}
-.mt .t b{display:block;font-size:22px;font-weight:500;color:var(--ink3);letter-spacing:-.5px;line-height:1;font-variant-numeric:tabular-nums}
-.mt .t span{display:block;font-size:12px;color:var(--ink3);margin-top:5px}
-.mt .t::after{content:"";position:absolute;inset-inline-end:-5.5px;top:calc(var(--mtpad) + 11px);width:11px;height:11px;border-radius:50%;border:1.5px solid var(--line);background:var(--white);transform:translateY(-50%);z-index:1}
-.mt.done .t b{color:var(--bd2)}
-.mt.done .t::after{border-color:var(--bd2);background:var(--bg)}
-.mt.next .t b{color:var(--coral);font-weight:600}
-.mt.next .t span{color:var(--coral)}
-.mt.next .t::after{border-color:var(--coral);border-width:2px;background:var(--white);box-shadow:0 0 0 4px var(--bad-bg)}
-.mt.next::before{content:"";position:absolute;inset-inline-start:calc(var(--axis) - 1px);top:8px;bottom:8px;width:3px;background:var(--coral);border-radius:4px;z-index:1}
-.mt .b{padding:var(--mtpad) 0;padding-inline-start:18px}
-.mt + .mt .b{border-top:1px solid var(--bd)}
-.mt.done .b{opacity:.94}
-.mt .b .ttl{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-.mt .b .ttl a.name{font-size:14px;font-weight:600;color:var(--navy)}
-.mt .b .ttl a.name:hover{text-decoration:underline}
-.mt .b .ttl .what{font-size:14px;color:var(--ink)}
-.mt .b .ttl .what:hover{text-decoration:underline}
-.mt .b .ttl .dot{color:var(--bd2)}
-.mt .meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);margin-top:4px;flex-wrap:wrap}
-.mt .meta .dot{color:var(--line)}
-.mt .meta .tlink{color:var(--navy);font-weight:500}
-.mt .meta .tlink:hover{text-decoration:underline}
-.mt .act{margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.mt.next .act{margin-top:6px}
-.mt .stage{font-size:12.5px;color:var(--ink3)}
-.mt .stage b{font-weight:500;color:var(--ink2)}
-.mt.flash .b{box-shadow:inset 0 0 0 2px var(--sky);border-radius:10px}
 
-/* ---------- now line + the free window ---------- */
-.nowline{display:grid;grid-template-columns:var(--axis) minmax(0,1fr);align-items:center;position:relative;gap:0 10px;margin:2px 0}
-.nowline .t{padding:2px 0;font-size:12px;color:var(--coral);font-weight:700;text-align:start;position:relative}
-.nowline .t::after{content:"";position:absolute;inset-inline-end:-3.5px;top:50%;width:7px;height:7px;border-radius:50%;background:var(--coral);transform:translateY(-50%);box-shadow:0 0 0 3px var(--white);z-index:1}
-.nowline .l{height:0;border-top:1.5px dashed var(--coral);opacity:.55}
-.nowline.end{padding-top:6px}
-.nowline.end .t{color:var(--ink3);font-weight:400}
-.nowline.end .t::after{background:var(--line)}
-.nowline.end .l{border-color:var(--bd);opacity:1}
-.freeline{display:grid;grid-template-columns:var(--axis) minmax(0,1fr);gap:0 10px;padding:2px 0 4px}
-.freeline .f{grid-column:2;display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding-inline-start:18px;font-size:12.5px;color:var(--ink2)}
-.freeline .dot{color:var(--line)}
-.freeline .lk{font-size:12.5px;font-weight:500;color:var(--navy);padding:0}
-.freeline .lk:hover{text-decoration:underline}
+/* פרופורציות היומן של מנהל התזרים: שעה קטנה ומודגשת, שורה אחת, קצב אחיד */
 
-/* ---------- born-from block (the one navy block in the body) ---------- */
+
+
+
+/* פס מוביל לכל שורה — כמו ב-.mc-item אצל מנהל התזרים */
+  bottom:calc(var(--mtpad) - 3px);width:3px;border-radius:99px;background:#8EC9EC}
+/* הכפתור הפך לצ׳יפ בתוך שורת המטא — כמו Zoom/Meet ביומן של המנהל */
+  padding:3px 11px;border-radius:99px;flex:none;margin-inline-start:3px}
+/* הפירוט של הפגישה נפתח בלחיצה — השורה עצמה נשארת בקצב של היום */
+.bornTg{border:1px solid var(--bd);background:var(--white);color:var(--navy);
+  font:inherit;font-size:10.5px;font-weight:600;border-radius:99px;padding:2px 9px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:.13s}
+.bornTg:hover{border-color:var(--coral);color:var(--coral)}
+.bornTg .n{background:var(--band);color:var(--white);font-size:9.5px;border-radius:99px;padding:0 5px}
+.bornTg[aria-expanded="true"]{background:var(--band);border-color:var(--band);color:var(--white)}
+.bornTg[aria-expanded="true"] .n{background:rgba(255,255,255,.22)}
+
+/* "מה נולד מהפגישה" — נפתח מהצ׳יפ שבשורה, ויושב כשורה משלו בציר */
 .born{margin:12px 0 0;max-width:680px;background:var(--band);color:var(--white);border-radius:10px;padding:14px 20px 12px;display:grid;grid-template-columns:1fr;gap:8px}
-.mt.done ~ .mt.done .born{display:none}
 .born .cap{font-size:12px;color:var(--on-navy3);letter-spacing:.2px}
 .born .dot{color:var(--on-navy4)}
 .born .sum{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .born .sum b{font-size:14px;font-weight:600}
-
 .born .col{border-top:1px solid rgba(255,255,255,.12);padding-top:10px}
 .born .col h4{font-size:12.5px;color:var(--on-navy3);font-weight:500;margin-bottom:6px}
 .born .col h4 a{color:var(--on-navy3);font-weight:400;margin-inline-start:6px}
@@ -181,32 +168,77 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .born .mu:first-of-type{border-top:0}
 .born .mu .k{color:var(--on-navy2)}
 .born .mu .tm{color:var(--on-navy4);font-size:12px;text-align:end}
+.born{margin:0 18px 10px;max-width:none}
+.born[hidden]{display:none}
+
+/* ---------- שורות היום — מועתקות ממבנה היומן של מנהל התזרים ---------- */
+.day{padding:6px 0 0;position:relative}
+.mc-item{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid #f0f4f8;
+  border-inline-start:3px solid transparent;transition:.12s}
+.mc-item.task{border-inline-start-color:#6b4fd6}
+.mc-item.client{border-inline-start-color:var(--coral)}
+.mc-item.meet{border-inline-start-color:var(--green)}
+.mc-item.done .mc-t{text-decoration:line-through;color:var(--ink3)}
+.mc-item.done{opacity:.62}
+.mc-time{flex:0 0 auto;width:44px;font-size:13px;font-weight:700;color:var(--navy);text-align:center;
+  font-variant-numeric:tabular-nums}
+.mc-chk{flex:0 0 auto;display:flex;cursor:pointer}
+.mc-chk input{display:none}
+.mc-chk span{width:19px;height:19px;border-radius:6px;border:2px solid #c9d8e6;display:flex;
+  align-items:center;justify-content:center;transition:.12s;background:var(--white)}
+.mc-chk input:checked+span{background:var(--green);border-color:var(--green)}
+.mc-chk input:checked+span::after{content:'✓';color:#fff;font-size:12px;font-weight:800}
+.mc-b{flex:1;min-width:0}
+.mc-t{font-size:13.5px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-t .name{color:var(--navy);font-weight:600}
+.mc-t .name:hover,.mc-t .what:hover{text-decoration:underline}
+.mc-t .what{color:var(--ink)}
+.mc-t .dot{color:var(--bd2);margin:0 5px}
+.mc-s{font-size:11.5px;color:var(--ink3);margin-top:1px}
+.mc-s.flexed{display:flex;align-items:center;gap:7px;white-space:normal}
+.mc-s-txt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.mc-s .dot{color:var(--line)}
+.mc-s .tlink{color:var(--navy);font-weight:500}
+.mc-s .tlink:hover{text-decoration:underline}
+.mc-s .mtact{font-size:10.5px;font-weight:600;height:auto;padding:3px 11px;border-radius:99px;flex:none}
+.mc-now{display:flex;align-items:center;gap:8px;padding:4px 18px}
+.mc-now-t{flex:0 0 auto;width:44px;text-align:center;font-size:11px;font-weight:800;color:var(--coral);
+  font-variant-numeric:tabular-nums}
+.mc-now-line{flex:1;height:2px;background:var(--coral);border-radius:2px}
+.mc-now-lbl{flex:0 0 auto;font-size:10.5px;font-weight:800;color:#fff;background:var(--coral);
+  border-radius:999px;padding:2px 10px}
+.mc-foot{padding:12px 18px;font-size:12px;color:var(--ink3);background:var(--bg);margin-top:auto}
 
 /* ---------- left column ---------- */
 /* העמודה נמתחת לגובה השורה — "תשומת לב" נגמרת בקו אחד עם ציר הפגישות */
-.left{display:flex;flex-direction:column;gap:14px;min-height:0}
-.left .panel{display:flex;flex-direction:column;min-height:0}
-.left .panel.tasks{flex:none}
-.left .panel.att{flex:1 1 auto;min-height:180px;overflow:hidden}
+/* מיקום מפורש כולל השורה — בלי grid-row הפריסה האוטומטית לא חוזרת
+   אחורה לעמודה 1 אחרי שהיומן כבר תפס את עמודה 2 */
+.panel.cal{grid-column:1;grid-row:1}
+.far{grid-column:2;grid-row:1;display:flex;flex-direction:column;min-height:0}
+.far .panel{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;overflow:hidden}
 .panel.att>.ph{background:var(--band);border-bottom:0;padding:12px 20px}
 .panel.att>.ph h2{color:var(--white)}
 .panel.att>.ph .hint{color:var(--on-navy3)}
 .panel.att>.ph .more{color:var(--on-navy)}
 .panel.att>.ph .more:hover{color:var(--white)}
-/* כותרת פאנל המשימות — כחולה, כמו הפס */
-.panel.tasks{overflow:hidden}
-.panel.tasks>.ph{background:var(--band);border-bottom:0;padding:12px 20px 10px}
-.panel.tasks>.ph h2{color:var(--white)}
-.panel.tasks>.ph .hint{color:var(--on-navy3)}
-.panel.tasks>.ph .more{color:var(--on-navy)}
-.panel.tasks>.ph .more:hover{color:var(--white)}
+/* פאנל המשימות בקצב של הפאנל אצל מנהל התזרים: כותרת בהירה, רמז גרירה,
+   שורות דקות עם שם הלקוח מתחת, וההוספה בתחתית ולא בראש. */
+.calside>.ph{background:transparent;border-bottom:0;padding:12px 16px 0}
+.calside>.ph h2{font-size:13.5px;font-weight:600;color:var(--navy)}
+.calside>.ph .hint{font-size:11px;font-weight:400;color:var(--ink3)}
+.calside .drag-hint{font-size:10.5px;color:var(--bd2);padding:2px 16px 6px}
+.calside .tl{flex:1 1 auto;overflow-y:auto;padding:0 16px 6px}
+.calside .add{order:9;margin-top:auto;border-bottom:0;border-top:1px solid var(--bd);
+  background:var(--white);padding:9px 16px}
+.calside .add input{height:32px;font-size:12.5px}
+.calside .add .btn{height:32px;font-size:12px;padding:0 14px}
 .add{display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--bd);background:var(--surface2)}
 .add input{flex:1;height:36px;border:1px solid var(--bd);border-radius:6px;padding:0 12px;font:inherit;font-size:13px;background:var(--white);color:var(--ink)}
 .add input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
 .add .btn{height:36px}
 .add .btn{height:38px}
 .tl{list-style:none;padding:2px 20px 6px}
-.tl li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:12px;align-items:start;padding:6px 0;border-bottom:1px solid var(--bd);cursor:pointer}
+.tl li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:9px;align-items:start;padding:9px 0;border-bottom:1px solid #F1F4F7;cursor:pointer}
 .tl li:last-child{border-bottom:0}
 .tl li:hover{background:var(--row-hover)}
 .tl .cb{appearance:none;-webkit-appearance:none;width:17px;height:17px;border:1.5px solid var(--bd2);border-radius:4px;margin-top:2px;background:var(--white);display:grid;place-items:center;cursor:pointer}
@@ -249,8 +281,8 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
 @media (max-width:1450px){
   :root{--mtpad:8px;--daypad:18px}
-  .wrap{grid-template-columns:minmax(0,1fr) 430px;padding:14px 0 16px;gap:14px;min-height:calc(100vh - 120px)}
-  .left{min-height:0}
+  :root{--sidew:262px;--attw:300px}
+  .wrap{padding:14px 0 16px;gap:13px}
   .ph{padding:11px 18px 8px}
   .ph h2{font-size:16px}
   .add{padding:10px 18px 8px}
@@ -304,67 +336,13 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 
 <main class="wrap">
 
-  <!-- ===== meetings ===== -->
-  <section class="panel meet">
-    <div class="ph"><h2>פגישות היום</h2><span class="hint" id="mtHint"></span><a class="more" href="meetings.html">כל הפגישות</a></div>
-    <div class="day">
-
-      <div class="mt done" id="mt0900">
-        <div class="t"><b class="num">09:00</b><span class="num">עד 10:00</span></div>
-        <div class="b">
-          <div class="ttl"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%90%D7%A0%D7%A8%D7%92%D7%99%20%D7%90%D7%99%D7%A0%D7%98%D7%A8%D7%A0%D7%A9%D7%99%D7%95%D7%A0%D7%9C&m=020709">פגישה שוטפת — סקירת תזרים</a></div>
-          <div class="meta"><span>עם צחי עובד</span><span class="dot">·</span><span>הוקלטה 46 דק׳</span><span class="dot">·</span><span class="al ok">הסתיימה</span></div>
-
-          <div class="born dark">
-            <div class="sum"><span class="cap">מה נולד מהפגישה</span><span class="dot">·</span><b>הסיכום מוכן לאישור</b><button class="btn on-navy" onclick="openSum()">אישור הסיכום</button></div>
-            <div class="col">
-              <h4>שלושה עדכוני זיכרון <a href="memory.html?c=511327876">לזיכרון ←</a></h4>
-              <div class="mu"><span class="k">כאבי לקוח</span><span>נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה</span><span class="tm num">10:02</span></div>
-              <div class="mu"><span class="k">שביעות רצון</span><span>ירידה: תסכול מקצב התגובה בוואטסאפ</span><span class="tm num">10:03</span></div>
-              <div class="mu"><span class="k">מצב תזרימי</span><span>צפי החריגה עודכן אחרי דחיית תשלום ספק</span><span class="tm num">10:02</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="nowline"><div class="t num" id="nowT">10:54 · עכשיו</div><div class="l"></div></div>
-      <div class="freeline" id="freeline"></div>
-
-      <div class="mt next" id="mtNext">
-        <div class="t"><b class="num">13:00</b></div>
-        <div class="b">
-          <div class="ttl"><a class="name" href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%9E%D7%98%D7%A2%D7%99%20%D7%92%D7%91%D7%A2%D7%95%D7%9F">שיחת מעקב</a></div>
-          <div class="meta"><span>אחרי חריגת התקציב</span><span class="dot">·</span><span>פגישה אחרונה <span class="num">12.05</span></span><span class="dot">·</span><span>לפני השיחה: <a class="tlink" href="#t2" onclick="return flashTask('t2')">לחזור לרו״ח על המע״מ</a></span></div>
-          <div class="act"><button class="btn pri" onclick="prep('mtNext')">הכנה לפגישה</button><span class="stage">במחזור החודשי: <b>יעדים עודכנו</b> · Money+ · טל מלקר</span></div>
-        </div>
-      </div>
-
-      <div class="mt" id="mt1600">
-        <div class="t"><b class="num">16:00</b><span class="num">עד 17:00</span></div>
-        <div class="b">
-          <div class="ttl"><a class="name" href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%9E%D7%A9%D7%94%20%D7%A2%D7%95%D7%91%D7%93">פגישה חודשית — יולי</a></div>
-          <div class="meta"><span>Zoom</span><span class="dot">·</span><span class="al warn">ההכנה לא נפתחה</span></div>
-          <div class="act"><button class="btn" onclick="prep('mt1600')">הכנה לפגישה</button><span class="stage">במחזור החודשי: <b>מוכן לפגישה</b> · Money · פגישה ראשונה</span></div>
-        </div>
-      </div>
-
-      <div class="mt" id="mt1700">
-        <div class="t"><b class="num">17:00</b><span class="num">עד 17:30</span></div>
-        <div class="b">
-          <div class="ttl"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%90%D7%A0%D7%A8%D7%92%D7%99%20%D7%90%D7%99%D7%A0%D7%98%D7%A8%D7%A0%D7%A9%D7%99%D7%95%D7%A0%D7%9C">המשך סקירה — החלטות תקציב</a></div>
-          <div class="meta"><span>המשך לפגישת 09:00</span><span class="dot">·</span><span class="al ok">ההכנה נפתחה</span></div>
-          <div class="act"><button class="btn" onclick="prep('mt1700')">הכנה לפגישה</button><span class="stage">במחזור החודשי: <b>מוכן לפגישה</b></span></div>
-        </div>
-      </div>
-
-      <div class="nowline end"><div class="t">סוף היום</div><div class="l"></div></div>
-    </div>
-  </section>
-
-  <!-- ===== left column ===== -->
-  <aside class="left">
-    <section class="panel tasks">
-      <div class="ph"><h2>המשימות שלי</h2><span class="hint">להיום</span><a class="more" href="tasks.html">כל המשימות</a></div>
+  <!-- ===== כרטיס אחד: המשימות משמאל לציר, כמו ביומן של מנהל התזרים ===== -->
+  <section class="panel cal">
+    <div class="ph"><h2>היומן שלי</h2><span class="hint" id="mtHint"></span><a class="more" href="calendar.html">היומן המלא</a></div>
+    <div class="calwrap">
+      <aside class="calside">
+      <div class="ph"><h2>המשימות שלי</h2><span class="hint">4 להיום</span><a class="more" href="tasks.html">כל המשימות</a></div>
+      <div class="drag-hint">גררו משימה למעלה או למטה כדי לשנות את הסדר</div>
       <form class="add" onsubmit="addTask(event)">
         <input id="newTask" type="text" placeholder="משימה חדשה… @ לשיוך לקוח" autocomplete="off">
         <button class="btn pri" type="submit">הוספה</button>
@@ -377,10 +355,118 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
         <li onclick="tog(this)"><input class="cb" type="checkbox" aria-label="תיאום מחדש — הפגישה לא התקיימה" onclick="event.stopPropagation()" onchange="tog(this.closest('li'))"><div><div class="tx">תיאום מחדש — הפגישה לא התקיימה</div><div class="sub"><a href="clients.html?c=511200341" onclick="event.stopPropagation()">אנרגי גולני</a> · פ.ע 24.06</div></div><span class="src m">מפגישה</span></li>
         <li onclick="tog(this)"><input class="cb" type="checkbox" aria-label="עדכוני וואטסאפ ללקוחות" onclick="event.stopPropagation()" onchange="tog(this.closest('li'))"><div><div class="tx">עדכוני וואטסאפ ללקוחות</div><div class="sub">4 חברות</div></div><span class="src">שלי</span></li>
       </ul>
-    </section>
+      </aside>
+      <div class="calmain">
+    <div class="day">
 
+      <div class="mc-item task done">
+        <div class="mc-time num">08:00</div>
+        <label class="mc-chk"><input type="checkbox" checked><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t">סקירת התראות הבוקר</div>
+          <div class="mc-s flexed"><span class="mc-s-txt">חמש חברות · 20 דק׳</span></div>
+        </div>
+      </div>
+
+      <div class="mc-item meet done" id="mt0900">
+        <div class="mc-time num">09:00</div>
+        <label class="mc-chk"><input type="checkbox" checked><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%90%D7%A0%D7%A8%D7%92%D7%99%20%D7%90%D7%99%D7%A0%D7%98%D7%A8%D7%A0%D7%A9%D7%99%D7%95%D7%A0%D7%9C&m=020709">פגישה שוטפת — סקירת תזרים</a></div>
+          <div class="mc-s flexed"><span class="mc-s-txt"><span>עם צחי עובד</span><span class="dot">·</span><span>הוקלטה 46 דק׳</span><span class="dot">·</span><span class="al ok">הסתיימה</span> <button class="bornTg" id="bornTg" onclick="bornToggle()" aria-expanded="false">מה נולד מהפגישה <span class="n">4</span></button></span></div>
+        </div>
+      </div>
+          <div class="born dark" id="born0" hidden>
+            <div class="sum"><span class="cap">מה נולד מהפגישה</span><span class="dot">·</span><b>הסיכום מוכן לאישור</b><button class="btn on-navy" onclick="openSum()">אישור הסיכום</button></div>
+            <div class="col">
+              <h4>שלושה עדכוני זיכרון <a href="memory.html?c=511327876">לזיכרון ←</a></h4>
+              <div class="mu"><span class="k">כאבי לקוח</span><span>נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה</span><span class="tm num">10:02</span></div>
+              <div class="mu"><span class="k">שביעות רצון</span><span>ירידה: תסכול מקצב התגובה בוואטסאפ</span><span class="tm num">10:03</span></div>
+              <div class="mu"><span class="k">מצב תזרימי</span><span>צפי החריגה עודכן אחרי דחיית תשלום ספק</span><span class="tm num">10:02</span></div>
+            </div>
+          </div>
+
+      <div class="mc-item task done">
+        <div class="mc-time num">10:00</div>
+        <label class="mc-chk"><input type="checkbox" checked><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t">אישור סיכומי פגישות</div>
+          <div class="mc-s flexed"><span class="mc-s-txt">שניים ממתינים · 15 דק׳</span></div>
+        </div>
+      </div>
+
+      <div class="mc-now"><span class="mc-now-t num" id="nowT">10:54</span><span class="mc-now-line"></span><span class="mc-now-lbl">עכשיו</span></div>
+
+      <div class="mc-item client ">
+        <div class="mc-time num">11:30</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t"><a class="name" href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="what">שיחת גבייה</span></div>
+          <div class="mc-s flexed"><span class="mc-s-txt">חוב פתוח <span class="num">1,200</span> ₪ · 15 דק׳</span></div>
+        </div>
+      </div>
+      <div class="mc-item task ">
+        <div class="mc-time num">12:00</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t">הכנת תזרים שבועי ללקוחות</div>
+          <div class="mc-s flexed"><span class="mc-s-txt">ארבע חברות · 30 דק׳</span></div>
+        </div>
+      </div>
+
+      <div class="mc-item client next" id="mtNext">
+        <div class="mc-time num">13:00</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t"><a class="name" href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%9E%D7%98%D7%A2%D7%99%20%D7%92%D7%91%D7%A2%D7%95%D7%9F">שיחת מעקב</a></div>
+          <div class="mc-s flexed"><span class="mc-s-txt"><span>אחרי חריגת התקציב</span><span class="dot">·</span><span>פגישה אחרונה <span class="num">12.05</span></span><span class="dot">·</span><span>לפני השיחה: <a class="tlink" href="#t2" onclick="return flashTask('t2')">לחזור לרו״ח על המע״מ</a></span><button class="btn pri mtact" onclick="prep('mtNext')">הכנה לפגישה</button></span></div>
+        </div>
+      </div>
+
+      <div class="mc-item client ">
+        <div class="mc-time num">14:30</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t"><a class="name" href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="what">הצעת מסגרת אשראי</span></div>
+          <div class="mc-s flexed"><span class="mc-s-txt">לפי בקשתו מהפגישה האחרונה · 25 דק׳</span></div>
+        </div>
+      </div>
+
+      <div class="mc-item meet " id="mt1600">
+        <div class="mc-time num">16:00</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t"><a class="name" href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%9E%D7%A9%D7%94%20%D7%A2%D7%95%D7%91%D7%93">פגישה חודשית — יולי</a></div>
+          <div class="mc-s flexed"><span class="mc-s-txt"><span>Zoom</span><span class="dot">·</span><span class="al warn">ההכנה לא נפתחה</span><button class="btn mtact" onclick="prep('mt1600')">הכנה לפגישה</button></span></div>
+        </div>
+      </div>
+
+      <div class="mc-item meet " id="mt1700">
+        <div class="mc-time num">17:00</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t"><a class="name" href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><a class="what" href="meetings.html?q=%D7%90%D7%A0%D7%A8%D7%92%D7%99%20%D7%90%D7%99%D7%A0%D7%98%D7%A8%D7%A0%D7%A9%D7%99%D7%95%D7%A0%D7%9C">המשך סקירה — החלטות תקציב</a></div>
+          <div class="mc-s flexed"><span class="mc-s-txt"><span>המשך לפגישת 09:00</span><span class="dot">·</span><span class="al ok">ההכנה נפתחה</span><button class="btn mtact" onclick="prep('mt1700')">הכנה לפגישה</button></span></div>
+        </div>
+      </div>
+
+      <div class="mc-item task ">
+        <div class="mc-time num">18:00</div>
+        <label class="mc-chk"><input type="checkbox"><span></span></label>
+        <div class="mc-b">
+          <div class="mc-t">סגירת יום — עדכוני וואטסאפ</div>
+          <div class="mc-s flexed"><span class="mc-s-txt">ארבע חברות · 20 דק׳</span></div>
+        </div>
+      </div>
+
+    </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="far">
     <section class="panel att">
-      <div class="ph"><h2>תשומת לב</h2><span class="hint" id="attHint"></span><a class="more" href="memory.html">כל העדכונים</a></div>
+      <div class="ph"><h2>תשומת לב</h2><a class="more" href="memory.html">כל העדכונים</a></div>
       <ul class="att-l" id="attl">
         <li class="warn"><i></i><div><div class="q">"אני מרגיש שאנחנו לא מתקדמים עם הבנק"</div><div class="w"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a> · צחי עובד <span class="src">פגישה · היום 10:03</span></div></div></li>
         <li><i></i><div><div class="q">סגרנו חוזה עם מרכז הבנייה — התחלה בספטמבר</div><div class="w"><a href="clients.html?c=514778220">מטעי גבעון</a> · תומר לוי <span class="src">קבוצה · אתמול 21:40</span></div></div></li>
@@ -392,7 +478,6 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
   </aside>
 
 </main>
-
 <!-- summary modal -->
 <div class="ov" id="ov" onclick="if(event.target===this)closeSum()">
   <div class="md" role="dialog" aria-modal="true" aria-labelledby="mdT">
@@ -410,6 +495,10 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 <div class="toast" id="toast"></div>
 
 <script>
+function bornToggle(){
+  var b=document.getElementById('born0'), t=document.getElementById('bornTg');
+  var on=b.hidden; b.hidden=!on; t.setAttribute('aria-expanded',on?'true':'false');
+}
 (function(){
 'use strict';
 var $=function(s,r){return (r||document).querySelector(s)};
@@ -433,9 +522,9 @@ function tick(){
 var WORDS=['','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה'];
 function word(n){return WORDS[n]||String(n)}
 function counts(){
-  var rows=$$('.day .mt'), done=rows.filter(function(r){return r.classList.contains('done')}).length;
+  var rows=$$('.day .mc-item'), done=rows.filter(function(r){return r.classList.contains('done')}).length;
   $('#mtHint').textContent=word(rows.length)+' · '+(done===1?'אחת הסתיימה':word(done)+' הסתיימו');
-  $('#attHint').textContent='מהזיכרון · '+word($$('#attl li').length)+' האחרונים';
+  /* הרמז בכותרת תשומת לב ירד — הוא נשבר לשתי שורות ולא אמר דבר */
 }
 function lk(txt,fn){var b=document.createElement('button');b.type='button';b.className='lk';b.textContent=txt;b.addEventListener('click',fn);return b}
 function sep(){var s=document.createElement('span');s.className='dot';s.textContent='·';return s}

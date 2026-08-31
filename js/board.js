@@ -64,8 +64,10 @@
         </div>
         <iframe loading="lazy" scrolling="no" data-file="${f}" src="widgets/${encodeURI(f)}#embed" style="height:${w.h}px" onload="this.parentElement.classList.remove('loading')"></iframe>
       </div>`;};
-    if(SCOPE==='client'&&typeof ROLE!=='undefined'&&ROLE==='manager'){
-      // המתפעל לא צריך את קוביות ה-KPI בחברה — נשארים רק הווидג'טים הגדולים
+    const _noKpi=(typeof ROLE!=='undefined'&&(ROLE==='manager'||ROLE==='client1'||ROLE==='clientN'));
+    if(SCOPE==='client'&&_noKpi){
+      /* המתפעל לא צריך את קוביות ה-KPI בחברה, ובעל העסק מקבל במקומן פס אחד
+         עם הפגישה הבאה — בשני המקרים נשארים רק הווידג'טים הגדולים. */
       if(top){top.style.display='none';top.innerHTML='';}
       const lgIx=active.map((f,i)=>i).filter(i=>sizeOf(active[i])!=='sm');
       b.innerHTML=lgIx.map(i=>frame(active[i],i)).join('');
@@ -150,7 +152,12 @@
     /* מסכי היועץ המוטמעים (docs/adv3) — דיווח גובה וניווט פנימי */
     if(d.hkAdv&&d.h>200){
       const MAP={today:'advTodayFrame',tasks:'advTasksFrame',meetings:'advMeetsFrame',memory:'advMemFrame',clients:'clFrame'};
-      const f=document.getElementById(MAP[d.hkAdv]); if(f) f.style.minHeight=d.h+'px'; return; }
+      /* לא פחות מגובה המסך — אחרת מסך קצר משאיר חצי עמוד ריק מתחתיו.
+         ה-max נעשה כאן ולא בתוך המסגרת, כי שם 100vh הוא גובה המסגרת עצמה. */
+      const f=document.getElementById(MAP[d.hkAdv]);
+      if(f){ const top=f.getBoundingClientRect().top+(window.scrollY||0);
+        f.style.minHeight=Math.max(d.h, innerHeight-top-16)+'px'; }
+      return; }
     /* מסכי החברה (docs/cli) — דיווח גובה והחלפת טאב מתוך המסגרת */
     if(d.hkCli&&d.h>200){
       const M={dash:'cliDashFrame',msgs:'cliMsgsFrame',meets:'cliMeetsFrame',ai:'cliAiFrame',

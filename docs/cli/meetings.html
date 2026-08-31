@@ -70,6 +70,8 @@
 
 /* דף ההכנה — פתוח, לא כפתור */
 .prep{padding:16px 20px 20px;min-width:0}
+/* ההכנה לפגישה היא כלי של היועץ — לבעל העסק היא לא קיימת */
+html.r-cli .prep,html.r-cli .prep-h2,html.r-cli #pcOv{display:none !important}
 .prep-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .prep-h b{font-size:14.5px;font-weight:700;color:var(--navy)}
 .prep-h .src{font-size:11.5px;color:var(--ink3)}
@@ -733,6 +735,8 @@ const nextMeet=()=>MT.filter(m=>m.status==='upcoming'&&untilM(m)>=0).sort((a,b)=
 let CONF=false;                       // אישור "לא תתקיים" פתוח בתוך הכרטיס
 
 let SEL=null, GRP={up:true, past:true}, MTAB='sum';
+/* ללקוח אין "זירה" ריקה — הפגישה האחרונה נפתחת מיד */
+let AUTO_SEL=true;
 
 /* =====================================================================
    הזירה — שני מצבים:
@@ -852,21 +856,25 @@ function hkConf(ttl,msg,btn,cb){
 /* ---------- זירת הפגישה ---------- */
 function meetArena(m){
   const d=dayDiff(m.date), up=m.status==='upcoming', c=CHIP[m.status];
+  /* בעל העסק רואה את התוצר בלבד: הסיכום והמשימות. זיכרון, משוב ותמלול
+     הם כלי העבודה של היועץ. */
+  const CLI=document.documentElement.classList.contains('r-cli');
   const tabs=[['sum','סיכום הפגישה',!!(m.sum&&m.sum.length)],
               ['tasks','משימות',!!(m.tasks&&m.tasks.length)],
-              ['mem','זיכרון',!!(m.memUpd&&m.memUpd.length)],
-              ['fb','משוב',!!m.rec],
-              ['tx','תמלול',!!m.tr]].filter(x=>x[2]);
+              ['mem','זיכרון',!CLI&&!!(m.memUpd&&m.memUpd.length)],
+              ['fb','משוב',!CLI&&!!m.rec],
+              ['tx','תמלול',!CLI&&!!m.tr]].filter(x=>x[2]);
+  if(CLI&&MTAB!=='sum'&&MTAB!=='tasks') MTAB='sum';
   if(!tabs.some(x=>x[0]===MTAB)) MTAB=tabs.length?tabs[0][0]:'';
 
   const head=`<div class="arn-h">
-    <button class="arn-back" onclick="toPrep()">→ להכנה החיה</button>
+    ${document.documentElement.classList.contains('r-cli')?'':'<button class="arn-back" onclick="toPrep()">→ להכנה החיה</button>'}
     <div class="day">${d===0?'היום':dayName(m.date)} · ${m.date}</div>
     <div class="clock num" dir="ltr">${timeTxt(m)}</div>
     <span class="in">${up?inTxt(m):c[0]}</span>
     <div class="name">${m.name}</div>
     <div class="who">${ICONS.usr} ${m.who.length?'עם '+whoTxt(m):'ללא משתתף משויך'}</div>
-    ${m.rec?`<button class="arn-play" onclick="trOpen('${m.id}')">
+    ${m.rec&&!document.documentElement.classList.contains('r-cli')?`<button class="arn-play" onclick="trOpen('${m.id}')">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       <span class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
       <b class="num" dir="ltr">${m.rec}</b></button>`:''}
@@ -938,6 +946,11 @@ function tabBody(m){
 }
 
 function arnActs(m){
+  /* האישור הוא פעולה של היועץ. ללקוח הסיכום כבר נשלח — נשארת רק ההורדה. */
+  if(document.documentElement.classList.contains('r-cli')) return `<div class="arn-f">
+    <button class="btn pln" onclick="toast('הסיכום ירד כ-PDF')">הורדת הסיכום</button>
+    <span class="arn-note">הסיכום נשלח אליך בוואטסאפ בסיום הפגישה.</span>
+  </div>`;
   const noWho=!m.who.length;
   if(m.status==='summary') return `<div class="arn-f">
     ${noWho?`<div class="whowarn">חובה לשייך משתתף לפני אישור — הזיכרון מתעדכן פר אדם.
@@ -986,7 +999,8 @@ function noShow(id){const m=MT.find(x=>x.id===id);if(m)m.status='noshow';CONF=fa
 /* ---------- 2 · זירת הפגישות ---------- */
 /* ---------- ציר הזמן ---------- */
 const CHIP={upcoming:['מתוכננת','up'],ai:['הסיכום בדרך — חוזר תוך דקות','ai'],
-  summary:['הסיכום ממתין לאישורך','sum'],done:['אושר ונשלח ללקוח','done'],noshow:['לא התקיימה','no']};
+  summary:[document.documentElement.classList.contains('r-cli')?'הסיכום מוכן':'הסיכום ממתין לאישורך','sum'],
+  done:[document.documentElement.classList.contains('r-cli')?'הסיכום נשלח אליך':'אושר ונשלח ללקוח','done'],noshow:['לא התקיימה','no']};
 
 function grpH(k,ttl,n,sum){
   return `<button class="tl-grp" aria-expanded="${GRP[k]}" onclick="grpTg('${k}')">
@@ -1002,7 +1016,7 @@ function tlRow(m){
   const p=m.date.split('.');
   let s,sc;
   if(up){ s=inTxt(m); sc='soon'; }
-  else if(m.status==='summary'||m.status==='ai'){ s='ממתין לאישורך'; sc='wait'; }
+  else if(m.status==='summary'||m.status==='ai'){ s=document.documentElement.classList.contains('r-cli')?'סיכום מוכן':'ממתין לאישורך'; sc=document.documentElement.classList.contains('r-cli')?'ok':'wait'; }
   else if(m.status==='noshow'){ s='לא התקיימה'; sc='wait'; }
   else { s='אושר ונשלח'; sc='ok'; }
   return `<button class="tl-row ${cls}" data-id="${m.id}" onclick="arenaShow('${m.id}')">
@@ -1028,13 +1042,13 @@ function renderTL(){
         :'<span class="flag warn">לא מתואמת</span>');
 
   document.getElementById('tl').innerHTML=
-    grpH('up','פגישות עתידיות',up.length,
+    (document.documentElement.classList.contains('r-cli')?'':grpH('up','פגישות עתידיות',up.length,
          nx?'הקרובה: '+(dayDiff(nx.date)===0?'היום ':nx.date.slice(0,5)+' ')+from(nx):'אין פגישה מתואמת')
    +'<div class="tl-body fut '+(GRP.up?'':'hid')+'">'
    +(up.length?up.map(tlRow).join('')
      :'<div class="tl-empty">אין פגישה מתואמת · <button class="lnk" onclick="schedOpen()">לתאם עכשיו</button></div>')
    +'</div>'
-   +'<div class="tl-now"><b>עכשיו · '+dayName(TODAY)+' '+TODAY.slice(0,5)+' '+NOW+'</b><span class="ln"></span></div>'
+   +'<div class="tl-now"><b>עכשיו · '+dayName(TODAY)+' '+TODAY.slice(0,5)+' '+NOW+'</b><span class="ln"></span></div>')
    +grpH('past','פגישות שהתקיימו',past.length,'')
    +'<div class="tl-body '+(GRP.past?'':'hid')+'">'+past.map(tlRow).join('')+'</div>';
 
@@ -1050,6 +1064,8 @@ function pipeHTML(m){
   const sum=m.status==='done'?S('סיכום אושר','ok'):m.status==='summary'?S('סיכום ממתין לאישור','run'):
             m.status==='ai'?S('סיכום נוצר עכשיו','run'):S('סיכום','');
   const mem=m.memUpd?S('זיכרון עודכן ('+m.memUpd.length+')','ok'):S('עדכון זיכרון','');
+  /* צינור העיבוד הוא פנימי — ללקוח הסיכום פשוט קיים */
+  if(document.documentElement.classList.contains('r-cli')) return '';
   return `<div class="pipe">${rec}${arm}${tr}${arm}${sum}${arm}${mem}</div>`;
 }
 
@@ -1167,6 +1183,12 @@ function schedLink(){schedClose();
 
 /* ---------- ריצה ---------- */
 function renderAll(){renderTL();arenaShow(SEL);}
+/* בכניסה נבחרת הפגישה האחרונה שהתקיימה — מסך ריק אינו מצב פתיחה */
+if(AUTO_SEL&&!SEL){
+  const past=MT.filter(m=>m.status!=='up'&&m.status!=='upcoming');
+  const first=(past.length?past:MT)[0];
+  if(first) SEL=first.id;
+}
 renderAll();
 /* Escape סוגר גם את האישור הפנימי בכרטיס הפגישה · שורת פגישה נפתחת גם מהמקלדת */
 addEventListener('keydown',e=>{

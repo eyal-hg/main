@@ -356,13 +356,13 @@
   /* ---- היומן של מנהל התזרים — תפעולים, פגישות ומשימות שהוא פותח לעצמו ---- */
   const MC_NOW='10:54';   // שעת הדמו — כמו בכותרת "סונכרן 10:54"
   let MGR_AGENDA=[
-    {time:'09:00', dur:'40 דק׳', kind:'ops',    title:'תפעול — אנרגי אינטרנשיונל', sub:'הושלם · נשלח עדכון ללקוח', done:true,  co:0},
-    {time:'09:45', dur:'35 דק׳', kind:'ops',    title:'תפעול — מטעי גבעון',        sub:'הושלם · 2 קיטלוגים אושרו',  done:true,  co:2},
+    {time:'09:00', dur:'40 דק׳', kind:'ops',    title:'תפעול',                     sub:'הושלם · נשלח עדכון ללקוח', done:true,  co:0, client:'אנרגי אינטרנשיונל'},
+    {time:'09:45', dur:'35 דק׳', kind:'ops',    title:'תפעול',                     sub:'הושלם · 2 קיטלוגים אושרו',  done:true,  co:2, client:'מטעי גבעון'},
     {time:'10:30', dur:'30 דק׳', kind:'task',   title:'בדיקת נגררות יוני — 5 חברות', sub:'משימה שלי',               done:false, pri:'high'},
-    {time:'11:30', dur:'20 דק׳', kind:'client', title:'עדכון תקציב שיווק ליולי',    sub:'משימת לקוח · אנרגי אינטרנשיונל', done:false},
+    {time:'11:30', dur:'20 דק׳', kind:'client', title:'עדכון תקציב שיווק ליולי',    sub:'משימת לקוח',              done:false, client:'אנרגי אינטרנשיונל'},
     {time:'13:00', dur:'45 דק׳', kind:'meet',   title:'פגישת צוות שבועית',          sub:'עם טל מלקר · Zoom',  done:false, link:'Zoom'},
-    {time:'15:00', dur:'45 דק׳', kind:'meet',   title:'פגישת תזרים — משה עובד',     sub:'מסונכרנת ללקוח · Google Meet', done:false, link:'Meet', client:'משה עובד'},
-    {time:'14:30', dur:'25 דק׳', kind:'task',   title:'מעקב חוב — רימון יצחק',      sub:'משימה שלי · 421,050 ₪',    done:false, pri:'high'},
+    {time:'15:00', dur:'45 דק׳', kind:'meet',   title:'פגישת תזרים',                sub:'מסונכרנת ללקוח · Google Meet', done:false, link:'Meet', client:'משה עובד'},
+    {time:'14:30', dur:'25 דק׳', kind:'task',   title:'מעקב חוב',                   sub:'משימה שלי · 421,050 ₪',    done:false, pri:'high', client:'רימון יצחק'},
     {time:'16:00', dur:'30 דק׳', kind:'task',   title:'שליחת עדכוני תזרים ללקוחות', sub:'משימה שלי · 4 חברות נותרו', done:false, pri:'mid'},
   ];
   /* שאר השבוע — לתצוגת שבוע (היום = חמישי, אינדקס 4) */
@@ -543,7 +543,7 @@
         <label class="mc-chk" onclick="event.stopPropagation()"><input type="checkbox" ${it.done?'checked':''} onchange="mcToggle(${ix})"><span></span></label>
         <div class="mc-b">
           <div class="mc-t">${it.title}${it.pri?` `:''}</div>
-          <div class="mc-s flexed"><span class="mc-s-txt">${it.sub} · ${it.dur}</span>
+          <div class="mc-s flexed"><span class="mc-s-txt">${it.client?`<b class="mc-cli">${it.client}</b> · `:''}${it.sub} · ${it.dur}</span>
             ${it.link&&!it.done?`<button class="mc-link" onclick="event.stopPropagation();toast('נפתח ${it.link} — ${it.title}')" title="פתיחת ${it.link}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> ${it.link} ↗</button>`:''}
             ${it.client&&it.kind==='meet'&&!it.done?`<button class="mc-link rec" onclick="event.stopPropagation();startMeetRec('${it.client}')" title="הקלטת הפגישה — מסונכרנת ללקוח"><span class="mrec-dot"></span> הקלטה</button>`:''}
           </div>

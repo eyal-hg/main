@@ -63,7 +63,7 @@ select.pill{appearance:none;padding-inline-end:26px;background-image:url("data:i
 .dirty-bar button{margin-inline-start:auto;background:#E48375;border:0;color:#fff;font-weight:700;font-size:11.5px;border-radius:999px;padding:5px 14px}
 
 /* ---------- פריסה: דוח + תובנות ---------- */
-.split{display:grid;grid-template-columns:1fr 250px;gap:14px;align-items:start}
+.split{display:grid;grid-template-columns:1fr 306px;gap:14px;align-items:start}
 @media(max-width:1000px){.split{grid-template-columns:1fr}}
 
 /* ---------- הדוח — כרטיסי קבוצה על גריד אחיד ---------- */
@@ -114,15 +114,35 @@ select.pill{appearance:none;padding-inline-end:26px;background-image:url("data:i
 .warn-ic:hover .tip{display:block}
 
 /* ---------- תובנות ---------- */
-.insights{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);padding:14px 16px;position:sticky;top:12px}
-.insights h3{margin:0 0 4px;font-size:13.5px;font-weight:700}
-.insights .isub{font-size:11.5px;color:var(--muted);margin-bottom:10px}
-.ins{border-inline-start:3px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:9px 11px;font-size:12px;line-height:1.5;margin-bottom:9px}
-.ins b{font-weight:700}
-.ins.warn{border-color:#E48375;background:#FDF3F1}
-.ins.good{border-color:var(--pos);background:var(--pos-soft)}
-.ins .pin{float:inline-end;color:var(--soft);cursor:pointer}
-.ins .pin:hover{color:var(--accent)}
+/* אותו עוזר כמו במסכי היועץ: ראש כהה, תובנות ככרטיסים, ושורת שאלה בקורל */
+.insights{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-sm);
+  position:sticky;top:12px;display:flex;flex-direction:column;overflow:hidden;max-height:calc(100vh - 24px)}
+.insights .ah{display:flex;align-items:center;gap:8px;padding:13px 16px;background:#0C4068}
+.insights .ah svg{color:#8EC9EC;flex:none}
+.insights .ah b{font-size:13.5px;font-weight:600;color:#fff}
+.insights .ah .src{margin-inline-start:auto;font-size:10.5px;color:rgba(255,255,255,.74)}
+.insights .ab{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.ins{position:relative;padding:10px 13px;padding-inline-start:16px;font-size:12.5px;line-height:1.6;color:var(--muted);
+  background:#fff;border:1px solid var(--border);border-radius:11px;box-shadow:0 1px 2px rgba(12,64,104,.05)}
+.ins::before{content:"";position:absolute;inset-inline-start:0;top:9px;bottom:9px;width:3px;border-radius:99px;background:#39ABE2}
+.ins.warn::before{background:#E48375}
+.ins.good::before{background:var(--pos)}
+.ins b{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
+.insights .q{position:relative;padding-inline-start:13px;font-size:13px;font-weight:600;color:var(--text)}
+.insights .q::before{content:"";position:absolute;inset-inline-start:0;top:2px;bottom:2px;width:3px;border-radius:99px;background:#E4826E}
+.insights .a{font-size:12.5px;line-height:1.75;color:var(--muted);padding-inline-start:13px}
+.insights .a b{color:var(--text);font-weight:600}
+.asug{display:flex;flex-wrap:wrap;gap:6px;padding:10px 13px 0;background:#FDF4F2}
+.asug button{border:1px solid #F0CFC7;background:#fff;border-radius:999px;padding:4px 11px;
+  font-size:11.5px;font-weight:500;color:var(--muted);cursor:pointer}
+.asug button:hover{border-color:#E4826E;color:var(--text)}
+.acomp{display:flex;align-items:center;gap:8px;padding:10px 13px;background:#FDF4F2;border-top:1px solid #F6DCD5}
+.acomp input{flex:1;min-width:0;border:1px solid #F0CFC7;background:#fff;border-radius:999px;padding:9px 14px;font:inherit;font-size:12.5px}
+.acomp input::placeholder{color:#C79184}
+.acomp input:focus{outline:none;border-color:#E4826E;box-shadow:0 0 0 3px rgba(228,130,110,.18)}
+.asend{flex:none;width:33px;height:33px;border:0;border-radius:50%;background:#E4826E;color:#fff;cursor:pointer;
+  box-shadow:0 3px 9px -2px rgba(228,130,110,.55);display:grid;place-items:center}
+.asend:hover{background:#D96A55}
 
 /* טוסט פנימי */
 #toast{position:fixed;bottom:18px;inset-inline-start:50%;transform:translateX(50%);background:#0C4068;color:#fff;font-size:12.5px;font-weight:600;border-radius:999px;padding:9px 20px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}
@@ -170,11 +190,23 @@ body.is-embedded .page-head{display:none}
   <div class="split">
     <div id="report"></div>
     <aside class="insights">
-      <h3>תובנות</h3>
-      <div class="isub">מחושב אוטומטית מנתוני הדוח</div>
-      <div class="ins warn"><span class="pin" title="הצמדה לדוח">📎</span><b>משיכות בעלים גבוהות:</b> 1.46 מ׳ ₪ בתקופה — פי 1.5 מההפרש התפעולי המצטבר.</div>
-      <div class="ins"><span class="pin" title="הצמדה לדוח">📎</span><b>אפריל חריג:</b> הפרש חודשי ‎-753 א׳ ₪, בעיקר משיכות בעלים (635 א׳) והעברות.</div>
-      <div class="ins good"><span class="pin" title="הצמדה לדוח">📎</span><b>מגמה תפעולית חיובית:</b> ההפרש התפעולי עלה מ-‎-173 א׳ באפריל ל-367 א׳ ביולי.</div>
+      <div class="ah">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/></svg>
+        <b>עוזר AI · על הדוח</b>
+        <span class="src">מנתוני הדוח</span>
+      </div>
+      <div class="ab" id="aiBody">
+        <div class="ins warn"><b>משיכות בעלים גבוהות</b><span>1.46 מ׳ ₪ בתקופה — פי 1.5 מההפרש התפעולי המצטבר.</span></div>
+        <div class="ins"><b>אפריל חריג</b><span>הפרש חודשי ‎-753 א׳ ₪, בעיקר משיכות בעלים (635 א׳) והעברות.</span></div>
+        <div class="ins good"><b>מגמה תפעולית חיובית</b><span>ההפרש התפעולי עלה מ-‎-173 א׳ באפריל ל-367 א׳ ביולי.</span></div>
+      </div>
+      <div class="asug" id="aiSug"></div>
+      <form class="acomp" onsubmit="event.preventDefault();aiSend()">
+        <input id="aiIn" placeholder="שאלו על הדוח…" autocomplete="off">
+        <button class="asend" type="submit" aria-label="שליחה">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        </button>
+      </form>
     </aside>
   </div>
 </div>
@@ -396,6 +428,23 @@ function produce(){
 ddRender();
 function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(window._tt); window._tt=setTimeout(()=>el.classList.remove('on'),2200); }
 render();
+/* ---------- העוזר של הדוח — שאלות פיננסיות על המספרים שבטבלה ---------- */
+var A_SUG=['מה מגמת ההכנסות?','מתי צפויה חריגה?','כמה יצא למשיכות בעלים?','מה קרה באפריל?'];
+var A_ANS={
+ 'מה מגמת ההכנסות?':'ההכנסות עלו מ-<b>1.96 מ׳ ₪</b> באפריל ל-<b>3.58 מ׳ ₪</b> ביוני, וירדו ל-<b>2.90 מ׳ ₪</b> ביולי. סה״כ בתקופה <b>11.47 מ׳ ₪</b> — מגמה עולה עם חודש אחד חריג כלפי מטה.',
+ 'מתי צפויה חריגה?':'בתקופה שבדוח לא הייתה חריגה — יתרת הסגירה חיובית בכל ארבעת החודשים. התחזית קדימה יושבת ב<b>תזרים עתידי</b>, לא בדוח הזה.',
+ 'כמה יצא למשיכות בעלים?':'<b>1.46 מ׳ ₪</b> לאורך ארבעת החודשים, בקבוצת "מימון, השקעות ובעלים" — פי 1.5 מההפרש התפעולי המצטבר.',
+ 'מה קרה באפריל?':'אפריל נסגר ב-<b>753,266- ₪</b> — החודש החריג בתקופה. 635 א׳ ₪ מתוכו משיכות בעלים, והשאר העברות בין החשבונות.'
+};
+function aiAsk(q){
+  var b=document.getElementById('aiBody');
+  var a=A_ANS[q]||'על השאלה הזאת אין לי מספיק מהדוח הזה — הוא מחזיק ארבעה חודשים סגורים בלבד. במסך העוזר טעון כל ההקשר של החברה.';
+  b.insertAdjacentHTML('beforeend','<div class="q">'+q+'</div><div class="a">'+a+'</div>');
+  b.scrollTop=b.scrollHeight;
+}
+function aiSend(){var el=document.getElementById('aiIn'),v=(el.value||'').trim();if(!v)return;el.value='';aiAsk(v);}
+document.getElementById('aiSug').innerHTML=A_SUG.map(function(q){
+  return '<button type="button" onclick="aiAsk('+JSON.stringify(q).replace(/"/g,'&quot;')+')">'+q+'</button>';}).join('');
 </script>
 </body>
 </html>

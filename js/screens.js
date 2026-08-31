@@ -110,6 +110,14 @@
     document.getElementById('wboard').style.display=showBoard?'':'none';
     // שורת ה-KPI העליונה שייכת למסך חברה — מוסתרת בכל תצוגת פורטפוליו אחרת
     const _wt=document.getElementById('wboardTop'); if(_wt&&!showBoard) _wt.style.display='none';
+    /* לבעל העסק אין שורת KPI, אין שורת סנכרון ואין רענון — הפס העליון
+       נושא את הפגישה הבאה, ומתחתיו רק הווידג'טים הפיננסיים. */
+    const _isCli=(ROLE==='client1'||ROLE==='clientN');
+    if(_isCli&&_wt) _wt.style.display='none';
+    const _sl=document.querySelector('.sub-line'); if(_sl&&_isCli) _sl.style.display='none';
+    const _rf=document.getElementById('btnRefresh'); if(_rf) _rf.style.display=_isCli?'none':'';
+    const _mb=document.getElementById('cliMeetBar');
+    if(_mb) _mb.style.display=(_isCli&&showBoard&&SCOPE==='client')?'':'none';
     // ללקוחות אין עריכת לוח — HK מגדירה את הלוח עבורם
     const canEdit=!(ROLE==='client1'||ROLE==='clientN');
     document.getElementById('wbActions').style.display=(showBoard&&canEdit)?'flex':'none';
@@ -128,8 +136,9 @@
     renderCoAlerts();
     if(typeof renderCoBar==='function')renderCoBar();
     renderClientRow();
-    // כדור ה-AI — ללקוחות בלבד, ורק כשנבחרה חברה ספציפית (הצ'אט הוא פר-חברה)
-    const aiOn=(ROLE==='client1'||ROLE==='clientN')&&SCOPE==='client';
+    /* הכדור ירד: לבעל העסק יש מסך "עוזר AI" מלא — אותו מסך של היועץ,
+       עם שיחות והיסטוריה. בועה צפה לצד מסך שלם היא שתי דלתות לאותו דבר. */
+    const aiOn=false;
     const orb=document.getElementById('aiOrb');
     if(orb) orb.style.display=aiOn?'flex':'none';
     if(!aiOn){const p=document.getElementById('aiPanel');if(p)p.classList.remove('show');}
@@ -210,6 +219,18 @@
   }
   /* בתוך חברה השם עלה לפס העליון ותג המצב ירד. אם גם הפעולות מוסתרות
      נשארת רצועה ריקה בגובה מלא — היא שנראתה כרווח מיותר מעל כל מסך מוטמע. */
+  /* מסכים שממלאים את הגובה — הגובה נגזר מהמיקום האמיתי של האלמנט ולא
+     ממספר קסם, אחרת נשאר פס לבן בתחתית בכל רזולוציה אחרת. */
+  function fitTall(){
+    ['viewCal','viewMeetings'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el||getComputedStyle(el).display==='none') return;
+      const top=el.getBoundingClientRect().top+(window.scrollY||0);
+      el.style.height=Math.max(360,innerHeight-top-16)+'px';
+    });
+  }
+  window.fitTall=fitTall;
+  addEventListener('resize',fitTall);
   function tidyClientHead(){
     const ch=document.querySelector('.client-head'); if(!ch) return;
     /* רק מכווץ — לעולם לא מחזיר להצגה. ההצגה נקבעת במקומות אחרים,
@@ -229,14 +250,24 @@
     if(cliHost){
       /* לבעל העסק ולמנהלת התזרים יש דשבורד משלהם — מסכי docs/cli הם של היועץ.
          שאר הטאבים משותפים גם למנהלת התזרים. */
-      const useCli=CLI_TABS[t]&&ROLE!=='client1'&&ROLE!=='clientN'
+      /* מסכי docs/cli הם מסך אחד לכל התפקידים. לבעל העסק פתוחים "פגישות"
+         ו"תמונת תזרים" — אותו מסך של היועץ, בלי החלקים של ההכנה לפגישה.
+         הדשבורד שלו נשאר שלו (פס הפגישה + הווידג'טים הפיננסיים). */
+      const _cliRole=(ROLE==='client1'||ROLE==='clientN');
+      const useCli=CLI_TABS[t]
+                   &&!(_cliRole&&t!=='meetings'&&t!=='past'&&t!=='chat')
                    &&!(t==='dash'&&ROLE==='manager');
       cliHost.style.display=useCli?'':'none';
       cliHost.querySelectorAll('.cliframe').forEach(f=>f.style.display='none');
       if(useCli){
         const f=document.getElementById(CLI_TABS[t]);
-        /* ערך מפורש — display:'' נופל חזרה ל-display:none של .cliframe */
-        if(f){ if(!f.src) f.src=f.dataset.src; f.style.display='block'; }
+        /* ערך מפורש — display:'' נופל חזרה ל-display:none של .cliframe.
+           ה-r מסמן למסך מי צופה בו, ומוגדר מחדש כשמחליפים תפקיד. */
+        if(f){
+          const want=_cliRole?'cli':'adv';
+          if(!f.src||f.dataset.role!==want){ f.dataset.role=want; f.src=f.dataset.src+'&r='+want; }
+          f.style.display='block';
+        }
         document.querySelector('.db-actions').style.visibility='hidden';
         document.getElementById('wbActions').style.display='none';
         document.querySelector('.sub-line').style.display='none';
@@ -337,6 +368,7 @@
     // יעד גלובלי: בלי כותרת חברה ופירור — זה לא עמוד של חברה
     document.querySelector('.client-head').style.display = isGlobal ? 'none' : 'flex';
     tidyClientHead();   /* אחרי הקביעה למעלה — היא זו שדרסה את הכיווץ */
+    requestAnimationFrame(fitTall);
     if(isGlobal){GNAV=t;const c=document.getElementById('crumb');if(c)c.style.display='none';}
     else if(SCOPE==='client'){GNAV='client';renderCrumb();}
     renderGlobalRail();
@@ -448,7 +480,7 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['msgs',1],['chat',1],['metrics',1],['meetings',0],['mem',1],['prep',1]];
+      const SEC=[['dash',0],['msgs',1],['chat',0],['metrics',1],['meetings',0],['mem',1],['prep',1]];
       /* החזרה והשם עברו לפס העליון — כאן הם היו חוזרים על עצמם */
       html=(ROLE==='client1'?`<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`:'')+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)

@@ -61,8 +61,28 @@
   ];
   /* כרטיסי שירות — ווидג'טים קבועים: שורה נמוכה (רבע/רבע/חצי) ושורה גבוהה (חצי/חצי).
      מסך חברה אחיד: היועץ רואה בדיוק את מה שהלקוח רואה; המתפעל במצב עבודה — בלעדיהם. */
+  /* הפס של בעל העסק — פגישה אחת, שורה אחת. הוא מחליף את וידג'ט
+     "הפגישה הבאה" ואת שורת ה-KPI שהייתה מעליו. */
+  function renderCliMeetBar(){
+    const el=document.getElementById('cliMeetBar'); if(!el) return;
+    const isCli=(ROLE==='client1'||ROLE==='clientN');
+    if(!isCli||SCOPE!=='client'||CUR_TAB!=='dash'){el.style.display='none';return;}
+    el.style.display='';
+    const c=CLIENTS[CUR]||{};
+    el.innerHTML=`<div class="clibar">
+      <span class="clibar-k">הפגישה הבאה</span>
+      <b class="clibar-t">סקירת רבעון Q3</b>
+      <span class="clibar-s">עם ${c.adv||'אילון שחר'} · ${c.firm||'שחר ייעוץ עסקי'} · Zoom</span>
+      <span class="clibar-sp"></span>
+      <span class="clibar-when"><b>10 ביולי</b> · 14:00–15:00 · בעוד 4 ימים</span>
+      <button class="clibar-btn" onclick="toast('נוספה ליומן שלך')">הוספה ליומן</button>
+      <button class="clibar-btn gh" onclick="toast('נשלחה בקשה לתיאום מחדש')">תיאום מחדש</button>
+    </div>`;
+  }
   function renderClientRow(){
     const el=document.getElementById('clientRow'); if(!el) return;
+    /* כרטיסי השירות ירדו לבעל העסק — נשארים רק הווידג'טים הפיננסיים */
+    if(ROLE==='client1'||ROLE==='clientN'){el.style.display='none';renderCliMeetBar();return;}
     const show=(SCOPE==='client')&&(typeof ROLE==='undefined'||ROLE!=='manager');
     if(!show){el.style.display='none';return;}
     el.style.display='';
@@ -166,7 +186,8 @@
 
   /* ---- AI chat orb (הלקוח שואל על החברה הנוכחית) ---- */
   /* העוזר עובד פר-חברה — עונה רק על החברה שנבחרה למעלה */
-  const AI_CHIPS=['מה המצב של החברה?','למה צפויה חריגה ביולי?','מה HK עשתה השבוע?','מתי הפגישה הבאה שלי?'];
+  /* שאלות פיננסיות על המספרים — לא על המערכת. זה מה שבעל עסק באמת שואל. */
+  const AI_CHIPS=['מה מגמת ההכנסות?','מתי צפויה חריגה?','מה תהיה היתרה בעוד שבועיים?','כמה קניתי מסונול החודש?'];
   const BAL={'אנרגי אינטרנשיונל':'1,029,208','אנרגי גולני':'312,400','מטעי גבעון':'568,900','משה עובד':'174,300','רימון יצחק':'421,050'};
   function aiAnswer(q){
     const c=CLIENTS[CUR];
@@ -175,6 +196,18 @@
       return {t:'הנה תמונת המצב של '+c.name+' — יתרה נוכחית וסטטוס תקציב:',
         cards:`<div class="aic ${bad?'bad':''}"><b>${c.name}</b><span dir="ltr">${BAL[c.name]||'—'} ₪</span><i>${bad?'חריגת תקציב':'תקין'}</i></div>
                <div class="aic"><b>ניצול תקציב חודשי</b><span dir="ltr">${c.budgetPct||0}%</span><i>${bad?'מעל היעד':'בתוך היעד'}</i></div>`};
+    }
+    if(q.includes('מגמת')||q.includes('הכנסות')){
+      return {t:'ההכנסות עלו מ-1.96 מ׳ ₪ באפריל ל-3.58 מ׳ ₪ ביוני, וירדו ל-2.90 מ׳ ₪ ביולי. סה״כ בארבעת החודשים הסגורים 11.47 מ׳ ₪ — מגמה עולה עם חודש אחד חריג כלפי מטה.',
+        cards:'<div class="aic"><b>הכנסות · 4 חודשים סגורים</b><span dir="ltr">11,467,390 ₪</span><i>שיא ביוני · 3.58 מ׳</i></div>'};
+    }
+    if(q.includes('יתרה')||q.includes('שבועיים')){
+      return {t:'התחזית לעוד שבועיים: היתרה יורדת מ-1,029,208 ₪ ל-כ-740,000 ₪, בעיקר בגלל תשלום ספק גדול (210k) שמתוכנן ל-14.7 ומשכורות ב-10.7. אחרי זה היא מתאוששת עם גביית הסליקה.',
+        cards:'<div class="aic"><b>יתרה צפויה · 16.07</b><span dir="ltr">~740,000 ₪</span><i>מ-1,029,208 ₪ היום</i></div>'};
+    }
+    if(q.includes('קניתי')||q.includes('ספק')||q.includes('סונול')){
+      return {t:'מסונול נרשמה החודש חשבונית אחת — 4,820 ₪ ב-30.06, ששויכה להוצאות דלק. היא כבר בתזרים ובקיטלוג.',
+        cards:'<div class="aic"><b>סונול · יוני</b><span dir="ltr">4,820 ₪</span><i>חשבונית אחת · הוצאות דלק</i></div>'};
     }
     if(q.includes('חריגה')||q.includes('יולי')){
       return {t:'צפויה חריגה של ‎-289,161 ₪ ב-13.7 בעו״ש המאוחד. הגורם המרכזי: הוצאות השכר חרגו ב-14% מהתקציב החודשי, ובמקביל תשלום ספק גדול (210k) מתוכנן ל-14.7. ב-HK כבר קיבלו התראה — מומלץ לתאם שיחה עם היועץ.',
