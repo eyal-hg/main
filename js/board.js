@@ -173,7 +173,7 @@
     if(d.hkCli&&d.h>200){
       const M={dash:'cliDashFrame',msgs:'cliMsgsFrame',meets:'cliMeetsFrame',ai:'cliAiFrame',
                metric:'cliMetricFrame',past:'cliPastFrame',flow:'cliFlowFrame',
-               intake:'cliIntakeFrame'};
+               intake:'cliIntakeFrame', calls:'cliCallsFrame'};
       /* כמו במסכי adv3: לא פחות מגובה המסך, אחרת מסך קצר משאיר פס לבן מתחתיו.
          הגובה נשמר על האלמנט, כי המסגרת מדווחת רק כשהתוכן משתנה — ובלי זה
          חישוב מוקדם אחד (לפני שהפריסה התייצבה) היה נתקע לתמיד. */

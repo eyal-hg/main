@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אנרגי אינטרנשיונל · שיחות טלפון</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="cli.css">
+<style>
+/* =====================================================================
+   שיחות טלפון — הערוץ השני של התקשורת, לצד הקבוצה בוואטסאפ.
+   פגישה מתואמת מראש ונמשכת שעה; שיחה קורית באמצע היום ונמשכת ארבע דקות,
+   ובכל זאת נסגרות בה החלטות — ולכן היא מקבלת בדיוק את אותו תוצר:
+   תמלול, סיכום, ומשימות שנפתחו ממנו.
+   הקידומת cl- שומרת מהתנגשות עם המחלקות הגנריות של cli.css.
+   ===================================================================== */
+.wrap{max-width:1580px;margin:0 auto;padding:16px 20px 28px}
+/* המסך נמתח לגובה שהמעטפת נותנת לו — בלי min-height, שמנפח את עצמו
+   בלולאה כשהעמוד מדווח את גובהו להורה. */
+html.embed,html.embed body{height:100%}
+html.embed body{display:flex;flex-direction:column}
+/* width:100% הכרחי: margin:0 auto על פריט בתוך flex-column גורם לו
+   להצטמצם לרוחב התוכן במקום להימתח. */
+html.embed .wrap{flex:1;width:100%;display:flex;flex-direction:column;min-height:0}
+html.embed .cl-grid{flex:1;min-height:0}
+.cl-grid{display:grid;grid-template-columns:392px minmax(0,1fr);gap:16px;align-items:stretch}
+.cl-grid>.panel{display:flex;flex-direction:column;min-height:0}
+@media(max-width:1120px){.cl-grid{grid-template-columns:minmax(0,1fr)}}
+.cl-sum{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:11px 18px;
+  border-bottom:1px solid var(--tint);font-size:11.5px;color:var(--ink3)}
+.cl-sum b{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
+.cl-sum .dot{width:3px;height:3px;border-radius:50%;background:var(--bd2)}
+.cl-fil{display:flex;gap:5px;padding:10px 16px;border-bottom:1px solid var(--tint)}
+.cl-fil button{border:1px solid var(--cardbd);background:#fff;color:var(--ink3);font:inherit;
+  font-size:11.5px;font-weight:600;border-radius:999px;padding:4px 12px;cursor:pointer;transition:.12s}
+.cl-fil button:hover{border-color:var(--sky);color:#14618F}
+.cl-fil button.on{background:var(--band);border-color:var(--band);color:#fff}
+.cl-list{flex:1;min-height:0;overflow-y:auto;padding:6px 0 8px}
+.cl-day{font-size:10.5px;font-weight:700;color:var(--faint);padding:11px 18px 4px;letter-spacing:.03em}
+.cl-row{width:100%;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:11px;align-items:center;
+  text-align:start;border:0;background:none;font:inherit;padding:9px 16px;cursor:pointer;
+  border-inline-start:2.5px solid transparent;transition:.12s}
+.cl-row:hover{background:#FBFDFF}
+.cl-row.on{background:var(--tint);border-inline-start-color:var(--band)}
+.cl-ico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex:none;background:#EAF4FB;color:#14618F}
+.cl-row.out .cl-ico{background:#EDE9FD;color:#5B41C4}
+.cl-row.miss .cl-ico{background:#FDECEB;color:#C43D30}
+.cl-w .no{color:#C43D30;font-weight:600}
+.cl-b{min-width:0}
+.cl-b b{display:block;font-size:13px;font-weight:600;color:var(--navy);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-b span{display:block;font-size:11.5px;color:var(--ink3);margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-w{text-align:end;flex:none}
+.cl-w b{display:block;font-size:11.5px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
+.cl-w span{display:block;font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:1px}
+
+.cl-h{padding:16px 20px 14px;border-bottom:1px solid var(--tint)}
+.cl-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  border-radius:999px;padding:3px 11px;margin-bottom:9px}
+.cl-tag.in{background:#EAF4FB;color:#14618F}
+.cl-tag.out{background:#EDE9FD;color:#5B41C4}
+.cl-tag.miss{background:#FDECEB;color:#C43D30}
+/* שיחה שלא נענתה אינה שיחה — אין לה תמלול ואין ממה לסכם.
+   מה שיש לה זה מי חיפש, מתי, ומה נעשה עם זה. */
+.cl-miss{padding:18px 20px 20px}
+.cl-mbox{display:flex;gap:13px;align-items:flex-start;background:#FFF9F8;border:1px solid #F6DCD5;
+  border-radius:13px;padding:15px 17px}
+.cl-mbox .ic{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;background:#FDECEB;color:#C43D30}
+.cl-mbox b{display:block;font-size:13.5px;color:#0C4068;margin-bottom:3px}
+.cl-mbox p{font-size:12.5px;color:var(--ink3);line-height:1.7}
+.cl-back{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 15px;
+  border:1px solid var(--tint);border-radius:12px;font-size:12.5px;color:var(--ink2)}
+.cl-back b{color:var(--navy);font-weight:600}
+.cl-back .ok2{font-size:11px;font-weight:700;color:#0B6E4B;background:#E7F7EF;
+  border-radius:999px;padding:2px 10px;flex:none}
+.cl-back .no2{font-size:11px;font-weight:700;color:#C43D30;background:#FDECEB;
+  border-radius:999px;padding:2px 10px;flex:none}
+.cl-back .lnk2{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;
+  color:#14618F;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
+.cl-macts{display:flex;gap:8px;margin-top:14px}
+.cl-h h2{font-size:17px;font-weight:600;color:var(--navy);line-height:1.35}
+.cl-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:8px;
+  font-size:12px;color:var(--ink3)}
+.cl-meta b{color:var(--navy);font-weight:600}
+.cl-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--bd2)}
+.cl-play{display:inline-flex;align-items:center;gap:9px;margin-top:12px;border:1px solid var(--cardbd);
+  background:#fff;border-radius:999px;padding:6px 8px 6px 14px;cursor:pointer;transition:.13s}
+.cl-play:hover{border-color:var(--sky);background:#FBFDFF}
+.cl-play .pl{width:24px;height:24px;border-radius:50%;background:var(--band);color:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center}
+.cl-play .wv{display:flex;align-items:center;gap:2px;height:17px}
+.cl-play .wv i{width:2px;border-radius:2px;background:#9EC6E2}
+.cl-play b{font-size:11.5px;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+.cl-tabs{display:flex;gap:2px;padding:0 16px;border-bottom:1px solid var(--tint);background:#FCFDFE}
+.cl-tabs button{position:relative;border:0;background:none;font:inherit;padding:12px 14px;
+  font-size:13px;font-weight:600;color:var(--ink3);cursor:pointer}
+.cl-tabs button:hover{color:var(--navy)}
+.cl-tabs button.on{color:var(--navy)}
+.cl-tabs button.on::after{content:"";position:absolute;inset-inline:12px;bottom:-1px;height:2px;
+  border-radius:99px;background:var(--coral)}
+.cl-body{padding:16px 20px 20px;flex:1;min-height:0;overflow-y:auto}
+.cl-dh{font-size:11px;font-weight:700;color:var(--faint);letter-spacing:.03em;margin-bottom:9px}
+.cl-dh.t2{margin-top:18px}
+.cl-pnt{display:flex;gap:9px;font-size:13px;color:var(--ink);line-height:1.65;padding:5px 0}
+.cl-pnt .n{font-weight:700;color:#39ABE2;flex:none;font-variant-numeric:tabular-nums}
+.cl-tsk{display:flex;align-items:center;gap:9px;background:#FBFDFE;border:1px solid var(--tint);
+  border-radius:10px;padding:9px 12px;margin-top:6px;font-size:12.5px;color:var(--navy)}
+.cl-tsk .mk{width:17px;height:17px;border-radius:50%;flex:none;display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-weight:700;border:1.5px solid var(--bd2);color:transparent}
+.cl-tsk.ok .mk{background:#0B6E4B;border-color:#0B6E4B;color:#fff}
+.cl-tsk .who{margin-inline-start:auto;font-size:10.5px;color:var(--faint);flex:none}
+
+.cl-tx{display:flex;flex-direction:column}
+.cl-txr{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:8px 0;
+  border-bottom:1px solid #F4F8FB}
+.cl-txr:last-child{border-bottom:0}
+.cl-txr .tm{font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums;padding-top:2px}
+.cl-txr .sp2{display:block;font-size:11px;font-weight:700;color:#14618F;margin-bottom:2px}
+.cl-txr.them .sp2{color:#5B41C4}
+.cl-txr p{font-size:13px;color:var(--ink);line-height:1.65}
+.cl-txf{display:flex;align-items:center;gap:9px;margin-top:14px;padding-top:13px;
+  border-top:1px solid var(--tint);font-size:11.5px;color:var(--ink3)}
+.cl-txf .sp{flex:1}
+.cl-note{font-size:12px;color:var(--ink3);line-height:1.7;background:#FBFDFE;border:1px solid var(--tint);
+  border-radius:11px;padding:13px 15px}
+.cl-empty{padding:40px 20px;text-align:center;font-size:12.5px;color:var(--ink3)}
+</style>
+</head>
+<body data-cli="calls">
+<main class="wrap">
+  <div class="cl-grid">
+    <section class="panel">
+      <div class="cl-sum" id="clSum"></div>
+      <div class="cl-fil" id="clFil"></div>
+      <div class="cl-list" id="clList"></div>
+    </section>
+    <section class="panel" id="clOne"></section>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script src="cli.js"></script>
+<script>
+/* בלי זה לא מופעלים embed ו-r-cli, והמסך גם לא מדווח את גובהו למעטפת */
+hkChrome('calls',{strip:false});
+
+/* =====================================================================
+   שיחות טלפון — הערוץ השני של אותה תקשורת.
+   השיחות נשענות על מה שכבר קיים בחברה: אותם אנשים, אותם ספקים, ואותם
+   שני נושאים שרצים בכל המסכים — החריגה הצפויה והמלאי שלא נצבע בתזרים.
+   ===================================================================== */
+/* נקרא מה-URL ולא מהמחלקה: cli.js מוסיף אותה אחרי שהסקריפט הזה כבר רץ */
+const KCLI=/[?&]r=cli/.test(location.search);
+const CALLS=[
+ {id:'k1', dir:'in', who:'צחי עובד', role:'בעלים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+  date:'02.07.2026', at:'09:14', dur:'4:38', topic:'דחיית התשלום לבז״ן בגלל החריגה',
+  sum:['צחי ראה את התראת החריגה וביקש לדחות את התשלום לבז״ן — 38,400 ₪ ב-30.07',
+       'טל בדקה מול תנאי התשלום של בז״ן: שוטף+30, ודחייה של עשרה ימים אינה גוררת קנס',
+       'סוכם שטל תפנה לבז״ן היום ותעדכן בקבוצת הוואטסאפ'],
+  tasks:[{t:'פנייה לבז״ן — דחיית התשלום ל-10.08', done:false, who:'טל מלקר'}],
+  tr:[['0:04','them','צחי עובד','טל, בוקר טוב. קיבלתי התראה על חריגה ב-11 לחודש. זה אמיתי?'],
+      ['0:11','us','טל מלקר','בוקר טוב. כן, אבל זה לא אסון — זה תזמון. יש 25 אלף מלאי שעוד לא נצבעו, ובמקביל התשלום לבז״ן נופל ב-30.'],
+      ['0:29','them','צחי עובד','אפשר לדחות את בז״ן?'],
+      ['0:33','us','טל מלקר','רגע, אני מסתכלת בתנאי התשלום שלהם… בז״ן זה שוטף+30. אם נדחה בעשרה ימים אנחנו עדיין בתוך מה שסיכמנו איתם, בלי קנס.'],
+      ['0:58','them','צחי עובד','אז בוא נדחה. אני לא רוצה להיכנס למסגרת בגלל תזמון.'],
+      ['1:07','us','טל מלקר','מסכימה. אני מדברת איתם היום ומעדכנת בקבוצה. ובמקביל — תבקש מרות את החשבוניות של המלאי, ברגע שהן נכנסות החריגה נעלמת לבד.'],
+      ['1:31','them','צחי עובד','אני אדבר איתה עכשיו.'],
+      ['1:36','us','טל מלקר','מעולה. אני חוזרת אליך אחרי שאדבר עם בז״ן.']]},
+
+ {id:'k0', dir:'in', miss:1, who:'צחי עובד', role:'בעלים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+  date:'02.07.2026', at:'08:47', tries:2, topic:'לא נענתה — הוחזרה ב-09:14',
+  backTo:'k1', backAt:'09:14'},
+
+ {id:'k2', dir:'out', who:'רות אלמוג', role:'מנהלת כספים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+  date:'01.07.2026', at:'16:05', dur:'9:21', topic:'החשבוניות שלא נצבעו בתזרים',
+  sum:['25,000 ₪ מקניות המלאי של יוני עדיין לא הועברו להנהלת החשבונות',
+       'רות תסרוק ותעביר עד סוף השבוע — שלוש חשבוניות ספק',
+       'הוסכם שמעכשיו החשבוניות נשלחות לקבוצה ביום שהן מתקבלות, במקום להיצבר'],
+  tasks:[{t:'העברת שלוש חשבוניות מלאי מיוני', done:true, who:'רות אלמוג'},
+         {t:'שליחת חשבוניות לקבוצה ביום קבלתן — נוהל חדש', done:false, who:'רות אלמוג'}],
+  tr:[['0:06','us','טל מלקר','רות היי, אני על התזרים של יולי ויש לי חור של 25 אלף בקניות המלאי.'],
+      ['0:14','them','רות אלמוג','כן, יש לי פה ערימה של חשבוניות מיוני שעוד לא העברתי.'],
+      ['0:21','us','טל מלקר','כמה בערך?'],
+      ['0:24','them','רות אלמוג','שלוש חשבוניות ספק, ביחד בערך 25.'],
+      ['0:31','us','טל מלקר','זה בדיוק הפער. תוכלי לסרוק ולהעביר עד סוף השבוע?'],
+      ['0:38','them','רות אלמוג','כן, אני עושה את זה מחר בבוקר.'],
+      ['0:43','us','טל מלקר','תודה. ורק שנסגור לעתיד — במקום לצבור, תשלחי אותן לקבוצה ביום שהן מגיעות. זה נקלט אצלנו אוטומטית ואת לא צריכה לזכור.'],
+      ['1:02','them','רות אלמוג','נשמע הגיוני. נתחיל ככה מיולי.']]},
+
+ {id:'k3', dir:'in', who:'צחי עובד', role:'בעלים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+  date:'28.06.2026', at:'11:40', dur:'2:55', topic:'חיוב כפול ב-Payment',
+  sum:['צחי זיהה חיוב כפול של 3,540 ₪ מ-Payment בכרטיס האשראי',
+       'טל אישרה שהחיוב נרשם פעמיים גם בתזרים והתחילה בירור מול הספק',
+       'סוכם שהזיכוי לא ייכנס לתזרים עד שיתברר שהחיוב המקורי לא יורד פעמיים'],
+  tasks:[{t:'בירור חיוב כפול מול Payment', done:true, who:'טל מלקר'}],
+  tr:[['0:03','them','צחי עובד','טל, יש לי חיוב כפול בכרטיס. Payment, 3,540, פעמיים באותו יום.'],
+      ['0:12','us','טל מלקר','שנייה… כן, אני רואה. זה נכנס פעמיים גם אצלי בתזרים.'],
+      ['0:20','them','צחי עובד','תוכלי לטפל?'],
+      ['0:23','us','טל מלקר','כן, אני פותחת בירור מולם. שים לב שכשיגיע הזיכוי אני לא מכניסה אותו אוטומטית — קודם מוודאת שהחיוב המקורי לא ירד פעמיים, אחרת נוריד כפול ונקבל חור.'],
+      ['0:44','them','צחי עובד','הבנתי. תעדכני אותי.']]},
+
+ {id:'km', dir:'in', miss:1, who:'רות אלמוג', role:'מנהלת כספים', side:'טל מלקר', sideRole:'מנהלת התזרים',
+  date:'26.06.2026', at:'17:32', tries:1, topic:'לא נענתה — טרם הוחזרה',
+  backTo:null},
+
+ {id:'k4', dir:'out', who:'צחי עובד', role:'בעלים', side:'אילון שחר', sideRole:'היועץ',
+  date:'24.06.2026', at:'15:10', dur:'12:47', topic:'מסגרת אשראי נוספת מול הבנק',
+  sum:['הבנק מוכן לדון במסגרת נוספת של 100 אש״ח',
+       'נדרש תכנון תזרימי לשישה חודשים — יופק מהמערכת ויישלח לסניף',
+       'היעד: סגירה עד 15.07, לפני עונת הרכש של אוגוסט'],
+  tasks:[{t:'הפקת תכנון תזרימי לשישה חודשים לבנק', done:true, who:'אילון שחר'},
+         {t:'פגישה בסניף — סגירת המסגרת', done:false, who:'צחי עובד'}],
+  tr:[['0:08','us','אילון שחר','צחי, דיברתי עם הסניף. הם מוכנים לדבר על עוד 100 אלף מסגרת.'],
+      ['0:18','them','צחי עובד','מצוין. מה הם צריכים?'],
+      ['0:22','us','אילון שחר','תכנון תזרימי לשישה חודשים. יש לנו את זה במערכת, אני מפיק ושולח להם.'],
+      ['0:33','them','צחי עובד','כמה זמן זה ייקח להם?'],
+      ['0:37','us','אילון שחר','שבועיים בערך. אם נסגור עד ה-15 ביולי אנחנו מסודרים לפני הרכש של אוגוסט.'],
+      ['0:49','them','צחי עובד','בוא נכוון לזה.']]},
+];
+const KDIR={in:['נכנסת','in'],out:['יוצאת','out'],miss:['שלא נענתה','miss']};
+const kKind=c=>c.miss?'miss':c.dir;
+const KICO={
+  in:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/><path d="M16 8l6-6M22 8V2h-6"/></svg>',
+  out:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/><path d="M16 2l6 6M16 8V2h6"/></svg>',
+  miss:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/><path d="M23 1l-6 6M17 1l6 6"/></svg>'};
+let KSEL=CALLS[0].id, KFIL='all', KTAB='sum';
+
+const kSecs=d=>{const a=d.split(':');return +a[0]*60+ +a[1]};
+const kList=()=>KFIL==='all'?CALLS
+  :KFIL==='miss'?CALLS.filter(c=>c.miss)
+  :CALLS.filter(c=>c.dir===KFIL&&!c.miss);
+const kDay=d=>d==='02.07.2026'?'היום · חמישי':d==='01.07.2026'?'אתמול · רביעי':d.slice(0,5);
+
+
+function kSum(){
+  const spoke=CALLS.filter(c=>!c.miss);
+  const tot=spoke.reduce((s,c)=>s+kSecs(c.dur),0);
+  const open=CALLS.filter(c=>c.miss&&!c.backTo).length;
+  document.getElementById('clSum').innerHTML=
+    `<b>${spoke.length}</b> שיחות<span class="dot"></span><b>${Math.round(tot/60)}</b> דקות בסך הכול`
+   +`<span class="dot"></span>האחרונה <b>היום ${CALLS[0].at}</b>`
+   +(open?`<span class="dot"></span><span class="no">${open===1?'שיחה אחת לא הוחזרה':open+' שיחות לא הוחזרו'}</span>`:'');
+}
+function kFil(){
+  const n=k=>k==='all'?CALLS.length:k==='miss'?CALLS.filter(c=>c.miss).length
+                                   :CALLS.filter(c=>c.dir===k&&!c.miss).length;
+  document.getElementById('clFil').innerHTML=
+    [['all','הכול'],['in','נכנסות'],['out','יוצאות'],['miss','לא נענו']].map(([k,l])=>
+      `<button class="${KFIL===k?'on':''}" onclick="kSetFil('${k}')">${l} ${n(k)}</button>`).join('');
+}
+function kSetFil(k){KFIL=k;kFil();kRows();}
+function kRows(){
+  const l=kList(), host=document.getElementById('clList');
+  if(!l.length){host.innerHTML='<div class="cl-empty">אין שיחות בתצוגה הזאת.</div>';return}
+  let last='',h='';
+  l.forEach(c=>{
+    if(c.date!==last){h+=`<div class="cl-day">${kDay(c.date)}</div>`;last=c.date}
+    const k=kKind(c);
+    h+=`<button class="cl-row ${k} ${KSEL===c.id?'on':''}" onclick="kPick('${c.id}')">
+      <span class="cl-ico">${KICO[k]}</span>
+      <span class="cl-b"><b>${c.who}</b><span>${c.topic}</span></span>
+      <span class="cl-w"><b dir="ltr">${c.at}</b>
+        <span ${c.miss?'class="no"':'dir="ltr"'}>${c.miss?'לא נענתה':c.dur}</span></span>
+    </button>`;
+  });
+  host.innerHTML=h;
+}
+function kPick(id){KSEL=id;KTAB='sum';kRows();kOne();}
+function kSetTab(k){KTAB=k;kOne();}
+function kOne(){
+  const c=CALLS.find(x=>x.id===KSEL), host=document.getElementById('clOne');
+  if(!c){host.innerHTML='<div class="cl-empty">בחרו שיחה מהרשימה.</div>';return}
+  const k=kKind(c), dl=KDIR[k][0], dc=KDIR[k][1];
+  /* שיחה שלא נענתה אינה שיחה: אין הקלטה, אין תמלול ואין ממה לסכם.
+     מה שיש לה זה מי חיפש, כמה פעמים, ומה נעשה עם זה. */
+  if(c.miss){
+    const back=c.backTo?CALLS.find(x=>x.id===c.backTo):null;
+    host.innerHTML=`
+      <div class="cl-h">
+        <span class="cl-tag miss">${KICO.miss} שיחה שלא נענתה</span>
+        <h2>${c.who} חיפש${c.who==='רות אלמוג'?'ה':''} אותנו</h2>
+        <div class="cl-meta">
+          <span><b>${c.who}</b> · ${c.role}</span><span class="dot"></span>
+          <span>${kDay(c.date)} ${c.at}</span><span class="dot"></span>
+          <span>${c.tries===1?'ניסיון אחד':c.tries+' ניסיונות'}</span>
+        </div>
+      </div>
+      <div class="cl-miss">
+        <div class="cl-mbox">
+          <span class="ic">${KICO.miss}</span>
+          <div><b>אין הקלטה ואין תמלול</b>
+            <p>השיחה לא נענתה, ולכן אין ממה לסכם ואין משימות שנפתחו ממנה.
+              מה שנשאר הוא לחזור אליה${back?' — וזה כבר נעשה.':'.'}</p></div>
+        </div>
+        <div class="cl-back">
+          ${back?`<span class="ok2">✓ הוחזרה</span>
+            <span>ב-<b>${c.backAt}</b> באותו יום, ומשם יצאה השיחה
+              <button class="lnk2" onclick="kPick('${back.id}')">${back.topic}</button></span>`
+          :`<span class="no2">טרם הוחזרה</span>
+            <span>עברו <b>6 ימים</b> מאז. אם היה נושא — הוא עדיין פתוח.</span>`}
+        </div>
+        ${back?'':`<div class="cl-macts">
+          <button class="btn pri" onclick="toast('חיוג ל${c.who}')">חיוג חזרה</button>
+          <button class="btn pln" onclick="toast('הודעה נשלחה ל${c.who} בוואטסאפ')">שליחת הודעה</button>
+        </div>`}
+      </div>`;
+    return;
+  }
+  /* התמלול הוא כלי עבודה של היועץ — אצל בעל העסק נשארים הסיכום והמשימות */
+  const tabs=[['sum','סיכום השיחה',1],['tx','תמלול',!KCLI],
+              ['tasks','משימות',!!(c.tasks&&c.tasks.length)]].filter(x=>x[2]);
+  if(!tabs.some(x=>x[0]===KTAB)) KTAB=tabs[0][0];
+  const wave=Array.from({length:22},(_,i)=>`<i style="height:${4+((i*7)%12)}px"></i>`).join('');
+  host.innerHTML=`
+    <div class="cl-h">
+      <span class="cl-tag ${dc}">${KICO[c.dir]} שיחה ${dl}</span>
+      <h2>${c.topic}</h2>
+      <div class="cl-meta">
+        <span>${c.dir==='in'?'מ־':'אל '}<b>${c.who}</b> · ${c.role}</span><span class="dot"></span>
+        <span>${c.dir==='in'?'ענתה':'התקשר'} <b>${c.side}</b> · ${c.sideRole}</span><span class="dot"></span>
+        <span>${kDay(c.date)} ${c.at}</span><span class="dot"></span>
+        <span dir="ltr"><b>${c.dur}</b> דק׳</span>
+      </div>
+      ${KCLI?'':`<button class="cl-play" onclick="toast('נגן ההקלטה — הדגמה')">
+        <span class="pl"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <span class="wv">${wave}</span><b dir="ltr">${c.dur}</b></button>`}
+    </div>
+    <div class="cl-tabs">${tabs.map(x=>
+      `<button class="${KTAB===x[0]?'on':''}" onclick="kSetTab('${x[0]}')">${x[1]}</button>`).join('')}</div>
+    <div class="cl-body">${kBody(c)}</div>`;
+}
+function kBody(c){
+  if(KTAB==='sum') return `
+    <div class="cl-dh">מה נסגר בשיחה</div>
+    ${c.sum.map((x,i)=>`<div class="cl-pnt"><span class="n">${i+1}.</span><span>${x}</span></div>`).join('')}
+    ${c.tasks&&c.tasks.length?`<div class="cl-dh t2">משימות שנפתחו מהשיחה</div>
+      ${c.tasks.map(k=>`<div class="cl-tsk ${k.done?'ok':''}"><span class="mk">✓</span>
+        <span>${k.t}</span><span class="who">${k.who}</span></div>`).join('')}`:''}`;
+  if(KTAB==='tasks') return `
+    <div class="cl-note">אלה המשימות שנפתחו מהשיחה הזאת. הן חיות באותו מקום כמו המשימות
+      שנפתחות מפגישה — אצל בעל העסק ואצל מנהלת התזרים.</div>
+    <div style="margin-top:12px">${c.tasks.map(k=>`<div class="cl-tsk ${k.done?'ok':''}">
+      <span class="mk">✓</span><span>${k.t}</span>
+      <span class="who">${k.done?'הושלמה · ':''}${k.who}</span></div>`).join('')}</div>`;
+  return `<div class="cl-dh">התמלול המלא · ${c.dur} דקות</div>
+    <div class="cl-tx">${c.tr.map(r=>
+      `<div class="cl-txr ${r[1]==='them'?'them':''}">
+        <span class="tm" dir="ltr">${r[0]}</span>
+        <div><span class="sp2">${r[2]}</span><p>${r[3]}</p></div>
+      </div>`).join('')}</div>
+    <div class="cl-txf"><span>התמלול נוצר אוטומטית מההקלטה, והוא המקור לסיכום ולמשימות.</span>
+      <span class="sp"></span>
+      <button class="btn pln" onclick="toast('התמלול ירד כקובץ')">הורדת התמלול</button></div>`;
+}
+function kRender(){kSum();kFil();kRows();kOne();}
+kRender();
+</script>
+</body>
+</html>

@@ -193,12 +193,12 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'תקשורת',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',calls:'שיחות טלפון',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
      את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */
   const CLI_TABS={dash:'cliDashFrame', msgs:'cliMsgsFrame', meetings:'cliMeetsFrame',
-                  chat:'cliAiFrame',   metrics:'cliMetricFrame',
+                  chat:'cliAiFrame',   metrics:'cliMetricFrame', calls:'cliCallsFrame',
                   past:'cliPastFrame', flow:'cliFlowFrame', entries:'cliIntakeFrame'};
   /* כניסה לחברה מציגה דשבורד. ליועץ זה מסך docs/cli, למנהלת התזרים
      ולבעל העסק — הלוח הישן. הצהרת פונקציה כדי שתהיה זמינה גם למעלה. */
@@ -282,7 +282,7 @@
          הדשבורד שלו נשאר שלו (פס הפגישה + הווידג'טים הפיננסיים). */
       const _cliRole=(ROLE==='client1'||ROLE==='clientN');
       const useCli=CLI_TABS[t]
-                   &&!(_cliRole&&t!=='meetings'&&t!=='past'&&t!=='chat')
+                   &&!(_cliRole&&t!=='meetings'&&t!=='past'&&t!=='chat'&&t!=='calls')
                    &&!((t==='dash'||t==='entries')&&ROLE==='manager');
       cliHost.style.display=useCli?'':'none';
       cliHost.querySelectorAll('.cliframe').forEach(f=>f.style.display='none');
@@ -480,7 +480,8 @@
     prep:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4"/></svg>',
     flow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 6H15a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h7.5"/></svg>',
     mem:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>',
-    fcast:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 14 4-4 3 3 5-6"/></svg>'};
+    fcast:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 14 4-4 3 3 5-6"/></svg>',
+    calls:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>'};
   /* סינון רשימת הלקוחות בסרגל של היועץ */
   let ADVQ='';
   function advQSet(v){
@@ -515,7 +516,7 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['msgs',1],['chat',0],['metrics',1],['meetings',0],['mem',1],['prep',1]];
+      const SEC=[['dash',0],['msgs',1],['calls',0],['chat',0],['metrics',1],['meetings',0],['mem',1],['prep',1]];
       /* החזרה והשם עברו לפס העליון — כאן הם היו חוזרים על עצמם */
       html=(ROLE==='client1'?`<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`:'')+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
@@ -543,7 +544,8 @@
         /* הדשבורד הוא הבית ועומד לבדו. אחריו שתי קבוצות: מה שזז מול החברה,
            ומה שיודעים עליה. ההכנה לפגישה אינה בסרגל — מגיעים אליה מהפגישות. */
         html+=seg('',['dash']);
-        html+=seg('שוטף',['msgs','meetings']);
+        /* תקשורת — כל מה שעובר בין החברה למשרד: הקבוצה, הטלפון והפגישות */
+        html+=seg('תקשורת',['msgs','calls','meetings']);
         html+=seg('ידע על החברה',['mem','chat','metrics']);
       }
       // דוחות — שלושה פריטי סרגל עצמאיים, בלי אקורדיון (מוסתרים במצב תפעול)
