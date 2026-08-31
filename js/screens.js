@@ -193,7 +193,7 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'תקשורת',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
      את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */

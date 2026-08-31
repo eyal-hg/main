@@ -90,7 +90,7 @@
     od:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'};
   function heroTasksHTML(){
     if(!CLIENT_TASKS.length) return '<div class="ct-row"><span class="t2">אין משימות פתוחות</span></div>';
-    return CLIENT_TASKS.slice(0,4).map(k=>`
+    return CLIENT_TASKS.map(k=>`
       <div class="ct-row">
         <span class="ct-st ${k.st}">${CT_ST[k.st]}</span>
         <span class="t2">${k.t}</span>
@@ -99,7 +99,7 @@
       </div>`).join('');
   }
   function heroFilesHTML(){
-    return CLIENT_DOCS.slice(0,3).map(f=>{
+    return CLIENT_DOCS.map(f=>{
       const [c,l]=CF_ST[f.st]||CF_ST.ai;
       return `<div class="cf-row"><span class="fn">${f.name}</span>
         <span class="fs ${c}">${l}</span><span class="w2">${f.when}</span></div>`;}).join('');
@@ -125,14 +125,18 @@
       <div class="chero-n">
         <div class="chero-f">
           <div class="chero-k">${HICO.bal}יתרה נוכחית</div>
-          <div class="chero-v">${BAL[c.name]||'—'}<span class="cur">₪</span></div>
-          <div class="chero-s">עו״ש · מסגרת <b>0 ₪</b> · עודכן היום 10:54</div>
+          <div class="chero-mid">
+            <div class="chero-v">${BAL[c.name]||'—'}<span class="cur">₪</span></div>
+            <div class="chero-s">עו״ש · מסגרת <b>0 ₪</b> · עודכן היום 10:54</div>
+          </div>
         </div>
         <div class="chero-f">
           <div class="chero-k">${HICO.od}חריגה צפויה</div>
-          <div class="chero-v bad" dir="ltr">${OD.amt}<span class="cur">₪</span></div>
-          <div class="chero-s">${OD.date} · עו״ש מאוחד</div>
-          <span class="chero-pill">בעוד ${OD.days} ימים</span>
+          <div class="chero-mid">
+            <div class="chero-v bad" dir="ltr">${OD.amt}<span class="cur">₪</span></div>
+            <div class="chero-s">${OD.date} · עו״ש מאוחד</div>
+            <span class="chero-pill">בעוד ${OD.days} ימים</span>
+          </div>
         </div>
       </div>
       <div class="chero-a">

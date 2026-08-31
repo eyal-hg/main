@@ -951,29 +951,39 @@
     border-radius:16px;overflow:hidden;margin-bottom:14px;background:#fff;
     border:1px solid #E3E9EF;box-shadow:0 10px 26px -18px rgba(12,64,104,.34)}
   @media (max-width:1080px){.chero{grid-template-columns:minmax(0,1fr)}}
-  .chero-n{display:grid;grid-template-columns:1fr 1fr;
-    background:linear-gradient(135deg,#0C4068 0%,#134E7E 58%,#155C92 100%)}
-  .chero-f{padding:20px 22px 18px;position:relative;min-width:0}
-  .chero-f+.chero-f::before{content:"";position:absolute;inset-block:20px;inset-inline-start:0;
-    width:1px;background:rgba(255,255,255,.16)}
-  .chero-k{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.76);
-    margin-bottom:9px}
-  .chero-k svg{flex:none;opacity:.8}
-  .chero-v{font-size:34px;font-weight:600;color:#fff;letter-spacing:-.5px;
+  /* הפס הכהה היחיד בדשבורד הוא פס הפגישה. כאן הכול לבן, וקו שיער אחד
+     מפריד בין "מה המצב" ל"מה אני עושה". האדום העמוק עובד רק על לבן. */
+  .chero-n{display:grid;grid-template-columns:1fr 1fr;background:#fff;
+    border-inline-end:1px solid #EDF1F5}
+  /* כל ארבע העמודות מתחילות באותו קו — התווית של המספר יושבת בדיוק
+     בגובה הכותרת של המשימות, אחרת שני החצאים נראים כאילו הם משני מסכים. */
+  .chero-f{padding:16px 20px;position:relative;min-width:0;
+    display:flex;flex-direction:column}
+  .chero-f+.chero-f::before{content:"";position:absolute;inset-block:16px;inset-inline-start:0;
+    width:1px;background:#EDF1F5}
+  /* הכותרת נשארת בקו של "המשימות שלי"; המספר עצמו ממורכז במה שנשאר,
+     אחרת הוא נתלה בראש העמודה ומתחתיו חלל. */
+  .chero-k{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#0C4068;
+    height:24px;margin-bottom:0;flex:none}
+  .chero-mid{flex:1;display:flex;flex-direction:column;justify-content:center;
+    align-items:flex-start;padding:6px 0}
+  .chero-k svg{flex:none;opacity:.7}
+  .chero-v{font-size:34px;font-weight:600;color:#0C4068;letter-spacing:-.5px;
     font-variant-numeric:tabular-nums;line-height:1.05;white-space:nowrap}
-  .chero-v.bad{color:#FF9E8C}
-  .chero-v .cur{font-size:19px;font-weight:500;opacity:.72;margin-inline-start:3px}
-  .chero-s{margin-top:8px;font-size:11.5px;color:rgba(255,255,255,.66);font-variant-numeric:tabular-nums}
-  .chero-s b{color:rgba(255,255,255,.9);font-weight:600}
-  .chero-pill{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;
-    font-weight:600;color:#FFD9D1;background:rgba(255,158,140,.16);
-    border:1px solid rgba(255,158,140,.34);border-radius:999px;padding:3px 10px}
+  .chero-v.bad{color:#C43D30}
+  .chero-v .cur{font-size:19px;font-weight:500;opacity:.6;margin-inline-start:3px}
+  .chero-s{margin-top:7px;font-size:11.5px;color:#8FA3B5;font-variant-numeric:tabular-nums}
+  .chero-s b{color:#41586C;font-weight:600}
+  .chero-pill{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;
+    font-weight:600;color:#C43D30;background:#FDECEB;border:1px solid #F6DCD5;
+    border-radius:999px;padding:3px 10px}
 
   .chero-a{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(0,1fr)}
   @media (max-width:760px){.chero-n,.chero-a{grid-template-columns:minmax(0,1fr)}}
   .chero-p{padding:16px 18px;min-width:0;display:flex;flex-direction:column}
   .chero-p+.chero-p{border-inline-start:1px solid #EDF1F5}
-  .chero-h{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+  .chero-k .warn{color:#C43D30}
+  .chero-h{display:flex;align-items:center;gap:8px;height:24px;margin-bottom:12px}
   .chero-h b{font-size:13px;font-weight:600;color:#0C4068}
   .chero-h .n2{font-size:10.5px;font-weight:700;color:#14618F;background:#E8F4FB;
     border-radius:999px;padding:2px 8px}
@@ -981,7 +991,11 @@
   .chero-add{border:0;background:#E4826E;color:#fff;font:inherit;font-size:11.5px;font-weight:600;
     border-radius:999px;padding:5px 13px;cursor:pointer;transition:.13s;white-space:nowrap}
   .chero-add:hover{background:#C96A57}
-  .chero-list{display:flex;flex-direction:column;gap:6px}
+  /* יותר משלוש משימות — הרשימה גוללת בתוך עצמה והפס לא מתארך */
+  .chero-list{display:flex;flex-direction:column;gap:6px;max-height:142px;overflow-y:auto;
+    padding-inline-end:2px}
+  .chero-list::-webkit-scrollbar{width:5px}
+  .chero-list::-webkit-scrollbar-thumb{background:#D9E3EC;border-radius:99px}
   .ct-row{display:flex;align-items:center;gap:9px;background:#FBFDFE;border:1px solid #EDF1F5;
     border-radius:10px;padding:8px 11px}
   .ct-row .t2{flex:1;min-width:0;font-size:12.5px;color:#0C4068;overflow:hidden;
@@ -999,7 +1013,10 @@
   .chero-drop:hover,.chero-drop.over{border-color:#39ABE2;background:#F2F9FD;color:#14618F}
   .chero-drop b{font-size:12.5px;font-weight:600}
   .chero-drop span{font-size:10.5px;color:#8FA3B5}
-  .chero-files{display:flex;flex-direction:column;gap:5px;margin-top:9px}
+  .chero-files{display:flex;flex-direction:column;gap:5px;margin-top:9px;
+    max-height:64px;overflow-y:auto}
+  .chero-files::-webkit-scrollbar{width:5px}
+  .chero-files::-webkit-scrollbar-thumb{background:#D9E3EC;border-radius:99px}
   .cf-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#41586C}
   .cf-row .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .cf-row .fs{font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;flex:none}
