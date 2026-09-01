@@ -220,10 +220,14 @@ body.calls-on .arena{display:none}
 .un-done b{display:block;font-size:14.5px;color:var(--navy);margin-bottom:4px}
 /* בורר הלקוח — רכיב שלנו, לא <select> נייטיב, כדי שיהיה בו חיפוש
    ושייראה כמו שאר המסך גם כשהוא פתוח. */
-.cpick{position:relative;min-width:238px;flex:none}
-.cpick .b{width:100%;display:flex;align-items:center;gap:8px;font:inherit;font-size:13.5px;
-  border:1px solid var(--bd);border-radius:8px;padding:9px 13px;background:var(--white);
-  color:var(--ink);cursor:pointer;text-align:start}
+/* הבורר סוגר על התוכן שלו. תיבה לבנה רחבה וריקה נקראת כשדה טקסט
+   ריק — לא ככפתור, ובטח לא כבקרה הראשית של המסך. */
+.cpick{position:relative;flex:none}
+.cpick .b{display:flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;font-weight:500;
+  border:1px solid var(--bd);border-radius:8px;padding:9px 13px;background:var(--surface2,#F1F5F9);
+  color:var(--ink);cursor:pointer;text-align:start;white-space:nowrap}
+.cpick .b>svg{flex:none;color:var(--ink3)}
+.cpick.pick .b>svg{color:rgba(255,255,255,.72)}
 /* כשיש לקוח נבחר — הכל במסך הוא עליו, ולכן זה חייב לצעוק */
 .cpick.pick .b{background:var(--navy);border-color:var(--navy);color:#fff}
 .cpick.pick .b:hover{background:#0E3355;color:#fff}
@@ -235,7 +239,7 @@ body.calls-on .arena{display:none}
 .cpick-x:hover{background:rgba(255,255,255,.32)}
 .cpick .b:hover{border-color:var(--navy);color:var(--navy)}
 .cpick.on .b{border-color:var(--navy);color:var(--navy)}
-.cpick .b i{margin-inline-start:auto;flex:none;display:inline-flex;align-items:center;
+.cpick .b i{margin-inline-start:2px;flex:none;display:inline-flex;align-items:center;
   width:11px;height:11px;transition:transform .15s}
 .cpick .b i svg{width:11px;height:11px;display:block}
 .cpick.on .b i{transform:rotate(180deg)}
@@ -385,6 +389,8 @@ tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
 .ksegs button.on[data-k="call"]{background:#EDE9FD;color:#5B41C4}
 .ksegs button.on[data-k="wa"]{background:#DEF0F3;color:#0A6675}
 /* עמודת הערוץ — מילה ואייקון, לא רק גוון. זה מה שמפריד באמת. */
+/* בקבוצה אין שעה — יש יום. השורה אומרת איזה יום סוכם. */
+.d small.dy{display:block;font-size:11px;color:var(--ink3);white-space:nowrap;font-weight:500}
 .ml td.kd{width:1%;white-space:nowrap;padding-inline-start:0;padding-inline-end:2px}
 .ml th.kd{width:1%;padding-inline-start:0}
 .kchip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
@@ -583,7 +589,7 @@ tr.m.wa .nm{color:#0B5A68}
     </div>
     <div class="search">
       <div class="cpick" id="cfil">
-        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span class="pre">לקוח:</span><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
+        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
         <div class="m">
           <div class="s"><input type="search" id="cfQ" placeholder="חיפוש לקוח" oninput="cfSearch(this)" autocomplete="off"></div>
           <div class="o" id="cfOpts"></div>
@@ -605,7 +611,7 @@ tr.m.wa .nm{color:#0B5A68}
       <thead><tr><th>תאריך</th><th class="kd">ערוץ</th><th>לקוח · נושא</th><th>מה חסר</th><th></th></tr></thead>
       <tbody>
         <tr class="m wa" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל קבוצה וואטסאפ הזמנה מרכז הבנייה חשבוניות בזן" id="w0207">
-          <td class="d num">היום<small class="num">18:00</small></td>
+          <td class="d num">היום<small class="dy">סיכום יומי</small></td>
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">הקבוצה התפעולית — הזמנה חדשה, חשבוניות ובז״ן</span><span class="hit"></span></td>
           <td class="st"><span class="al ok">סיכום נוצר</span><i>14 הודעות · 4 כותבים</i></td>
           <td class="ac"></td>
@@ -624,7 +630,7 @@ tr.m.wa .nm{color:#0B5A68}
           <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">אישור ושליחה</button></td>
         </tr>
         <tr class="m wa" tabindex="0" role="button" data-tags="warn" data-k="מטעי גבעון קבוצה וואטסאפ מסגרת אשראי ביטולים קורס מנחות" id="w0107">
-          <td class="d num">01.07<small class="num">18:00</small></td>
+          <td class="d num">01.07<small class="dy">סיכום יומי</small></td>
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">הקבוצה התפעולית — שאלה על המסגרת נשארה פתוחה</span><span class="hit"></span></td>
           <td class="st"><span class="al ok">סיכום נוצר</span><i>9 הודעות · 3 כותבים</i></td>
           <td class="ac"></td>
@@ -859,7 +865,7 @@ tr.m.wa .nm{color:#0B5A68}
        לקבוצה אין התחלה וסוף, יש לה יום. לכן הישות היא «סיכום היום»,
        ומה שמייחד אותה משיחה או מפגישה הוא שיש בה מי כתב. ===== */
     w0207:{kind:'wa', co:'אנרגי אינטרנשיונל', name:'הזמנה חדשה, חשבוניות ובז״ן',
-      meta:'היום · 14 הודעות · 4 כותבים · הקבוצה התפעולית', st:'סיכום נוצר', stc:'ok',
+      day:'02.07.2026', meta:'סיכום יומי · 02.07.2026 · 14 הודעות · 4 כותבים · הקבוצה התפעולית', st:'סיכום נוצר', stc:'ok',
       who:[['צחי עובד',6],['רות אלמוג',4],['טל מלקר',3],['ליאור בן חיים',1]],
       base:['רות העלתה שלוש חשבוניות ספק מיוני — 18,300 ₪, לפי הנוהל שנקבע בשיחה מ-01.07.',
             'צחי הזכיר שוב את התשלום לבז״ן: ביקש אישור שהדחייה ל-10.08 סגורה מולם.',
@@ -880,7 +886,7 @@ tr.m.wa .nm{color:#0B5A68}
             ['טל מלקר','14:06','מזל טוב. ליאור — מה תנאי התשלום שסוכמו איתם? צריך לצבוע את זה בתזרים.'],
             ['ליאור בן חיים','14:31','אני בודק בחוזה ומעדכן.']]},
     w0107:{kind:'wa', co:'מטעי גבעון', name:'שאלה על המסגרת נשארה פתוחה',
-      meta:'01.07 · 9 הודעות · 3 כותבים · הקבוצה התפעולית', st:'סיכום נוצר', stc:'ok',
+      day:'01.07.2026', meta:'סיכום יומי · 01.07.2026 · 9 הודעות · 3 כותבים · הקבוצה התפעולית', st:'סיכום נוצר', stc:'ok',
       who:[['תומר לוי',5],['ענת שקד',3],['טל מלקר',1]],
       base:['תומר ביקש להזיז את קניות המלאי לאוגוסט — לדבריו הספק מוכן להמתין.',
             'ענת דיווחה על שני מבטלים בקורס המנחות; ההכנסה הצפויה קטנה ב-3,600 ₪.',
@@ -1029,9 +1035,9 @@ tr.m.wa .nm{color:#0B5A68}
     let body='';
     if(_arTab==='sum'){
       body=`<div class="ar-sec">
-        ${a.who?`<h4>מי כתב היום</h4>
+        ${a.who?`<h4>מי כתב ב-${a.day}</h4>
           <div class="wa-who">${a.who.map(w=>`<span><b>${w[0]}</b><i>${w[1]} הודעות</i></span>`).join('')}</div>`:''}
-        <h4>${a.kind==='wa'?'מה עלה בקבוצה':'תמונת מצב ונתוני יסוד'}</h4>
+        <h4>${a.kind==='wa'?'מה עלה בקבוצה · '+a.day:'תמונת מצב ונתוני יסוד'}</h4>
         <ol class="ar-ol">${a.base.map(r=>`<li>${r}</li>`).join('')}</ol>
         ${a.insights?`<h4>תובנות מרכזיות</h4>
           ${a.insights.map((x,i)=>`<div class="ar-ins2"><b>${i+1}. ${x.t}</b><p>${x.d}</p></div>`).join('')}`:''}
@@ -1076,7 +1082,7 @@ tr.m.wa .nm{color:#0B5A68}
             ${F.improve?`<div class="ar-ins imp"><b>↗ נקודה לשיפור</b><span>${F.improve}</span></div>`:''}</div>`;
     }else if(_arTab==='msgs'){
       /* בקבוצה כל הודעה נושאת מי כתב ומתי — זה מה שאין בתמלול של שיחה */
-      body=`<div class="ar-sec"><h4>ההודעות · ${a.meta.split(' · ')[1]||''}</h4>
+      body=`<div class="ar-sec"><h4>ההודעות · ${a.day}</h4>
         ${a.msgs.map(m=>`<div class="wa-msg"><div class="hd"><b>${m[0]}</b><i class="num">${m[1]}</i></div><p>${m[2]}</p></div>`).join('')}</div>`;
     }else{
       body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
