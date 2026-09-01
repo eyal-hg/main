@@ -29,6 +29,11 @@ function helpKey(){
   }
   if(inCo) return (isCli?'cli.':'co.')+(typeof CUR_TAB!=='undefined'?CUR_TAB:'dash');
 
+  /* «יומן» ו«הגדרות» נפתחים דרך showTab גם מחוץ לחברה — ADV_PVIEW נשאר
+     על המסך הקודם, ובלי הבדיקה הזו העזרה מציגה את ההסבר שלו. */
+  var ct=(typeof CUR_TAB!=='undefined')?CUR_TAB:'';
+  if(ct==='cal'||ct==='settings') return 'adv.'+ct;
+
   if(role==='manager')
     return (typeof MGR_VIEW!=='undefined'&&MGR_VIEW==='meets')?'adv.comm':'mgr.ops';
   if(isCli) return 'cli.dash';
@@ -52,7 +57,7 @@ function helpFor(key){
   if(!e) return null;
 
   if(isCli&&e.cli_secs&&e.cli_secs.length)
-    return {t:e.t, lede:e.cli_lede||e.lede, secs:e.cli_secs, shot:e.shot};
+    return {t:e.t, lede:e.cli_lede||e.lede, secs:e.cli_secs, shot:e.cli_shot||e.shot};
   return {t:e.t, lede:e.lede, secs:e.secs||[], shot:e.shot};
 }
 

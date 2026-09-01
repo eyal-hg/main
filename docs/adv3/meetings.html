@@ -1500,7 +1500,12 @@ function mtView(v){
 unidRender(); stripQ();
 /* ?v=unid — קישור ישיר לתור השיחות הלא־מזוהות. יושב כאן ולא בחוזה הכתובת
    שלמעלה, כי mtView מוגדר בבלוק סקריפט מאוחר יותר ולא היה קיים שם. */
-if(new URLSearchParams(location.search).get('v')==='unid') mtView('unid');
+(function(){
+  var q=new URLSearchParams(location.search);
+  if(q.get('v')==='unid') mtView('unid');
+  /* ?tab=fb|tasks|mem|tx|msgs — קישור ישיר לטאב בזירה */
+  if(q.get('tab')&&typeof arTab==='function') arTab(q.get('tab'));
+})();
 
 </script>
 </body>

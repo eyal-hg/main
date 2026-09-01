@@ -57,6 +57,13 @@
     /* ---------- מנהל התזרים ---------- */
     'mgr-ops'     :[R('manager'),G('ops')],
     'mgr-comm'    :[R('manager'),G('meets')],
+    'mgr-opsmode' :[R('manager'),C(0),F(function(){enterOps()},1600)],
+
+    /* ---------- הפגישה ---------- */
+    'meet-prep'   :[R('advisor'),C(0),T('prep')],
+    'meet-feedback':[R('advisor'),G('meets'),FR('&m=r0207&tab=fb')],
+    'meet-tasks'  :[R('advisor'),G('meets'),FR('&m=r0207&tab=tasks')],
+    'meet-mem'    :[R('advisor'),G('meets'),FR('&m=r0207&tab=mem')],
 
     /* ---------- תצוגת הלקוח (white-label) ---------- */
     'cli-dash'    :[R('client1'),F(function(){selectClient(0)},900),T('dash')],
