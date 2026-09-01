@@ -21,6 +21,10 @@
   var C=function(i){return {fn:function(){selectClient(i||0)},wait:900}};
   var T=function(k){return {fn:function(){showTab(k)},wait:1100}};
   var F=function(fn,w){return {fn:fn,wait:w||700}};
+  /* טעינת פריים היועץ עם פרמטרים — חוזה הכתובת של docs/adv3/meetings.html */
+  var FR=function(qs){return {fn:function(){
+      var f=document.getElementById('advMeetsFrame');
+      f.src='docs/adv3/meetings.html?embed=1'+qs;},wait:2600}};
 
   var SHOTS={
     /* ---------- היועץ · גלובלי ---------- */
@@ -28,15 +32,10 @@
     'adv-tasks'   :[R('advisor'),G('tasks')],
     'adv-cal'     :[R('advisor'),G('cal')],
     'adv-comm'    :[R('advisor'),G('meets')],
-    'adv-comm-unid':[R('advisor'),G('meets'),F(function(){
-        var f=document.getElementById('advMeetsFrame');
-        f.contentWindow.mtView('unid');},900)],
-    'adv-comm-wa' :[R('advisor'),G('meets'),F(function(){
-        var f=document.getElementById('advMeetsFrame');
-        f.contentWindow.arenaShow('w0207');},900)],
-    'adv-comm-ai' :[R('advisor'),G('meets'),F(function(){
-        var f=document.getElementById('advMeetsFrame');
-        f.contentWindow.arenaShow('a0207');},900)],
+    'adv-comm-unid':[R('advisor'),G('meets'),FR('&v=unid')],
+    'adv-comm-wa' :[R('advisor'),G('meets'),FR('&m=w0207')],
+    'adv-comm-ai' :[R('advisor'),G('meets'),FR('&m=a0207')],
+    'adv-comm-call':[R('advisor'),G('meets'),FR('&m=c0207')],
     'adv-clients' :[R('advisor'),G('clients')],
 
     /* ---------- בתוך חברה · תצוגת יועץ ---------- */
