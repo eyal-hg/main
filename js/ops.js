@@ -1643,6 +1643,54 @@
      אותה שיחה של שלב 4, לקריאה: מה הלקוח שלח, מה נענה, ומה עוד מחכה. */
   /* צפי התזרים לפאנל הצד — ימים קדימה עם יתרה רצה */
   window._opsSideTab=window._opsSideTab||'chat';
+  /* ---- כספים: עבר, עתיד, ומה שהאשראי עומד להוריד ----
+     בתפעול צריך את שלושתם: מה כבר קרה בבנק (לאימות מול המסמכים),
+     מה צפוי (הווידג'ט הקיים), ומה חיובי האשראי שירדו בבת אחת. */
+  window._opsFinTab=window._opsFinTab||'fc';
+  function opsFinTab(v){ window._opsFinTab=v; renderOps(); }
+  /* בנק אמיתי של הימים האחרונים — אותם שמות שכבר חיים בתזרים */
+  const FIN_PAST=[
+    {d:'31.08.2026', day:'שני', rows:[
+      {t:'סליקה — צמרת מימונים', s:'סליקה', v:14830},
+      {t:'העברה ללווא זירו', s:'העברה בנקאית', v:-5200},
+      {t:'שכירות ספטמבר — נכסי הגליל', s:'הוראת קבע', v:-8400}], end:43281},
+    {d:'28.08.2026', day:'שישי', rows:[
+      {t:'לקוח פריסה 2 — תשלום 4/6', s:'העברה בנקאית', v:2374},
+      {t:'מס הכנסה ניכויים 27/08', s:'מוסדות', v:-3226},
+      {t:'מס הכנסה מקדמות 27/08', s:'מוסדות', v:-1774}], end:42051},
+    {d:'27.08.2026', day:'חמישי', rows:[
+      {t:'סליקה — צמרת מימונים', s:'סליקה', v:15530},
+      {t:'תקציב הכנסות ממכירות — סליקה', s:'אחר', v:3200},
+      {t:'הלוואות מזרחי-טפחות(י)', s:'הרשאה לחיוב חשבון', v:-4796},
+      {t:'משכורות מוטי ניסים', s:'העברה בנקאית', v:-10000}], end:44677}];
+  const FIN_CREDIT=[
+    {card:'ישראכרט · 4412', when:'02.09.2026', tot:-18435, rows:[
+      {t:'דלק פז — 6 תדלוקים', v:-3120},{t:'סונול — 4 תדלוקים', v:-2050},
+      {t:'ציוד משרדי — אופיס דיפו', v:-1265},{t:'ביטוח רכב — הראל', v:-4200},
+      {t:'שוטף — 14 עסקאות נוספות', v:-7800}]},
+    {card:'ויזה לאומי · 8903', when:'10.09.2026', tot:-9640, rows:[
+      {t:'חומרי גלם — פלסט-גל', v:-6400},{t:'שוטף — 9 עסקאות', v:-3240}]}];
+  const finNum=v=>(v<0?'−':'+')+Math.abs(v).toLocaleString('en-US')+' ₪';
+  function opsFinHtml(){
+    const ft=window._opsFinTab;
+    const tabs=[['past','פעולות אחרונות'],['fc','תזרים צפוי'],['credit','אשראי צפוי']]
+      .map(x=>`<button class="fin-tb ${ft===x[0]?'on':''}" onclick="opsFinTab('${x[0]}')">${x[1]}</button>`).join('');
+    let body;
+    if(ft==='fc') body=`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תזרים צפוי"></iframe>`;
+    else if(ft==='past') body=`<div class="ops-chatbody fin-body">${FIN_PAST.map(g=>`
+      <div class="fin-day"><b>${g.day}</b><span>${g.d}</span></div>
+      ${g.rows.map(r=>`<div class="fin-r"><div class="b"><b>${r.t}</b><span>${r.s}</span></div>
+        <i class="${r.v<0?'neg':'pos'}" dir="ltr">${finNum(r.v)}</i></div>`).join('')}
+      <div class="fin-end">יתרה בסוף היום <b dir="ltr">${g.end.toLocaleString('en-US')} ₪</b></div>`).join('')}
+      <div class="fin-note">תנועות הבנק כפי שנקלטו — לאימות מול המסמכים שבתפעול.</div></div>`;
+    else body=`<div class="ops-chatbody fin-body">${FIN_CREDIT.map(c=>`
+      <div class="fin-card"><div class="fin-day card"><b>${c.card}</b><span>יורד ב-${c.when}</span>
+        <i class="neg" dir="ltr">${finNum(c.tot)}</i></div>
+      ${c.rows.map(r=>`<div class="fin-r sm"><div class="b"><b>${r.t}</b></div>
+        <i class="neg" dir="ltr">${finNum(r.v)}</i></div>`).join('')}</div>`).join('')}
+      <div class="fin-note">החיובים שהצטברו בכרטיסים — יורדים מהעו״ש בבת אחת ביום החיוב, וכבר משוקללים בתזרים הצפוי.</div></div>`;
+    return `<div class="fin-tabs">${tabs}</div>${body}`;
+  }
   if(window._opsSideOpen==null) window._opsSideOpen=true;
   function opsSideToggle(){ window._opsSideOpen=!window._opsSideOpen; window._opsSideUser=1; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
   function opsSideTab(v){ window._opsSideTab=v; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }
@@ -1782,20 +1830,20 @@
       return `<div class="ops-wdg ops-chatside closed" onclick="opsSideToggle()" title="פתיחת הפאנל">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
         <span class="cl-ic" title="הודעות">💬${openN?`<em>${openN}</em>`:''}</span>
-        <span class="cl-lbl">הודעות · תזרים · אנשי קשר · כללי</span>
+        <span class="cl-lbl">הודעות · כספים · אנשי קשר · כללי</span>
       </div>`;
     }
     return `<div class="ops-wdg ops-chatside">
       <div class="ost-head side-tabs">
         <button class="sf-hide" onclick="opsSideToggle()" title="כיווץ הפאנל"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></button>
         <button class="stb ${tab==='chat'?'on':''}" onclick="opsSideTab('chat')">הודעות ${openN?`<em>${openN}</em>`:''}</button>
-        <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">תזרים</button>
+        <button class="stb ${tab==='flow'?'on':''}" onclick="opsSideTab('flow')">כספים</button>
         <button class="stb ${tab==='adv'?'on':''}" onclick="opsSideTab('adv')">משימות ${advTasksOf().length?`<em>${advTasksOf().length}</em>`:''}</button>
         <button class="stb ${tab==='cts'?'on':''}" onclick="opsSideTab('cts')">אנשי קשר</button>
         <button class="stb ${tab==='gen'?'on':''}" onclick="opsSideTab('gen')">כללי</button>
       </div>
       ${tab==='chat'?`<div class="ops-chatbody">${body}</div>`
-        :tab==='flow'?`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תחזית תזרים"></iframe>`
+        :tab==='flow'?opsFinHtml()
         :tab==='adv'?`<div class="ops-chatbody">${advTasksHtml()}</div>`
         :tab==='gen'?`<div class="ops-chatbody">${opsGenHtml()}</div>`
         :`<div class="ops-chatbody">${opsCtsHtml()}</div>`}
