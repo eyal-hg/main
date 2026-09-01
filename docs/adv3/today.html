@@ -241,6 +241,7 @@ html.embed .wrap{flex:1 1 auto;min-height:0;padding-bottom:16px}
 .add .btn{height:38px}
 .tl{list-style:none;padding:2px 20px 6px}
 .tl li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:9px;align-items:start;padding:9px 0;border-bottom:1px solid #F1F4F7;cursor:pointer}
+.tl li.dragging{opacity:.45;background:#F4F9FF}
 .tl li:last-child{border-bottom:0}
 .tl li:hover{background:var(--row-hover)}
 .tl .cb{appearance:none;-webkit-appearance:none;width:17px;height:17px;border:1.5px solid var(--bd2);border-radius:4px;margin-top:2px;background:var(--white);display:grid;place-items:center;cursor:pointer}
@@ -583,6 +584,29 @@ function prep(rowId){
   flash(row,'flash');
   toast('ההכנה לפגישה נפתחת — '+co+', '+hour);
 }
+/* הגרירה שהשורה «גררו משימה למעלה או למטה» מבטיחה */
+function dragWire(li){
+  li.draggable=true;
+  li.addEventListener('dragstart',function(e){
+    li.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+    try{e.dataTransfer.setData('text/plain','')}catch(_){}
+  });
+  li.addEventListener('dragend',function(){li.classList.remove('dragging')});
+}
+(function(){
+  var tl=document.getElementById('tl'); if(!tl) return;
+  tl.querySelectorAll('li').forEach(dragWire);
+  tl.addEventListener('dragover',function(e){
+    var d=tl.querySelector('li.dragging'); if(!d) return;
+    e.preventDefault();
+    var after=[].slice.call(tl.querySelectorAll('li:not(.dragging)')).find(function(li){
+      var r=li.getBoundingClientRect(); return e.clientY < r.top + r.height/2;
+    });
+    if(after) tl.insertBefore(d,after); else tl.appendChild(d);
+  });
+})();
+
 function addTask(e){
   e.preventDefault();
   var i=$('#newTask'), v=i.value.trim();if(!v)return;
@@ -594,6 +618,7 @@ function addTask(e){
   $('.tx',li).textContent=txt;
   $('.sub',li).textContent=client||'היום';
   $('.cb',li).setAttribute('aria-label',txt);
+  dragWire(li);
   $('#tl').prepend(li);i.value='';toast('המשימה נוספה להיום');
 }
 function recTg(b){
