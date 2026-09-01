@@ -1397,8 +1397,10 @@
     const el=document.getElementById('finCallIn');
     const v=(el&&el.value.trim())||''; if(!v){ el&&el.focus(); return; }
     const k='c'+CUR; (FIN_CALLS[k]=FIN_CALLS[k]||[]).push({t:v, at:finClock()});
+    /* גם השיחה נכנסת ליומן החריגות — אותו תיעוד, שני מקומות קריאה */
+    ovLog({t:'תיעוד שיחה', s:v, when:'now'}, 'call');
     renderFinFoot();
-    toast('התיעוד נשמר · '+finClock());
+    toast('התיעוד נשמר · '+finClock()+' · נכנס ליומן החריגות');
   }
   function finCallDel(i){
     const k='c'+CUR; if(FIN_CALLS[k]) FIN_CALLS[k].splice(i,1);
