@@ -193,7 +193,7 @@
   function toast(m){const t=document.getElementById('toast');t.textContent='✓ '+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
   /* ---- section tabs / rail nav ---- */
-  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון פיננסי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',calls:'שיחות טלפון',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
+  const TAB_LABELS={dash:'דשבורד',chat:'עוזר AI',metrics:'מדדים',meetings:'פגישות',cal:'יומן',prep:'הכנה לפגישה',flow:'התהליך שלי',fcast:'תכנון תזרימי',acct:'תכנון חשבונאי',past:'תמונת תזרים',budget:'מעקב ופערים',entries:'קליטת מסמכים',msgs:'קבוצת הוואטסאפ',calls:'שיחות טלפון',flowlog:'מה השתנה בתזרים',mem:'זיכרון החברה',coset:'הגדרות חברה'};
   let CUR_TAB='dash';
   /* טאבי כרטיס החברה שעברו למסכי docs/cli. הסרת מפתח מכאן מחזירה
      את הטאב למימוש הישן — זו נקודת החזרה היחידה שצריך לגעת בה. */
@@ -562,7 +562,7 @@
           <span>מעקב ופערים</span></div>`;
       }
       /* שני התכנונים צמודים, ותמונת התזרים אחריהם: קודם מגדירים ומתכננים,
-         ואז מסתכלים על מה שקרה. תכנון פיננסי הוא עבודה של היועץ והמתפעל;
+         ואז מסתכלים על מה שקרה. תכנון חשבונאי הוא עבודה של היועץ והמתפעל;
          תכנון תזרימי הוא גם של בעל העסק — זה התזרים שלו קדימה. */
       if(!isClientP)
         html+=`<div class="gn-item sec ${CUR_TAB==='acct'?'on':''}" onclick="showTab('acct')">
