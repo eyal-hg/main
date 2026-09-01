@@ -1,17 +1,72 @@
 /* =====================================================================
-   css/help.css — פופאפ העזרה
-   מודאל מרכזי גדול: צילומי המסך הם עיקר התוכן, והם צריכים רוחב.
-   שתי עמודות — ניווט סעיפים בצד ההתחלה, התוכן נגלל בצד השני.
+   css/help.css — פופאפ העזרה של HK
+   ---------------------------------------------------------------------
+   העזרה כאן היא מסמך, לא טולטיפ: פסקת פתיח שמסבירה למה המסך בנוי ככה,
+   ואחריה סעיפים שכל אחד נשען על צילום מסך אמיתי. הצילום הוא התוכן —
+   ולכן הוא מקבל את הרוחב, ולכן מודאל ממורכז ולא מגירת צד.
+   מ-44 מסכים נגזר הכלל השני: טור ניווט שמסמן איפה אתה, כי מסמך של
+   שמונה סעיפים בגלילה אחת בלי מפה הוא מסמך שקוראים פעם אחת.
+
+   מרחב שמות: hlp- · תואם ל-js/help.js הקיים (hlpWrap · hlpBd · hlpPanel
+   · hlpTitle · hlpNav · hlpBody · hlpX ומחלקות .hlp-lede/.hlp-sec/
+   .hlp-shot/.hlp-none שה-render מייצר) — כך שהחלפת הקובץ אינה דורשת
+   שינוי במנוע.
+
+   סקאלה:  22 (כותרת) · 17 (פתיח) · 14 (כותרת סעיף) · 13 (גוף) ·
+           12.5 (ניווט, פתקית) · 12 (כיתוב) · 11.5 (קאפס)
+   רדיוס:  4 · 6 · 7 · 10 · 12 · 50% — ואין אחרים.
+   ריפוד:  20px אופקי בכל המודאל — כותרת, גוף ותחתית על אותו קו.
+   לוגי:   inset-inline / margin-inline / border-inline בלבד.
    ===================================================================== */
 
+:root{
+  /* צבע — נגזר ממשתני המסך, עם נפילה לערכי המותג, כדי שהמודאל יתלבש
+     גם על מסך שלא טען את theme-hk.css */
+  --hlp-navy:var(--navy,#0C4068);
+  --hlp-band:var(--band,#104A76);
+  --hlp-coral:var(--coral,#E8635A);
+  --hlp-coral-d:var(--coral-deep,#D96A55);
+  --hlp-sky:var(--blue,#39ABE2);
+  --hlp-bd:var(--bd,var(--line,#E6ECF4));
+  --hlp-bg:var(--bg,#F4F7FA);
+  --hlp-tint:#EAF3FA;
+  --hlp-ink:#12263A;
+  --hlp-ink2:#44566A;
+  --hlp-ink3:#7A8898;
+  --hlp-on-navy:#9FC0DA;
+  --hlp-pad:20px;          /* חוק הבית */
+  --hlp-nav-w:214px;
+}
+
+/* =====================================================================
+   1 · הכפתור בפס העליון
+   ===================================================================== */
+.tb-help{flex:none;width:34px;height:34px;border-radius:10px;
+  border:1px solid transparent;background:none;color:var(--hlp-ink3);
+  display:grid;place-items:center;cursor:pointer;transition:.14s}
+.tb-help:hover{background:var(--hlp-tint);color:var(--hlp-navy)}
+/* פתוח = מצב, ולכן נייבי מלא ולא קורל */
+.tb-help[aria-expanded="true"]{background:var(--hlp-band);
+  border-color:var(--hlp-band);color:#fff}
+.tb-help:focus-visible{outline:2px solid var(--hlp-sky);outline-offset:1px}
+
+/* =====================================================================
+   2 · המעטפת והרקע
+   ===================================================================== */
 .hlp-wrap{position:fixed;inset:0;z-index:1200;display:none}
 .hlp-wrap.on{display:block}
-body.hlp-open{overflow:hidden}
+html.hlp-open,body.hlp-open{overflow:hidden;scrollbar-gutter:stable}
 
 .hlp-bd{position:absolute;inset:0;background:rgba(12,64,104,.42);
   backdrop-filter:blur(2px);animation:hlpFade .16s ease-out}
 @keyframes hlpFade{from{opacity:0}to{opacity:1}}
 
+/* =====================================================================
+   3 · הפאנל
+   ---------------------------------------------------------------------
+   1080px: אחרי טור הניווט והריפוד נשארים ~826px לטור התוכן — הרוחב
+   שבו צילום של מסך HK עוד נקרא בלי לפזול.
+   ===================================================================== */
 .hlp-panel{position:absolute;inset-inline:0;top:50%;transform:translateY(-50%);
   margin-inline:auto;width:min(1080px,calc(100vw - 64px));height:min(860px,88vh);
   background:#fff;border-radius:12px;overflow:hidden;
@@ -21,72 +76,213 @@ body.hlp-open{overflow:hidden}
 @keyframes hlpPop{from{opacity:0;transform:translateY(-50%) scale(.985)}
                   to{opacity:1;transform:translateY(-50%) scale(1)}}
 
-/* ---------- הכותרת ---------- */
-.hlp-h{flex:none;display:flex;align-items:center;gap:14px;
-  padding:16px 20px;background:#0C4068;color:#fff}
-.hlp-h-t{min-width:0}
-.hlp-cap{display:block;font-size:11.5px;letter-spacing:.4px;color:#9FC0DA;
-  font-weight:500;margin-bottom:3px}
+/* =====================================================================
+   4 · הכותרת — כרום נייבי, קו קורל תחת השם
+   ===================================================================== */
+.hlp-h{flex:none;display:flex;align-items:flex-start;gap:14px;
+  padding:15px var(--hlp-pad) 14px;background:var(--hlp-navy);color:#fff;
+  transition:box-shadow .18s;z-index:2}
+/* הצל מופיע רק כשיש תוכן מעל הקיפול — רמז שהמסמך נגלל */
+.hlp-panel.scrolled .hlp-h{box-shadow:0 6px 18px rgba(10,53,87,.26)}
+.hlp-h-t{min-width:0;flex:1}
+.hlp-cap{display:block;font-size:11.5px;letter-spacing:.4px;
+  color:var(--hlp-on-navy);font-weight:500;margin-bottom:4px}
 .hlp-h h2{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:22px;
-  line-height:1.1;letter-spacing:-.3px;color:#fff;margin:0}
-.hlp-x{margin-inline-start:auto;flex:none;width:32px;height:32px;border-radius:8px;
+  line-height:1.15;letter-spacing:-.3px;color:#fff;margin:0;
+  position:relative;padding-bottom:9px}
+.hlp-h h2::after{content:"";position:absolute;inset-inline-start:0;
+  inset-block-end:0;width:28px;height:3px;border-radius:4px;
+  background:var(--hlp-coral)}
+/* ✕ — יציאה, לא פעולה ראשית: לבן שקט ולא קורל */
+.hlp-x{flex:none;width:32px;height:32px;border-radius:10px;
   border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);
   color:#DCEBF5;display:grid;place-items:center;cursor:pointer;transition:.14s}
 .hlp-x:hover{background:rgba(255,255,255,.18);color:#fff}
-.hlp-x:focus-visible{outline:2px solid #39ABE2;outline-offset:2px}
 
-/* ---------- הגוף ---------- */
-.hlp-body-wrap{flex:1;min-height:0;display:grid;grid-template-columns:214px minmax(0,1fr)}
+/* =====================================================================
+   5 · הגוף — שתי עמודות
+   ===================================================================== */
+.hlp-body-wrap{flex:1;min-height:0;
+  display:grid;grid-template-columns:var(--hlp-nav-w) minmax(0,1fr)}
+/* אין סעיפים ⇒ אין ניווט, והטור נסגר במקום להשאיר 214px ריקים.
+   .hlp-nonav היא המסלול הוודאי (הסקריפט מוסיף); ה-:has הוא רשת ביטחון. */
+.hlp-body-wrap.hlp-nonav,
+.hlp-body-wrap:has(.hlp-nav:empty){grid-template-columns:minmax(0,1fr)}
+.hlp-body-wrap.hlp-nonav .hlp-navcol,
+.hlp-body-wrap:has(.hlp-nav:empty) .hlp-navcol{display:none}
 
-.hlp-nav{border-inline-end:1px solid #E6ECF4;background:#F7F9FC;
-  padding:14px 10px;overflow-y:auto;min-height:0}
-.hlp-nav button{display:block;width:100%;text-align:start;border:0;background:none;
-  font:inherit;font-size:12.5px;font-weight:500;color:#51677A;
-  padding:8px 11px;border-radius:7px;cursor:pointer;line-height:1.45;
-  transition:.12s}
-.hlp-nav button:hover{background:#EAF1F8;color:#0C4068}
-.hlp-nav:empty{display:none}
+/* ---------- טור הניווט ---------- */
+.hlp-navcol{min-height:0;display:flex;flex-direction:column;
+  border-inline-end:1px solid var(--hlp-bd);background:#F7F9FC}
+.hlp-navcap{flex:none;padding:14px 14px 7px;font-size:11.5px;font-weight:600;
+  letter-spacing:.3px;color:var(--hlp-ink3)}
+.hlp-nav{flex:1;min-height:0;overflow-y:auto;padding:0 10px 14px;
+  counter-reset:hnav}
+.hlp-nav button{display:flex;align-items:baseline;gap:9px;width:100%;
+  text-align:start;border:0;background:none;font:inherit;font-size:12.5px;
+  font-weight:500;color:#51677A;padding:8px 11px;border-radius:7px;
+  cursor:pointer;line-height:1.45;transition:.12s}
+/* המספור נגזר בַּ-CSS ולכן נשאר מסונכרן עם הסעיפים בלי לגעת ב-render */
+.hlp-nav button::before{counter-increment:hnav;content:counter(hnav);
+  flex:none;align-self:flex-start;display:grid;place-items:center;
+  width:19px;height:19px;border-radius:50%;background:#E4EBF3;
+  color:var(--hlp-navy);font-size:11px;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;transition:.12s}
+.hlp-nav button:hover{background:#EAF1F8;color:var(--hlp-navy)}
+/* «איפה אני» — במסמך של שמונה סעיפים זה חצי מהערך של הניווט */
+.hlp-nav button.on{background:var(--hlp-tint);color:var(--hlp-navy);font-weight:600}
+.hlp-nav button.on::before{background:var(--hlp-navy);color:#fff}
 
-.hlp-body{overflow-y:auto;min-height:0;padding:22px 20px 40px;scroll-behavior:smooth}
+/* ---------- טור התוכן ---------- */
+.hlp-body{overflow-y:auto;min-height:0;padding:22px var(--hlp-pad) 44px;
+  scroll-behavior:smooth;counter-reset:hsec;
+  scrollbar-width:thin;scrollbar-color:#C6D5E2 transparent}
+.hlp-body::-webkit-scrollbar{width:10px}
+.hlp-body::-webkit-scrollbar-track{background:transparent}
+.hlp-body::-webkit-scrollbar-thumb{background:#C6D5E2;border-radius:10px;
+  border:3px solid #fff}
+.hlp-body::-webkit-scrollbar-thumb:hover{background:var(--hlp-sky)}
 
-/* ---------- הפתיח ---------- */
-.hlp-lede{font-size:15.5px;line-height:1.75;color:#28425C;font-weight:300;
-  margin:0 0 18px;padding-inline-start:13px;
-  border-inline-start:3px solid #E8635A}
-.hlp-lede b{font-weight:600;color:#0C4068}
+/* =====================================================================
+   6 · הפתיח — למה המסך הזה קיים
+   ===================================================================== */
+.hlp-lede{font-size:17px;line-height:1.7;color:#28425C;font-weight:300;
+  margin:0 0 20px;padding-inline-start:13px;
+  border-inline-start:3px solid var(--hlp-coral)}
+.hlp-lede b{font-weight:600;color:var(--hlp-navy)}
 
-/* ---------- סעיף ---------- */
-.hlp-sec{padding:16px 0 0;border-top:1px solid #EEF2F7;margin-top:16px}
+/* =====================================================================
+   7 · סעיף — כותרת ממוספרת, טקסט, צילום
+   ===================================================================== */
+.hlp-sec{padding:18px 0 0;border-top:1px solid #EEF2F7;margin-top:18px;
+  scroll-margin-top:4px}
 .hlp-sec:first-of-type{border-top:0;margin-top:0;padding-top:0}
-.hlp-sec h3{font-size:15px;font-weight:600;color:#0C4068;margin:0 0 6px;
-  line-height:1.35}
-.hlp-sec p{font-size:13.5px;line-height:1.75;color:#3F566E;margin:0}
-.hlp-sec p b{font-weight:600;color:#0C4068}
+.hlp-sec h3{display:flex;align-items:baseline;gap:9px;font-size:14px;
+  font-weight:600;color:var(--hlp-navy);margin:0 0 7px;line-height:1.4}
+.hlp-sec h3::before{counter-increment:hsec;content:counter(hsec);
+  flex:none;align-self:flex-start;display:grid;place-items:center;
+  width:21px;height:21px;border-radius:50%;background:var(--hlp-tint);
+  color:var(--hlp-navy);font-size:11.5px;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums}
+.hlp-sec p{font-size:13px;line-height:1.75;color:#3F566E;margin:0}
+.hlp-sec p+p{margin-top:9px}
+.hlp-sec p b{font-weight:600;color:var(--hlp-navy)}
 
-/* ---------- צילום מסך ---------- */
-.hlp-shot{margin:13px 0 0;border:1px solid #E6ECF4;border-radius:8px;
-  overflow:hidden;background:#F4F7FA;
+/* ---------- פתקית «למה זה ככה» — גוון אחד, תכלת = הדגשה ולא אזהרה --- */
+.hlp-note{margin-top:12px;padding:10px 13px;border-radius:6px;
+  background:var(--hlp-tint);border-inline-start:3px solid var(--hlp-sky);
+  font-size:12.5px;line-height:1.65;color:var(--hlp-ink2)}
+.hlp-note b{color:var(--hlp-navy);font-weight:600}
+
+/* ---------- מונח/פירוש — בלי טבלה ---------- */
+.hlp-kv{list-style:none;margin:12px 0 0;padding:0}
+.hlp-kv li{display:grid;grid-template-columns:126px minmax(0,1fr);gap:14px;
+  padding:8px 0;border-top:1px solid #EEF2F7;font-size:12.5px;
+  line-height:1.6;color:var(--hlp-ink2)}
+.hlp-kv li:first-child{border-top:0}
+.hlp-kv li .k{color:var(--hlp-navy);font-weight:600}
+
+/* =====================================================================
+   8 · צילום המסך — עיקר התוכן
+   ---------------------------------------------------------------------
+   מסך HK אמיתי הוא רחב וצפוף. גם ב-826px חלק מהמספרים קטנים, ולכן
+   הצילום נפתח בלחיצה. תקרת הגובה מונעת מצילום־עמוד־שלם לבלוע את
+   המסמך — מה שנחתך מהמבט נמצא בהגדלה.
+   ===================================================================== */
+.hlp-shot{position:relative;margin:14px 0 0;border:1px solid var(--hlp-bd);
+  border-radius:10px;overflow:hidden;background:#fff;
   box-shadow:0 2px 10px rgba(12,64,104,.07)}
-.hlp-shot img{display:block;width:100%;height:auto}
+/* 72vh: רוב צילומי HK עוברים בלי נגיעה; רק צילום־עמוד־שלם מתכווץ,
+   ומה שהתכווץ נמצא בהגדלה */
+.hlp-shot img{display:block;width:100%;height:auto;max-height:72vh;
+  object-fit:contain;object-position:center;cursor:zoom-in;
+  font-size:12px;color:var(--hlp-ink3)}  /* alt שנשבר לא ייראה כחור */
+.hlp-shot figcaption{padding:8px 13px;border-top:1px solid var(--hlp-bd);
+  background:#fff;font-size:12px;line-height:1.5;color:var(--hlp-ink3)}
+/* צילום פרט ולא מסך שלם — לא נמתח */
+.hlp-shot.tight{max-width:360px}
+/* רמז ההגדלה — מופיע במגע, לא יושב על התמונה כל הזמן */
+.hlp-shot .hlp-zoomhint{position:absolute;inset-block-start:9px;
+  inset-inline-end:9px;padding:3px 9px;border-radius:4px;
+  background:rgba(12,64,104,.82);color:#fff;font-size:11.5px;font-weight:500;
+  opacity:0;transition:.14s;pointer-events:none}
+.hlp-shot:hover .hlp-zoomhint,
+.hlp-shot img:focus-visible+.hlp-zoomhint{opacity:1}
 
-/* ---------- אין תוכן ---------- */
-.hlp-none{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:9px;text-align:center;padding:64px 24px;color:#64798C}
+/* ---------- שכבת ההגדלה ---------- */
+.hlp-zoom{position:absolute;inset:0;z-index:5;display:none;
+  flex-direction:column;background:#0A3557;padding:20px}
+.hlp-zoom.on{display:flex;animation:hlpFade .14s ease-out}
+.hlp-zoom img{flex:1;min-height:0;width:100%;object-fit:contain;
+  border-radius:6px;cursor:zoom-out}
+.hlp-zoom figcaption{flex:none;padding-top:12px;text-align:center;
+  font-size:12.5px;color:var(--hlp-on-navy)}
+.hlp-zoom-x{position:absolute;inset-block-start:14px;inset-inline-end:14px;
+  width:32px;height:32px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.1);
+  color:#fff;display:grid;place-items:center;cursor:pointer;transition:.14s}
+.hlp-zoom-x:hover{background:rgba(255,255,255,.2)}
+
+/* =====================================================================
+   9 · «עוד לא נכתב הסבר» — מצב מעוצב, לא חור
+   ===================================================================== */
+.hlp-none{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;text-align:center;padding:64px 24px;
+  color:#64798C;min-height:100%}
 .hlp-none svg{color:#B9C9D8}
-.hlp-none b{font-size:15px;font-weight:600;color:#0C4068}
-.hlp-none span{font-size:13px;line-height:1.7;max-width:320px}
+.hlp-none b{font-family:'Frank Ruhl Libre',serif;font-size:17px;
+  font-weight:700;color:var(--hlp-navy)}
+.hlp-none span{font-size:13px;line-height:1.7;max-width:330px}
 .hlp-none .hlp-key{font-style:normal;font-size:11px;color:#A9B7C4;
-  background:#F1F4F8;border-radius:5px;padding:3px 9px;direction:ltr}
+  background:#F1F4F8;border-radius:4px;padding:3px 9px;direction:ltr}
 
-/* ---------- הכפתור בפס העליון ---------- */
-.tb-help{width:34px;height:34px;border-radius:9px;border:1px solid transparent;
-  background:none;color:#64798C;display:grid;place-items:center;cursor:pointer;
-  transition:.14s;flex:none}
-.tb-help:hover{background:#EEF3F8;color:#0C4068}
-.tb-help:focus-visible{outline:2px solid #39ABE2;outline-offset:1px}
+/* =====================================================================
+   10 · התחתית — המוצא, והקיצור שמלמד את עצמו
+   ===================================================================== */
+.hlp-foot{flex:none;display:flex;align-items:center;gap:14px;
+  padding:11px var(--hlp-pad);border-top:1px solid var(--hlp-bd);
+  background:var(--hlp-bg);font-size:12px;color:var(--hlp-ink3)}
+.hlp-foot kbd{font-family:inherit;font-size:11px;font-weight:600;
+  color:var(--hlp-ink2);background:#fff;border:1px solid var(--hlp-bd);
+  border-radius:4px;padding:1px 6px;margin-inline-end:6px;direction:ltr;
+  display:inline-block}
+.hlp-foot .sep{color:#C6D2DE}
+.hlp-btn{margin-inline-start:auto;display:inline-flex;align-items:center;
+  gap:6px;padding:6px 14px;border-radius:7px;font:inherit;font-size:12.5px;
+  font-weight:600;border:1px solid var(--hlp-bd);background:#fff;
+  color:var(--hlp-navy);cursor:pointer;transition:.14s}
+.hlp-btn:hover{border-color:var(--hlp-coral);color:var(--hlp-coral)}
 
+/* =====================================================================
+   11 · מיקוד
+   ===================================================================== */
+.hlp-panel :focus-visible{outline:2px solid var(--hlp-sky);outline-offset:2px}
+.hlp-h :focus-visible,.hlp-zoom :focus-visible{outline-color:#fff}
+
+/* =====================================================================
+   12 · רספונסיביות
+   ===================================================================== */
+@media (max-width:1180px){:root{--hlp-nav-w:186px}}
+/* מתחת ל-1100 הטור השני גוזל מהצילום יותר משהוא נותן — הניווט יורד,
+   והמספור בכותרות ממשיך לשמש מפה */
 @media (max-width:1100px){
   .hlp-panel{width:calc(100vw - 28px);height:92vh}
   .hlp-body-wrap{grid-template-columns:minmax(0,1fr)}
-  .hlp-nav{display:none}
+  .hlp-navcol{display:none}
 }
+@media (max-width:820px){
+  :root{--hlp-pad:16px}
+  .hlp-h h2{font-size:19px}
+  .hlp-lede{font-size:14px}
+  .hlp-shot img{max-height:52vh}
+  .hlp-kv li{grid-template-columns:minmax(0,1fr);gap:2px}
+}
+
+/* =====================================================================
+   13 · העדפות מערכת
+   ===================================================================== */
+@media (prefers-reduced-motion:reduce){
+  .hlp-bd,.hlp-panel,.hlp-zoom{animation:none}
+  .hlp-body{scroll-behavior:auto}
+}
+@media print{.hlp-wrap{display:none}}
