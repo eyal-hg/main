@@ -125,7 +125,7 @@
     if(inPortfolio){
       document.querySelector('.sub-line').textContent=
         (ROLE==='clientN'?'כל החברות שלך במבט אחד'
-        :pView==='queue'?'מבט-על תפעולי':pView==='how'?'איך הזיכרון נבנה — מה שמראים ליועצים':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'זירת הפגישות · כל אינטראקציה מוקלטת הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
+        :pView==='queue'?'מבט-על תפעולי':pView==='how'?'איך הזיכרון נבנה — מה שמראים ליועצים':pView==='clients'?'תיק הלקוחות שלך':pView==='meets'?'פגישות, שיחות וקבוצות — כל אינטראקציה הופכת לזיכרון':pView==='alerts'?(ROLE==='advisor'?'הבוקר שלך · מה היום, איפה בוער ומה המצב':'מוקד התראות · חברות שדורשות טיפול'):'מבט מאוחד')
         +' · '+(ROLE==='clientN'?CLIENT_GROUP_N:CLIENTS.filter(c=>typeof coActive!=='function'||coActive(c)).length)
         +' חברות'+(ROLE==='clientN'?'':' במעקב')+' · נכון ל-2.7.2026';
     }
@@ -447,14 +447,14 @@
          ההקשר כבר נאמר — שם החברה יושב מעל הסרגל. הפריט הגלובלי הוא זה
          שנשא הקשר סמוי ("של כולם"), והוא זה שקיבל את המילה. אותו טיפול
          בדיוק כמו "כל הלקוחות" בקישור החזרה. */
-      {k:'meets',   l:'פגישות ושיחות',go:"gnavGo('meets')"},
+      {k:'meets',   l:'תקשורת',go:"gnavGo('meets')"},
       /* "התיק שלי" ולא "לקוחות": זה מסך ניהול (סטטוסים, יעדים, תשומת לב),
          והרשימה שמתחתיו בסרגל היא הניווט. שני שמות זהים בלבלו. */
       {k:'clients', l:'התיק שלי', go:"gnavGo('clients')"}];
     if(ROLE==='manager') return [
       {k:'ops',     l:'לקוחות',  go:"gnavGo('ops')"},
       {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
-      {k:'meets',   l:'פגישות ושיחות', go:"gnavGo('meets')"},
+      {k:'meets',   l:'תקשורת', go:"gnavGo('meets')"},
       {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
     if(ROLE==='clientN') return [
       {k:'home',    l:'הבית',    go:"gnavGo('home')"}];

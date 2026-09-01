@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>פגישות · HK</title>
+<title>תקשורת · HK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -206,13 +206,21 @@ body.calls-on .arena{display:none}
 .un-done b{display:block;font-size:14.5px;color:var(--navy);margin-bottom:4px}
 /* בורר הלקוח — רכיב שלנו, לא <select> נייטיב, כדי שיהיה בו חיפוש
    ושייראה כמו שאר המסך גם כשהוא פתוח. */
-.cpick{margin-inline-start:auto;position:relative;min-width:186px}
-.cpick .b{width:100%;display:flex;align-items:center;gap:8px;font:inherit;font-size:12.5px;
-  border:1px solid var(--bd);border-radius:6px;padding:6px 10px;background:var(--white);
+.cpick{position:relative;min-width:238px;flex:none}
+.cpick .b{width:100%;display:flex;align-items:center;gap:8px;font:inherit;font-size:13.5px;
+  border:1px solid var(--bd);border-radius:8px;padding:9px 13px;background:var(--white);
   color:var(--ink);cursor:pointer;text-align:start}
+/* כשיש לקוח נבחר — הכל במסך הוא עליו, ולכן זה חייב לצעוק */
+.cpick.pick .b{background:var(--navy);border-color:var(--navy);color:#fff}
+.cpick.pick .b:hover{background:#0E3355;color:#fff}
+.cpick.pick .b .pre{font-size:11px;font-weight:500;opacity:.68;margin-inline-end:1px}
+.cpick .b .pre{display:none}
+.cpick.pick .b .pre{display:inline}
+.cpick-x{flex:none;border:0;background:rgba(255,255,255,.18);color:#fff;width:19px;height:19px;
+  border-radius:50%;font:inherit;font-size:12px;line-height:1;cursor:pointer;padding:0}
+.cpick-x:hover{background:rgba(255,255,255,.32)}
 .cpick .b:hover{border-color:var(--navy);color:var(--navy)}
 .cpick.on .b{border-color:var(--navy);color:var(--navy)}
-.cpick.pick .b{border-color:var(--navy);color:var(--navy);font-weight:600}
 .cpick .b i{margin-inline-start:auto;flex:none;line-height:0;transition:transform .15s}
 .cpick.on .b i{transform:rotate(180deg)}
 .cpick .m{position:absolute;z-index:40;top:calc(100% + 5px);inset-inline-end:0;min-width:230px;
@@ -345,14 +353,51 @@ table.ml{width:100%;border-collapse:collapse}
 .k-ic{width:25px;height:25px;padding:6px;border-radius:50%;box-sizing:border-box;flex:none;
   margin-inline-end:9px;vertical-align:-8px;background:#EDF1F5;color:#64798C}
 tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
+/* עמודת הסוג — מילה ואייקון, לא רק גוון. זה מה שמפריד באמת. */
+.ml td.kd{width:1%;white-space:nowrap;padding-inline-start:0;padding-inline-end:2px}
+.ml th.kd{width:1%;padding-inline-start:0}
+.kchip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+  line-height:1;padding:5px 9px 5px 8px;border-radius:999px;border:1px solid;letter-spacing:.1px}
+.kchip svg{flex:none}
+.kchip.meet{background:#EEF2F6;color:#4F6579;border-color:#DBE3EB}
+.kchip.call{background:#EDE9FD;color:#5B41C4;border-color:#DCD3F8}
+.kchip.wa{background:#DEF0F3;color:#0A6675;border-color:#BCE1E8}
+/* פס צד לכל שורה — שלושה מסלולים צבעוניים שנסרקים במבט */
+tr.m td:first-child{box-shadow:inset -3px 0 0 #CBD6E0}
 /* ופס צד — כדי שגם סריקה מהירה של העמודה תראה איפה השיחות */
-tr.m.call td:first-child{box-shadow:inset 3px 0 0 #7557E3}
+tr.m.call td:first-child{box-shadow:inset -3px 0 0 #7557E3}
 tr.m.call:hover{background:#FBFAFF}
 tr.m.call .nm{color:#4A3B8C}
+/* קבוצת וואטסאפ — הישות השלישית. טורקיז ולא ירוק, כי ירוק כבר אומר
+   "אושר" במסך הזה, וסוג של פריט הוא לא סטטוס. */
+tr.m.wa .k-ic{background:#DFF0F3;color:#0B6C7C}
+tr.m.wa td:first-child{box-shadow:inset -3px 0 0 #1596AA}
+tr.m.wa:hover{background:#F7FCFD}
+tr.m.wa .nm{color:#0B5A68}
 /* כותרת הזירה נושאת את הסוג — אייקון ומילה, לא רק ניסוח */
 .ar-cap{display:inline-flex;align-items:center;gap:6px}
 .ar-cap svg{flex:none;opacity:.9}
-.ar-cap.call{background:#EDE9FD;color:#5B41C4;border-color:#DAD2F7}
+/* על רקע הנייבי פסטל נראה כמו מדבקה. אותו חומר לשלושת הסוגים —
+   שקוף בהיר — והצבע נשאר באייקון בלבד. */
+.ar-h .ar-cap{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);
+  color:#E7EFF7;border-radius:999px;padding:4px 10px;font-weight:600;letter-spacing:.1px}
+.ar-h .ar-cap.meet svg{color:#B9C9D8}
+.ar-h .ar-cap.call svg{color:#BFAEFA}
+.ar-h .ar-cap.wa svg{color:#6FD3E0}
+.ar-cap svg{opacity:1}
+/* מי כתב — זה מה שיש בקבוצה ואין בשיחה או בפגישה */
+.wa-who{display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 4px}
+.wa-who span{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink);
+  background:var(--bg,#F7F9FB);border:1px solid var(--bd);border-radius:999px;padding:4px 10px}
+.wa-who span b{font-weight:600}
+.wa-who span i{font-style:normal;font-size:11px;color:var(--muted-2,#8b9aa8)}
+/* ההודעות — כמו תמלול, אבל עם שם הכותב ושעה */
+.wa-msg{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.wa-msg:last-child{border-bottom:0}
+.wa-msg .hd{grid-column:1/-1;display:flex;align-items:baseline;gap:8px}
+.wa-msg .hd b{font-size:12.5px;font-weight:600;color:var(--navy)}
+.wa-msg .hd i{font-style:normal;font-size:11px;color:var(--muted-2,#8b9aa8)}
+.wa-msg p{grid-column:1/-1;margin:0;font-size:13px;line-height:1.65;color:var(--ink)}
 .ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--band);flex:none}
 .ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--on-navy3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
 .ar-tabs button:hover{color:var(--white)}
@@ -471,14 +516,14 @@ tr.m.call .nm{color:#4A3B8C}
     <li><a href="today.html">היום</a></li>
     <li><a href="tasks.html">משימות</a></li>
     <li><a href="clients.html">לקוחות</a></li>
-    <li><a class="on" href="meetings.html">פגישות</a></li>
+    <li><a class="on" href="meetings.html">תקשורת</a></li>
     <li><a href="memory.html">זיכרון לקוחות</a></li>
   </ul>
   <div class="me"><div><b>אילון שחר</b>שחר ייעוץ עסקי</div><i>אש</i></div>
 </nav>
 
 <header class="strip dark">
-  <div><h1>פגישות</h1></div>
+  <div><h1>תקשורת</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
   <div class="next">
@@ -499,21 +544,21 @@ tr.m.call .nm{color:#4A3B8C}
   <section class="panel list">
     <div class="ph">
       <div class="mtabs">
-        <button class="on" id="tbMeet" onclick="mtView('meet')">פגישות ושיחות</button>
+        <button class="on" id="tbMeet" onclick="mtView('meet')">הכל</button>
         <button id="tbUnid" onclick="mtView('unid')">שיחות טלפון לא מזוהות <i id="unidN"></i></button>
       </div>
-      <span class="hint" id="hint"></span>
+      <span class="hint" id="hint"></span></div>
+    <div class="search">
       <div class="cpick" id="cfil">
-        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
+        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span class="pre">לקוח:</span><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
         <div class="m">
           <div class="s"><input type="search" id="cfQ" placeholder="חיפוש לקוח" oninput="cfSearch(this)" autocomplete="off"></div>
           <div class="o" id="cfOpts"></div>
         </div>
-      </div></div>
-    <div class="search">
+      </div>
       <div class="in">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="חיפוש בסיכומי הפגישות — נושא, החלטה, יעד">
+        <input id="q" type="search" placeholder="חיפוש בכל התקשורת — נושא, החלטה, יעד">
       </div>
       <span class="res" id="res"></span>
       <a href="#" class="clr" id="clr">ניקוי</a>
@@ -522,7 +567,7 @@ tr.m.call .nm{color:#4A3B8C}
     <div class="topics fbt" id="fbtRow"></div>
     <div class="tw">
     <table class="ml" id="ml">
-      <thead><tr><th>תאריך</th><th>לקוח · פגישה</th><th>מה חסר</th><th></th></tr></thead>
+      <thead><tr><th>תאריך</th><th>סוג</th><th>לקוח · נושא</th><th>מה חסר</th><th></th></tr></thead>
       <tbody>
         <!-- הפגישה הקרובה של היום — ראש הרשימה -->
         <tr class="m fut" tabindex="0" role="button" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
@@ -530,6 +575,12 @@ tr.m.call .nm{color:#4A3B8C}
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="dot">·</span><span class="mt">Zoom</span><span class="hit"></span></td>
           <td class="st"><span class="al warn">הכנה לא נפתחה</span><i>בעוד 5 שעות</i></td>
           <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></td>
+        </tr>
+        <tr class="m wa" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל קבוצה וואטסאפ הזמנה מרכז הבנייה חשבוניות בזן" id="w0207">
+          <td class="d num">היום<small class="num">18:00</small></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">הקבוצה התפעולית — הזמנה חדשה, חשבוניות ובז״ן</span><span class="hit"></span></td>
+          <td class="st"><span class="al ok">סיכום אושר</span><i>14 הודעות · 4 כותבים</i></td>
+          <td class="ac"></td>
         </tr>
         <tr class="m call" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל שיחה דחיית התשלום לבזן" id="c0207">
           <td class="d num">היום<small class="num">09:14</small></td>
@@ -543,6 +594,12 @@ tr.m.call .nm{color:#4A3B8C}
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
           <td class="st"><span class="al warn">סיכום לא אושר</span><i>מהיום</i></td>
           <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">אישור ושליחה</button></td>
+        </tr>
+        <tr class="m wa" tabindex="0" role="button" data-tags="warn" data-k="מטעי גבעון קבוצה וואטסאפ מסגרת אשראי ביטולים קורס מנחות" id="w0107">
+          <td class="d num">01.07<small class="num">18:00</small></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">הקבוצה התפעולית — שאלה על המסגרת נשארה פתוחה</span><span class="hit"></span></td>
+          <td class="st"><span class="al warn">ממתין לסקירה</span><i>9 הודעות · 3 כותבים</i></td>
+          <td class="ac"></td>
         </tr>
         <tr class="m call" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל שיחה חשבוניות מלאי רות" id="c0107">
           <td class="d num">01.07<small class="num">16:05</small></td>
@@ -680,7 +737,13 @@ tr.m.call .nm{color:#4A3B8C}
   function cfRender(){
     $('#cfOpts').innerHTML=cfOptsHtml();
     $('#cfLbl').textContent=S.c||'כל הלקוחות';
-    $('#cfil').classList.toggle('pick',!!S.c);
+    const w=$('#cfil'); w.classList.toggle('pick',!!S.c);
+    /* ✕ נולד רק כשיש מה לנקות */
+    const old=w.querySelector('.cpick-x'); if(old) old.remove();
+    if(S.c){ const x=document.createElement('button'); x.type='button'; x.className='cpick-x';
+      x.title='ביטול הסינון'; x.textContent='✕';
+      x.onclick=function(e){e.stopPropagation();cfSet('');};
+      $('#cfChev').before(x); }
   }
   function cfTg(b){
     const w=b.closest('.cpick'), was=w.classList.contains('on');
@@ -715,8 +778,9 @@ tr.m.call .nm{color:#4A3B8C}
     const parts=[];
     if(S.f) parts.push(MISS[S.f]);
     const fbl=(FBTS.find(f=>f[1]===S.fbt)||[])[0]; if(fbl) parts.push(fbl);
-    if(S.c) parts.push(S.c);
-    $('#hint').textContent = parts.length?'מסונן: '+parts.join(' · ')+' · '+(hebCount[shown]||shown):'';
+    $('#hint').textContent = (parts.length||S.c)
+      ? (parts.length?'מסונן: '+parts.join(' · ')+' · ':'')+(hebCount[shown]||shown)+' פריטים ברשימה'
+      : '';
     $('#res').innerHTML = S.q?'<b>'+shown+'</b> תוצאות ל-״'+esc(S.q)+'״':'';
     $('#clr').classList.toggle('on',!!S.q);
     $('#empty').classList.toggle('on',shown===0);
@@ -724,8 +788,8 @@ tr.m.call .nm{color:#4A3B8C}
       $('#emptyT').textContent = S.q?'אין פגישה שמכילה ״'+S.q+'״'
                                  : S.c?'אין פגישה של '+S.c+' שמתאימה לסינון'
                                  : 'אין פגישה שמתאימה לסינון';
-      $('#emptyS').textContent = S.q?'החיפוש עובר על סיכומי הפגישות ועל שמות הפגישות.'
-                                   :'אפשר לנקות את הסינון ולחזור לכל הפגישות.';
+      $('#emptyS').textContent = S.q?'החיפוש עובר על סיכומי הפגישות, השיחות והקבוצות.'
+                                   :'אפשר לנקות את הסינון ולחזור לכל התקשורת.';
     }
     renderTopics();
   }
@@ -762,6 +826,46 @@ tr.m.call .nm{color:#4A3B8C}
       mem:[['כאבי לקוח','נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה ≈ 70% מהמחזור'],['שביעות רצון','ירידה: תסכול מקצב התגובה בוואטסאפ'],['מצב תזרימי','צפי החריגה ב-24.08 עודכן — קטנה ב-8,000 ₪'],['יעדים והסכמות','יעד חדש: לקוח משמעותי נוסף עד ספטמבר']],
       tx:[['יועץ','בוקר טוב צחי, בוא נסתכל על שלושת החשבונות ביחד.'],['לקוח','המרכנתיל שוב בחריגה?'],['יועץ','כן, 42 אלף. יש לנו שתי דרכים לטפל בזה — העברה מהמזרחי או תזמון מול התקבול של מרכז הבנייה.'],['לקוח','בסדר, נעשה את ההעברה.'],['יועץ','עכשיו לנושא שרציתי להרים — רימון מוצרי אנרגיה זה בערך 70% מהמחזור שלך.'],['לקוח','אני יודע, זה מטריד גם אותי.'],['יועץ','בוא נגדיר יעד: לקוח חדש משמעותי עד ספטמבר. נבנה רשימה של חמישה פוטנציאליים.'],['לקוח','צריך שאשב על זה עם תומר.'],['יועץ','מעולה. ומה עם המענה בוואטסאפ? תומר העלה תסכול.'],['לקוח','נדבר על זה בפגישה החודשית.'],['יועץ','טוב, נסכם: העברה היום, רשימת לקוחות עד סוף השבוע, ומסגרת מול הבנק.'],['לקוח','סגור. תודה.']],
       acts:'pending'},
+    /* ===== קבוצות וואטסאפ — יום, לא מפגש =====
+       לקבוצה אין התחלה וסוף, יש לה יום. לכן הישות היא «סיכום היום»,
+       ומה שמייחד אותה משיחה או מפגישה הוא שיש בה מי כתב. ===== */
+    w0207:{kind:'wa', co:'אנרגי אינטרנשיונל', name:'הזמנה חדשה, חשבוניות ובז״ן',
+      meta:'היום · 14 הודעות · 4 כותבים · הקבוצה התפעולית', st:'סיכום אושר', stc:'ok',
+      who:[['צחי עובד',6],['רות אלמוג',4],['טל מלקר',3],['ליאור בן חיים',1]],
+      base:['רות העלתה שלוש חשבוניות ספק מיוני — 18,300 ₪, לפי הנוהל שנקבע בשיחה מ-01.07.',
+            'צחי הזכיר שוב את התשלום לבז״ן: ביקש אישור שהדחייה ל-10.08 סגורה מולם.',
+            'עלתה הזמנה חדשה ממרכז הבנייה — 64,000 ₪, תחילת עבודה בספטמבר.'],
+      insights:[{t:'ההזמנה ממרכז הבנייה טרם נצבעה בתזרים',d:'64,000 ₪ שהוזכרו בקבוצה ולא קיימים בתחזית. אם התנאים שוטף+60, התקבול נופל בנובמבר — בדיוק בחודש שבו נפתחת החריגה.'},
+                {t:'הנוהל החדש עובד',d:'שבוע שני ברציפות שהחשבוניות מגיעות ביום קבלתן ולא נצברות אצל רות.'}],
+      tasks:[{t:'צביעת ההזמנה ממרכז הבנייה בתזרים — בירור תנאי תשלום',who:'טל מלקר'},
+             {t:'אישור בכתב מבז״ן לדחייה ל-10.08',who:'טל מלקר'}],
+      mem:[['שיתוף פעולה','הנוהל החדש נשמר — חשבוניות מגיעות ביום קבלתן'],
+           ['מצב תזרימי','הזמנה ממרכז הבנייה — 64,000 ₪, תחילת עבודה בספטמבר'],
+           ['כאבי לקוח','צחי חוזר על אותה שאלה כשאין לו אישור בכתב']],
+      msgs:[['צחי עובד','08:41','טל בוקר טוב, בז״ן אישרו לנו את הדחייה ל-10.08? רק שיהיה לי בכתב.'],
+            ['טל מלקר','09:02','שלחתי להם אתמול, מחכה לתשובה. מעדכנת פה ברגע שמגיע.'],
+            ['רות אלמוג','11:15','מעלה שלוש חשבוניות ספק מיוני — 18,300 ₪ סה״כ. 📎'],
+            ['טל מלקר','11:20','מעולה רות, נכנס לתזרים היום.'],
+            ['ליאור בן חיים','13:47','חבר׳ה — מרכז הבנייה חתמו. 64 אלף, מתחילים בספטמבר.'],
+            ['צחי עובד','13:49','מצוין!! זה בדיוק מה שחיכינו לו.'],
+            ['טל מלקר','14:06','מזל טוב. ליאור — מה תנאי התשלום שסוכמו איתם? צריך לצבוע את זה בתזרים.'],
+            ['ליאור בן חיים','14:31','אני בודק בחוזה ומעדכן.']]},
+    w0107:{kind:'wa', co:'מטעי גבעון', name:'שאלה על המסגרת נשארה פתוחה',
+      meta:'01.07 · 9 הודעות · 3 כותבים · הקבוצה התפעולית', st:'ממתין לסקירה', stc:'wait',
+      who:[['תומר לוי',5],['ענת שקד',3],['טל מלקר',1]],
+      base:['תומר ביקש להזיז את קניות המלאי לאוגוסט — לדבריו הספק מוכן להמתין.',
+            'ענת דיווחה על שני מבטלים בקורס המנחות; ההכנסה הצפויה קטנה ב-3,600 ₪.',
+            'לא ניתן מענה לשאלה על מסגרת האשראי — נשארה פתוחה בקבוצה.'],
+      insights:[{t:'שאלה של הלקוח נשארה בלי מענה',d:'תומר שאל על המסגרת ב-10:22 ולא נענה. זו הפעם השנייה החודש שהוא מרים שאלה תזרימית בקבוצה ולא מקבל תשובה באותו יום.'}],
+      tasks:[{t:'מענה לתומר על מסגרת האשראי',who:'טל מלקר'},
+             {t:'עדכון תחזית הכנסות הקורס — מינוס 3,600 ₪',who:'טל מלקר'}],
+      mem:[['שביעות רצון','ירידה: שאלות תזרים בקבוצה נשארות בלי מענה באותו יום'],
+           ['מצב תזרימי','הכנסות קורס המנחות קטנו ב-3,600 ₪ — שני מבטלים']],
+      acts:'pending', contact:'תומר',
+      msgs:[['תומר לוי','10:22','שאלה — המסגרת הנוספת מול הבנק, יש התקדמות? צריך לדעת אם אני מזמין מלאי החודש.'],
+            ['ענת שקד','10:40','שני מבטלים בקורס המנחות. 3,600 ₪ פחות.'],
+            ['תומר לוי','12:05','ענת תודה. טל?'],
+            ['תומר לוי','16:58','טל, אני עדיין מחכה. אם אין מסגרת אני דוחה את המלאי לאוגוסט.']]},
     /* ===== שיחות טלפון — אותה ישות בדיוק, רק kind אחר =====
        לשיחה יש סיכום, משימות, זיכרון, משוב ותמלול — כמו לפגישה.
        ההבדל היחיד הוא בשפה שהמסך מדבר עליה: "שיחה" ולא "פגישה". ===== */
@@ -847,6 +951,17 @@ tr.m.call .nm{color:#4A3B8C}
   };
   let _arTab='sum';
   function arTab(v){ _arTab=v; arenaShow(window._arSel); }
+  /* שלושה סוגים, מקום אחד. מי שמוסיף סוג רביעי נוגע רק כאן. */
+  const KINDS={
+    meet:{lb:'פגישה', sum:'סיכום פגישה',
+      ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'},
+    call:{lb:'שיחת טלפון', sum:'סיכום השיחה',
+      ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>'},
+    wa:{lb:'קבוצת וואטסאפ', sum:'סיכום היום',
+      ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg>'}
+  };
+  const KIND=a=>KINDS[a.kind]||KINDS.meet;
+
   function arenaShow(id){
     const a=ARENA[id]||ARENA.r0207; window._arSel=id=ARENA[id]?id:'r0207';
     const host=document.getElementById('arena');
@@ -866,9 +981,7 @@ tr.m.call .nm{color:#4A3B8C}
     }
     /* --- פגישה בלי תוצרים --- */
     const head=`<div class="ar-h slim">
-        <div class="ar-top"><span class="ar-cap ${a.kind==='call'?'call':''}">${a.kind==='call'
-          ?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> שיחת טלפון'
-          :'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> פגישה'}</span><span class="ar-st ${a.stc}">${a.st}</span>
+        <div class="ar-top"><span class="ar-cap ${a.kind||'meet'}">${KIND(a).ic+' '+KIND(a).lb}</span><span class="ar-st ${a.stc}">${a.st}</span>
           ${a.tx?`<button class="ar-play" onclick="arPlay(this)" title="השמעת ההקלטה">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <span class="ar-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -883,12 +996,14 @@ tr.m.call .nm{color:#4A3B8C}
       return;
     }
     /* --- הזירה: טאבים כמו במערכת — סיכום פגישה · משימות · משוב · תמלול --- */
-    const tabs=[['sum',a.kind==='call'?'סיכום השיחה':'סיכום פגישה',!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['mem','זיכרון',!!(a.mem&&a.mem.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx]].filter(x=>x[2]);
+    const tabs=[['sum',KIND(a).sum,!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['mem','זיכרון',!!(a.mem&&a.mem.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx],['msgs','ההודעות',!!(a.msgs&&a.msgs.length)]].filter(x=>x[2]);
     if(!tabs.some(x=>x[0]===_arTab)) _arTab=tabs[0][0];
     let body='';
     if(_arTab==='sum'){
       body=`<div class="ar-sec">
-        <h4>תמונת מצב ונתוני יסוד</h4>
+        ${a.who?`<h4>מי כתב היום</h4>
+          <div class="wa-who">${a.who.map(w=>`<span><b>${w[0]}</b><i>${w[1]} הודעות</i></span>`).join('')}</div>`:''}
+        <h4>${a.kind==='wa'?'מה עלה בקבוצה':'תמונת מצב ונתוני יסוד'}</h4>
         <ol class="ar-ol">${a.base.map(r=>`<li>${r}</li>`).join('')}</ol>
         ${a.insights?`<h4>תובנות מרכזיות</h4>
           ${a.insights.map((x,i)=>`<div class="ar-ins2"><b>${i+1}. ${x.t}</b><p>${x.d}</p></div>`).join('')}`:''}
@@ -931,6 +1046,10 @@ tr.m.call .nm{color:#4A3B8C}
         :`<div class="ar-sec"><h4>משוב · ${F.d}</h4>
             ${F.strong?`<div class="ar-ins good"><b>✓ נקודת חוזק</b><span>${F.strong}</span></div>`:''}
             ${F.improve?`<div class="ar-ins imp"><b>↗ נקודה לשיפור</b><span>${F.improve}</span></div>`:''}</div>`;
+    }else if(_arTab==='msgs'){
+      /* בקבוצה כל הודעה נושאת מי כתב ומתי — זה מה שאין בתמלול של שיחה */
+      body=`<div class="ar-sec"><h4>ההודעות · ${a.meta.split(' · ')[1]||''}</h4>
+        ${a.msgs.map(m=>`<div class="wa-msg"><div class="hd"><b>${m[0]}</b><i class="num">${m[1]}</i></div><p>${m[2]}</p></div>`).join('')}</div>`;
     }else{
       body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
     }
@@ -1017,6 +1136,21 @@ tr.m.call .nm{color:#4A3B8C}
     else if(act==='resch') toast('תיאום מחדש עם אנרגי גולני — נפתח ביומן');
     else if(act==='prep') location.href='today.html?prep=039112774';
   });
+  /* עמודת הסוג. השורות כתובות ב-HTML, ולכן מוסיפים אותה כאן פעם אחת
+     במקום לחזור על אותו תא ארבעים פעם. */
+  const KCHIP={
+    meet:['פגישה','<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
+    call:['שיחה','<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>'],
+    wa:['קבוצה','<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg>']
+  };
+  document.querySelectorAll('#ml tbody tr.m').forEach(tr=>{
+    const k=tr.classList.contains('wa')?'wa':tr.classList.contains('call')?'call':'meet';
+    const ic=tr.querySelector('.k-ic'); if(ic) ic.remove();
+    const td=document.createElement('td'); td.className='kd';
+    td.innerHTML='<span class="kchip '+k+'">'+KCHIP[k][1]+KCHIP[k][0]+'</span>';
+    tr.firstElementChild.after(td);
+  });
+
   /* חוזה כתובת: ?c לקוח · ?q חיפוש · ?f מה חסר · ?m פגישה */
   const u=new URLSearchParams(location.search);
   if(u.get('f')&&MISS[u.get('f')]) S.f=u.get('f');
