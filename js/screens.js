@@ -568,9 +568,7 @@
         html+=`<div class="gn-item sec ${CUR_TAB==='acct'?'on':''}" onclick="showTab('acct')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
             <span>${TAB_LABELS.acct}</span></div>`;
-      /* ליועץ זה עדיין רעש — הוא צורך את התוצאה ולא מזין אותה */
-      if(ROLE!=='advisor')
-        html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
+      html+=`<div class="gn-item sec ${CUR_TAB==='fcast'?'on':''}" onclick="showTab('fcast')">${SEC_ICO.fcast}<span>${TAB_LABELS.fcast}</span></div>`;
       html+=`<div class="gn-item sec ${CUR_TAB==='past'?'on':''}" onclick="showTab('past')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
           <span>${TAB_LABELS.past}</span></div>`;
