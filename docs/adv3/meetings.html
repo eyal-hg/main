@@ -288,6 +288,13 @@ table.ml{width:100%;border-collapse:collapse}
 .ar-st.wait{background:rgba(201,132,4,.3);color:var(--on-warn)}
 .ar-st.ok{background:rgba(19,137,91,.3);color:var(--on-good)}
 .ar-st.bad{background:rgba(232,99,90,.3);color:var(--on-bad)}
+/* ===== פגישה מול שיחה — אותה ישות, סימון שונה =====
+   לשיחה יש בדיוק אותם תוצרים; ההבחנה היא באייקון, בפס הצד ובשם הזירה. */
+.k-ic{flex:none;margin-inline-end:7px;vertical-align:-2px;color:#9BAAB8}
+tr.m.call .k-ic{color:#5B41C4}
+tr.m.call td:first-child{border-inline-start:3px solid #C9B9EE}
+tr.m.call:hover{background:#FBFAFF}
+.ar-cap.call{background:#EDE9FD;color:#5B41C4;border-color:#DAD2F7}
 .ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--band);flex:none}
 .ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--on-navy3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
 .ar-tabs button:hover{color:var(--white)}
@@ -459,60 +466,78 @@ table.ml{width:100%;border-collapse:collapse}
         <!-- הפגישה הקרובה של היום — ראש הרשימה -->
         <tr class="m fut" tabindex="0" role="button" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
           <td class="d num">היום<small class="num">16:00</small></td>
-          <td class="who"><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="dot">·</span><span class="mt">Zoom</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="dot">·</span><span class="mt">Zoom</span><span class="hit"></span></td>
           <td class="st"><span class="al warn">הכנה לא נפתחה</span><i>בעוד 5 שעות</i></td>
           <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></td>
+        </tr>
+        <tr class="m call" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל שיחה דחיית התשלום לבזן" id="c0207">
+          <td class="d num">היום<small class="num">09:14</small></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">שיחה — דחיית התשלום לבז״ן</span><span class="hit"></span></td>
+          <td class="st"><span class="al ok">סיכום אושר</span><i>4:38 דק׳</i></td>
+          <td class="ac"></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="appr" data-fbt="why" data-k="אנרגי אינטרנשיונל פגישה שוטפת סקירת תזרים" id="r0207"
             data-items='["סקירת המזומנים בשלושת החשבונות — מרכנתיל בחריגה","סיכון ריכוזיות: רימון מוצרי אנרגיה ≈ 70% מהמחזור","נבחן קידום מסגרת אשראי מול הבנק","יעד: לקוח משמעותי חדש עד ספטמבר"]'>
           <td class="d num">02.07<small class="num">09:00</small></td>
-          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
           <td class="st"><span class="al warn">סיכום לא אושר</span><i>מהיום</i></td>
           <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">אישור ושליחה</button></td>
         </tr>
+        <tr class="m call" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל שיחה חשבוניות מלאי רות" id="c0107">
+          <td class="d num">01.07<small class="num">16:05</small></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">שיחה — החשבוניות שלא נצבעו בתזרים</span><span class="hit"></span></td>
+          <td class="st"><span class="al ok">סיכום אושר</span><i>9:21 דק׳</i></td>
+          <td class="ac"></td>
+        </tr>
+        <tr class="m call" tabindex="0" role="button" data-tags="appr" data-k="מטעי גבעון שיחה מסגרת אשראי בנק" id="c2406">
+          <td class="d num">24.06<small class="num">15:10</small></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">שיחה — מסגרת אשראי נוספת מול הבנק</span><span class="hit"></span></td>
+          <td class="st"><span class="al warn">סיכום לא אושר</span><i>לפני 8 ימים</i></td>
+          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('c2406')">אישור ושליחה</button></td>
+        </tr>
         <tr class="m" tabindex="0" role="button" data-tags="held" data-k="אנרגי גולני פ.ע חודש יוני" id="r2406">
           <td class="d num">24.06<small class="num">10:30</small></td>
-          <td class="who"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
           <td class="st"><span class="al info">הפגישה לא התקיימה</span><i>לפני 8 ימים</i></td>
           <td class="ac"><button class="btn pri sm" data-act="resch">תיאום מחדש</button></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="sent" data-fbt="why" data-k="אנרגי אינטרנשיונל פ.ע חודש יוני" id="r0106"
             data-items='["מעבר לדיווח שבועי","יעד גבייה 95% — טיפול בחובות פתוחים","עדכון על מסגרת אשראי — ממתינים לבנק"]'>
           <td class="d num">01.06<small class="num">11:00</small></td>
-          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש יוני</span><span class="hit"></span></td>
           <td class="st"><span class="al bad">סיכום לא נשלח</span><i>לפני 31 ימים</i></td>
           <td class="ac"><button class="btn sm" onclick="event.stopPropagation();arenaShow('r0106')">שליחה ללקוח</button></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="ok" data-k="מטעי גבעון פגישת עבודה קורס מנחות" id="r1205"
             data-items='["מערך קורס המנחות אושר","תמחור הקורס והגבייה מהמשתתפות"]'>
           <td class="d num">12.05<small class="num">10:00</small></td>
-          <td class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">פגישת עבודה — קורס מנחות</span><span class="hit"></span></td>
           <td class="st"><span class="al ok">הושלם</span></td>
           <td class="ac"></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="ok" data-fbt="deep nums" data-k="אנרגי אינטרנשיונל פ.ע חודש מאי" id="r0505a"
             data-items='["ניתוח רבעון מרץ–מאי: הכנסות 116/140/120 אש״ח","זוהה פער: כרטיס ״מקס״ אינו מחובר ל-Bizibox","הוחלט: החלפת פונקציית שירות הלקוחות","הוגדר יעד: מסגרת אשראי נוספת של 100 א׳ ₪ עד 15.7"]'>
           <td class="d num">05.05<small class="num">11:00</small></td>
-          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש מאי</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פ.ע — חודש מאי</span><span class="hit"></span></td>
           <td class="st"><span class="al ok">הושלם</span></td>
           <td class="ac"></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="rec" data-k="אנרגי גולני לימוד בנדל" id="r0505b">
           <td class="d num">05.05<small class="num">09:00</small></td>
-          <td class="who"><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">לימוד בנדל</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511200341">אנרגי גולני</a><span class="dot">·</span><span class="nm">לימוד בנדל</span><span class="hit"></span></td>
           <td class="st"><span class="al bad">לא הוקלטה</span><i>לפני 58 ימים</i></td>
           <td class="ac"><button class="btn pri sm" data-act="upload">העלאת הקלטה</button></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל פגישה חודשית אפריל" id="r0304">
           <td class="d num">03.04<small class="num">10:00</small></td>
-          <td class="who"><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה חודשית — אפריל</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה חודשית — אפריל</span><span class="hit"></span></td>
           <td class="st"><span class="al ok">הושלם</span></td>
           <td class="ac"></td>
         </tr>
         <tr class="m" tabindex="0" role="button" data-tags="ok" data-fbt="nums" data-k="רימון יצחק פגישה חודשית מרץ" id="r1703"
             data-items='["פילוח הוצאות לפי ספקים","יעד רווחיות Q2","נדונה מסגרת אשראי לגישור העונתיות"]'>
           <td class="d num">17.03<small class="num">12:00</small></td>
-          <td class="who"><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
+          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=025664109">רימון יצחק</a><span class="dot">·</span><span class="nm">פגישה חודשית — מרץ</span><span class="hit"></span></td>
           <td class="st"><span class="al ok">הושלם</span></td>
           <td class="ac"></td>
         </tr>
@@ -649,6 +674,59 @@ table.ml{width:100%;border-collapse:collapse}
       mem:[['כאבי לקוח','נוסף כאב: תלות בלקוח מרכזי — רימון מוצרי אנרגיה ≈ 70% מהמחזור'],['שביעות רצון','ירידה: תסכול מקצב התגובה בוואטסאפ'],['מצב תזרימי','צפי החריגה ב-24.08 עודכן — קטנה ב-8,000 ₪'],['יעדים והסכמות','יעד חדש: לקוח משמעותי נוסף עד ספטמבר']],
       tx:[['יועץ','בוקר טוב צחי, בוא נסתכל על שלושת החשבונות ביחד.'],['לקוח','המרכנתיל שוב בחריגה?'],['יועץ','כן, 42 אלף. יש לנו שתי דרכים לטפל בזה — העברה מהמזרחי או תזמון מול התקבול של מרכז הבנייה.'],['לקוח','בסדר, נעשה את ההעברה.'],['יועץ','עכשיו לנושא שרציתי להרים — רימון מוצרי אנרגיה זה בערך 70% מהמחזור שלך.'],['לקוח','אני יודע, זה מטריד גם אותי.'],['יועץ','בוא נגדיר יעד: לקוח חדש משמעותי עד ספטמבר. נבנה רשימה של חמישה פוטנציאליים.'],['לקוח','צריך שאשב על זה עם תומר.'],['יועץ','מעולה. ומה עם המענה בוואטסאפ? תומר העלה תסכול.'],['לקוח','נדבר על זה בפגישה החודשית.'],['יועץ','טוב, נסכם: העברה היום, רשימת לקוחות עד סוף השבוע, ומסגרת מול הבנק.'],['לקוח','סגור. תודה.']],
       acts:'pending'},
+    /* ===== שיחות טלפון — אותה ישות בדיוק, רק kind אחר =====
+       לשיחה יש סיכום, משימות, זיכרון, משוב ותמלול — כמו לפגישה.
+       ההבדל היחיד הוא בשפה שהמסך מדבר עליה: "שיחה" ולא "פגישה". ===== */
+    c0207:{kind:'call', co:'אנרגי אינטרנשיונל', contact:'צחי', name:'שיחה — דחיית התשלום לבז״ן',
+      meta:'היום · 09:14 · נכנסת · 4 דק׳ · צחי עובד', st:'סיכום אושר', stc:'ok',
+      base:['צחי ראה את התראת החריגה וביקש לדחות את התשלום לבז״ן — 38,400 ₪ ב-30.07.',
+            'תנאי התשלום של בז״ן הם שוטף+30; דחייה של עשרה ימים אינה גוררת קנס.',
+            'סוכם שטל תפנה לבז״ן היום ותעדכן בקבוצת הוואטסאפ.'],
+      insights:[{t:'החריגה היא תזמון, לא חוסר',d:'25,000 ₪ מלאי שלא נצבעו בתזרים ותשלום שנופל ב-30 — שני הצדדים ניתנים להזזה.'}],
+      tasks:[{t:'פנייה לבז״ן — דחיית התשלום ל-10.08',who:'טל מלקר'},{t:'קבלת חשבוניות המלאי מרות',who:'צחי'}],
+      mem:[['מצב תזרימי','החריגה ב-11.07 נובעת מתזמון — 25,000 ₪ מלאי שטרם נצבעו'],
+           ['שיתוף פעולה','צחי מגיב לתוך שעה להתראות חריגה']],
+      fbTab:{d:'02.07.2026', strong:'תשובה תוך דקות להתראה, ועם פתרון ביד — לא רק ידיעה.',
+             improve:'אפשר היה לסגור באותה שיחה גם את מועד קבלת החשבוניות מרות.'},
+      tx:[['לקוח','טל, בוקר טוב. קיבלתי התראה על חריגה ב-11 לחודש. זה אמיתי?'],
+          ['יועץ','בוקר טוב. כן, אבל זה לא אסון — זה תזמון. יש 25 אלף מלאי שעוד לא נצבעו, ובמקביל התשלום לבז״ן נופל ב-30.'],
+          ['לקוח','אפשר לדחות את בז״ן?'],
+          ['יועץ','רגע, אני מסתכלת בתנאי התשלום שלהם… בז״ן זה שוטף+30. אם נדחה בעשרה ימים אנחנו עדיין בתוך מה שסיכמנו איתם, בלי קנס.'],
+          ['לקוח','אז בוא נדחה. אני לא רוצה להיכנס למסגרת בגלל תזמון.'],
+          ['יועץ','מסכימה. אני מדברת איתם היום ומעדכנת בקבוצה.']]},
+    c0107:{kind:'call', co:'אנרגי אינטרנשיונל', contact:'רות', name:'שיחה — החשבוניות שלא נצבעו בתזרים',
+      meta:'01.07 · 16:05 · יוצאת · 9 דק׳ · רות אלמוג', st:'סיכום אושר', stc:'ok',
+      base:['25,000 ₪ מקניות המלאי של יוני עדיין לא הועברו להנהלת החשבונות.',
+            'רות תסרוק ותעביר עד סוף השבוע — שלוש חשבוניות ספק.',
+            'הוסכם שמעכשיו החשבוניות נשלחות לקבוצה ביום שהן מתקבלות, במקום להיצבר.'],
+      tasks:[{t:'העברת שלוש חשבוניות מלאי מיוני',who:'רות אלמוג',ok:1},
+             {t:'שליחת חשבוניות לקבוצה ביום קבלתן — נוהל חדש',who:'רות אלמוג'}],
+      mem:[['שיתוף פעולה','נוהל חדש: חשבוניות נשלחות לקבוצה ביום קבלתן'],
+           ['כאבי לקוח','חשבוניות מלאי נצברות אצל רות ומגיעות באיחור']],
+      fbTab:{d:'01.07.2026', strong:'במקום לבקש את החומר — נסגר נוהל שמונע את החזרה של הבעיה.', improve:''},
+      tx:[['יועץ','רות היי, אני על התזרים של יולי ויש לי חור של 25 אלף בקניות המלאי.'],
+          ['לקוח','כן, יש לי פה ערימה של חשבוניות מיוני שעוד לא העברתי.'],
+          ['יועץ','תוכלי לסרוק ולהעביר עד סוף השבוע?'],
+          ['לקוח','כן, אני עושה את זה מחר בבוקר.'],
+          ['יועץ','תודה. ורק שנסגור לעתיד — במקום לצבור, תשלחי אותן לקבוצה ביום שהן מגיעות.']]},
+    c2406:{kind:'call', co:'מטעי גבעון', contact:'תומר', name:'שיחה — מסגרת אשראי נוספת מול הבנק',
+      meta:'24.06 · 15:10 · יוצאת · 12 דק׳ · תומר לוי', st:'ממתין לאישור', stc:'wait',
+      base:['הבנק מוכן לדון במסגרת נוספת של 100 אש״ח.',
+            'נדרש תכנון תזרימי לשישה חודשים — יופק מהמערכת ויישלח לסניף.',
+            'היעד: סגירה עד 15.07, לפני עונת הרכש של אוגוסט.'],
+      insights:[{t:'המסגרת היא תנאי לעונת הרכש',d:'בלי המסגרת הנוספת, הרכש של אוגוסט דוחף את העו״ש לחריגה כבר בשבוע הראשון.'}],
+      tasks:[{t:'הפקת תכנון תזרימי לשישה חודשים לבנק',who:'צוות הייעוץ',ok:1},
+             {t:'פגישה בסניף — סגירת המסגרת',who:'תומר לוי'}],
+      mem:[['יעדים והסכמות','מסגרת אשראי נוספת 100 אש״ח — יעד סגירה 15.07'],
+           ['מצב תזרימי','עונת הרכש של אוגוסט תלויה במסגרת הנוספת']],
+      fbTab:{d:'24.06.2026', strong:'חיבר את הבקשה מהבנק ללוח הזמנים של העסק, לא רק למספר.',
+             improve:'לא נקבע מי אחראי לתיאום הפגישה בסניף — נשאר פתוח.'},
+      tx:[['יועץ','תומר, דיברתי עם הסניף. הם מוכנים לדבר על עוד 100 אלף מסגרת.'],
+          ['לקוח','מצוין. מה הם צריכים?'],
+          ['יועץ','תכנון תזרימי לשישה חודשים. יש לנו את זה במערכת, אני מפיק ושולח להם.'],
+          ['לקוח','כמה זמן זה ייקח להם?'],
+          ['יועץ','שבועיים בערך. אם נסגור עד ה-15 ביולי אנחנו מסודרים לפני הרכש של אוגוסט.']],
+      acts:'pending'},
     r2406:{co:'אנרגי גולני', name:'פ.ע — חודש יוני', meta:'24.06 · 10:30', st:'לא התקיימה', stc:'bad',
       none:'הפגישה לא התקיימה — אין ממנה תוצרים.', act:['resch','תיאום מחדש']},
     r0106:{co:'אנרגי אינטרנשיונל', name:'פ.ע — חודש יוני', meta:'01.06 · 11:00 · 58 דק׳', st:'אושר — לא נשלח', stc:'wait',
@@ -700,7 +778,7 @@ table.ml{width:100%;border-collapse:collapse}
     }
     /* --- פגישה בלי תוצרים --- */
     const head=`<div class="ar-h slim">
-        <div class="ar-top"><span class="ar-cap">זירת הפגישה</span><span class="ar-st ${a.stc}">${a.st}</span>
+        <div class="ar-top"><span class="ar-cap ${a.kind==='call'?'call':''}">${a.kind==='call'?'זירת השיחה':'זירת הפגישה'}</span><span class="ar-st ${a.stc}">${a.st}</span>
           ${a.tx?`<button class="ar-play" onclick="arPlay(this)" title="השמעת ההקלטה">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <span class="ar-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -715,7 +793,7 @@ table.ml{width:100%;border-collapse:collapse}
       return;
     }
     /* --- הזירה: טאבים כמו במערכת — סיכום פגישה · משימות · משוב · תמלול --- */
-    const tabs=[['sum','סיכום פגישה',!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['mem','זיכרון',!!(a.mem&&a.mem.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx]].filter(x=>x[2]);
+    const tabs=[['sum',a.kind==='call'?'סיכום השיחה':'סיכום פגישה',!!a.base],['tasks','משימות',!!(a.tasks&&a.tasks.length)],['mem','זיכרון',!!(a.mem&&a.mem.length)],['fb','משוב',!!a.fbTab],['tx','תמלול',!!a.tx]].filter(x=>x[2]);
     if(!tabs.some(x=>x[0]===_arTab)) _arTab=tabs[0][0];
     let body='';
     if(_arTab==='sum'){
