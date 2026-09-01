@@ -211,40 +211,34 @@ td:last-child .cell{border-inline-end:none}
 .curband.s-tgt{box-shadow:inset 2px 0 0 #d8e9fb}
 
 /* row kinds */
-tr.section td,tr.section th.cat{border-top:9px solid #F4F7FA}
-tr.section th.cat{background:#f1f5fb;color:#33486a;font-weight:900;font-size:11px;letter-spacing:1.2px;padding-top:10px;padding-bottom:10px}
-tr.section th.cat::before{content:"";display:inline-block;width:8px;height:8px;border-radius:3px;margin-inline-end:8px;vertical-align:1px;background:var(--accent)}
-tr.section.exp th.cat::before{background:var(--warn)}
-tr.section td{background:#f1f5fb}
+/* כותרת סעיף — כותרת, לא פס: טקסט נייבי על לבן, אוויר מעליה,
+   וקו תחתון שמתחיל את הגוש. בלי ריבועים צבעוניים. */
+tr.section td,tr.section th.cat{border-top:14px solid #F4F7FA;background:#fff;border-bottom:2px solid var(--border-strong)}
+tr.section th.cat{color:#0C4068;font-weight:700;font-size:13.5px;letter-spacing:0;padding-top:15px;padding-bottom:9px}
 tr.summary th.cat,tr.summary .cell{font-weight:800}
 tr.summary td,tr.summary th.cat{background:var(--surface-alt)}
 tr.summary.net td,tr.summary.net th.cat{background:#eef4fc}
 tr.summary.net th.cat,tr.summary.net .cell{font-weight:900}
-tr.total th.cat,tr.total .cell{font-weight:900}
-/* סך־הכל: מופרד מהפירוט בקו כפול ובנשימה, וצבוע ברקע מלא —
-   שורת סיכום צריכה להיקרא כשורה אחרת, לא כעוד סעיף */
-tr.total td,tr.total th.cat{border-top:2px solid var(--border-strong)}
-tr.total .cell,tr.total th.cat{padding-top:13px;padding-bottom:13px}
-tr.total.income td,tr.total.income th.cat{background:#E1F3E9}
-tr.total.income th.cat{color:#0f7a50;box-shadow:inset -3px 0 0 #13895b,1px 0 0 var(--border)}
-tr.total.expense td,tr.total.expense th.cat{background:#FBF1D9}
-tr.total.expense th.cat{color:#9a6604;box-shadow:inset -3px 0 0 #c98404,1px 0 0 var(--border)}
+tr.total th.cat,tr.total .cell{font-weight:800}
+/* סה״כ: רקע אחיד אחד לכל שורות הסיכום — אפור־נייבי שקט. הסמנטיקה
+   (הכנסה/הוצאה) חיה בצבע הפונט, לא ברקע: רקעים צבעוניים מתחרים
+   זה בזה, ופונט צבוע על רקע אחיד נקרא כמו בדוח של רו״ח. */
+tr.total td,tr.total th.cat{border-top:8px solid #F4F7FA;background:#EEF2F6}
+tr.total .cell,tr.total th.cat{padding-top:12px;padding-bottom:12px}
+tr.total .cell{border-inline-end-color:#E1E7EE}
+tr.total.income th.cat,tr.total.income .cell{color:#0f7a50}
+tr.total.expense th.cat,tr.total.expense .cell{color:#C43D30}
 tr.data:hover td{background:#f2f8ff}
 tr.data:hover th.cat{background:#f2f8ff}
 
 /* profit tiers */
-tr.profit td,tr.profit th.cat{background:linear-gradient(180deg,#eef6ff,#e4eefb);border-top:9px solid #F4F7FA}
+tr.profit td,tr.profit th.cat{background:#EEF2F6;border-top:8px solid #F4F7FA}
 tr.profit .cell,tr.profit th.cat{padding-top:12px;padding-bottom:12px}
-tr.profit th.cat{box-shadow:inset -3px 0 0 var(--accent),1px 0 0 var(--border)}
-tr.profit th.cat{color:#15498f;font-weight:900;font-size:13.5px}
-tr.profit .cell{font-weight:900;font-size:14px;color:#15498f}
-tr.profit th.cat::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:8px;vertical-align:1px;background:var(--accent)}
+tr.profit th.cat{color:#0C4068;font-weight:800;font-size:13.5px}
+tr.profit .cell{font-weight:800;font-size:14px;color:#0C4068;border-inline-end-color:#E1E7EE}
 tr.profit .cell.pos{color:var(--positive)}
-tr.profit.big td,tr.profit.big th.cat{background:linear-gradient(180deg,#e7f6ee,#d8efe2);border-top:9px solid #F4F7FA}
-tr.profit.big th.cat{box-shadow:inset -3px 0 0 var(--positive),1px 0 0 var(--border)}
-tr.profit.big th.cat{color:#0f6f48}
-tr.profit.big .cell{color:#0f6f48;font-size:15px}
-tr.profit.big th.cat::before{background:var(--positive)}
+tr.profit .cell.neg{color:#C43D30}
+tr.profit.big .cell{font-size:15px}
 
 /* ---- drill-down: indent, caret, subgroups, sublines ---- */
 th.cat.lvl1{padding-inline-start:30px}
