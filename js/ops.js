@@ -1389,6 +1389,22 @@
   /* ===== תיעוד שיחה עם הלקוח =====
      לא פר חריגה — יומן אחד לכל החריגות של אותו תפעול: מתי התקשרנו ומה נאמר. */
   const FIN_CALLS={};
+  /* ההיסטוריה — תיעודים מתפעולים קודמים. מנהלת התזרים צריכה לראות מתי
+     דיברו לאחרונה ומה נאמר, לפני שהיא מחליטה מה לתעד היום. */
+  const FIN_CALL_HIST={
+    c0:[{d:'20.08.2026', at:'14:05', t:'צחי — עדכן שההזמנה של רימון נדחתה לספטמבר; ביקש לעדכן את הצפי'},
+        {d:'12.08.2026', at:'09:40', t:'רות — סוכם שתעביר חשבוניות מלאי בכל יום ראשון'},
+        {d:'04.08.2026', at:'16:20', t:'צחי — נמסר שהחריגה נסגרה אחרי תקבול אלקטרו סחר'}],
+    c1:[{d:'26.08.2026', at:'11:15', t:'אורי — ביקש להקפיא תזכורות גבייה עד סוף החודש'},
+        {d:'11.08.2026', at:'08:50', t:'אורי — אישר את מסגרת האשראי החדשה מול הבנק'}],
+    c2:[{d:'28.08.2026', at:'13:30', t:'שיחה קצרה — אין שינוי, התזרים תקין'}],
+  };
+  /* כמה ימים עברו מהתאריך שנרשם, מול עוגן הדמו */
+  function finDaysAgo(d){
+    const p=String(d).split('.'); if(p.length<3) return null;
+    const then=new Date(+p[2],+p[1]-1,+p[0]), now=new Date(2026,8,1);
+    return Math.max(0,Math.round((now-then)/86400000));
+  }
   const FIN_DATE='01.09.2026';
   function finClock(){
     const base=10*60+54+Math.round((typeof opsTotal==='number'?opsTotal:0)/60);
@@ -1409,12 +1425,21 @@
     renderFinFoot();
   }
   function finCallHtml(){
-    const list=FIN_CALLS['c'+CUR]||[];
+    const k='c'+CUR;
+    const now=(FIN_CALLS[k]||[]).map((c,i)=>({...c,i,fresh:1}));
+    const past=(FIN_CALL_HIST[k]||[]);
+    const all=now.slice().reverse().concat(past);         /* החדש למעלה */
+    const last=all[0], ago=last?finDaysAgo(last.d):null;
+    const lead=!all.length
+      ? '<span class="fc-lead none">לא תועדה שיחה עם הלקוח הזה — זו תהיה הראשונה</span>'
+      : '<span class="fc-lead '+(ago>=14?'old':'')+'">שיחה אחרונה '+
+        (ago===0?'היום':ago===1?'אתמול':'לפני '+ago+' ימים')+' · '+last.d+'</span>';
     return `<div class="fcall">
       <div class="fcall-h">תיעוד שיחה עם הלקוח<span>לכל החריגות — לא פר שורה</span></div>
-      ${list.length?`<ul class="fcall-l">${list.map((c,i)=>`<li>
+      ${lead}
+      ${all.length?`<ul class="fcall-l">${all.map(c=>`<li class="${c.fresh?'fresh':''}">
           <span class="fc-at">${c.d||FIN_DATE}<i>${c.at}</i></span><span class="fc-t">${c.t}</span>
-          <button class="fc-x" onclick="finCallDel(${i})" title="מחיקה">✕</button></li>`).join('')}</ul>`:''}
+          ${c.fresh?`<button class="fc-x" onclick="finCallDel(${c.i})" title="מחיקה">✕</button>`:''}</li>`).join('')}</ul>`:''}
       <div class="fcall-add">
         <input id="finCallIn" placeholder="למשל: התקשרתי לצחי — סוכם שיבדוק מול הבנק ויחזור מחר"
                autocomplete="off" onkeydown="if(event.key==='Enter')finCallAdd()">
