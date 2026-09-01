@@ -465,33 +465,24 @@ button{font-family:inherit;cursor:pointer}
 @keyframes rIn{from{opacity:0;transform:translateY(9px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
 @media (prefers-reduced-motion:reduce){.face.out > *,.face.in > *{animation:none}}
 
-/* ============================ פאנל המיפוי ============================ */
-.mapwrap{display:flex;align-items:stretch;min-width:0}
-.mapwrap>.scroll{flex:1;min-width:0}
-.mapp{width:322px;flex:none;border-inline-end:1px solid var(--line);background:#FBFDFE;
-  display:flex;flex-direction:column;min-height:0}
-.mapp[hidden]{display:none}
-.mapp-h{display:flex;align-items:center;gap:8px;padding:12px 14px 9px}
-.mapp-h b{font-size:13px;color:var(--navy)}
-.mapp-h span{font-size:11px;color:var(--muted-2);font-variant-numeric:tabular-nums}
-.mapp-x{margin-inline-start:auto;border:0;background:#F1F5F9;color:#64748b;width:24px;height:24px;
-  border-radius:7px;font-size:12px;cursor:pointer}
-.mapp-x:hover{background:#E7EDF3;color:var(--navy)}
-.mapp-q{padding:0 14px 9px}
-.mapp-q input{width:100%;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:9px;
-  padding:7px 11px;background:#fff;color:var(--navy)}
-.mapp-q input:focus{outline:none;border-color:var(--sky)}
-.mapp-f{display:flex;gap:4px;flex-wrap:wrap;padding:0 14px 10px}
-.mapp-f button{border:1px solid var(--line);background:#fff;color:var(--muted);font:inherit;
-  font-size:11px;font-weight:600;border-radius:999px;padding:3px 9px;cursor:pointer}
-.mapp-f button:hover{border-color:var(--tone);color:var(--tone-ink)}
-.mapp-f button.on{background:var(--tone);border-color:var(--tone);color:#fff}
-.mapp-f button em{font-style:normal;opacity:.62;margin-inline-start:4px;font-variant-numeric:tabular-nums}
-.mapp-l{flex:1;min-height:0;overflow-y:auto;padding:0 10px 10px}
-.mapp-g{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--muted-2);
-  padding:11px 5px 5px;letter-spacing:.02em}
-.mapp-g i{width:7px;height:7px;border-radius:50%;flex:none}
-.mapp-g.warn{color:#9A6300}
+/* ============================ סדנת המיפוי ============================ */
+.mw{display:grid;grid-template-columns:340px minmax(0,1fr);min-height:0}
+.mw-l{border-inline-end:1px solid var(--line);background:#FBFDFE;display:flex;flex-direction:column;min-height:0}
+.mw-q{padding:12px 14px 8px}
+.mw-q input{width:100%;font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:9px;
+  padding:8px 12px;background:#fff;color:var(--navy)}
+.mw-q input:focus{outline:none;border-color:var(--sky)}
+.mw-f{display:flex;gap:4px;flex-wrap:wrap;padding:0 14px 10px}
+.mw-f button{border:1px solid var(--line);background:#fff;color:var(--muted);font:inherit;
+  font-size:11px;font-weight:600;border-radius:999px;padding:3px 10px;cursor:pointer}
+.mw-f button:hover{border-color:var(--tone);color:var(--tone-ink)}
+.mw-f button.on{background:var(--tone);border-color:var(--tone);color:#fff}
+.mw-f button em{font-style:normal;opacity:.62;margin-inline-start:4px;font-variant-numeric:tabular-nums}
+.mw-cl{flex:1;min-height:0;overflow-y:auto;padding:0 10px 12px}
+.mw-g{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--muted-2);
+  padding:11px 5px 5px}
+.mw-g i{width:7px;height:7px;border-radius:50%;flex:none}
+.mw-g.warn{color:#9A6300}
 .mc{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
   border-radius:9px;padding:7px 10px;margin:4px 0;cursor:grab;transition:.12s}
 .mc:hover{border-color:var(--tone);box-shadow:0 2px 8px rgba(12,64,104,.07)}
@@ -502,11 +493,42 @@ button{font-family:inherit;cursor:pointer}
 .mc-b span{display:block;font-size:10.5px;color:var(--muted-2);font-variant-numeric:tabular-nums;margin-top:1px}
 .mc-r{border:0;background:none;color:var(--muted-2);font-size:13px;padding:2px 5px;border-radius:6px;cursor:pointer;flex:none}
 .mc-r:hover{background:#EDE9FD;color:#5B41C4}
-.mapp-e{padding:22px 10px;text-align:center;font-size:12px;color:var(--muted-2)}
-.mapp-ft{padding:10px 14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted);line-height:1.6}
-.mapp-ft b{color:var(--navy);font-weight:600}
-body.dragging .gr.dr{outline:1px dashed transparent}
-.gr.over{background:#F1EDFC !important;box-shadow:inset 0 0 0 2px var(--violet,#6C63E6)}
+.mw-e{padding:22px 10px;text-align:center;font-size:12px;color:var(--muted-2)}
+/* עמודת הסעיפים */
+/* קבוצה אחת בכל שורה, והסעיפים שלה ברשת — כך העין יורדת קבוצה-קבוצה
+   ולא מחפשת את "מימון" בקצה של עמודה רביעית. */
+.mw-r{display:block;overflow-y:auto;padding:12px 16px 18px;min-height:0}
+.mw-grp{display:block;margin-bottom:18px}
+.mw-grp .mw-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(302px,1fr));gap:8px}
+.mw-gh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.mw-gh b{font-size:12.5px;color:var(--navy)}
+.mw-gh span{font-size:11px;color:var(--muted-2)}
+.mw-add{margin-inline-start:auto;border:1px dashed var(--line-s);background:#fff;color:var(--tone-ink);
+  font:inherit;font-size:11px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer}
+.mw-add:hover{border-color:var(--tone);background:#F1EDFC}
+.mw-new{display:flex;gap:6px;margin-bottom:9px}
+.mw-new input{flex:1;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:9px;padding:7px 11px}
+.mw-new input:focus{outline:none;border-color:var(--tone)}
+.mw-new button{border:0;background:var(--tone);color:#fff;font:inherit;font-size:11.5px;font-weight:600;
+  border-radius:9px;padding:7px 14px;cursor:pointer}
+.mw-a{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0;background:#fff;transition:.12s}
+.mw-a.over{border-color:var(--tone);background:#F5F2FE;box-shadow:0 0 0 2px rgba(108,99,230,.18)}
+.mw-at{display:flex;align-items:center;gap:8px}
+.mw-at i{width:9px;height:9px;border-radius:50%;flex:none}
+.mw-at b{font-size:12.5px;color:var(--navy)}
+.mw-at span{font-size:11px;color:var(--muted-2);font-variant-numeric:tabular-nums}
+.mw-at .amt{margin-inline-start:auto;font-size:12px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums}
+.mw-cards{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.mw-cards:empty::after{content:"גררו לכאן כרטיסים";font-size:11px;color:var(--muted-2)}
+.mw-more{font-size:11px;font-weight:600;color:var(--tone-ink);background:#F1EDFC;border-radius:999px;
+  padding:2px 10px;align-self:center}
+.mw-chip{display:inline-flex;align-items:center;gap:5px;background:#F4F7FA;border:1px solid var(--line);
+  border-radius:999px;padding:2px 5px 2px 9px;font-size:11px;color:var(--ink-2)}
+.mw-chip b{font-weight:600;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mw-chip i{font-style:normal;color:var(--muted-2);font-variant-numeric:tabular-nums}
+.mw-chip button{border:0;background:none;color:var(--muted-2);font-size:11px;cursor:pointer;padding:0 2px}
+.mw-chip button:hover{color:var(--neg)}
+.mw-sub{margin-top:7px;padding-inline-start:12px;border-inline-start:2px solid var(--line)}
 .badge.acct{background:#F1F5F9;border-color:#E1E8EF;color:#5A7590;font-variant-numeric:tabular-nums}
 
 /* ============================ Ribbon — אפיק ההקשר ============================ */
@@ -634,99 +656,6 @@ body.dragging .gr.dr{outline:1px dashed transparent}
 <style id="dyn"></style>
 <style>
 /* ===== סדנת סיווג התיאורים ===== */
-.cls-t{display:flex;align-items:center;gap:9px;padding:11px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.cls-t .sp{flex:1}
-.msum{font-size:11.5px;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums;
-  background:#F2F6FA;border-radius:8px;padding:5px 10px}
-.swrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--ink-2);cursor:pointer}
-.swrow input{display:none}
-.swrow .sw2{width:30px;height:17px;border-radius:99px;background:#D3DDE8;position:relative;flex:none;transition:.18s}
-.swrow .sw2::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:13px;height:13px;border-radius:50%;background:#fff;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.swrow input:checked + .sw2{background:var(--violet)}
-.swrow input:checked + .sw2::after{transform:translateX(-13px)}
-.clsl{padding:6px 10px 14px}
-.crow{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:11px;
-  padding:8px 12px;margin:6px 0;transition:.13s}
-.crow:hover{border-color:var(--line-s)}
-.crow.sel{border-color:var(--violet);background:#FBFAFF}
-.crow input[type=checkbox]{width:15px;height:15px;accent-color:var(--violet);flex:none}
-.crow .nm3{flex:1;min-width:0;font-size:12.5px;font-weight:600;color:var(--navy)}
-.crow .nm3 small{display:block;font-size:10px;font-weight:400;color:var(--muted-2);margin-top:1px}
-.crow .amt{font-size:12.5px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;min-width:78px;text-align:start}
-.amtinp{width:88px;font:inherit;font-size:12.5px;font-weight:700;color:var(--navy);direction:ltr;text-align:start;
-  border:1.5px solid #d3dced;border-radius:8px;padding:4px 7px;outline:none;font-variant-numeric:tabular-nums}
-.amtinp:focus{border-color:var(--violet)}
-.recur{font-size:10px;font-weight:700;border-radius:99px;padding:3px 9px;background:#F1F5F9;color:#8FA3B5;white-space:nowrap}
-.recur.r3{background:#E7F7EF;color:#0B6E4B}
-.recur.mid{background:var(--warn-bg);color:var(--warn-ink)}
-.recur.manual{background:#EDE9FD;color:#5B41C4}
-.segx{display:inline-flex;background:#EEF3F7;border-radius:9px;padding:2px;flex:none}
-.segx button{border:0;background:none;font:inherit;font-size:11px;font-weight:600;color:#8FA3B5;padding:4px 11px;border-radius:7px}
-.segx button.onfx{background:#fff;color:#0B6E4B;box-shadow:0 1px 3px rgba(12,64,104,.12)}
-.segx button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(12,64,104,.12)}
-.mgi{border:0;background:none;font:inherit;font-size:10px;font-weight:600;color:var(--violet);padding:0;text-align:start}
-.members{margin:-2px 0 8px;padding:8px 12px;background:#FBFAFF;border:1px dashed #DCD0EC;border-radius:11px}
-.mrow{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--ink-2);padding:3px 0}
-.mrow .md{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mrow .ma{font-variant-numeric:tabular-nums;color:var(--muted);direction:ltr;unicode-bidi:isolate}
-.unm{border:0;background:none;color:var(--muted-2);font:inherit;font-size:10.5px;font-weight:600}
-.unm:hover{color:var(--neg)}
-.crec{margin:-2px 0 8px;padding:9px 12px;background:#F7FAFD;border:1px solid var(--line);border-radius:11px}
-.crec .rh{font-size:11px;font-weight:600;color:var(--ink-2);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.crec .rt{display:flex;flex-wrap:wrap;gap:5px}
-.rtx{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:10.5px;color:var(--ink-2)}
-.rtx .rd{color:var(--muted-2);font-variant-numeric:tabular-nums}
-.rtx b{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
-.addbar{display:flex;gap:7px;flex-wrap:wrap;padding:10px 16px;background:#FBFAFF;border-bottom:1px solid var(--line)}
-.addbar input{border:1.5px solid #d3dced;border-radius:9px;padding:6px 10px;font:inherit;font-size:12px;outline:none}
-.addbar input:focus{border-color:var(--violet)}
-.addbar input.n1{flex:1;min-width:150px}
-.addbar input.n2{width:120px;direction:ltr;text-align:start}
-/* מיפוי */
-/* הרשימה שמשמאל מתרוקנת ככל שמשייכים, ולכן היא צרה וקבועה.
-   הסעיפים — התוצאה שנשארת על המסך — מקבלים את כל השאר. */
-.mw-grid{display:grid;grid-template-columns:288px minmax(0,1fr);gap:14px;align-items:start;padding:16px 18px 20px}
-/* אין מה לשייך — אין סיבה להחזיק עמודה ריקה */
-.mw-grid.solo{grid-template-columns:minmax(0,1fr)}
-.mw-done{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;
-  color:#13895b;background:#E7F7EF;border:1px solid #BFE8D5;border-radius:11px;padding:9px 14px;margin-bottom:2px}
-@media(max-width:1000px){.mw-grid{grid-template-columns:1fr}}
-.mw-col{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-/* הכותרת נשארת במקום — גוררים לאורך רשימה ארוכה וצריך לדעת לאן */
-.mw-h{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;padding:11px 14px;
-  border-bottom:1px solid #eef3f8;background:#FBFDFF}
-.mw-h b{font-size:13px;color:var(--navy)}
-.mw-h .n{font-size:10.5px;font-weight:700;border-radius:99px;padding:2px 9px;background:#EAF4FB;color:#1B6C9C}
-.mw-h .n.a{background:#F1EDFC;color:var(--violet)}
-.mw-h .sp{flex:1}
-.mw-g{font-size:10.5px;font-weight:700;color:var(--muted-2);padding:6px 14px 3px;background:#FAFCFE}
-.mw-g.warn{color:var(--warn-ink);background:#FDF4E3}
-.mw-r{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border-bottom:1px solid #F1F6FA}
-.mw-r:hover{background:#FBFDFF}
-.mw-r.un{background:#FFFBF4}
-.mw-r .sp2{flex:1;min-width:0}
-.mw-r .t{font-size:12.5px;font-weight:600;color:var(--navy)}
-.mw-r .am{font-size:11px;color:var(--muted-2);font-variant-numeric:tabular-nums;margin-top:1px;direction:ltr;unicode-bidi:isolate}
-.mw-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.mw-c{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;background:#F1EDFC;color:var(--violet);border-radius:99px;padding:2px 9px}
-.mw-c .x{cursor:pointer;opacity:.55;font-size:10px}.mw-c .x:hover{opacity:1}
-.mw-done{font-size:12.5px;font-weight:600;color:#13895b;background:#E7F7EF;border:1px solid #BFE8D5;
-  border-radius:11px;padding:14px 16px;text-align:center}
-.mw-f .fx{margin-inline-start:6px;color:var(--muted-2);font-size:10px;cursor:pointer}
-.mw-f .fx:hover{color:var(--neg)}
-.mw-pk{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.mw-pk button{border:1px solid var(--line);background:#fff;color:#64748b;font:inherit;font-size:11px;font-weight:600;border-radius:99px;padding:4px 11px}
-.mw-pk button:hover{border-color:var(--violet);color:var(--violet);background:#F1EDFC}
-.mw-ar{display:flex;align-items:center;gap:12px;padding:7px 14px;border-bottom:1px solid #F1F6FA}
-.mw-ar .top{display:flex;align-items:center;gap:9px;flex:0 0 190px;min-width:0}
-.mw-ar .t2{flex:1;min-width:0;font-size:12.5px;font-weight:700;color:var(--navy)}
-.mw-ar .v2{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--violet);direction:ltr;unicode-bidi:isolate}
-.mw-ar .from{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
-.mw-f{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;background:#EAF4FB;color:#1B6C9C;border-radius:99px;padding:2px 9px}
-.mw-f i{font-style:normal;font-weight:700;opacity:.75}
-.mw-ar .none{flex:1;font-size:10.5px;color:var(--muted-2);border:1px dashed #DDE7EF;border-radius:9px;padding:6px 10px}
-.mw-note{font-size:11.5px;color:#64748b;line-height:1.75;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin:0 18px 18px}
-.mw-note b{color:var(--navy)}
 </style>
 <style>
 /* בתוך האפליקציה: בלי גובה מסך מלא ובלי כותרת כפולה */
@@ -837,18 +766,6 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
       </div>
     </div>
 
-    <div class="mapwrap">
-    <aside class="mapp" id="mapp" hidden>
-      <div class="mapp-h">
-        <b>כרטיסי הנהלת חשבונות</b>
-        <span id="mappN"></span>
-        <button class="mapp-x" onclick="mapPanel(false)" aria-label="סגירה">✕</button>
-      </div>
-      <div class="mapp-q"><input id="mapQ" placeholder="חיפוש כרטיס — שם או מספר" oninput="mapDraw()"></div>
-      <div class="mapp-f" id="mappF"></div>
-      <div class="mapp-l" id="mappL"></div>
-      <div class="mapp-ft">גוררים כרטיס לשורת סעיף או לסעיף משנה. <b>הסכומים נדרסים בכל העלאה, השיוך לא.</b></div>
-    </aside>
     <div class="scroll" id="scroll">
       <div class="grid" id="grid">
         <div class="rail" id="rail"></div>
@@ -858,8 +775,6 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
         </div>
         <div class="gr net" id="net"></div>
       </div>
-    </div>
-
     </div>
 
     <div class="ribbon" id="ribbon" hidden>
@@ -875,6 +790,20 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
 
 <!-- popovers / modals -->
 <div class="pop" id="mddPop"></div>
+<div class="ov" id="ovMap"><div class="box">
+  <div class="box-h"><b>מיפוי כרטיסי הנהלת החשבונות</b>
+    <span class="s" id="mwSub"></span>
+    <button class="box-x" onclick="mapClose()" aria-label="סגירה">✕</button></div>
+  <div class="box-b"><div class="mw">
+    <div class="mw-l">
+      <div class="mw-q"><input id="mapQ" placeholder="חיפוש כרטיס — שם או מספר" oninput="mapDraw()"></div>
+      <div class="mw-f" id="mwF"></div>
+      <div class="mw-cl" id="mwCl"></div>
+    </div>
+    <div class="mw-r" id="mwR"></div>
+  </div></div>
+</div></div>
+
 <div class="ov" id="ovSub"><div class="box sm">
   <div class="box-h"><b>פירוק לסעיפי משנה</b><span class="s" id="sbWho"></span>
     <button class="box-x" id="sbX" aria-label="סגירה">✕</button></div>
@@ -903,7 +832,7 @@ const GROUPS=[{id:'rev',name:'הכנסות'},{id:'cogs',name:'עלות המכר'
               {id:'opex',name:'הוצאות תפעוליות'},{id:'fin',name:'מימון'}];
 
 /* ---- הסעיפים בדוח. הם לא באים מהכרטסת — הם הדרך שבה קוראים אותה. ---- */
-const ACC=[
+let ACC=[
  {id:'rv_srv', g:'rev',  name:'הכנסות משירות',        c:'#2A9BD4'},
  {id:'rv_prj', g:'rev',  name:'הכנסות מפרויקטים',     c:'#1B7FB4'},
  {id:'rv_prt', g:'rev',  name:'הכנסות מחלפים',        c:'#86CDEE'},
@@ -956,11 +885,14 @@ let SUBS={};
 /* MOVED[מספר כרטיס] = מזהה סעיף — שיוך ידני שגובר על המלצת ה-AI.
    הוא נשמר בנפרד כדי שהעלאת כרטסת חדשה תדרוס סכומים ולא החלטות. */
 let MOVED={};
+/* סעיפים שנוספו ידנית בסדנת המיפוי */
+let XACC=[];
 let startBal=180000;
 try{const s=JSON.parse(localStorage.getItem('hkAP')||'null');
-  if(s){TGT=s.TGT||TGT;BOOKS=s.BOOKS||{};GOAL=s.GOAL||GOAL;SUBS=s.SUBS||{};MOVED=s.MOVED||{};
+  if(s){TGT=s.TGT||TGT;BOOKS=s.BOOKS||{};GOAL=s.GOAL||GOAL;SUBS=s.SUBS||{};MOVED=s.MOVED||{};XACC=s.XACC||[];
+        XACC.forEach(x=>{if(!ACC.some(a=>a.id===x.id))ACC.push(x)});
         if(s.startBal!=null)startBal=s.startBal;}}catch(e){}
-const persist=()=>{try{localStorage.setItem('hkAP',JSON.stringify({TGT,BOOKS,GOAL,SUBS,MOVED,startBal}));}catch(e){}};
+const persist=()=>{try{localStorage.setItem('hkAP',JSON.stringify({TGT,BOOKS,GOAL,SUBS,MOVED,XACC,startBal}));}catch(e){}};
 const pick=(o,k,m)=>{const r=o&&o[k];return r&&r[m]!=null?r[m]:null};
 const put=(o,k,m,v)=>{o[k]=o[k]||{};if(v==null)delete o[k][m];else o[k][m]=v};
 const parseNum=v=>{const n=String(v).replace(/[^0-9.\-]/g,'');return n===''||n==='-'?null:+n};
@@ -1292,7 +1224,7 @@ function nameCell(node,vw,hasKids,isLast){
   const acts=el('div','acts');
   if(node.lvl===2&&node.ghost){
     const b=el('button',null,'⚙'); b.title='שייכו לסעיף חשבונאי';
-    b.addEventListener('click',e=>{e.stopPropagation();mapPanel(true)}); acts.appendChild(b);
+    b.addEventListener('click',e=>{e.stopPropagation();mapOpen()}); acts.appendChild(b);
   }
   /* פירוק לסעיפי משנה — פעולה חשבונאית, ולכן רק בתצוגה החשבונאית */
   if(node.lvl===1&&!node.ghost&&vw==='acc'){
@@ -1314,12 +1246,6 @@ function buildNode(host,node,vw,isLast){
   }
   const row=el('div','gr dr l'+node.lvl+(EXCL.has(node.key)?' ex':''));
   row.dataset.key=node.key;
-  /* יעד גרירה: סעיף או סעיף משנה. כרטיס אינו יעד — הוא מה שנגרר. */
-  if(node.lvl===1||node.sub){
-    row.addEventListener('dragover',e=>{if(!DRAGC)return;e.preventDefault();row.classList.add('over')});
-    row.addEventListener('dragleave',()=>row.classList.remove('over'));
-    row.addEventListener('drop',e=>{e.preventDefault();row.classList.remove('over');mapDropOn(node.key)});
-  }
   const kk=kidsFor(node,vw);
   row.appendChild(nameCell(node,vw,kk.length>0,isLast));
   buildCells(row,vw,node);
@@ -1850,7 +1776,7 @@ document.getElementById('balTg').addEventListener('click',()=>{
 /* =======================================================================
    17 · סימולציה / טען מחדש / ייצוא
    ======================================================================= */
-document.getElementById('gearBtn').addEventListener('click',()=>mapPanel());
+document.getElementById('gearBtn').addEventListener('click',mapOpen);
 document.getElementById('reloadBtn').addEventListener('click',()=>{
   /* העלאה חוזרת דורסת סכומים ולא החלטות: הכרטסת מסכמת מחדש כל כרטיס,
      והשיוך — של ה-AI ושל האדם — נשמר לפי מספר הכרטיס. */
@@ -1872,79 +1798,126 @@ document.getElementById('expBtn').addEventListener('click',()=>{
 });
 
 /* =======================================================================
-   18 · פאנל המיפוי — כרטיסי הנהלת החשבונות
-   הכרטסת מגיעה בלי דעה; ה-AI מציע לכל כרטיס סעיף, וכאן מתקנים אותו.
-   גרירה מעבירה כרטיס לסעיף או לתוך סעיף משנה, ו-↺ מחזירה להמלצה.
+   18 · סדנת המיפוי — מסך אחד שבו נקבע לאן הולך כל כרטיס
+   מימין הכרטיסים שהכרטסת הביאה, משמאל הסעיפים בדוח. גוררים כרטיס
+   לסעיף או לסעיף משנה, ✕ מנתק, ↺ מחזיר להמלצת ה-AI, ו-＋ מוסיף סעיף.
    ======================================================================= */
-let MAPON=false, MFIL='all', DRAGC=null;
+let MFIL='all', DRAGC=null, MNEW=null;
 const mi3=()=>Math.max(0,PAST()-1);
 const cNow=c=>c.full[MONTHS[mi3()].abs]||0;
-function mapPanel(on){
-  MAPON=(on===undefined)?!MAPON:on;
-  document.getElementById('mapp').hidden=!MAPON;
-  if(MAPON) mapDraw();
-  measure();
-}
+function mapOpen(){document.getElementById('ovMap').classList.add('on');mapDraw();}
+function mapClose(){document.getElementById('ovMap').classList.remove('on');MNEW=null;}
 function mapFil(k){MFIL=k;mapDraw();}
 function mapList(){
   const q=(document.getElementById('mapQ').value||'').trim();
   let L=CARDS;
-  if(MFIL==='un')   L=L.filter(c=>c.ai&&!accOf(c.a));
-  if(MFIL==='bal')  L=L.filter(c=>!c.ai&&!accOf(c.a));
-  if(MFIL==='man')  L=L.filter(c=>isManual(c.a));
-  if(MFIL==='all')  L=L.filter(c=>c.ai||accOf(c.a)||isManual(c.a));
+  if(MFIL==='un')  L=L.filter(c=>c.ai&&!accOf(c.a));
+  if(MFIL==='bal') L=L.filter(c=>!c.ai&&!accOf(c.a));
+  if(MFIL==='man') L=L.filter(c=>isManual(c.a));
+  if(MFIL==='all') L=L.filter(c=>c.ai||accOf(c.a));
   if(q) L=L.filter(c=>c.n.indexOf(q)>=0||c.a.indexOf(q)>=0);
   return L;
 }
 function mapDraw(){
   const L=mapList();
-  const n=k=>k==='un'?CARDS.filter(c=>c.ai&&!accOf(c.a)).length
-          :k==='bal'?CARDS.filter(c=>!c.ai&&!accOf(c.a)).length
-          :k==='man'?CARDS.filter(c=>isManual(c.a)).length
-          :CARDS.filter(c=>c.ai||accOf(c.a)).length;
-  document.getElementById('mappF').innerHTML=
-    [['all','הכול'],['un','לא משויכים'],['man','שויכו ידנית'],['bal','מאזניים']].map(x=>
+  const cnt=k=>k==='un'?CARDS.filter(c=>c.ai&&!accOf(c.a)).length
+           :k==='bal'?CARDS.filter(c=>!c.ai&&!accOf(c.a)).length
+           :k==='man'?CARDS.filter(c=>isManual(c.a)).length
+           :CARDS.filter(c=>c.ai||accOf(c.a)).length;
+  document.getElementById('mwSub').textContent=
+    cnt('all')+' כרטיסים תוצאתיים · '+cnt('un')+' ללא סעיף · '+cnt('bal')+' מאזניים · לפי '+MONTHS[mi3()].n;
+  document.getElementById('mwF').innerHTML=
+    [['all','הכול'],['un','ללא סעיף'],['man','שויכו ידנית'],['bal','מאזניים']].map(x=>
       '<button class="'+(MFIL===x[0]?'on':'')+'" onclick="mapFil(\''+x[0]+'\')">'+x[1]+
-      '<em>'+n(x[0])+'</em></button>').join('');
-  document.getElementById('mappN').textContent=L.length+' מתוך '+CARDS.length;
-  /* מקובצים לפי הסעיף שאליו הם משויכים — כך רואים את ההרכב, ומה שאין
-     לו סעיף עולה לראש הרשימה כי הוא זה שדורש החלטה. */
+      '<em>'+cnt(x[0])+'</em></button>').join('');
+
+  /* עמודת הכרטיסים — מקובצת לפי הסעיף שאליו הם משויכים */
   const by={}, none=[];
-  L.forEach(c=>{const a=accOf(c.a); if(a) (by[a]=by[a]||[]).push(c); else none.push(c)});
-  let h='';
-  const row=c=>{
-    const a=accOf(c.a);
-    return '<div class="mc'+(a?'':' un')+'" draggable="true" ondragstart="mcStart(event,\''+c.a+'\')" ondragend="mcEnd()">'
+  L.forEach(c=>{const a=accOf(c.a); if(a)(by[a]=by[a]||[]).push(c); else none.push(c)});
+  const crd=c=>{
+    return '<div class="mc'+(accOf(c.a)?'':' un')+'" draggable="true" ondragstart="mcStart(event,\''+c.a+'\')" ondragend="mcEnd()">'
       +'<div class="mc-b"><b>'+c.n+'</b><span>'+c.a+' · '+fmtN(cNow(c))+' ₪</span></div>'
       +(isManual(c.a)?'<button class="mc-r" title="חזרה להמלצת ה-AI" onclick="mapReset(\''+c.a+'\')">↺</button>':'')
       +'</div>';
   };
-  if(none.length) h+='<div class="mapp-g warn">ללא סעיף · '+none.length+'</div>'+none.map(row).join('');
-  ACC.forEach(a=>{ const l=by[a.id]; if(!l||!l.length) return;
-    h+='<div class="mapp-g"><i style="background:'+a.c+'"></i>'+a.name+' · '+l.length+'</div>'+l.map(row).join(''); });
-  document.getElementById('mappL').innerHTML=h||'<div class="mapp-e">אין כרטיסים בתצוגה הזאת.</div>';
+  let h='';
+  if(none.length) h+='<div class="mw-g warn">ללא סעיף · '+none.length+'</div>'+none.map(crd).join('');
+  ACC.forEach(a=>{const l=by[a.id]; if(!l||!l.length)return;
+    h+='<div class="mw-g"><i style="background:'+a.c+'"></i>'+a.name+' · '+l.length+'</div>'+l.map(crd).join('');});
+  document.getElementById('mwCl').innerHTML=h||'<div class="mw-e">אין כרטיסים בתצוגה הזאת.</div>';
+
+  /* עמודת הסעיפים — יעדי הגרירה, מקובצים לקבוצות הדוח */
+  const abs=MONTHS[mi3()].abs;
+  const sumOf=id=>cardsOf(id).reduce((s,c)=>s+(c.full[abs]||0),0);
+  /* עשרה צ׳יפים ודי — סעיף עם 63 כרטיסים היה מנפח את הסדנה.
+     הרשימה המלאה חיה בעמודת הכרטיסים ובדוח עצמו. */
+  const chips=(l,acc)=>l.slice(0,10).map(c=>chip(c,acc)).join('')
+    +(l.length>10?'<span class="mw-more">+'+(l.length-10)+' נוספים</span>':'');
+  const chip=(c,acc,sub)=>'<span class="mw-chip"><b>'+c.n+'</b><i>'+c.a+'</i>'
+      +'<button title="ניתוק" onclick="mapOff(\''+c.a+'\')">✕</button></span>';
+  document.getElementById('mwR').innerHTML=GROUPS.map(g=>{
+    const items=ACC.filter(a=>a.g===g.id);
+    return '<div class="mw-grp"><div class="mw-gh"><b>'+g.name+'</b>'
+      +'<span>'+items.length+' סעיפים</span>'
+      +'<button class="mw-add" onclick="mapNew(\''+g.id+'\')">＋ סעיף</button></div>'
+      +(MNEW===g.id?'<div class="mw-new"><input id="mwN" placeholder="שם הסעיף החדש" '
+        +'onkeydown="if(event.key===\'Enter\')mapAdd(\''+g.id+'\')"><button onclick="mapAdd(\''+g.id+'\')">הוספה</button></div>':'')
+      +'<div class="mw-items">'+items.map(a=>{
+        const mine=cardsOf(a.id), subs=(SUBS[a.id]||[]).filter(s=>s&&s.n);
+        let body='';
+        if(subs.length){
+          const used=new Set();
+          body=subs.map(s=>{
+            const cs=(s.cards||[]).map(x=>cardBy[x]).filter(c=>c&&accOf(c.a)===a.id);
+            cs.forEach(c=>used.add(c.a));
+            return '<div class="mw-sub" ondragover="mwOver(event,this)" ondragleave="this.classList.remove(\'over\')"'
+              +' ondrop="mwDrop(event,this,\''+a.id+'\',\''+s.id+'\')">'
+              +'<div class="mw-at"><b>'+s.n+'</b><span>'+cs.length+' כרטיסים</span></div>'
+              +'<div class="mw-cards">'+chips(cs,a.id)+'</div></div>';
+          }).join('');
+          const rest=mine.filter(c=>!used.has(c.a));
+          if(rest.length) body+='<div class="mw-cards" style="margin-top:7px">'+chips(rest,a.id)+'</div>';
+        } else {
+          body='<div class="mw-cards">'+chips(mine,a.id)+'</div>';
+        }
+        return '<div class="mw-a" ondragover="mwOver(event,this)" ondragleave="this.classList.remove(\'over\')"'
+          +' ondrop="mwDrop(event,this,\''+a.id+'\',\'\')">'
+          +'<div class="mw-at"><i style="background:'+a.c+'"></i><b>'+a.name+'</b>'
+          +'<span>'+mine.length+' כרטיסים</span>'
+          +'<span class="amt">'+fmtN(sumOf(a.id))+' ₪</span></div>'+body+'</div>';
+      }).join('')+'</div></div>';
+  }).join('');
+  const nn=document.getElementById('mwN'); if(nn) nn.focus();
 }
-function mcStart(e,a){DRAGC=a;document.body.classList.add('dragging');
-  try{e.dataTransfer.setData('text/plain',a);e.dataTransfer.effectAllowed='move'}catch(x){}}
-function mcEnd(){DRAGC=null;document.body.classList.remove('dragging');
-  document.querySelectorAll('.gr.over').forEach(x=>x.classList.remove('over'));}
-function mapDropOn(key){
+function mcStart(e,a){DRAGC=a;try{e.dataTransfer.setData('text/plain',a);e.dataTransfer.effectAllowed='move'}catch(x){}}
+function mcEnd(){DRAGC=null;document.querySelectorAll('.mw-a.over,.mw-sub.over').forEach(x=>x.classList.remove('over'));}
+function mwOver(e,el){if(!DRAGC)return;e.preventDefault();e.stopPropagation();el.classList.add('over');}
+function mwDrop(e,el,accId,subId){
+  e.preventDefault(); e.stopPropagation(); el.classList.remove('over');
   if(!DRAGC) return;
-  const node=nodeBy[key]; if(!node) return;
   const a=DRAGC, c=cardBy[a];
-  const accId = node.lvl===1?node.acc:node.acc;      /* גם סעיף וגם סעיף משנה יודעים לאיזה סעיף הם שייכים */
   MOVED[a]=accId;
-  if(node.sub){
-    /* לתוך סעיף משנה — מוציאים אותו מכל סעיף משנה אחר של אותו סעיף */
-    (SUBS[accId]||[]).forEach(s=>{ s.cards=(s.cards||[]).filter(x=>x!==a) });
-    const s=(SUBS[accId]||[]).find(s=>s.id===node.sub);
-    if(s){ s.cards=(s.cards||[]).concat([a]); }
-  }
+  (SUBS[accId]||[]).forEach(s=>{s.cards=(s.cards||[]).filter(x=>x!==a)});
+  if(subId){const s=(SUBS[accId]||[]).find(s=>s.id===subId); if(s) s.cards=(s.cards||[]).concat([a]);}
   persist(); rebuild(); mapDraw();
-  toast(c.n+' → '+acBy[accId].name+(node.sub?' · '+node.name:''));
+  toast(c.n+' → '+acBy[accId].name);
 }
-function mapReset(a){delete MOVED[a];persist();rebuild();mapDraw();
-  const c=cardBy[a];toast(c.n+' חזר להמלצת ה-AI');}
+function mapOff(a){
+  MOVED[a]=null; (Object.keys(SUBS)).forEach(k=>(SUBS[k]||[]).forEach(s=>{s.cards=(s.cards||[]).filter(x=>x!==a)}));
+  persist(); rebuild(); mapDraw(); toast(cardBy[a].n+' נותק מהסעיף');
+}
+function mapReset(a){delete MOVED[a];persist();rebuild();mapDraw();toast(cardBy[a].n+' חזר להמלצת ה-AI');}
+function mapNew(g){MNEW=(MNEW===g?null:g);mapDraw();}
+function mapAdd(g){
+  const el=document.getElementById('mwN'); const n=(el&&el.value||'').trim();
+  if(!n){if(el)el.focus();return}
+  const id='x'+(XACC.length+1)+'_'+g;
+  XACC.push({id,g,name:n,c:SBC[XACC.length%SBC.length]});
+  ACC.push(XACC[XACC.length-1]); acBy[id]=XACC[XACC.length-1];
+  MNEW=null; persist(); rebuild(); mapDraw(); toast('הסעיף «'+n+'» נוסף');
+}
+addEventListener('keydown',e=>{if(e.key==='Escape')mapClose()});
+document.getElementById('ovMap').addEventListener('click',e=>{if(e.target.id==='ovMap')mapClose()});
 
 /* =======================================================================
    19 · Render / מתג / rail
@@ -1963,7 +1936,7 @@ function rerender(){
   ch.innerHTML='<i></i> '+(unc?(unc===1?'כרטיס אחד לא שויך':unc+' כרטיסים לא שויכו')
     :CARDS.filter(c=>accOf(c.a)).length+' כרטיסים תוצאתיים בדוח');
   ch.classList.toggle('chip--warn',!!unc);
-  if(MAPON) mapDraw();
+  if(document.getElementById('ovMap').classList.contains('on')) mapDraw();
   applyFilter(); idle(); measure();
 }
 const countDesc=()=>CARDS.filter(c=>accOf(c.a)).length;
@@ -2120,7 +2093,7 @@ addEventListener('load',()=>{setTimeout(()=>{
   if(h==='edit'){setTimeout(()=>{const c=document.querySelector('.face.on .dr.l1 .c.editable');if(c)c.click()},300)}
   if(h==='deepedit'){expandAll(2);setTimeout(()=>{const cs=document.querySelectorAll('.face.on .dr.l3 .c.editable');if(cs[3])cs[3].click()},350)}
   if(h==='cls'){setTimeout(()=>openCls('pay'),200)}
-  if(h==='map'){setTimeout(()=>mapPanel(true),200)}
+  if(h==='map'){setTimeout(mapOpen,200)}
   if(h==='vs'){DM='vs';document.body.dataset.dm='vs';rerender()}
   if(h==='tonly'){DM='tgt';document.body.dataset.dm='tgt';rerender()}
   if(h==='hover'){setTimeout(()=>{const r=document.querySelector('.face.on .node[data-key="a|wages"] .dr.l1');if(r)r.dispatchEvent(new MouseEvent('mouseenter'))},300)}
