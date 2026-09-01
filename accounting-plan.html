@@ -183,8 +183,7 @@ button{font-family:inherit;cursor:pointer}
 .tool.on{background:var(--navy);border-color:var(--navy);color:#fff}
 .tool.ic{padding:6px 9px}
 /* הטעינה מהנה״ח שייכת לשפה החשבונאית בלבד — בתזרימי אין מה למשוך */
-#loadBtn{display:none}
-body[data-v="acc"] #loadBtn{display:inline-flex}
+#loadBtn{display:inline-flex}
 .switch{position:relative;display:grid;grid-template-columns:1fr 1fr;min-width:248px;
   padding:4px;border-radius:12px;background:#EFF4F9;border:1px solid var(--line)}
 .switch button{position:relative;z-index:1;appearance:none;border:0;background:none;height:30px;border-radius:9px;
@@ -797,7 +796,7 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
       <span class="chip chip--warn" id="unChip"><i></i> קטגוריה אחת ללא מיפוי מלא</span>
       <button class="baltg" id="balTg" type="button" aria-expanded="false">
         <svg class="balchv" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-        <b>יתרות</b><span class="balsum" id="balSum"></span>
+        <b>רווחיות</b><span class="balsum" id="balSum"></span>
       </button>
       <span class="mrng">
         <button class="mdd-btn" id="mFrom" type="button" aria-expanded="false"><i>מ־</i><b></b><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -1484,37 +1483,38 @@ function buildNet(vw){
    ======================================================================= */
 const kpis=document.getElementById('kpis');
 function buildKpis(vw){
-  const vv=vw==='uni'?'cf':vw;
-  const netv=MONTHS.map((_,m)=>GROUPS.reduce((s,g)=>s+totFor('cf',g.id,m),0));
+  /* יתרות בנק אינן שייכות לדוח רווח והפסד — נשארו שני המספרים שהדוח
+     באמת מייצר: הרווח הגולמי והרווח הנקי, לחודש הרץ ולמצטבר. */
   const past=PAST();
-  const balNow=startBal+netv.slice(0,past).reduce((s,x)=>s+x,0);
-  const balEnd=startBal+netv.reduce((s,x)=>s+x,0);
   const ni=MONTHS.findIndex(m=>m.now); const nIdx=ni<0?past:ni;
-  const netCur=GROUPS.reduce((s,g)=>s+totFor(vv,g.id,nIdx),0);
-  const revCur=totFor(vv,'rev',nIdx)||1;
   const lbl=MONTHS[nIdx]?MONTHS[nIdx].n:'';
+  const at=m=>({rev:totFor('acc','rev',m), cogs:totFor('acc','cogs',m),
+                net:GROUPS.reduce((s,g)=>s+totFor('acc',g.id,m),0)});
+  const cur=at(nIdx);
+  const gross=cur.rev+cur.cogs;
+  const seq=MONTHS.map((_,m)=>at(m));
+  const sum=k=>seq.slice(0,Math.max(1,past)).reduce((s,x)=>s+x[k],0);
+  const rSum=sum('rev')||1, gSum=sum('rev')+sum('cogs'), nSum=sum('net');
+  const pc=(v,b)=>(b?(v/Math.abs(b)*100):0).toFixed(1)+'%';
   kpis.innerHTML=
-   '<div class="kpi b1"><div style="min-width:0;flex:1">'+
-     '<div class="lab">יתרת פתיחה <span class="pen">✎ ניתן לעריכה</span></div>'+
-     '<input class="binp" id="startBal" value="'+fmtN(startBal)+' ₪">'+
-     '<div class="sub">נקודת הפתיחה של הליווי</div></div></div>'+
-   '<div class="kpi b2"><div style="min-width:0;flex:1"><div class="lab">יתרה נוכחית <span class="ctag">תזרים</span></div>'+
-     '<div class="val '+(balNow<0?'neg':'')+'">'+fmtN(balNow)+' ₪</div>'+
-     '<div class="sub">אחרי '+past+' חודשים סגורים</div></div>'+spark(netv.slice(0,Math.max(2,past+1)),'#1B6C9C')+'</div>'+
-   '<div class="kpi b3"><div style="min-width:0;flex:1"><div class="lab">יתרה צפויה לסוף התקופה <span class="ctag">תזרים</span></div>'+
-     '<div class="val '+(balEnd<0?'neg':balEnd>balNow?'pos':'')+'">'+fmtN(balEnd)+' ₪</div>'+
-     '<div class="sub">אם היעדים יתקיימו · <b>'+(balEnd-balNow>=0?'+':'−')+nf(balEnd-balNow)+'</b></div></div>'+spark(netv,'#0E9384')+'</div>'+
-   '<div class="kpi"><div style="min-width:0;flex:1"><div class="lab">'+(vw==='acc'?'רווח נקי · ':'תזרים נטו · ')+lbl+'</div>'+
-     '<div class="val">'+fmtN(netCur)+' ₪</div>'+
-     '<div class="sub">'+(netCur/revCur*100).toFixed(1)+'% מהמחזור</div></div>'+
-     spark(MONTHS.map((_,m)=>GROUPS.reduce((s,g)=>s+totFor(vv,g.id,m),0)),vw==='cf'?'#39ABE2':vw==='acc'?'#6C63E6':'#8FA3B5')+'</div>';
+   '<div class="kpi b2"><div style="min-width:0;flex:1">'+
+     '<div class="lab">רווח גולמי · '+lbl+'</div>'+
+     '<div class="val '+(gross<0?'neg':'pos')+'">'+fmtN(gross)+' ₪</div>'+
+     '<div class="sub">'+pc(gross,cur.rev)+' מהמחזור</div></div>'+
+     spark(seq.map(x=>x.rev+x.cogs),'#0E9384')+'</div>'+
+   '<div class="kpi b3"><div style="min-width:0;flex:1">'+
+     '<div class="lab">רווח נקי · '+lbl+'</div>'+
+     '<div class="val '+(cur.net<0?'neg':'pos')+'">'+fmtN(cur.net)+' ₪</div>'+
+     '<div class="sub">'+pc(cur.net,cur.rev)+' מהמחזור</div></div>'+
+     spark(seq.map(x=>x.net),'#6C63E6')+'</div>'+
+   '<div class="kpi"><div style="min-width:0;flex:1">'+
+     '<div class="lab">מצטבר · '+past+' חודשים סגורים</div>'+
+     '<div class="val">'+fmtN(nSum)+' ₪</div>'+
+     '<div class="sub">רווח גולמי <b>'+fmtN(gSum)+' ₪</b> · '+pc(gSum,rSum)+'</div></div></div>';
   const bs=document.getElementById('balSum');
-  if(bs) bs.innerHTML='פתיחה <i>'+fmtN(startBal)+' ₪</i> · נוכחית <i>'+fmtN(balNow)+' ₪</i> · צפויה <i>'+fmtN(balEnd)+' ₪</i>';
-  const sb=document.getElementById('startBal');
-  sb.addEventListener('focus',()=>{sb.value=String(Math.round(startBal))});
-  sb.addEventListener('blur',()=>{const n=parseNum(sb.value);if(n!=null){startBal=n;persist()}rerender()});
-  sb.addEventListener('keydown',e=>{if(e.key==='Enter')sb.blur()});
+  if(bs) bs.innerHTML='גולמי <i>'+fmtN(gross)+' ₪</i> · נקי <i>'+fmtN(cur.net)+' ₪</i> · מצטבר <i>'+fmtN(nSum)+' ₪</i>';
 }
+
 function spark(vals,color){
   if(vals.length<2) vals=[0,0];
   const w=88,h=28,p=4;
@@ -1850,6 +1850,7 @@ document.getElementById('balTg').addEventListener('click',()=>{
 /* =======================================================================
    17 · סימולציה / טען מחדש / ייצוא
    ======================================================================= */
+document.getElementById('gearBtn').addEventListener('click',()=>mapPanel());
 document.getElementById('reloadBtn').addEventListener('click',()=>{
   /* העלאה חוזרת דורסת סכומים ולא החלטות: הכרטסת מסכמת מחדש כל כרטיס,
      והשיוך — של ה-AI ושל האדם — נשמר לפי מספר הכרטיס. */
@@ -2021,7 +2022,9 @@ document.getElementById('loadBtn').addEventListener('click',()=>{
   setTimeout(()=>{
     ov.hidden=true; busy=false;
     rerender();
-    toast('מאזן בוחן נטען · '+ALL_M[WIN].n+' – '+ALL_M[WIN+WINN-1].n+' '+ALL_M[WIN].y);
+    const man=Object.keys(MOVED).length;
+    toast('הכרטסת נטענה · '+CARDS.length+' כרטיסים, '+CARDS.filter(c=>c.ai).length+' תוצאתיים'
+      +(man?' · '+man+' שיוכים ידניים נשמרו':''));
   },900);
 });
 /* PF/PT — הבחירה הממתינה. הטבלה משתנה רק ב"הפקה". */
