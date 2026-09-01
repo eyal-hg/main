@@ -89,7 +89,7 @@ body.calls-on .arena{display:none}
 
 /* התצוגה של השיחות — מחליפה את החיפוש, הצ׳יפים והטבלה */
 .list.calls .search,.list.calls .topics,.list.calls .tw,
-.list.calls .empty,.list.calls .lfoot,.list.calls .cfil{display:none!important}
+.list.calls .empty,.list.calls .lfoot,.list.calls .cpick{display:none!important}
 .list:not(.calls) .unid{display:none}
 .unid{padding:4px 20px 18px}
 /* סיכום השבוע — הרשימה למטה היא החריגים, וזה מה שהם חריגים ממנו */
@@ -120,6 +120,20 @@ body.calls-on .arena{display:none}
 .un-lg b{color:var(--navy);font-weight:600}
 /* מסנן פנימי — הממתינות הן ברירת המחדל, אבל כל השיחות במרחק לחיצה */
 .un-fil{display:flex;gap:6px;margin:14px 0 12px;align-items:center;flex-wrap:wrap}
+/* חיפוש בתור — לרוב לפי מספר, ולכן המספר הוא הדוגמה הראשונה */
+.un-q{display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;background:var(--off,#F8FAFC);
+  border:1px solid transparent;border-radius:999px;color:var(--muted-2,#a9a9a9);flex:none}
+.un-q:focus-within{background:#fff;border-color:#39ABE2}
+.un-q input{width:240px;border:0;outline:none;background:none;font:inherit;font-size:12px;color:var(--ink)}
+.un-none{padding:26px 10px;text-align:center;font-size:12.5px;color:var(--ink3)}
+/* ארכיון — שקט, אבל קריא */
+.un-row.del{background:#FBFCFD;border-color:#E7EDF2}
+.un-row.del .un-ic{background:#EDF1F5;color:#93A3B2}
+.un-row.del .un-num,.un-row.del .un-tp{color:var(--ink3)}
+.un-why .lb.del{color:var(--muted-2,#a9a9a9);font-weight:500}
+.un-rst{margin-inline-start:auto;border:1px solid var(--bd);background:#fff;color:var(--ink);font:inherit;
+  font-size:12px;font-weight:600;border-radius:999px;padding:5px 14px;cursor:pointer}
+.un-rst:hover{border-color:var(--navy);color:var(--navy)}
 .un-fil button{border:1px solid var(--bd);background:var(--white);color:var(--ink3);font:inherit;
   font-size:12.5px;font-weight:600;border-radius:999px;padding:5px 14px;cursor:pointer;transition:.12s}
 .un-fil button:hover{border-color:var(--navy);color:var(--navy)}
@@ -158,7 +172,10 @@ body.calls-on .arena{display:none}
 .un-play b{font-size:11.5px;font-weight:600;color:var(--ink3);font-variant-numeric:tabular-nums}
 
 /* בחירת החברה — דרופדאון, כי לתיק יכולות להיות עשרות חברות */
-.un-pick{margin-inline-start:auto;position:relative;min-width:212px}
+.un-del{margin-inline-start:auto;border:1px solid var(--bd);background:var(--white);color:var(--muted-2,#a9a9a9);
+  font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:5px 13px;cursor:pointer;transition:.12s}
+.un-del:hover{border-color:#F0B7AE;color:#C43D30;background:#FFF8F7}
+.un-pick{margin-inline-start:10px;position:relative;min-width:212px}
 .un-pick .b{width:100%;display:flex;align-items:center;gap:8px;padding:6px 13px;
   border:1px solid var(--bd);background:var(--white);border-radius:999px;font:inherit;
   font-size:12.5px;font-weight:600;color:var(--ink3);cursor:pointer;transition:.13s;text-align:start}
@@ -173,13 +190,47 @@ body.calls-on .arena{display:none}
 .un-pick .m button{display:block;width:100%;text-align:start;border:0;background:none;font:inherit;
   font-size:12.5px;color:var(--ink);padding:7px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .un-pick .m button:hover{background:#EAF4FB;color:var(--navy)}
+.un-pick .m button b{font-weight:600;color:var(--navy)}
+.un-pick .m button .dsh{color:var(--muted-2,#a9a9a9);margin:0 6px}
+.un-pick .m .s{position:relative;margin-bottom:4px}
+.un-pick .m .s input{width:100%;font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--bd);
+  border-radius:6px;background:var(--bg,#F7F9FB);color:var(--ink)}
+.un-pick .m .s input:focus{outline:0;border-color:var(--navy);background:var(--white)}
+.un-pick .m .o{max-height:212px;overflow:auto}
+.un-pick .m .none{font-size:12px;color:var(--muted-2,#a9a9a9);padding:8px 11px}
 .un-pick .m .sep{font-size:11px;color:var(--muted-2,#a9a9a9);padding:6px 11px 3px}
 .un-note{font-size:11.5px;color:var(--ink3);line-height:1.6;align-self:center;
   margin-inline-start:6px}
 .un-note b{color:var(--navy);font-weight:600}
 .un-done{padding:26px 10px;text-align:center;font-size:13px;color:var(--ink3)}
 .un-done b{display:block;font-size:14.5px;color:var(--navy);margin-bottom:4px}
-.ph .cfil{margin-inline-start:auto;font:inherit;font-size:12.5px;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;background:var(--white);color:var(--ink)}
+/* בורר הלקוח — רכיב שלנו, לא <select> נייטיב, כדי שיהיה בו חיפוש
+   ושייראה כמו שאר המסך גם כשהוא פתוח. */
+.cpick{margin-inline-start:auto;position:relative;min-width:186px}
+.cpick .b{width:100%;display:flex;align-items:center;gap:8px;font:inherit;font-size:12.5px;
+  border:1px solid var(--bd);border-radius:6px;padding:6px 10px;background:var(--white);
+  color:var(--ink);cursor:pointer;text-align:start}
+.cpick .b:hover{border-color:var(--navy);color:var(--navy)}
+.cpick.on .b{border-color:var(--navy);color:var(--navy)}
+.cpick.pick .b{border-color:var(--navy);color:var(--navy);font-weight:600}
+.cpick .b i{margin-inline-start:auto;flex:none;line-height:0;transition:transform .15s}
+.cpick.on .b i{transform:rotate(180deg)}
+.cpick .m{position:absolute;z-index:40;top:calc(100% + 5px);inset-inline-end:0;min-width:230px;
+  background:var(--white);border:1px solid var(--bd);border-radius:9px;
+  box-shadow:0 12px 30px rgba(16,42,67,.16);padding:7px;display:none}
+.cpick.on .m{display:block}
+.cpick .m .s{position:relative;margin-bottom:5px}
+.cpick .m .s input{width:100%;font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--bd);
+  border-radius:6px;background:var(--bg,#F7F9FB);color:var(--ink)}
+.cpick .m .s input:focus{outline:0;border-color:var(--navy);background:var(--white)}
+.cpick .m .o{max-height:236px;overflow:auto}
+.cpick .m button{display:flex;align-items:center;gap:7px;width:100%;text-align:start;border:0;
+  background:none;font:inherit;font-size:12.5px;color:var(--ink);padding:7px 10px;border-radius:6px;cursor:pointer}
+.cpick .m button:hover{background:#EAF4FB;color:var(--navy)}
+.cpick .m button.sel{background:#EAF4FB;color:var(--navy);font-weight:600}
+.cpick .m button .tick{flex:none;width:12px;color:var(--navy);opacity:0}
+.cpick .m button.sel .tick{opacity:1}
+.cpick .m .none{font-size:12px;color:var(--muted-2,#a9a9a9);padding:9px 10px}
 
 /* ---- buttons ---- */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:6px;font-size:13px;font-weight:500;border:1px solid var(--bd);background:var(--white);color:var(--navy);white-space:nowrap;cursor:pointer}
@@ -290,10 +341,17 @@ table.ml{width:100%;border-collapse:collapse}
 .ar-st.bad{background:rgba(232,99,90,.3);color:var(--on-bad)}
 /* ===== פגישה מול שיחה — אותה ישות, סימון שונה =====
    לשיחה יש בדיוק אותם תוצרים; ההבחנה היא באייקון, בפס הצד ובשם הזירה. */
-.k-ic{flex:none;margin-inline-end:7px;vertical-align:-2px;color:#9BAAB8}
-tr.m.call .k-ic{color:#5B41C4}
-tr.m.call td:first-child{border-inline-start:3px solid #C9B9EE}
+/* האייקון יושב במדליה צבועה — צורה אחת, שני צבעים, ניכר במבט אחד */
+.k-ic{width:25px;height:25px;padding:6px;border-radius:50%;box-sizing:border-box;flex:none;
+  margin-inline-end:9px;vertical-align:-8px;background:#EDF1F5;color:#64798C}
+tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
+/* ופס צד — כדי שגם סריקה מהירה של העמודה תראה איפה השיחות */
+tr.m.call td:first-child{box-shadow:inset 3px 0 0 #7557E3}
 tr.m.call:hover{background:#FBFAFF}
+tr.m.call .nm{color:#4A3B8C}
+/* כותרת הזירה נושאת את הסוג — אייקון ומילה, לא רק ניסוח */
+.ar-cap{display:inline-flex;align-items:center;gap:6px}
+.ar-cap svg{flex:none;opacity:.9}
 .ar-cap.call{background:#EDE9FD;color:#5B41C4;border-color:#DAD2F7}
 .ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--band);flex:none}
 .ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--on-navy3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
@@ -445,10 +503,13 @@ tr.m.call:hover{background:#FBFAFF}
         <button id="tbUnid" onclick="mtView('unid')">שיחות טלפון לא מזוהות <i id="unidN"></i></button>
       </div>
       <span class="hint" id="hint"></span>
-      <select class="cfil" id="cfil" aria-label="סינון לפי לקוח">
-        <option value="">כל הלקוחות</option>
-        <option>אנרגי אינטרנשיונל</option><option>אנרגי גולני</option><option>מטעי גבעון</option><option>משה עובד</option><option>רימון יצחק</option>
-      </select></div>
+      <div class="cpick" id="cfil">
+        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
+        <div class="m">
+          <div class="s"><input type="search" id="cfQ" placeholder="חיפוש לקוח" oninput="cfSearch(this)" autocomplete="off"></div>
+          <div class="o" id="cfOpts"></div>
+        </div>
+      </div></div>
     <div class="search">
       <div class="in">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -605,7 +666,35 @@ tr.m.call:hover{background:#FBFAFF}
 
   function topicGo(btn,q){ S.q=(S.q===q)?'':q; S.fbt=null; $('#q').value=S.q; apply(); }
   function fbtGo(btn,k){ S.fbt=(S.fbt===k)?null:k; S.q=''; $('#q').value=''; apply(); }
-  function tClear(){ S.q='';S.fbt=null;S.f=null;S.c=''; $('#q').value=''; $('#cfil').value=''; apply(); }
+  /* ===== בורר הלקוח ===== */
+  const CFCOS=['אנרגי אינטרנשיונל','אנרגי גולני','מטעי גבעון','משה עובד','רימון יצחק'];
+  const CF_CHEV='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+  const CF_TICK='<svg class="tick" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+  let CFQ='';
+  function cfOptsHtml(){
+    const q=CFQ, list=[''].concat(CFCOS).filter(c=>!q||c.indexOf(q)>=0||(!c&&'כל הלקוחות'.indexOf(q)>=0));
+    if(!list.length) return '<div class="none">אין לקוח בשם ״'+esc(q)+'״</div>';
+    return list.map(c=>'<button type="button" class="'+(S.c===c?'sel':'')+'" onclick="cfSet(\''+c+'\')">'
+      +CF_TICK+'<span>'+(c||'כל הלקוחות')+'</span></button>').join('');
+  }
+  function cfRender(){
+    $('#cfOpts').innerHTML=cfOptsHtml();
+    $('#cfLbl').textContent=S.c||'כל הלקוחות';
+    $('#cfil').classList.toggle('pick',!!S.c);
+  }
+  function cfTg(b){
+    const w=b.closest('.cpick'), was=w.classList.contains('on');
+    document.querySelectorAll('.cpick.on,.un-pick.on').forEach(x=>x.classList.remove('on'));
+    if(!was){ CFQ=''; $('#cfQ').value=''; cfRender(); w.classList.add('on'); $('#cfQ').focus(); }
+  }
+  function cfSearch(el){ CFQ=(el.value||'').trim(); $('#cfOpts').innerHTML=cfOptsHtml(); }
+  function cfSet(v){ S.c=v; $('#cfil').classList.remove('on'); cfRender(); apply(); }
+  window.cfTg=cfTg; window.cfSearch=cfSearch; window.cfSet=cfSet;
+  document.addEventListener('click',e=>{ if(!e.target.closest('.cpick')) document.querySelectorAll('.cpick.on').forEach(x=>x.classList.remove('on')); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.cpick.on').forEach(x=>x.classList.remove('on')); });
+  $('#cfChev').innerHTML=CF_CHEV;
+
+  function tClear(){ S.q='';S.fbt=null;S.f=null;S.c=''; $('#q').value=''; cfRender(); apply(); }
   window.topicGo=topicGo; window.fbtGo=fbtGo; window.tClear=tClear;
 
   function apply(){
@@ -643,7 +732,6 @@ tr.m.call:hover{background:#FBFAFF}
 
   $('#q').addEventListener('input',e=>{S.q=e.target.value.trim();S.fbt=null;apply()});
   $('#clr').addEventListener('click',e=>{e.preventDefault();S.q='';$('#q').value='';apply()});
-  $('#cfil').addEventListener('change',e=>{S.c=e.target.value;apply()});
   $('#emptyR').addEventListener('click',tClear);
 
   function recTg(b,co){
@@ -778,7 +866,9 @@ tr.m.call:hover{background:#FBFAFF}
     }
     /* --- פגישה בלי תוצרים --- */
     const head=`<div class="ar-h slim">
-        <div class="ar-top"><span class="ar-cap ${a.kind==='call'?'call':''}">${a.kind==='call'?'זירת השיחה':'זירת הפגישה'}</span><span class="ar-st ${a.stc}">${a.st}</span>
+        <div class="ar-top"><span class="ar-cap ${a.kind==='call'?'call':''}">${a.kind==='call'
+          ?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> שיחת טלפון'
+          :'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> פגישה'}</span><span class="ar-st ${a.stc}">${a.st}</span>
           ${a.tx?`<button class="ar-play" onclick="arPlay(this)" title="השמעת ההקלטה">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <span class="ar-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -931,8 +1021,8 @@ tr.m.call:hover{background:#FBFAFF}
   const u=new URLSearchParams(location.search);
   if(u.get('f')&&MISS[u.get('f')]) S.f=u.get('f');
   if(u.get('q')){ S.q=u.get('q').trim(); $('#q').value=S.q; }
-  if(u.get('c')){ const v=u.get('c'), sel=$('#cfil');
-    if([...sel.options].some(o=>(o.value||o.text)===v)){ sel.value=v; S.c=v; } }
+  if(u.get('c')&&CFCOS.indexOf(u.get('c'))>=0) S.c=u.get('c');
+  cfRender();
   apply();
   arenaShow(u.get('m')||'r0207');
 })();
@@ -992,6 +1082,12 @@ let UNID=[
    why:'none', tp:'שיחה קצרה — ביקש לחזור אליו'},
 ];
 const ALL_CO=['אנרגי אינטרנשיונל','אנרגי גולני','מטעי גבעון','משה עובד','רימון יצחק'];
+/* שיחה שנמחקה לא נעלמת — היא עוברת לארכיון, וניתן לשחזר אותה.
+   מחיקה כאן היא החלטה ("לא שייכת לאף חברה"), ולהחלטה מגיע תיעוד. */
+let UDEL=[], UVIEW='wait', UQ='';
+function unSetView(v){UVIEW=v;unidRender();}
+function unSearch(el){UQ=(el.value||'').trim();unidRender(true);}
+const unMatch=u=>!UQ||[u.ph,u.who||'',u.tp,u.when].some(x=>String(x).indexOf(UQ)>=0);
 /* סיכום השבוע — כל השיחות שנקלטו, לא רק החריגות. WEEK.tot כולל את
    הממתינות, ולכן הזוהו-אוטומטית נגזר ולא מוזן פעמיים. */
 const WEEK={tot:32, mins:192, top:[['אנרגי אינטרנשיונל',9],['מטעי גבעון',7],['רימון יצחק',5]]};
@@ -1029,17 +1125,40 @@ function unidRender(){
   top.innerHTML=weekHTML();
   const wave=Array.from({length:18},function(_,i){
     return '<i style="height:'+(3+((i*5)%10))+'px"></i>'}).join('');
-  /* אין כאן יותר מסנן "כל השיחות": שיחה ששויכה עוברת לרשימת «פגישות
-     ושיחות» ומקבלת שם זירה מלאה. הטאב הזה הוא תור עבודה, לא ארכיון. */
-  document.getElementById('unFil').innerHTML=UNID.length
-    ? '<span class="un-note">אפשר להאזין להקלטה כבר עכשיו. '
+  /* שיחה ששויכה עוברת לרשימת «פגישות ושיחות»; שיחה שנמחקה עוברת לארכיון.
+     שתי התצוגות כאן הן שני מצבים של אותו תור. */
+  document.getElementById('unFil').innerHTML=
+    '<button class="'+(UVIEW==='wait'?'on':'')+'" onclick="unSetView(\'wait\')">ממתינות לשיוך<em>'+UNID.length+'</em></button>'
+   +'<button class="'+(UVIEW==='del'?'on':'')+'" onclick="unSetView(\'del\')">שיחות שנמחקו<em>'+UDEL.length+'</em></button>'
+   +'<span class="un-q"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
+   +'<input id="unQ" value="'+UQ.replace(/"/g,'&quot;')+'" placeholder="חיפוש לפי מספר טלפון, שם או נושא" oninput="unSearch(this)"></span>'
+   +(UVIEW==='wait'&&UNID.length?'<span class="un-note">אפשר להאזין להקלטה כבר עכשיו. '
       +'<b>התמלול והסיכום מתחילים רק אחרי השיוך</b> — הם נכתבים לזיכרון של חברה מסוימת, '
-      +'ובלי לדעת איזו אין לאן לכתוב אותם.</span>' : '';
-  host.innerHTML=UNID.map(u=>unRow(u,wave)).join('');
+      +'ובלי לדעת איזו אין לאן לכתוב אותם.</span>':'');
+  const src=(UVIEW==='del'?UDEL:UNID).filter(unMatch);
+  host.innerHTML=src.length
+    ? src.map(u=>UVIEW==='del'?unDelRow(u,wave):unRow(u,wave)).join('')
+    : '<div class="un-none">'+(UQ?'אין שיחה שמכילה ״'+UQ+'״':
+        UVIEW==='del'?'לא נמחקה אף שיחה':'אין שיחות שממתינות לשיוך')+'</div>';
+}
+/* שורת ארכיון — מה נמחק, מתי ועל ידי מי, ואפשרות לשחזר */
+function unDelRow(u,wave){
+  return '<div class="un-row del">'
+    +'<div class="un-h"><span class="un-ic">'+UN_ICO+'</span>'
+    +'<span class="un-num" dir="ltr">'+u.ph+'</span>'
+    +'<span class="un-who">'+(u.who?u.who:'לא מזוהה')+'</span>'
+    +'<button class="un-play" onclick="toast(\'השמעת ההקלטה · '+u.ph+'\')">'
+      +'<span class="pl"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'
+      +'<span class="wv">'+wave+'</span><b dir="ltr">'+u.dur+'</b></button>'
+    +'<span class="un-when">'+u.when+'</span></div>'
+    +'<div class="un-tp">'+u.tp+'</div>'
+    +'<div class="un-why"><span class="lb del">נמחקה '+u.delAt+' · '+u.delBy+'</span>'
+    +'<button class="un-rst" onclick="unidRestore(\''+u.id+'\')">שחזור לתור</button></div>'
+    +'</div>';
 }
 function unRow(u,wave){
   {
-    const opts=u.why==='two'?u.cos:ALL_CO;
+    const opts=unOpts(u);
     return '<div class="un-row '+u.why+'">'
       +'<div class="un-h"><span class="un-ic">'+UN_ICO+'</span>'
       +'<span class="un-num" dir="ltr">'+u.ph+'</span>'
@@ -1052,15 +1171,51 @@ function unRow(u,wave){
       +'<div class="un-why"><span class="lb">'
       +(u.why==='two'?'⚠ הלקוח מחזיק שתי חברות':'⚠ המספר לא מוכר לאף לקוח')
       +'</span>'
+      +'<button class="un-del" onclick="unidDel(\''+u.id+'\')" title="מחיקת השיחה — לא שייכת לאף חברה">מחיקה</button>'
       +'<span class="un-pick" data-id="'+u.id+'">'
         +'<button class="b" onclick="unTg(this)">שיוך לחברה<i>'+UN_CHEV+'</i></button>'
         +'<span class="m">'
-        +(u.why==='two'?'<div class="sep">החברות של הלקוח</div>':'')
-        +opts.map(function(c){return '<button onclick="unidSet(\''+u.id+'\',\''+c+'\')">'+c+'</button>'}).join('')
+        +(u.why==='two'?'<div class="sep">החברות של '+u.who+'</div>'
+                       :'<div class="s"><input type="search" placeholder="חיפוש חברה" oninput="unPickQ(this)" autocomplete="off"></div>')
+        +'<span class="o">'+unOptsHtml(u,opts,'')+'</span>'
         +'</span></span>'
       +'</div>'
       +'</div>';
   }
+}
+const unOpts=u=>u.why==='two'?u.cos:ALL_CO;
+
+/* כשהמספר מוכר והלקוח מחזיק כמה חברות — כל שורה היא «שם הלקוח — חברה»,
+   כי מה שבוחרים הוא לא חברה סתם אלא איזו מהחברות של אותו אדם. */
+function unOptsHtml(u,opts,q){
+  const list=opts.filter(c=>!q||c.indexOf(q)>=0);
+  if(!list.length) return '<div class="none">אין חברה בשם ״'+q+'״</div>';
+  return list.map(function(c){
+    return '<button onclick="unidSet(\''+u.id+'\',\''+c+'\')">'
+      +(u.why==='two'&&u.who?'<b>'+u.who+'</b><span class="dsh">—</span>'+c:c)+'</button>';
+  }).join('');
+}
+function unPickQ(el){
+  const w=el.closest('.un-pick'), id=w.dataset.id, u=UNID.find(x=>x.id===id); if(!u) return;
+  w.querySelector('.o').innerHTML=unOptsHtml(u,unOpts(u),(el.value||'').trim());
+}
+window.unPickQ=unPickQ;
+
+/* שיחה שלא שייכת לאף חברה — טלפון שגוי, פרטי, או ספאם.
+   מחיקה מסירה גם את ההקלטה: אין לאן לתמלל אותה. */
+function unidDel(id){
+  const u=UNID.find(x=>x.id===id); if(!u) return;
+  UNID=UNID.filter(x=>x.id!==id);
+  UDEL.unshift({...u, delAt:'01.09.2026', delBy:'אילון שחר'});
+  unidRender();
+  toast(u.ph+' הועברה לשיחות שנמחקו — ההקלטה לא תתומלל');
+}
+function unidRestore(id){
+  const u=UDEL.find(x=>x.id===id); if(!u) return;
+  UDEL=UDEL.filter(x=>x.id!==id);
+  UNID.unshift({id:u.id,ph:u.ph,who:u.who,when:u.when,dur:u.dur,why:u.why,cos:u.cos,tp:u.tp});
+  unidRender();
+  toast(u.ph+' שוחזרה — חזרה לתור השיוך');
 }
 function unidSet(id,co){
   const u=UNID.find(x=>x.id===id); if(!u) return;
