@@ -466,7 +466,10 @@ button{font-family:inherit;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.face.out > *,.face.in > *{animation:none}}
 
 /* ============================ סדנת המיפוי ============================ */
-.mw{display:grid;grid-template-columns:340px minmax(0,1fr);min-height:0}
+/* שתי גלילות נפרדות: אי אפשר לגרור כרטיס מלמעלה לסעיף שנמצא מחוץ למסך
+   כשכל הפופאפ גולל כמקשה אחת. הפופאפ קבוע, וכל עמודה גוללת בעצמה. */
+#ovMap .box-b{height:min(74vh,660px);max-height:none;overflow:hidden}
+.mw{display:grid;grid-template-columns:340px minmax(0,1fr);height:100%;min-height:0}
 .mw-l{border-inline-end:1px solid var(--line);background:#FBFDFE;display:flex;flex-direction:column;min-height:0}
 .mw-q{padding:12px 14px 8px}
 .mw-q input{width:100%;font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:9px;
@@ -506,6 +509,9 @@ button{font-family:inherit;cursor:pointer}
 .mw-add{margin-inline-start:auto;border:1px dashed var(--line-s);background:#fff;color:var(--tone-ink);
   font:inherit;font-size:11px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer}
 .mw-add:hover{border-color:var(--tone);background:#F1EDFC}
+.mw-sadd{border:1px dashed var(--line-s);background:#fff;color:var(--tone-ink);font:inherit;
+  font-size:10.5px;font-weight:600;border-radius:999px;padding:2px 9px;cursor:pointer;flex:none}
+.mw-sadd:hover{border-color:var(--tone);background:#F1EDFC}
 .mw-new{display:flex;gap:6px;margin-bottom:9px}
 .mw-new input{flex:1;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:9px;padding:7px 11px}
 .mw-new input:focus{outline:none;border-color:var(--tone)}
@@ -848,11 +854,12 @@ let ACC=[
 const UN='#D9922B';
 const SBC=['#6C63E6','#8F88EE','#4E46C9','#B2ADF5','#3C349E'];
 
-/* ---- ההמלצה של ה-AI ----
-   הכרטסת מגיעה בלי דעה. הכלל כאן הוא מה שה-AI מציע לכל כרטיס לפי מספרו
-   ושמו, וזו נקודת הפתיחה בלבד — כל שיוך ניתן להחזרה בפאנל המיפוי, ומה
-   שהוחלף ידנית מסומן ולא נדרס בהעלאה הבאה. */
-function aiPick(a,n){
+/* ---- הסיווג שמגיע מהמקור ----
+   זו אינה המלצה שלנו: זה המקום שבו הכרטיס יושב אצל רואה החשבון, כפי
+   שהוא נגזר ממבנה הכרטסת — טווח מספר הכרטיס והשם שניתן לו שם. זו נקודת
+   הפתיחה של הדוח, ומי שרוצה לקרוא אחרת מעביר את הכרטיס בסדנת המיפוי.
+   ההעברה נשמרת לפי מספר הכרטיס, ו-↺ מחזירה למקור. */
+function srcPick(a,n){
   if(a.startsWith('800')) return /ריטיינר|שעות|מוקד/.test(n) ? 'rv_srv'
                                : /פרוייקט|פרויקט|אנרגי/.test(n) ? 'rv_prj' : 'rv_prt';
   if(a.startsWith('90')) return 'cg_buy';
@@ -869,7 +876,7 @@ function aiPick(a,n){
 }
 /* CARDS — הכרטיסים שהכרטסת הביאה, אחרי פריסה ל-12 חודשים.
    m[0..5] מגיעים מהקובץ; מ-7 והלאה אין בפועל, שם חיים היעדים. */
-const CARDS=LEDGER.map(r=>({a:r.a, n:r.n, ai:aiPick(r.a,r.n),
+const CARDS=LEDGER.map(r=>({a:r.a, n:r.n, src:srcPick(r.a,r.n),
   full:r.m.concat([0,0,0,0,0,0])}));
 const cardBy=Object.fromEntries(CARDS.map(c=>[c.a,c]));
 const gName=Object.fromEntries(GROUPS.map(g=>[g.id,g.name]));
@@ -882,8 +889,8 @@ let TGT={acc:{}}, BOOKS={}, GOAL={acc:{}}, EXCL=new Set(), OPEN=new Set();
 /* פירוק סעיף לסעיפי משנה: SUBS[accId]=[{id,n,cards:['מספר כרטיס',…]}].
    כרטיס שייך לסעיף משנה אחד בדיוק — ולכן הסה״כ של הסעיף לא משתנה. */
 let SUBS={};
-/* MOVED[מספר כרטיס] = מזהה סעיף — שיוך ידני שגובר על המלצת ה-AI.
-   הוא נשמר בנפרד כדי שהעלאת כרטסת חדשה תדרוס סכומים ולא החלטות. */
+/* MOVED[מספר כרטיס] = מזהה סעיף — העברה שלנו, שגוברת על הסיווג שמגיע
+   מרואה החשבון. נשמר בנפרד כדי שהעלאת כרטסת תדרוס סכומים ולא החלטות. */
 let MOVED={};
 /* סעיפים שנוספו ידנית בסדנת המיפוי */
 let XACC=[];
@@ -897,9 +904,13 @@ const pick=(o,k,m)=>{const r=o&&o[k];return r&&r[m]!=null?r[m]:null};
 const put=(o,k,m,v)=>{o[k]=o[k]||{};if(v==null)delete o[k][m];else o[k][m]=v};
 const parseNum=v=>{const n=String(v).replace(/[^0-9.\-]/g,'');return n===''||n==='-'?null:+n};
 
-/* לאיזה סעיף שייך כרטיס — ידני קודם, אחרת ההמלצה */
-const accOf=a=>MOVED[a]!==undefined?MOVED[a]:(cardBy[a]?cardBy[a].ai:null);
-const isManual=a=>MOVED[a]!==undefined;
+/* לאיזה סעיף שייך כרטיס — ההעברה שלנו קודמת, אחרת הסיווג מהמקור */
+const accOf=a=>MOVED[a]!==undefined?MOVED[a]:(cardBy[a]?cardBy[a].src:null);
+/* "שונה מהמקור" רק כשההחלטה באמת שונה. כרטיס שנגרר בדיוק לאן שהוא
+   יושב אצל רו״ח אינו חריג, ואין מה להחזיר בו — ולכן גם אין לו ↺. */
+const srcOf=a=>cardBy[a]?cardBy[a].src:null;
+const isManual=a=>MOVED[a]!==undefined&&MOVED[a]!==srcOf(a);
+const srcName=a=>{const g=srcOf(a);return g?acBy[g].name:'מאזני — לא נכנס לרו״ה'};
 const cardsOf=id=>CARDS.filter(c=>accOf(c.a)===id);
 
 /* =======================================================================
@@ -935,10 +946,9 @@ function buildTree(){
             n2.kids.push(leaf(c,'sc|'+a.id+'|'+s.id,n2));}});
         n1.kids.push(n2);
       });
-      /* כרטיס שנוסף לסעיף אחרי הפירוק נופל לסעיף המשנה הראשון,
-         כדי שהסה״כ לעולם לא ייפול בין הכיסאות. */
-      const first=n1.kids[0];
-      mine.forEach(c=>{ if(!used.has(c.a)) first.kids.push(leaf(c,'sc|'+a.id+'|'+subs[0].id,first)); });
+      /* כרטיס שעוד לא שויך לתת־סעיף נשאר תלוי ישירות תחת הסעיף. הוא נספר
+         בסה״כ בדיוק כמו קודם, ורואים שהוא ממתין לשיוך במקום שייבלע. */
+      mine.forEach(c=>{ if(!used.has(c.a)) n1.kids.push(leaf(c,'c|'+a.id,n1)); });
     } else {
       mine.forEach(c=>n1.kids.push(leaf(c,'c|'+a.id,n1)));
     }
@@ -1213,11 +1223,11 @@ function nameCell(node,vw,hasKids,isLast){
     side.appendChild(el('span','badge sbb',node.subs.length+' סעיפי משנה'));
   if(node.lvl===1&&!node.subs&&node.kids.length)
     side.appendChild(el('span','badge cfc',node.kids.length+' כרטיסים'));
-  /* עלה = כרטיס מהכרטסת. המספר שלו הוא הזהות, והתג אומר אם ה-AI שייך
-     אותו או שאדם העביר אותו ידנית. */
+  /* עלה = כרטיס מהכרטסת. המספר שלו הוא הזהות, והתג מופיע רק כשהשיוך
+     שונה ממה שיש אצל רואה החשבון. */
   if(node.card){
     side.appendChild(el('span','badge acct',node.card));
-    if(isManual(node.card)) side.appendChild(el('span','badge nw','שויך ידנית'));
+    if(isManual(node.card)) side.appendChild(el('span','badge nw','שונה מהמקור'));
   }
   nm.appendChild(side);
   /* ריל הפעולות — מקום שמור, נחשף בריחוף */
@@ -1462,7 +1472,7 @@ let pin=null;
 const ARW='<span class="arw"><svg width="15" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6H2"/><path d="M6 2 2 6l4 4"/></svg></span>';
 /* כרטיסים תוצאתיים שלא שויכו לאף סעיף — הם לא נספרים ברווח והפסד */
 function unmapTotal(m){
-  return CARDS.reduce((s,c)=>(c.ai&&!accOf(c.a))?s+(c.full[MONTHS[m].abs]||0):s,0);
+  return CARDS.reduce((s,c)=>(c.src&&!accOf(c.a))?s+(c.full[MONTHS[m].abs]||0):s,0);
 }
 function idle(){
   pin=null;
@@ -1780,9 +1790,9 @@ document.getElementById('gearBtn').addEventListener('click',mapOpen);
 document.getElementById('reloadBtn').addEventListener('click',()=>{
   /* העלאה חוזרת דורסת סכומים ולא החלטות: הכרטסת מסכמת מחדש כל כרטיס,
      והשיוך — של ה-AI ושל האדם — נשמר לפי מספר הכרטיס. */
-  const man=Object.keys(MOVED).length;
+  const man=CARDS.filter(c=>isManual(c.a)).length;
   toast('הכרטסת נטענה מחדש · '+CARDS.length+' כרטיסים סוכמו מחדש'
-    +(man?' · '+man+' שיוכים ידניים נשמרו':''));
+    +(man?' · '+man+' העברות נשמרו':''));
 });
 document.getElementById('expBtn').addEventListener('click',()=>{
   const vw=view==='uni'?'cf':view;
@@ -1800,9 +1810,9 @@ document.getElementById('expBtn').addEventListener('click',()=>{
 /* =======================================================================
    18 · סדנת המיפוי — מסך אחד שבו נקבע לאן הולך כל כרטיס
    מימין הכרטיסים שהכרטסת הביאה, משמאל הסעיפים בדוח. גוררים כרטיס
-   לסעיף או לסעיף משנה, ✕ מנתק, ↺ מחזיר להמלצת ה-AI, ו-＋ מוסיף סעיף.
+   לסעיף או לתת־סעיף, ✕ מנתק, ↺ מחזיר לסיווג של רו״ח, ו-＋ מוסיף סעיף.
    ======================================================================= */
-let MFIL='all', DRAGC=null, MNEW=null;
+let MFIL='all', DRAGC=null, MNEW=null, SNEW=null;
 const mi3=()=>Math.max(0,PAST()-1);
 const cNow=c=>c.full[MONTHS[mi3()].abs]||0;
 function mapOpen(){document.getElementById('ovMap').classList.add('on');mapDraw();}
@@ -1811,23 +1821,23 @@ function mapFil(k){MFIL=k;mapDraw();}
 function mapList(){
   const q=(document.getElementById('mapQ').value||'').trim();
   let L=CARDS;
-  if(MFIL==='un')  L=L.filter(c=>c.ai&&!accOf(c.a));
-  if(MFIL==='bal') L=L.filter(c=>!c.ai&&!accOf(c.a));
+  if(MFIL==='un')  L=L.filter(c=>c.src&&!accOf(c.a));
+  if(MFIL==='bal') L=L.filter(c=>!c.src&&!accOf(c.a));
   if(MFIL==='man') L=L.filter(c=>isManual(c.a));
-  if(MFIL==='all') L=L.filter(c=>c.ai||accOf(c.a));
+  if(MFIL==='all') L=L.filter(c=>c.src||accOf(c.a));
   if(q) L=L.filter(c=>c.n.indexOf(q)>=0||c.a.indexOf(q)>=0);
   return L;
 }
 function mapDraw(){
   const L=mapList();
-  const cnt=k=>k==='un'?CARDS.filter(c=>c.ai&&!accOf(c.a)).length
-           :k==='bal'?CARDS.filter(c=>!c.ai&&!accOf(c.a)).length
+  const cnt=k=>k==='un'?CARDS.filter(c=>c.src&&!accOf(c.a)).length
+           :k==='bal'?CARDS.filter(c=>!c.src&&!accOf(c.a)).length
            :k==='man'?CARDS.filter(c=>isManual(c.a)).length
-           :CARDS.filter(c=>c.ai||accOf(c.a)).length;
+           :CARDS.filter(c=>c.src||accOf(c.a)).length;
   document.getElementById('mwSub').textContent=
     cnt('all')+' כרטיסים תוצאתיים · '+cnt('un')+' ללא סעיף · '+cnt('bal')+' מאזניים · לפי '+MONTHS[mi3()].n;
   document.getElementById('mwF').innerHTML=
-    [['all','הכול'],['un','ללא סעיף'],['man','שויכו ידנית'],['bal','מאזניים']].map(x=>
+    [['all','הכול'],['un','ללא סעיף'],['man','שונו מהמקור'],['bal','מאזניים']].map(x=>
       '<button class="'+(MFIL===x[0]?'on':'')+'" onclick="mapFil(\''+x[0]+'\')">'+x[1]+
       '<em>'+cnt(x[0])+'</em></button>').join('');
 
@@ -1837,7 +1847,7 @@ function mapDraw(){
   const crd=c=>{
     return '<div class="mc'+(accOf(c.a)?'':' un')+'" draggable="true" ondragstart="mcStart(event,\''+c.a+'\')" ondragend="mcEnd()">'
       +'<div class="mc-b"><b>'+c.n+'</b><span>'+c.a+' · '+fmtN(cNow(c))+' ₪</span></div>'
-      +(isManual(c.a)?'<button class="mc-r" title="חזרה להמלצת ה-AI" onclick="mapReset(\''+c.a+'\')">↺</button>':'')
+      +(isManual(c.a)?'<button class="mc-r" title="החזרה לסיווג של רואה החשבון: '+srcName(c.a)+'" onclick="mapReset(\''+c.a+'\')">↺</button>':'')
       +'</div>';
   };
   let h='';
@@ -1884,10 +1894,15 @@ function mapDraw(){
           +' ondrop="mwDrop(event,this,\''+a.id+'\',\'\')">'
           +'<div class="mw-at"><i style="background:'+a.c+'"></i><b>'+a.name+'</b>'
           +'<span>'+mine.length+' כרטיסים</span>'
-          +'<span class="amt">'+fmtN(sumOf(a.id))+' ₪</span></div>'+body+'</div>';
+          +'<span class="amt">'+fmtN(sumOf(a.id))+' ₪</span>'
+          +'<button class="mw-sadd" title="הוספת תת־סעיף" onclick="subNew(\''+a.id+'\')">＋ תת־סעיף</button>'
+          +'</div>'
+          +(SNEW===a.id?'<div class="mw-new"><input id="mwS" placeholder="שם תת־הסעיף" '
+            +'onkeydown="if(event.key===\'Enter\')subAdd(\''+a.id+'\')"><button onclick="subAdd(\''+a.id+'\')">הוספה</button></div>':'')
+          +body+'</div>';
       }).join('')+'</div></div>';
   }).join('');
-  const nn=document.getElementById('mwN'); if(nn) nn.focus();
+  const nn=document.getElementById('mwN')||document.getElementById('mwS'); if(nn) nn.focus();
 }
 function mcStart(e,a){DRAGC=a;try{e.dataTransfer.setData('text/plain',a);e.dataTransfer.effectAllowed='move'}catch(x){}}
 function mcEnd(){DRAGC=null;document.querySelectorAll('.mw-a.over,.mw-sub.over').forEach(x=>x.classList.remove('over'));}
@@ -1903,11 +1918,30 @@ function mwDrop(e,el,accId,subId){
   toast(c.n+' → '+acBy[accId].name);
 }
 function mapOff(a){
+  const from=accOf(a);
   MOVED[a]=null; (Object.keys(SUBS)).forEach(k=>(SUBS[k]||[]).forEach(s=>{s.cards=(s.cards||[]).filter(x=>x!==a)}));
-  persist(); rebuild(); mapDraw(); toast(cardBy[a].n+' נותק מהסעיף');
+  persist(); rebuild(); mapDraw();
+  toast(cardBy[a].n+' נותק מ'+(from?acBy[from].name:'הסעיף')+' — ממתין לשיוך');
 }
-function mapReset(a){delete MOVED[a];persist();rebuild();mapDraw();toast(cardBy[a].n+' חזר להמלצת ה-AI');}
-function mapNew(g){MNEW=(MNEW===g?null:g);mapDraw();}
+/* החזרה לסיווג המקורי. אם במקור הכרטיס מאזני, הוא יוצא מהרו״ה ולכן גם
+   מהרשימה הזאת — ההודעה אומרת לאן הוא הלך ולא רק שהוחזר. */
+function mapReset(a){
+  const dest=srcName(a), bal=!srcOf(a);
+  delete MOVED[a]; persist(); rebuild();
+  if(bal&&MFIL==='all') MFIL='bal';
+  mapDraw();
+  toast(cardBy[a].n+' חזר לסיווג של רואה החשבון · '+dest);
+}
+function mapNew(g){MNEW=(MNEW===g?null:g);SNEW=null;mapDraw();}
+function subNew(a){SNEW=(SNEW===a?null:a);MNEW=null;mapDraw();}
+function subAdd(accId){
+  const el=document.getElementById('mwS'); const n=(el&&el.value||'').trim();
+  if(!n){if(el)el.focus();return}
+  const list=SUBS[accId]=SUBS[accId]||[];
+  let i=1; while(list.some(s=>s.id==='s'+i)) i++;
+  list.push({id:'s'+i,n,cards:[]});
+  SNEW=null; persist(); rebuild(); mapDraw(); toast('תת־הסעיף «'+n+'» נוסף ל'+acBy[accId].name);
+}
 function mapAdd(g){
   const el=document.getElementById('mwN'); const n=(el&&el.value||'').trim();
   if(!n){if(el)el.focus();return}
@@ -1931,7 +1965,7 @@ function rerender(){
   buildNet(keep); buildRoll(keep); buildKpis(keep);
   document.querySelector('.face[data-f="'+keep+'"]').classList.add('on');
   busy=false;
-  const unc=CARDS.filter(c=>c.ai&&!accOf(c.a)).length;
+  const unc=CARDS.filter(c=>c.src&&!accOf(c.a)).length;
   const ch=document.getElementById('unChip');
   ch.innerHTML='<i></i> '+(unc?(unc===1?'כרטיס אחד לא שויך':unc+' כרטיסים לא שויכו')
     :CARDS.filter(c=>accOf(c.a)).length+' כרטיסים תוצאתיים בדוח');
@@ -1995,9 +2029,9 @@ document.getElementById('loadBtn').addEventListener('click',()=>{
   setTimeout(()=>{
     ov.hidden=true; busy=false;
     rerender();
-    const man=Object.keys(MOVED).length;
-    toast('הכרטסת נטענה · '+CARDS.length+' כרטיסים, '+CARDS.filter(c=>c.ai).length+' תוצאתיים'
-      +(man?' · '+man+' שיוכים ידניים נשמרו':''));
+    const man=CARDS.filter(c=>isManual(c.a)).length;
+    toast('הכרטסת נטענה · '+CARDS.length+' כרטיסים, '+CARDS.filter(c=>c.src).length+' תוצאתיים'
+      +(man?' · '+man+' העברות נשמרו':''));
   },900);
 });
 /* PF/PT — הבחירה הממתינה. הטבלה משתנה רק ב"הפקה". */
