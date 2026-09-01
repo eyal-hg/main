@@ -66,7 +66,12 @@
 5. **מעדכן את מוני התור.** ספירת הלא־מזוהות לרצועת "ממתין לשיוך"
    ולמסך היועץ (`UNID`), כולל התיישנות: שיחה לא משויכת מעל N ימים
    עולה בדוח התפעול היומי.
-6. **מפרסם את שורות היום למסך.** כל התוצרים נכתבים בסטטוס
+6. **מייצר Embeddings לכל הסיכומים של היום.** כל סיכום שנוצר —
+   פגישה, שיחה, קבוצה, עוזר — נחתך ומוטמע (embedding) לחיפוש סמנטי.
+   זה מה שמאפשר לשורת החיפוש של המסך לענות על "מתי דיברנו על המסגרת"
+   גם כשהמילה המדויקת לא הופיעה, ולהכנה־לפגישה לשלוף "מה השתנה מאז"
+   מכל הערוצים. מוטמעים סיכומים ותובנות — לא תמלולים גולמיים.
+7. **מפרסם את שורות היום למסך.** כל התוצרים נכתבים בסטטוס
    **«סיכום נוצר»** — לערוצים האוטומטיים אין שלב אישור אנושי.
 
 **מה לא רץ בלילה:** תמלול וסיכום פגישה (בסיום ההקלטה) · תמלול וסיכום
@@ -84,12 +89,13 @@
 ──► [3] חילוץ תוצרים: תובנות · משימות מוצעות · שורות זיכרון (AI)
 ──► [4] מעבר זיכרון על כל סיכומי היום, קטגוריה־קטגוריה (AI, MEM_CATS)
 ──► [5] השלמות: עיבודים שנכשלו במהלך היום (שיחות/פגישות)
-──► [6] פרסום: שורות communications + עדכון מונים   (קוד, טרנזקציה)
+──► [6] Embeddings לכל סיכומי היום                    (מודל הטמעה)
+──► [7] פרסום: שורות communications + עדכון מונים   (קוד, טרנזקציה)
 ```
 
 - שלבים [2]–[4] הם קריאות מודל נפרדות עם קלט תחום — לא פרומפט אחד ענק.
   בערוץ העוזר: קריאה פר יוזר פעיל, והרכבת שורת החברה בקוד.
-- שלב [6] דטרמיניסטי: כתיבה אטומית פר יום־חברה (מחיקת תוצרי אותו יום
+- שלב [7] דטרמיניסטי: כתיבה אטומית פר יום־חברה (מחיקת תוצרי אותו יום
   אם קיימים, כתיבה מחדש — עקרון 5).
 - כשל בקבוצה אחת לא מפיל את השאר; הפריט נרשם ל-[5] של הלילה הבא
   ולדוח התפעול.
@@ -155,6 +161,19 @@ CREATE TABLE calls (
   deleted_at TIMESTAMPTZ NULL, deleted_by BIGINT NULL     -- ארכיון, לא DELETE
 );
 
+-- חיפוש סמנטי — pgvector. יחידת ההטמעה: שורת סיכום / תובנה / משימה,
+-- לא המסמך כולו — כדי שהתוצאה תצביע על סעיף, כמו החיפוש במסך היום.
+CREATE TABLE comm_embeddings (
+  id BIGSERIAL PRIMARY KEY,
+  comm_id     BIGINT REFERENCES communications(id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL,               -- summary | insight | task | memory_line
+  chunk_ix    INT NOT NULL,                -- הסעיף בתוך התוצר
+  chunk_text  TEXT NOT NULL,               -- מה שהוטמע, להצגה בתוצאה
+  embedding   VECTOR(1536) NOT NULL,
+  UNIQUE (comm_id, kind, chunk_ix)         -- ריצה חוזרת מחליפה (עקרון 5)
+);
+CREATE INDEX ON comm_embeddings USING hnsw (embedding vector_cosine_ops);
+
 CREATE TABLE nightly_runs (               -- תצפית על הג׳וב עצמו
   id BIGSERIAL PRIMARY KEY, company_id BIGINT NOT NULL,
   ran_for DATE NOT NULL, started_at TIMESTAMPTZ, finished_at TIMESTAMPTZ,
@@ -174,6 +193,8 @@ CREATE TABLE nightly_runs (               -- תצפית על הג׳וב עצמו
 
 ```
 GET  /companies/:id/communications?from&to&channel&q     ← הרשימה + הבורר
+GET  /companies/:id/communications/search?q              ← סמנטי: comm_embeddings,
+                                                           מחזיר סעיף + הפריט שלו
 GET  /communications/:id                                 ← הזירה (עם outputs)
 POST /calls/:id/assign        {company_id}               ← שיוך → מפעיל עיבוד מיידי
 POST /calls/:id/archive       /restore                   ← מחיקה לארכיון ושחזור
