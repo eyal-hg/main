@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>תקשורת · HK</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- הפונטים שה-CSS באמת מבקש. קודם נטען Heebo ונכתב Rubik, ולכן העברית
+     נפלה לפונט מערכת — וזה מה שנראה מטושטש בתוך ה-iframe. -->
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* HK · מסך פגישות · מפרט אחיד v1
    רצועה 68 navy: כותרת 28 + תאריך | האירוע הבא | עכשיו
@@ -28,7 +30,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{font-family:Rubik,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 a{color:inherit;text-decoration:none}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .num{font-variant-numeric:tabular-nums}
@@ -63,6 +65,15 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip .next .n{font-size:22px;font-weight:600;line-height:1;color:#FFB4AC}
 .strip .next .n.zero{color:var(--white)}
 .strip .next .sub{color:var(--on-navy2);font-size:13px}
+/* הרצועה כולה לחיצה — היא מספרת על עבודה, אז היא גם מובילה אליה */
+.strip .next{cursor:pointer;border-radius:9px;padding:6px 12px;margin-inline-start:-12px;
+  transition:background .15s}
+.strip .next:hover{background:rgba(255,255,255,.07)}
+/* זו פעולה, ולכן קורל — ומספיק חזק כדי להיקרא על נייבי */
+.strip .next .go{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;
+  color:#fff;background:var(--coral,#E8635A);border:0;border-radius:8px;padding:8px 15px;
+  box-shadow:0 2px 10px rgba(232,99,90,.42)}
+.strip .next:hover .go{background:#D9534A;box-shadow:0 3px 14px rgba(232,99,90,.55)}
 .strip .spacer{margin-inline-start:auto}
 .strip .now{font-size:13px;color:var(--on-navy2)}
 .strip .now b{color:var(--white);font-weight:500}
@@ -74,17 +85,14 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .ph{display:flex;align-items:baseline;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--bd)}
 .ph h2{font-size:17px;font-weight:600;color:var(--navy)}
 .ph .hint{font-size:12.5px;color:var(--ink3)}
-/* טאבים בראש הרשימה — פגישות מול שיחות שלא נקשרו לחברה */
-.mtabs{display:flex;gap:2px}
-.mtabs button{position:relative;border:0;background:none;font:inherit;padding:2px 12px 10px;
-  font-size:15px;font-weight:600;color:var(--ink3);cursor:pointer;display:flex;align-items:center;gap:7px}
-.mtabs button:hover{color:var(--navy)}
-.mtabs button.on{color:var(--navy)}
-.mtabs button.on::after{content:"";position:absolute;inset-inline:8px;bottom:-11px;height:2px;
-  border-radius:99px;background:var(--sal,#c97b6e)}
-.mtabs button i{font-style:normal;font-size:11px;font-weight:700;color:#fff;background:#D9922B;
-  border-radius:999px;padding:0 7px;line-height:17px}
-.mtabs button i:empty{display:none}
+/* התור הוא משימה שנכנסים אליה מהרצועה, לא מבט שכן בטאב לצד הרשימה.
+   ולכן: כותרת וכפתור חזרה — רק בתוכו. */
+.list:not(.calls) .ph{display:none}
+.ph-back{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);background:var(--white);
+  font:inherit;font-size:12.5px;color:var(--ink2);padding:6px 11px;border-radius:7px;cursor:pointer;
+  align-self:center}
+.ph-back:hover{border-color:var(--navy);color:var(--navy)}
+.ph-back svg{flex:none;transform:scaleX(-1)}
 
 /* בטאב השיחות אין פגישה נבחרת — הזירה יורדת והרשימה נפרסת על כל הרוחב */
 body.calls-on .wrap{grid-template-columns:minmax(0,1fr)}
@@ -193,8 +201,11 @@ body.calls-on .arena{display:none}
 .un-pick .m button{display:block;width:100%;text-align:start;border:0;background:none;font:inherit;
   font-size:12.5px;color:var(--ink);padding:7px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .un-pick .m button:hover{background:#EAF4FB;color:var(--navy)}
-.un-pick .m button b{font-weight:600;color:var(--navy)}
-.un-pick .m button .dsh{color:var(--muted-2,#a9a9a9);margin:0 6px}
+/* החברות של הלקוח נראות בלי לפתוח כלום — הבורר הוא הבחירה, לא הגילוי */
+.un-cos{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap;margin-inline-start:10px}
+.un-cos b{font-size:12.5px;font-weight:600;color:var(--navy);background:#EDF3F9;
+  border:1px solid #DBE7F2;border-radius:999px;padding:3px 10px}
+.un-cos i{font-style:normal;color:var(--muted-2,#b3bfca);font-size:11px}
 .un-pick .m .s{position:relative;margin-bottom:4px}
 .un-pick .m .s input{width:100%;font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--bd);
   border-radius:6px;background:var(--bg,#F7F9FB);color:var(--ink)}
@@ -224,7 +235,9 @@ body.calls-on .arena{display:none}
 .cpick-x:hover{background:rgba(255,255,255,.32)}
 .cpick .b:hover{border-color:var(--navy);color:var(--navy)}
 .cpick.on .b{border-color:var(--navy);color:var(--navy)}
-.cpick .b i{margin-inline-start:auto;flex:none;line-height:0;transition:transform .15s}
+.cpick .b i{margin-inline-start:auto;flex:none;display:inline-flex;align-items:center;
+  width:11px;height:11px;transition:transform .15s}
+.cpick .b i svg{width:11px;height:11px;display:block}
 .cpick.on .b i{transform:rotate(180deg)}
 .cpick .m{position:absolute;z-index:40;top:calc(100% + 5px);inset-inline-end:0;min-width:230px;
   background:var(--white);border:1px solid var(--bd);border-radius:9px;
@@ -368,7 +381,7 @@ tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
 .ksegs button.on b{color:inherit;opacity:.7}
 .ksegs button.on svg{opacity:1}
 .ksegs button.on[data-k=""]{background:#EEF2F6;color:var(--navy)}
-.ksegs button.on[data-k="meet"]{background:#EEF2F6;color:#4F6579}
+.ksegs button.on[data-k="meet"]{background:#E8EAED;color:#333F4B}
 .ksegs button.on[data-k="call"]{background:#EDE9FD;color:#5B41C4}
 .ksegs button.on[data-k="wa"]{background:#DEF0F3;color:#0A6675}
 /* עמודת הערוץ — מילה ואייקון, לא רק גוון. זה מה שמפריד באמת. */
@@ -377,11 +390,13 @@ tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
 .kchip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
   line-height:1;padding:5px 9px 5px 8px;border-radius:999px;border:1px solid;letter-spacing:.1px}
 .kchip svg{flex:none}
-.kchip.meet{background:#EEF2F6;color:#4F6579;border-color:#DBE3EB}
+/* אפור בהיר נקרא כ״מושבת״. פגישה היא הערוץ הראשי — ולכן פחם, לא דהוי,
+   ובלי להוסיף עוד כחול למסך. */
+.kchip.meet{background:#E8EAED;color:#333F4B;border-color:#D2D7DD}
 .kchip.call{background:#EDE9FD;color:#5B41C4;border-color:#DCD3F8}
 .kchip.wa{background:#DEF0F3;color:#0A6675;border-color:#BCE1E8}
 /* פס צד לכל שורה — שלושה מסלולים צבעוניים שנסרקים במבט */
-tr.m td:first-child{box-shadow:inset -3px 0 0 #CBD6E0}
+tr.m td:first-child{box-shadow:inset -3px 0 0 #7A8896}
 /* ופס צד — כדי שגם סריקה מהירה של העמודה תראה איפה השיחות */
 tr.m.call td:first-child{box-shadow:inset -3px 0 0 #7557E3}
 tr.m.call:hover{background:#FBFAFF}
@@ -416,10 +431,13 @@ tr.m.wa .nm{color:#0B5A68}
 .wa-msg .hd b{font-size:12.5px;font-weight:600;color:var(--navy)}
 .wa-msg .hd i{font-style:normal;font-size:11px;color:var(--muted-2,#8b9aa8)}
 .wa-msg p{grid-column:1/-1;margin:0;font-size:13px;line-height:1.65;color:var(--ink)}
-.ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--band);flex:none}
-.ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--on-navy3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer}
-.ar-tabs button:hover{color:var(--white)}
-.ar-tabs button.on{color:var(--white);border-color:var(--coral)}
+/* הטאבים ירדו מהנייבי. הכהה שמור לכותרת — מי הלקוח ומה הערוץ —
+   והניווט בתוך התוצרים הוא כבר תוכן, ותוכן חי על לבן. */
+.ar-tabs{display:flex;gap:2px;padding:0 14px;background:var(--white);flex:none;
+  border-bottom:1px solid var(--bd)}
+.ar-tabs button{font:inherit;font-size:13px;font-weight:600;color:var(--ink3);background:none;border:none;border-bottom:2.5px solid transparent;padding:11px 13px 12px;cursor:pointer;margin-bottom:-1px}
+.ar-tabs button:hover{color:var(--navy)}
+.ar-tabs button.on{color:var(--navy);border-color:var(--coral)}
 .ar-play{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:12.5px;font-weight:600;color:var(--white);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:6px 14px;cursor:pointer}
 .ar-play:hover{background:rgba(255,255,255,.18)}
 .ar-wave{display:inline-flex;align-items:center;gap:2px;height:16px}
@@ -555,12 +573,14 @@ tr.m.wa .nm{color:#0B5A68}
 
   <!-- ===== all meetings ===== -->
   <section class="panel list">
+    <!-- הכותרת הזאת נראית רק בתוך התור. ברשימה עצמה שורת החיפוש
+         כבר אומרת הכל, ופס כותרת ריק הוא רעש. -->
     <div class="ph">
-      <div class="mtabs">
-        <button class="on" id="tbMeet" onclick="mtView('meet')">הכל</button>
-        <button id="tbUnid" onclick="mtView('unid')">שיחות טלפון לא מזוהות</button>
-      </div>
-      <span class="hint" id="hint"></span></div>
+      <button class="ph-back" onclick="mtView('meet')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        חזרה לתקשורת</button>
+      <h2>שיחות טלפון לא מזוהות</h2>
+    </div>
     <div class="search">
       <div class="cpick" id="cfil">
         <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span class="pre">לקוח:</span><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
@@ -574,6 +594,7 @@ tr.m.wa .nm{color:#0B5A68}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="q" type="search" placeholder="חיפוש בכל התקשורת — נושא, החלטה, יעד">
       </div>
+      <span class="hint" id="hint"></span>
       <span class="res" id="res"></span>
       <a href="#" class="clr" id="clr">ניקוי</a>
     </div>
@@ -583,17 +604,10 @@ tr.m.wa .nm{color:#0B5A68}
     <table class="ml" id="ml">
       <thead><tr><th>תאריך</th><th class="kd">ערוץ</th><th>לקוח · נושא</th><th>מה חסר</th><th></th></tr></thead>
       <tbody>
-        <!-- הפגישה הקרובה של היום — ראש הרשימה -->
-        <tr class="m fut" tabindex="0" role="button" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
-          <td class="d num">היום<small class="num">16:00</small></td>
-          <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=039112774">משה עובד</a><span class="dot">·</span><span class="nm">פגישה חודשית — יולי</span><span class="dot">·</span><span class="mt">Zoom</span><span class="hit"></span></td>
-          <td class="st"><span class="al warn">הכנה לא נפתחה</span><i>בעוד 5 שעות</i></td>
-          <td class="ac"><button class="btn pri sm" data-act="prep">פתיחת ההכנה</button></td>
-        </tr>
         <tr class="m wa" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל קבוצה וואטסאפ הזמנה מרכז הבנייה חשבוניות בזן" id="w0207">
           <td class="d num">היום<small class="num">18:00</small></td>
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">הקבוצה התפעולית — הזמנה חדשה, חשבוניות ובז״ן</span><span class="hit"></span></td>
-          <td class="st"><span class="al ok">סיכום אושר</span><i>14 הודעות · 4 כותבים</i></td>
+          <td class="st"><span class="al ok">סוכם</span><i>14 הודעות · 4 כותבים</i></td>
           <td class="ac"></td>
         </tr>
         <tr class="m call" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל שיחה דחיית התשלום לבזן" id="c0207">
@@ -612,7 +626,7 @@ tr.m.wa .nm{color:#0B5A68}
         <tr class="m wa" tabindex="0" role="button" data-tags="warn" data-k="מטעי גבעון קבוצה וואטסאפ מסגרת אשראי ביטולים קורס מנחות" id="w0107">
           <td class="d num">01.07<small class="num">18:00</small></td>
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5A11.9 11.9 0 0 0 3.6 19.3L2.5 23l3.8-1a11.9 11.9 0 0 0 5.7 1.4h0A11.9 11.9 0 0 0 20.5 3.5z"/><path d="M8.6 7.6c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.6.1-.9.4-.3.4-1.1 1.1-1.1 2.6s1.1 3 1.3 3.2c.2.2 2.2 3.4 5.4 4.6 2.6 1 3.2.8 3.8.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2z"/></svg><a href="clients.html?c=514778220">מטעי גבעון</a><span class="dot">·</span><span class="nm">הקבוצה התפעולית — שאלה על המסגרת נשארה פתוחה</span><span class="hit"></span></td>
-          <td class="st"><span class="al warn">ממתין לסקירה</span><i>9 הודעות · 3 כותבים</i></td>
+          <td class="st"><span class="al warn">טרם נקרא</span><i>9 הודעות · 3 כותבים</i></td>
           <td class="ac"></td>
         </tr>
         <tr class="m call" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל שיחה חשבוניות מלאי רות" id="c0107">
@@ -845,7 +859,7 @@ tr.m.wa .nm{color:#0B5A68}
        לקבוצה אין התחלה וסוף, יש לה יום. לכן הישות היא «סיכום היום»,
        ומה שמייחד אותה משיחה או מפגישה הוא שיש בה מי כתב. ===== */
     w0207:{kind:'wa', co:'אנרגי אינטרנשיונל', name:'הזמנה חדשה, חשבוניות ובז״ן',
-      meta:'היום · 14 הודעות · 4 כותבים · הקבוצה התפעולית', st:'סיכום אושר', stc:'ok',
+      meta:'היום · 14 הודעות · 4 כותבים · הקבוצה התפעולית', st:'סוכם', stc:'ok',
       who:[['צחי עובד',6],['רות אלמוג',4],['טל מלקר',3],['ליאור בן חיים',1]],
       base:['רות העלתה שלוש חשבוניות ספק מיוני — 18,300 ₪, לפי הנוהל שנקבע בשיחה מ-01.07.',
             'צחי הזכיר שוב את התשלום לבז״ן: ביקש אישור שהדחייה ל-10.08 סגורה מולם.',
@@ -866,7 +880,7 @@ tr.m.wa .nm{color:#0B5A68}
             ['טל מלקר','14:06','מזל טוב. ליאור — מה תנאי התשלום שסוכמו איתם? צריך לצבוע את זה בתזרים.'],
             ['ליאור בן חיים','14:31','אני בודק בחוזה ומעדכן.']]},
     w0107:{kind:'wa', co:'מטעי גבעון', name:'שאלה על המסגרת נשארה פתוחה',
-      meta:'01.07 · 9 הודעות · 3 כותבים · הקבוצה התפעולית', st:'ממתין לסקירה', stc:'wait',
+      meta:'01.07 · 9 הודעות · 3 כותבים · הקבוצה התפעולית', st:'טרם נקרא', stc:'wait',
       who:[['תומר לוי',5],['ענת שקד',3],['טל מלקר',1]],
       base:['תומר ביקש להזיז את קניות המלאי לאוגוסט — לדבריו הספק מוכן להמתין.',
             'ענת דיווחה על שני מבטלים בקורס המנחות; ההכנסה הצפויה קטנה ב-3,600 ₪.',
@@ -876,7 +890,6 @@ tr.m.wa .nm{color:#0B5A68}
              {t:'עדכון תחזית הכנסות הקורס — מינוס 3,600 ₪',who:'טל מלקר'}],
       mem:[['שביעות רצון','ירידה: שאלות תזרים בקבוצה נשארות בלי מענה באותו יום'],
            ['מצב תזרימי','הכנסות קורס המנחות קטנו ב-3,600 ₪ — שני מבטלים']],
-      acts:'pending', contact:'תומר',
       msgs:[['תומר לוי','10:22','שאלה — המסגרת הנוספת מול הבנק, יש התקדמות? צריך לדעת אם אני מזמין מלאי החודש.'],
             ['ענת שקד','10:40','שני מבטלים בקורס המנחות. 3,600 ₪ פחות.'],
             ['תומר לוי','12:05','ענת תודה. טל?'],
@@ -1068,13 +1081,16 @@ tr.m.wa .nm{color:#0B5A68}
     }else{
       body=`<div class="ar-sec"><h4>תמלול · מלא</h4>${a.tx.map(x=>`<div class="ar-txr"><b>${x[0]}:</b>${x[1]}</div>`).join('')}</div>`;
     }
-    const acts=a.acts==='pending'
+    /* קבוצה אינה נשלחת לאישור הלקוח: הוא כתב אותה. הסיכום הוא כלי
+       פנימי של היועץ, ולכן אין כאן פס פעולות. */
+    const acts=a.kind==='wa'?''
+      :a.acts==='pending'
       ?`<button class="btn pri" onclick="arApprove(true)">אישור ושליחה ל${a.contact||'לקוח'}</button><button class="btn" onclick="arApprove(false)">אישור ללא שליחה</button>`
       :a.acts==='send'?`<button class="btn pri" onclick="arSend()">שליחת הסיכום ללקוח</button>`
       :`<a class="btn" href="../../meeting-room.html">הזירה המלאה ↗</a>`;
     host.innerHTML=head
       +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
-      +`<div class="ar-body">`+body+`</div><div class="ar-acts">${acts}</div>`;
+      +`<div class="ar-body">`+body+`</div>`+(acts?`<div class="ar-acts">${acts}</div>`:'');
   }
   /* ===== אישור ושליחה — הזרימה המלאה =====
      שליחה עם משימות שלא אושרו ⇒ עצירה ושאלה. אחרי הפעולה — הסטטוס,
@@ -1234,15 +1250,13 @@ html.embed .wrap{height:calc(100vh - 68px)}
    ===================================================================== */
 let UNID=[
   {id:'u1', ph:'052-441-3908', who:'צחי עובד', when:'היום · 09:14', dur:'4:38',
-   why:'two', cos:['אנרגי אינטרנשיונל','אנרגי גולני'],
-   tp:'דחיית התשלום לבז״ן בגלל החריגה הצפויה'},
+   why:'two', cos:['אנרגי אינטרנשיונל','אנרגי גולני']},
   {id:'u2', ph:'054-771-2280', who:null, when:'אתמול · 13:20', dur:'3:12',
-   why:'none', tp:'הצעת מחיר לליסינג — המשך מהודעה בקבוצה'},
+   why:'none'},
   {id:'u3', ph:'052-441-3908', who:'צחי עובד', when:'01.07 · 08:12', dur:'6:04',
-   why:'two', cos:['אנרגי אינטרנשיונל','אנרגי גולני'],
-   tp:'סגירת שכר יוני והעברת התלושים'},
+   why:'two', cos:['אנרגי אינטרנשיונל','אנרגי גולני']},
   {id:'u4', ph:'050-338-9017', who:null, when:'28.06 · 15:47', dur:'1:52',
-   why:'none', tp:'שיחה קצרה — ביקש לחזור אליו'},
+   why:'none'},
 ];
 const ALL_CO=['אנרגי אינטרנשיונל','אנרגי גולני','מטעי גבעון','משה עובד','רימון יצחק'];
 /* שיחה שנמחקה לא נעלמת — היא עוברת לארכיון, וניתן לשחזר אותה.
@@ -1250,7 +1264,7 @@ const ALL_CO=['אנרגי אינטרנשיונל','אנרגי גולני','מט�
 let UDEL=[], UVIEW='wait', UQ='';
 function unSetView(v){UVIEW=v;unidRender();}
 function unSearch(el){UQ=(el.value||'').trim();unidRender(true);}
-const unMatch=u=>!UQ||[u.ph,u.who||'',u.tp,u.when].some(x=>String(x).indexOf(UQ)>=0);
+const unMatch=u=>!UQ||[u.ph,u.who||'',u.when].concat(u.cos||[]).some(x=>String(x).indexOf(UQ)>=0);
 /* סיכום השבוע — כל השיחות שנקלטו, לא רק החריגות. WEEK.tot כולל את
    הממתינות, ולכן הזוהו-אוטומטית נגזר ולא מוזן פעמיים. */
 const WEEK={tot:32, mins:192, top:[['אנרגי אינטרנשיונל',9],['מטעי גבעון',7],['רימון יצחק',5]]};
@@ -1294,7 +1308,7 @@ function unidRender(){
     '<button class="'+(UVIEW==='wait'?'on':'')+'" onclick="unSetView(\'wait\')">ממתינות לשיוך<em>'+UNID.length+'</em></button>'
    +'<button class="'+(UVIEW==='del'?'on':'')+'" onclick="unSetView(\'del\')">שיחות שנמחקו<em>'+UDEL.length+'</em></button>'
    +'<span class="un-q"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
-   +'<input id="unQ" value="'+UQ.replace(/"/g,'&quot;')+'" placeholder="חיפוש לפי מספר טלפון, שם או נושא" oninput="unSearch(this)"></span>'
+   +'<input id="unQ" value="'+UQ.replace(/"/g,'&quot;')+'" placeholder="חיפוש לפי מספר טלפון, שם או חברה" oninput="unSearch(this)"></span>'
    +(UVIEW==='wait'&&UNID.length?'<span class="un-note">אפשר להאזין להקלטה כבר עכשיו. '
       +'<b>התמלול והסיכום מתחילים רק אחרי השיוך</b> — הם נכתבים לזיכרון של חברה מסוימת, '
       +'ובלי לדעת איזו אין לאן לכתוב אותם.</span>':'');
@@ -1314,7 +1328,6 @@ function unDelRow(u,wave){
       +'<span class="pl"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'
       +'<span class="wv">'+wave+'</span><b dir="ltr">'+u.dur+'</b></button>'
     +'<span class="un-when">'+u.when+'</span></div>'
-    +'<div class="un-tp">'+u.tp+'</div>'
     +'<div class="un-why"><span class="lb del">נמחקה '+u.delAt+' · '+u.delBy+'</span>'
     +'<button class="un-rst" onclick="unidRestore(\''+u.id+'\')">שחזור לתור</button></div>'
     +'</div>';
@@ -1330,15 +1343,20 @@ function unRow(u,wave){
         +'<span class="pl"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'
         +'<span class="wv">'+wave+'</span><b dir="ltr">'+u.dur+'</b></button>'
       +'<span class="un-when">'+u.when+'</span></div>'
-      +'<div class="un-tp">'+u.tp+'</div>'
+      /* אין כאן נושא: הנושא נולד מהתמלול, והתמלול מתחיל רק אחרי השיוך.
+         מה שכן ידוע לפני העיבוד — המספר, מי מחזיק אותו, ואיזה חברות יש לו. */
       +'<div class="un-why"><span class="lb">'
-      +(u.why==='two'?'⚠ הלקוח מחזיק שתי חברות':'⚠ המספר לא מוכר לאף לקוח')
+      +(u.why==='two'
+         ? '⚠ '+u.who+' מחזיק שתי חברות — לאיזו מהן לשייך?'
+         : '⚠ המספר לא מוכר לאף לקוח')
       +'</span>'
+      +(u.why==='two'?'<span class="un-cos">'+u.cos.map(function(c){
+          return '<b>'+c+'</b>'}).join('<i>·</i>')+'</span>':'')
       +'<button class="un-del" onclick="unidDel(\''+u.id+'\')" title="מחיקת השיחה — לא שייכת לאף חברה">מחיקה</button>'
       +'<span class="un-pick" data-id="'+u.id+'">'
         +'<button class="b" onclick="unTg(this)">שיוך לחברה<i>'+UN_CHEV+'</i></button>'
         +'<span class="m">'
-        +(u.why==='two'?'<div class="sep">החברות של '+u.who+'</div>'
+        +(u.why==='two'?''
                        :'<div class="s"><input type="search" placeholder="חיפוש חברה" oninput="unPickQ(this)" autocomplete="off"></div>')
         +'<span class="o">'+unOptsHtml(u,opts,'')+'</span>'
         +'</span></span>'
@@ -1354,8 +1372,7 @@ function unOptsHtml(u,opts,q){
   const list=opts.filter(c=>!q||c.indexOf(q)>=0);
   if(!list.length) return '<div class="none">אין חברה בשם ״'+q+'״</div>';
   return list.map(function(c){
-    return '<button onclick="unidSet(\''+u.id+'\',\''+c+'\')">'
-      +(u.why==='two'&&u.who?'<b>'+u.who+'</b><span class="dsh">—</span>'+c:c)+'</button>';
+    return '<button onclick="unidSet(\''+u.id+'\',\''+c+'\')">'+c+'</button>';
   }).join('');
 }
 function unPickQ(el){
@@ -1376,7 +1393,7 @@ function unidDel(id){
 function unidRestore(id){
   const u=UDEL.find(x=>x.id===id); if(!u) return;
   UDEL=UDEL.filter(x=>x.id!==id);
-  UNID.unshift({id:u.id,ph:u.ph,who:u.who,when:u.when,dur:u.dur,why:u.why,cos:u.cos,tp:u.tp});
+  UNID.unshift({id:u.id,ph:u.ph,who:u.who,when:u.when,dur:u.dur,why:u.why,cos:u.cos});
   unidRender();
   toast(u.ph+' שוחזרה — חזרה לתור השיוך');
 }
@@ -1404,26 +1421,29 @@ addEventListener('keydown',e=>{
 });
 /* הרצועה מדברת בשפה של חסימה, לא של מונה: השיחה מחכה כי בלי חברה
    אין למי לתמלל אותה. וכשאין תור — אומרים את זה ולא משאירים חור. */
+const STRIP_ARR='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
 function stripQ(){
   const el=document.getElementById('stripQ'); if(!el) return;
   const n=(typeof UNID!=='undefined'?UNID.length:0);
+  /* כל הרצועה היא הכפתור — לוחצים על הדבר שמספר לך על העבודה.
+     גם כשהתור ריק היא נפתחת, כי שם יושב גם ארכיון השיחות שנמחקו. */
   el.innerHTML = n
-    ? '<span class="cap">ממתין לך</span>'
+    ? '<span class="cap">ממתין לשיוך</span>'
       +'<span class="n num">'+n+'</span>'
       +'<span class="who">שיחות טלפון לא מזוהות<span class="c">·</span>'
         +'<span class="hint">בלי שיוך לחברה התמלול לא מתחיל</span></span>'
-      +'<button class="btn sm" onclick="mtView(\'unid\')">לשיוך</button>'
-    : '<span class="cap">ממתין לך</span><span class="n num zero">0</span>'
+      +'<span class="go">לשיוך '+STRIP_ARR+'</span>'
+    : '<span class="cap">ממתין לשיוך</span><span class="n num zero">0</span>'
       +'<span class="who">כל השיחות שויכו<span class="c">·</span>'
-        +'<span class="hint">אין מה לשייך כרגע</span></span>';
+        +'<span class="hint">אין מה לשייך כרגע</span></span>'
+      +'<span class="go">לתור '+STRIP_ARR+'</span>';
+  el.onclick=function(){mtView('unid')};
 }
 
 function mtView(v){
   const sec=document.querySelector('.panel.list');
   sec.classList.toggle('calls', v==='unid');
   document.body.classList.toggle('calls-on', v==='unid');
-  document.getElementById('tbMeet').classList.toggle('on', v!=='unid');
-  document.getElementById('tbUnid').classList.toggle('on', v==='unid');
   if(v==='unid') unidRender();
 }
 unidRender(); stripQ();
