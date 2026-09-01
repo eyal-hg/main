@@ -41,11 +41,18 @@
    מוצעות, שורות זיכרון, וההודעות עצמן. אם היו הודעות אך אין מה להוסיף
    לזיכרון — זה נאמר במפורש (*"לא נמצא מה להוסיף לזיכרון"*), כי שקט הוא
    מידע.
-2. **מסכם את הצ׳אטים של החברה עם העוזר באותו יום — עיבוד פר יוזר,
-   שורה אחת לחברה.**
+2. **מסכם את ערוץ הוואטסאפ של כל יוזר מול העוזר באותו יום — עיבוד
+   פר יוזר, שורה אחת לחברה.**
+   **בסקופ: ערוץ הוואטסאפ בלבד** — השיחה האחת הפתוחה תמיד של היוזר מול
+   העוזר, שבה עוברות גם הודעות התפעול, התזכורות והתגובות שלו עליהן.
+   זו תקשורת שקורית מחוץ למוצר, ואין ליועץ שום מקום אחר לראות אותה.
+   הצ׳אט שבתוך האפליקציה (שאילתות על הדשבורד) הוא שימוש במוצר —
+   לא נכנס למסך התקשורת ולא מסוכם בלילה.
    הסיכום רץ **לכל יוזר בנפרד**: הצ׳אט הוא שיחה אישית נמשכת, ההקשר של
    כל שאלה הוא השיחה שלו, והקטגוריות האישיות בזיכרון (`scope:'user'`)
    חייבות קלט משויך לאדם. אין ערבוב צ׳אטים של שני אנשים בקריאת מודל אחת.
+   הסיכום מפריד בין מה **שהיוזר** העלה לבין מה **שהמערכת** דחפה
+   (תזכורת, משימה) — סיגנל הוא מה שהוא שאל וענה, לא מה שנשלח אליו.
    ההצגה לעומת זאת היא **שורת `ai` אחת ליום־חברה** — אחרת חברה עם כמה
    יוזרים פעילים מציפה את הרשימה. בזירה, סקשן פר יוזר (כמו "מי כתב"
    בקבוצה): מה הוא שאל, מה זה מגלה, וההתכתבות עצמה. משימות ושורות
@@ -127,15 +134,17 @@ CREATE TABLE wa_messages (
   sent_at TIMESTAMPTZ NOT NULL, body TEXT, attachment JSONB
 );
 
-CREATE TABLE ai_turns (
+CREATE TABLE ai_turns (                   -- ערוץ הוואטסאפ מול העוזר בלבד
   id BIGSERIAL PRIMARY KEY, company_id BIGINT NOT NULL,
-  user_id BIGINT NOT NULL, asked_at TIMESTAMPTZ NOT NULL,
-  question TEXT NOT NULL, answer JSONB NOT NULL
+  user_id BIGINT NOT NULL, at TIMESTAMPTZ NOT NULL,
+  origin TEXT NOT NULL CHECK (origin IN ('user','assistant','system')),
+                                          -- system = הודעת תפעול/תזכורת שנדחפה
+  body JSONB NOT NULL
 );
 -- שורת ה-ai ברשימה: communications אחת ליום־חברה (source_id=NULL);
 -- הפירוק פר יוזר חי בתוך comm_outputs.payload:
 --   summary: {users:[{user_id, n_questions, summary, insights[]}]}
---   messages: {users:[{user_id, turns:[{q,a,at}]}]}
+--   messages: {users:[{user_id, turns:[{origin,body,at}]}]}
 
 CREATE TABLE calls (
   id BIGSERIAL PRIMARY KEY,
