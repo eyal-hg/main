@@ -37,16 +37,26 @@
      fix:null, done:false},
   ];
   /* HK מדווחת — היא לא מבצעת העברות ולא מתזמנת אותן.
-     הפעולה היחידה על חריגה היא להביא אותה לידיעת הלקוח. */
+     הפעולה היחידה על חריגה היא להביא אותה לידיעת הלקוח.
+     כל החלטה מתועדת ביומן החריגות (hkOvLog) — מוצג ב"תפעול יומי". */
+  function ovLog(e,act){
+    try{
+      const log=JSON.parse(localStorage.getItem('hkOvLog')||'[]');
+      log.unshift({co:(CLIENTS[CUR]||{}).name||'', t:e.t, s:e.s, when:e.when,
+                   act, by:(CLIENTS[CUR]||{}).mgr||'מנהלת התזרים', d:'01.09.2026 · '+
+                   new Date().toTimeString().slice(0,5)});
+      localStorage.setItem('hkOvLog',JSON.stringify(log.slice(0,80)));
+    }catch(x){}
+  }
   function finExcMsg(k){
     const e=FIN_EXC.find(x=>x.k===k); if(!e) return;
-    e.done=true; e.ign=false; renderFinFoot();
-    toast('נשלחה הודעה ל'+(CLIENTS[CUR].name||'לקוח')+' — '+e.t);
+    e.done=true; e.ign=false; ovLog(e,'msg'); renderFinFoot();
+    toast('נשלחה הודעה ל'+(CLIENTS[CUR].name||'לקוח')+' — '+e.t+' · תועד ביומן החריגות');
   }
   function finExcIgn(k){
     const e=FIN_EXC.find(x=>x.k===k); if(!e) return;
-    e.done=true; e.ign=true; renderFinFoot();
-    toastUndo('החריגה סומנה כלא לדיווח',()=>{e.done=false;e.ign=false;renderFinFoot();});
+    e.done=true; e.ign=true; ovLog(e,'ign'); renderFinFoot();
+    toastUndo('החריגה סומנה כלא לדיווח — תועד ביומן החריגות',()=>{e.done=false;e.ign=false;renderFinFoot();});
   }
   /* שלבי תפעול שמסומנים כטופלו מראש בדמו — כדי לנחות על השלב שרוצים להציג.
      ריק ⇒ נוחתים על "הודעות לקוח" (השלב הראשון).

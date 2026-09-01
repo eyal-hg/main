@@ -182,6 +182,20 @@ function render(){
   }).sort((a,b)=>b.v-a.v).slice(0,7);
   const minsTot=mins.reduce((s,r)=>s+ (MODE==='day'?r.v:r.v),0);
 
+  /* 4 · חריגות בפועל — העו״ש ירד מתחת למסגרת, לא תחזית.
+     ביום: מי בחריגה עכשיו וכמה עמוק. בתקופה: כמה ימי חריגה הצטברו. */
+  const over=COS.map(n=>{
+    const inOv=V(n,'ov',10,0)>6;                       /* בערך שליש מהחברות */
+    const depth=inOv?(V(n,'ovd',88,6)*1000):0;
+    const days=inOv?Math.min(scale()===1?1:V(n,'ovdays',Math.max(2,S),1),MODE==='day'?1:31):0;
+    return {n, v:MODE==='day'?depth:days, depth, days,
+      fmt:MODE==='day'
+        ? '−'+depth.toLocaleString('en-US')+'<small>₪ מתחת למסגרת</small>'
+        : days+'<small>ימי חריגה</small>',
+      tail:MODE==='day'?'':'העמוקה −'+depth.toLocaleString('en-US')+' ₪ מתחת למסגרת',
+      warn:depth>=50000||days>=Math.max(3,Math.round(S/2))};
+  }).filter(r=>r.v).sort((a,b)=>b.v-a.v).slice(0,7);
+
   document.getElementById('perTot').innerHTML=
     '<b>'+COS.length+'</b> חברות במעקב · <b>'+delTot+'</b> נמחקו מחוסר עדכון · <b>'
     +(MODE==='day'?minsTot+' דק׳':Math.round(minsTot/60)+' שעות')+'</b> תפעול';
@@ -199,7 +213,50 @@ function render(){
       'כמה זמן מסך התפעול היה פתוח על כל חברה — מהכניסה ל«מצב תפעול» ועד «סיום תפעול», כולל השהיות שנשמרו.',
       mins,'הזמן נמדד אוטומטית ממצב התפעול. חברה שחורגת מ-40 דק׳ לתפעול באופן קבוע — כנראה בעיה מבנית, לא עומס נקודתי.',
       '#1B6C9C',when)
+   +cube('הכי הרבה חריגות בפועל',
+      MODE==='day'
+        ? 'מי עמד מתחת למסגרת בסוף היום, וכמה עמוק. חריגה בפועל — לא תחזית: הבנק כבר שם.'
+        : 'כמה ימים כל חברה עמדה מתחת למסגרת בתקופה. יום חריגה בודד קורה; רצף — זו בעיה מבנית או מסגרת קטנה מדי.',
+      over.length?over:[{n:'אף חברה לא חרגה',v:1,fmt:'✓',tail:'',warn:false}],
+      'נמדד מיתרות סוף היום מול המסגרת המאושרת של כל חשבון. חריגה נספרת רק כשקרתה בפועל — תחזיות חיות במסך התזרים.',
+      '#8B2E24',when)
+   +ovLogCube()
    +'<div class="cube next">הקובייה הבאה נכנסת לכאן —<br>המסך בנוי להתרחב קובייה-קובייה</div>';
+}
+/* =====================================================================
+   5 · יומן החריגות — התיעוד עצמו.
+   כל "הודעה ללקוח" או "התעלם" על חריגה בסיום התפעול נכתבים לכאן
+   (hkOvLog, נכתב מ-ops.js). הקוביות שמעל סופרות; היומן זוכר מי החליט מה.
+   ===================================================================== */
+const OV_SEED=[
+  {co:'יאיר לשלום השקעות בע״מ', t:'חריגה בחשבון דיסקונט+ 181433224', s:'42,807- ₪ · בתאריך 1.9.2026',
+   when:'soon', act:'msg', by:'לירון בן כליפא', d:'01.09.2026 · 08:34'},
+  {co:'אנרגי אינטרנשיונל', t:'עו״ש לאומי 604 — 161,198- ₪', s:'בחריגה בפועל 6 ימים · מסגרת 150,000 ₪',
+   when:'now', act:'msg', by:'טל מלקר', d:'31.08.2026 · 09:12'},
+  {co:'מטעי גבעון', t:'עו״ש מזרחי 295199 — חריגה צפויה', s:'32,400- ₪ בעוד 9 ימים',
+   when:'soon', act:'ign', by:'טל מלקר', d:'31.08.2026 · 10:05'},
+  {co:'סהר חשמל', t:'כרטיס אשראי מקס — חיוב נדחה 18,400 ₪', s:'החיוב לא כובד · אין יתרה פנויה',
+   when:'now', act:'msg', by:'לירון בן כליפא', d:'28.08.2026 · 11:40'},
+];
+function ovEntries(){
+  let live=[];
+  try{live=JSON.parse(localStorage.getItem('hkOvLog')||'[]')}catch(e){}
+  return live.concat(OV_SEED).slice(0,8);
+}
+function ovLogCube(){
+  const L=ovEntries();
+  return `<section class="cube">
+    <div class="cube-h"><b>יומן החריגות</b><span>${L.length} רישומים אחרונים</span></div>
+    <div class="cube-sub">התיעוד עצמו: כל חריגה שעלתה בסיום תפעול, מה הוחלט עליה, מי ומתי.
+      נכתב אוטומטית מ«הודעה ללקוח» ו«התעלם» במסך התפעול.</div>
+    <div class="rowz">${L.map(e=>`
+      <div class="rz">
+        <span class="nm">${e.co} · <span style="font-weight:400">${e.t}</span></span>
+        <span class="flag ${e.act==='msg'?'':'amb'}" style="${e.act==='msg'?'background:var(--green-bg);color:var(--green)':''}">${e.act==='msg'?'✓ נשלחה הודעה':'○ לא דווח'}</span>
+        <span class="sub2">${e.s} · ${e.by} · ${e.d}</span>
+      </div>`).join('')}</div>
+    <div class="cube-note">יומן — לא רשימת מטלות: מה שנרשם כאן כבר הוכרע. חריגה פתוחה חיה במסך התפעול עד שמחליטים עליה.</div>
+  </section>`;
 }
 render();
 </script>
