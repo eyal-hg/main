@@ -3927,7 +3927,7 @@ const MSGS_THREADS={
   group:{name:'תפעול · אנרגי אינטרנשיונל', ppl:[
       {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'רות אלמוג',j:'מנהלת כספים',r:'cl'},
       {n:'אילון שחר',j:'יועץ',r:'adv'},{n:'טל מלקר',j:'מנהל תזרים · HK',r:'me'},
-      {n:'054-771-2280',r:'unk',unk:1},{n:'בוט HK',j:'אוטומטי',r:'bot'}], unread:2, msgs:[
+      {n:'054-771-2280',r:'unk',unk:1},{n:'העוזר',j:'אוטומטי',r:'bot'}], unread:2, msgs:[
     {day:'אתמול', date:'רביעי · 01.07'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'מצרף את אישור ההעברה ללדובק 🙏 [קובץ]', time:'10:12', tag:'משימת הזנה'},
     {who:'טל מלקר', job:'מנהל תזרים · HK', role:'me', t:'תודה! חסר לי עוד מועד פירעון לשיק 21036', time:'10:20', tag:'בקשה פתוחה'},
@@ -3935,7 +3935,7 @@ const MSGS_THREADS={
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'סגור. דרך אגב — סגרנו את החוזה עם מרכז הבנייה 🎉', time:'12:44'},
     {who:'רות אלמוג', job:'מנהלת כספים', role:'cl', t:'אני אשלח את הדוח, צחי לא מעורב בזה בדרך כלל', time:'12:51'},
     {who:'054-771-2280', role:'unk', unk:1, t:'שלום, מצרף את הצעת המחיר לליסינג החדש [PDF]', time:'12:58'},
-    {who:'בוט HK', job:'אוטומטי', role:'bot', t:'📋 סיכום פגישת 09:00 נשלח · נפתחו 3 משימות', time:'13:05'},
+    {who:'העוזר', job:'אוטומטי', role:'bot', t:'📋 סיכום פגישת 09:00 נשלח · נפתחו 3 משימות', time:'13:05'},
     {sum:{ran:'02:10', n:15, unk:'054-771-2280', lines:[
       S('נסגר החוזה עם מרכז הבנייה — צפי תוספת למחזור','אירועים מהותיים'),
       S('החומר מגיע מרות אלמוג, לא מצחי','שיתוף פעולה'),
@@ -3951,7 +3951,7 @@ const MSGS_THREADS={
   ]},
   mgmt:{name:'הנהלה · אנרגי', ppl:[
       {n:'צחי עובד',j:'בעלים',r:'cl'},{n:'אילון שחר',j:'יועץ',r:'adv'},
-      {n:'בוט HK',j:'אוטומטי',r:'bot'}], unread:0, msgs:[
+      {n:'העוזר',j:'אוטומטי',r:'bot'}], unread:0, msgs:[
     {day:'שני', date:'שני · 29.06'},
     {who:'אילון שחר', job:'יועץ', role:'adv', t:'צחי, לפני שנרחיב — כדאי שנסגור את המסגרת מול הבנק', time:'09:10'},
     {who:'צחי עובד', job:'בעלים', role:'cl', t:'אני לא רוצה להגדיל מסגרת, זה נראה לי כמו הודאה בכישלון', time:'09:25'},
@@ -3964,7 +3964,7 @@ const MSGS_THREADS={
     {sum:{pending:1}},
   ]},
 };
-/* אות אחת. לעברית אין קונבנציה לראשי-תיבות דו-אותיים, ו״בוט HK״ יוצא ״בH״. */
+/* אות אחת. לעברית אין קונבנציה לראשי-תיבות דו-אותיים. */
 const MG_INI=n=>String(n||'').trim().charAt(0);
 /* אייקון קו-מתאר, לא אמוג׳י — אותה שפת SVG של .com-search במסך הזיכרון */
 const MG_ICO=g=>g
@@ -3981,6 +3981,13 @@ function mgFam(lines){
     g.lines.push(l);
   });
   return out.sort((a,b)=>(a.sc==='co'?0:1)-(b.sc==='co'?0:1));
+}
+/* white-label: בעל העסק לא רואה מי הספק שמאחורי המשרד ולא מונחים
+   תפעוליים פנימיים. תפקיד שמכיל «HK» או «מנהל תזרים» מוצג כ«צוות הליווי». */
+function mgJob(j,isCli){
+  if(!j) return '';
+  if(!isCli) return j;
+  return /HK|מנהל תזרים|מתפעל/.test(j) ? 'צוות הליווי' : j;
 }
 function mgSumHtml(s,isCli){
   if(isCli) return '';
@@ -4018,7 +4025,7 @@ function renderMsgsView(){
       ${k===MSGS_SEL?`<div class="mg-ppl">${(g.ppl||[]).map(p=>`<span class="mg-p ${p.r}">
         <i>${p.unk?'?':MG_INI(p.n)}</i>
         <b>${p.unk?`<bdo dir="ltr">${comEsc(p.n)}</bdo>`:comEsc(p.n)}</b>
-        <em>${p.unk?'לא מזוהה':comEsc(p.j||'')}</em></span>`).join('')}</div>`:''}
+        <em>${p.unk?'לא מזוהה':comEsc(mgJob(p.j,isCli))}</em></span>`).join('')}</div>`:''}
     </div>`;}).join('');
   /* החיפוש רץ על ההודעות בלבד — הסיכום הלילי אינו הודעה — ומפריד יום שנשאר
      בלי אף הודעה נופל איתן. */
@@ -4034,7 +4041,7 @@ function renderMsgsView(){
     :`<div class="mg-m ${m.role}">
         <span class="mg-av ${m.role}">${MG_INI(m.who)}</span>
         <div class="mg-bub">
-          <b class="mg-who">${m.unk?`<bdo dir="ltr">${mk(m.who)}</bdo>`:mk(m.who)}<i>${m.unk?'לא מזוהה':comEsc(m.job||'')}</i></b>
+          <b class="mg-who">${m.unk?`<bdo dir="ltr">${mk(m.who)}</bdo>`:mk(m.who)}<i>${m.unk?'לא מזוהה':comEsc(mgJob(m.job,isCli))}</i></b>
           <span class="mg-t">${mk(m.t)}</span>
           <span class="mg-meta">${m.time}${(m.tag&&!isCli)?` <i class="mg-tag">${m.tag}</i>`:''}</span>
         </div>
@@ -4044,7 +4051,9 @@ function renderMsgsView(){
     ${solo?'':`<aside class="mg-side">
       <div class="mg-side-h">קבוצות הוואטסאפ<em>${keys.length}</em></div>
       <div class="mg-list">${list}</div>
-      <div class="mg-note">כל הודעה בקבוצות האלה עוברת את אותו ראוטינג: משימות, נגררות, וסיכום לילי לזיכרון.</div>
+      <div class="mg-note">${isCli
+        ? 'כל מה שנכתב כאן נקרא ומטופל — בקשות הופכות למשימות, ובסוף היום נכתב סיכום.'
+        : 'כל הודעה בקבוצות האלה עוברת את אותו ראוטינג: משימות, נגררות, וסיכום לילי לזיכרון.'}</div>
     </aside>`}
     <div class="mg-main">
       <div class="mg-head">

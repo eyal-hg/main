@@ -26,7 +26,7 @@
       if(kpi)kpi.style.display='';
       /* בעל העסק לא רואה סיווג פנימי של החברה שלו — הוא רואה מי מלווה אותו */
       sub.textContent=(ROLE==='client1'||ROLE==='clientN')
-        ? 'מלווה על ידי '+CLIENTS[CUR].mgr+' · HK · עודכן 2.7.2026 10:54'
+        ? 'מלווה על ידי '+(CLIENTS[CUR].firm||CLIENTS[CUR].mgr)+' · עודכן 2.7.2026 10:54'
         : 'חברת ייעוץ · '+CLIENTS[CUR].mgr+' · סונכרן אוטומטית 2.7.2026 10:54';
     }
     // force dashboard tab
@@ -178,7 +178,8 @@
       return;
     }
     body.innerHTML=list.map(m=>{
-      const av=`<div class="av ${m.from}">${m.from==='hk'?'HK':initials(m.name)}</div>`;
+      /* גם באווטאר לא כותבים "HK" — הלקוח לא אמור לדעת מי הספק שמאחורי המשרד */
+      const av=`<div class="av ${m.from}">${initials(m.name)}</div>`;
       const sender=`<div class="sender">${m.name}${m.auto?'<span class="auto">אוטומטי</span>':''}</div>`;
       const bubble=`<div class="b ${m.from}">${sender}<div class="txt">${m.t}</div><div class="when">${m.when}</div></div>`;
       return `<div class="msg ${m.from}">${av}${bubble}</div>`;
@@ -264,6 +265,10 @@
   }
   window.tidyClientHead=tidyClientHead;
   function showTab(t){
+    /* מסכי ניהול פנימיים אינם קיימים לבעל העסק — הם לא בסרגל שלו, ואסור
+       שיגיע אליהם גם דרך קישור ישן או קריאה ישירה. */
+    const CO_INTERNAL=['coset','flowlog'];
+    if((ROLE==='client1'||ROLE==='clientN')&&CO_INTERNAL.indexOf(t)>=0) t='dash';
     CUR_TAB=t;
     /* הפסים של בעל העסק חיים בדשבורד בלבד. הם בודקים את CUR_TAB בעצמם,
        ולכן הם נקראים כאן — אחרי ההשמה ולפני הענפים שיוצאים ב-return. */
