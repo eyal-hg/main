@@ -60,6 +60,9 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .strip .next .c{color:var(--on-navy4)}
 .strip .next .hint{color:var(--on-navy2);font-size:13px}
 .strip .next .in{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:3px 11px;font-size:12.5px;color:var(--on-navy)}
+.strip .next .n{font-size:22px;font-weight:600;line-height:1;color:#FFB4AC}
+.strip .next .n.zero{color:var(--white)}
+.strip .next .sub{color:var(--on-navy2);font-size:13px}
 .strip .spacer{margin-inline-start:auto}
 .strip .now{font-size:13px;color:var(--on-navy2)}
 .strip .now b{color:var(--white);font-weight:500}
@@ -353,7 +356,22 @@ table.ml{width:100%;border-collapse:collapse}
 .k-ic{width:25px;height:25px;padding:6px;border-radius:50%;box-sizing:border-box;flex:none;
   margin-inline-end:9px;vertical-align:-8px;background:#EDF1F5;color:#64798C}
 tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
-/* עמודת הסוג — מילה ואייקון, לא רק גוון. זה מה שמפריד באמת. */
+/* בורר הערוץ — שלושה מסלולים, ולכן צריך גם לבודד אחד מהם */
+.ksegs{display:flex;align-items:center;gap:2px;flex:none;background:var(--white);
+  border:1px solid var(--bd);border-radius:8px;padding:3px}
+.ksegs button{display:inline-flex;align-items:center;gap:5px;border:0;background:none;font:inherit;
+  font-size:12.5px;color:var(--ink2);padding:6px 10px;border-radius:6px;cursor:pointer;line-height:1}
+.ksegs button svg{flex:none;opacity:.75}
+.ksegs button b{font-weight:500;font-size:11.5px;color:var(--muted-2,#8b9aa8)}
+.ksegs button:hover{background:var(--surface2)}
+.ksegs button.on{font-weight:600}
+.ksegs button.on b{color:inherit;opacity:.7}
+.ksegs button.on svg{opacity:1}
+.ksegs button.on[data-k=""]{background:#EEF2F6;color:var(--navy)}
+.ksegs button.on[data-k="meet"]{background:#EEF2F6;color:#4F6579}
+.ksegs button.on[data-k="call"]{background:#EDE9FD;color:#5B41C4}
+.ksegs button.on[data-k="wa"]{background:#DEF0F3;color:#0A6675}
+/* עמודת הערוץ — מילה ואייקון, לא רק גוון. זה מה שמפריד באמת. */
 .ml td.kd{width:1%;white-space:nowrap;padding-inline-start:0;padding-inline-end:2px}
 .ml th.kd{width:1%;padding-inline-start:0}
 .kchip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
@@ -526,14 +544,9 @@ tr.m.wa .nm{color:#0B5A68}
   <div><h1>תקשורת</h1></div>
   <div class="date num">יום חמישי · 02.07.2026</div>
   <div class="sep"></div>
-  <div class="next">
-    <span class="cap">האירוע הבא</span>
-    <span class="tm num">13:00</span>
-    <span class="who"><a href="clients.html?c=514778220">מטעי גבעון</a><span class="c">·</span>שיחת מעקב<span class="c">·</span><span class="hint">אחרי חריגת התקציב</span></span>
-    <span class="in num">בעוד 2:06</span>
-    <button class="btn danger sm rec" onclick="recTg(this,'מטעי גבעון')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4"/></svg><i class="rd"></i><span class="rl">הקלטה</span></button>
-    <button class="btn sm" onclick="arenaShow('prep')">הכנה לפגישה</button>
-  </div>
+  <!-- הספירה לאירוע הבא חיה במסך «היום». מה שייחודי כאן הוא מה שתקוע:
+       שיחה שלא שויכה לחברה לא מתומללת, ולכן לא הופכת לכלום. -->
+  <div class="next" id="stripQ"></div>
   <div class="spacer"></div>
   <div class="now num"><b>10:54</b> · עכשיו</div>
 </header>
@@ -545,7 +558,7 @@ tr.m.wa .nm{color:#0B5A68}
     <div class="ph">
       <div class="mtabs">
         <button class="on" id="tbMeet" onclick="mtView('meet')">הכל</button>
-        <button id="tbUnid" onclick="mtView('unid')">שיחות טלפון לא מזוהות <i id="unidN"></i></button>
+        <button id="tbUnid" onclick="mtView('unid')">שיחות טלפון לא מזוהות</button>
       </div>
       <span class="hint" id="hint"></span></div>
     <div class="search">
@@ -556,6 +569,7 @@ tr.m.wa .nm{color:#0B5A68}
           <div class="o" id="cfOpts"></div>
         </div>
       </div>
+      <div class="ksegs" id="ksegs"></div>
       <div class="in">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="q" type="search" placeholder="חיפוש בכל התקשורת — נושא, החלטה, יעד">
@@ -567,7 +581,7 @@ tr.m.wa .nm{color:#0B5A68}
     <div class="topics fbt" id="fbtRow"></div>
     <div class="tw">
     <table class="ml" id="ml">
-      <thead><tr><th>תאריך</th><th>סוג</th><th>לקוח · נושא</th><th>מה חסר</th><th></th></tr></thead>
+      <thead><tr><th>תאריך</th><th class="kd">ערוץ</th><th>לקוח · נושא</th><th>מה חסר</th><th></th></tr></thead>
       <tbody>
         <!-- הפגישה הקרובה של היום — ראש הרשימה -->
         <tr class="m fut" tabindex="0" role="button" data-tags="prep" data-k="משה עובד פגישה חודשית יולי" id="r1600">
@@ -691,7 +705,7 @@ tr.m.wa .nm{color:#0B5A68}
   const rows=$$('#ml tbody tr.m');
   const hebCount=['אפס','אחת','שתיים','שלוש','ארבע','חמש','שש','שבע','שמונה','תשע'];
   /* מצב סינון אחד — כל צ'יפ, מסנן ותיבה נגזרים ממנו */
-  const S={q:'',fbt:null,f:null,c:''};
+  const S={q:'',fbt:null,f:null,c:'',kd:''};
   const MISS={rec:'לא הוקלטה',appr:'סיכום לא אושר',sent:'סיכום לא נשלח',prep:'הכנה לא נפתחה'};
   const TOPICS=[['מסגרת אשראי','מסגרת אשראי'],['גבייה','גבייה'],['קורס המנחות','קורס'],['התלות ברימון','רימון מוצרי'],['תמחור','תמחור'],['גיוס עובדים','גיוס']];
   const FBTS=[['חיבור חזק ל"למה"','why'],['פתיחה במספרים בלי הקשר','nums'],['צלילה לפרטים טכניים','deep'],['הקשבה והכלה','listen'],['סיכום פעולות חד','actions']];
@@ -717,7 +731,7 @@ tr.m.wa .nm{color:#0B5A68}
     build(TOPICS,'topRow','topicGo','_topMore','נושאים שחזרו לאחרונה',S.q);
     build(FBTS,'fbtRow','fbtGo','_fbtMore','מה חוזר במשובים על היועץ',S.fbt,
       '<a href="#" class="tclr" id="tclr" onclick="event.preventDefault();tClear()">✕ ניקוי הסינון</a>');
-    const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(S.q||S.fbt||S.f||S.c));
+    const tc=document.getElementById('tclr'); if(tc) tc.classList.toggle('on',!!(S.q||S.fbt||S.f||S.c||S.kd));
   }
   window.renderTopics=renderTopics;
 
@@ -757,7 +771,7 @@ tr.m.wa .nm{color:#0B5A68}
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.querySelectorAll('.cpick.on').forEach(x=>x.classList.remove('on')); });
   $('#cfChev').innerHTML=CF_CHEV;
 
-  function tClear(){ S.q='';S.fbt=null;S.f=null;S.c=''; $('#q').value=''; cfRender(); apply(); }
+  function tClear(){ S.q='';S.fbt=null;S.f=null;S.c='';S.kd=''; $('#q').value=''; cfRender(); ksegRender(); apply(); }
   window.topicGo=topicGo; window.fbtGo=fbtGo; window.tClear=tClear;
 
   function apply(){
@@ -765,6 +779,7 @@ tr.m.wa .nm{color:#0B5A68}
     rows.forEach(r=>{
       const tags=r.dataset.tags.split(' ');
       let ok = S.f ? tags.includes(S.f) : true;
+      if(ok&&S.kd&&r.dataset.kind!==S.kd) ok=false;
       if(ok&&S.c&&!r.dataset.k.includes(S.c)) ok=false;
       if(ok&&S.fbt&&!(r.dataset.fbt||'').split(' ').includes(S.fbt)) ok=false;
       const hit=r.querySelector('.hit'); hit.innerHTML='';
@@ -778,8 +793,8 @@ tr.m.wa .nm{color:#0B5A68}
     const parts=[];
     if(S.f) parts.push(MISS[S.f]);
     const fbl=(FBTS.find(f=>f[1]===S.fbt)||[])[0]; if(fbl) parts.push(fbl);
-    $('#hint').textContent = (parts.length||S.c)
-      ? (parts.length?'מסונן: '+parts.join(' · ')+' · ':'')+(hebCount[shown]||shown)+' פריטים ברשימה'
+    $('#hint').textContent = (parts.length||S.c||S.kd)
+      ? (parts.length?'מסונן: '+parts.join(' · ')+' · ':'')+shown+(shown===1?' פריט ברשימה':' פריטים ברשימה')
       : '';
     $('#res').innerHTML = S.q?'<b>'+shown+'</b> תוצאות ל-״'+esc(S.q)+'״':'';
     $('#clr').classList.toggle('on',!!S.q);
@@ -951,7 +966,7 @@ tr.m.wa .nm{color:#0B5A68}
   };
   let _arTab='sum';
   function arTab(v){ _arTab=v; arenaShow(window._arSel); }
-  /* שלושה סוגים, מקום אחד. מי שמוסיף סוג רביעי נוגע רק כאן. */
+  /* שלושה ערוצים, מקום אחד. מי שמוסיף ערוץ רביעי נוגע רק כאן. */
   const KINDS={
     meet:{lb:'פגישה', sum:'סיכום פגישה',
       ic:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'},
@@ -1136,7 +1151,7 @@ tr.m.wa .nm{color:#0B5A68}
     else if(act==='resch') toast('תיאום מחדש עם אנרגי גולני — נפתח ביומן');
     else if(act==='prep') location.href='today.html?prep=039112774';
   });
-  /* עמודת הסוג. השורות כתובות ב-HTML, ולכן מוסיפים אותה כאן פעם אחת
+  /* עמודת הערוץ. השורות כתובות ב-HTML, ולכן מוסיפים אותה כאן פעם אחת
      במקום לחזור על אותו תא ארבעים פעם. */
   const KCHIP={
     meet:['פגישה','<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'],
@@ -1145,18 +1160,32 @@ tr.m.wa .nm{color:#0B5A68}
   };
   document.querySelectorAll('#ml tbody tr.m').forEach(tr=>{
     const k=tr.classList.contains('wa')?'wa':tr.classList.contains('call')?'call':'meet';
+    tr.dataset.kind=k;
     const ic=tr.querySelector('.k-ic'); if(ic) ic.remove();
     const td=document.createElement('td'); td.className='kd';
     td.innerHTML='<span class="kchip '+k+'">'+KCHIP[k][1]+KCHIP[k][0]+'</span>';
     tr.firstElementChild.after(td);
   });
 
+  /* בורר הערוץ. המספרים נגזרים מהשורות עצמן — אין רשימה שנייה לתחזק. */
+  const KSEG=[['','הכל',''],['meet','פגישות',KCHIP.meet[1]],['call','טלפון',KCHIP.call[1]],['wa','וואטסאפ',KCHIP.wa[1]]];
+  function ksegRender(){
+    const all=[...document.querySelectorAll('#ml tbody tr.m')];
+    $('#ksegs').innerHTML=KSEG.map(s=>{
+      const n=s[0]?all.filter(r=>r.dataset.kind===s[0]).length:all.length;
+      return '<button type="button" data-k="'+s[0]+'" class="'+(S.kd===s[0]?'on':'')+'" '
+        +'onclick="ksegGo(\''+s[0]+'\')">'+s[2]+s[1]+'<b>'+n+'</b></button>';
+    }).join('');
+  }
+  function ksegGo(k){ S.kd=(S.kd===k)?'':k; ksegRender(); apply(); }
+  window.ksegGo=ksegGo;
+
   /* חוזה כתובת: ?c לקוח · ?q חיפוש · ?f מה חסר · ?m פגישה */
   const u=new URLSearchParams(location.search);
   if(u.get('f')&&MISS[u.get('f')]) S.f=u.get('f');
   if(u.get('q')){ S.q=u.get('q').trim(); $('#q').value=S.q; }
   if(u.get('c')&&CFCOS.indexOf(u.get('c'))>=0) S.c=u.get('c');
-  cfRender();
+  cfRender(); ksegRender();
   apply();
   arenaShow(u.get('m')||'r0207');
 })();
@@ -1248,7 +1277,7 @@ const UN_ICO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke
 
 function unidRender(){
   const n=UNID.length;
-  const b=document.getElementById('unidN'); if(b) b.textContent=n||'';
+  stripQ();
   const top=document.getElementById('unTop'), host=document.getElementById('unList');
   if(!host) return;
   if(!n){
@@ -1373,6 +1402,22 @@ document.addEventListener('click',e=>{
 addEventListener('keydown',e=>{
   if(e.key==='Escape') document.querySelectorAll('.un-pick.on').forEach(x=>x.classList.remove('on'));
 });
+/* הרצועה מדברת בשפה של חסימה, לא של מונה: השיחה מחכה כי בלי חברה
+   אין למי לתמלל אותה. וכשאין תור — אומרים את זה ולא משאירים חור. */
+function stripQ(){
+  const el=document.getElementById('stripQ'); if(!el) return;
+  const n=(typeof UNID!=='undefined'?UNID.length:0);
+  el.innerHTML = n
+    ? '<span class="cap">ממתין לך</span>'
+      +'<span class="n num">'+n+'</span>'
+      +'<span class="who">שיחות טלפון לא מזוהות<span class="c">·</span>'
+        +'<span class="hint">בלי שיוך לחברה התמלול לא מתחיל</span></span>'
+      +'<button class="btn sm" onclick="mtView(\'unid\')">לשיוך</button>'
+    : '<span class="cap">ממתין לך</span><span class="n num zero">0</span>'
+      +'<span class="who">כל השיחות שויכו<span class="c">·</span>'
+        +'<span class="hint">אין מה לשייך כרגע</span></span>';
+}
+
 function mtView(v){
   const sec=document.querySelector('.panel.list');
   sec.classList.toggle('calls', v==='unid');
@@ -1381,7 +1426,7 @@ function mtView(v){
   document.getElementById('tbUnid').classList.toggle('on', v==='unid');
   if(v==='unid') unidRender();
 }
-unidRender();
+unidRender(); stripQ();
 
 </script>
 </body>
