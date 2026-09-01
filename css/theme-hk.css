@@ -4132,12 +4132,15 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
   --com-bad:#C43D30; --com-bad-bg:#FDEDEB; --com-strike:#D5DEE6;
   --com-w:620px;
 }
-.com{padding:2px 0 28px}
+/* הזיכרון הוא גיליון אחד — משטח לבן שעליו הכול כתוב, בלי קוביות.
+   ההיררכיה טיפוגרפית: כותרות קטנות, טקסט, ואוויר. */
+.com{background:#fff;border:1px solid #EAF0F5;border-radius:18px;
+  box-shadow:0 2px 14px -10px rgba(12,64,104,.14);padding:22px 30px 18px;margin-bottom:24px}
 /* ---- רצועה: חיפוש ומצב הסינון. שום דבר אחר ---- */
-.com-bar{display:flex;align-items:center;gap:14px;min-height:34px;margin-bottom:14px}
-.com-search{display:flex;align-items:center;gap:8px;flex:none;height:34px;padding:0 11px;
-  background:#fff;border:1px solid var(--com-line);border-radius:6px;color:var(--com-mut)}
-.com-search:focus-within{border-color:var(--com-focus)}
+.com-bar{display:flex;align-items:center;gap:14px;min-height:34px;margin-bottom:16px}
+.com-search{display:flex;align-items:center;gap:8px;flex:none;height:34px;padding:0 13px;
+  background:#F4F8FB;border:1px solid transparent;border-radius:999px;color:var(--com-mut)}
+.com-search:focus-within{background:#fff;border-color:var(--com-focus)}
 .com-search input{width:230px;border:0;outline:none;background:none;font:inherit;font-size:13px;color:var(--com-ink)}
 .com-res{font-size:12.5px;color:var(--com-mut)}
 .com-res b{color:var(--com-navy);font-weight:600}
@@ -4145,13 +4148,17 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
   padding:2px 4px;margin-inline-start:6px;cursor:pointer;text-decoration:underline}
 
 /* ---- שתי עמודות מסמך ---- */
-.com-cols{display:grid;grid-template-columns:repeat(2,minmax(0,var(--com-w)));
-  gap:22px;align-items:start;justify-content:start}
-.com-col{min-width:0}
-@media (max-width:1150px){.com-cols{grid-template-columns:minmax(0,var(--com-w))}}
+.com-cols{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start}
+.com-col{min-width:0;padding-inline-end:30px}
+.com-col + .com-col{padding-inline-end:0;padding-inline-start:30px;
+  border-inline-start:1px solid #EEF3F7}
+@media (max-width:1150px){.com-cols{grid-template-columns:1fr}
+  .com-col{padding-inline-end:0}
+  .com-col + .com-col{padding-inline-start:0;border-inline-start:0;
+    margin-top:22px;padding-top:22px;border-top:1px solid #EEF3F7}}
 
 /* ---- כותרת עמודה נדבקת: אומרת של מי המסמך ---- */
-.com-sh{position:sticky;top:0;z-index:3;background:var(--bg,#F4F7FA);
+.com-sh{position:sticky;top:0;z-index:3;background:#fff;
   display:flex;align-items:baseline;gap:9px;
   padding:9px 0 8px;margin:0 0 4px;border-bottom:1px solid var(--com-line);
   font-size:13px;font-weight:600;color:var(--com-navy)}
@@ -4174,18 +4181,17 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
   padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .com-shared{font-size:11.5px;color:var(--com-pr);margin:0 0 10px}
 
-/* ---- הכרטיס ----
-   זיכרון נקרא כמו פנקס, לא כמו לוח בקרה: כותרת שקטה בטקסט כהה על לבן,
-   ונקודת צבע קטנה שאומרת של מי הידיעה — כחול לעסק, סגול לאדם.
-   הכחול הכהה שמור במסך הזה לפריט הפעיל בסרגל בלבד. */
-.com-c{background:#fff;border:1px solid #E8EEF4;border-radius:12px;overflow:hidden;
-  box-shadow:0 1px 2px rgba(12,64,104,.03);margin-bottom:12px;transition:border-color .14s}
-.com-c:hover{border-color:#D8E3ED;box-shadow:0 3px 10px -6px rgba(12,64,104,.12)}
-.com-c.empty{background:#FBFCFE;box-shadow:none}
-.com-h{display:flex;align-items:baseline;gap:11px;padding:13px 20px 3px;background:none}
-.com-h b{flex:none;display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;
-  color:var(--com-navy)}
-.com-h b::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
+/* ---- הקטגוריה: סקציה על הגיליון, לא קופסה.
+   הזהות בנקודת צבע — כחול לעסק, סגול לאדם — והשאר טיפוגרפיה ואוויר. */
+.com-c{background:none;border:0;border-radius:0;overflow:visible;box-shadow:none;
+  margin:0;padding:15px 0 17px}
+.com-c + .com-c{border-top:1px solid #F1F5F9}
+.com-c.empty .com-h b{color:#93A3B3}
+.com-c.empty .com-h b::before{opacity:.4}
+.com-h{display:flex;align-items:baseline;gap:11px;padding:0 0 4px;background:none}
+.com-h b{flex:none;display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;
+  color:var(--com-navy);letter-spacing:.01em}
+.com-h b::before{content:"";width:6px;height:6px;border-radius:50%;flex:none}
 .com-c[data-scope="company"] .com-h b::before{background:var(--com-co)}
 .com-c[data-scope="user"] .com-h b::before{background:var(--com-pr)}
 .com-h .com-vis.gd{color:#6B4FA0}
@@ -4201,7 +4207,7 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .com-hb:hover,.com-hb.on{color:var(--com-co);text-decoration:underline}
 
 /* ---- הגוף: מסמך אחד + רייל אחד ---- */
-.com-body{position:relative;padding:7px 20px 13px}
+.com-body{position:relative;padding:2px 0 0}
 /* השורה — פסקה. מרזב 44px בקצה שמור תמיד, כדי שהפעולות ייכנסו באפס הזזה. */
 .com-p{position:relative;font-size:13px;line-height:1.6;color:var(--com-ink);
   padding:4px 8px;padding-inline-start:20px;padding-inline-end:30px;
@@ -4231,25 +4237,25 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .com-none{font-size:13px;color:var(--com-faint);padding:2px 0}
 .com-p.solved{color:var(--com-ink-2)}
 /* תקרה — רק כשהיא מלאה, ואומרת מה יקרה */
-.com-cap{margin:0 20px 10px;font-size:11.5px;color:var(--com-warn)}
-/* מה מגיע לצ׳אט — כותרת תחתונה, לא קופסה */
-.com-gd{margin:2px 12px 12px;padding:9px 12px 10px;background:#F7F4FD;
-  border:1px solid #E7DFF5;border-radius:8px}
+.com-cap{margin:7px 0 0;font-size:11.5px;color:var(--com-warn)}
+/* מה מגיע לצ׳אט — ציטוט עם פס סגול, לא קופסה */
+.com-gd{margin:10px 0 0;padding:2px 12px 3px;background:none;border:0;
+  border-inline-start:2px solid #C9B9EE;border-radius:0}
 .com-gd .gl{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
   color:var(--com-pr);margin-bottom:4px}
 .com-gd .gl::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
 .com-gd .gt{font-size:12.5px;line-height:1.55;color:#3E3163;font-weight:500}
 .com-gd .gt .ph{font-style:italic;color:#B0A3CB}
 /* היסטוריה · מצב ריק · הערת שוליים */
-.com-hist{list-style:none;margin:0 20px;padding:9px 0 12px;border-top:1px solid var(--com-line-2)}
+.com-hist{list-style:none;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--com-line-2)}
 .com-hist li{font-size:11.5px;color:var(--com-mut);line-height:1.55;padding:2px 0}
 .com-empty{padding:40px 20px;text-align:center;color:var(--com-mut);font-size:13px}
 .com-empty.sm{padding:22px 12px;font-size:12.5px}
 .com-empty b{display:block;font-size:14px;color:var(--com-ink);font-weight:600;margin-bottom:6px}
 .com-empty span{display:block}
 .com-empty .btn{margin-top:12px}
-.com-note{max-width:calc(var(--com-w)*2 + 22px);margin-top:22px;padding-top:12px;
-  border-top:1px solid var(--com-line);font-size:11.5px;color:var(--com-mut)}
+.com-note{margin-top:18px;padding-top:12px;
+  border-top:1px solid #F1F5F9;font-size:11.5px;color:var(--com-mut)}
 .com-note b{color:var(--com-pr);font-weight:600}
 
 /* הסבר "מסונן ללקוח" */
