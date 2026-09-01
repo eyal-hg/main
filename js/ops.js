@@ -318,8 +318,9 @@
   }
   function finishOps(){
     if(finPaused){opsTotal=(opsAccum[opsActiveKey]||0)+opsSession();stopOpsTimer();finPaused=false;document.getElementById('opsGrid').style.display='none';document.getElementById('finView').style.display='';opsEndBtnMode();return;}
-    if(window._refPassed===opsActiveKey){finishOps2();return;}
-    openRefresh('gate');
+    /* הרענון נשאר זמין מהכפתור שלו — אבל הוא לא חוסם את הדרך לסיכום.
+       לחיצה על "סיום תפעול" נוחתת ישר על מסך הסיום. */
+    finishOps2();
   }
   /* רענון נתוני ה-raw data — זמין תמיד, וגם השער בין חלק 1 לחלק 2 */
   let _refMode='manual';
@@ -1388,6 +1389,7 @@
   /* ===== תיעוד שיחה עם הלקוח =====
      לא פר חריגה — יומן אחד לכל החריגות של אותו תפעול: מתי התקשרנו ומה נאמר. */
   const FIN_CALLS={};
+  const FIN_DATE='01.09.2026';
   function finClock(){
     const base=10*60+54+Math.round((typeof opsTotal==='number'?opsTotal:0)/60);
     const h=Math.floor(base/60)%24, m=base%60;
@@ -1396,7 +1398,7 @@
   function finCallAdd(){
     const el=document.getElementById('finCallIn');
     const v=(el&&el.value.trim())||''; if(!v){ el&&el.focus(); return; }
-    const k='c'+CUR; (FIN_CALLS[k]=FIN_CALLS[k]||[]).push({t:v, at:finClock()});
+    const k='c'+CUR; (FIN_CALLS[k]=FIN_CALLS[k]||[]).push({t:v, at:finClock(), d:FIN_DATE});
     /* גם השיחה נכנסת ליומן החריגות — אותו תיעוד, שני מקומות קריאה */
     ovLog({t:'תיעוד שיחה', s:v, when:'now'}, 'call');
     renderFinFoot();
@@ -1411,7 +1413,7 @@
     return `<div class="fcall">
       <div class="fcall-h">תיעוד שיחה עם הלקוח<span>לכל החריגות — לא פר שורה</span></div>
       ${list.length?`<ul class="fcall-l">${list.map((c,i)=>`<li>
-          <span class="fc-at">${c.at}</span><span class="fc-t">${c.t}</span>
+          <span class="fc-at">${c.d||FIN_DATE}<i>${c.at}</i></span><span class="fc-t">${c.t}</span>
           <button class="fc-x" onclick="finCallDel(${i})" title="מחיקה">✕</button></li>`).join('')}</ul>`:''}
       <div class="fcall-add">
         <input id="finCallIn" placeholder="למשל: התקשרתי לצחי — סוכם שיבדוק מול הבנק ויחזור מחר"
@@ -1441,9 +1443,9 @@
               <button class="fx-ign" onclick="finExcIgn('${e.k}')">התעלם</button>
             </span>`}
       </div>`).join('')}
-      ${finCallHtml()}
     </div>`:'';
-    foot.innerHTML=`<div class="fin-2col"><div class="fin-c-exc">`+excHtml+`</div><div class="fin-c-send">`+`
+    foot.innerHTML=`<div class="fin-2col"><div class="fin-c-exc">`+excHtml+`</div><div class="fin-c-send">`+
+      finCallHtml()+`
       ${open.length?`<div class="fin-block">⚠ ${open.length===1?'חריגה אחת טרם דווחה':open.length+' חריגות טרם דווחו'} — התזרים לא ייצא ללקוח</div>`:`<div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> ${FIN_EXC.length?'החריגות דווחו — התזרים מוכן לשליחה':'אין חריגות — התזרים מוכן לשליחה'}</div>`}
       <button class="fin-wa" onclick="finSendCF()"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.14-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.04-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.57-.48-.5-.66-.5h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.75-.72 2-1.4.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.15l-.3-.18-3 .8.8-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg> שליחת תזרים ללקוח</button>`.replace('<button class="fin-wa"', open.length?'<button class="fin-wa" disabled title="יש חריגה שטרם דווחה ללקוח"':'<button class="fin-wa"')+`
       <button class="chip-btn" style="width:100%;justify-content:center" onclick="finishDone()">שמירה ללא שליחה</button>
