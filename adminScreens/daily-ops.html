@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HK Money – תפעול יומי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C4068; --blue:#39ABE2; --blue-soft:#E4F6FE;
+    --salmon:#c97b6e; --green:#1e8e5f; --green-bg:#dff3e9;
+    --amber:#b46e0e; --amber-bg:#fbecd0; --bad:#C43D30; --bad-bg:#FDEDEB;
+    --divider:#E3E3E3; --muted:#7E7E7E; --muted-2:#a9a9a9;
+    --bg:#F4F7FA; --off:#F8FAFC; --white:#fff;
+    --shadow-card:7px 5px 21.4px rgba(104,105,106,.10), -3px -6px 19.3px rgba(138,138,138,.13);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{direction:rtl}
+  body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--navy);line-height:1.5;
+    min-height:100vh;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  body.is-embedded .wrap{max-width:none;margin:0;padding:18px 0 28px 18px}
+  .wrap{max-width:1500px;margin:0 auto;padding:32px 40px 60px}
+
+  .page-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .page-head h1{font-size:1.7rem;font-weight:500;letter-spacing:-.7px}
+  .page-head .meta{color:var(--muted);font-size:.88rem;padding-bottom:5px}
+  .sa{font-size:.72rem;font-weight:600;color:#5B41C4;background:#EDE9FD;border:1px solid #DAD2F7;
+    border-radius:60px;padding:3px 11px;align-self:center;margin-bottom:6px}
+
+  /* ---- בורר התקופה: יום · טווח · חודש. הכול שלנו, בלי פקדי דפדפן ---- */
+  .per{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--white);
+    border:1px solid var(--divider);border-radius:14px;padding:10px 14px;margin-bottom:18px}
+  .per-modes{display:flex;gap:4px;background:var(--off);border-radius:60px;padding:3px}
+  .per-modes button{font-size:.85rem;font-weight:500;color:var(--muted);border-radius:60px;padding:5px 15px}
+  .per-modes button.on{background:var(--navy);color:#fff}
+  .per-nav{display:flex;align-items:center;gap:8px;margin-inline-start:4px}
+  .per-nav button{width:29px;height:29px;border-radius:50%;border:1px solid var(--divider);
+    display:grid;place-items:center;color:var(--muted);background:#fff}
+  .per-nav button:hover{border-color:var(--blue);color:var(--blue)}
+  .per-lbl{font-size:.95rem;font-weight:600;min-width:180px;text-align:center;font-variant-numeric:tabular-nums}
+  .per .sp{flex:1}
+  .per .tot{font-size:.85rem;color:var(--muted)}
+  .per .tot b{color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* ---- הקוביות ---- */
+  .cubes{display:grid;grid-template-columns:repeat(auto-fill,minmax(430px,1fr));gap:16px;align-items:start}
+  .cube{background:var(--white);border-top:2px solid var(--blue);box-shadow:var(--shadow-card);
+    border-radius:0 0 12px 12px;padding:18px 22px 16px}
+  .cube-h{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+  .cube-h b{font-size:1.02rem;font-weight:600}
+  .cube-h span{font-size:.8rem;color:var(--muted-2);margin-inline-start:auto;font-variant-numeric:tabular-nums}
+  .cube-sub{font-size:.8rem;color:var(--muted);margin-bottom:12px;line-height:1.55}
+  .rowz{display:flex;flex-direction:column}
+  .rz{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 14px;align-items:center;
+    padding:8px 2px;border-bottom:1px solid #F2F5F8}
+  .rz:last-child{border-bottom:0}
+  .rz .nm{font-size:.9rem;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rz .v{font-size:.95rem;font-weight:600;font-variant-numeric:tabular-nums;text-align:end;white-space:nowrap}
+  .rz .v small{font-weight:400;color:var(--muted-2);font-size:.75rem;margin-inline-start:3px}
+  .rz .sub2{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--muted-2)}
+  .rz .bar{flex:1;height:5px;border-radius:99px;background:#EEF3F7;overflow:hidden}
+  .rz .bar i{display:block;height:100%;border-radius:99px}
+  .rz.warn .v{color:var(--bad)}
+  .rz .flag{font-size:.72rem;font-weight:600;border-radius:60px;padding:1px 9px;white-space:nowrap}
+  .flag.bad{background:var(--bad-bg);color:var(--bad)}
+  .flag.amb{background:var(--amber-bg);color:var(--amber)}
+  .cube-note{margin-top:12px;padding-top:10px;border-top:1px solid #F2F5F8;
+    font-size:.76rem;color:var(--muted-2);line-height:1.6}
+  .cube.next{border:1.5px dashed var(--divider);border-radius:12px;box-shadow:none;background:none;
+    display:grid;place-items:center;min-height:180px;color:var(--muted-2);font-size:.85rem;text-align:center}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <h1>תפעול יומי</h1>
+    <span class="sa">Super Admin בלבד</span>
+    <span class="meta">מבט רוחבי על התפעול בכל החברות — הקוביות יתווספו בהדרגה</span>
+  </div>
+
+  <div class="per">
+    <div class="per-modes" id="perModes"></div>
+    <div class="per-nav">
+      <button onclick="perMove(1)" aria-label="אחורה">‹</button>
+      <span class="per-lbl" id="perLbl"></span>
+      <button onclick="perMove(-1)" aria-label="קדימה">›</button>
+    </div>
+    <span class="sp"></span>
+    <span class="tot" id="perTot"></span>
+  </div>
+
+  <div class="cubes" id="cubes"></div>
+</main>
+
+<script>
+if(location.search.includes('embed=1')) document.body.classList.add('is-embedded');
+
+/* =====================================================================
+   תפעול יומי — מסך העל של התפעול, ל-Super Admin.
+   בורר התקופה משנה את כל הקוביות; כל קובייה שאלה אחת על כל החברות.
+   הנתונים דטרמיניסטיים לפי (חברה, תקופה) — מתחלפים כשמדפדפים.
+   ===================================================================== */
+const COS=['אנרגי אינטרנשיונל','מטעי גבעון','אנרגי גולני','רימון יצחק','משה עובד',
+           'חורש מתכת','הראל טכנולוגיות','ורדית דפוס','סהר חשמל','זוהר תקשורת'];
+let MODE='day', OFF=0;         /* OFF: 0=התקופה האחרונה, 1=הקודמת... */
+const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי'];
+const H=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h};
+const V=(co,salt,max,min)=>{min=min||0;return min+H(co+'|'+perKey()+'|'+salt)%(max-min+1)};
+
+function perKey(){ return MODE+':'+OFF; }
+function perLabel(){
+  if(MODE==='day'){ /* עוגן הדמו: 01.09.2026, מדפדפים אחורה */
+    const date=new Date(2026,8,1); date.setDate(date.getDate()-OFF);
+    const z=n=>String(n).padStart(2,'0');
+    return 'יום '+DAYS[(date.getDay())%6]+' · '+z(date.getDate())+'.'+z(date.getMonth()+1)+'.'+date.getFullYear();
+  }
+  if(MODE==='range'){ const end=new Date(2026,8,1); end.setDate(end.getDate()-OFF*7);
+    const st=new Date(end); st.setDate(st.getDate()-6);
+    const z=n=>String(n).padStart(2,'0');
+    return z(st.getDate())+'.'+z(st.getMonth()+1)+' – '+z(end.getDate())+'.'+z(end.getMonth()+1)+'.'+end.getFullYear();
+  }
+  const m=new Date(2026,8-OFF,1);
+  return ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'][m.getMonth()]+' '+m.getFullYear();
+}
+const scale=()=>MODE==='day'?1:MODE==='range'?6:24;   /* טווח ארוך = מספרים גדולים */
+
+function perMove(d){ OFF=Math.max(0,OFF+d); render(); }
+function perMode(m){ MODE=m; OFF=0; render(); }
+
+/* קובייה גנרית: שורות ממוינות, מוביל = 100% בר */
+function cube(title,sub,rows,note,color,when){
+  const mx=Math.max(...rows.map(r=>r.v))||1;
+  return `<section class="cube">
+    <div class="cube-h"><b>${title}</b><span>${when}</span></div>
+    <div class="cube-sub">${sub}</div>
+    <div class="rowz">${rows.map(r=>`
+      <div class="rz ${r.warn?'warn':''}">
+        <span class="nm">${r.n}</span>
+        <span class="v">${r.fmt}</span>
+        <span class="sub2"><span class="bar"><i style="width:${Math.round(r.v/mx*100)}%;background:${color}"></i></span>${r.tail||''}</span>
+      </div>`).join('')}</div>
+    <div class="cube-note">${note}</div>
+  </section>`;
+}
+function render(){
+  document.getElementById('perModes').innerHTML=
+    [['day','יום'],['range','טווח תאריכים'],['month','חודש']].map(x=>
+      `<button class="${MODE===x[0]?'on':''}" onclick="perMode('${x[0]}')">${x[1]}</button>`).join('');
+  document.getElementById('perLbl').textContent=perLabel();
+  const S=scale(), when=perLabel();
+
+  /* 1 · לא צפויות שנמחקו בגלל חוסר עדכון — החברה לא הזינה צפי, הבנק הפתיע */
+  const del=COS.map(n=>{
+    const v=V(n,'del',4*S,0), amt=v*(800+V(n,'damt',4200));
+    return {n, v, amt,
+      fmt:v+'<small>נמחקו</small>',
+      tail:v?amt.toLocaleString('en-US')+' ₪ יצאו מהתזרים בדיעבד':'נקי — הצפי הוזן מראש',
+      warn:v>=3*S};
+  }).filter(r=>r.v||MODE==='day').sort((a,b)=>b.v-a.v).slice(0,7);
+  const delTot=del.reduce((s,r)=>s+r.v,0);
+
+  /* 2 · חברות עם הרבה נגררות — צפי שקיים ולא מתממש */
+  const carry=COS.map(n=>{
+    const v=V(n,'carry',9,0), age=v?V(n,'age',21,2):0;
+    return {n, v,
+      fmt:v+'<small>נגררות</small>',
+      tail:v?'הוותיקה נגררת '+age+' ימים':'',
+      warn:v>=6||age>=14};
+  }).filter(r=>r.v).sort((a,b)=>b.v-a.v).slice(0,7);
+
+  /* 3 · זמן התפעול — איפה הזמן של הצוות באמת הולך */
+  const mins=COS.map(n=>{
+    const v=V(n,'mins',52,9)*(MODE==='day'?1:S);
+    const avg=Math.round(v/(MODE==='day'?1:S));
+    return {n, v,
+      fmt:(MODE==='day'?v+'<small>דק׳</small>':Math.round(v/60*10)/10+'<small>שעות</small>'),
+      tail:MODE==='day'?'':('ממוצע '+avg+' דק׳ לתפעול'),
+      warn:avg>=40};
+  }).sort((a,b)=>b.v-a.v).slice(0,7);
+  const minsTot=mins.reduce((s,r)=>s+ (MODE==='day'?r.v:r.v),0);
+
+  document.getElementById('perTot').innerHTML=
+    '<b>'+COS.length+'</b> חברות במעקב · <b>'+delTot+'</b> נמחקו מחוסר עדכון · <b>'
+    +(MODE==='day'?minsTot+' דק׳':Math.round(minsTot/60)+' שעות')+'</b> תפעול';
+
+  document.getElementById('cubes').innerHTML=
+    cube('נמחקו בגלל חוסר עדכון',
+      'פעולות לא צפויות שנמחקו כי החברה לא עדכנה צפי מראש — הבנק הפתיע, והמתפעלת מחקה בדיעבד. הרבה כאן = החברה לא מזינה חומר.',
+      del,'נספרות מחיקות מעמודת «לא צפויות» שקיבלו תג שמשמעותו חוסר עדכון (כבר הוזן ידנית · בלי צפי מקדים).',
+      '#C43D30',when)
+   +cube('הכי הרבה נגררות',
+      'צפי שקיים בתזרים ולא מתממש בבנק — ממתין, נגרר, ודוחף את התחזית. נגררת ותיקה היא כמעט תמיד גבייה תקועה או צפי מת.',
+      carry,'נמדד ברגע התקופה: כמה שורות עמדו בעמודת «נגררות», וכמה ימים הוותיקה שבהן.',
+      '#b46e0e',when)
+   +cube('הכי הרבה זמן תפעול',
+      'כמה זמן מסך התפעול היה פתוח על כל חברה — מהכניסה ל«מצב תפעול» ועד «סיום תפעול», כולל השהיות שנשמרו.',
+      mins,'הזמן נמדד אוטומטית ממצב התפעול. חברה שחורגת מ-40 דק׳ לתפעול באופן קבוע — כנראה בעיה מבנית, לא עומס נקודתי.',
+      '#1B6C9C',when)
+   +'<div class="cube next">הקובייה הבאה נכנסת לכאן —<br>המסך בנוי להתרחב קובייה-קובייה</div>';
+}
+render();
+</script>
+</body>
+</html>

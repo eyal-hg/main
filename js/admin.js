@@ -2,6 +2,10 @@
 const ADMIN_SCREENS=[
   {k:'meetings',label:'פגישות ודוחות',file:'adminScreens/index.html?embed=1',
    ic:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
+  /* תפעול יומי — מבט העל של התפעול. חי רק בתצוגת מנהל התזרים, ורק
+     ל-Super Admin: היועץ והלקוח לא אמורים לדעת שהוא קיים. */
+  {k:'dailyops',label:'תפעול יומי', file:'adminScreens/daily-ops.html?embed=1', mgrOnly:true,
+   ic:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'},
   {k:'leads',  label:'לידים',         file:'adminScreens/leads.html?embed=1',
    ic:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/>'},
   {k:'advisors',label:'ניהול יועצים', file:'adminScreens/advisors.html?embed=1',
@@ -31,8 +35,9 @@ function openAdmin(){
   admGo('meetings');
 }
 function closeAdmin(){ document.getElementById('adminShell').classList.remove('show'); }
+const admVisible=s=>!s.mgrOnly||(typeof ROLE!=='undefined'&&ROLE==='manager');
 function renderAdmRail(){
-  document.getElementById('admRail').innerHTML=ADMIN_SCREENS.map(s=>{
+  document.getElementById('admRail').innerHTML=ADMIN_SCREENS.filter(admVisible).map(s=>{
     if(s.sep) return `<div class="adm-sep">${s.sep}</div>`;
     return `<div class="adm-item ${ADM_CUR===s.k?'on':''}" onclick="admGo('${s.k}')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.ic}</svg>
@@ -40,7 +45,7 @@ function renderAdmRail(){
   }).join('');
 }
 function admGo(k){
-  const s=ADMIN_SCREENS.find(x=>x.k===k); if(!s) return;
+  const s=ADMIN_SCREENS.find(x=>x.k===k); if(!s||!admVisible(s)) return;
   ADM_CUR=k; renderAdmRail();
   const f=document.getElementById('admFrame'), p=document.getElementById('admPanel');
   if(s.panel){   // זיכרון לקוח — מסך פנימי, לא iframe ולא פופאפ
