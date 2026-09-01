@@ -975,7 +975,7 @@ html.embed .wrap{height:calc(100vh - 68px)}
    שיחה נכנסת מזוהה לפי המספר. שני מצבים שבהם המערכת לא יכולה להכריע
    לבדה, ולכן היא לא מנחשת אלא שואלת:
      none — המספר אינו מוכר לאף לקוח.
-     two  — המספר מוכר, אבל הנציג יושב בשתי חברות (אותו בעלים, שני עסקים),
+     two  — המספר מוכר, אבל הלקוח מחזיק שתי חברות (אותו בעלים, שני עסקים),
             ואי אפשר לדעת על איזו מהן דיברו.
    עד שהשיחה משויכת היא לא נכנסת לזיכרון של אף חברה.
    ===================================================================== */
@@ -992,19 +992,6 @@ let UNID=[
    why:'none', tp:'שיחה קצרה — ביקש לחזור אליו'},
 ];
 const ALL_CO=['אנרגי אינטרנשיונל','אנרגי גולני','מטעי גבעון','משה עובד','רימון יצחק'];
-/* השיחות שכבר נקשרו לחברה — הן הרוב, והן מה שהופך את הממתינות לחריגות */
-const DONE=[
-  {ph:'03-644-2180',  who:'טל מלקר',   co:'מטעי גבעון',          when:'היום · 10:22', dur:'7:41', tp:'אישור תשלום לספק המזון'},
-  {ph:'054-882-3311', who:'אילון שחר', co:'אנרגי אינטרנשיונל',   when:'היום · 08:05', dur:'12:05',tp:'הכנה לפגישת סקירת התזרים'},
-  {ph:'052-441-3908', who:'צחי עובד',  co:'אנרגי אינטרנשיונל',   when:'אתמול · 16:40',dur:'5:27', tp:'חריגת התקציב בשיווק'},
-  {ph:'050-771-9002', who:'אורי מלכה', co:'מטעי גבעון',          when:'אתמול · 11:15',dur:'4:52', tp:'עדכון על עיכוב בגבייה'},
-  {ph:'03-529-7740',  who:'נועה ברק',  co:'אנרגי גולני',         when:'30.06 · 15:30',dur:'9:12', tp:'סגירת חודש יוני'},
-  {ph:'053-441-2288', who:'שירה בן דוד',co:'משה עובד',           when:'30.06 · 09:48',dur:'2:34', tp:'תיאום הפגישה החודשית'},
-  {ph:'054-661-3390', who:'יעל שמש',   co:'רימון יצחק',          when:'29.06 · 14:03',dur:'6:15', tp:'העברת מסמכי ספקים'},
-  {ph:'052-880-4417', who:'דנה גורן',  co:'רימון יצחק',          when:'28.06 · 10:20',dur:'3:18', tp:'בקשה לדוח תזרים לרבעון'},
-];
-let UFIL='wait';
-function unSetFil(k){UFIL=k;unidRender();}
 /* סיכום השבוע — כל השיחות שנקלטו, לא רק החריגות. WEEK.tot כולל את
    הממתינות, ולכן הזוהו-אוטומטית נגזר ולא מוזן פעמיים. */
 const WEEK={tot:32, mins:192, top:[['אנרגי אינטרנשיונל',9],['מטעי גבעון',7],['רימון יצחק',5]]};
@@ -1042,31 +1029,13 @@ function unidRender(){
   top.innerHTML=weekHTML();
   const wave=Array.from({length:18},function(_,i){
     return '<i style="height:'+(3+((i*5)%10))+'px"></i>'}).join('');
-  document.getElementById('unFil').innerHTML=
-    [['wait','ממתינות לשיוך',UNID.length],['all','כל השיחות',WEEK.tot]].map(function(x){
-      return '<button class="'+(UFIL===x[0]?'on':'')+'" onclick="unSetFil(\''+x[0]+'\')">'
-        +x[1]+'<em>'+x[2]+'</em></button>'}).join('')
-    +(UNID.length?'<span class="un-note">אפשר להאזין להקלטה כבר עכשיו. '
+  /* אין כאן יותר מסנן "כל השיחות": שיחה ששויכה עוברת לרשימת «פגישות
+     ושיחות» ומקבלת שם זירה מלאה. הטאב הזה הוא תור עבודה, לא ארכיון. */
+  document.getElementById('unFil').innerHTML=UNID.length
+    ? '<span class="un-note">אפשר להאזין להקלטה כבר עכשיו. '
       +'<b>התמלול והסיכום מתחילים רק אחרי השיוך</b> — הם נכתבים לזיכרון של חברה מסוימת, '
-      +'ובלי לדעת איזו אין לאן לכתוב אותם.</span>':'');
-  const rows = UFIL==='wait' ? UNID.map(u=>unRow(u,wave))
-    : UNID.map(u=>unRow(u,wave)).concat(DONE.map(d=>unDone(d,wave)));
-  host.innerHTML=rows.join('');
-}
-/* שורת שיחה ששויכה — נגן, חברה, ומה נעשה איתה. בלי החלטה לקבל. */
-function unDone(d,wave){
-  return '<div class="un-row ok">'
-    +'<div class="un-h"><span class="un-ic">'+UN_ICO+'</span>'
-    +'<span class="un-num" dir="ltr">'+d.ph+'</span>'
-    +'<span class="un-who">'+d.who+'</span>'
-    +'<button class="un-play" onclick="toast(\'השמעת ההקלטה · '+d.ph+' · '+d.dur+' דק׳\')">'
-      +'<span class="pl"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'
-      +'<span class="wv">'+wave+'</span><b dir="ltr">'+d.dur+'</b></button>'
-    +'<span class="un-when">'+d.when+'</span></div>'
-    +'<div class="un-tp">'+d.tp+'</div>'
-    +'<div class="un-why"><span class="un-proc">תומללה, סוכמה ונכתבה לזיכרון</span>'
-    +'<span class="un-co">✓ '+d.co+'</span></div>'
-    +'</div>';
+      +'ובלי לדעת איזו אין לאן לכתוב אותם.</span>' : '';
+  host.innerHTML=UNID.map(u=>unRow(u,wave)).join('');
 }
 function unRow(u,wave){
   {
@@ -1081,12 +1050,12 @@ function unRow(u,wave){
       +'<span class="un-when">'+u.when+'</span></div>'
       +'<div class="un-tp">'+u.tp+'</div>'
       +'<div class="un-why"><span class="lb">'
-      +(u.why==='two'?'⚠ הנציג משויך לשתי חברות':'⚠ המספר לא מוכר לאף לקוח')
+      +(u.why==='two'?'⚠ הלקוח מחזיק שתי חברות':'⚠ המספר לא מוכר לאף לקוח')
       +'</span>'
       +'<span class="un-pick" data-id="'+u.id+'">'
         +'<button class="b" onclick="unTg(this)">שיוך לחברה<i>'+UN_CHEV+'</i></button>'
         +'<span class="m">'
-        +(u.why==='two'?'<div class="sep">הנציג רשום בשתיים</div>':'')
+        +(u.why==='two'?'<div class="sep">החברות של הלקוח</div>':'')
         +opts.map(function(c){return '<button onclick="unidSet(\''+u.id+'\',\''+c+'\')">'+c+'</button>'}).join('')
         +'</span></span>'
       +'</div>'
@@ -1097,7 +1066,7 @@ function unidSet(id,co){
   const u=UNID.find(x=>x.id===id); if(!u) return;
   UNID=UNID.filter(x=>x.id!==id);
   unidRender();
-  toast(u.ph+' שויכה ל'+co+' — התמלול והסיכום מתחילים עכשיו');
+  toast(u.ph+' שויכה ל'+co+' — התמלול מתחיל, והשיחה עוברת לרשימת הפגישות והשיחות');
 }
 function unPlay(id){
   const u=UNID.find(x=>x.id===id); if(!u) return;
