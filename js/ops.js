@@ -2310,7 +2310,8 @@
     };
     const col=(title,items,cls)=>`<div class="cu-col ${cls}">
       <div class="cu-h">${title} <span>${items.length}</span>
-        ${cls==='un'&&items.length?`<button class="cu-delall" onclick="nrAll()">מחק הכל</button>`:''}${gear(cls)}</div>
+        ${cls==='un'&&items.length?`<button class="cu-delall" onclick="nrAll()">מחק הכל</button>`:''}${
+          cls==='ca'&&items.length?`<button class="cu-delall" onclick="caAll()">התעלם מהכל</button>`:''}${gear(cls)}</div>
       ${setPanel(cls)}
       ${items.length?items.map(t=>opsRow(t,T.indexOf(t))).join(''):'<div class="ops-empty" style="padding:14px">נקי ✓</div>'}
     </div>`;
@@ -3709,16 +3710,17 @@
         : `<button class="nr-addbtn" onclick="_nrAdd=true;nrRender();setTimeout(()=>{const e=document.getElementById('nrNew');if(e)e.focus();},0)">+ תג חדש</button>`);
     const b=document.getElementById('nrGoBtn');
     if(b){ b.disabled=!_nrPick;
-      const n=_nrBulk?curTasks().filter(x=>x.type==='unexpected'&&!x.done).length:0;
-      b.textContent=_nrBulk?('מחיקת '+n+' פעולות'):(_nrMode==='ignore'?'התעלם':'מחיקה'); }
+      const n=_nrBulk?curTasks().filter(x=>x.type===(_nrBulk==='ca'?'carry':'unexpected')&&!x.done).length:0;
+      b.textContent=_nrBulk==='ca'?('התעלמות מ-'+n+' נגררות')
+        :_nrBulk?('מחיקת '+n+' פעולות'):(_nrMode==='ignore'?'התעלם':'מחיקה'); }
   }
   /* מחיקה מרוכזת של הלא-צפויות — אותה דיסציפלינה כמו מחיקה בודדת:
      גם כאן חייבים לבחור תג סיבה, והוא נרשם על כל השורות. */
-  let _nrBulk=false;
+  let _nrBulk=null;                    /* null · 'un' (מחיקת לא צפויות) · 'ca' (התעלמות מנגררות) */
   function nrAll(){
     const open=curTasks().filter(t=>t.type==='unexpected'&&!t.done);
     if(!open.length) return;
-    _nrBulk=true; _nrIx=null; _nrPick=null; _nrAdd=false; _nrMode='del';
+    _nrBulk='un'; _nrIx=null; _nrPick=null; _nrAdd=false; _nrMode='del';
     document.getElementById('nrTitle').textContent='מחיקת '+open.length+' פעולות לא צפויות';
     document.getElementById('nrSub').textContent=
       'כל '+open.length+' הפעולות יימחקו מהתזרים ויקבלו את אותה סיבה. בחרו תג; התגים ניתנים לניהול.';
@@ -3738,16 +3740,29 @@
     if(_nrPick===gone) _nrPick=null;
     nrRender();
   }
-  function nrClose(){document.getElementById('nrOv').classList.remove('show');_nrIx=null;_nrPick=null;_nrAdd=false;_nrBulk=false;}
+  /* התעלמות מכל הנגררות — אותו פופאפ תגים, כי גם להתעלמות המונית מגיעה סיבה.
+     הצפי עצמו לא משתנה בביזיבוקס — יורד רק מהרשימה כאן. */
+  function caAll(){
+    const open=curTasks().filter(t=>t.type==='carry'&&!t.done);
+    if(!open.length) return;
+    _nrBulk='ca'; _nrIx=null; _nrPick=null; _nrAdd=false; _nrMode='ignore';
+    document.getElementById('nrTitle').textContent='התעלמות מ-'+open.length+' נגררות';
+    document.getElementById('nrSub').textContent=
+      'כל '+open.length+' הנגררות יירדו מהרשימה כאן — הצפי עצמו לא משתנה בביזיבוקס. בחרו סיבה; התגים ניתנים לניהול.';
+    nrRender();
+    document.getElementById('nrOv').classList.add('show');
+  }
+  function nrClose(){document.getElementById('nrOv').classList.remove('show');_nrIx=null;_nrPick=null;_nrAdd=false;_nrBulk=null;}
   function nrGo(){
     if(!_nrPick){toast('צריך לבחור תג סיבה');return;}
     const r=_nrPick;
     if(_nrBulk){
-      const T=curTasks();
-      const ix=T.map((t,k)=>k).filter(k=>T[k].type==='unexpected'&&!T[k].done);
+      const ca=_nrBulk==='ca', T=curTasks();
+      const ix=T.map((t,k)=>k).filter(k=>T[k].type===(ca?'carry':'unexpected')&&!T[k].done);
       nrClose();
-      ix.forEach(k=>otHandle(k,'נמחקה — '+r));
-      toast(ix.length+' פעולות לא צפויות נמחקו — '+r);
+      ix.forEach(k=>otHandle(k,(ca?'הוסרה מהרשימה — ':'נמחקה — ')+r));
+      toast(ca?ix.length+' נגררות הוסרו מהרשימה — '+r
+             :ix.length+' פעולות לא צפויות נמחקו — '+r);
       return;
     }
     const i=_nrIx; nrClose();
