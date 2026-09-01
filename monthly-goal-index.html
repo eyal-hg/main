@@ -6,7 +6,7 @@
 <title>תכנון תזרימי · יעדים</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet" />
 <style>
 :root{
   --bg:#eef2f8; --surface:#ffffff; --surface-alt:#f8fafc;
@@ -34,26 +34,27 @@ button{font-family:inherit;cursor:pointer}
 .page-head .sub{color:var(--text-muted);font-size:13.5px;margin-top:4px;max-width:720px}
 
 /* ---------- Legend chips ---------- */
-.bigstats{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:12px;margin:2px 0 10px;align-items:stretch}
-.bigstat{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px 18px;box-shadow:var(--shadow-sm)}
-.bigstat .bk{font-size:13px;color:var(--text-muted);font-weight:700;display:flex;align-items:center;gap:8px}
-.bigstat .bv{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-top:2px;font-variant-numeric:tabular-nums}
-.bigstat .bv.pos{color:var(--positive)} .bigstat .bv.neg{color:var(--negative)}
-.bigstat::before{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:5px}
-.bigstat.start::before{background:#7a5cf0}
-.bigstat.now::before{background:var(--accent)}
-.bigstat.end::before{background:var(--positive)}
-.edithint{font-size:10.5px;font-weight:600;color:#7a5cf0;background:#efeafe;border-radius:999px;padding:2px 7px}
-.binput{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-top:2px;font-variant-numeric:tabular-nums;font-family:inherit;color:var(--text);width:100%;border:none;background:transparent;padding:0 0 2px;outline:none;border-bottom:1.5px dashed var(--border-strong);cursor:text}
-.binput:hover{border-bottom-color:#bcadf5}
-.binput:focus{border-bottom-color:#7a5cf0}
+/* שלוש היתרות — קוביות שקטות בשפת המערכת: מסגרת דקה, כותרת קטנה,
+   מספר גדול. הצבע חי במספר עצמו (אדום עמוק = חריגה), לא בקישוטים. */
+.bigstats{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:12px;margin:0 0 14px;align-items:stretch}
+.bigstat{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 18px 12px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.bigstat .bk{font-size:12px;color:var(--text-muted);font-weight:500;display:flex;align-items:center;gap:8px;letter-spacing:.1px}
+.bigstat .bv{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-top:4px;font-variant-numeric:tabular-nums;color:#0C4068}
+.bigstat .bv.pos{color:var(--positive)} .bigstat .bv.neg{color:#C43D30}
+.edithint{font-size:10.5px;font-weight:500;color:#64798C;background:#EDF1F5;border-radius:999px;padding:2px 8px}
+.binput{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-top:4px;font-variant-numeric:tabular-nums;font-family:inherit;color:var(--text);width:100%;border:none;background:transparent;padding:0 0 2px;outline:none;border-bottom:1.5px dashed var(--border-strong);cursor:text}
+.binput:hover{border-bottom-color:#9FC0DA}
+.binput:focus{border-bottom-color:#1B6C9C}
 .curtog,.pasttog{border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:6px;min-width:19px;height:19px;font-size:13px;line-height:1;padding:0 2px;vertical-align:middle;cursor:pointer;font-weight:900}
 .curtog:hover,.pasttog:hover{background:#fff}
-.legend{display:grid;grid-template-columns:auto auto;gap:4px 6px;align-content:center;margin:0}
-.legend .lchip{font-size:10px;padding:3px 8px;box-shadow:none}
+/* המקרא — לוח אחד שקט, לא ארבע גלולות צפות */
+.legend{display:grid;grid-template-columns:auto auto;gap:5px 16px;align-content:center;margin:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;
+  box-shadow:0 1px 2px rgba(12,64,104,.04)}
+.legend .lchip{font-size:11px;padding:0;box-shadow:none;border:none;background:none}
 .legend .lchip .swatch{width:11px;height:11px}
-.lchip{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 12px;font-size:12px;color:var(--text-muted);box-shadow:var(--shadow-xs)}
-.lchip .swatch{width:16px;height:16px;border-radius:5px;display:inline-block}
+.lchip{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--text-muted)}
+.lchip .swatch{width:14px;height:14px;border-radius:4px;display:inline-block;flex:none}
 .sw-avg{background:repeating-linear-gradient(45deg,#eef2f8,#eef2f8 3px,#e0e7f1 3px,#e0e7f1 6px);border:1px solid var(--border-strong)}
 .sw-edit{background:var(--accent-soft);border:1px solid #bcd9f6}
 .sw-tin{background:linear-gradient(135deg,#d8f2e4,#bdeacf);border:1px solid #a7e0bf}
@@ -61,9 +62,20 @@ button{font-family:inherit;cursor:pointer}
 
 /* ---------- Card ---------- */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow-md);overflow:hidden}
-.card-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#fcfdff,#f6f9fd)}
-.card-bar .ttl{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:800}
-.card-bar .ttl .ic{width:30px;height:30px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:15px}
+/* הרצועה הכחולה של המערכת — כמו בכל מסך: כותרת מימין, כלים משמאל */
+.card-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:0 22px;height:60px;border-radius:12px;margin-bottom:14px;
+  background:#0C4068;color:#fff;box-shadow:0 1px 2px rgba(12,64,104,.12)}
+.card-bar .ttl{font-family:'Frank Ruhl Libre',serif;font-size:21px;font-weight:700;
+  letter-spacing:-.3px;color:#fff}
+.card-bar .pill{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);
+  color:#E7EFF7;box-shadow:none}
+.card-bar .pill .mut{color:#9FC0DA}
+.card-bar .pill svg{opacity:.8}
+.card-bar .iconbtn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);
+  color:#DCEBF5;box-shadow:none}
+.card-bar .iconbtn:hover{background:rgba(255,255,255,.16);color:#fff}
+.card-bar .dd.open .ddbtn{border-color:rgba(255,255,255,.55);color:#fff}
 .toolbar{display:flex;align-items:center;gap:8px}
 .pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border-strong);border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;color:var(--text);box-shadow:var(--shadow-xs)}
 .pill .mut{color:var(--text-soft);font-weight:500}
@@ -189,7 +201,8 @@ thead th.shead.s-tgt{box-shadow:inset 2px 0 0 #cfe4fa}
 
 td,tbody th{padding:0;border-bottom:1px solid var(--border)}
 tbody th.cat{position:sticky;inset-inline-end:0;z-index:3;background:#fff;text-align:start;font-weight:600;font-size:13px;padding:11px 16px;color:var(--text);min-width:226px;box-shadow:1px 0 0 var(--border)}
-.cell{padding:9px 14px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600;color:var(--text);white-space:nowrap;letter-spacing:-.2px}
+.cell{padding:9px 14px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600;color:var(--text);white-space:nowrap;letter-spacing:-.2px;border-inline-end:1px solid #F0F4F9}
+td:last-child .cell{border-inline-end:none}
 .cell.empty{color:var(--text-soft);font-weight:500}
 .neg{color:var(--negative)} .pos{color:var(--positive)}
 .avgc{background:#f7f9fc}
@@ -198,7 +211,8 @@ tbody th.cat{position:sticky;inset-inline-end:0;z-index:3;background:#fff;text-a
 .curband.s-tgt{box-shadow:inset 2px 0 0 #d8e9fb}
 
 /* row kinds */
-tr.section th.cat{background:#f1f5fb;color:#33486a;font-weight:900;font-size:11px;letter-spacing:1.2px}
+tr.section td,tr.section th.cat{border-top:9px solid #F4F7FA}
+tr.section th.cat{background:#f1f5fb;color:#33486a;font-weight:900;font-size:11px;letter-spacing:1.2px;padding-top:10px;padding-bottom:10px}
 tr.section th.cat::before{content:"";display:inline-block;width:8px;height:8px;border-radius:3px;margin-inline-end:8px;vertical-align:1px;background:var(--accent)}
 tr.section.exp th.cat::before{background:var(--warn)}
 tr.section td{background:#f1f5fb}
@@ -207,20 +221,27 @@ tr.summary td,tr.summary th.cat{background:var(--surface-alt)}
 tr.summary.net td,tr.summary.net th.cat{background:#eef4fc}
 tr.summary.net th.cat,tr.summary.net .cell{font-weight:900}
 tr.total th.cat,tr.total .cell{font-weight:900}
-tr.total.income td,tr.total.income th.cat{background:var(--positive-soft)}
-tr.total.income th.cat{color:#0f7a50}
-tr.total.expense td,tr.total.expense th.cat{background:var(--warn-soft)}
-tr.total.expense th.cat{color:#9a6604}
+/* סך־הכל: מופרד מהפירוט בקו כפול ובנשימה, וצבוע ברקע מלא —
+   שורת סיכום צריכה להיקרא כשורה אחרת, לא כעוד סעיף */
+tr.total td,tr.total th.cat{border-top:2px solid var(--border-strong)}
+tr.total .cell,tr.total th.cat{padding-top:13px;padding-bottom:13px}
+tr.total.income td,tr.total.income th.cat{background:#E1F3E9}
+tr.total.income th.cat{color:#0f7a50;box-shadow:inset -3px 0 0 #13895b,1px 0 0 var(--border)}
+tr.total.expense td,tr.total.expense th.cat{background:#FBF1D9}
+tr.total.expense th.cat{color:#9a6604;box-shadow:inset -3px 0 0 #c98404,1px 0 0 var(--border)}
 tr.data:hover td{background:#f2f8ff}
 tr.data:hover th.cat{background:#f2f8ff}
 
 /* profit tiers */
-tr.profit td,tr.profit th.cat{background:linear-gradient(180deg,#eef6ff,#e4eefb);border-top:1px solid #d3e3f6}
+tr.profit td,tr.profit th.cat{background:linear-gradient(180deg,#eef6ff,#e4eefb);border-top:9px solid #F4F7FA}
+tr.profit .cell,tr.profit th.cat{padding-top:12px;padding-bottom:12px}
+tr.profit th.cat{box-shadow:inset -3px 0 0 var(--accent),1px 0 0 var(--border)}
 tr.profit th.cat{color:#15498f;font-weight:900;font-size:13.5px}
 tr.profit .cell{font-weight:900;font-size:14px;color:#15498f}
 tr.profit th.cat::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:8px;vertical-align:1px;background:var(--accent)}
 tr.profit .cell.pos{color:var(--positive)}
-tr.profit.big td,tr.profit.big th.cat{background:linear-gradient(180deg,#e7f6ee,#d8efe2);border-top:1.5px solid #b9e0c9}
+tr.profit.big td,tr.profit.big th.cat{background:linear-gradient(180deg,#e7f6ee,#d8efe2);border-top:9px solid #F4F7FA}
+tr.profit.big th.cat{box-shadow:inset -3px 0 0 var(--positive),1px 0 0 var(--border)}
 tr.profit.big th.cat{color:#0f6f48}
 tr.profit.big .cell{color:#0f6f48;font-size:15px}
 tr.profit.big th.cat::before{background:var(--positive)}
@@ -360,6 +381,22 @@ if(RO){document.documentElement.classList.add('r-cli');
     </div>
   </div>
 
+  <div class="card-bar">
+      <div class="ttl">תכנון תזרימי</div>
+      <div class="toolbar">
+        <div class="dd" id="ddRange">
+          <button class="pill ddbtn" id="ddRangeBtn"><span class="mut">טווח:</span> <span id="rangeLbl">—</span>
+            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="ddmenu" id="ddRangeMenu"></div>
+        </div>
+        <button class="pill" id="reloadBtn" style="cursor:pointer;font-weight:700">🔄 טען מחדש</button>
+        <button class="iconbtn" title="ייצוא">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5M4 15.5h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+  </div>
+
   <div class="bigstats">
     <div class="bigstat start"><div class="bk">יתרת תחילת ליווי <span class="edithint">✎ ניתן לעריכה</span></div><input class="bv binput" id="startBal" type="text" /></div>
     <div class="bigstat now"><div class="bk">יתרה נוכחית</div><div class="bv" id="balNow">—</div></div>
@@ -373,21 +410,6 @@ if(RO){document.documentElement.classList.add('r-cli');
   </div>
 
   <div class="card">
-    <div class="card-bar">
-      <div class="ttl"><span class="ic">📈</span> תכנון תזרימי</div>
-      <div class="toolbar">
-        <div class="dd" id="ddRange">
-          <button class="pill ddbtn" id="ddRangeBtn"><span class="mut">טווח:</span> <span id="rangeLbl">—</span>
-            <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="ddmenu" id="ddRangeMenu"></div>
-        </div>
-        <button class="pill" id="reloadBtn" style="cursor:pointer;font-weight:700">🔄 טען מחדש</button>
-        <button class="iconbtn" title="ייצוא">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5M4 15.5h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </div>
     <div id="simbar" class="simbar" style="display:none">
       <span>🧪 מצב סימולציה — <b id="simcount">0</b> פריטים מוסתרים מהחישוב; היתרות והסכומים מציגים את התרחיש.</span>
       <button id="simreset" class="simreset">↺ שחזר הכל</button>
