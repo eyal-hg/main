@@ -537,7 +537,9 @@
       document.getElementById('finTitle').textContent='התפעול הסתיים ✓';
       document.getElementById('finSub').textContent='כל שלבי העבודה והבדיקה עברו · הושלם ב-'+fmtDur(opsTotal);
     }
-    document.getElementById('finFindings').innerHTML=finRecapHtml();
+    /* אין עוד אזור עליון נפרד: הסיכום, התיעוד והחריגות חיים באותו
+       מבנה של שתי עמודות, כל אחד מיושר לעמודה שלו. */
+    document.getElementById('finFindings').innerHTML='';
     document.getElementById('finFindings').classList.remove('bl-mode');
     renderFinFoot();
     finChatFill();   /* הפאנל מלווה את כל הדרך — כולל מסך הסיום */
@@ -548,18 +550,13 @@
       const log=OPS_STAGE_LOG.find(l=>l.n===st[1]);
       return `<div class="frec-row"><span class="frec-ic">✓</span><b>${st[1]}</b><i>${log?fmtDur(log.s):'הושלם'}</i></div>`;
     }).join('');
-    /* הבדיקות מסתכמות בשורה אחת: כולן עברו, וזה כל מה שיש לומר עליהן.
-       הפירוט שהיה כאן חזר על עצמו פעמיים באותו מסך. */
-    const checkLine=`<div class="frec-checks"><span class="frec-ic">✓</span>
-      <b>${FIN_STEPS.length} בדיקות עברו</b><i>${FIN_STEPS.join(' · ')}</i></div>`;
-    /* התיעוד יושב כאן, בראש המסך, ולא בתחתית העמודה — מנהלת התזרים
-       קוראת את ההיסטוריה לפני שהיא מחליטה מה לתעד ומה לדווח. */
-    return `<div class="frec-top">
-      <div class="frec-wrap one">
-        <div class="frec-col"><div class="frec-h">שלבי העבודה</div>${workDone}${checkLine}</div>
-      </div>
-      ${finCallHtml()}
-    </div>`;
+    const checkDone=FIN_STEPS.map(s=>`<div class="frec-row"><span class="frec-ic">✓</span><b>${s}</b><i>נבדק</i></div>`).join('');
+    /* שתי הטבלאות בקופסה אחת, בעמודת השליחה — מה שנעשה ומה שנבדק,
+       בדיוק מעל הכפתור ששולח את התוצאה. */
+    return `<div class="frec-box"><div class="frec-wrap">
+      <div class="frec-col"><div class="frec-h">שלבי העבודה</div>${workDone}</div>
+      <div class="frec-col"><div class="frec-h">שלבי הבדיקה</div>${checkDone}</div>
+    </div></div>`;
   }
   /* כל השורות התקציביות — גם התקינות מוצגות תמיד בשלב הבדיקה */
   /* מצב לפני התפעול מול אחרי — השורות נבנות ב-Bizibox רק מהמסך הזה, באישור */
@@ -1423,14 +1420,12 @@
     const k='c'+CUR; (FIN_CALLS[k]=FIN_CALLS[k]||[]).push({t:v, at:finClock(), d:FIN_DATE});
     /* גם השיחה נכנסת ליומן החריגות — אותו תיעוד, שני מקומות קריאה */
     ovLog({t:'תיעוד שיחה', s:v, when:'now'}, 'call');
-    const fx=document.getElementById('finFindings');
-    if(fx&&!fx.classList.contains('bl-mode')) fx.innerHTML=finRecapHtml();
+    renderFinFoot();
     toast('התיעוד נשמר · '+finClock()+' · נכנס ליומן החריגות');
   }
   function finCallDel(i){
     const k='c'+CUR; if(FIN_CALLS[k]) FIN_CALLS[k].splice(i,1);
-    const fx=document.getElementById('finFindings');
-    if(fx&&!fx.classList.contains('bl-mode')) fx.innerHTML=finRecapHtml();
+    renderFinFoot();
   }
   function finCallHtml(){
     const k='c'+CUR;
@@ -1477,7 +1472,8 @@
             </span>`}
       </div>`).join('')}
     </div>`:'';
-    foot.innerHTML=`<div class="fin-2col"><div class="fin-c-exc">`+excHtml+`</div><div class="fin-c-send">`+`
+    foot.innerHTML=`<div class="fin-2col"><div class="fin-c-exc">`+finCallHtml()+excHtml+`</div><div class="fin-c-send">`+
+      finRecapHtml()+`
       ${open.length?`<div class="fin-block">⚠ ${open.length===1?'חריגה אחת טרם דווחה':open.length+' חריגות טרם דווחו'} — התזרים לא ייצא ללקוח</div>`:`<div class="fin-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> ${FIN_EXC.length?'החריגות דווחו — התזרים מוכן לשליחה':'אין חריגות — התזרים מוכן לשליחה'}</div>`}
       <button class="fin-wa" onclick="finSendCF()"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.2-.34.22-.64.07-.3-.14-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.04-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.57-.48-.5-.66-.5h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.58-.09 1.75-.72 2-1.4.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.3a8.3 8.3 0 0 1-4.2-1.15l-.3-.18-3 .8.8-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg> שליחת תזרים ללקוח</button>`.replace('<button class="fin-wa"', open.length?'<button class="fin-wa" disabled title="יש חריגה שטרם דווחה ללקוח"':'<button class="fin-wa"')+`
       <button class="chip-btn" style="width:100%;justify-content:center" onclick="finishDone()">שמירה ללא שליחה</button>
