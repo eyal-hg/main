@@ -1648,6 +1648,23 @@
      מה צפוי (הווידג'ט הקיים), ומה חיובי האשראי שירדו בבת אחת. */
   window._opsFinTab=window._opsFinTab||'fc';
   function opsFinTab(v){ window._opsFinTab=v; renderOps(); }
+  /* חיפוש בכספים — מסנן את ה-DOM ישירות, בלי רינדור מחדש, כדי שהשדה
+     לא יאבד פוקוס בכל תו. בתזרים הצפוי השאילתה נשלחת לווידג'ט. */
+  function opsFinQ(inp){
+    const q=(inp.value||'').trim(), box=inp.closest('.ops-chatside');
+    if(window._opsFinTab==='fc'){
+      const f=box.querySelector('.ops-flow-frame');
+      if(f&&f.contentWindow) f.contentWindow.postMessage({hkFinQ:q},'*');
+      return;
+    }
+    box.querySelectorAll('.fin-r').forEach(r=>{
+      r.style.display=(!q||r.textContent.indexOf(q)>=0)?'':'none';});
+    /* יום או כרטיס שלא נשאר בו כלום — יורד יחד עם שורת היתרה שלו */
+    box.querySelectorAll('.fin-grp').forEach(g=>{
+      const any=[...g.querySelectorAll('.fin-r')].some(r=>r.style.display!=='none');
+      g.style.display=any?'':'none';
+      const end=g.querySelector('.fin-end'); if(end) end.style.display=q?'none':'';});
+  }
   /* בנק אמיתי של הימים האחרונים — אותם שמות שכבר חיים בתזרים */
   const FIN_PAST=[
     {d:'31.08.2026', day:'שני', rows:[
@@ -1678,18 +1695,21 @@
     let body;
     if(ft==='fc') body=`<iframe class="ops-flow-frame" src="widgets/widget-cashflow-full.html?t=0#embed" title="תזרים צפוי"></iframe>`;
     else if(ft==='past') body=`<div class="ops-chatbody fin-body">${FIN_PAST.map(g=>`
-      <div class="fin-day"><b>${g.day}</b><span>${g.d}</span></div>
+      <div class="fin-grp"><div class="fin-day"><b>${g.day}</b><span>${g.d}</span></div>
       ${g.rows.map(r=>`<div class="fin-r"><div class="b"><b>${r.t}</b><span>${r.s}</span></div>
         <i class="${r.v<0?'neg':'pos'}" dir="ltr">${finNum(r.v)}</i></div>`).join('')}
-      <div class="fin-end">יתרה בסוף היום <b dir="ltr">${g.end.toLocaleString('en-US')} ₪</b></div>`).join('')}
+      <div class="fin-end">יתרה בסוף היום <b dir="ltr">${g.end.toLocaleString('en-US')} ₪</b></div></div>`).join('')}
       <div class="fin-note">תנועות הבנק כפי שנקלטו — לאימות מול המסמכים שבתפעול.</div></div>`;
     else body=`<div class="ops-chatbody fin-body">${FIN_CREDIT.map(c=>`
-      <div class="fin-card"><div class="fin-day card"><b>${c.card}</b><span>יורד ב-${c.when}</span>
+      <div class="fin-card fin-grp"><div class="fin-day card"><b>${c.card}</b><span>יורד ב-${c.when}</span>
         <i class="neg" dir="ltr">${finNum(c.tot)}</i></div>
       ${c.rows.map(r=>`<div class="fin-r sm"><div class="b"><b>${r.t}</b></div>
         <i class="neg" dir="ltr">${finNum(r.v)}</i></div>`).join('')}</div>`).join('')}
       <div class="fin-note">החיובים שהצטברו בכרטיסים — יורדים מהעו״ש בבת אחת ביום החיוב, וכבר משוקללים בתזרים הצפוי.</div></div>`;
-    return `<div class="fin-tabs">${tabs}</div>${body}`;
+    return `<div class="fin-tabs">${tabs}</div>
+      <div class="fin-q"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input placeholder="${ft==='past'?'חיפוש בתנועות — שם, קטגוריה או סכום':ft==='credit'?'חיפוש בחיובי האשראי':'חיפוש בתזרים הצפוי'}" oninput="opsFinQ(this)"></div>
+      ${body}`;
   }
   if(window._opsSideOpen==null) window._opsSideOpen=true;
   function opsSideToggle(){ window._opsSideOpen=!window._opsSideOpen; window._opsSideUser=1; if(document.getElementById('finView').style.display!=='none'){finChatFill();}else{renderOps();} }

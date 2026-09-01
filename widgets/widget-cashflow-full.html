@@ -644,6 +644,27 @@ function render() {
 let cnt = 1;
 function cp(d) { cnt = Math.max(1,cnt+d); document.getElementById('n').textContent = cnt; }
 
+/* חיפוש שמגיע מהמעטפת (פאנל הכספים בתפעול) — מסנן את שורות התנועה,
+   ויום שלא נשאר בו כלום יורד יחד עם הכותרת ושורת היתרה שלו. */
+addEventListener('message', e => {
+  if (!e.data || e.data.hkFinQ === undefined) return;
+  const q = String(e.data.hkFinQ).trim();
+  const list = document.getElementById('days-list'); if (!list) return;
+  list.querySelectorAll('.tx-row').forEach(r => {
+    r.style.display = (!q || r.textContent.indexOf(q) >= 0) ? '' : 'none';
+  });
+  /* קיבוץ לפי מבנה שטוח: כותרת יום → שורות → יתרה */
+  let hdr = null, any = false;
+  const setDay = () => { if (hdr) { hdr.style.display = any ? '' : 'none'; } };
+  [...list.children].forEach(el => {
+    if (el.classList.contains('day-hdr')) { setDay(); hdr = el; any = false; }
+    else if (el.classList.contains('tx-row')) { if (el.style.display !== 'none') any = true; }
+    else if (el.classList.contains('eod-row')) { el.style.display = (q && !any) ? 'none' : (q ? 'none' : ''); }
+    else if (q && !any && hdr) { el.style.display = 'none'; }
+  });
+  setDay();
+});
+
 render();
 </script>
 
