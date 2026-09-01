@@ -500,7 +500,9 @@ button{font-family:inherit;cursor:pointer}
 /* עמודת הסעיפים */
 /* קבוצה אחת בכל שורה, והסעיפים שלה ברשת — כך העין יורדת קבוצה-קבוצה
    ולא מחפשת את "מימון" בקצה של עמודה רביעית. */
-.mw-r{display:block;overflow-y:auto;padding:12px 16px 18px;min-height:0}
+.mw-rw{display:flex;flex-direction:column;min-height:0}
+.mw-rw .mw-q{padding:12px 16px 4px}
+.mw-r{display:block;flex:1;overflow-y:auto;padding:8px 16px 18px;min-height:0}
 .mw-grp{display:block;margin-bottom:18px}
 .mw-grp .mw-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(302px,1fr));gap:8px}
 .mw-gh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
@@ -840,7 +842,10 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
       <div class="mw-f" id="mwF"></div>
       <div class="mw-cl" id="mwCl"></div>
     </div>
-    <div class="mw-r" id="mwR"></div>
+    <div class="mw-rw">
+      <div class="mw-q"><input id="mapQR" placeholder="חיפוש סעיף — או כרטיס בתוכו" oninput="mapDraw()"></div>
+      <div class="mw-r" id="mwR"></div>
+    </div>
   </div></div>
 </div></div>
 
@@ -1896,7 +1901,14 @@ function mapDraw(){
     h+='<div class="mw-g"><i style="background:'+a.c+'"></i>'+a.name+' · '+l.length+'</div>'+l.map(crd).join('');});
   document.getElementById('mwCl').innerHTML=h||'<div class="mw-e">אין כרטיסים בתצוגה הזאת.</div>';
 
-  /* עמודת הסעיפים — יעדי הגרירה, מקובצים לקבוצות הדוח */
+  /* עמודת הסעיפים — יעדי הגרירה, מקובצים לקבוצות הדוח.
+     החיפוש תופס סעיף לפי שמו, לפי שם תת־סעיף, או לפי כרטיס שבתוכו —
+     כי "איפה יושב 93007" היא בדיוק השאלה שמחפשים איתה. */
+  const qr=(document.getElementById('mapQR').value||'').trim();
+  const secHit=a=>!qr
+    || a.name.indexOf(qr)>=0
+    || (SUBS[a.id]||[]).some(s=>s&&s.n&&s.n.indexOf(qr)>=0)
+    || cardsOf(a.id).some(c=>c.n.indexOf(qr)>=0||c.a.indexOf(qr)>=0);
   const abs=MONTHS[mi3()].abs;
   const sumOf=id=>cardsOf(id).reduce((s,c)=>s+(c.full[abs]||0),0);
   /* עשרה צ׳יפים ודי — סעיף עם 63 כרטיסים היה מנפח את הסדנה.
@@ -1906,7 +1918,8 @@ function mapDraw(){
   const chip=(c,acc,sub)=>'<span class="mw-chip"><b>'+c.n+'</b><i>'+c.a+'</i>'
       +'<button title="ניתוק" onclick="mapOff(\''+c.a+'\')">✕</button></span>';
   document.getElementById('mwR').innerHTML=GROUPS.map(g=>{
-    const items=ACC.filter(a=>a.g===g.id);
+    const items=ACC.filter(a=>a.g===g.id).filter(secHit);
+    if(qr&&!items.length&&MNEW!==g.id) return '';
     return '<div class="mw-grp"><div class="mw-gh"><b>'+g.name+'</b>'
       +'<span>'+items.length+' סעיפים</span>'
       +'<button class="mw-add" onclick="mapNew(\''+g.id+'\')">＋ סעיף</button></div>'
