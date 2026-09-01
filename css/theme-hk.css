@@ -4166,23 +4166,29 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
   border-radius:7px;padding:5px 10px;color:#6B7C8D;cursor:pointer}
 .com-u:hover{background:var(--com-chip-h);color:var(--com-navy)}
 .com-u.on{background:var(--com-navy);color:#fff}
+/* גלגל ההגדרות של היוזר הפעיל — לכבות לו קטגוריה, לשנות תפקיד וסוג */
+.com-ug{display:inline-flex;align-items:center;margin-inline-start:7px;opacity:.72;cursor:pointer}
+.com-u.on:hover .com-ug{opacity:1}
+.com-off-n{font-size:11px;color:var(--com-mut);margin:2px 0 8px}
+.com-off-n button{font:inherit;font-size:11px;color:var(--com-pr);background:none;border:0;
+  padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .com-shared{font-size:11.5px;color:var(--com-pr);margin:0 0 10px}
 
-/* ---- הכרטיס ---- */
-.com-c{background:#fff;border:1px solid var(--com-line);border-radius:10px;overflow:hidden;
-  box-shadow:0 1px 2px rgba(12,64,104,.04);margin-bottom:12px;transition:border-color .14s}
-.com-c:hover{border-color:#D8E3ED}
+/* ---- הכרטיס ----
+   זיכרון נקרא כמו פנקס, לא כמו לוח בקרה: כותרת שקטה בטקסט כהה על לבן,
+   ונקודת צבע קטנה שאומרת של מי הידיעה — כחול לעסק, סגול לאדם.
+   הכחול הכהה שמור במסך הזה לפריט הפעיל בסרגל בלבד. */
+.com-c{background:#fff;border:1px solid #E8EEF4;border-radius:12px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(12,64,104,.03);margin-bottom:12px;transition:border-color .14s}
+.com-c:hover{border-color:#D8E3ED;box-shadow:0 3px 10px -6px rgba(12,64,104,.12)}
 .com-c.empty{background:#FBFCFE;box-shadow:none}
-/* הכותרת בכחול הכהה — אותו בלוק שרץ בכל המסכים */
-.com-h{display:flex;align-items:baseline;gap:12px;padding:12px 20px 11px;background:var(--com-navy)}
-.com-h b{flex:none;font-size:17px;font-weight:600;color:#fff}
-.com-h .com-vis{color:rgba(255,255,255,.72)}
-.com-h .com-vis.gd{color:#E6DCFB}
-.com-h .com-src{color:rgba(255,255,255,.55)}
-.com-h .com-src.none{color:rgba(255,255,255,.4)}
-.com-h .com-hb{color:rgba(255,255,255,.72)}
-.com-h .com-hb:hover,.com-h .com-hb.on{color:#fff}
-@media (max-width:1450px){.com-h{padding:10px 18px 9px}.com-h b{font-size:16px}}
+.com-h{display:flex;align-items:baseline;gap:11px;padding:13px 20px 3px;background:none}
+.com-h b{flex:none;display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;
+  color:var(--com-navy)}
+.com-h b::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
+.com-c[data-scope="company"] .com-h b::before{background:var(--com-co)}
+.com-c[data-scope="user"] .com-h b::before{background:var(--com-pr)}
+.com-h .com-vis.gd{color:#6B4FA0}
 .com-vis{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--com-mut)}
 .com-vis.gd{gap:5px;font-size:11px;font-weight:600;letter-spacing:.2px;
   background:rgba(203,186,238,.22);border:1px solid rgba(203,186,238,.5);
@@ -4195,7 +4201,7 @@ body.is-dragging .hkt-node[data-drop] .hkt-pad{display:flex}
 .com-hb:hover,.com-hb.on{color:var(--com-co);text-decoration:underline}
 
 /* ---- הגוף: מסמך אחד + רייל אחד ---- */
-.com-body{position:relative;padding:10px 20px 12px}
+.com-body{position:relative;padding:7px 20px 13px}
 /* השורה — פסקה. מרזב 44px בקצה שמור תמיד, כדי שהפעולות ייכנסו באפס הזזה. */
 .com-p{position:relative;font-size:13px;line-height:1.6;color:var(--com-ink);
   padding:4px 8px;padding-inline-start:20px;padding-inline-end:30px;

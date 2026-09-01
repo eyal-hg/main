@@ -308,11 +308,17 @@ function renderMemCard(){
 
 /* ---- הגדרות יוזר: תפקיד, סוג, ואילו קטגוריות פעילות עליו ---- */
 let US_IX=0;
+/* פתיחה ממסך זיכרון החברה — MEM_USERS ממופתח לפי החברה הנוכחית */
+function comUserSet(ix){ MEM_CUR=CUR; MEM_USER=COM_USER; openUserSet(ix); }
 function openUserSet(ix){
   US_IX=ix; renderUserSet();
   document.getElementById('userSetOv').classList.add('show');
 }
-function closeUserSet(){document.getElementById('userSetOv').classList.remove('show');renderMemCard();}
+function closeUserSet(){
+  document.getElementById('userSetOv').classList.remove('show');
+  const vm=document.getElementById('viewMem');
+  if(vm&&vm.style.display!=='none'&&vm.innerHTML) renderCoMem(); else renderMemCard();
+}
 function renderUserSet(){
   const u=(MEM_USERS[MEM_CUR]||[])[US_IX]; if(!u) return;
   u.off=u.off||[];
@@ -523,7 +529,10 @@ function renderCoMem(keepFocus){
   if(COM_USER>=users.length) COM_USER=0;
   const u=users[COM_USER]||{}, uType=u.type||'admin';
   const co=MEM_CATS.filter(x=>x.scope==='company');
-  const us=MEM_CATS.filter(x=>x.scope==='user').filter(x=>!x.appliesTo||x.appliesTo==='all'||x.appliesTo===uType);
+  const us=MEM_CATS.filter(x=>x.scope==='user')
+    .filter(x=>!x.appliesTo||x.appliesTo==='all'||x.appliesTo===uType)
+    .filter(x=>!(u.off||[]).includes(x.key));         /* קטגוריות שכובו ליוזר הזה */
+  const nOff=(u.off||[]).filter(k=>MEM_CATS.some(c=>c.key===k)).length;
   const coH=co.map(comCard).join(''), usH=us.map(comCard).join('');
   const nHit=[...co,...us].filter(x=>comCard(x)).length;
   const nLines=COM_Q?[...co,...us].reduce((s,x)=>{const d=comDoc(x.scope,x.key);
@@ -545,7 +554,9 @@ function renderCoMem(keepFocus){
       </section>
       <section class="com-col">
         <h3 class="com-sh pr"><span class="dot"></span>${comEsc(u.n||'')}<em>${comEsc(u.role||'')}</em></h3>
-        <div class="com-us">${users.map((x,i)=>`<button class="com-u ${i===COM_USER?'on':''}" onclick="comUser(${i})">${comEsc(x.n)}</button>`).join('')}</div>
+        <div class="com-us">${users.map((x,i)=>`<button class="com-u ${i===COM_USER?'on':''}" onclick="comUser(${i})">${comEsc(x.n)}${
+          i===COM_USER?`<span class="com-ug" title="הגדרות היוזר — קטגוריות, תפקיד וסוג" onclick="event.stopPropagation();comUserSet(${i})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>`:''}</button>`).join('')}</div>
+        ${nOff?`<p class="com-off-n">${nOff===1?'קטגוריה אחת כבויה':nOff+' קטגוריות כבויות'} אצל ${comEsc(u.n)} — <button onclick="comUserSet(${COM_USER})">להגדרות</button></p>`:''}
         ${multi?`<p class="com-shared">הזיכרון האישי של ${comEsc(u.n)} משותף ל-2 חברות — תיקון כאן משפיע גם על ${comEsc(multi)}.</p>`:''}
         ${usH||'<div class="com-empty sm">אין התאמה בזיכרון האדם</div>'}
       </section>
