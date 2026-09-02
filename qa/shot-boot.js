@@ -88,7 +88,6 @@
     'adm-tags'    :[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('tags')},1100)],
     'adm-kb'      :[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('kb')},1100)],
     'adm-aitests' :[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('aitests')},1100)],
-    'adm-calendar':[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('calendar')},1100)],
     'adm-memory'  :[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('memory')},1100)]
   };
 
