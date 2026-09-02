@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>אפיון הג׳וב הלילי · HK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0C4068;--navy2:#0A3557;--band:#104A76;--coral:#E8635A;--sky:#39ABE2;
+ --ink:#28425C;--ink2:#51677A;--muted:#7A8898;--line:#E6ECF4;--bg:#F4F7FA;
+ --onnavy:#9FC0DA;--good:#13895B;--warn:#D9922B;--bad:#C43D30}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Rubik,'Heebo',Arial,sans-serif;background:var(--bg);color:var(--ink);
+ direction:rtl;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+ font-size:14px;line-height:1.5}
+
+/* ---------- הרצועה ---------- */
+.strip{position:sticky;top:0;z-index:20;height:68px;background:var(--navy);color:#fff;
+ display:flex;align-items:center;gap:20px;padding:0 26px;box-shadow:0 2px 12px rgba(12,64,104,.18)}
+.strip h1{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:22px;font-weight:700;
+ letter-spacing:-.2px;white-space:nowrap}
+.strip .sub{font-size:12.5px;color:var(--onnavy);white-space:nowrap}
+.strip .sep{width:1px;height:30px;background:rgba(255,255,255,.18)}
+.strip .spacer{margin-inline-start:auto}
+.saved{font-size:12px;color:var(--onnavy);white-space:nowrap;min-width:118px;text-align:end}
+.saved.on{color:#7FD7B0}
+.tb{display:flex;gap:8px}
+.tb button{font:inherit;font-size:12.5px;font-weight:500;border:1px solid rgba(255,255,255,.22);
+ background:rgba(255,255,255,.08);color:#E7EFF7;border-radius:8px;padding:8px 14px;cursor:pointer;
+ transition:.14s;white-space:nowrap}
+.tb button:hover{background:rgba(255,255,255,.18);color:#fff}
+.tb button.pri{background:var(--coral);border-color:var(--coral);color:#fff}
+.tb button.pri:hover{background:#D9534A}
+
+/* ---------- פריסה ---------- */
+.wrap{display:grid;grid-template-columns:274px minmax(0,1fr);gap:22px;
+ max-width:1420px;margin:0 auto;padding:22px 26px 60px;align-items:start}
+
+/* ---------- ניווט ---------- */
+.nav{position:sticky;top:90px;background:#fff;border:1px solid var(--line);border-radius:10px;
+ box-shadow:0 1px 2px rgba(12,64,104,.04);overflow:hidden}
+.nav-h{padding:14px 18px 10px;font-size:12px;font-weight:600;color:var(--muted);
+ letter-spacing:.3px;border-bottom:1px solid var(--line)}
+.nav-l{padding:8px;max-height:calc(100vh - 220px);overflow-y:auto}
+.nav-l a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;
+ font-size:13px;color:var(--ink2);text-decoration:none;line-height:1.4;transition:.12s}
+.nav-l a:hover{background:#EAF1F8;color:var(--navy)}
+.nav-l a.on{background:#EAF3FA;color:var(--navy);font-weight:600}
+.nav-l a.sub{padding-inline-start:24px;font-size:12.5px}
+.nav-l a i{flex:none;width:7px;height:7px;border-radius:50%;background:#D3DCE5}
+.nav-l a i.ok{background:var(--good)}
+.nav-l a i.talk{background:var(--warn)}
+.nav-foot{padding:11px 16px;border-top:1px solid var(--line);background:var(--bg);
+ font-size:11.5px;color:var(--muted);line-height:1.6}
+
+/* ---------- סעיף ---------- */
+.sec{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:16px;
+ box-shadow:0 1px 2px rgba(12,64,104,.04);scroll-margin-top:90px}
+.sec.talk{border-color:#F0D9A6}
+.sec.ok{border-color:#BFE3CE}
+.sec-h{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);
+ background:#FCFDFE;border-radius:10px 10px 0 0}
+.sec-h .num{flex:none;font-size:11.5px;font-weight:700;color:var(--coral);letter-spacing:.3px}
+.sec-h .ttl{font-size:15px;font-weight:600;color:var(--navy);min-width:0;flex:1}
+.sec-h .acts{display:flex;gap:6px;flex:none}
+.sec-h button{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;
+ color:var(--ink2);border-radius:7px;padding:5px 11px;cursor:pointer;transition:.12s;white-space:nowrap}
+.sec-h button:hover{border-color:var(--navy);color:var(--navy)}
+.sec-h button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.sec-h .st{flex:none;display:flex;gap:4px}
+.sec-h .st button.ok.on{background:var(--good);border-color:var(--good)}
+.sec-h .st button.talk.on{background:var(--warn);border-color:var(--warn)}
+.sec-b{padding:18px 22px 22px}
+.sec.edit .sec-b{padding:0}
+
+/* ---------- עורך ---------- */
+textarea.ed{display:block;width:100%;min-height:340px;border:0;border-radius:0 0 10px 10px;
+ padding:18px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+ line-height:1.75;color:var(--ink);background:#FBFCFE;resize:vertical;outline:none;direction:rtl}
+textarea.ed:focus{background:#fff;box-shadow:inset 0 0 0 2px #CFE3F5}
+
+/* ---------- תגובות ---------- */
+.cm{margin:14px 22px 18px;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+ padding:12px 14px;display:none}
+.sec.cmon .cm{display:block}
+.cm label{display:block;font-size:11.5px;font-weight:600;color:var(--coral);margin-bottom:7px}
+.cm textarea{width:100%;min-height:70px;font:inherit;font-size:13px;line-height:1.6;color:var(--ink);
+ border:1px solid var(--line);border-radius:7px;padding:9px 11px;resize:vertical;outline:none;background:#fff}
+.cm textarea:focus{border-color:var(--sky)}
+
+/* ---------- תוכן מרונדר ---------- */
+.md h2{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:21px;font-weight:700;color:var(--navy);
+ margin:0 0 12px;line-height:1.25}
+.md h3{font-size:15.5px;font-weight:600;color:var(--navy);margin:22px 0 9px}
+.md h1{display:none}
+.md p{margin:0 0 12px;line-height:1.8;color:var(--ink)}
+.md b,.md strong{font-weight:600;color:var(--navy)}
+.md em{font-style:italic;color:var(--ink2)}
+.md a{color:var(--navy);border-bottom:1px solid #C6D9EA;text-decoration:none}
+.md ul,.md ol{margin:0 0 13px;padding-inline-start:20px}
+.md li{margin-bottom:7px;line-height:1.75}
+.md li::marker{color:var(--coral)}
+.md code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+ background:#EEF3F8;color:#12507F;border-radius:4px;padding:1.5px 6px;direction:ltr;
+ display:inline-block}
+.md pre{background:var(--navy2);color:#DCEBF5;border-radius:9px;padding:15px 18px;overflow-x:auto;
+ margin:0 0 14px;direction:ltr;text-align:left}
+.md pre code{background:none;color:inherit;padding:0;font-size:12px;line-height:1.65;display:block}
+.md blockquote{margin:0 0 14px;padding:11px 15px;background:#EAF3FA;border-radius:8px;
+ border-inline-start:3px solid var(--sky);color:var(--ink2);font-size:13.5px;line-height:1.7}
+.md blockquote p:last-child{margin:0}
+.md hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+.md table{width:100%;border-collapse:collapse;margin:0 0 15px;font-size:13px}
+.md th{text-align:start;padding:9px 12px;background:#F1F5F9;color:var(--navy);font-weight:600;
+ border-bottom:1px solid var(--line);font-size:12.5px}
+.md td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--ink2);line-height:1.65;
+ vertical-align:top}
+.md tr:last-child td{border-bottom:0}
+.md td code{font-size:11.5px}
+
+/* ---------- מצב הדפסה ---------- */
+@media print{
+ .strip,.nav,.sec-h .acts,.nav-foot{display:none!important}
+ body{background:#fff}.wrap{display:block;max-width:none;padding:0}
+ .sec{border:0;box-shadow:none;margin-bottom:8px;break-inside:avoid}
+ .sec-h{background:none;border-bottom:1px solid var(--line)}
+}
+@media (max-width:980px){.wrap{grid-template-columns:minmax(0,1fr)}.nav{display:none}}
+</style>
+</head>
+<body>
+
+<header class="strip">
+  <h1>אפיון הג׳וב הלילי</h1>
+  <span class="sep"></span>
+  <span class="sub">תקשורת · זיכרון · תקציר הבוקר</span>
+  <span class="spacer"></span>
+  <span class="saved" id="saved"></span>
+  <div class="tb">
+    <button onclick="window.print()">הדפסה</button>
+    <button onclick="resetAll()">שחזור למקור</button>
+    <button class="pri" onclick="exportMd()">ייצוא ל-Markdown</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="nav">
+    <div class="nav-h">סעיפי האפיון</div>
+    <div class="nav-l" id="nav"></div>
+    <div class="nav-foot">כל סעיף ניתן לעריכה, לסימון «אושר» או «לדיון»,
+      ולהוספת הערה. הכל נשמר בדפדפן הזה — הייצוא מחזיר Markdown מלא
+      עם ההערות בסוף.</div>
+  </aside>
+  <main id="doc"></main>
+</div>
+
+<div id="cfm" style="display:none;position:fixed;inset:0;z-index:40;background:rgba(12,64,104,.42);
+  align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:24px 26px;max-width:420px;
+    box-shadow:0 24px 60px rgba(12,64,104,.32)">
+    <b style="display:block;font-size:16px;color:#0C4068;margin-bottom:8px">לשחזר למקור?</b>
+    <span style="display:block;font-size:13.5px;line-height:1.7;color:#51677A;margin-bottom:18px">
+      כל העריכות, הסימונים וההערות שנעשו כאן יימחקו, והמסמך יחזור לגרסה שבקובץ.</span>
+    <div style="display:flex;gap:8px;justify-content:flex-start">
+      <button onclick="cfmDo(true)" style="font:inherit;font-size:13px;font-weight:600;border:0;
+        background:#C43D30;color:#fff;border-radius:8px;padding:9px 18px;cursor:pointer">שחזור</button>
+      <button onclick="cfmDo(false)" style="font:inherit;font-size:13px;border:1px solid #E6ECF4;
+        background:#fff;color:#51677A;border-radius:8px;padding:9px 18px;cursor:pointer">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<script id="src" type="text/markdown"># הג׳וב הלילי של התקשורת — אפיון למימוש
+
+הג׳וב שממלא את מסך **תקשורת** (`docs/adv3/meetings.html`) — רשימה אחת של
+ארבעה ערוצים: פגישה · שיחת טלפון · קבוצת וואטסאפ · עוזר AI, ולכל פריט
+זירה עם אותם תוצרים: סיכום, משימות, זיכרון, ולפי הערוץ גם משוב, תמלול
+או ההודעות עצמן.
+
+בליבו הג׳וב עושה שני דברים — **סיכום** ו**עדכון זיכרון** — וכל השאר
+נגזרות שלהם: המשימות והתובנות הן חלק מפלט הסיכום, ה-embeddings הם
+אינדקס על הסיכומים, וההשלמות הן ריצה חוזרת על מה שנפל.
+
+נקודת המוצא: לא כל התקשורת נוצרת בלילה. אירוע עם סוף מעובד בסופו;
+הג׳וב הלילי סוגר את היום — ואת המספרים של הבוקר סוגר **ג׳וב הבוקר**
+(רענון הבנקים), שמסתיים בכתיבת "תקציר הבוקר" (§2א).
+
+---
+
+## 1 · עקרונות שאינם ניתנים למשא ומתן
+
+1. **אירוע עם סוף מעובד בסופו; יום מעובד בלילה.** פגישה ושיחה מסתיימות —
+   העיבוד שלהן מיידי. לקבוצה ולעוזר אין סוף — היחידה שלהן היא יום, ואותו
+   סוגר הג׳וב הלילי.
+2. **בלי שיוך לחברה אין עיבוד.** שיחה שלא שויכה לא מתומללת ולא מסוכמת —
+   ההקלטה נשמרת והשיחה ממתינה בתור הלא־מזוהות. השיוך (ידני של היועץ)
+   הוא הטריגר, ואז העיבוד רץ מיד — לא מחכה ללילה.
+3. **הזיכרון ניזון מסיכומים, לא מחומר גלם.** כל קטגוריית זיכרון
+   (`MEM_CATS`) מקבלת את סיכום האינטראקציה + המסמך הנוכחי שלה, ומחזירה
+   "אין עדכון" או מסמך מעודכן. המודל לא קורא תמלולים מלאים בלילה.
+4. **דובר לא מזוהה לא נכנס לזיכרון אישי.** מספר זר בקבוצה מסוכם ברמת
+   החברה בלבד, ומסומן: *"אינו מזוהה — מה שנאמר ממנו לא שויך לזיכרון
+   אישי"*. אין ניחוש זהות.
+5. **הג׳וב אידמפוטנטי.** ריצה חוזרת על אותו יום (אחרי כשל, או ידנית)
+   מחליפה את התוצרים של אותו יום — לא מכפילה שורות, משימות או רשומות
+   זיכרון.
+
+---
+
+## 2 · אחריות הג׳וב — מה רץ בלילה
+
+רץ פר חברה, בחלון 02:00–03:00 (הפרוטוטיפ מציג `רץ ב-02:10`).
+
+1. **מסכם את קבוצות הוואטסאפ שהיו פעילות באותו יום.**
+   קבוצה בלי הודעות היום — אין שורה, אין "סיכום ריק". קבוצה עם הודעות
+   מקבלת שורת `wa` אחת ליום עם: סיכום (מה עלה בקבוצה), תובנות, משימות
+   מוצעות, שורות זיכרון, וההודעות עצמן. אם היו הודעות אך אין מה להוסיף
+   לזיכרון — זה נאמר במפורש (*"לא נמצא מה להוסיף לזיכרון"*), כי שקט הוא
+   מידע.
+2. **מסכם את ערוץ הוואטסאפ של כל יוזר מול העוזר באותו יום — עיבוד
+   פר יוזר, שורה אחת לחברה.**
+   **בסקופ: ערוץ הוואטסאפ בלבד** — השיחה האחת הפתוחה תמיד של היוזר מול
+   העוזר, שבה עוברות גם הודעות התפעול, התזכורות והתגובות שלו עליהן.
+   זו תקשורת שקורית מחוץ למוצר, ואין ליועץ שום מקום אחר לראות אותה.
+   הצ׳אט שבתוך האפליקציה (שאילתות על הדשבורד) הוא שימוש במוצר —
+   לא נכנס למסך התקשורת ולא מסוכם בלילה.
+   הסיכום רץ **לכל יוזר בנפרד**: הצ׳אט הוא שיחה אישית נמשכת, ההקשר של
+   כל שאלה הוא השיחה שלו, והקטגוריות האישיות בזיכרון (`scope:'user'`)
+   חייבות קלט משויך לאדם. אין ערבוב צ׳אטים של שני אנשים בקריאת מודל אחת.
+   הסיכום מפריד בין מה **שהיוזר** העלה לבין מה **שהמערכת** דחפה
+   (תזכורת, משימה) — סיגנל הוא מה שהוא שאל וענה, לא מה שנשלח אליו.
+   ההצגה לעומת זאת היא **שורת `ai` אחת ליום־חברה** — אחרת חברה עם כמה
+   יוזרים פעילים מציפה את הרשימה. בזירה, סקשן פר יוזר (כמו "מי כתב"
+   בקבוצה): מה הוא שאל, מה זה מגלה, וההתכתבות עצמה. משימות ושורות
+   זיכרון נושאות את היוזר שממנו נולדו.
+3. **מריץ את מעבר הזיכרון** על כל הסיכומים החדשים של היום — כולל
+   סיכומי פגישות ושיחות שנוצרו במהלך היום — קטגוריה־קטגוריה לפי
+   הפרומפטים של `MEM_CATS`, בהפרדת scope (חברה / משתמש).
+4. **משלים את מה שנפל.** שיחה ששויכה אך העיבוד שלה נכשל, פגישה שהוקלטה
+   אך אין לה סיכום — הג׳וב מזהה ומריץ שוב. זו רשת הביטחון, לא המסלול
+   הראשי.
+5. **מעדכן את מוני התור.** ספירת הלא־מזוהות לרצועת "ממתין לשיוך"
+   ולמסך היועץ (`UNID`), כולל התיישנות: שיחה לא משויכת מעל N ימים
+   עולה בדוח התפעול היומי.
+6. **מייצר Embeddings לכל הסיכומים של היום.** כל סיכום שנוצר —
+   פגישה, שיחה, קבוצה, עוזר — נחתך ומוטמע (embedding) לחיפוש סמנטי.
+   זה מה שמאפשר לשורת החיפוש של המסך לענות על "מתי דיברנו על המסגרת"
+   גם כשהמילה המדויקת לא הופיעה, ולהכנה־לפגישה לשלוף "מה השתנה מאז"
+   מכל הערוצים. מוטמעים סיכומים ותובנות — לא תמלולים גולמיים.
+7. **מפרסם את שורות היום למסך.** כל התוצרים נכתבים בסטטוס
+   **«סיכום נוצר»** — לערוצים האוטומטיים אין שלב אישור אנושי.
+
+**מה לא רץ בלילה:** תמלול וסיכום פגישה (בסיום ההקלטה) · תמלול וסיכום
+שיחה משויכת (מיידי עם השיוך) · המשוב על היועץ (נגזר מסיכום הפגישה,
+בערוץ `meet` בלבד) · תקציר הבוקר (§2א).
+
+### 2א · ג׳וב הבוקר — תקציר הבוקר
+
+תקציר הבוקר **אינו** חלק מהג׳וב הלילי: הוא צריך את מספרי הבוקר, ולכן
+הוא הצעד המסיים של **ג׳וב הבוקר** — זה שמריץ את רענון הבנקים. אין
+תלות־תזמון בין שני הג׳ובים ("לרוץ אחרון ולקוות") — כל אחד מסיים את
+מה ששלו:
+
+- **לילה (02:00):** תקשורת ← סיכומים, זיכרון, embeddings.
+- **בוקר (עם סיום רענון הבנקים, ~06:00):** מספרים טריים ← ואז הפסקה
+  שמחברת אותם: **כל הזיכרון** של החברה (מסמכי `MEM_CATS`, שעודכנו
+  בלילה) + המספרים שזה עתה נמשכו ← "תקציר הבוקר" שבדשבורד הלקוח
+  (`docs/cli/dashboard.html`).
+
+החותמת שבפרוטוטיפ היא החוזה: *"מהזיכרון והמספרים — לא מהמקורות
+הגולמיים"*. הנרטיב מקשר לראיות (jump לווידג׳טים); אדום עמוק שמור
+לסכנה הכספית עצמה בלבד; שפת הלקוח — white-label, בלי HK.
+אם רענון הבנקים נכשל — התקציר נכתב מהזיכרון בלבד, עם מספרי אתמול
+מסומנים כ*"נכון לאתמול"* — לא ממתין ולא נעלם.
+במהלך היום התקציר מתרענן: אירוע שמעובד (סיכום פגישה שאושר) מפעיל
+כתיבה מחדש עם *"עודכן HH:MM, אחרי …"*.
+
+---
+
+## 3 · צינור הריצה
+
+```
+02:00, פר חברה
+──► [1] איסוף: הודעות הקבוצות של היום · שיחות היום עם העוזר
+──► [2] סיכום פר קבוצה / פר משתמש (AI)
+──► [3] חילוץ תוצרים: תובנות · משימות מוצעות · שורות זיכרון (AI)
+──► [4] מעבר זיכרון על כל סיכומי היום, קטגוריה־קטגוריה (AI, MEM_CATS)
+──► [5] השלמות: עיבודים שנכשלו במהלך היום (שיחות/פגישות)
+──► [6] Embeddings לכל סיכומי היום                    (מודל הטמעה)
+──► [7] פרסום: שורות communications + עדכון מונים   (קוד, טרנזקציה)
+
+ג׳וב הבוקר (בסיום רענון הבנקים):
+──► [B1] משיכת יתרות ותנועות מהבנקים
+──► [B2] תקציר הבוקר: כל הזיכרון + המספרים ← פסקה    (AI, פר חברה)
+```
+
+- שלבים [2]–[4] הם קריאות מודל נפרדות עם קלט תחום — לא פרומפט אחד ענק.
+  בערוץ העוזר: קריאה פר יוזר פעיל, והרכבת שורת החברה בקוד.
+- שלב [7] דטרמיניסטי: כתיבה אטומית פר יום־חברה (מחיקת תוצרי אותו יום
+  אם קיימים, כתיבה מחדש — עקרון 5).
+- כשל בקבוצה אחת לא מפיל את השאר; הפריט נרשם ל-[5] של הלילה הבא
+  ולדוח התפעול.
+
+---
+
+## 4 · מודל הנתונים
+
+```sql
+-- שורה אחת בכל הרשימה = communication אחד
+CREATE TABLE communications (
+  id            BIGSERIAL PRIMARY KEY,
+  company_id    BIGINT NOT NULL REFERENCES companies(id),
+  channel       TEXT NOT NULL CHECK (channel IN ('meet','call','wa','ai')),
+  title         TEXT NOT NULL,            -- «תפעול · נסגר החוזה עם מרכז הבנייה»
+  happened_on   DATE NOT NULL,            -- לערוצי יום: היום המסוכם
+  happened_at   TIMESTAMPTZ,              -- לפגישה/שיחה: מועד האירוע
+  source_id     BIGINT,                   -- fk לפי ערוץ: meeting / call / group / user
+  status        TEXT NOT NULL,            -- meet: recorded|summary_draft|approved|sent
+                                          -- call|wa|ai: summary_created
+  meta          JSONB NOT NULL DEFAULT '{}',  -- משך, כיוון, מוני הודעות/כותבים
+  UNIQUE (company_id, channel, source_id, happened_on)   -- אידמפוטנטיות
+);
+
+CREATE TABLE comm_outputs (               -- התוצרים של הזירה
+  comm_id       BIGINT REFERENCES communications(id) ON DELETE CASCADE,
+  kind          TEXT CHECK (kind IN
+                  ('summary','insights','tasks','memory_lines',
+                   'feedback','transcript','messages')),
+  payload       JSONB NOT NULL,
+  PRIMARY KEY (comm_id, kind)
+);
+
+CREATE TABLE wa_groups (
+  id BIGSERIAL PRIMARY KEY, company_id BIGINT NOT NULL,
+  name TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'ops'    -- תפעול / הנהלה
+);
+
+CREATE TABLE wa_messages (
+  id BIGSERIAL PRIMARY KEY, group_id BIGINT REFERENCES wa_groups(id),
+  sender_phone TEXT NOT NULL, sender_user BIGINT NULL,    -- NULL = לא מזוהה
+  sent_at TIMESTAMPTZ NOT NULL, body TEXT, attachment JSONB
+);
+
+CREATE TABLE ai_turns (                   -- ערוץ הוואטסאפ מול העוזר בלבד
+  id BIGSERIAL PRIMARY KEY, company_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL, at TIMESTAMPTZ NOT NULL,
+  origin TEXT NOT NULL CHECK (origin IN ('user','assistant','system')),
+                                          -- system = הודעת תפעול/תזכורת שנדחפה
+  body JSONB NOT NULL
+);
+-- שורת ה-ai ברשימה: communications אחת ליום־חברה (source_id=NULL);
+-- הפירוק פר יוזר חי בתוך comm_outputs.payload:
+--   summary: {users:[{user_id, n_questions, summary, insights[]}]}
+--   messages: {users:[{user_id, turns:[{origin,body,at}]}]}
+
+CREATE TABLE calls (
+  id BIGSERIAL PRIMARY KEY,
+  phone TEXT NOT NULL, direction TEXT, duration_s INT,
+  recorded_at TIMESTAMPTZ NOT NULL, recording_url TEXT NOT NULL,
+  company_id BIGINT NULL,                 -- NULL = בתור הלא־מזוהות
+  assigned_by BIGINT NULL, assigned_at TIMESTAMPTZ NULL,
+  deleted_at TIMESTAMPTZ NULL, deleted_by BIGINT NULL     -- ארכיון, לא DELETE
+);
+
+-- חיפוש סמנטי — pgvector. יחידת ההטמעה: שורת סיכום / תובנה / משימה,
+-- לא המסמך כולו — כדי שהתוצאה תצביע על סעיף, כמו החיפוש במסך היום.
+CREATE TABLE comm_embeddings (
+  id BIGSERIAL PRIMARY KEY,
+  comm_id     BIGINT REFERENCES communications(id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL,               -- summary | insight | task | memory_line
+  chunk_ix    INT NOT NULL,                -- הסעיף בתוך התוצר
+  chunk_text  TEXT NOT NULL,               -- מה שהוטמע, להצגה בתוצאה
+  embedding   VECTOR(1536) NOT NULL,
+  UNIQUE (comm_id, kind, chunk_ix)         -- ריצה חוזרת מחליפה (עקרון 5)
+);
+CREATE INDEX ON comm_embeddings USING hnsw (embedding vector_cosine_ops);
+
+CREATE TABLE morning_briefs (             -- תקציר הבוקר של הדשבורד
+  company_id  BIGINT NOT NULL, for_date DATE NOT NULL,
+  narrative   JSONB NOT NULL,             -- הפסקה + עוגני jump לווידג׳טים
+  written_at  TIMESTAMPTZ NOT NULL,       -- 06:00
+  updated_at  TIMESTAMPTZ, updated_reason TEXT,   -- "אחרי פגישת הסקירה"
+  PRIMARY KEY (company_id, for_date)
+);
+
+CREATE TABLE nightly_runs (               -- תצפית על הג׳וב עצמו
+  id BIGSERIAL PRIMARY KEY, company_id BIGINT NOT NULL,
+  ran_for DATE NOT NULL, started_at TIMESTAMPTZ, finished_at TIMESTAMPTZ,
+  ok BOOLEAN, stats JSONB, error TEXT,
+  UNIQUE (company_id, ran_for)
+);
+```
+
+שיוך מספרים קיים כבר במסך "מספרי טלפון" של ניהול HK
+(`adminScreens/phones.html`): `phone → user → company`. שיחה נכנסת
+מוצלבת מולו; מספר עם משתמש שמחזיק כמה חברות נכנס לתור עם
+`why='two'`, מספר לא מוכר — `why='none'`.
+
+---
+
+## 5 · API (סקיצה)
+
+```
+GET  /companies/:id/communications?from&to&channel&q     ← הרשימה + הבורר
+GET  /companies/:id/communications/search?q              ← סמנטי: comm_embeddings,
+                                                           מחזיר סעיף + הפריט שלו
+GET  /communications/:id                                 ← הזירה (עם outputs)
+POST /calls/:id/assign        {company_id}               ← שיוך → מפעיל עיבוד מיידי
+POST /calls/:id/archive       /restore                   ← מחיקה לארכיון ושחזור
+GET  /companies/:id/unidentified?view=wait|deleted&q
+POST /admin/nightly/run       {company_id?, date?}       ← הרצה ידנית (אידמפוטנטית)
+GET  /admin/nightly/runs?date                            ← לדוח התפעול היומי
+```
+
+---
+
+## 6 · מה הפרוטוטיפ כבר מממש (מפת התמצאות למתכנת)
+
+| בפרוטוטיפ | מה זה מדגים |
+|---|---|
+| `docs/adv3/meetings.html · ARENA` | מבנה התוצרים המלא של כל ערוץ — זה ה-payload של `comm_outputs` |
+| `KINDS / KCHIP / KSEG` שם | ארבעת הערוצים; הוספת ערוץ = נגיעה רק שם |
+| `UNID / unidSet / unidDel` שם | תור הלא־מזוהות, שיוך, ארכיון ושחזור |
+| `stripQ()` שם | רצועת "ממתין לשיוך N" — ניזונה מסעיף 2.5 |
+| `js/ops.js · MSGS_THREADS` | הקבוצות, הקאסט, והסיכום הלילי (`ran:'02:10'`, `pending`) |
+| `docs/cli/ai.html · WA_CHAT` | ההתכתבות עם העוזר — המקור לשורות `ai` |
+| `js/memory.js · MEM_CATS` | הפרומפטים של מעבר הזיכרון, כולל scope ו-vis |
+| `adminScreens/phones.html` | ניהול שיוך מספר → נציג → חברה |
+| `docs/cli/dashboard.html · .brief` | תקציר הבוקר — הנרטיב, ה-jump לראיות, החותמות |
+
+---
+
+## 7 · מקרי קצה שחובה לכסות
+
+1. **יום בלי פעילות בערוץ** — אין שורה. לא יוצרים "סיכום ריק" (2.1).
+2. **הודעות אחרי חצות** — הודעה מ-00:30 שייכת ליום החדש; הג׳וב של
+   הלילה הבא יתפוס אותה. אין "יום כפול".
+3. **שיוך שיחה בזמן ריצת הג׳וב** — העיבוד המיידי של השיוך גובר;
+   שלב ההשלמות מדלג על מה שכבר בעיבוד (נעילה על `call_id`).
+4. **מספר זר שהפך מזוהה** — שיוך המספר במסך הטלפונים חל מרגע השיוך
+   והלאה. אין עיבוד רטרואקטיבי של סיכומי עבר, אבל שורות "אינו מזוהה"
+   ישנות נשארות נכונות לזמנן.
+5. **אותו משתמש בשתי חברות (why='two')** — השיוך ידני בלבד; בבורר כל
+   שורה היא «שם הלקוח — חברה». הג׳וב לא מנחש.
+6. **ריצה כפולה / הרצה ידנית אחרי תיקון** — `UNIQUE(company_id, ran_for)`
+   + כתיבה אטומית פר יום: התוצרים מוחלפים, משימות שכבר אושרו ידנית
+   לא נמחקות (מפתח לפי `source_line_hash`).
+7. **קבוצה שנוספה באמצע יום** — נכנסת לסריקה מהלילה הראשון שלה; אין
+   עיבוד היסטוריה אחורה אלא בהרצה ידנית עם `date`.
+</script>
+<script>
+/* =====================================================================
+   מנוע העריכה. יחידת העריכה היא סעיף: בתצוגה הוא מרונדר, בעריכה הוא
+   ה-Markdown הגולמי שלו — כך שהייצוא חוזר למקור בלי אובדן.
+   ===================================================================== */
+const KEY='hkNightlySpec.v1';
+const SRC=document.getElementById('src').textContent;
+
+/* ---------- פיצול לסעיפים לפי ## ---------- */
+function split(md){
+  const lines=md.split('\n'), secs=[]; let cur={t:'',lv:0,body:[]};
+  let fence=false;
+  for(const ln of lines){
+    if(/^```/.test(ln)) fence=!fence;
+    const m=!fence&&ln.match(/^(#{2,3})\s+(.*)$/);
+    if(m){ if(cur.t||cur.body.length) secs.push(cur);
+      cur={t:m[2].trim(),lv:m[1].length,body:[]}; }
+    else cur.body.push(ln);
+  }
+  if(cur.t||cur.body.length) secs.push(cur);
+  if(secs.length&&!secs[0].t){ secs[0].t='פתיח'; secs[0].lv=0; }
+  return secs;
+}
+
+/* ---------- רנדור Markdown (התת־קבוצה שהמסמך משתמש בה) ---------- */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function inline(s){
+  return esc(s)
+    .replace(/`([^`]+)`/g,(m,c)=>'<code>'+c+'</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+    .replace(/(^|[\s(])\*([^*\n]+)\*/g,'$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>');
+}
+function render(md){
+  const L=md.split('\n'), out=[]; let i=0;
+  const flush=(tag,items)=>out.push('<'+tag+'>'+items.map(x=>'<li>'+inline(x)+'</li>').join('')+'</'+tag+'>');
+  while(i<L.length){
+    let ln=L[i];
+    if(/^```/.test(ln)){                       /* בלוק קוד */
+      const lang=ln.slice(3).trim(); i++; const buf=[];
+      while(i<L.length&&!/^```/.test(L[i])) buf.push(L[i++]);
+      i++; out.push('<pre><code data-lang="'+esc(lang)+'">'+esc(buf.join('\n'))+'</code></pre>');
+      continue;
+    }
+    if(/^\|/.test(ln)){                        /* טבלה */
+      const rows=[]; while(i<L.length&&/^\|/.test(L[i])) rows.push(L[i++]);
+      const cells=r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const head=cells(rows[0]); const body=rows.slice(2).map(cells);
+      out.push('<table><thead><tr>'+head.map(h=>'<th>'+inline(h)+'</th>').join('')+
+        '</tr></thead><tbody>'+body.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+
+        '</tr>').join('')+'</tbody></table>');
+      continue;
+    }
+    if(/^>\s?/.test(ln)){                      /* ציטוט */
+      const buf=[]; while(i<L.length&&/^>\s?/.test(L[i])) buf.push(L[i++].replace(/^>\s?/,''));
+      out.push('<blockquote>'+render(buf.join('\n'))+'</blockquote>'); continue;
+    }
+    if(/^\s*[-*]\s+/.test(ln)){                /* רשימה */
+      const buf=[]; while(i<L.length&&/^\s*[-*]\s+/.test(L[i])){
+        let it=L[i++].replace(/^\s*[-*]\s+/,'');
+        while(i<L.length&&/^\s{2,}\S/.test(L[i])&&!/^\s*[-*]\s+/.test(L[i])) it+=' '+L[i++].trim();
+        buf.push(it);
+      } flush('ul',buf); continue;
+    }
+    if(/^\s*\d+\.\s+/.test(ln)){               /* רשימה ממוספרת */
+      const buf=[]; while(i<L.length&&/^\s*\d+\.\s+/.test(L[i])){
+        let it=L[i++].replace(/^\s*\d+\.\s+/,'');
+        while(i<L.length&&/^\s{2,}\S/.test(L[i])&&!/^\s*\d+\.\s+/.test(L[i])) it+=' '+L[i++].trim();
+        buf.push(it);
+      } flush('ol',buf); continue;
+    }
+    if(/^---+\s*$/.test(ln)){ out.push('<hr>'); i++; continue; }
+    if(/^#{1,4}\s+/.test(ln)){
+      const m=ln.match(/^(#+)\s+(.*)$/); out.push('<h'+m[1].length+'>'+inline(m[2])+'</h'+m[1].length+'>');
+      i++; continue;
+    }
+    if(!ln.trim()){ i++; continue; }
+    const buf=[];                              /* פסקה */
+    while(i<L.length&&L[i].trim()&&!/^(```|\||>|#{1,4}\s|---+\s*$|\s*[-*]\s|\s*\d+\.\s)/.test(L[i]))
+      buf.push(L[i++]);
+    out.push('<p>'+inline(buf.join(' '))+'</p>');
+  }
+  return out.join('');
+}
+
+/* ---------- מצב ---------- */
+let ST = {secs:null, meta:{}};
+try{ const raw=localStorage.getItem(KEY); if(raw) ST=JSON.parse(raw); }catch(e){}
+const BASE=split(SRC);
+if(!ST.secs||ST.secs.length!==BASE.length) ST.secs=BASE.map(s=>s.body.join('\n'));
+if(!ST.meta) ST.meta={};
+
+let dirty=false, tmr=null;
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(ST));
+    mark('נשמר '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}),true);
+  }catch(e){ mark('השמירה נכשלה — ייצא לקובץ',false); }
+  dirty=false;
+}
+function mark(t,ok){ const e=document.getElementById('saved');
+  e.textContent=t; e.classList.toggle('on',!!ok); }
+function touch(){ dirty=true; mark('שינויים לא שמורים…',false);
+  clearTimeout(tmr); tmr=setTimeout(save,900); }
+
+/* ---------- בנייה ---------- */
+function build(){
+  const host=document.getElementById('doc'), nav=document.getElementById('nav');
+  host.innerHTML=''; nav.innerHTML='';
+  BASE.forEach((s,ix)=>{
+    const id='s'+ix, meta=ST.meta[id]||{};
+    const el=document.createElement('section');
+    el.className='sec'+(meta.st?' '+meta.st:'')+(meta.cm?' cmon':'');
+    el.id=id;
+    const numMatch=s.t.match(/^([\d]+[א]?)\s*·\s*(.*)$/);
+    el.innerHTML=
+      '<div class="sec-h">'+
+        (numMatch?'<span class="num">'+esc(numMatch[1])+'</span>':'')+
+        '<span class="ttl">'+esc(numMatch?numMatch[2]:s.t)+'</span>'+
+        '<span class="st">'+
+          '<button class="ok'+(meta.st==='ok'?' on':'')+'" onclick="setSt(\''+id+'\',\'ok\')" title="אושר">אושר</button>'+
+          '<button class="talk'+(meta.st==='talk'?' on':'')+'" onclick="setSt(\''+id+'\',\'talk\')" title="דורש דיון">לדיון</button>'+
+        '</span>'+
+        '<span class="acts">'+
+          '<button onclick="tgCm(\''+id+'\')">הערה</button>'+
+          '<button class="edb" onclick="tgEd(\''+id+'\')">עריכה</button>'+
+        '</span>'+
+      '</div>'+
+      '<div class="cm"><label>הערה לצוות הפיתוח</label>'+
+        '<textarea oninput="setNote(\''+id+'\',this.value)" placeholder="מה צריך לשנות, ולמה">'+
+        esc(meta.note||'')+'</textarea></div>'+
+      '<div class="sec-b md">'+render(ST.secs[ix])+'</div>';
+    host.appendChild(el);
+
+    const a=document.createElement('a');
+    a.href='#'+id; a.className=(s.lv===3?'sub':'');
+    a.innerHTML='<i class="'+(meta.st||'')+'"></i><span>'+esc(s.t)+'</span>';
+    nav.appendChild(a);
+  });
+  spy();
+}
+
+/* ---------- פעולות ---------- */
+window.tgEd=function(id){
+  const el=document.getElementById(id), ix=+id.slice(1);
+  const b=el.querySelector('.edb');
+  if(el.classList.contains('edit')){
+    const ta=el.querySelector('textarea.ed');
+    ST.secs[ix]=ta.value; touch();
+    el.classList.remove('edit'); b.textContent='עריכה'; b.classList.remove('on');
+    const div=document.createElement('div');
+    div.className='sec-b md'; div.innerHTML=render(ST.secs[ix]);
+    ta.replaceWith(div);
+    const a=document.querySelectorAll('#nav a')[ix];
+    if(a) a.querySelector('span').textContent=BASE[ix].t;
+  }else{
+    el.classList.add('edit'); b.textContent='סיום עריכה'; b.classList.add('on');
+    const body=el.querySelector('.sec-b');
+    const ta=document.createElement('textarea');
+    ta.className='ed'; ta.value=ST.secs[ix];
+    ta.style.minHeight=Math.max(260,body.offsetHeight)+'px';
+    body.replaceWith(ta); ta.focus();
+  }
+};
+window.setSt=function(id,st){
+  const m=ST.meta[id]=ST.meta[id]||{};
+  m.st = (m.st===st) ? '' : st;
+  const el=document.getElementById(id);
+  el.classList.remove('ok','talk'); if(m.st) el.classList.add(m.st);
+  el.querySelectorAll('.st button').forEach(b=>
+    b.classList.toggle('on', b.classList.contains(m.st)&&!!m.st));
+  const a=document.querySelectorAll('#nav a')[+id.slice(1)];
+  if(a) a.querySelector('i').className=m.st||'';
+  touch();
+};
+window.tgCm=function(id){
+  const m=ST.meta[id]=ST.meta[id]||{};
+  m.cm=!m.cm; document.getElementById(id).classList.toggle('cmon',m.cm);
+  if(m.cm) document.getElementById(id).querySelector('.cm textarea').focus();
+  touch();
+};
+window.setNote=function(id,v){ (ST.meta[id]=ST.meta[id]||{}).note=v; touch(); };
+
+/* ייצוא: מרכיב את ה-Markdown מחדש, והערות שנכתבו נוספות בסוף */
+window.exportMd=function(){
+  let out=[];
+  BASE.forEach((s,ix)=>{
+    if(s.t&&s.lv>=2) out.push('#'.repeat(s.lv)+' '+s.t);
+    out.push(ST.secs[ix]);
+  });
+  const notes=BASE.map((s,ix)=>{
+    const m=ST.meta['s'+ix]||{};
+    if(!m.note&&!m.st) return null;
+    return '- **'+s.t+'** — '+(m.st==='ok'?'אושר':m.st==='talk'?'דורש דיון':'—')+
+           (m.note?': '+m.note:'');
+  }).filter(Boolean);
+  if(notes.length) out.push('\n---\n\n## הערות מהסקירה\n\n'+notes.join('\n')+'\n');
+  const blob=new Blob([out.join('\n')],{type:'text/markdown;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='NIGHTLY_COMM_SPEC.md';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+window.resetAll=function(){
+  if(!confirmBox()) return;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  ST={secs:BASE.map(s=>s.body.join('\n')),meta:{}};
+  build(); mark('שוחזר למקור',true);
+};
+/* אין confirm של הדפדפן — שאלה בתוך הדף */
+function confirmBox(){
+  const w=document.getElementById('cfm');
+  w.style.display='flex';
+  return false;
+}
+window.cfmDo=function(yes){
+  document.getElementById('cfm').style.display='none';
+  if(!yes) return;
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  ST={secs:BASE.map(s=>s.body.join('\n')),meta:{}};
+  build(); mark('שוחזר למקור',true);
+};
+
+/* ---------- «איפה אני» בניווט ---------- */
+function spy(){
+  const links=[...document.querySelectorAll('#nav a')];
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(!e.isIntersecting) return;
+      const ix=+e.target.id.slice(1);
+      links.forEach((a,i)=>a.classList.toggle('on',i===ix)); });
+  },{rootMargin:'-80px 0px -70% 0px',threshold:0});
+  document.querySelectorAll('.sec').forEach(s=>io.observe(s));
+}
+
+addEventListener('beforeunload',e=>{ if(dirty){ save(); } });
+addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='s'){ e.preventDefault(); save(); }
+  if(e.key==='Escape') document.getElementById('cfm').style.display='none';
+});
+build();
+mark('נטען','');
+</script>
+</body>
+</html>
