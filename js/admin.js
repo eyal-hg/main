@@ -22,8 +22,7 @@ const ADMIN_SCREENS=[
    ic:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'},
   {k:'aitests',label:'בדיקות AI',     file:'adminScreens/ai-tests.html?embed=1',
    ic:'<path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0H5a2 2 0 0 1-2-2v-4m6 6h10a2 2 0 0 0 2-2v-4"/>'},
-  {k:'calendar',label:'יומן',file:'adminScreens/calendar.html',
-   ic:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
+  /* 'יומן' ירד מאיזור הניהול — זה אותו יומן של היועץ ומנהל התזרים (הכרעת אייל, 02.09) */
   {sep:'המערכת'},
   {k:'memory', label:'זיכרון לקוח — קטגוריות', panel:true,
    ic:'<path d="M12 2a3 3 0 0 0-3 3 3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v1a3 3 0 0 0 6 0M12 2a3 3 0 0 1 3 3 3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v1a3 3 0 0 1-6 0M12 2v20"/>'},
