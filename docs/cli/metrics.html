@@ -543,6 +543,12 @@ html.embed .md{max-height:none}
 .fmet .fm .kind{margin:0}
 .fmet .fm:hover{border-color:var(--sky)}
 .fmet .fm.on{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);background:#F4F8FC}
+/* אזור הערך של האגף — קופסה משלו עם כותרת, כדי שלא ייראה כהמשך של כפתורי המקור */
+.fval-box{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:9px 11px 10px}
+.fval-box .fvl{font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:7px}
+.fval-box .cp{border:0;padding:0}
+.fpick{display:flex;flex-direction:column;gap:1px}
+.cb.rd{border-radius:50%}
 .fsheet{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .fsheet input.s{width:130px}
 .mxcalc .fval .cp-rows{grid-template-columns:minmax(0,1fr)}
@@ -1856,8 +1862,8 @@ function drawFormula(){
     }else if(side.src==='cats'){
       h=cpHtml(sd,side.vals||[],true);              /* אותו בורר של מקור המדד, מקופל לסעיפים */
     }else if(side.src==='acct'){
-      h='<div class="pillrow">'+PL_LINES.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>'+
-        '<div class="hint" style="margin-top:6px">שורה בדוח רווח והפסד של החודש</div>';
+      /* רשימת שורות עם סימון — נראית כמו בחירה, לא כהמשך של כפתורי המקור */
+      h='<div class="fpick">'+PL_LINES.map(function(c){return '<button class="cp-r'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'"><span class="cb rd'+(c===side.val?' on':'')+'">'+ICO_CK+'</span><span class="nm">'+esc(c)+'</span></button>';}).join('')+'</div>';
     }else if(side.src==='sheets'){
       h='<div class="fsheet"><input class="s" data-fin="'+sd+'" data-fk="val" value="'+esc(side.val||'')+'" placeholder="תא, למשל B4">'+
         '<input class="s" data-fin="'+sd+'" data-fk="gid" value="'+esc(side.gid||'')+'" placeholder="gid של הטאב"></div>'+
@@ -1866,7 +1872,8 @@ function drawFormula(){
       h='<div class="fsheet"><input class="s" data-fin="'+sd+'" data-fk="val" inputmode="numeric" value="'+esc(side.val||'')+'" placeholder="מספר קבוע">'+
         '<button class="pill'+(side.val==='ימי עבודה'?' on':'')+'" data-fs="'+sd+'" data-fv="ימי עבודה">ימי עבודה בחודש</button></div>';
     }
-    val.innerHTML=h;
+    var lbl={metric:'איזה מדד',cats:'אילו קטגוריות',acct:'איזו שורה בדוח רווח והפסד',sheets:'איזה תא בגיליון',const:'איזה מספר'}[side.src];
+    val.innerHTML='<div class="fval-box"><div class="fvl">'+lbl+'</div>'+h+'</div>';
   });
   document.getElementById('mxCalcOp').innerHTML=FOPS.map(function(o){return '<button class="pill'+(o===D.f.op?' on':'')+'" data-fop="'+o+'">'+o+'</button>';}).join('');
   document.getElementById('mxFsum').innerHTML='ƒ '+esc(fSideTxt(D.f.a))+' <b>'+esc(D.f.op)+'</b> '+esc(fSideTxt(D.f.b));
