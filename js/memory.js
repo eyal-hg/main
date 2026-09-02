@@ -466,11 +466,17 @@ function comChat(scope,key){ return comBag(scope)[key+'_chat']||''; }
 
 /* ---- החותמת: רק מה ששונה מחותמת הכרטיס ---- */
 /* לכל שורה מקור ותאריך משלה — הם לא מאפיין של הכרטיס */
+/* המקור כתג צבעוני לפי ערוץ — אותם צבעים של מסך התקשורת */
+function comSrcChip(src){
+  if(!src) return '';
+  const k=/וואטסאפ/.test(src)?'wa':/שיחת טלפון|שיחה/.test(src)?'call':/פגישה/.test(src)?'meet':/תפעול/.test(src)?'ops':'oth';
+  return `<span class="com-sc ${k}">${comEsc(src)}</span>`;
+}
 function comStamp(l){
-  const base=(l.d||'')+(l.src?' · '+l.src:'');
-  if(l.st==='dropped') return {cls:'off', t:'הוסר · '+(l.by||COM_ME)+' · '+(l.on||'')};
-  if(l.st==='solved')  return {cls:'ok',  t:'נפתר '+(l.on||l.d||'')};
-  if(l.st==='stale')   return {cls:'',    t:base+' · לא הוזכר מאז'};
+  const base=(l.d?`<span class="d">${comEsc(l.d)}</span>`:'')+comSrcChip(l.src);
+  if(l.st==='dropped') return {cls:'off', t:'הוסר · '+comEsc(l.by||COM_ME)+' · '+comEsc(l.on||'')};
+  if(l.st==='solved')  return {cls:'ok',  t:'נפתר '+comEsc(l.on||l.d||'')};
+  if(l.st==='stale')   return {cls:'',    t:base+'<span class="d">לא הוזכר מאז</span>'};
   return {cls:'', t:base};
 }
 
@@ -504,13 +510,13 @@ function comCard(c){
   const rows=all.map(l=>{
     const s=comStamp(l);
     return `<p class="com-p ${l.st==='solved'?'solved':''} ${l.origin==='advisor'?'adv':''}"
-      data-id="${l.id}">${mark(l.t)}<i class="com-st ${s.cls}">${comEsc(s.t)}${
-      l.origin==='advisor'?' · הוזן ידנית':''}</i>
+      data-id="${l.id}">${mark(l.t)}<i class="com-st ${s.cls}">${s.t}${
+      l.origin==='advisor'?'<span class="d">הוזן ידנית</span>':''}</i>
       <button class="com-x" title="מחיקת השורה מהזיכרון" onclick="comDel(this)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></button></p>`;}).join('');
   const capN=(c.cap||6), full=all.filter(l=>l.st==='live').length>=capN;
   return `<section class="com-c ${all.length?'':'empty'}" data-scope="${c.scope}" data-key="${c.key}" data-k="${k}">
     <div class="com-h">
-      <b>${comEsc(c.name)}</b>
+      <b>${comEsc(c.name)}${all.length?`<span class="com-n">${all.length}</span>`:''}</b>
       ${gd?`<button class="com-vis gd" onclick="gdOpen()" title="מה זה אומר?"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3 4 6v6c0 4.4 3.4 7.9 8 9 4.6-1.1 8-4.6 8-9V6l-8-3z"/></svg>מסונן ללקוח</button>`:''}
       ${doc&&doc.hist&&doc.hist.length?`<button class="com-hb ${MEM_HIST.has(k)?'on':''}" onclick="comHistTg('${k}')">היסטוריה ${doc.hist.length}</button>`:''}
     </div>
@@ -534,6 +540,8 @@ function renderCoMem(keepFocus){
     .filter(x=>!(u.off||[]).includes(x.key));         /* קטגוריות שכובו ליוזר הזה */
   const nOff=(u.off||[]).filter(k=>MEM_CATS.some(c=>c.key===k)).length;
   const coH=co.map(comCard).join(''), usH=us.map(comCard).join('');
+  const cnt=list=>list.reduce((n,x)=>{const d=comDoc(x.scope,x.key);return n+((d&&d.lines)||[]).filter(l=>l.st!=='dropped').length;},0);
+  const coN=cnt(co), usN=cnt(us);
   const nHit=[...co,...us].filter(x=>comCard(x)).length;
   const nLines=COM_Q?[...co,...us].reduce((s,x)=>{const d=comDoc(x.scope,x.key);
     return s+((d&&d.lines)||[]).filter(l=>l.t.indexOf(COM_Q)>-1).length;},0):0;
@@ -549,13 +557,12 @@ function renderCoMem(keepFocus){
     </div>
     ${(coH||usH)?`<div class="com-cols">
       <section class="com-col">
-        <h3 class="com-sh co"><span class="dot"></span>העסק</h3>
+        <h3 class="com-sh co"><span class="dot"></span>העסק<em>${comEsc(c.name||'')}</em><span class="com-tot">${coN} שורות · ${co.length} קטגוריות</span></h3>
         ${coH||'<div class="com-empty sm">אין התאמה בזיכרון החברה</div>'}
       </section>
       <section class="com-col">
-        <h3 class="com-sh pr"><span class="dot"></span>${comEsc(u.n||'')}<em>${comEsc(u.role||'')}</em></h3>
-        <div class="com-us">${users.map((x,i)=>`<button class="com-u ${i===COM_USER?'on':''}" onclick="comUser(${i})">${comEsc(x.n)}${
-          i===COM_USER?`<span class="com-ug" title="הגדרות היוזר — קטגוריות, תפקיד וסוג" onclick="event.stopPropagation();comUserSet(${i})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>`:''}</button>`).join('')}</div>
+        <h3 class="com-sh pr"><span class="dot"></span><div class="com-us">${users.map((x,i)=>`<button class="com-u ${i===COM_USER?'on':''}" onclick="comUser(${i})">${comEsc(x.n)}${
+          i===COM_USER?`<span class="com-ug" title="הגדרות היוזר — קטגוריות, תפקיד וסוג" onclick="event.stopPropagation();comUserSet(${i})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>`:''}</button>`).join('')}</div><em>${comEsc(u.role||'')}</em><span class="com-tot">${usN} שורות</span></h3>
         ${nOff?`<p class="com-off-n">${nOff===1?'קטגוריה אחת כבויה':nOff+' קטגוריות כבויות'} אצל ${comEsc(u.n)} — <button onclick="comUserSet(${COM_USER})">להגדרות</button></p>`:''}
         ${multi?`<p class="com-shared">הזיכרון האישי של ${comEsc(u.n)} משותף ל-2 חברות — תיקון כאן משפיע גם על ${comEsc(multi)}.</p>`:''}
         ${usH||'<div class="com-empty sm">אין התאמה בזיכרון האדם</div>'}
