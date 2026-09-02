@@ -239,10 +239,11 @@ body.calls-on .arena{display:none}
 .cpick-x:hover{background:rgba(255,255,255,.32)}
 .cpick .b:hover{border-color:var(--navy);color:var(--navy)}
 .cpick.on .b{border-color:var(--navy);color:var(--navy)}
-.cpick .b i{margin-inline-start:2px;flex:none;display:inline-flex;align-items:center;
-  width:11px;height:11px;transition:transform .15s}
-.cpick .b i svg{width:11px;height:11px;display:block}
-.cpick.on .b i{transform:rotate(180deg)}
+.cpick .b .chev{margin-inline-start:2px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:14px;height:14px;transition:transform .15s;color:var(--ink3)}
+.cpick.pick .b .chev{color:rgba(255,255,255,.8)}
+.cpick .b .chev svg{width:11px;height:11px;display:block}
+.cpick.on .b .chev{transform:rotate(180deg)}
 .cpick .m{position:absolute;z-index:40;top:calc(100% + 5px);inset-inline-start:0;min-width:230px;
   background:var(--white);border:1px solid var(--bd);border-radius:9px;
   box-shadow:0 12px 30px rgba(16,42,67,.16);padding:7px;display:none}
@@ -304,13 +305,16 @@ body.calls-on .arena{display:none}
 .search svg{position:absolute;inset-inline-start:12px;top:11px;width:16px;height:16px;color:var(--ink3)}
 /* החיפוש — הפיצ׳ר החזק במסך: שדה גדול, כפתור פעולה, הסבר ותוצאות */
 .search{padding-bottom:4px}
-.qrow{display:flex;align-items:center;gap:10px;padding:6px 20px 12px;background:var(--surface2)}
+.qband{margin:4px 20px 12px;padding:12px 16px 14px;background:#EEF5FB;border:1px solid #D2E3F1;border-radius:12px}
+.qb-t{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:8px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.qb-t span{font-size:12px;font-weight:400;color:var(--ink3)}
+.qrow{display:flex;align-items:center;gap:10px}
 .qrow .in{flex:1;position:relative}
 .qrow .in svg{position:absolute;inset-inline-start:12px;top:11px;width:16px;height:16px;color:var(--navy)}
-.qrow input{width:100%;height:38px;border:1px solid #C9D8E6;border-radius:8px;padding-inline-start:36px;padding-inline-end:12px;
+.qrow input{width:100%;height:40px;border:1px solid #C9D8E6;border-radius:8px;padding-inline-start:36px;padding-inline-end:12px;
   font:inherit;font-size:13.5px;background:var(--white);color:var(--ink)}
 .qrow input:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.16)}
-.qrow .qgo{height:38px;padding:0 18px;border-radius:8px;font-size:13.5px;font-weight:600;flex:none}
+.qrow .qgo{height:40px;padding:0 20px;border-radius:8px;font-size:13.5px;font-weight:600;flex:none}
 .qrow .clr{font-size:12.5px;color:var(--sky);font-weight:500;display:none}
 .qrow .clr.on{display:inline}
 .qres{padding:8px 20px;font-size:13px;color:var(--ink2);background:#EEF5FB;border-top:1px solid #D7E6F2;display:none}
@@ -603,6 +607,11 @@ tr.m.wa .nm{color:#0B5A68}
 
 /* שורות הנושאים והמשובים ירדו (אייל, 02.09: "סתם מסבך כרגע") */
 #topRow,#fbtRow{display:none!important}
+
+/* סימון החלק הרלוונטי בסיכום אחרי חיפוש */
+.qm{background:var(--mark);color:var(--ink);padding:0 2px;border-radius:3px}
+.qhit{background:#FFF8E1;outline:2px solid #F3DFA3;outline-offset:2px;border-radius:6px}
+.ar-qnote{margin:0 0 12px;padding:8px 12px;background:#FFF8E1;border:1px solid #F3DFA3;border-radius:8px;font-size:12.5px;color:#6B4F00;font-weight:600}
 </style>
 <link rel="stylesheet" href="brand.css">
 </head>
@@ -645,7 +654,7 @@ tr.m.wa .nm{color:#0B5A68}
     </div>
     <div class="search">
       <div class="cpick" id="cfil">
-        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span id="cfLbl">כל הלקוחות</span><i id="cfChev"></i></button>
+        <button class="b" type="button" onclick="cfTg(this)" aria-label="סינון לפי לקוח"><span id="cfLbl">כל הלקוחות</span><span id="cfChev" class="chev"></span></button>
         <div class="m">
           <div class="s"><input type="search" id="cfQ" placeholder="חיפוש לקוח" oninput="cfSearch(this)" autocomplete="off"></div>
           <div class="o" id="cfOpts"></div>
@@ -654,14 +663,17 @@ tr.m.wa .nm{color:#0B5A68}
       <div class="ksegs" id="ksegs"></div>
       <span class="hint" id="hint"></span>
     </div>
-    <!-- החיפוש — בשורה משלו, מרווח -->
+    <!-- החיפוש — הפיצ׳ר החזק: רצועה משלו עם כותרת -->
+    <div class="qband">
+    <div class="qb-t">מתי דיברנו על…<span>חיפוש בתוכן, לא בשמות — מוצא גם ניסוח אחר, ומראה את הקטע בפגישה</span></div>
     <div class="qrow">
       <div class="in">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="חיפוש בתוכן 50 האירועים האחרונים — מתי דיברנו על מסגרת אשראי, גבייה, תמחור…">
+        <input id="q" type="search" placeholder="מסגרת אשראי, גבייה, תמחור… — ב-50 האירועים האחרונים">
       </div>
       <button class="btn pri qgo" id="qgo" type="button">חיפוש</button>
       <a href="#" class="clr" id="clr">ניקוי</a>
+    </div>
     </div>
     <div class="qres" id="res"></div>
     <div class="topics" id="topRow"></div>
@@ -895,8 +907,8 @@ tr.m.wa .nm{color:#0B5A68}
       : '';
     const scope=S.c?'אצל <b>'+esc(S.c)+'</b>':'בכל הלקוחות';
     /* ההסבר חי בשדה עצמו — ומשתנה כשמסונן לקוח */
-    $('#q').placeholder = S.c ? 'חיפוש בתוכן 50 האירועים האחרונים של '+S.c+' — מתי דיברנו על…'
-                              : 'חיפוש בתוכן 50 האירועים האחרונים — מתי דיברנו על מסגרת אשראי, גבייה, תמחור…';
+    $('#q').placeholder = S.c ? 'ב-50 האירועים האחרונים של '+S.c+'…'
+                              : 'מסגרת אשראי, גבייה, תמחור… — ב-50 האירועים האחרונים';
     const res=$('#res');
     res.innerHTML = S.q?'<b>'+shown+'</b> '+(shown===1?'אירוע':'אירועים')+' שבהם דיברו על ״'+esc(S.q)+'״ — '+scope+' <em>· מתוך 50 האירועים האחרונים · הקטע שנמצא מוצג בכל שורה</em>':'';
     res.classList.toggle('on',!!S.q);
@@ -1090,6 +1102,28 @@ tr.m.wa .nm{color:#0B5A68}
   };
   let _arTab='sum';
   function arTab(v){ _arTab=v; arenaShow(window._arSel); }
+  /* תוצאת חיפוש: הפגישה כולה נפתחת, והחלק הרלוונטי מסומן בתוך הסיכום */
+  function arMarkQ(){
+    if(!S.q) return;
+    const body=document.querySelector('#arena .ar-body'); if(!body) return;
+    const q=S.q, walker=document.createTreeWalker(body,NodeFilter.SHOW_TEXT), nodes=[];
+    while(walker.nextNode()){ if(walker.currentNode.nodeValue.includes(q)) nodes.push(walker.currentNode); }
+    let first=null;
+    nodes.forEach(n=>{
+      const parts=n.nodeValue.split(q), frag=document.createDocumentFragment();
+      parts.forEach((t,i)=>{ frag.appendChild(document.createTextNode(t));
+        if(i<parts.length-1){ const m=document.createElement('mark'); m.className='qm'; m.textContent=q; frag.appendChild(m); } });
+      const holder=n.parentElement.closest('li,.ar-r,.ar-q,p')||n.parentElement;
+      holder.classList.add('qhit'); if(!first) first=holder;
+      n.parentNode.replaceChild(frag,n);
+    });
+    if(first){
+      const note=document.createElement('div'); note.className='ar-qnote';
+      note.innerHTML='התאמה לחיפוש ״'+esc(q)+'״ — הקטע מסומן בסיכום';
+      body.prepend(note);
+      setTimeout(()=>first.scrollIntoView({block:'center',behavior:'smooth'}),80);
+    }
+  }
   /* שלושה ערוצים, מקום אחד. מי שמוסיף ערוץ רביעי נוגע רק כאן. */
   const KINDS={
     meet:{lb:'פגישה', sum:'סיכום פגישה',
@@ -1208,6 +1242,7 @@ tr.m.wa .nm{color:#0B5A68}
     host.innerHTML=head
       +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
       +`<div class="ar-body">`+body+`</div>`+(acts?`<div class="ar-acts">${acts}</div>`:'');
+    arMarkQ();
   }
   /* ===== אישור ושליחה — הזרימה המלאה =====
      שליחה עם משימות שלא אושרו ⇒ עצירה ושאלה. אחרי הפעולה — הסטטוס,
