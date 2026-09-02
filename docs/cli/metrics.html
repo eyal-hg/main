@@ -243,14 +243,22 @@
 .marn-b{padding:16px 22px 20px}
 .marn-b .track{margin-top:0}
 /* מגמת ששת החודשים — עמודות, לא ספארק זעיר */
-.hb{display:flex;align-items:flex-end;gap:9px;height:96px;margin-top:10px}
-.hb .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
-.hb .c s{text-decoration:none;display:block;width:100%;border-radius:5px 5px 0 0;background:#D5E5F2;min-height:3px}
-.hb .c.on s{background:var(--band)}
-.hb .c.nul s{background:repeating-linear-gradient(135deg,#E8EEF4 0 4px,#F4F7FA 4px 8px)}
-.hb .c u{text-decoration:none;font-size:11px;font-weight:600;color:var(--ink2);font-variant-numeric:tabular-nums}
-.hb .c em{font-style:normal;font-size:11px;color:var(--faint)}
+.hb{position:relative;display:flex;align-items:flex-end;gap:10px;height:190px;margin-top:14px;
+  padding:26px 0 24px;border-bottom:1px solid var(--tint)}
+.hb .c{position:relative;flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;min-width:0}
+.hb .c s{text-decoration:none;display:block;width:100%;max-width:56px;border-radius:6px 6px 0 0;
+  background:linear-gradient(to top,#2F92CE,#6FB9E4);min-height:4px}
+.hb .c.on s{background:linear-gradient(to top,#0C4068,#1F6FA6)}
+.hb .c.nul s{background:repeating-linear-gradient(135deg,#E3EAF1 0 4px,#F4F7FA 4px 8px)}
+.hb .c u{text-decoration:none;font-size:12.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hb .c em{position:absolute;bottom:-22px;font-style:normal;font-size:11.5px;color:var(--ink3)}
+.hb .c.on em{color:var(--navy);font-weight:700}
 .hb .c.on u{color:var(--navy)}
+.hb .c.nul u{color:var(--faint);font-weight:500}
+/* קו היעד של החודש המוצג, לרוחב הגרף */
+.hb u.tgl{position:absolute;inset-inline:0;height:0;border-top:1.6px dashed var(--coral);text-decoration:none;z-index:1}
+.hb u.tgl em{position:absolute;inset-inline-end:0;top:-16px;font-style:normal;font-size:11px;font-weight:700;
+  color:var(--coral-d);background:#fff;padding:0 6px;border-radius:4px}
 /* עמודה לכל יום עבודה + קו היעד היומי */
 .dbars{position:relative;display:flex;align-items:flex-end;gap:3px;height:104px;margin-top:12px;
   padding-bottom:2px;border-bottom:1px solid var(--tint)}
@@ -862,7 +870,8 @@ function julValue(m){
   return m.rate?m.target*(0.85+(s/97)*0.3):Math.round(m.target*f);
 }
 function valOf(m){
-  if(m.rate){var b=byKey(m.from); var v=b&&b.hist[MI]; return v==null?null:v/WORKDAYS;}
+  if(m.rate){var b=byKey(m.from); var v=b?valOf(b):null; if(v==null) return null;
+    return v/(MI===CUR_MI?JUL_DONE:WORKDAYS);}   /* בחודש הרץ: מה שנכנס עד היום חלקי הימים שעברו */
   if(MI>CUR_MI) return null;                    /* חודש שטרם התחיל */
   if(MI===CUR_MI) return m.src==='hand'?((m.hist&&m.hist[MI]!=null)?m.hist[MI]:null):julValue(m);
   return (m.hist&&m.hist[MI]!=null)?m.hist[MI]:null;
@@ -874,17 +883,18 @@ function pctOf(m){var v=valOf(m); if(v==null||!m.target) return null; return v/m
 function stateOf(m){
   if(MI>CUR_MI) return 'future';
   var v=valOf(m);
-  if(v==null) return 'wait';
+  if(v==null) return m.src==='hand'?'wait':'nodata';
   if(!m.target) return 'trk';
   var p=pctOf(m);
   if(m.money) return p<100?'dng':'ok';
   if(m.invert) return p<=100?'ok':(p<=115?'near':'off');
   return p>=100?'ok':(p>=85?'near':'off');
 }
-var ORDER={dng:0,wait:1,off:2,near:3,ok:4,trk:5,future:6};
+var ORDER={dng:0,wait:1,nodata:1,off:2,near:3,ok:4,trk:5,future:6};
 var FLAG={
   dng :{cls:'',     t:'סכנה כספית'},
   wait:{cls:'wt',   t:'מחכה למספר מהלקוח'},
+  nodata:{cls:'trk',t:'אין עדיין נתון לחודש'},
   future:{cls:'',   t:'החודש טרם התחיל'},
   off :{cls:'warn', t:'לא ביעד'},
   near:{cls:'near', t:'קרוב ליעד'},
@@ -1040,7 +1050,7 @@ function card(m){
 
 /* ---------- הרשימה + שורת החודש ---------- */
 function counts(){
-  var c={dng:0,wait:0,off:0,near:0,ok:0,trk:0};
+  var c={dng:0,wait:0,nodata:0,off:0,near:0,ok:0,trk:0};
   M.forEach(function(m){c[stateOf(m)]++;});
   return c;
 }
@@ -1127,17 +1137,20 @@ function dayChart(m){
   return s;
 }
 
+var HB_H=140;   /* גובה אזור העמודות בפיקסלים — .hb 190 פחות הריפודים */
 function histBars(m){
-  var H=m.hist||[], mx=0, i;
-  for(i=0;i<H.length;i++) if(H[i]!=null&&H[i]>mx) mx=H[i];
-  if(m.target&&m.target>mx) mx=m.target;
-  if(!mx) return '';
+  var from=Math.max(0,MI-5), vals=[], mx=0, i;
+  for(i=from;i<=MI;i++){var v=valAt(m,i); vals.push(v); if(v!=null&&v>mx) mx=v;}
+  var tg=m.target; if(tg&&tg>mx) mx=tg;
+  if(!mx) return '<div class="sect row" style="margin-top:18px">מגמה — ששת החודשים האחרונים'+trendTgl()+'</div>'+
+                 '<div class="state">אין עדיין מספרים להציג.</div>';
   var s='<div class="sect row" style="margin-top:18px">מגמה — ששת החודשים האחרונים'+trendTgl()+'</div><div class="hb">';
-  for(i=0;i<6;i++){
-    var v=H[i], h=v==null?12:Math.max(4,v/mx*74);
+  if(tg) s+='<u class="tgl" style="bottom:'+(24+tg/mx*HB_H).toFixed(1)+'px"><em>'+(m.invert?'תקרה':'יעד')+' '+plain(m,tg)+'</em></u>';
+  for(i=from;i<=MI;i++){
+    var v=vals[i-from], h=v==null?6:Math.max(4,v/mx*100);
     s+='<div class="c'+(i===MI?' on':'')+(v==null?' nul':'')+'">'+
        '<u>'+(v==null?'—':nf(v))+'</u>'+
-       '<s style="height:'+h.toFixed(0)+'px"></s>'+
+       '<s style="height:'+h.toFixed(1)+'%"></s>'+
        '<em>'+MONTHS[i]+'</em></div>';
   }
   return s+'</div>';
@@ -1164,14 +1177,14 @@ function mArena(k){
   for(var i=0;i<rows.length;i++) rows[i].classList.toggle('on',rows[i].dataset.k===k);
 
   var st=stateOf(m), v=valOf(m), f=FLAG[st];
-  var H=m.hist||[], lastI=-1, j;
-  for(j=0;j<MI;j++) if(H[j]!=null) lastI=j;
+  var lastI=-1, j, lastV=null;
+  for(j=0;j<MI;j++){var vj=valAt(m,j); if(vj!=null){lastI=j;lastV=vj;}}
 
   var head='<div class="marn-h">'+
     '<div class="k">'+kindTag(m)+'<span class="tag">'+srcTxt(m)+'</span><span class="tag">'+m.freq+'</span></div>'+
     '<h2>'+esc(m.name)+'</h2>';
-  if(st==='wait'){
-    head+='<div class="vrow"><div class="big pale">'+(lastI>=0?num(m,H[lastI]):'—')+'</div>'+
+  if(st==='wait'||st==='nodata'){
+    head+='<div class="vrow"><div class="big pale">'+(lastI>=0?num(m,lastV):'—')+'</div>'+
       (m.target?'<div class="tgtbox"><span>'+(m.invert?'תקרה':'יעד')+'</span><b>'+plain(m,m.target)+'</b></div>':'')+
       '</div><div class="tgt">'+(lastI>=0?'המספר האחרון · '+MONTHS[lastI]:'אין נתון קודם')+'</div>';
   }else{
@@ -1187,6 +1200,9 @@ function mArena(k){
   if(st!=='wait'&&m.target) b+=trackHtml(m,st)+scaleHtml(m,st)+gapHtml(m,st);
   if(st==='future'){
     b+='<div class="state">'+MONTHS[MI]+' עוד לא התחיל. היעד כבר מוגדר — המעקב ייפתח עם תחילת החודש.</div>';
+  }
+  if(st==='nodata'){
+    b+='<div class="state">אין עדיין נתון ל'+MONTHS[MI]+' — '+stripTags(srcTxt(m))+'. המספר ייכנס לבד כשהמקור יתעדכן.</div>';
   }
   if(st==='wait'){
     b+= SENT[m.k]
@@ -1302,6 +1318,7 @@ function dailyTxt(m){
 function pctTxt(m){
   var st=stateOf(m);
   if(st==='wait')   return '<span class="pc pale">ממתין</span>';
+  if(st==='nodata') return '<span class="pc pale">—</span>';
   if(st==='future') return '<span class="pc pale">—</span>';
   if(st==='trk')    return '<span class="pc pale">מעקב</span>';
   var p=pctOf(m); if(p==null) return '<span class="pc pale">—</span>';
