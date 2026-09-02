@@ -51,7 +51,7 @@
     document.querySelector('.tabs').style.display='none';   // הסקציות חיות בסרגל — אין טאבים אופקיים
     // ניווט דו-רמתי: הסרגל גלובלי וקבוע; הסקציות של חברה הן טאבים בתוך עמוד הלקוח
     GNAV = (s==='client') ? 'client'
-         : isOperator ? (MGR_VIEW==='meets'?'meets':'ops')
+         : isOperator ? (['meets','today','tasks','clients'].includes(MGR_VIEW)?MGR_VIEW:'ops')
          : ROLE==='advisor' ? (ADV_PVIEW==='clients'?'clients':ADV_PVIEW==='meets'?'meets':ADV_PVIEW==='how'?'how':ADV_PVIEW==='tasks'?'tasks':'today')
          : 'home';
     renderGlobalRail();
@@ -61,13 +61,15 @@
     const inPortfolio=(s==='portfolio');
     let pView='board';
     if(inPortfolio){
-      if(isOperator) pView=(MGR_VIEW==='meets')?'meets':'queue';   // הבית של המנהל הוא התפעול; זירת פגישות בבחירה
+      /* הבית של המנהל הוא התפעול; השאר — אותם מסכים של היועץ */
+      if(isOperator) pView=MGR_VIEW==='meets'?'meets':MGR_VIEW==='today'?'alerts':MGR_VIEW==='tasks'?'tasks':MGR_VIEW==='clients'?'clients':'queue';
       else if(ROLE==='clientN') pView='board';
       else pView=(ADV_PVIEW==='clients')?'clients':(ADV_PVIEW==='meets')?'meets':(ADV_PVIEW==='how')?'how':(ADV_PVIEW==='tasks')?'tasks':'alerts';
     }
     /* ===== מסכי היועץ המוטמעים — היום / משימות / פגישות / זיכרון =====
        ליועץ המסכים האלה מחליפים את התצוגות הישנות; למנהל התפעול שום דבר לא משתנה. */
-    const advScr = inPortfolio && ROLE==='advisor';
+    /* מסכי "היום" ו"משימות" המוטמעים משמשים גם את מנהל התזרים */
+    const advScr = inPortfolio && (ROLE==='advisor' || (isOperator && (pView==='alerts'||pView==='tasks')));
     const ADVMAP = {alerts:['advToday','advTodayFrame'], tasks:['advTasks','advTasksFrame'],
                     meets:['advMeets','advMeetsFrame'],  how:['advMem','advMemFrame']};
     Object.keys(ADVMAP).forEach(k=>{
@@ -456,19 +458,24 @@
       /* "התיק שלי" ולא "לקוחות": זה מסך ניהול (סטטוסים, יעדים, תשומת לב),
          והרשימה שמתחתיו בסרגל היא הניווט. שני שמות זהים בלבלו. */
       {k:'clients', l:'התיק שלי', go:"gnavGo('clients')"}];
+    /* מנהל התזרים: אותו סרגל בדיוק כמו היועץ, בתוספת "תפעול" — הלקוחות של היום —
+       שהוא הראשון והדיפולט בכניסה. "הגדרות" ירדו לתפריט המשתמש, כמו אצל היועץ. */
     if(ROLE==='manager') return [
-      {k:'ops',     l:'לקוחות',  go:"gnavGo('ops')"},
+      {k:'ops',     l:'תפעול',   go:"gnavGo('ops')"},
+      {k:'today',   l:'היום',    go:"gnavGo('today')"},
+      {k:'tasks',   l:'משימות',  go:"gnavGo('tasks')"},
       {k:'cal',     l:'יומן',    go:"gnavGo('cal')"},
-      {k:'meets',   l:'תקשורת', go:"gnavGo('meets')"},
-      {k:'settings',l:'הגדרות',  go:"gnavGo('settings')"}];
+      {k:'meets',   l:'תקשורת',go:"gnavGo('meets')"},
+      {k:'clients', l:'התיק שלי', go:"gnavGo('clients')"}];
     if(ROLE==='clientN') return [
       {k:'home',    l:'הבית',    go:"gnavGo('home')"}];
     return [{k:'home', l:'הבית', go:"gnavGo('home')"}];   // client1
   }
   function gnavGo(k){
-    if(k==='today'){ADV_PVIEW='home';selectPortfolio();return;}
-    if(k==='tasks'){ADV_PVIEW='tasks';selectPortfolio();return;}
-    if(k==='clients'){ADV_PVIEW='clients';selectPortfolio();return;}
+    const op=(typeof isOperator!=='undefined'&&isOperator);
+    if(k==='today'){if(op)MGR_VIEW='today';else ADV_PVIEW='home';selectPortfolio();return;}
+    if(k==='tasks'){if(op)MGR_VIEW='tasks';else ADV_PVIEW='tasks';selectPortfolio();return;}
+    if(k==='clients'){if(op)MGR_VIEW='clients';else ADV_PVIEW='clients';selectPortfolio();return;}
     if(k==='how'){ADV_PVIEW='how';selectPortfolio();return;}
     if(k==='ops'){MGR_VIEW='ops';selectPortfolio();return;}
     if(k==='meets'){if(typeof isOperator!=='undefined'&&isOperator)MGR_VIEW='meets';else ADV_PVIEW='meets';selectPortfolio();return;}
