@@ -97,6 +97,9 @@ GET /manager/rail-clients
 
 # חלק ב · נספח — מפת הסרגלים לכל התפקידים
 
+התפקידים במערכת (`SUPER_ADMIN` · `HK_CONSULTANT` · `HK_REPRESENTATIVE` → ממשק מנהל תזרים;
+`ADMIN` · `REPRESENTATIVE` → ממשק יועץ; `CUSTOMER` → ממשק לקוח): `docs/ROLES.md`.
+
 המצב כפי שהוא היום בפרוטוטיפ, אחרי המשימה שבחלק א. בסוף — הסתירות שעוד לא הוכרעו.
 
 ### העיקרון
