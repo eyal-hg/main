@@ -345,7 +345,7 @@
       MP.forEach(o=>{
         rows+=o.m.set
           ?`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')"><b>${o.c.name}${o.m.when?`<i class="oqs-sub">${o.m.when}</i>`:''}</b><span class="oqs-src okk">✓ נקבעה</span></div>`
-          :`<div class="oqs-row"><b>${o.c.name}${o.m.gap?`<i class="oqs-sub">${o.m.gap}</i>`:''}</b><button class="mt-btn view" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')">לתיאום</button></div>`;});
+          :`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')"><b>${o.c.name}${o.m.gap?`<i class="oqs-sub">${o.m.gap}</i>`:''}</b><span class="oqs-src none">לא נקבעה</span></div>`;});
     }
     if(key==='mrep') CLIENTS.forEach((c,i)=>{
       if(!firmOk(c)||!coActive(c)||!(c.product==='money'||c.product==='money+')) return;
