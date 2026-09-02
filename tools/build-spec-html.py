@@ -57,6 +57,17 @@ body{font-family:Rubik,'Heebo',Arial,sans-serif;background:var(--bg);color:var(-
 .nav-foot{padding:11px 16px;border-top:1px solid var(--line);background:var(--bg);
  font-size:11.5px;color:var(--muted);line-height:1.6}
 
+/* ---------- חלק (כותרת #) ---------- */
+.sec.part{background:none;border:0;box-shadow:none;margin:26px 0 14px}
+.sec.part .part-h{padding:6px 2px 10px;border-bottom:2px solid var(--navy)}
+.sec.part .part-h h2{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:24px;font-weight:700;
+ color:var(--navy);letter-spacing:-.3px}
+.sec.part:first-child{margin-top:0}
+.sec.part .sec-h .ttl{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:19px}
+.nav-l a.grp{margin-top:8px;font-weight:700;color:var(--navy);font-size:12.5px;letter-spacing:.2px}
+.nav-l a.grp:first-child{margin-top:0}
+.nav-l a.grp i{display:none}
+
 /* ---------- סעיף ---------- */
 .sec{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:16px;
  box-shadow:0 1px 2px rgba(12,64,104,.04);scroll-margin-top:90px}
@@ -146,13 +157,15 @@ function split(md){
   let fence=false;
   for(const ln of lines){
     if(/^```/.test(ln)) fence=!fence;
-    const m=!fence&&ln.match(/^(#{2,3})\s+(.*)$/);
+    const m=!fence&&ln.match(/^(#{1,3})\s+(.*)$/);
     if(m){ if(cur.t||cur.body.length) secs.push(cur);
       cur={t:m[2].trim(),lv:m[1].length,body:[]}; }
     else cur.body.push(ln);
   }
   if(cur.t||cur.body.length) secs.push(cur);
-  if(secs.length&&!secs[0].t){ secs[0].t='פתיח'; secs[0].lv=0; }
+  if(secs.length&&!secs[0].t){ secs[0].t='פתיח'; secs[0].lv=2; }
+  /* שורות --- שנשארו בסוף גוף לפני כותרת חלק — רעש, לא תוכן */
+  secs.forEach(s=>{ while(s.body.length&&/^(---+\s*|)$/.test(s.body[s.body.length-1])) s.body.pop(); });
   return secs;
 }
 
@@ -243,9 +256,17 @@ function build(){
   BASE.forEach((s,ix)=>{
     const id='s'+ix, meta=ST.meta[id]||{};
     const el=document.createElement('section');
-    el.className='sec'+(meta.st?' '+meta.st:'')+(meta.cm?' cmon':'');
+    const isPart=(s.lv===1), hasBody=!!ST.secs[ix].trim();
+    el.className='sec'+(isPart?' part':'')+(meta.st?' '+meta.st:'')+(meta.cm?' cmon':'');
     el.id=id;
     const numMatch=s.t.match(/^([\d]+[א]?)\s*·\s*(.*)$/);
+    if(isPart&&!hasBody){
+      el.innerHTML='<div class="part-h"><h2>'+esc(s.t)+'</h2></div>';
+      host.appendChild(el);
+      const a=document.createElement('a'); a.href='#'+id; a.className='grp';
+      a.innerHTML='<span>'+esc(s.t)+'</span>'; nav.appendChild(a);
+      return;
+    }
     el.innerHTML=
       '<div class="sec-h">'+
         (numMatch?'<span class="num">'+esc(numMatch[1])+'</span>':'')+
@@ -266,7 +287,7 @@ function build(){
     host.appendChild(el);
 
     const a=document.createElement('a');
-    a.href='#'+id; a.className=(s.lv===3?'sub':'');
+    a.href='#'+id; a.className=(s.lv===3?'sub':isPart?'grp':'');
     a.innerHTML='<i class="'+(meta.st||'')+'"></i><span>'+esc(s.t)+'</span>';
     nav.appendChild(a);
   });
@@ -318,7 +339,7 @@ window.setNote=function(id,v){ (ST.meta[id]=ST.meta[id]||{}).note=v; touch(); };
 window.exportMd=function(){
   let out=[];
   BASE.forEach((s,ix)=>{
-    if(s.t&&s.lv>=2) out.push('#'.repeat(s.lv)+' '+s.t);
+    if(s.t&&s.lv>=1) out.push('#'.repeat(s.lv)+' '+s.t);
     out.push(ST.secs[ix]);
   });
   const notes=BASE.map((s,ix)=>{
