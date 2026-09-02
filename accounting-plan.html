@@ -32,7 +32,7 @@ html,body{margin:0;padding:0}
   /* ---- גיאומטריה — העוגן ---- */
   --namew:330px;
   --colw:150px;
-  --colw3:250px;          /* חודש סגור: בפועל · יעד · הפרש */
+  --colw3:296px;          /* חודש פתוח: בפועל · יעד · הפרש — מקום לשבע ספרות ואחוז מתחת */
   --rh:34px;    /* רמה 1 — סעיף חשבונאי */
   --rh2:30px;   /* רמה 2 — קטגוריית תזרים */
   --rh3:27px;   /* רמה 3 — תיאור */
@@ -384,10 +384,14 @@ button{font-family:inherit;cursor:pointer}
 .setpop .srow b{display:block;font-size:12.5px;color:var(--ink)}
 .setpop .srow small{display:block;font-size:11px;color:var(--muted);line-height:1.45;margin-top:2px}
 /* תא שעודכן ידנית */
-.c .mn{position:absolute;top:4px;inset-inline-end:5px;width:7px;height:7px;border-radius:50%;background:var(--navy);z-index:1}
-.c .mn.o{background:#fff;border:1.5px solid var(--navy)}
+.c .mn{display:block;width:max-content;margin:2px auto 0;font-style:normal;font-size:9px;font-weight:700;line-height:1.5;
+  padding:0 5px;border-radius:4px;background:var(--navy);color:#fff;letter-spacing:.1px}
+.c .mn.o{background:#fff;color:var(--navy);border:1px solid var(--navy);line-height:1.3}
+.c .mn.t{background:#EAF3FA;color:var(--navy);border:1px solid rgba(12,64,104,.35);line-height:1.3}
+.c:has(.mn){box-shadow:inset -2px 0 0 var(--navy)}
+.c.m3:has(.mn){box-shadow:none}
 .manchip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#fff;opacity:.9;margin-inline-end:10px}
-.manchip .mn{position:static;width:8px;height:8px;background:#fff}
+.manchip .mn{position:static;background:#fff;color:var(--navy)}
 .cedit .keep{margin:8px 0 6px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:9px;font-size:11.5px;color:var(--ink-2)}
 .cedit .keep .kl{display:block;font-weight:600;color:var(--navy);margin-bottom:5px}
 .cedit .keep label{display:flex;align-items:center;gap:6px;padding:2px 0;cursor:pointer}
@@ -399,6 +403,8 @@ button{font-family:inherit;cursor:pointer}
 /* אחוז קטן מתחת למספר — בהפרש ובשורות הסה״כ */
 .c > .v .pc{display:block;font-size:10px;font-weight:500;line-height:1.2;margin-top:1px;opacity:.85}
 .tot .c > .v .pc{color:rgba(255,255,255,.8)}
+.pnl .c > .v .pc{color:var(--muted-2);font-size:9.5px}
+.pnl .c > .v.df{font-size:13px}
 /* שורת המס — קלט האחוז בתוך השם */
 .pnl.tax .nm small{display:inline-flex;align-items:center;gap:4px;margin-inline-start:auto;font-size:10.5px;color:var(--muted)}
 .pnl.tax .nm small input{width:40px;font:inherit;font-size:11.5px;font-weight:600;color:var(--navy);text-align:center;
@@ -514,6 +520,9 @@ button{font-family:inherit;cursor:pointer}
 .net .c{z-index:1;color:var(--navy);border-inline-start:3px solid var(--mo-line)}
 .net .c.isnow{background:color-mix(in srgb,var(--tone) 7%,#fff)}
 .net .c .v{font-size:18px;font-weight:700;letter-spacing:-.3px;color:var(--navy)}
+.net .c.m3 .v{font-size:14px}.net .c.m3 .v.tg{color:var(--muted);font-weight:500}.net .c.m3 .v.df{font-size:13px}
+.net .c.m3 .v.df.g{color:#13895b}.net .c.m3 .v.df.b{color:#dc4436}
+.net .c .pc{display:block;font-size:9.5px;font-weight:500;color:var(--muted-2);line-height:1.2;margin-top:1px}
 
 /* ---- אנימציית מעבר בין שפות ---- */
 .face.out > *{animation:rOut .19s ease-in both}
@@ -718,10 +727,6 @@ button{font-family:inherit;cursor:pointer}
 .tgl input:checked + .sw2::after{transform:translateX(-14px)}
 .tgl .txt{font-size:12px;font-weight:600;color:var(--navy);line-height:1.25}
 .tgl .txt small{display:block;font-size:9.5px;font-weight:400;color:var(--muted)}
-.dirnote{display:none;font-size:10.5px;border-radius:8px;padding:5px 8px;margin-bottom:8px}
-.dirnote.show{display:block}
-.dirnote.in{background:#E7F7EF;color:#0B6E4B}
-.dirnote.ex{background:var(--warn-bg);color:var(--warn-ink)}
 .cacts{display:flex;align-items:center;gap:6px;margin-top:2px}
 .cacts button{border:1px solid #d3dced;background:#fff;color:var(--navy);font:inherit;font-size:11px;font-weight:600;border-radius:8px;padding:5px 10px}
 .cacts .cok{background:var(--tone);border-color:var(--tone);color:#fff}
@@ -748,7 +753,7 @@ button{font-family:inherit;cursor:pointer}
   box-shadow:0 14px 34px -8px rgba(12,64,104,.5);opacity:0;pointer-events:none;transition:.24s var(--ease)}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-@media (max-width:1240px){:root{--namew:262px;--colw:126px;--colw3:214px}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1240px){:root{--namew:262px;--colw:126px;--colw3:250px}.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>
 <style id="dyn"></style>
 <style>
@@ -1219,7 +1224,7 @@ let view='acc', busy=false;
 function dyn(){
   /* חודש סגור נושא שלושה מספרים (בפועל · יעד · הפרש) ולכן רחב מהעתידי.
      בתצוגת ערך אחד אין לו מה להרחיב — כל החודשים באותו רוחב. */
-  const cols=MONTHS.map(mo=>wideM(mo)?'minmax(var(--colw3),1.5fr)':'minmax(var(--colw),1fr)').join(' ');
+  const cols=MONTHS.map(mo=>wideM(mo)?'minmax(var(--colw3),1.9fr)':'minmax(var(--colw),1fr)').join(' ');
   const nAct=MONTHS.filter(wideM).length;
   document.getElementById('dyn').textContent=
     '.gr{grid-template-columns:var(--namew) '+cols+'}'+
@@ -1274,12 +1279,12 @@ function rebuildHead(){
 /* סימון תא שעודכן ידנית: נקודה מלאה = יישמר בטעינה הבאה, חלולה = יידרס */
 function manMark(node,m){
   const x=(MAN[node.key]||{})[m]; if(!x) return '';
-  return '<i class="mn '+(x.keep?'k':'o')+'" title="עודכן ידנית · '+x.at+' · '+(x.keep?'יישמר בטעינה הבאה':'יידרס בטעינה הבאה')+'"></i>';
+  return '<i class="mn '+(x.keep?'k':'o')+'" title="עודכן ידנית · '+x.at+' · '+(x.keep?'יישמר בטעינה הבאה':'יידרס בטעינה הבאה')+'">'+(x.keep?'ידני':'ידני · יידרס')+'</i>';
 }
 function cellHTML(view,node,m){
   const past=m<PAST();
   let h=cellHTML0(view,node,m);
-  if(past&&(MAN[node.key]||{})[m]) h+=manMark(node,m);
+  if(past&&(MAN[node.key]||{})[m]) h=h.replace('</span>',manMark(node,m)+'</span>');   /* בתוך תא הבפועל */
   if(PCT[node.key]&&pick(TGT.acc,node.key,m)==null) h+='<i class="pctm" title="יעד: '+PCT[node.key].pct+'% מ'+pctBaseName(PCT[node.key].base)+'">%</i>';
   return h;
 }
@@ -1348,7 +1353,7 @@ function buildCells(row,vw,node){
       if(isGoal(vw,node,m)){ c.classList.add(isInc(node)?'gin':'gex');
         const q0=c.querySelector('.v');
         if(q0) q0.insertAdjacentHTML('beforeend','<i class="gmk">'+(isInc(node)?'↑':'↓')+'</i>'); }
-      else if(isMan(vw,node,m)) c.classList.add('uedit');
+      else if(isMan(vw,node,m)){ c.classList.add('uedit'); const tv=c.querySelector('.v.tg')||c.querySelector('.v'); if(tv) tv.insertAdjacentHTML('beforeend','<i class="mn t" title="יעד שהוזן ידנית">ידני</i>'); }
     }
     if(st.edit&&!node.ghost){
       c.classList.add('editable');
@@ -1489,24 +1494,15 @@ function buildFace(face,vw){
       const c=el('div','c'+(mo.now?' isnow':'')+(wideM(mo)?' m3':''));
       const dcf=totFor('cf',g.id,m), dac=totFor('acc',g.id,m);
       const act=(vw==='cf'?dcf:dac);
-      /* גם בשורת הסה״כ יש יעד והפרש — אחרת העמודה נשארת ריקה */
-      /* אחוז מהמחזור: מה תוכנן, מה יצא, וההפרש בנקודות — בשורות הסה״כ (לא בהכנסות עצמן) */
-      const isRev=(g.id==='rev');
-      const revA=Math.abs(mo.now?actFor(vw,'rev',m):totFor(vw,'rev',m))||0;
-      const revP=Math.abs(TREE.filter(n=>n.g==='rev'&&incl(n)).reduce((s,n)=>s+((PLAN[n.key]&&PLAN[n.key][m]!=null)?PLAN[n.key][m]:targetOf(vw,n,m)),0))||0;
-      const pcOf=(v,base)=>base?(Math.abs(v)/base*100):null;
-      const pcTxt=v=>v==null?'':'<small class="pc">'+v.toFixed(1)+'%</small>';
+      /* שורת הסה״כ, חודש פתוח: בפועל · יעד · פער ₪ ו-% מהיעד — כמו כל שורה. אחוזי הרווחיות נשארים לשורות הרווח. */
       if(wideM(mo)){
         const a2=mo.now?actFor(vw,g.id,m):act;
-        const pl=list.reduce((s,n)=>s+(incl(n)?((PLAN[n.key]&&PLAN[n.key][m]!=null)?PLAN[n.key][m]:targetOf(vw,n,m)):0),0);
+        const pl=inMode('tgt',()=>totFor(vw,g.id,m));
         const d=a2-pl, good=(a2<0)?(d>0):(d>=0), pct=pl?Math.abs(d/pl*100):0;
-        const pa=isRev?null:pcOf(a2,revA), pp=isRev?null:pcOf(pl,revP);
-        const dpp=(pa!=null&&pp!=null)?(pa-pp):null;
-        c.innerHTML='<span class="v">'+fmt(a2)+pcTxt(pa)+'</span>'+
-          '<span class="v tg">'+fmt(pl)+pcTxt(pp)+'</span>'+
-          '<span class="v df '+(pct<0.5?'z':(good?'g':'b'))+'">'+(pct<0.5?'—':((d>0?'+':'−')+nf(d)))+
-            (dpp!=null&&Math.abs(dpp)>=0.05?'<small class="pc">'+(dpp>0?'+':'−')+Math.abs(dpp).toFixed(1)+' נק׳</small>':'')+'</span>';
-      } else c.innerHTML='<span class="v">'+fmt(act)+(isRev?'':pcTxt(pcOf(act,revA)))+'</span>';
+        c.innerHTML='<span class="v">'+fmt(a2)+'</span>'+
+          '<span class="v tg">'+fmt(pl)+'</span>'+
+          '<span class="v df '+(pct<0.5?'z':(good?'g':'b'))+'">'+(pct<0.5?'—':((d>0?'+':'−')+nf(d)+'<small class="pc">'+(d>0?'+':'−')+pct.toFixed(1)+'%</small>'))+'</span>';
+      } else c.innerHTML='<span class="v">'+fmt(act)+'</span>';
       tr.appendChild(c);
     });
     face.appendChild(tr);
@@ -1523,9 +1519,14 @@ function buildFace(face,vw){
 }
 /* מלאי: עלות המכר = קניות + מלאי פתיחה − מלאי סגירה (הוצאות שליליות, לכן −פתיחה +סגירה) */
 const invAdj=(vw,gid,m)=>(INV_ON&&vw==='acc'&&gid==='cogs')?(-(+INV.open[m]||0)+(+INV.close[m]||0)):0;
+/* TMODE: null = לפי החודש (עבר בפועל, עתיד יעד) · 'act' = בפועל בלבד · 'tgt' = יעד בלבד.
+   שורות הרווח בחודש פתוח צריכות את שניהם — "לאיזה רווח תכננתי" מול "לאיזה הגעתי". */
+let TMODE=null;
+const inMode=(mode,f)=>{const p=TMODE;TMODE=mode;try{return f()}finally{TMODE=p}};
+const planOf=(vw,n,m)=>(PLAN[n.key]&&PLAN[n.key][m]!=null)?PLAN[n.key][m]:targetOf(vw,n,m);
 function totFor(vw,gid,m){
   return TREE.filter(n=>n.g===gid&&incl(n))
-    .reduce((s,n)=>s+(m<PAST()?actualOf(vw,n,m):targetOf(vw,n,m)),0)+invAdj(vw,gid,m);
+    .reduce((s,n)=>s+(TMODE==='act'?actualOf(vw==='acc'?'acc':'cf',n,m):TMODE==='tgt'?planOf(vw,n,m):(m<PAST()?actualOf(vw,n,m):targetOf(vw,n,m))),0)+invAdj(vw,gid,m);
 }
 /* סכום הבפועל בלבד — שורת הסה״כ של חודש פתוח צריכה אותו, שם totFor
    כבר עובר ליעד בכל מה שאינו חודש סגור. */
@@ -1545,8 +1546,7 @@ function taxRow(vw){
   r.appendChild(nm);
   MONTHS.forEach((mo,m)=>{
     const c=el('div','c'+(mo.now?' isnow':'')+(wideM(mo)?' m3':''));
-    const v=taxOf(vw,m), rv=totFor(vw,'rev',m)||1;
-    c.innerHTML='<span class="v'+(v===0?' z':'')+'">'+(v===0?'—':fmtN(v))+'</span>'+(v?'<span class="p">'+(Math.abs(v)/rv*100).toFixed(1)+'%</span>':'');
+    pnlCell(c,vw,m,mo,taxOf,true);
     r.appendChild(c);
   });
   const inp=nm.querySelector('#taxR');
@@ -1556,19 +1556,33 @@ function taxRow(vw){
   inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();}});
   return r;
 }
+/* תא בשורת רווח. חודש מקופל: מספר אחד ואחוז מהמחזור.
+   חודש פתוח: הרווח שהגעתי אליו ואחוזו מהמחזור בפועל · הרווח שתכננתי לפי היעדים ואחוזו מהמחזור המתוכנן · הפער ב-₪ וב-% מהיעד. */
+function pnlCell(c,vw,m,mo,fn,isExp){
+  const pp=(v,rv)=>rv?'<small class="pc">'+(Math.abs(v)/rv*100).toFixed(1)+'% מהמחזור</small>':'';
+  if(vw==='uni'){
+    const d=fn('acc',m)-fn('cf',m);
+    c.innerHTML='<span class="v">'+(Math.round(d)===0?'—':(d>0?'+':'−')+nf(d))+'</span>'; return;
+  }
+  if(wideM(mo)){
+    const a=inMode('act',()=>fn(vw,m)), t=inMode('tgt',()=>fn(vw,m));
+    const ra=Math.abs(inMode('act',()=>totFor(vw,'rev',m))), rt=Math.abs(inMode('tgt',()=>totFor(vw,'rev',m)));
+    const d=a-t, good=isExp?(d>0):(d>=0), pct=t?Math.abs(d/t*100):0;
+    c.innerHTML='<span class="v'+(a===0?' z':'')+'">'+fmtN(a)+pp(a,ra)+'</span>'+
+      '<span class="v tg">'+fmtN(t)+pp(t,rt)+'</span>'+
+      '<span class="v df '+(pct<0.5?'z':(good?'g':'b'))+'">'+(pct<0.5?'—':((d>0?'+':'−')+nf(d)+'<small class="pc">'+(d>0?'+':'−')+pct.toFixed(1)+'%</small>'))+'</span>';
+    return;
+  }
+  const v=fn(vw,m), rv=Math.abs(totFor(vw,'rev',m));
+  c.innerHTML='<span class="v'+(v===0?' z':'')+'">'+(v===0&&isExp?'—':fmtN(v))+'</span>'+(v&&rv?'<span class="p">'+(Math.abs(v)/rv*100).toFixed(1)+'%</span>':'');
+}
 function pnlRow(name,sub,vw,fn){
   const r=el('div','gr pnl');
   const nm=el('div','nm'); nm.appendChild(el('b',null,name)); nm.appendChild(el('small',null,sub));
   r.appendChild(nm);
   MONTHS.forEach((mo,m)=>{
     const c=el('div','c'+(mo.now?' isnow':'')+(wideM(mo)?' m3':''));
-    if(vw==='uni'){
-      const d=fn('acc',m)-fn('cf',m);
-      c.innerHTML='<span class="v">'+(Math.round(d)===0?'—':(d>0?'+':'−')+nf(d))+'</span>';
-    }else{
-      const v=fn(vw,m), rv=totFor(vw,'rev',m)||1;
-      c.innerHTML='<span class="v">'+fmtN(v)+'</span><span class="p">'+(v/rv*100).toFixed(1)+'%</span>';
-    }
+    pnlCell(c,vw,m,mo,fn,false);
     r.appendChild(c);
   });
   return r;
@@ -1625,8 +1639,10 @@ function buildNet(vw){
       const a=GROUPS.reduce((s,g)=>s+totFor('cf',g.id,m),0), b=GROUPS.reduce((s,g)=>s+totFor('acc',g.id,m),0);
       c.innerHTML='<span class="v">'+(Math.round(b-a)===0?'—':((b-a>0?'+':'−')+nf(b-a)))+'</span><span class="p">הפרש בין השפות</span>';
     }else{
-      const v=vw==='acc'?netAfterTax(vw,m):GROUPS.reduce((s,g)=>s+totFor(vw,g.id,m),0), rv=totFor(vw,'rev',m)||1;
-      c.innerHTML='<span class="v">'+fmtN(v)+'</span>'+(vw==='acc'?'<span class="p">'+(v/rv*100).toFixed(1)+'%</span>':'');
+      const fn=vw==='acc'?netAfterTax:((v2,m2)=>GROUPS.reduce((s,g)=>s+totFor(v2,g.id,m2),0));
+      if(wideM(mo)) pnlCell(c,vw,m,mo,fn,false);
+      else{ const v=fn(vw,m), rv=totFor(vw,'rev',m)||1;
+        c.innerHTML='<span class="v">'+fmtN(v)+'</span>'+(vw==='acc'?'<span class="p">'+(v/rv*100).toFixed(1)+'%</span>':''); }
     }
     netEl.appendChild(c);
   });
@@ -1851,9 +1867,6 @@ function openEditor(vw,node,m,cellEl){
         '<label><input type="radio" name="edK" value="1" '+(((MAN[node.key]||{})[m]||{}).keep?'checked':'')+'>לשמור את המספר שלי</label></div>'+
       lastChgHtml(node.key,m)
      :'<div class="cnote">'+(vw==='cf'?'הבפועל מגיע מהבנק — לא נערך כאן.':'בפועל יוזן בסוף החודש.')+'</div>')+
-    '<label class="tgl"><input type="checkbox" id="edG" '+(isGoal(vw,node,m)?'checked':'')+'><span class="sw2"></span>'+
-      '<span class="txt">פתח יעד ללקוח 🎯<small>מעקב והתראות על עמידה ביעד</small></span></label>'+
-    '<div class="dirnote '+(inc?'in':'ex')+'" id="edD">'+(inc?'יעד הכנסה — הלקוח צריך <b>לעבור</b> את הסכום ↑':'יעד הוצאה — הלקוח צריך <b>לא לעבור</b> את הסכום ↓')+'</div>'+
     '<div class="cacts"><button class="cok" id="edOk">שמירה</button><button id="edX">ביטול</button></div>'+
     '<div class="cmini"><button id="edR">↺ החזרה לממוצע</button><button id="edC2">🔄 חשב ממוצע מחדש</button></div>';
   document.body.appendChild(ed); edEl=ed;
@@ -1863,7 +1876,7 @@ function openEditor(vw,node,m,cellEl){
   if(top+ed.offsetHeight>innerHeight-10) top=Math.max(10,r.top-ed.offsetHeight-7);
   ed.style.top=top+'px'; ed.style.left=left+'px';
 
-  const iT=ed.querySelector('#edT'), iA=ed.querySelector('#edA'), g=ed.querySelector('#edG'), dn=ed.querySelector('#edD');
+  const iT=ed.querySelector('#edT'), iA=ed.querySelector('#edA');
   /* מצב היעד: סכום / אחוז מסעיף */
   let tmode=PCT[node.key]?'pct':'amt', pbase=(PCT[node.key]||{}).base||null;
   const pBox=ed.querySelector('#edP'), pV=ed.querySelector('#edPv'), pN=ed.querySelector('#edPn');
@@ -1875,8 +1888,6 @@ function openEditor(vw,node,m,cellEl){
   ed.querySelectorAll('#edPb .pl').forEach(b=>b.addEventListener('click',()=>{
     pbase=b.dataset.b; ed.querySelectorAll('#edPb .pl').forEach(x=>x.classList.toggle('on',x===b)); pN.textContent=pctBaseName(pbase);
   }));
-  const syncD=()=>dn.classList.toggle('show',g.checked);
-  syncD(); g.addEventListener('change',syncD);
   const chg=ed.querySelector('#edC');
   function updChg(){
     const v=Math.round(parseFloat(iT.value)), a=Math.abs(av);
@@ -1898,14 +1909,12 @@ function openEditor(vw,node,m,cellEl){
       if(!pbase||isNaN(pv)){ toast('בחרו בסיס ואחוז'); return; }
       PCT[node.key]={base:pbase,pct:pv};
       delete TGT[vw][node.key];                     /* האחוז חל על כל החודשים — סכומים ישנים יורדים */
-      put(GOAL[vw],node.key,m,g.checked?1:null);
       persist(); closeEditor(); rerender();
       toast('היעד נקבע: '+pv+'% מ'+pctBaseName(pbase)+' · לכל החודשים'); return;
     }
     if(PCT[node.key]) delete PCT[node.key];
     let t=parseNum(iT.value); if(t!=null&&neg) t=-Math.abs(t);
     put(TGT[vw],node.key,m,t);
-    put(GOAL[vw],node.key,m,g.checked?1:null);
     if(iA){
       let a=parseNum(iA.value); if(a!=null&&neg)a=-Math.abs(a);
       const before=bookActual(node,m), keep=(ed.querySelector('input[name="edK"]:checked')||{}).value==='1';
@@ -1916,7 +1925,7 @@ function openEditor(vw,node,m,cellEl){
       } else { if(MAN[node.key]) delete MAN[node.key][m]; }
     }
     persist(); closeEditor(); rerender();
-    toast(g.checked?'נשמר · יעד '+(inc?'הכנסה — לעבור מעל':'הוצאה — לא לעבור')+' פעיל':'היעד נשמר');
+    toast('היעד נשמר');
   };
   ed.querySelector('#edOk').addEventListener('click',commit);
   ed.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();commit()}if(e.key==='Escape'){e.preventDefault();closeEditor()}});
@@ -2285,7 +2294,7 @@ function manChipDraw(){
   const el=document.getElementById('manChip'); if(!el) return;
   let k=0,o=0; Object.values(MAN).forEach(r=>Object.values(r).forEach(x=>x.keep?k++:o++));
   el.style.display=(k+o)?'':'none';
-  el.innerHTML='<i class="mn k"></i>ידני '+(k+o)+(k?' · '+k+' נשמרים':'')+(o?' · '+o+' יידרסו':'');
+  el.innerHTML='<i class="mn k">ידני</i>'+(k+o)+(k?' · '+k+' נשמרים':'')+(o?' · '+o+' יידרסו':'');
 }
 function rerender(){
   manChipDraw();
