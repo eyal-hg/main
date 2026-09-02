@@ -35,7 +35,7 @@
   }
   function openCt(){
     const c=CLIENTS[CUR]||{};
-    document.getElementById('ctMgr').textContent='המשימה תישלח ל'+(c.mgr||'מנהל התזרים')+' — מנהל התזרים של '+(c.name||'החברה');
+    document.getElementById('ctMgr').textContent='הבקשה תישלח ל'+(c.mgr||'מנהל התזרים')+' — מנהל התזרים של '+(c.name||'החברה');
     document.getElementById('ctSubj').value='';document.getElementById('ctBody').value='';
     document.querySelector('input[name="ctUrg"][value="reg"]').checked=true;
     document.getElementById('ctErr').style.display='none';
@@ -50,7 +50,7 @@
     const k={t:subj, st:'new', when:'עכשיו', urgent};
     CLIENT_TASKS.unshift(k); renderCxTasks(); refreshHero(); closeCt();
     const c=CLIENTS[CUR]||{};
-    toast('המשימה נשלחה ל'+(c.mgr||'מנהל התזרים'));
+    toast('הבקשה נשלחה ל'+(c.mgr||'מנהל התזרים'));
     setTimeout(()=>{k.st='prog';renderCxTasks();refreshHero();},3200);   // סימולציה: המנהל קיבל והתחיל לטפל
   }
 
@@ -116,7 +116,7 @@
       n.textContent=k===0?'הכול סגור':k===1?'פתוחה אחת':k+' פתוחות';}
     const d=document.getElementById('heroDone');
     if(d){const k=CLIENT_TASKS.filter(x=>x.st==='done').length;
-      d.style.display=k?'':'none'; d.textContent=(HERO_DONE?'הסתרת ':'')+k+' הושלמו';}
+      d.style.display=k?'':'none'; d.textContent=HERO_DONE?'הסתרת המשימות שהושלמו':'הצגת '+k+' שהושלמו';}
   }
   function heroToggleDone(){HERO_DONE=!HERO_DONE;refreshHero();}
   window.heroToggleDone=heroToggleDone;
@@ -148,11 +148,11 @@
       </div>
       <div class="chero-a">
         <div class="chero-p">
-          <div class="chero-h"><b>המשימות שלי</b>
-            <span class="n2" id="heroTaskN">${openTxt(open)}</span>
-            <button class="chero-done" id="heroDone" onclick="heroToggleDone()">${CLIENT_TASKS.filter(x=>x.st==='done').length} הושלמו</button><span class="sp"></span>
-            <button class="chero-add" onclick="openCt()">＋ משימה חדשה</button></div>
+          <div class="chero-h"><b>משימות מנהל התזרים</b>
+            <span class="n2" id="heroTaskN">${openTxt(open)}</span><span class="sp"></span>
+            <button class="chero-add" onclick="openCt()" title="בקשה חדשה למנהל התזרים">＋ בקשה</button></div>
           <div class="chero-list" id="heroTasks">${heroTasksHTML()}</div>
+          <button class="chero-done" id="heroDone" onclick="heroToggleDone()">${(n=>n?'הצגת '+n+' שהושלמו':'')(CLIENT_TASKS.filter(x=>x.st==='done').length)}</button>
         </div>
         <div class="chero-p">
           <div class="chero-h"><b>העלאת מסמכים</b><span class="sp"></span></div>
@@ -222,7 +222,7 @@
           <div class="cx-files cx-scroll" id="cxFiles"></div>
         </div>`},
       {k:'task', cls:'w50 h-high', icc:'task',
-       t:(ROLE==='client1'||ROLE==='clientN')?'מה ביקשתי מ-HK':'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', hbtn:'<button class="cx-add" onclick="openCt()">+ משימה חדשה</button>', body:`
+       t:(ROLE==='client1'||ROLE==='clientN')?'המשימות של מנהל התזרים':'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', hbtn:'<button class="cx-add" onclick="openCt()">+ משימה חדשה</button>', body:`
         <div class="cx-files cx-scroll" id="cxTasks" style="padding:4px 16px 12px"></div>`},
       {k:'ops', cls:'w50 h-high', icc:'ops',
        t:(ROLE==='client1'||ROLE==='clientN')?'מה HK עשתה עבורך החודש':'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
