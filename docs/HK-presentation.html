@@ -1,260 +1,314 @@
 <!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HK — מ־10 לקוחות ל־30</title>
+<title>HK — מערכת ניהול ליועצים עסקיים</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Frank+Ruhl+Libre:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#0C4068;--navy2:#0A3557;--band:#104A76;--coral:#E8635A;
  --sky:#39ABE2;--ink:#28425C;--ink2:#51677A;--muted:#7A8898;
- --line:#E6ECF4;--bg:#F4F7FA;--onnavy:#9FC0DA}
+ --line:#E6ECF4;--bg:#F4F7FA;--onnavy:#9FC0DA;--good:#13895B}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:Rubik,'Heebo',Arial,sans-serif;background:#0A3557;direction:rtl;
  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow:hidden}
 
-/* ---------- שקף = מסך ---------- */
 .sl{position:absolute;inset:0;display:none;flex-direction:column;
- padding:5.2vh 5vw;overflow:hidden;background:#fff}
+ padding:4.4vh 4.4vw 3.4vh;overflow:hidden;background:#fff}
 .sl.on{display:flex}
 .sl.dark{background:linear-gradient(160deg,#0C4068 0%,#0A3557 100%);color:#fff}
 
 /* ---------- טיפוגרפיה ---------- */
-.brand{font-size:clamp(13px,1.35vw,19px);font-weight:500;color:var(--sky);letter-spacing:.12em}
-.kicker{display:block;font-size:clamp(13px,1.3vw,19px);font-weight:600;color:var(--coral);
- letter-spacing:.04em;margin-bottom:1.6vh}
-.kicker.coral{color:var(--coral)}
-.sl.light .kicker{color:var(--coral)}
+.brand{font-size:clamp(14px,1.5vw,21px);font-weight:700;color:var(--sky);letter-spacing:.16em}
+.kicker{display:block;font-size:clamp(12px,1.15vw,17px);font-weight:600;color:var(--coral);
+ letter-spacing:.03em;margin-bottom:.9vh}
 h1{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:700;
- font-size:clamp(54px,9.8vw,150px);line-height:1.04;letter-spacing:-.015em}
+ font-size:clamp(40px,6.4vw,98px);line-height:1.08;letter-spacing:-.015em}
 h2{font-family:'Frank Ruhl Libre',Georgia,serif;font-weight:700;color:var(--navy);
- font-size:clamp(30px,3.6vw,56px);line-height:1.12;letter-spacing:-.01em}
-.sl.dark h2{color:#fff}
-h2 em,h1 em{font-style:normal;color:var(--coral)}
-.giant{font-size:clamp(44px,6.6vw,104px);line-height:1.06}
-.giant.sm{font-size:clamp(38px,5.4vw,86px)}
-.giant em{font-style:normal;color:var(--sky)}
+ font-size:clamp(24px,2.65vw,42px);line-height:1.18;letter-spacing:-.008em}
+h2.w{color:#fff}
+.lead{margin-top:1.1vh;font-size:clamp(13px,1.28vw,19px);line-height:1.62;color:var(--ink2);
+ font-weight:300;max-width:70vw}
+.top{flex:none}
 
 /* ---------- שער ---------- */
-.cover{justify-content:center;gap:3.4vh}
-.cover h1{max-width:82vw}
-.cover .sub{font-size:clamp(20px,2.5vw,38px);color:var(--onnavy);font-weight:300}
+.cover{justify-content:center;gap:3vh}
+.cover .sub{font-size:clamp(15px,1.6vw,24px);line-height:1.65;color:var(--onnavy);
+ font-weight:300;max-width:58vw}
 
-/* ---------- שקף כהה טיפוגרפי ---------- */
-.sl.dark{justify-content:center}
-.side{margin-top:3.6vh;font-size:clamp(15px,1.55vw,23px);line-height:1.75;color:var(--onnavy)}
-.side b{color:#fff;font-weight:600}
+/* ---------- גוף: צילום + יתרונות ---------- */
+.body{flex:1;min-height:0;margin-top:2.4vh;display:grid;align-items:stretch;
+ grid-template-columns:minmax(0,1fr) 25vw;gap:1.8vw}
+.body>*{min-height:0}
+.sl.two .body{grid-template-columns:1fr 1fr}
+.frame{position:relative;min-height:0;height:100%;background:#fff;border-radius:12px;overflow:hidden;
+ border:1px solid #D5DEE8;box-shadow:0 22px 50px rgba(12,64,104,.22);
+ display:flex;flex-direction:column}
+.chrome{flex:none;height:2.6vh;background:#EEF2F6;border-bottom:1px solid var(--line);
+ display:flex;align-items:center;gap:.45vw;padding:0 .9vw}
+.chrome i{width:.6vh;height:.6vh;border-radius:50%;background:#C9D4DF;min-width:5px;min-height:5px}
+.frame img{flex:1;min-height:0;width:100%;object-fit:cover;object-position:top}
+.frame .cap{flex:none;padding:1.2vh 1vw;border-top:1px solid var(--line);
+ font-size:clamp(11px,1.02vw,15px);line-height:1.5;color:var(--ink2)}
+.chip{position:absolute;max-width:52%;background:var(--navy);color:#fff;
+ font-size:clamp(11px,1.02vw,15px);font-weight:500;line-height:1.5;
+ padding:1.1vh 1vw;border-radius:9px;box-shadow:0 12px 28px rgba(10,53,87,.4)}
+.chip.tl{top:14%;inset-inline-start:2.5%}
+.chip.tr{top:14%;inset-inline-end:2.5%}
 
-/* ---------- המשוואה ---------- */
-.sl.math{justify-content:flex-start;padding-top:9vh;padding-bottom:7vh}
-.sl.math .kicker{margin-bottom:0}
-.eq{display:flex;align-items:center;gap:2.8vw;margin:auto 0}
-.eq .t b{display:block;font-size:clamp(56px,7.6vw,120px);font-weight:700;line-height:1;
- letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.eq .t span{display:block;margin-top:1.2vh;font-size:clamp(13px,1.3vw,19px);
- color:var(--onnavy);line-height:1.45}
-.eq .t.bad b{color:var(--coral)}
-.eq .op{font-size:clamp(34px,4vw,64px);color:#3F6E96;font-weight:300}
-.punchline{margin-top:0;font-size:clamp(24px,3vw,46px);font-weight:600;color:#fff}
-.punchline em{font-style:normal;color:var(--coral)}
+/* ---------- לוח היתרונות ---------- */
+.adv{min-height:0;display:flex;flex-direction:column;gap:1.5vh;
+ background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:2vh 1.3vw}
+.advh{flex:none;font-size:clamp(11px,1.02vw,15px);font-weight:700;color:var(--coral);
+ letter-spacing:.04em}
+.ai{flex:1;display:flex;flex-direction:column;justify-content:center}
+.ai b{display:block;font-size:clamp(13.5px,1.32vw,20px);font-weight:600;color:var(--navy);
+ line-height:1.3}
+.ai span{display:block;margin-top:.6vh;font-size:clamp(11.5px,1.06vw,16px);line-height:1.55;
+ color:var(--ink2)}
 
-/* ---------- שקף מוצר: כותרת + hero ---------- */
-.sl.light .top{flex:none;max-width:88vw}
-.one{margin-top:1.4vh;font-size:clamp(15px,1.5vw,22px);line-height:1.6;color:var(--ink2);
- font-weight:300;max-width:72vw}
-.hero{flex:1;min-height:0;margin-top:3vh;display:flex;justify-content:center}
-.frame{position:relative;height:100%;aspect-ratio:1620/860;max-width:100%;
- background:#fff;border-radius:14px;overflow:hidden;
- border:1px solid #D5DEE8;box-shadow:0 34px 70px rgba(12,64,104,.30)}
-.chrome{height:3.8%;background:#EEF2F6;border-bottom:1px solid var(--line);
- display:flex;align-items:center;gap:.5vw;padding:0 1vw}
-.chrome i{width:.65vw;height:.65vw;border-radius:50%;background:#C9D4DF}
-.frame img{display:block;width:100%;height:96.2%;object-fit:cover;object-position:top}
-/* צ׳יפ ציטוט צף — הדבר האחד שאייל מצביע עליו */
-.chip{position:absolute;max-width:34%;background:var(--navy);color:#fff;
- font-size:clamp(12px,1.15vw,17px);font-weight:500;line-height:1.5;
- padding:1.4vh 1.2vw;border-radius:10px;box-shadow:0 14px 34px rgba(10,53,87,.45)}
-.chip::before{content:"";position:absolute;top:-7px;inset-inline-start:24px;
- border:7px solid transparent;border-bottom-color:var(--navy);border-top:0}
-.chip.tl{top:12%;inset-inline-start:3%}
-.chip.tr{top:12%;inset-inline-end:3%}
-.chip.tr::before{inset-inline-start:auto;inset-inline-end:24px}
+/* ---------- מפת המוצר ---------- */
+.map{justify-content:flex-start}
+.mapgrid{flex:1;min-height:0;margin-top:3vh;display:grid;
+ grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:1.5vw}
+.mc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+ border-radius:12px;padding:2.6vh 1.5vw;display:flex;flex-direction:column;justify-content:center}
+.mc.off{background:transparent;border-style:dashed}
+.mc i{flex:none;width:3.2vh;height:3.2vh;min-width:26px;min-height:26px;border-radius:50%;
+ background:var(--sky);color:var(--navy2);font-style:normal;
+ font-size:clamp(11px,1.05vw,16px);font-weight:700;display:grid;place-items:center;
+ margin-bottom:1.4vh}
+.mc.off i{background:rgba(255,255,255,.2);color:#fff}
+.mc b{font-size:clamp(15px,1.5vw,23px);font-weight:600;color:#fff}
+.mc span{margin-top:1vh;font-size:clamp(11.5px,1.08vw,16px);line-height:1.55;color:var(--onnavy)}
 
-/* ---------- ועוד ---------- */
-.sl.more{justify-content:flex-start}
-.more .tags{margin:auto 0;display:flex;flex-wrap:wrap;gap:1.5vw;max-width:66vw}
-.tags span{font-size:clamp(15px,1.6vw,24px);font-weight:500;color:var(--navy);
- background:var(--bg);border:1px solid var(--line);border-radius:999px;
- padding:1.5vh 1.7vw}
+/* ---------- תגיות ---------- */
+.more .tags{flex:none;margin:auto 0;display:flex;flex-wrap:wrap;gap:1.7vw 1.2vw;max-width:82vw}
+.fineL{flex:none;font-size:clamp(12px,1.15vw,18px);line-height:1.6;color:var(--ink2);
+ max-width:64vw}
+.tags span{font-size:clamp(14px,1.5vw,23px);font-weight:500;color:var(--navy);
+ background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2.4vh 2vw}
 
-/* ---------- סגירה ---------- */
-.close{justify-content:flex-start;padding-top:9vh;gap:0}
-.close .kicker{margin-bottom:1.6vh}
-.closeline{color:#fff;font-size:clamp(28px,3.4vw,54px);margin-bottom:auto}
-.close .nums{margin-bottom:5vh}
-.close .cta{margin-bottom:2.4vh}
-.nums{display:flex;gap:3.5vw}
-.nums .t b{display:block;font-size:clamp(48px,6.4vw,104px);font-weight:700;line-height:1;
- color:var(--sky);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.nums .t span{display:block;margin-top:1.4vh;font-size:clamp(13px,1.35vw,20px);
- color:var(--onnavy);line-height:1.5}
-.cta{align-self:flex-start;background:var(--coral);color:#fff;border-radius:14px;
- padding:2.2vh 3vw;font-size:clamp(26px,3.2vw,52px);font-weight:700;
- font-family:'Frank Ruhl Libre',Georgia,serif;box-shadow:0 18px 44px rgba(232,99,90,.35)}
-.ctasub{font-size:clamp(15px,1.55vw,23px);line-height:1.7;color:var(--onnavy)}
+/* ---------- טבלת ההשוואה ---------- */
+.sum{justify-content:flex-start}
+.cmp{flex:none;width:100%;margin-top:3.2vh;border-collapse:collapse;
+ font-size:clamp(13px,1.32vw,20px)}
+.cmp th{text-align:right;padding:1.4vh 1.1vw;font-size:clamp(11px,1.05vw,16px);font-weight:600;
+ color:var(--onnavy);border-bottom:1px solid rgba(255,255,255,.18)}
+.cmp th:nth-child(2),.cmp th:nth-child(3){text-align:center;width:22%}
+.cmp td{padding:1.5vh 1.1vw;color:#DCEBF5;border-bottom:1px solid rgba(255,255,255,.09)}
+.cmp td:nth-child(2),.cmp td:nth-child(3){text-align:center;font-weight:600}
+.cmp .was{color:#F2A79E}
+.cmp .is{color:#7FD7B0}
+.cmp .tot td{border-bottom:0;padding-top:2vh;font-weight:700;font-size:clamp(15px,1.55vw,24px);
+ border-top:2px solid rgba(255,255,255,.25)}
+.fine{flex:none;margin-top:auto;font-size:clamp(12px,1.15vw,18px);line-height:1.6;color:var(--onnavy)}
+.close .fine{margin-top:0}
+
+/* ---------- איך מתחילים ---------- */
+.close{justify-content:flex-start}
+.steps{flex:none;margin:auto 0;min-height:40vh;display:grid;grid-template-columns:repeat(3,1fr);
+ gap:1.7vw;align-items:stretch}
+.sc{position:relative;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+ border-radius:12px;padding:3.6vh 1.8vw;display:flex;flex-direction:column;justify-content:center}
+.sc i{width:4.4vh;height:4.4vh;min-width:34px;min-height:34px;border-radius:50%;
+ background:var(--coral);color:#fff;font-style:normal;font-weight:700;
+ font-size:clamp(14px,1.4vw,21px);display:grid;place-items:center;margin-bottom:1.8vh}
+.sc b{font-size:clamp(16px,1.7vw,26px);font-weight:600;color:#fff}
+.sc span{margin-top:1.1vh;font-size:clamp(12px,1.14vw,17px);line-height:1.6;color:var(--onnavy)}
 
 /* ---------- כרום ההצגה ---------- */
-.hud{position:fixed;inset-inline-end:18px;inset-block-end:14px;z-index:9;
- display:flex;align-items:center;gap:10px;font-size:12.5px;color:#8FA9C0;
+.hud{position:fixed;inset-inline-end:16px;inset-block-end:12px;z-index:9;
+ display:flex;align-items:center;gap:10px;font-size:12px;color:#8FA9C0;
  direction:ltr;user-select:none}
 .hud b{color:#fff;font-weight:500}
-.sl.light~.hud, body.on-light .hud{color:#9AA9B8}
-body.on-light .hud b{color:var(--navy)}
-.hud .keys{opacity:.75}
+body.on-light .hud{color:#A3B0BD}body.on-light .hud b{color:var(--navy)}
 .note{display:none}
 body.notes .note{display:block;position:fixed;inset-inline:0;bottom:0;z-index:8;
- background:rgba(10,53,87,.96);color:#D9E7F2;font-size:14.5px;line-height:1.7;
- padding:16px 5vw 18px;border-top:2px solid var(--coral)}
+ background:rgba(10,53,87,.97);color:#D9E7F2;font-size:14px;line-height:1.7;
+ padding:15px 4.4vw 17px;border-top:2px solid var(--coral)}
 body.notes .sl:not(.on) .note{display:none}
 
-/* ---------- הדפסה: כל שקף עמוד ---------- */
 @media print{
  body{overflow:visible;background:#fff}
- .sl{display:flex;position:relative;inset:auto;width:100%;height:100vh;
-  page-break-after:always}
+ .sl{display:flex;position:relative;inset:auto;width:100%;height:100vh;page-break-after:always}
  .hud,.note{display:none!important}
 }
 </style></head><body>
 <section class="sl dark cover">
-  <span class="brand">HK · מערכת ליועצים עסקיים</span>
-  <h1>מ־10 לקוחות<br>ל־30.</h1>
-  <p class="sub">כל מה שאינו ייעוץ — יורד ממך.</p><div class="note">שקט. משפט אחד: "אני רוצה להראות לך למה אתה תקוע על עשרה לקוחות — ומה קורה כשזה נעלם." ואז השאלה: כמה מהשבוע האחרון שלך היה באמת ייעוץ?</div></section>
-<section class="sl dark">
-  <span class="kicker">הבוקר שלך, היום</span>
-  <h2 class="giant">14 הודעות<br>בוואטסאפ.<br><em>אף אחת מהן<br>אינה ייעוץ.</em></h2>
-  <p class="side">צילום של שיק · "עדכנת את התשלומים?" · שני אקסלים ·<br>
-     לקוח שכועס שלא חזרת אליו</p><div class="note">לתת להם לצחוק צחוק כואב. ואז: ההכנה לפגישה נעשית בתשע וחצי מהזיכרון, הסיכום נכתב בערב אם בכלל, ובין לבין אתה מקטלג תנועות בנק. בסוף החודש שני לקוחות נפלו בין הכיסאות — לא כי הם לא חשובים, כי לא היה זמן.</div></section>
-<section class="sl dark math">
-  <span class="kicker">המתמטיקה שנועלת אותך</span>
-  <div class="eq">
-    <div class="t"><b>7–10</b><span>שעות עבודה<br>פר לקוח בחודש</span></div>
-    <div class="op">×</div>
-    <div class="t"><b>10</b><span>לקוחות</span></div>
-    <div class="op">=</div>
-    <div class="t bad"><b>משרה</b><span>של פקיד</span></div>
-  </div>
-  <p class="punchline">התקרה שלך היא שעות. <em>לא יכולת ייעוץ.</em></p><div class="note">לעשות את החשבון בקול על המספרים שלהם: כמה לקוחות, כמה שעות פר לקוח, כמה שווה שעה שלהם. עם HK זה יורד ל-1–1.5 שעות פר לקוח — אותן 80 שעות מכסות 25–30 לקוחות. אם המספר הזה נכון אצלם, כל השאר הוא רק ה"איך".</div></section>
+  <span class="brand">HK</span>
+  <h1>מערכת ניהול<br>ליועצים עסקיים</h1>
+  <p class="sub">תפעול תזרים, זיכרון לקוח, תקשורת ודוחות פיננסיים —
+     במערכת אחת, שהלקוח רואה בשם המשרד שלך.</p><div class="note">פתיחה עניינית: "אני אעבור איתך על המערכת — מה יש בה, איך זה עובד, ומה זה נותן לך. בסוף נדבר על איך מתחילים." בלי הבטחות בפתיחה.</div></section>
+<section class="sl dark map">
+  <span class="kicker">מבנה המערכת</span>
+  <h2 class="w">חמישה חלקים, מערכת אחת</h2>
+  <div class="mapgrid">
+    <div class="mc"><i>1</i><b>תפעול חודשי</b><span>מנהל תזרים של HK מריץ לכל לקוח שלך
+      חמישה שלבי עבודה וחמש בדיקות, כל חודש</span></div>
+    <div class="mc"><i>2</i><b>זיכרון לקוח</b><span>12 קטגוריות שמתעדכנות אוטומטית
+      מכל פגישה, שיחה והודעה</span></div>
+    <div class="mc"><i>3</i><b>תקשורת</b><span>פגישות, שיחות טלפון, קבוצת וואטסאפ
+      והעוזר — במסך אחד עם אותם תוצרים</span></div>
+    <div class="mc"><i>4</i><b>דוחות פיננסיים</b><span>תכנון תזרימי קדימה, דוח רווח והפסד
+      מהכרטסת, מעקב תקציב ומדדים</span></div>
+    <div class="mc"><i>5</i><b>הצד של הלקוח</b><span>דשבורד, תקציר בוקר ועוזר בוואטסאפ —
+      הכל בשם המשרד שלך</span></div>
+    <div class="mc off"><i>+</i><b>ניהול המשרד</b><span>יועצים והרשאות, חיוב, לידים,
+      תבניות הודעות ובקרת איכות</span></div>
+  </div><div class="note">זה השקף שנותן להם את המפה. לומר: "אני אעבור על חמשת החלקים לפי הסדר הזה, ואראה לך כל אחד במערכת עצמה." אם הם עוצרים בשאלה על חלק מסוים — לקפוץ לשקף שלו.</div></section>
 <section class="sl light">
   <div class="top">
-    <span class="kicker">מה HK עושה · 1 מתוך 4</span>
-    <h2>HK עושה את החודש <em>במקומך.</em></h2>
-    <p class="one">מנהל תזרים של HK מריץ לכל לקוח שלך חמישה שלבי עבודה וחמש בדיקות — כל חודש. אתה מקבל תזרים מוכן ובדוק.</p>
+    <span class="kicker">חלק 1 · תפעול חודשי</span>
+    <h2>התפעול מבוצע על ידי HK, לא על ידך</h2>
+    <p class="lead">מנהל תזרים של HK מריץ לכל חברה חמישה שלבי עבודה — קיטלוג תנועות, מוטבי שיקים, נגררות ולא־צפויות, הודעות מהלקוח והזנות עתידיות — ואחריהם חמש בדיקות שסוגרות את החודש.</p>
   </div>
-  
-  <div class="hero">
+  <div class="body">
     <div class="frame">
       <div class="chrome"><i></i><i></i><i></i></div>
       <img src="shots/mgr-opsmode.png" alt="">
-      <div class="chip tl">התזרים לא יוצא ללקוח עד שכל חריגה דווחה או הוכרעה</div>
+      <div class="chip tl">חמישה שלבי עבודה · חמש בדיקות · כל חודש</div>
     </div>
-  </div><div class="note">זה שירות, לא פיצ׳ר — אדם שמפעיל מערכת, וזה מה שאף תוכנה לא מעתיקה. השלבים: קטגוריות, מוטבים, נגררות, הודעות לקוח, הזנות. הבדיקות: שורה תקציבית, דוח חודשי מול הבנקים בסבילות 300 ש"ח, תקציבי, חומר, שינויים. והוואטסאפ? מנהל התזרים עונה ללקוח כל יום — אליך מגיע רק מה שדורש יועץ.</div></section>
+    <aside class="adv">
+      <span class="advh">היתרון ליועץ</span>
+      <div class="ai"><b>אפס שעות הקלדה</b><span>העבודה שנעשית היום ידנית — קיטלוג, התאמות, רדיפה אחרי חומר — יורדת ממך במלואה.</span></div><div class="ai"><b>תזרים בדוק, לא רק מוכן</b><span>הבדיקה מוודאת שהרווח הנקי יושב על תנועת הבנקים בסבילות 300 ₪. התזרים לא נשלח ללקוח עד שכל חריגה דווחה או הוכרעה.</span></div><div class="ai"><b>עלות ידועה פר לקוח</b><span>זמן התפעול נמדד פר חברה, כך שידוע כמה כל לקוח עולה בפועל.</span></div>
+    </aside>
+  </div><div class="note">להדגיש שזה שירות ולא פיצ׳ר — אדם שמפעיל מערכת. זה ההבדל מכל כלי תוכנה שהם מכירים. אם שואלים על הוואטסאפ: מנהל התזרים עונה ללקוח על תפעול שוטף, בשם המשרד, ואליהם מגיע רק מה שדורש יועץ — כולל תזכורת שנתקעה שלוש פעמים.</div></section>
 <section class="sl light">
   <div class="top">
-    <span class="kicker">מה HK עושה · 2 מתוך 4</span>
-    <h2>המערכת זוכרת את הלקוח <em>בשבילך.</em></h2>
-    <p class="one">שתים־עשרה קטגוריות זיכרון שמתעדכנות לבד מכל פגישה, שיחה והודעה — כאבים, יעדים, שביעות רצון, סגנון תקשורת.</p>
+    <span class="kicker">חלק 2 · זיכרון לקוח</span>
+    <h2>המערכת מתחזקת פרופיל חי לכל לקוח</h2>
+    <p class="lead">שתים־עשרה קטגוריות — מצב תזרימי, פרופיל עסקי, כאבים, יעדים, שביעות רצון, סגנון תקשורת ועוד — מתעדכנות אוטומטית מכל פגישה, שיחה והודעה. לכל קטגוריה פרומפט משלה והגדרה מי רשאי לראות אותה.</p>
   </div>
-  
-  <div class="hero">
+  <div class="body">
     <div class="frame">
       <div class="chrome"><i></i><i></i><i></i></div>
       <img src="shots/co-mem.png" alt="">
-      <div class="chip tl">חוסר שביעות רצון מזוהה לפני שהלקוח עוזב</div>
+      <div class="chip tl">מעגל החברה ומעגל אישי — מה שפנימי לא נחשף ללקוח</div>
     </div>
-  </div><div class="note">יועץ עם 25 לקוחות לא זוכר מה כואב לכל אחד — המערכת זוכרת ומזכירה לפני הפגישה, לא אחריה. מה שפנימי נשאר פנימי: הלקוח לא רואה את מה שנכתב עליו. וכאן אני אומר בגלוי: אחרי שנה, לזיכרון הזה אין תחליף בשום מקום.</div></section>
+    <aside class="adv">
+      <span class="advh">היתרון ליועץ</span>
+      <div class="ai"><b>לא צריך לזכור 25 לקוחות</b><span>מה שנאמר בפגישה לפני חודשיים נמצא בכרטיס, עם תאריך ומקור.</span></div><div class="ai"><b>התרעה לפני שלקוח עוזב</b><span>ירידה בשביעות רצון נלמדת מהטון בפגישה, מביטולים ומהקבוצה — ומגיעה אליך בזמן.</span></div><div class="ai"><b>שקיפות מלאה</b><span>אפשר לראות בכל רגע מה נכתב, מאיזה מקור, ועל ידי איזה תהליך.</span></div>
+    </aside>
+  </div><div class="note">להראות קטגוריה אחת פתוחה. ולומר בכנות: אחרי שנה של עבודה, הזיכרון הזה הוא נכס של המשרד שלהם ואין לו תחליף — זו גם הסיבה שהוא נשמר בטקסט קריא ולא בקופסה שחורה.</div></section>
 <section class="sl light">
   <div class="top">
-    <span class="kicker">מה HK עושה · 3 מתוך 4</span>
-    <h2>כל מה שנאמר ללקוח — <em>במסך אחד.</em></h2>
-    <p class="one">פגישות, שיחות טלפון, קבוצת הוואטסאפ וההתכתבות עם העוזר — אותם תוצרים: סיכום, משימות, זיכרון.</p>
+    <span class="kicker">חלק 3 · תקשורת</span>
+    <h2>ארבעה ערוצים, מסך אחד, אותם תוצרים</h2>
+    <p class="lead">פגישות, שיחות טלפון, קבוצת הוואטסאפ וההתכתבות עם העוזר יושבות ברשימה אחת. כל פריט מייצר את אותם תוצרים: סיכום, משימות מוצעות ועדכוני זיכרון. ג׳וב לילי סוגר כל יום.</p>
   </div>
-  
-  <div class="hero">
+  <div class="body">
     <div class="frame">
       <div class="chrome"><i></i><i></i><i></i></div>
       <img src="shots/adv-comm.png" alt="">
-      <div class="chip tl">שיחת טלפון שלא שויכה ממתינה בתור — ולא נעלמת</div>
+      <div class="chip tl">פגישה · שיחת טלפון · קבוצת וואטסאפ · עוזר AI</div>
     </div>
-  </div><div class="note">לסנן לקוח אחד ולהראות איך הכל נופל למקום. השאלה של יועץ היא "מה קורה עם הלקוח הזה" — לא "אילו פגישות היו". ג׳וב לילי סוגר כל יום לבד: מסכם את הקבוצות ואת הצ׳אטים, מעדכן את הזיכרון.</div></section>
+    <aside class="adv">
+      <span class="advh">היתרון ליועץ</span>
+      <div class="ai"><b>סינון לפי לקוח = תמונה מלאה</b><span>בלחיצה אחת רואים כל מה שקרה עם לקוח מסוים — בכל הערוצים, לפי סדר.</span></div><div class="ai"><b>שיחות טלפון לא הולכות לאיבוד</b><span>שיחה מוקלטת, מתומללת והופכת לזיכרון. שיחה שלא זוהתה ממתינה בתור לשיוך.</span></div><div class="ai"><b>הקבוצה מסוכמת כל לילה</b><span>מה עלה, מי כתב, ומה נכנס לזיכרון — בלי שתקרא את ההודעות.</span></div>
+    </aside>
+  </div><div class="note">לסנן לקוח אחד ולהראות. הנקודה: השאלה של יועץ היא "מה קורה עם הלקוח הזה", ולכן זה מסך אחד ולא ארבעה. אם שואלים על התמלול — שיחה בלי שיוך לחברה לא מתומללת בכלל, מטעמי פרטיות.</div></section>
 <section class="sl light">
   <div class="top">
-    <span class="kicker">מה HK עושה · 4 מתוך 4</span>
-    <h2>ההכנה לפגישה <em>נגזרת. לא נכתבת.</em></h2>
-    <p class="one">שתי דקות לפני הפגישה אתה פותח הכנה שנבנתה עכשיו — מהזיכרון החי, מהמספרים של הבוקר, מהמשימות הפתוחות.</p>
+    <span class="kicker">חלק 3 · תקשורת — הפגישה</span>
+    <h2>הכנה שנבנית מחדש בכל פתיחה</h2>
+    <p class="lead">דף ההכנה לא נשמר ולא נכתב מראש — הוא נגזר ברגע הפתיחה מהזיכרון החי, מהמספרים העדכניים ומהמשימות הפתוחות: מה סוכם בפעם הקודמת, מה השתנה מאז, ואיך מדברים עם האדם הזה.</p>
   </div>
-  
-  <div class="hero">
+  <div class="body">
     <div class="frame">
       <div class="chrome"><i></i><i></i><i></i></div>
       <img src="shots/meet-prep.png" alt="">
       <div class="chip tr">«פתח במספרים — צחי מאבד סבלנות מהקדמות»</div>
     </div>
-  </div><div class="note">להקריא את ההנחיה האישית מהמסך. זה הרגע שבו יועצים מבינים שהמערכת מכירה את הלקוח, לא מתייקת אותו. ואחרי הפגישה: סיכום, משימות ועדכוני זיכרון — מוכנים לאישור. שעה וחצי פר פגישה יורדת לדקות.</div></section>
-<section class="sl dark quote">
-  <span class="kicker coral">אין את זה לאף מתחרה</span>
-  <h2 class="giant sm">אחרי כל פגישה —<br>המערכת נותנת משוב<br><em>עליך.</em></h2>
-  <p class="side">מיקוד וחיבור ל«למה» · הקשבה ומרחב · עבודת עומק · הובלה והנעה לפעולה<br>
-  <b>לעיניך בלבד. לא נשלח ללקוח, לא למנהל.</b></p><div class="note">לעצור כאן. כל מערכת אחרת מודדת את הלקוח — זו היחידה שעוזרת ליועץ עצמו להשתפר מפגישה לפגישה. אפשר להראות את המסך אם שואלים (יש בגיבוי), אבל המשפט חזק יותר מהצילום.</div></section>
+    <aside class="adv">
+      <span class="advh">היתרון ליועץ</span>
+      <div class="ai"><b>הכנה בשתי דקות במקום שעה</b><span>נפתחת מוכנה מהיומן או מהבר שעולה חמש דקות לפני הפגישה.</span></div><div class="ai"><b>תמיד עדכנית</b><span>מסמך שנכתב לפני שבוע כבר לא נכון. זה נכון לרגע שנפתח.</span></div><div class="ai"><b>אחרי הפגישה — לאישור בלבד</b><span>סיכום, משימות שחולצו ועדכוני זיכרון מוכנים; אתה מאשר ושולח.</span></div>
+    </aside>
+  </div><div class="note">להקריא את ההנחיה האישית מהמסך — היא באה מקטגוריית סגנון התקשורת בזיכרון. אם יש זמן: להראות את מסך הפגישה אחרי — תמלול, סיכום, משימות לאישור.</div></section>
 <section class="sl light">
   <div class="top">
-    <span class="kicker">ומה שהלקוח שלך רואה</span>
-    <h2>הלקוח מקבל מערכת. <em>אתה מקבל את הקרדיט.</em></h2>
-    <p class="one">תקציר בוקר שנכתב כל יום מהזיכרון וממספרי הבנק, דשבורד חי, ועוזר בוואטסאפ — הכל בשם המשרד שלך. אין «HK» בשום מקום.</p>
+    <span class="kicker">חלק 3 · תקשורת — משוב מקצועי</span>
+    <h2>המערכת מנתחת גם את ניהול הפגישה שלך</h2>
+    <p class="lead">אחרי כל פגישה נוצר משוב על עבודת היועץ בארבעה צירים: מיקוד וחיבור ל«למה», הקשבה ומתן מרחב, עבודה ברובד הסמוי, והובלה והנעה לפעולה. המשוב גלוי ליועץ בלבד ואינו נשלח ללקוח או למנהל.</p>
   </div>
-  
-  <div class="hero">
+  <div class="body">
+    <div class="frame">
+      <div class="chrome"><i></i><i></i><i></i></div>
+      <img src="shots/meet-feedback.png" alt="">
+      <div class="chip tl">ארבעה צירי משוב · לעיני היועץ בלבד</div>
+    </div>
+    <aside class="adv">
+      <span class="advh">היתרון ליועץ</span>
+      <div class="ai"><b>שיפור מדיד מפגישה לפגישה</b><span>נקודות חוזק ונקודות לשיפור, מנוסחות על הפגישה הספציפית ולא בכלליות.</span></div><div class="ai"><b>כלי הכשרה למשרד</b><span>יועץ חדש נכנס לשיטה קיימת ומקבל משוב מהפגישה הראשונה.</span></div><div class="ai"><b>פרטי לחלוטין</b><span>לא נשלח ללקוח, לא נראה למנהל המשרד.</span></div>
+    </aside>
+  </div><div class="note">זה החלק שאין לו מקבילה בשוק. לומר את זה עניינית ולא כהתפארות: רוב הכלים מודדים את הלקוח; כאן יש גם משוב על עבודת היועץ. מי שזה לא מעניין אותו — פשוט לא נכנס לטאב.</div></section>
+<section class="sl light two">
+  <div class="top">
+    <span class="kicker">חלק 4 · דוחות פיננסיים</span>
+    <h2>תכנון קדימה ודוח רווח והפסד — מוכנים</h2>
+    <p class="lead">תכנון תזרימי לחודשים קדימה עם יעד לכל קטגוריה ויתרות שמתגלגלות; ודוח רווח והפסד שנבנה מהכרטסת האמיתית של רואה החשבון — בדוגמה שבמערכת: 14,083 תנועות שהפכו ל־631 כרטיסים.</p>
+  </div><div class="body">
+    <div class="frame"><div class="chrome"><i></i><i></i><i></i></div>
+      <img src="shots/co-fcast.png" alt="">
+      <div class="cap">תכנון תזרימי — יעד לכל קטגוריה, וחריגה שנראית לפני שהיא קורית</div></div>
+    <div class="frame"><div class="chrome"><i></i><i></i><i></i></div>
+      <img src="shots/co-acct.png" alt="">
+      <div class="cap">תכנון חשבונאי — ה־AI ממפה מבנה, חיבור הסכומים רץ בקוד</div></div>
+  </div><div class="note">ההפרדה חשובה ליועצים: ה-AI מסווג שמות וממפה מבנה בלבד; כל חיבור של סכומים רץ בקוד דטרמיניסטי עם בדיקות ביקורת. זה מה שמאפשר להציג את הדוח ללקוח בלי לבדוק אותו שורה־שורה. יש גם מעקב תקציב ומדדים לא־פיננסיים.</div></section>
+<section class="sl light">
+  <div class="top">
+    <span class="kicker">חלק 5 · הצד של הלקוח</span>
+    <h2>הלקוח מקבל מערכת בשם המשרד שלך</h2>
+    <p class="lead">לבעל העסק יש דשבורד משלו שנפתח בתקציר בוקר — פסקה שנכתבת כל בוקר מהזיכרון ומיתרות הבנק העדכניות — ולצדה יתרה, חריגה צפויה, משימות פתוחות והעלאת מסמכים. וכן עוזר בוואטסאפ שיודע את המספרים שלו.</p>
+  </div>
+  <div class="body">
     <div class="frame">
       <div class="chrome"><i></i><i></i><i></i></div>
       <img src="shots/cli-dash.png" alt="">
       <div class="chip tr">«היתרה 75,187 ₪ — צפויה חריגה ב־11.07 אם ההעברה לא תבוצע»</div>
     </div>
-  </div><div class="note">שקף השימור: לקוח שעוזב כמעט אף פעם לא עוזב בגלל ייעוץ גרוע — הוא עוזב כי הרגיש נטוש בין פגישות. כאן הוא מרגיש מטופל כל בוקר. white-label מלא, כולל שם הבוט. סיפור אמיתי מהמערכת: אחרי התראת חריגה הלקוח שאל את העוזר "מה זאת אומרת חריגה?" — וזה הפך למשימה ליועץ ולשורת זיכרון.</div></section>
-<section class="sl light">
-  <div class="top">
-    <span class="kicker">והמספרים עצמם</span>
-    <h2>דוחות ברמת CFO — <em>בלי שתבנה אותם.</em></h2>
-    <p class="one">תכנון תזרימי קדימה עם יעדים ללקוח, ודוח רווח והפסד שנבנה מהכרטסת האמיתית של רואה החשבון — 14,083 תנועות, 631 כרטיסים.</p>
-  </div>
-  
-  <div class="hero">
-    <div class="frame">
-      <div class="chrome"><i></i><i></i><i></i></div>
-      <img src="shots/co-fcast.png" alt="">
-      <div class="chip tl">ה־AI ממפה ומסווג · כל שקל מחובר בקוד דטרמיניסטי</div>
-    </div>
-  </div><div class="note">יועצים חוששים ש-AI ימציא מספרים — להפריד חד: ה-AI רק מסווג שמות וממפה מבנה; חיבור הכסף רץ בקוד עם בדיקות ביקורת. חריגה נראית בתחזית לפני שהיא קורית, והלקוח רואה את התכנון לקריאה בלבד.</div></section>
+    <aside class="adv">
+      <span class="advh">היתרון ליועץ</span>
+      <div class="ai"><b>שימור לקוחות</b><span>הלקוח מרגיש מטופל כל בוקר, לא רק ביום הפגישה.</span></div><div class="ai"><b>white-label מלא</b><span>אין אזכור ל־HK בשום מקום — לא בכותרת, לא בשם הבוט, לא בתפקידים.</span></div><div class="ai"><b>פחות שאלות אליך</b><span>מה שהלקוח שואל את העוזר נענה מיד; מה שדורש יועץ מגיע אליך כמשימה.</span></div>
+    </aside>
+  </div><div class="note">סיפור אמיתי מהמערכת: אחרי התראת חריגה הלקוח שאל את העוזר "מה זאת אומרת חריגה?" — וזה הפך למשימה ליועץ ולשורת זיכרון. מה שהלקוח שואל מגלה מה מטריד אותו.</div></section>
 <section class="sl light more">
   <div class="top">
-    <span class="kicker">ומתחת למכסה</span>
-    <h2>מוצר שלם. <em>לא דמו.</em></h2>
+    <span class="kicker">ומעל הכל · ניהול המשרד</span>
+    <h2>שכבת ניהול למשרד שגדל</h2>
+    <p class="lead">מה שמאפשר להעביר את השיטה בין יועצים: הרשאות ותפקידים, מחזור חודשי אחיד, תבניות הודעות מאושרות, ובקרת איכות על התוצרים של ה־AI.</p>
+  </div><div class="tags">
+    <span>יועצים והרשאות</span><span>חיוב וגבייה</span><span>לידים</span>
+    <span>11 סוגי הודעות אוטומטיות פר איש קשר</span><span>שיוך מספרי טלפון לחברות</span>
+    <span>קטגוריות קיטלוג ובסיס ידע</span><span>בדיקות איכות על תוצרי ה־AI</span>
+    <span>משימות ובקשות ל־HK</span><span>עזרה מותאמת בכל מסך</span>
   </div>
-  <div class="tags">
-    <span>ניהול משרד והרשאות</span><span>חיוב וגבייה</span><span>לידים</span>
-    <span>תבניות וואטסאפ מאושרות</span><span>שיוך מספרי טלפון</span>
-    <span>קטגוריות ובסיס ידע</span><span>בדיקות AI על התוצרים</span>
-    <span>עזרה מותאמת בכל מסך</span><span>משימות ובקשות מ־HK</span>
-  </div><div class="note">לעבור מהר — עשר שניות. המסר היחיד: יש כאן שכבת ניהול שלמה למשרד שגדל, והיא לא הנושא של הפגישה הזאת.</div></section>
+  <p class="fineL">השיטה מוגדרת ברמת המשרד — מחזור חודשי, שלבים ויעדים — כך שיועץ
+     חדש נכנס לשיטה קיימת ולא ממציא אותה מחדש.</p><div class="note">לעבור מהר — זה לא ליבת הפגישה. המסר: השיטה מוגדרת ברמת המשרד, כך שיועץ חדש נכנס לשיטה קיימת ולא ממציא אותה מחדש.</div></section>
+<section class="sl dark sum">
+  <span class="kicker">מה זה משנה בפועל</span>
+  <h2 class="w">הזמן שיורד מהיועץ, פר לקוח לחודש</h2>
+  <table class="cmp">
+    <thead><tr><th>פעילות</th><th>היום</th><th>עם HK</th></tr></thead>
+    <tbody>
+      <tr><td>תפעול תזרים — קיטלוג, התאמות, רדיפה אחרי חומר</td><td class="was">4–8 שעות</td><td class="is">0</td></tr>
+      <tr><td>הכנה לפגישה</td><td class="was">כשעה</td><td class="is">דקות</td></tr>
+      <tr><td>סיכום ומשימות אחרי פגישה</td><td class="was">כחצי שעה</td><td class="is">דקות</td></tr>
+      <tr><td>מענה שוטף בוואטסאפ</td><td class="was">1–2 שעות</td><td class="is">רק מה שדורש יועץ</td></tr>
+      <tr class="tot"><td>סה״כ פר לקוח לחודש</td><td class="was">7–10 שעות</td><td class="is">1–1.5 שעות</td></tr>
+    </tbody>
+  </table>
+  <p class="fine">80 שעות עבודת לקוחות בחודש מכסות היום 8–10 לקוחות. כשהתפעול יורד — אותן שעות מכסות 25–30.</p><div class="note">כאן לעצור ולעשות את החשבון על המספרים שלהם: כמה לקוחות יש להם, כמה שעות הם מעריכים שהתפעול לוקח, וכמה שווה שעה שלהם. המספר צריך לצאת מהם, לא ממני.</div></section>
 <section class="sl dark close">
-  <span class="kicker">השורה התחתונה</span>
-  <h2 class="closeline">כל מה שאינו ייעוץ — יורד ממך.</h2>
-  <div class="nums">
-    <div class="t"><b>0</b><span>שעות תפעול<br>פר לקוח</span></div>
-    <div class="t"><b>25–30</b><span>לקוחות באותו<br>יום עבודה</span></div>
-    <div class="t"><b>כל בוקר</b><span>הלקוח מטופל<br>בשם המשרד שלך</span></div>
+  <span class="kicker">איך מתחילים</span>
+  <h2 class="w">לקוח אחד, חודש הרצה</h2>
+  <div class="steps">
+    <div class="sc"><i>1</i><b>בוחרים לקוח</b><span>עדיף כזה שהתפעול שלו כבד — שם ההבדל נראה כבר בחודש הראשון</span></div>
+    <div class="sc"><i>2</i><b>ישיבת פתיחה אחת</b><span>חשבונות בנק, כרטסת אם יש, קטגוריות ואנשי הקשר שמקבלים הודעות</span></div>
+    <div class="sc"><i>3</i><b>HK מריצה לו חודש</b><span>קיטלוג, בדיקות, תזרים מוכן — ואתה מגיע לפגישה ורואה מה השתנה</span></div>
   </div>
-  <div class="cta">נתחיל מלקוח אחד.</div>
-  <p class="ctasub">נבחר יחד לקוח שהתפעול שלו כבד, ו־HK תריץ לו חודש מלא.<br>אתה תגיע לפגישה איתו — ותראה מה השתנה.</p><div class="note">לחזור למספר משקף 3 ולסגור עליו את המעגל. הבקשה קונקרטית וקטנה: לקוח אחד, חודש הרצה, בוחרים אותו עכשיו יחד. בלי התחייבות על כל התיק.</div></section>
-<div class="hud"><span class="keys">→ ← ניווט · F מסך מלא · N הערות · P הדפסה</span><b id="pos"></b></div>
+  <p class="fine">אין פרויקט הטמעה ואין חודש שבו עובדים כפול. אפשר להריץ במקביל לשיטה הקיימת, כמה זמן שתרצה.</p><div class="note">הבקשה קונקרטית וקטנה: לקוח אחד. אם אפשר — לבחור אותו יחד עכשיו, בפגישה. זה מה שהופך את הסיום להתחלה של משהו ולא לשאלה פתוחה.</div></section>
+<div class="hud"><span>→ ← ניווט · F מסך מלא · N הערות · P הדפסה</span><b id="pos"></b></div>
 <script>
 let cur=0;
 const sls=[...document.querySelectorAll('.sl')];
@@ -265,7 +319,7 @@ function go(i){
  document.getElementById('pos').textContent=(cur+1)+' / '+sls.length;
 }
 addEventListener('keydown',e=>{
- if(e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown') go(cur+1);   /* RTL: שמאלה = קדימה */
+ if(e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown') go(cur+1);
  else if(e.key==='ArrowRight'||e.key==='PageUp') go(cur-1);
  else if(e.key==='Home') go(0);
  else if(e.key==='End') go(sls.length-1);
@@ -274,7 +328,6 @@ addEventListener('keydown',e=>{
  else if(e.key==='p'||e.key==='P') window.print();
 });
 addEventListener('click',e=>{ if(!e.target.closest('.hud')) go(cur+1); });
-/* ?slide=N לצילום ולקישור ישיר */
 const q=new URLSearchParams(location.search);
 go(q.get('slide')?+q.get('slide')-1:0);
 </script>
