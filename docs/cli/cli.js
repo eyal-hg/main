@@ -56,7 +56,7 @@ function hkChrome(active, opts){
   const m = CO.money, hasMoney = !!m, hasMeet = !!CO.meet || CO.product!=='HK Money';
 
   const nav = `<nav class="nav">
-    <a class="brand" href="dashboard.html"><i>H<b>K</b></i>חזות קריספין</a>
+    <a class="brand" href="dashboard.html"><i>שח</i>שחר ייעוץ עסקי</a>
     ${withStrip?'':`<a class="crumb" href="dashboard.html"><span class="d"></span>${CO.name}</a>`}
     <ul>${NAVI.map(n=>{const b=n.badge&&n.badge();
       return `<li><a class="${n.k===active?'on':''}" href="${n.f}">${n.l}${b?`<em>${b}</em>`:''}</a></li>`}).join('')}</ul>
@@ -66,8 +66,7 @@ function hkChrome(active, opts){
   const strip = !withStrip ? '' : `<header class="strip">
     <div>
       <h1>${CO.name}</h1>
-      <!-- שם המוצר ננעל ל-LTR, אחרת ה-+ נופל לצד הלא נכון בתוך פסקה עברית -->
-      <div class="sub num">ח.פ ${CO.hp} · <span dir="ltr">${CO.product}</span> · מנהלת התזרים <b>${CO.mgr}</b> · איש קשר <b>${CO.contact}</b></div>
+      <div class="sub num">ח.פ ${CO.hp} · צוות הליווי <b>${CO.mgr}</b> · איש קשר <b>${CO.contact}</b></div>
     </div>
     <span class="st">${CO.status}</span>
     <div class="spacer"></div>
@@ -79,7 +78,7 @@ function hkChrome(active, opts){
     <div class="cell">
       <button class="tkbtn" onclick="tkListToggle(event)" aria-expanded="false" id="tkBtn">
         <span class="cnt num" id="tkCount">${openTasks.length}</span>
-        <span class="lb">משימות פתוחות למנהלת התזרים</span>
+        <span class="lb">משימות פתוחות לצוות הליווי</span>
         <span class="late" id="tkLate">${lateN?`· ${lateN===1?'אחת באיחור':lateN+' באיחור'}`:''}</span>
         <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
