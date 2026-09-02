@@ -46,7 +46,6 @@
     'co-mem'      :[R('advisor'),C(0),T('mem')],
     'co-chat'     :[R('advisor'),C(0),T('chat')],
     'co-metrics'  :[R('advisor'),C(0),T('metrics')],
-    'co-metrics-table':[R('advisor'),C(0),T('metrics'),F(function(){var f=document.getElementById('cliMetricFrame');f.src='docs/cli/metrics.html?embed=1&view=table';},2600)],
     'co-entries'  :[R('advisor'),C(0),T('entries')],
     'co-budget'   :[R('advisor'),C(0),T('budget')],
     'co-acct'     :[R('advisor'),C(0),T('acct')],
