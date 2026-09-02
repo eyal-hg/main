@@ -304,7 +304,7 @@ body.calls-on .arena{display:none}
 .search svg{position:absolute;inset-inline-start:12px;top:11px;width:16px;height:16px;color:var(--ink3)}
 /* החיפוש — הפיצ׳ר החזק במסך: שדה גדול, כפתור פעולה, הסבר ותוצאות */
 .search{padding-bottom:4px}
-.qrow{display:flex;align-items:center;gap:10px;padding:6px 20px 8px;background:var(--surface2)}
+.qrow{display:flex;align-items:center;gap:10px;padding:6px 20px 12px;background:var(--surface2)}
 .qrow .in{flex:1;position:relative}
 .qrow .in svg{position:absolute;inset-inline-start:12px;top:11px;width:16px;height:16px;color:var(--navy)}
 .qrow input{width:100%;height:38px;border:1px solid #C9D8E6;border-radius:8px;padding-inline-start:36px;padding-inline-end:12px;
@@ -313,8 +313,6 @@ body.calls-on .arena{display:none}
 .qrow .qgo{height:38px;padding:0 18px;border-radius:8px;font-size:13.5px;font-weight:600;flex:none}
 .qrow .clr{font-size:12.5px;color:var(--sky);font-weight:500;display:none}
 .qrow .clr.on{display:inline}
-.qnote{padding:0 20px 8px;font-size:12px;color:var(--ink3);line-height:1.55;background:var(--surface2)}
-.qnote b{color:var(--navy);font-weight:600}
 .qres{padding:8px 20px;font-size:13px;color:var(--ink2);background:#EEF5FB;border-top:1px solid #D7E6F2;display:none}
 .qres.on{display:block}
 .qres b{color:var(--navy);font-weight:700}
@@ -660,15 +658,10 @@ tr.m.wa .nm{color:#0B5A68}
     <div class="qrow">
       <div class="in">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="מתי דיברנו על… מסגרת אשראי, גבייה, תמחור">
+        <input id="q" type="search" placeholder="חיפוש בתוכן 50 האירועים האחרונים — מתי דיברנו על מסגרת אשראי, גבייה, תמחור…">
       </div>
       <button class="btn pri qgo" id="qgo" type="button">חיפוש</button>
       <a href="#" class="clr" id="clr">ניקוי</a>
-    </div>
-    <!-- מה החיפוש עושה — חיפוש סמנטי בתוכן, לא בשמות -->
-    <div class="qnote" id="qnote">
-      <b>חיפוש בתוכן</b> של <b>50 האירועים האחרונים</b> — פגישות, שיחות וקבוצות: סיכומים, החלטות, משימות ותמלולים.
-      <span id="qscope">בכל הלקוחות.</span> מוצא גם ניסוח אחר של אותו עניין, ומחזיר את הקטע עצמו.
     </div>
     <div class="qres" id="res"></div>
     <div class="topics" id="topRow"></div>
@@ -901,7 +894,9 @@ tr.m.wa .nm{color:#0B5A68}
       ? (parts.length?'מסונן: '+parts.join(' · ')+' · ':'')+shown+(shown===1?' פריט ברשימה':' פריטים ברשימה')
       : '';
     const scope=S.c?'אצל <b>'+esc(S.c)+'</b>':'בכל הלקוחות';
-    const qs=$('#qscope'); if(qs) qs.textContent = S.c?'מסונן לקוח — מחפשים רק אצל '+S.c+'.':'בכל הלקוחות.';
+    /* ההסבר חי בשדה עצמו — ומשתנה כשמסונן לקוח */
+    $('#q').placeholder = S.c ? 'חיפוש בתוכן 50 האירועים האחרונים של '+S.c+' — מתי דיברנו על…'
+                              : 'חיפוש בתוכן 50 האירועים האחרונים — מתי דיברנו על מסגרת אשראי, גבייה, תמחור…';
     const res=$('#res');
     res.innerHTML = S.q?'<b>'+shown+'</b> '+(shown===1?'אירוע':'אירועים')+' שבהם דיברו על ״'+esc(S.q)+'״ — '+scope+' <em>· מתוך 50 האירועים האחרונים · הקטע שנמצא מוצג בכל שורה</em>':'';
     res.classList.toggle('on',!!S.q);
