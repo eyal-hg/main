@@ -56,6 +56,8 @@
 
     /* ---------- מנהל התזרים ---------- */
     'mgr-ops'     :[R('manager'),G('ops')],
+    'mgr-me'      :[R('manager'),G('ops'),F(function(){document.getElementById('meMenu').classList.add('on')},500)],
+    'adv-me'      :[R('advisor'),G('today'),F(function(){document.getElementById('meMenu').classList.add('on')},500)],
     'mgr-today'   :[R('manager'),G('today')],
     'mgr-clients' :[R('manager'),G('clients')],
     'mgr-ops-meet':[R('manager'),G('ops'),F(function(){oqsToggle('meet')},900)],

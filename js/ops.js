@@ -158,6 +158,10 @@
     if(_ma&&!_ma.querySelector('img'))
       _ma.innerHTML='<img src="avatar.png" alt="" onerror="this.onerror=null;this.src=\'avatar.svg\'">';
 
+    /* תפריט המשתמש: "איזור הניהול" רק למנהל התזרים */
+    const _ma2=document.getElementById('meAdmin'), _ms2=document.getElementById('meSep');
+    if(_ma2) _ma2.style.display=(r==='manager')?'':'none';
+    if(_ms2) _ms2.style.display=(r==='manager')?'':'none';
     /* מנהלי תזרים / מוצרים / סטטוסים הם כלי המשרד של מנהל התפעול.
        ליועץ נשאר רק "יועץ אחראי" — הוא רלוונטי לו בתיק. */
     const advOnly = (ROLE==='advisor');

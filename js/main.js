@@ -16,7 +16,6 @@
   window.meGo=function(k){
     meClose();
     if(k==='admin'){ if(typeof openAdmin==='function') openAdmin(); return; }
-    if(k==='settings'){ if(typeof showTab==='function') showTab('settings'); return; }
     if(typeof toast==='function') toast('בדמו: התנתקות מהמערכת');
   };
   document.addEventListener('click',e=>{ if(!e.target.closest('.me-wrap')) meClose(); });
