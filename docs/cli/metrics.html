@@ -288,7 +288,7 @@
 .mt.tbl{grid-template-columns:minmax(0,1fr)}
 .sheet{position:relative}
 .shx{overflow-x:auto}
-.sh{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:1150px}
+.sh{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:1040px}
 .sh th{background:var(--bg);text-align:start;font-size:11px;font-weight:700;color:var(--ink3);
   letter-spacing:.2px;padding:0 10px;height:34px;border-bottom:1px solid var(--cardbd);
   border-inline-end:1px solid var(--cardbd);white-space:nowrap}
@@ -298,7 +298,7 @@
 .sh th button .cv{opacity:0;transition:transform .15s}
 .sh th button.on .cv{opacity:1}
 .sh th button.on.desc .cv{transform:rotate(180deg)}
-.sh th.num,.sh td.num{text-align:end}
+.sh th.num,.sh td.num{text-align:center}
 .sh th.cur{background:#EAF3FA;color:var(--navy)}
 .sh td.cur{background:#F3F8FC}
 .sh td{padding:0;height:38px;border-bottom:1px solid var(--tint);border-inline-end:1px solid var(--tint);
@@ -318,12 +318,12 @@
 .sh .c-nm{min-width:200px}
 .sh .c-kd{width:118px}
 .sh .c-un{width:58px}
-.sh .c-mo{width:92px}
-.sh .c-pc{width:112px}
+.sh .c-mo{width:118px}
+.sh .c-pc{width:84px}
 .sh .c-tl{width:44px}
 .ci{display:block;width:100%;height:38px;border:0;background:transparent;padding:0 10px;
   font:inherit;font-size:12.5px;color:var(--ink);outline:none;border-radius:0;min-width:0}
-.ci.num{text-align:end;direction:ltr;font-variant-numeric:tabular-nums}
+.ci.num{text-align:center;direction:ltr;font-variant-numeric:tabular-nums}
 .ci:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--sky);position:relative;z-index:1}
 .ci::placeholder{color:var(--faint);font-weight:400}
 .c-nm .ci{font-weight:600;color:var(--navy)}
@@ -336,16 +336,29 @@
 .pc{font-weight:700;color:var(--ink2)}
 .pc.ok{color:var(--good)} .pc.off{color:var(--warn)} .pc.dng{color:var(--bad)}
 .pc.pale{color:var(--faint);font-weight:500}
-/* זוג שורות: היעד מעל, מעודן; הבפועל מתחת, בולט. הקו בין השורות דק, אחרי הזוג עבה יותר */
-.sh td.c-lb{width:52px;padding:0 10px;font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.2px}
-.sh tr.t td{border-bottom:1px dashed var(--tint)}
-.sh tr.t .ci.t{color:var(--ink3);font-weight:500}
-.sh tr.t td[rowspan]{border-bottom:1px solid var(--cardbd)}
-.sh tr.a td{border-bottom:1px solid var(--cardbd);color:var(--ink)}
-.sh tr.a .ci{font-weight:600;color:var(--navy)}
-.sh tr.a td.ro{font-weight:600;color:var(--ink)}
-.sh tr.a td.ro .nil{font-weight:400}
-.sh td .dy{font-size:11px;color:var(--faint);font-weight:500}
+/* חודש מקופל = בפועל; חודש פתוח = יעד · בפועל · ביצוע. החודש המוצג פתוח תמיד */
+.sh tr.h1 th{height:32px;border-bottom:0}
+.sh tr.h2 th{height:24px;font-size:10.5px;font-weight:600;color:var(--ink3);background:#FAFBFD}
+.sh th.c-sub.mute{color:var(--faint);font-weight:500}
+.sh th.c-mg{padding:0 8px}
+.sh th.c-mg .mo-h{display:flex;align-items:center;gap:7px}
+.sh th.c-mg b{font-weight:700;color:var(--ink2)}
+.sh th.c-mg.open b{color:var(--navy)}
+.sh th.c-mg.cur{background:#EAF3FA}
+.sh th.c-mg.cur b{color:var(--navy)}
+.sh th.c-mg.open:not(.cur){background:#F1F6FB}
+.sh .tg{width:16px;height:16px;border-radius:4px;border:1px solid #C9D6E3;background:#fff;color:var(--navy);
+  display:inline-grid;place-items:center;flex:none;padding:0;transition:.12s}
+.sh button.tg:hover{border-color:var(--sky);background:#EAF3FA}
+.sh .tg.fx{border-color:transparent;background:#D7E7F4;color:var(--navy)}
+.sh td.op{background:#F7FAFD}
+.sh td.op.cur{background:#F3F8FC}
+.sh td.op.first{border-inline-start:2px solid #D7E3EE}
+.sh td.op.last{border-inline-end:2px solid #D7E3EE}
+.sh .ci.t{color:var(--ink3);font-weight:500}
+.sh .ci{font-weight:600;color:var(--navy)}
+.sh td.ro{font-weight:600;color:var(--ink)}
+.sh td.ro .nil{font-weight:400}
 .sh tr.grp td{height:30px;padding:0 12px;background:#F7FAFD;color:var(--navy);font-size:12px;font-weight:700;
   letter-spacing:.2px;border-bottom:1px solid var(--cardbd);border-inline-end:0}
 .sh tr.grp td .n{margin-inline-start:8px;font-size:11px;font-weight:600;color:var(--faint)}
@@ -627,7 +640,7 @@ var SRC={
 /* שורות דוח רווח והפסד שמדד יכול להימשך מהן (מסך "תכנון חשבונאי") */
 var PL_LINES=['הכנסות','עלות המכר','הוצאות הנהלה וכלליות','רווח תפעולי','רווח נקי'];
 var LOGIC=['ללא לוגיקה','אותו תא לכל החודשים','חודשים לפי עמודות','לפי שם הגיליון'];
-var UNITS=['₪','מספר','%','ימים'];
+var UNITS=['₪','מספר'];   /* כרגע רק שתי יחידות — ש״ח או מספר */
 var FREQ=['חודשי','שבועי','יומי'];
 var CALCS=['מחזור הכנסות − כל קטגוריות ההוצאות','מחזור הכנסות ÷ ימי עבודה',
            'הכנסות ממכירות + הכנסות סליקה','מחזור הכנסות − עלות המכר'];
@@ -643,7 +656,7 @@ var M=[
   alerts:[{on:false,mode:'pct',dir:'below',th:80,sev:'mid'}],
   note:'הבסיס לכל השאר — ההכנסה ליום עבודה והרווח התזרימי נגזרים ממנו.'},
 
- {k:'liters', name:'סך הליטרים - לפי סוג דלק', src:'sheets', unit:'ליטר', target:120000, freq:'חודשי', grp:'הכנסות ומכירות',
+ {k:'liters', name:'סך הליטרים - לפי סוג דלק', src:'sheets', unit:'מספר', target:120000, freq:'חודשי', grp:'הכנסות ומכירות',
   cell:'C7', logic:'חודשים לפי עמודות', tgt:[110000,110000,115000,115000,120000,120000,120000],
   hist:[104200,98700,101500,106400,105100,93600],
   alerts:[{on:true,mode:'pct',dir:'below',th:85,sev:'mid'}],
@@ -664,7 +677,7 @@ var M=[
   alerts:[{on:false,mode:'pct',dir:'below',th:75,sev:'mid'}],
   note:'הכסף שבאמת נכנס לבנק, להבדיל מהמחזור שנרשם.'},
 
- {k:'budget', name:'עמידה בתקציב', src:'cats', unit:'%', target:100, invert:true, freq:'חודשי', grp:'הוצאות ורווח',
+ {k:'budget', name:'עמידה בתקציב', src:'cats', unit:'מספר', target:100, invert:true, freq:'חודשי', grp:'הוצאות ורווח',
   cats:['כל קטגוריות ההוצאות'],
   hist:[103,99,101,96,102,82],
   alerts:[{on:true,mode:'pct',dir:'above',th:100,sev:'high'},
@@ -1141,7 +1154,8 @@ function applyView(){
   document.getElementById('msheet').classList.toggle('hid',!tbl);
   document.querySelector('.ph .mstep').classList.toggle('hid',tbl);
   document.getElementById('mrange').classList.toggle('hid',!tbl);
-  if(tbl){ RT=MI; RF=Math.min(RF,RT); if(RT-RF>11) RF=RT-11; drawRange(); }
+  /* הכרטיסים זוכרים את החודש שלהם; הטבלה עובדת על הטווח */
+  if(tbl){ CARD_MI=MI; MI=fixedOpen(); drawRange(); } else { MI=CARD_MI; }
   /* ניהול המדדים חוזר על מה שהגיליון כבר מראה — יורד בתצוגת הטבלה */
   document.querySelector('.mgr').classList.toggle('hid',tbl);
   var b=document.querySelectorAll('#vseg button');
@@ -1153,11 +1167,14 @@ function applyView(){
 
 /* טווח החודשים בגיליון: מחודש עד חודש. החודש האחרון בטווח הוא החודש המוצג —
    מולו מחושבים הביצוע, היעד היומי והמצב. */
-var RF=Math.max(0,MI-5), RT=MI;
+/* ברירת המחדל: מהחודש הקודם ועד עוד חודשיים. החודש הפתוח תמיד הוא החודש
+   הנוכחי (CUR_MI) אם הוא בטווח, ואחרת האחרון בטווח. */
+var RF=Math.max(0,CUR_MI-1), RT=Math.min(11,CUR_MI+2), CARD_MI=MI;
 function moWin(){var a=[];for(var i=RF;i<=RT;i++)a.push(i);return a;}
+function fixedOpen(){return (CUR_MI>=RF&&CUR_MI<=RT)?CUR_MI:RT;}
 function setRange(f,t){
   RF=Math.max(0,Math.min(f,11)); RT=Math.max(RF,Math.min(t,11));
-  MI=RT; render();
+  MI=fixedOpen(); render();
 }
 function drawRange(){
   var f=document.getElementById('rFrom'), t=document.getElementById('rTo');
@@ -1182,50 +1199,61 @@ function pctTxt(m){
   var p=pctOf(m); if(p==null) return '<span class="pc pale">—</span>';
   return '<span class="pc '+st+'">'+Math.round(p)+'%</span>';
 }
+/* חודשים פתוחים: פתוח = יעד · בפועל · ביצוע; מקופל = בפועל בלבד.
+   החודש המוצג (האחרון בטווח) פתוח תמיד. */
+var OPEN={};
+function moOpen(i){return i===fixedOpen()||!!OPEN[i];}
+function pctTxtAt(m,i){var o=MI;MI=i;var h=pctTxt(m);MI=o;return h;}
 var CV2=CV;
+var ICO_PLUS='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+var ICO_MINUS='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M5 12h14"/></svg>';
 function shHead(){
-  var h='<tr><th class="c-st"></th>'+
-    '<th class="c-nm"><button data-sort="name" class="'+(SORT==='name'?'on':'')+(SORT==='name'&&DESC?' desc':'')+'">שם המדד'+CV2+'</button></th>'+
-    '<th class="c-kd"><button data-sort="kind" class="'+(SORT==='kind'?'on':'')+(SORT==='kind'&&DESC?' desc':'')+'">סוג'+CV2+'</button></th>'+
-    '<th class="c-un">יחידה</th><th class="c-lb"></th>';
+  var h='<tr class="h1"><th class="c-st" rowspan="2"></th>'+
+    '<th class="c-nm" rowspan="2"><button data-sort="name" class="'+(SORT==='name'?'on':'')+(SORT==='name'&&DESC?' desc':'')+'">שם המדד'+CV2+'</button></th>'+
+    '<th class="c-kd" rowspan="2"><button data-sort="kind" class="'+(SORT==='kind'?'on':'')+(SORT==='kind'&&DESC?' desc':'')+'">סוג'+CV2+'</button></th>'+
+    '<th class="c-un" rowspan="2">יחידה</th>';
+  var h2='';
   moWin().forEach(function(i){
-    var cur=(i===MI);
-    h+='<th class="c-mo num'+(cur?' cur':'')+'">'+
-       (cur?'<button data-sort="val" class="'+(SORT==='val'?'on':'')+(SORT==='val'&&DESC?' desc':'')+'">'+MONTHS[i]+CV2+'</button>':MONTHS[i])+'</th>';
+    var op=moOpen(i), fixed=(i===fixedOpen());
+    h+='<th class="c-mg'+(op?' open':'')+(fixed?' cur':'')+'" colspan="'+(op?3:1)+'"><span class="mo-h">'+
+       (fixed?'<i class="tg fx" title="החודש הנוכחי — פתוח תמיד">'+ICO_MINUS+'</i>'
+             :'<button class="tg" data-mo-tg="'+i+'" title="'+(op?'קיפול':'פתיחה — יעד, בפועל וביצוע')+'" aria-expanded="'+(op?'true':'false')+'">'+(op?ICO_MINUS:ICO_PLUS)+'</button>')+
+       '<b>'+MONTHS[i]+'</b></span></th>';
+    if(op) h2+='<th class="c-sub num'+(fixed?' cur':'')+'">יעד</th><th class="c-sub num'+(fixed?' cur':'')+'">בפועל</th><th class="c-sub num'+(fixed?' cur':'')+'">ביצוע</th>';
+    else   h2+='<th class="c-sub num mute">בפועל</th>';
   });
-  h+='<th class="c-pc num">'+MONTHS[MI]+' · ביצוע</th><th class="c-tl"></th></tr>';
+  h+='<th class="c-tl" rowspan="2"></th></tr><tr class="h2">'+h2+'</tr>';
   return h;
 }
 var ICO_ED='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+function actCell(m,i,cls){
+  var v=valAt(m,i);
+  if(canEdit(m,i))
+    return '<td class="c-mo ed num'+cls+'"><input class="ci num" data-f="hist" data-i="'+i+'" inputmode="numeric" value="'+(v!=null?nf(v):'')+'" placeholder="—" aria-label="בפועל '+MONTHS[i]+'"></td>';
+  return '<td class="c-mo num ro'+cls+'" data-c="mo" data-i="'+i+'">'+(v!=null?nf(v):'<span class="nil">—</span>')+'</td>';
+}
 function shRows(m){
-  var ix=M.indexOf(m), st=stateOf(m), W=moWin();
-  /* שורת היעד — השם, הסוג והיחידה נפרשים על שתי השורות */
-  var s='<tr class="t s-'+st+'" data-k="'+m.k+'">';
-  s+='<td class="c-st" rowspan="2"><span class="ml-dot" title="'+FLAG[st].t+'"></span></td>';
-  s+='<td class="c-nm ed" rowspan="2"><input class="ci" data-f="name" value="'+esc(m.name)+'" aria-label="שם המדד"></td>';
-  s+='<td class="c-kd" rowspan="2"><button class="kind '+SRC[m.src].cls+'" data-pop="kind" data-k="'+m.k+'" title="'+esc(stripTags(srcTxt(m)))+'">'+esc(SRC[m.src].lbl)+'</button></td>';
-  s+='<td class="c-un" rowspan="2"><button class="ub" data-pop="unit" data-k="'+m.k+'">'+esc(m.unit)+'</button></td>';
-  s+='<td class="c-lb">'+(m.invert?'תקרה':'יעד')+'</td>';
-  W.forEach(function(i){
-    var t=tgtAt(m,i), cur=(i===MI);
-    s+='<td class="c-mo ed num'+(cur?' cur':'')+'"><input class="ci num t" data-f="tgt" data-i="'+i+'" inputmode="numeric" value="'+(t!=null?nf(t):'')+'" placeholder="—" aria-label="יעד '+MONTHS[i]+'"></td>';
+  var ix=M.indexOf(m), st=stateOf(m);
+  var s='<tr class="s-'+st+'" data-k="'+m.k+'">';
+  s+='<td class="c-st"><span class="ml-dot" title="'+FLAG[st].t+'"></span></td>';
+  s+='<td class="c-nm ed"><input class="ci" data-f="name" value="'+esc(m.name)+'" aria-label="שם המדד"></td>';
+  s+='<td class="c-kd"><button class="kind '+SRC[m.src].cls+'" data-pop="kind" data-k="'+m.k+'" title="'+esc(stripTags(srcTxt(m)))+'">'+esc(SRC[m.src].lbl)+'</button></td>';
+  s+='<td class="c-un"><button class="ub" data-pop="unit" data-k="'+m.k+'">'+esc(m.unit)+'</button></td>';
+  moWin().forEach(function(i){
+    var op=moOpen(i), cls=(i===fixedOpen()?' cur':'')+(op?' op':'');
+    if(op){
+      var t=tgtAt(m,i);
+      s+='<td class="c-mo ed num'+cls+' first"><input class="ci num t" data-f="tgt" data-i="'+i+'" inputmode="numeric" value="'+(t!=null?nf(t):'')+'" placeholder="—" aria-label="'+(m.invert?'תקרה':'יעד')+' '+MONTHS[i]+'"></td>';
+      s+=actCell(m,i,cls);
+      s+='<td class="c-pc num cp'+cls+' last" data-c="pct" data-i="'+i+'">'+pctTxtAt(m,i)+'</td>';
+    }else s+=actCell(m,i,cls);
   });
-  s+='<td class="c-pc num cp" data-c="daily"></td>';
-  s+='<td class="c-tl" rowspan="2"><button class="ibtn" title="עריכה מלאה — מקור, נוסחה, קבוצה, התראות" data-edit="'+ix+'">'+ICO_ED+'</button></td></tr>';
-  /* שורת הבפועל */
-  s+='<tr class="a" data-k="'+m.k+'"><td class="c-lb">בפועל</td>';
-  W.forEach(function(i){
-    var v=valAt(m,i), cur=(i===MI);
-    if(canEdit(m,i))
-      s+='<td class="c-mo ed num'+(cur?' cur':'')+'"><input class="ci num" data-f="hist" data-i="'+i+'" inputmode="numeric" value="'+(v!=null?nf(v):'')+'" placeholder="—" aria-label="בפועל '+MONTHS[i]+'"></td>';
-    else
-      s+='<td class="c-mo num ro'+(cur?' cur':'')+'" data-c="mo" data-i="'+i+'">'+(v!=null?nf(v):'<span class="nil">—</span>')+'</td>';
-  });
-  s+='<td class="c-pc num cp" data-c="pct">'+pctTxt(m)+'</td></tr>';
+  s+='<td class="c-tl"><button class="ibtn" title="עריכה מלאה — מקור, נוסחה, קבוצה, התראות" data-edit="'+ix+'">'+ICO_ED+'</button></td></tr>';
   return s;
 }
 function shGrp(name,n){
-  return '<tr class="grp"><td colspan="'+(moWin().length+7)+'">'+esc(name)+'<span class="n">'+n+'</span></td></tr>';
+  var n2=0; moWin().forEach(function(i){n2+=moOpen(i)?3:1;});
+  return '<tr class="grp"><td colspan="'+(n2+5)+'">'+esc(name)+'<span class="n">'+n+'</span></td></tr>';
 }
 function shNewRow(){
   return '<tr class="new">'+
@@ -1233,7 +1261,7 @@ function shNewRow(){
     '<td class="c-nm ed"><input class="ci" data-f="nname" placeholder="מדד חדש — שם ו-Enter" aria-label="שם המדד החדש"></td>'+
     '<td class="c-kd"><span class="kind ghost">הזנה ידנית</span></td>'+
     '<td class="c-un"><span class="ub ghost">₪</span></td>'+
-    '<td class="ghost-td" colspan="'+(moWin().length+3)+'">שורה חדשה בגיליון — הקלידו שם, ואחר כך את היעד לכל חודש. סוג ויחידה משנים בלחיצה.</td>'+
+    '<td class="ghost-td" colspan="'+(function(){var n=0;moWin().forEach(function(i){n+=moOpen(i)?3:1;});return n+1;})()+'">שורה חדשה בגיליון — הקלידו שם, ואחר כך את היעד. סוג ויחידה משנים בלחיצה.</td>'+
     '</tr>';
 }
 function shFoot(){
@@ -1266,17 +1294,15 @@ function renderSheet(){
 }
 /* עדכון התאים המחושבים בלבד — בלי לבנות מחדש ובלי לאבד את הפוקוס */
 function refreshComputed(mark){
-  var rows=document.querySelectorAll('#shB tr.t[data-k]');
+  var rows=document.querySelectorAll('#shB tr[data-k]');
   for(var r=0;r<rows.length;r++){
     var tr=rows[r], m=byKey(tr.dataset.k); if(!m) continue;
-    var st=stateOf(m), ta=tr.nextElementSibling;
-    tr.className='t s-'+st;
+    var st=stateOf(m);
+    tr.className='s-'+st;
     var dot=tr.querySelector('.ml-dot'); if(dot) dot.title=FLAG[st].t;
-    var lb=tr.querySelector('.c-lb'); if(lb) lb.textContent=m.invert?'תקרה':'יעד';
-    var d=tr.querySelector('[data-c="daily"]'); if(d){var dt=dailyTxt(m); d.innerHTML=dt?'<span class="dy">יומי '+dt+'</span>':'';}
-    if(!ta) continue;
-    var p=ta.querySelector('[data-c="pct"]'); if(p) p.innerHTML=pctTxt(m);
-    var mos=ta.querySelectorAll('[data-c="mo"]');
+    var ps=tr.querySelectorAll('[data-c="pct"]');
+    for(var q=0;q<ps.length;q++) ps[q].innerHTML=pctTxtAt(m,+ps[q].dataset.i);
+    var mos=tr.querySelectorAll('[data-c="mo"]');
     for(var j=0;j<mos.length;j++){var v=valAt(m,+mos[j].dataset.i); mos[j].innerHTML=v!=null?nf(v):'<span class="nil">—</span>';}
   }
   if(mark!==false){
@@ -1315,7 +1341,7 @@ function shCreate(tr){
          hist:[null,null,null,null,null,null,null], alerts:[], note:''};
   M.push(m); wrapTargets(); render();
   /* ההמשך הטבעי: היעד של החודש המוצג */
-  var nxt=document.querySelector('#shB tr.t[data-k="'+m.k+'"] [data-f="tgt"][data-i="'+MI+'"]');
+  var nxt=document.querySelector('#shB tr[data-k="'+m.k+'"] [data-f="tgt"][data-i="'+fixedOpen()+'"]');
   if(nxt) nxt.focus();
   toast('נוסף המדד «'+nm+'» — עכשיו היעד לכל חודש');
 }
@@ -1328,7 +1354,7 @@ function shMove(inp,dir){
   while(ix>=0&&ix<rows.length){
     var r=rows[ix], el=null;
     if(nameCol) el=r.querySelector('[data-f="name"],[data-f="nname"]');
-    else el=r.querySelector('input[data-i="'+i+'"]');
+    else el=r.querySelector('input[data-f="'+f+'"][data-i="'+i+'"]');
     if(el){el.focus();return;}
     ix+=dir;
   }
@@ -1346,7 +1372,7 @@ function openPop(btn,kind){
     cur=String(kind==='from'?RF:RT);
   }else{
     m=byKey(btn.dataset.k); if(!m) return;
-    opts=kind==='kind'?KIND_OPTS:UNITS.concat(['ליטר']).map(function(u){return [u,u];});
+    opts=kind==='kind'?KIND_OPTS:UNITS.map(function(u){return [u,u];});
     cur=kind==='kind'?m.src:m.unit;
   }
   var pop=document.createElement('div'); pop.className='pop'+(m?'':' months'); pop.dataset.kind=kind; pop.dataset.k=m?m.k:'';
@@ -1440,7 +1466,7 @@ function kindOf(){return D.src==='sheets'?'hand':D.src;}
 function drawMx(){
   pills('mxSrc',KINDS.map(function(x){return x[1];}),
         (KINDS.filter(function(x){return x[0]===kindOf();})[0]||KINDS[0])[1],'kind');
-  pills('mxUnit',['₪','1-2'],D.unit==='₪'?'₪':'1-2','unit');
+  pills('mxUnit',UNITS,D.unit==='₪'?'₪':'מספר','unit');
   pills('mxLogic',LOGIC,D.logic,'logic');
   pills('mxCats',CATLIST,D.cats||[],'cat');
   drawFormula();
@@ -1521,6 +1547,7 @@ document.addEventListener('click',function(e){
   if(t.dataset.sort){mSort(t.dataset.sort);return;}
   if(t.dataset.pop){openPop(t,t.dataset.pop);return;}
   if(t.dataset.rpop){openPop(t,t.dataset.rpop);return;}
+  if(t.dataset.moTg!=null){var mi=+t.dataset.moTg; OPEN[mi]=!OPEN[mi]; renderSheet(); return;}
   if(t.dataset.po&&t.closest('.pop')){
     var pp=t.closest('.pop');
     if(pp.dataset.kind==='from'){closePop();setRange(+t.dataset.po,RT);return;}
