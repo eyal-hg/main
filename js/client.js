@@ -182,12 +182,12 @@
       task:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>',
       ops:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'};
     const cards=[
-      {k:'meet', cls:'w25 h-low', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון שחר · יועץ HK', badge:'10 יולי · 14:00', body:`
+      {k:'meet', cls:'w25 h-low', icc:'meet', t:'הפגישה הבאה', sub:'עם אילון שחר · '+(c.firm||'המשרד'), badge:'10 יולי · 14:00', body:`
         <div class="cx-meet">
           <div class="cxm-date"><b>10</b><span>יולי</span></div>
           <div class="cxm-b">
             <div class="cxm-t">סקירת רבעון Q3</div>
-            <div class="cxm-d">עם אילון שחר · יועץ HK</div>
+            <div class="cxm-d">עם אילון שחר · ${c.firm||'המשרד'}</div>
             <div class="cxm-meta"><span dir="ltr">14:00–15:00</span><span class="cxm-zoom">Zoom</span><span>בעוד 4 ימים</span></div>
           </div>
         </div>
@@ -208,7 +208,7 @@
             <button class="cx-dl" onclick="toast('תזרים עתידי — הופק ויורד כ-PDF')">הורדה</button>
           </div>
         </div>`},
-      {k:'docs', cls:'w50 h-low', icc:'docs', t:'העלאת מסמכים', sub:(ROLE==='client1'||ROLE==='clientN')?'נשלחים לקיטלוג ב-HK':'נשלחים לקיטלוג אצל המתפעל', badge:CLIENT_DOCS.length+' קבצים', body:`
+      {k:'docs', cls:'w50 h-low', icc:'docs', t:'העלאת מסמכים', sub:(ROLE==='client1'||ROLE==='clientN')?'נשלחים להזנה אצל מנהל התזרים':'נשלחים לקיטלוג אצל המתפעל', badge:CLIENT_DOCS.length+' קבצים', body:`
         <div class="cx-docrow">
           <div class="cx-drop" id="cxDrop"
                ondragover="event.preventDefault();this.classList.add('over')"
@@ -225,7 +225,7 @@
        t:(ROLE==='client1'||ROLE==='clientN')?'המשימות של מנהל התזרים':'משימות למנהל התזרים', sub:c.mgr||'', badge:CLIENT_TASKS.filter(x=>x.st!=='done').length+' פתוחות', hbtn:'<button class="cx-add" onclick="openCt()">+ משימה חדשה</button>', body:`
         <div class="cx-files cx-scroll" id="cxTasks" style="padding:4px 16px 12px"></div>`},
       {k:'ops', cls:'w50 h-high', icc:'ops',
-       t:(ROLE==='client1'||ROLE==='clientN')?'מה HK עשתה עבורך החודש':'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
+       t:(ROLE==='client1'||ROLE==='clientN')?'מה מנהל התזרים עשה עבורך החודש':'מה המתפעל עשה עבורך', sub:c.mgr||'', badge:OPS_LOG.length+' פעולות', body:`
         <div class="cx-log cx-scroll">
           ${OPS_LOG.map(l=>`
             <div class="cxl">
