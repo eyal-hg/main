@@ -18,41 +18,77 @@
 
   /* ---- client tasks → cashflow manager ---- */
   let CLIENT_TASKS=[
-    {t:'עדכון תקציב שיווק ליולי',        st:'prog', when:'30.06', urgent:false},
-    {t:'בירור חיוב כפול — Payment',      st:'done', when:'28.06', urgent:false},
-    {t:'הוספת הרשאה לרו״ח בדוח החודשי', st:'done', when:'24.06', urgent:false},
+    {t:'אישור העברה לאלקטרה מיזוג — לא מופיעה בבנק', st:'new',  when:'עכשיו', urgent:true},
+    {t:'עדכון תקציב שיווק ליולי',                    st:'new', when:'30.06', urgent:false},
+    {t:'פיצול חשבונית סונול בין שני מרכזי רווח',      st:'new', when:'29.06', urgent:false},
+    {t:'בדיקת כפל חיוב — ביטוח חיים מנורה',           st:'new',  when:'29.06', urgent:false},
+    {t:'הוספת חשבון מזרחי 295199 לתזרים',            st:'new', when:'27.06', urgent:false},
+    {t:'בירור חיוב כפול — Payment',                  st:'done', when:'28.06', urgent:false},
+    {t:'הוספת הרשאה לרו״ח בדוח החודשי',              st:'done', when:'24.06', urgent:false},
   ];
-  const CT_ST={new:'נשלחה',prog:'בטיפול',done:'✓ הושלמה'};
+  /* הפס מציג שלוש פתוחות — דחוף קודם, אחר כך לפי סדר ההגעה (ctSend עושה unshift,
+     כך שהחדשה למעלה). כל השאר חיים בפופאפ "כל המשימות". */
+  const HERO_MAX=3;
+  const ctOpen=()=>CLIENT_TASKS.filter(k=>k.st!=='done')
+    .map((k,i)=>[k,i])
+    .sort((a,b)=>(b[0].urgent?1:0)-(a[0].urgent?1:0)||a[1]-b[1])
+    .map(x=>x[0]);
+  /* שני מצבים בלבד — נשלחה · בוצעה. אין "בטיפול": מנהל התזרים לא מדווח
+     על עצמו באמצע, והלקוח רואה רק אם הבקשה יצאה או נסגרה. */
+  const CT_ST={new:'נשלחה',done:'✓ בוצעה'};
   function renderCxTasks(){
     const el=document.getElementById('cxTasks'); if(!el) return;
     el.innerHTML=CLIENT_TASKS.map(k=>`
       <div class="cxf">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>
         <span class="cxf-n">${k.t}${k.urgent?' <span class="cxt-urg">דחוף</span>':''}</span>
-        <span class="cxf-st ${k.st==='done'?'done':k.st==='prog'?'ops':'ai'}">${CT_ST[k.st]}</span>
+        <span class="cxf-st ${k.st==='done'?'done':'ai'}">${CT_ST[k.st]}</span>
         <span class="cxf-w">${k.when}</span>
       </div>`).join('');
   }
-  function openCt(){
+  /* אותה חלונית משמשת לפתיחה ולעריכה. CT_EDIT = האינדקס שנערך, או null. */
+  let CT_EDIT=null;
+  function openCt(i){
     const c=CLIENTS[CUR]||{};
-    document.getElementById('ctMgr').textContent='הבקשה תישלח ל'+(c.mgr||'מנהל התזרים')+' — מנהל התזרים של '+(c.name||'החברה');
-    document.getElementById('ctSubj').value='';document.getElementById('ctBody').value='';
-    document.querySelector('input[name="ctUrg"][value="reg"]').checked=true;
+    CT_EDIT=(typeof i==='number'&&CLIENT_TASKS[i]&&CLIENT_TASKS[i].st!=='done')?i:null;
+    const k=CT_EDIT!=null?CLIENT_TASKS[CT_EDIT]:null;
+    document.getElementById('ctTitle').textContent=k?'עריכת הבקשה':'בקשה חדשה למנהל התזרים';
+    document.getElementById('ctMgr').textContent=(k?'העדכון יגיע ל':'הבקשה תישלח ל')
+      +(c.mgr||'מנהל התזרים')+' — מנהל התזרים של '+(c.name||'החברה');
+    document.getElementById('ctSubj').value=k?k.t:'';
+    document.getElementById('ctBody').value=(k&&k.body)?k.body:'';
+    document.querySelector('input[name="ctUrg"][value="'+((k&&k.urgent)?'urgent':'reg')+'"]').checked=true;
     document.getElementById('ctErr').style.display='none';
+    document.getElementById('ctSendBtn').textContent=k?'שמירת השינויים':'שליחת המשימה';
+    document.getElementById('ctDelBtn').style.display=k?'':'none';
     document.getElementById('ctOv').classList.add('show');
     setTimeout(()=>document.getElementById('ctSubj').focus(),80);
   }
-  function closeCt(){document.getElementById('ctOv').classList.remove('show');}
+  function closeCt(){CT_EDIT=null;document.getElementById('ctOv').classList.remove('show');}
   function ctSend(){
     const subj=document.getElementById('ctSubj').value.trim();
     if(!subj){document.getElementById('ctErr').style.display='';return;}
     const urgent=document.querySelector('input[name="ctUrg"]:checked').value==='urgent';
-    const k={t:subj, st:'new', when:'עכשיו', urgent};
-    CLIENT_TASKS.unshift(k); renderCxTasks(); refreshHero(); closeCt();
+    const body=document.getElementById('ctBody').value.trim();
     const c=CLIENTS[CUR]||{};
+    if(CT_EDIT!=null&&CLIENT_TASKS[CT_EDIT]){
+      const k=CLIENT_TASKS[CT_EDIT];
+      k.t=subj; k.urgent=urgent; k.body=body; k.when='עכשיו';
+      closeCt(); renderCxTasks(); refreshHero();
+      toast('הבקשה עודכנה אצל '+(c.mgr||'מנהל התזרים'));
+      return;
+    }
+    const k={t:subj, st:'new', when:'עכשיו', urgent, body};
+    CLIENT_TASKS.unshift(k); closeCt(); renderCxTasks(); refreshHero();
     toast('הבקשה נשלחה ל'+(c.mgr||'מנהל התזרים'));
-    setTimeout(()=>{k.st='prog';renderCxTasks();refreshHero();},3200);   // סימולציה: המנהל קיבל והתחיל לטפל
   }
+  /* מחיקה עם ביטול — בקשה שבוצעה היא תיעוד ולא נמחקת */
+  function ctDel(i){
+    const k=CLIENT_TASKS[i]; if(!k||k.st==='done') return;
+    CLIENT_TASKS.splice(i,1); closeCt(); renderCxTasks(); refreshHero();
+    toastUndo('הבקשה נמחקה',()=>{CLIENT_TASKS.splice(i,0,k);renderCxTasks();refreshHero();});
+  }
+  function ctDelCur(){if(CT_EDIT!=null)ctDel(CT_EDIT);}
 
   /* ---- client documents ---- */
   let CLIENT_DOCS=[
@@ -88,17 +124,26 @@
   const HICO={
     bal:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 11h20M6 15h4"/></svg>',
     od:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'};
-  let HERO_DONE=false;   /* המשימות שהושלמו מקופלות — בעל העסק רואה מה פתוח */
-  function heroTasksHTML(){
-    const list=CLIENT_TASKS.filter(k=>HERO_DONE||k.st!=='done');
-    if(!list.length) return '<div class="ct-row"><span class="t2">אין משימות פתוחות</span></div>';
-    return list.map(k=>`
-      <div class="ct-row">
+  /* acts=true רק בפופאפ. בפס השורה נשארת קריאה בלבד — ארבע שורות עם
+     כפתורים זעירים על פס שרוחבו קבוע נקראות כרעש, והלקוח לא מחפש שם עריכה. */
+  function ctRowHTML(k,acts){
+    const i=CLIENT_TASKS.indexOf(k);
+    return `<div class="ct-row">
         <span class="ct-st ${k.st}">${CT_ST[k.st]}</span>
         <span class="t2">${k.t}</span>
         ${k.urgent&&k.st!=='done'?'<span class="ur">דחוף</span>':''}
         <span class="w2">${k.when}</span>
-      </div>`).join('');
+        ${(acts&&k.st!=='done')?`<span class="ct-acts">
+          <button class="ct-act" onclick="openCt(${i})">עריכה</button>
+          <button class="ct-act del" onclick="ctDel(${i})">מחיקה</button>
+        </span>`:''}
+        ${(acts&&k.st==='done')?'<span class="ct-lock">בוצעה — נעולה</span>':''}
+      </div>`;
+  }
+  function heroTasksHTML(){
+    const list=ctOpen();
+    if(!list.length) return '<div class="ct-row"><span class="t2">אין משימות פתוחות</span></div>';
+    return list.slice(0,HERO_MAX).map(k=>ctRowHTML(k)).join('');   /* בלי map(ctRowHTML) — האינדקס היה נכנס כ-acts */
   }
   function heroFilesHTML(){
     return CLIENT_DOCS.map(f=>{
@@ -114,12 +159,27 @@
     if(b) b.innerHTML=heroFilesHTML();
     if(n){const k=CLIENT_TASKS.filter(x=>x.st!=='done').length;
       n.textContent=k===0?'הכול סגור':k===1?'פתוחה אחת':k+' פתוחות';}
-    const d=document.getElementById('heroDone');
-    if(d){const k=CLIENT_TASKS.filter(x=>x.st==='done').length;
-      d.style.display=k?'':'none'; d.textContent=HERO_DONE?'הסתרת המשימות שהושלמו':'הצגת '+k+' שהושלמו';}
+    const d=document.getElementById('heroAll');
+    if(d){d.style.display=CLIENT_TASKS.length?'':'none';
+      d.textContent='ניהול המשימות ('+CLIENT_TASKS.length+')';}
+    const ov=document.getElementById('ctAllOv');
+    if(ov&&ov.classList.contains('show')) renderCtAll();
   }
-  function heroToggleDone(){HERO_DONE=!HERO_DONE;refreshHero();}
-  window.heroToggleDone=heroToggleDone;
+  /* ===== פופאפ "כל המשימות" =====
+     הפס מראה שלוש; מהרביעית והלאה הן היו נעלמות בגלילה פנימית בלי סימן.
+     הפופאפ הוא המקום היחיד שבו הרשימה המלאה נראית — פתוחות ואחריהן שהושלמו. */
+  function renderCtAll(){
+    const open=ctOpen(), done=CLIENT_TASKS.filter(k=>k.st==='done');
+    const sec=(ttl,arr)=>arr.length?`<div class="cta-sec">${ttl} · ${arr.length}</div>`+arr.map(k=>ctRowHTML(k,true)).join(''):'';
+    const el=document.getElementById('ctAllList'); if(!el) return;
+    el.innerHTML=(sec('פתוחות',open)+sec('הושלמו',done))||
+      '<div class="ct-row"><span class="t2">אין עדיין משימות</span></div>';
+    const n=document.getElementById('ctAllN');
+    if(n) n.textContent=(open.length?open.length+' פתוחות מתוך '+CLIENT_TASKS.length:'הכול סגור')
+      +' · אפשר לערוך או למחוק בקשה שעדיין לא בוצעה';
+  }
+  function openCtAll(){renderCtAll();document.getElementById('ctAllOv').classList.add('show');}
+  function closeCtAll(){document.getElementById('ctAllOv').classList.remove('show');}
   function renderCliHero(){
     const el=document.getElementById('cliHero'); if(!el) return;
     const isCli=(ROLE==='client1'||ROLE==='clientN');
@@ -152,7 +212,7 @@
             <span class="n2" id="heroTaskN">${openTxt(open)}</span><span class="sp"></span>
             <button class="chero-add" onclick="openCt()" title="בקשה חדשה למנהל התזרים">＋ בקשה</button></div>
           <div class="chero-list" id="heroTasks">${heroTasksHTML()}</div>
-          <button class="chero-done" id="heroDone" onclick="heroToggleDone()">${(n=>n?'הצגת '+n+' שהושלמו':'')(CLIENT_TASKS.filter(x=>x.st==='done').length)}</button>
+          <button class="chero-all" id="heroAll" onclick="openCtAll()">ניהול המשימות (${CLIENT_TASKS.length})</button>
         </div>
         <div class="chero-p">
           <div class="chero-h"><b>העלאת מסמכים</b><span class="sp"></span></div>

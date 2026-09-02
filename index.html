@@ -618,7 +618,7 @@
 <div class="mx-ov" id="ctOv">
   <div class="mx2">
     <button class="mx2-x" onclick="closeCt()">✕</button>
-    <div class="mx2-title">בקשה חדשה למנהל התזרים</div>
+    <div class="mx2-title" id="ctTitle">בקשה חדשה למנהל התזרים</div>
     <div class="mx2-note" id="ctMgr" style="margin-top:-4px"></div>
 
     <label class="mx2-lbl">נושא</label>
@@ -635,8 +635,23 @@
     <div class="mx2-err" id="ctErr" style="display:none">חסר נושא למשימה</div>
 
     <div class="mx2-foot">
-      <button class="mx2-btn primary" onclick="ctSend()">שליחת המשימה</button>
+      <button class="mx2-btn primary" id="ctSendBtn" onclick="ctSend()">שליחת המשימה</button>
       <button class="mx2-btn" onclick="closeCt()">ביטול</button>
+      <button class="mx2-btn danger" id="ctDelBtn" onclick="ctDelCur()" style="display:none;margin-inline-start:auto">מחיקה</button>
+    </div>
+  </div>
+</div>
+
+<!-- כל המשימות של בעל העסק — הפס מראה שלוש, כאן הרשימה המלאה -->
+<div class="mx-ov" id="ctAllOv">
+  <div class="mx2" style="max-width:520px">
+    <button class="mx2-x" onclick="closeCtAll()">✕</button>
+    <div class="mx2-title">המשימות של מנהל התזרים</div>
+    <div class="mx2-note" id="ctAllN" style="margin-top:-4px"></div>
+    <div class="cta-list" id="ctAllList"></div>
+    <div class="mx2-foot">
+      <button class="mx2-btn primary" onclick="closeCtAll();openCt()">בקשה חדשה</button>
+      <button class="mx2-btn" onclick="closeCtAll()">סגירה</button>
     </div>
   </div>
 </div>

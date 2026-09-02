@@ -471,9 +471,9 @@
     </div>`;
   }
   function ctDone(i){
-    CLIENT_TASKS[i].st=(CLIENT_TASKS[i].st==='done'?'prog':'done');
+    CLIENT_TASKS[i].st=(CLIENT_TASKS[i].st==='done'?'new':'done');
     renderMgrCal();
-    toastUndo('המשימה של הלקוח הושלמה',()=>{CLIENT_TASKS[i].st='prog';renderMgrCal();});
+    toastUndo('המשימה של הלקוח בוצעה',()=>{CLIENT_TASKS[i].st='new';renderMgrCal();});
   }
   function mcTodoToggle(i){
     MGR_TODO[i].done=!MGR_TODO[i].done;
