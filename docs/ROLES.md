@@ -39,7 +39,31 @@
 - המסננים בפס העליון: כל מנהלי התזרים · כל חברות הייעוץ · מוצרים · כל הסטטוסים.
 - "איזור הניהול" בתפריט המשתמש.
 
+## מי נחשב "מנהל תזרים" — טבלה חדשה, לא לפי תפקיד
+
+הדרופדאון "כל מנהלי התזרים" בפס העליון (וכל מקום אחר שבוחרים בו מנהל תזרים — שיוך לחברה,
+סינון התור, רשימת הלקוחות בסרגל) **לא** נבנה מהמשתמשים שהתפקיד שלהם `HK_REPRESENTATIVE`.
+הסיבה: מנהל תזרים שקיבל הרשאת `SUPER_ADMIN` כדי לטפל בלקוחות של מנהל תזרים חולה — נעלם
+מהרשימה, ואי אפשר לשייך לו לקוחות.
+
+במקום זה — טבלה חדשה, שמנהל המערכת מתחזק ידנית:
+
+```sql
+CREATE TABLE representative_hk (
+  user_id   BIGINT PRIMARY KEY REFERENCES users(id),
+  active    BOOLEAN NOT NULL DEFAULT true,
+  added_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+- **הרשימה בדרופדאון** = `SELECT u.* FROM representative_hk r JOIN users u ON u.id=r.user_id WHERE r.active`.
+- התפקיד של המשתמש לא משנה: הוא יכול להיות `HK_REPRESENTATIVE`, `HK_CONSULTANT` או `SUPER_ADMIN`
+  ועדיין להופיע — ולהיפך, `HK_REPRESENTATIVE` שלא בטבלה לא מופיע.
+- "ללא מנהל תזרים" (עם המונה) נשאר כאפשרות בדרופדאון.
+- `companies.ops_manager_id` מפנה ל-`representative_hk.user_id`.
+
 ## מה לא נגזר מהתפקיד
 
-- מי "מנהל התזרים של הלקוח" (מוצג ברשימת הלקוחות) הוא שיוך של החברה, לא תפקיד של המשתמש.
+- מי "מנהל התזרים של הלקוח" (מוצג ברשימת הלקוחות) הוא שיוך של החברה (`ops_manager_id`), מתוך
+  `representative_hk` — לא תפקיד של המשתמש.
 - ההכרעות על הסרגלים והמסכים: `docs/TASK_RAILS.md`.
