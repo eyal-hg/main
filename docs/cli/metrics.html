@@ -183,7 +183,15 @@
 .mxrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .mxrow .s.num{width:150px}
 .mxcalc{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin-top:8px}
-.mxcalc .side{min-width:0}
+.mxcalc .side{min-width:0;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 11px}
+.mxcalc .sl{font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:7px}
+.mxcalc .fval{margin-top:8px}
+.mxcalc .fval .pillrow .pill{font-size:11.5px;padding:3px 10px}
+.mxcalc .fval input.s{width:120px;padding:6px 10px;font-size:12.5px}
+.mxcalc .op{justify-content:center;padding-top:26px}
+.mxcalc .op .pill{width:34px;justify-content:center;font-size:14px;font-weight:700;padding:3px 0}
+.fsum{margin-top:10px;font-size:13px;color:var(--navy);font-weight:600}
+.fsum b{font-weight:700;color:var(--coral)}
 .pillrow.sm .pill{font-size:11.5px;padding:3px 10px}
 .pillrow.op{flex-direction:column;gap:4px}
 .msr{position:relative;display:flex;align-items:center}
@@ -542,11 +550,12 @@
     <div class="hid" id="mxPaneCalc">
       <div class="fld"><label>נוסחת החישוב</label>
         <div class="mxcalc">
-          <div class="side"><div class="pillrow sm" id="mxSrcA"></div><div id="mxOpA"></div></div>
+          <div class="side"><div class="sl">אגף ראשון</div><div class="pillrow sm" id="mxSrcA"></div><div class="fval" id="mxOpA"></div></div>
           <div class="pillrow op" id="mxCalcOp"></div>
-          <div class="side"><div class="pillrow sm" id="mxSrcB"></div><div id="mxOpB"></div></div>
+          <div class="side"><div class="sl">אגף שני</div><div class="pillrow sm" id="mxSrcB"></div><div class="fval" id="mxOpB"></div></div>
         </div>
-        <div class="hint">כל צד יכול להיות מדד, קטגוריה, תא מגיליון או מספר קבוע — הבפועל מחושב אוטומטית ולא ניתן להזנה.</div>
+        <div class="fsum" id="mxFsum"></div>
+        <div class="hint">כל אגף ממקור משלו — מדד אחר, קטגוריית תזרים, שורה בדוח החשבונאי, תא בגיליון או מספר קבוע. הבפועל מחושב ואינו ניתן להזנה.</div>
       </div>
     </div>
 
@@ -670,12 +679,15 @@ var M=[
 
  {k:'cfprofit', name:'רווח / הפסד תזרימי', src:'calc', unit:'₪', target:30000, freq:'חודשי', grp:'הוצאות ורווח',
   calc:'מחזור הכנסות − כל קטגוריות ההוצאות',
+  /* שני אגפים ממקורות שונים: מדד (שנמשך מהדוח החשבונאי) פחות קטגוריות תזרים */
+  f:{a:{src:'metric',val:'revenue'},op:'−',b:{src:'cats',val:'כל קטגוריות ההוצאות'}},
   hist:[24800,19600,27300,33100,28400,31200],
   alerts:[{on:true,mode:'pct',dir:'below',th:80,sev:'mid'}],
   note:'ההפרש בין הכסף שנכנס לכסף שיצא בפועל.'},
 
  {k:'perday', name:'הכנסה ליום עבודה', src:'calc', unit:'₪', target:6800, rate:true, freq:'חודשי', grp:'הכנסות ומכירות',
-  calc:'מחזור הכנסות ÷ ימי עבודה', from:'revenue', alerts:[{on:false,mode:'pct',dir:'below',th:85,sev:'mid'}],
+  calc:'מחזור הכנסות ÷ ימי עבודה', from:'revenue',
+  f:{a:{src:'metric',val:'revenue'},op:'÷',b:{src:'const',val:'ימי עבודה'}}, alerts:[{on:false,mode:'pct',dir:'below',th:85,sev:'mid'}],
   note:'מנטרל את אורך החודש — היום עצמו, בלי תלות בכמה ימים היו.'},
 ];
 
@@ -752,11 +764,22 @@ function srcTxt(m){
   if(m.src==='sheets') return '<b>Google Sheets</b> · '+esc(m.logic)+' · תא '+esc(m.cell);
   if(m.src==='hand')   return '<b>הזנה ידנית</b> · מתעדכן כל חודש';
   if(m.src==='cats')   return '<b>Bizibox</b> · נתוני אמת · '+esc((m.cats||[]).join(' + '));
-  if(m.src==='calc')   return '<b>ƒ</b> '+esc(m.calc);
+  if(m.src==='calc')   return '<b>ƒ</b> '+esc(m.f?fTxt(m.f):m.calc);
   if(m.src==='acct')   return '<b>דוח רווח והפסד</b> · שורת '+esc(m.line||PL_LINES[0]);
   return '<b>אוטומטי</b> · מיומן הפגישות';
 }
 function kindTag(m){var s=SRC[m.src];return '<span class="kind '+s.cls+'">'+esc(s.lbl)+'</span>';}
+
+/* ---------- נוסחת מדד מחושב: שני אגפים, לכל אגף מקור משלו ---------- */
+var FSRC=[['metric','מדד'],['cats','קטגוריה'],['acct','דוח חשבונאי'],['sheets','גיליון'],['const','מספר']];
+var FOPS=['−','+','÷','×'];
+function fSideTxt(side){
+  if(!side||side.val==null||side.val==='') return '…';
+  if(side.src==='metric'){var m=byKey(side.val);return m?m.name:'…';}
+  if(side.src==='sheets') return 'תא '+side.val;
+  return String(side.val);
+}
+function fTxt(f){return f?fSideTxt(f.a)+' '+(f.op||'−')+' '+fSideTxt(f.b):'';}
 
 /* ---------- גרף ששת החודשים ---------- */
 function spark(m){
@@ -1420,7 +1443,7 @@ function drawMx(){
   pills('mxUnit',['₪','1-2'],D.unit==='₪'?'₪':'1-2','unit');
   pills('mxLogic',LOGIC,D.logic,'logic');
   pills('mxCats',CATLIST,D.cats||[],'cat');
-  pills('mxCalc',CALCS,D.calc,'calc');
+  drawFormula();
   pills('mxLine',PL_LINES,D.line||PL_LINES[0],'line');
   pills('mxGrp',['ללא קבוצה'].concat(allGroups()),D.grp||'ללא קבוצה','grp');
 
@@ -1448,6 +1471,32 @@ function drawMx(){
   var tv=parseFloat(document.getElementById('mxTarget').value);
   document.getElementById('mxDaily').textContent=
     (tv>0&&D.unit==='₪')?'יעד יומי '+nf(tv/WORKDAYS)+' ₪ · לפי '+WORKDAYS+' ימי עבודה':'';
+}
+
+/* עורך הנוסחה — אגף א, אופרטור, אגף ב. כל אגף: סוג מקור + ערך לפי הסוג */
+function drawFormula(){
+  if(!D.f) D.f={a:{src:'metric',val:''},op:'−',b:{src:'cats',val:''}};
+  ['a','b'].forEach(function(sd){
+    var side=D.f[sd], box=document.getElementById(sd==='a'?'mxSrcA':'mxSrcB');
+    box.innerHTML=FSRC.map(function(x){return '<button class="pill'+(x[0]===side.src?' on':'')+'" data-fs="'+sd+'" data-fsrc="'+x[0]+'">'+x[1]+'</button>';}).join('');
+    var val=document.getElementById(sd==='a'?'mxOpA':'mxOpB'), h='';
+    if(side.src==='metric'){
+      var others=M.filter(function(m){return m.k!==D.k&&m.src!=='calc';});
+      h='<div class="pillrow">'+others.map(function(m){return '<button class="pill'+(m.k===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(m.k)+'">'+esc(m.name)+'</button>';}).join('')+'</div>';
+    }else if(side.src==='cats'){
+      h='<div class="pillrow">'+CATLIST.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>';
+    }else if(side.src==='acct'){
+      h='<div class="pillrow">'+PL_LINES.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>';
+    }else if(side.src==='sheets'){
+      h='<input class="s" data-fin="'+sd+'" value="'+esc(side.val||'')+'" placeholder="תא, למשל B4">';
+    }else{
+      h='<input class="s" data-fin="'+sd+'" inputmode="numeric" value="'+esc(side.val||'')+'" placeholder="מספר">'+
+        ' <button class="pill'+(side.val==='ימי עבודה'?' on':'')+'" data-fs="'+sd+'" data-fv="ימי עבודה">ימי עבודה</button>';
+    }
+    val.innerHTML=h;
+  });
+  document.getElementById('mxCalcOp').innerHTML=FOPS.map(function(o){return '<button class="pill'+(o===D.f.op?' on':'')+'" data-fop="'+o+'">'+o+'</button>';}).join('');
+  document.getElementById('mxFsum').innerHTML='ƒ '+esc(fSideTxt(D.f.a))+' <b>'+esc(D.f.op)+'</b> '+esc(fSideTxt(D.f.b));
 }
 
 /* ---------- חיווט ---------- */
@@ -1511,6 +1560,9 @@ document.addEventListener('click',function(e){
   if(t.dataset.logic){D.logic=t.dataset.logic;drawMx();return;}
   if(t.dataset.calc){D.calc=t.dataset.calc;drawMx();return;}
   if(t.dataset.line){D.line=t.dataset.line;drawMx();return;}
+  if(t.dataset.fsrc){var sdA=D.f[t.dataset.fs]; if(sdA.src!==t.dataset.fsrc){sdA.src=t.dataset.fsrc;sdA.val='';} drawFormula();return;}
+  if(t.dataset.fv!=null&&t.dataset.fs){D.f[t.dataset.fs].val=t.dataset.fv;drawFormula();return;}
+  if(t.dataset.fop){D.f.op=t.dataset.fop;drawFormula();return;}
   if(t.dataset.grp){D.grp=(t.dataset.grp==='ללא קבוצה')?'':t.dataset.grp;document.getElementById('mxGrpNew').value='';drawMx();return;}
   if(t.dataset.cat){
     D.cats=D.cats||[]; var ix=D.cats.indexOf(t.dataset.cat);
@@ -1528,6 +1580,7 @@ document.addEventListener('click',function(e){
     var av=parseFloat(document.getElementById('mxActual').value);
     if(!isNaN(av)){ D.hist=D.hist||[]; D.hist[MI]=av; }
     var gn=document.getElementById('mxGrpNew').value.trim(); if(gn) D.grp=gn;
+    if(D.src==='calc'&&D.f) D.calc=fTxt(D.f);
     var nm2=D.name;
     if(EX>=0) M[EX]=D; else M.push(D);
     wrapTargets();
@@ -1536,6 +1589,10 @@ document.addEventListener('click',function(e){
 /* קלט בעורך — יעד יומי מתעדכן חי, וחוקי ההתראה נשמרים בעותק העבודה */
 document.addEventListener('input',function(e){
   if(!D) return;
+  if(e.target.dataset&&e.target.dataset.fin){
+    D.f[e.target.dataset.fin].val=e.target.value.trim();
+    document.getElementById('mxFsum').innerHTML='ƒ '+esc(fSideTxt(D.f.a))+' <b>'+esc(D.f.op)+'</b> '+esc(fSideTxt(D.f.b));
+    return;}
   if(e.target.id==='mxTarget'){
     var v=parseFloat(e.target.value); D.target=isNaN(v)?null:v;
     document.getElementById('mxDaily').textContent=
