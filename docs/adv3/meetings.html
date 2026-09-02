@@ -392,27 +392,29 @@ table.ml{width:100%;border-collapse:collapse}
   margin-inline-end:9px;vertical-align:-8px;background:#EDF1F5;color:#64798C}
 tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
 /* בורר הערוץ — שלושה מסלולים, ולכן צריך גם לבודד אחד מהם */
-.ksegs{display:flex;align-items:center;gap:2px;flex:none;background:var(--white);
-  border:1px solid var(--bd);border-radius:8px;padding:3px}
+.ksegs{display:flex;align-items:center;gap:4px;flex:none;background:#F7FAFD;
+  border:1px solid var(--bd);border-radius:10px;padding:4px}
 .ksegs button{display:inline-flex;align-items:center;gap:5px;border:0;background:none;font:inherit;
   font-size:12.5px;color:var(--ink2);padding:6px 10px;border-radius:6px;cursor:pointer;line-height:1}
 .ksegs button svg{flex:none;opacity:.75}
-.ksegs button b{font-weight:600;font-size:10.5px;color:#5F7285;background:#EEF2F6;border-radius:999px;padding:2px 7px;line-height:1.2}
-.ksegs button:hover{background:var(--surface2)}
-.ksegs button.on{font-weight:600}
-.ksegs button.on b{background:rgba(255,255,255,.75);color:inherit}
-.ksegs button.on svg{opacity:1}
-/* כל ערוץ בצבע שלו כשהוא נבחר — אותם צבעים של התגים ברשימה */
+.ksegs button{padding:6px 11px;border-radius:8px;font-weight:500;border:1px solid transparent}
+.ksegs button b{font-weight:700;font-size:10.5px;border-radius:999px;padding:2px 7px;line-height:1.2;background:#fff;color:inherit;border:1px solid currentColor;opacity:.85}
+/* כל ערוץ בצבע שלו — עדין כשלא נבחר, מלא כשנבחר. אותם צבעים של התגים ברשימה */
+.ksegs button[data-k=""]{color:var(--navy)}
+.ksegs button[data-k="meet"]{color:#1B6C9C}
+.ksegs button[data-k="call"]{color:#5B41C4}
+.ksegs button[data-k="wa"]{color:#0A6675}
+.ksegs button[data-k="ai"]{color:#12507F}
+.ksegs button:hover{background:#fff;border-color:currentColor}
+.ksegs button.on{font-weight:600;border-color:transparent}
+.ksegs button.on b{background:rgba(255,255,255,.55);border-color:transparent;opacity:1}
 .ksegs button.on[data-k=""]{background:var(--navy);color:#fff}
-.ksegs button.on[data-k=""] b{background:rgba(255,255,255,.18);color:#fff}
-.ksegs button.on[data-k="meet"]{background:#E1F0FA;color:#1B6C9C}
-.ksegs button.on[data-k="call"]{background:#EDE9FD;color:#5B41C4}
-.ksegs button.on[data-k="wa"]{background:#DEF0F3;color:#0A6675}
-.ksegs button.on[data-k="ai"]{background:#E7EEF6;color:#12507F}
-.ksegs button[data-k="meet"] svg{color:#1B6C9C}
-.ksegs button[data-k="call"] svg{color:#5B41C4}
-.ksegs button[data-k="wa"] svg{color:#0A6675}
-.ksegs button[data-k="ai"] svg{color:#12507F}
+.ksegs button.on[data-k=""] b{background:rgba(255,255,255,.2);color:#fff}
+.ksegs button.on[data-k="meet"]{background:#E1F0FA}
+.ksegs button.on[data-k="call"]{background:#EDE9FD}
+.ksegs button.on[data-k="wa"]{background:#DEF0F3}
+.ksegs button.on[data-k="ai"]{background:#E7EEF6}
+.ksegs button svg{opacity:1}
 .ksegs button.on[data-k="wa"]{background:#DEF0F3;color:#0A6675}
 /* עמודת הערוץ — מילה ואייקון, לא רק גוון. זה מה שמפריד באמת. */
 /* בקבוצה אין שעה — יש יום. השורה אומרת איזה יום סוכם. */
@@ -589,9 +591,9 @@ tr.m.wa .nm{color:#0B5A68}
 }
 
 /* בורר הנמענים לסיכום */
-.sov{position:fixed;inset:0;z-index:90;background:rgba(12,38,58,.42);display:none;align-items:flex-start;justify-content:center;padding-top:60px}
-.sov.on{display:flex}
-.smd{position:relative;width:min(420px,92vw);background:#fff;border-radius:14px;padding:20px 22px 18px;box-shadow:0 24px 60px rgba(12,64,104,.28)}
+.sov{position:absolute;inset-inline:0;top:0;z-index:90;background:rgba(12,38,58,.42);display:none}
+.sov.on{display:block}
+.smd{position:absolute;left:50%;transform:translateX(-50%);width:min(420px,92vw);background:#fff;border-radius:14px;padding:20px 22px 18px;box-shadow:0 24px 60px rgba(12,64,104,.28)}
 .smd .sx{position:absolute;inset-inline-end:12px;top:10px;width:28px;height:28px;border:0;background:none;color:#8A9AA8;font-size:14px;cursor:pointer;border-radius:8px}
 .smd .sx:hover{background:#F0F4F8;color:#0C4068}
 .smd h3{font-size:16px;font-weight:700;color:#0C4068;margin:0 0 4px}
@@ -1280,8 +1282,13 @@ tr.m.wa .nm{color:#0B5A68}
     document.getElementById('sendTo').innerHTML=list.map((c,i)=>`<label class="sd-row">
       <input type="checkbox" data-nm="${c.n}" onchange="arSendChk()"><b>${c.n}</b>${c.r?`<span>${c.r}</span>`:''}</label>`).join('');
     document.getElementById('sendGo').disabled=true;
-    document.getElementById('sendOv').classList.add('on');
-    if(window.parent!==window) parent.postMessage({hkCliTop:1},'*');
+    /* הפופאפ נפתח ליד הכפתור שנלחץ — גם כשהמסגרת גלולה בתוך המערכת */
+    const ov=document.getElementById('sendOv'), md=ov.querySelector('.smd');
+    const btn=document.querySelector('#arena .ar-acts .btn.pri');
+    const y=btn?btn.getBoundingClientRect().top+window.scrollY:200;
+    ov.style.height=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight)+'px';
+    md.style.top=Math.max(16,y-330)+'px';
+    ov.classList.add('on');
   }
   function arSendChk(){ document.getElementById('sendGo').disabled=!document.querySelector('#sendTo input:checked'); }
   function arSendClose(){ document.getElementById('sendOv').classList.remove('on'); }
@@ -1640,7 +1647,8 @@ unidRender(); stripQ();
 </script>
 <script>
 /* צילום: ?pop=send פותח את בורר הנמענים על הזירה הטעונה */
-(function(){ if(new URLSearchParams(location.search).get('pop')==='send') setTimeout(function(){ if(typeof arSendPop==='function') arSendPop('approve'); },900); })();
+(function(){ if(new URLSearchParams(location.search).get('pop')!=='send') return;
+  let n=0; (function tick(){ if(document.querySelector('#arena .ar-acts .btn.pri')||n++>30){ if(typeof arSendPop==='function') arSendPop('approve'); } else setTimeout(tick,150); })(); })();
 </script>
 </body>
 </html>
