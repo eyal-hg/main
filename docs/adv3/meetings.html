@@ -241,11 +241,13 @@ body.calls-on .arena{display:none}
 .cpick-x:hover{background:rgba(255,255,255,.32)}
 .cpick .b:hover{border-color:var(--navy);background:#F7FAFD}
 .cpick.on .b{border-color:var(--navy);box-shadow:0 0 0 3px rgba(57,171,226,.16)}
-.cpick .b .chev{margin-inline-start:2px;flex:none;display:inline-flex;align-items:center;justify-content:center;
-  width:14px;height:14px;transition:transform .15s;color:var(--ink3)}
-.cpick.pick .b .chev{color:rgba(255,255,255,.8)}
-.cpick .b .chev svg{width:11px;height:11px;display:block}
-.cpick.on .b .chev{transform:rotate(180deg)}
+/* החץ מצויר ב-CSS — תמיד באמצע הגובה, בלי תלות ב-svg */
+.cpick .b .chev{flex:none;width:8px;height:8px;margin-inline-start:4px;margin-top:-4px;
+  border-inline-end:2px solid currentColor;border-bottom:2px solid currentColor;
+  transform:rotate(45deg);transition:transform .15s;color:var(--ink3);opacity:.9}
+.cpick.pick .b .chev{color:rgba(255,255,255,.85)}
+.cpick .b .chev svg{display:none}
+.cpick.on .b .chev{transform:rotate(-135deg);margin-top:4px}
 .cpick .m{position:absolute;z-index:40;top:calc(100% + 6px);inset-inline-start:0;min-width:270px;
   background:var(--white);border:1px solid #C9D8E6;border-radius:12px;
   box-shadow:0 16px 40px rgba(16,42,67,.18);padding:8px;display:none}
