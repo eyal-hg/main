@@ -26,14 +26,14 @@ const CO = {
   meet:{ when:'היום 17:00', who:'צחי עובד', what:'המשך סקירה — החלטות תקציב' },
 };
 
+/* הסרגל של בעל העסק — זהה לסרגל שלו במערכת (הכרעת אייל, 02.09):
+   דשבורד · פגישות · עוזר AI · תכנון תזרימי (במערכת בלבד) · תמונת תזרים.
+   קבוצת הוואטסאפ, מדדים והתהליך שלי הם מסכי היועץ ומנהל התזרים — לא בסרגל שלו. */
 const NAVI = [
   {k:'dash',   f:'dashboard.html', l:'דשבורד'},
-  {k:'msgs',   f:'messages.html',  l:'קבוצת הוואטסאפ', badge:()=>CO.unread},
   {k:'meets',  f:'meetings.html',  l:'פגישות'},
   {k:'ai',     f:'ai.html',        l:'עוזר AI'},
-  {k:'metric', f:'metrics.html',   l:'מדדים'},
   {k:'past',   f:'cashflow-past.html', l:'תמונת תזרים'},
-  {k:'flow',   f:'process.html',       l:'התהליך שלי'},
 ];
 
 const ICO = {
