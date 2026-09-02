@@ -347,6 +347,42 @@ button{font-family:inherit;cursor:pointer}
 .c > .v.df{font-size:13.5px;font-weight:600}
 .c > .v.df.g{color:#13895b}.c > .v.df.b{color:#dc4436}.c > .v.df.z{color:#c3d3e0;font-weight:500}
 .c > .pv{justify-self:center}
+/* שורת מלאי — קלט בכל חודש */
+.dr.inv .nm b{font-size:12.5px;color:var(--navy)}
+.dr.inv .nm small{margin-inline-start:auto;font-size:10px;color:var(--muted)}
+.dr.inv .c{padding:0 6px}
+.ii{width:100%;max-width:120px;height:26px;text-align:center;font:inherit;font-size:13px;font-variant-numeric:tabular-nums;
+  color:var(--navy);border:1px dashed var(--line-s);border-radius:6px;background:#fff;justify-self:center}
+.ii:focus{outline:none;border-style:solid;border-color:var(--navy)}
+.ii::placeholder{color:var(--muted-2)}
+/* יעד באחוזים — סימון בתא */
+.c .pctm{position:absolute;top:3px;inset-inline-start:5px;font-style:normal;font-size:9.5px;font-weight:700;color:var(--navy);
+  background:#EAF3FA;border-radius:4px;padding:0 4px;line-height:1.5}
+.tmode{display:flex;gap:4px;margin:0 0 6px}
+.tmode .tm{font:inherit;font-size:11.5px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink-2);
+  border-radius:999px;padding:3px 10px;cursor:pointer}
+.tmode .tm.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pctbox{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-bottom:8px}
+.pctbox .prow{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);margin-bottom:6px}
+.pctbox .prow b{color:var(--navy)}
+.pctbox .ci.sm{width:58px;text-align:center;margin:0}
+.pctbox .pills{display:flex;flex-wrap:wrap;gap:4px;max-height:96px;overflow:auto}
+.pctbox .pl{font:inherit;font-size:11px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:2px 9px;cursor:pointer}
+.pctbox .pl.sec{border-style:dashed}
+.pctbox .pl.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pctbox .hint{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+/* העברת סעיף לקבוצה אחרת — בכותרת הסעיף בסדנת המיפוי, נחשף בריחוף */
+.mw-mv{display:none;gap:4px;margin-inline-start:6px}
+.mw-a:hover .mw-mv{display:inline-flex}
+.mw-mv button{font:inherit;font-size:10.5px;border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:999px;padding:1px 8px;cursor:pointer}
+.mw-mv button:hover{border-color:var(--navy);color:var(--navy)}
+/* הגדרות המסך */
+.setpop{width:320px;padding:12px 14px}
+.setpop h5{margin:0 0 8px;font-size:12.5px;font-weight:700;color:var(--navy)}
+.setpop .srow{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+.setpop .srow input{margin-top:3px;accent-color:var(--navy)}
+.setpop .srow b{display:block;font-size:12.5px;color:var(--ink)}
+.setpop .srow small{display:block;font-size:11px;color:var(--muted);line-height:1.45;margin-top:2px}
 /* תא שעודכן ידנית */
 .c .mn{position:absolute;top:4px;inset-inline-end:5px;width:7px;height:7px;border-radius:50%;background:var(--navy);z-index:1}
 .c .mn.o{background:#fff;border:1.5px solid var(--navy)}
@@ -811,6 +847,7 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L8 8m4-4l4 4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
         טעינת כרטסת</button>
       <span class="loadhint">Excel או PDF מהמערכת · סריקות לא נקלטות</span>
+      <button class="tool ic" id="setBtn" title="הגדרות המסך" aria-haspopup="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <button class="tool" id="gearBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         מיפוי כרטיסים</button>
@@ -854,6 +891,11 @@ body.is-embedded .topbar .brand,body.is-embedded .mast{display:none}
 
 <!-- popovers / modals -->
 <div class="pop" id="mddPop"></div>
+<!-- הגדרות המסך — מה שרוב היועצים לא צריכים, ולכן לא על המסך -->
+<div class="pop setpop" id="setPop">
+  <h5>הגדרות המסך</h5>
+  <label class="srow"><input type="checkbox" id="setInv"><span><b>מלאי פתיחה וסגירה</b><small>שתי שורות בעלות המכר — פתיחה ראשונה, סגירה אחרונה. עלות המכר = קניות + פתיחה − סגירה. רוב היועצים לא צריכים את זה.</small></span></label>
+</div>
 <div class="ov" id="ovMap"><div class="box">
   <div class="box-h"><b>מיפוי כרטיסי הנהלת החשבונות</b>
     <span class="s" id="mwSub"></span>
@@ -955,6 +997,18 @@ const acBy=Object.fromEntries(ACC.map(a=>[a.id,a]));
 let TGT={acc:{}}, BOOKS={}, GOAL={acc:{}}, EXCL=new Set(), OPEN=new Set();
 /* עדכונים ידניים של בפועל: MAN[key][m]={keep,at} — האם לשמור בטעינה הבאה; CHG[key][m]=[{from,to,by,at}] — היסטוריית שינויים */
 let MAN={}, CHG={};
+/* מלאי פתיחה וסגירה — כבוי כברירת מחדל (רוב היועצים לא משתמשים); נדלק בהגדרות */
+let INV_ON=false, INV={open:{},close:{}};
+/* יעד כאחוז מסעיף אחר: PCT[key]={base:'g:rev'|'a:<key>', pct} — חל על כל החודשים */
+let PCT={}; const PCT_BUSY=new Set();
+/* העברת סעיף שלם בין קבוצות הדוח (למשל "קניות ומלאי" מעלות המכר להוצאות תפעוליות): SECG[accId]=groupId */
+let SECG={};
+function applySecG(){ Object.keys(SECG).forEach(id=>{ const a=ACC.find(x=>x.id===id); if(a){ a.g0=a.g0||a.g; a.g=SECG[id]; } }); }
+function secMove(accId,gid){
+  const a=ACC.find(x=>x.id===accId); if(!a||a.g===gid) return;
+  a.g0=a.g0||a.g; a.g=gid; SECG[accId]=gid; if(gid===a.g0) delete SECG[accId];
+  persist(); rebuild(); mapDraw(); toast('«'+a.name+'» עבר ל'+gName[gid]);
+}
 const STAMP=()=>'02.09 · '+new Date().toTimeString().slice(0,5);
 function logChg(key,m,from,to,by){ CHG[key]=CHG[key]||{}; (CHG[key][m]=CHG[key][m]||[]).push({from,to,by,at:STAMP()}); }
 function nodeByKey(key){ let f=null; const walk=n=>{ if(f) return; if(n.key===key){f=n;return;} n.kids.forEach(walk); }; TREE.forEach(walk); return f; }
@@ -968,10 +1022,11 @@ let MOVED={};
 let XACC=[];
 let startBal=180000;
 try{const s=JSON.parse(localStorage.getItem('hkAP')||'null');
-  if(s){TGT=s.TGT||TGT;BOOKS=s.BOOKS||{};GOAL=s.GOAL||GOAL;SUBS=s.SUBS||{};MOVED=s.MOVED||{};XACC=s.XACC||[];MAN=s.MAN||{};CHG=s.CHG||{};
+  if(s){TGT=s.TGT||TGT;BOOKS=s.BOOKS||{};GOAL=s.GOAL||GOAL;SUBS=s.SUBS||{};MOVED=s.MOVED||{};XACC=s.XACC||[];MAN=s.MAN||{};CHG=s.CHG||{};INV_ON=!!s.INV_ON;INV=s.INV||{open:{},close:{}};PCT=s.PCT||{};SECG=s.SECG||{};
         XACC.forEach(x=>{if(!ACC.some(a=>a.id===x.id))ACC.push(x)});
+        applySecG();
         if(s.startBal!=null)startBal=s.startBal;}}catch(e){}
-const persist=()=>{try{localStorage.setItem('hkAP',JSON.stringify({TGT,BOOKS,GOAL,SUBS,MOVED,XACC,startBal,MAN,CHG}));}catch(e){}};
+const persist=()=>{try{localStorage.setItem('hkAP',JSON.stringify({TGT,BOOKS,GOAL,SUBS,MOVED,XACC,startBal,MAN,CHG,INV_ON,INV,PCT,SECG}));}catch(e){}};
 const pick=(o,k,m)=>{const r=o&&o[k];return r&&r[m]!=null?r[m]:null};
 const put=(o,k,m,v)=>{o[k]=o[k]||{};if(v==null)delete o[k][m];else o[k][m]=v};
 const parseNum=v=>{const n=String(v).replace(/[^0-9.\-]/g,'');return n===''||n==='-'?null:+n};
@@ -1051,8 +1106,26 @@ function bookActual(node,m){
   if(node.card) return baseM(node,m);
   return node.kids.reduce((s,k)=>s+(incl(k)?bookActual(k,m):0),0);
 }
+/* בסיס ליעד באחוזים: קבוצה או סעיף. הערך המוחלט של היעד של הבסיס באותו חודש */
+function pctBaseVal(view,base,m,self){
+  if(!base) return 0;
+  if(base.startsWith('g:')) return Math.abs(totFor(view,base.slice(2),m));
+  const n=nodeBy[base.slice(2)]; if(!n||n.key===self) return 0;
+  return Math.abs(targetOf(view,n,m));
+}
+function pctBaseName(base){
+  if(!base) return '';
+  if(base.startsWith('g:')) return (GROUPS.find(g=>g.id===base.slice(2))||{}).name||'';
+  const n=nodeBy[base.slice(2)]; return n?n.name:'';
+}
 function targetOf(view,node,m){
   const ex=pick(TGT.acc,node.key,m); if(ex!=null) return ex;
+  /* יעד כאחוז מסעיף אחר — גובר על סכום הבנים, וחל על כל החודשים */
+  const pr=PCT[node.key];
+  if(pr&&pr.base&&!PCT_BUSY.has(node.key)){
+    PCT_BUSY.add(node.key); let v=0; try{ v=pctBaseVal(view,pr.base,m,node.key)*pr.pct/100; } finally { PCT_BUSY.delete(node.key); }
+    return Math.round(isInc(node)?v:-v);
+  }
   if(node.kids.length) return node.kids.reduce((s,k)=>s+(incl(k)?targetOf(view,k,m):0),0);
   /* חודש שאין לו כרטסת — היעד נגזר מממוצע שלושת החודשים האחרונים */
   return baseM(node,m)||avg3(node);
@@ -1205,8 +1278,10 @@ function manMark(node,m){
 }
 function cellHTML(view,node,m){
   const past=m<PAST();
-  if(past&&(MAN[node.key]||{})[m]) { const h=cellHTML0(view,node,m); return h+manMark(node,m); }
-  return cellHTML0(view,node,m);
+  let h=cellHTML0(view,node,m);
+  if(past&&(MAN[node.key]||{})[m]) h+=manMark(node,m);
+  if(PCT[node.key]&&pick(TGT.acc,node.key,m)==null) h+='<i class="pctm" title="יעד: '+PCT[node.key].pct+'% מ'+pctBaseName(PCT[node.key].base)+'">%</i>';
+  return h;
 }
 function cellHTML0(view,node,m){
   const past=m<PAST();
@@ -1328,6 +1403,25 @@ function nameCell(node,vw,hasKids,isLast){
   return nm;
 }
 
+/* שורת מלאי — פתיחה ראשונה, סגירה אחרונה. מספר לכל חודש, מוזן ידנית. */
+function invRow(kind){
+  const r=el('div','gr dr l1 inv');
+  const nm=el('div','nm');
+  nm.innerHTML='<b>'+(kind==='open'?'מלאי פתיחה':'מלאי סגירה')+'</b><small>'+(kind==='open'?'נוסף לעלות המכר':'מופחת מעלות המכר')+'</small>';
+  r.appendChild(nm);
+  MONTHS.forEach((mo,m)=>{
+    const c=el('div','c'+(mo.now?' isnow':'')+(wideM(mo)?' m3':''));
+    const v=INV[kind][m];
+    c.innerHTML='<input class="ii" inputmode="numeric" data-k="'+kind+'" data-m="'+m+'" value="'+(v!=null?nf(v):'')+'" placeholder="—">';
+    const inp=c.querySelector('input');
+    inp.addEventListener('click',e=>e.stopPropagation());
+    const save=()=>{ const n=parseNum(inp.value); if(n==null) delete INV[kind][m]; else INV[kind][m]=Math.abs(n); persist(); rerender(); };
+    inp.addEventListener('change',save);
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();inp.blur();} if(e.key==='Escape'){inp.value=v!=null?nf(v):'';inp.blur();} });
+    r.appendChild(c);
+  });
+  return r;
+}
 function buildNode(host,node,vw,isLast){
   const wrap=el('div',(node.lvl===1?'node':'knode')+(OPEN.has(node.key)?' open':'')+(EXCL.has(node.key)?' ex':''));
   wrap.dataset.key=node.key;
@@ -1381,7 +1475,10 @@ function buildFace(face,vw){
 
     const seq=list.slice();
     if(g.id==='fin'&&GHOST) seq.push(GHOST);
-    seq.forEach((n,i)=>buildNode(face,n,vw,i===seq.length-1));
+    const inv=(g.id==='cogs'&&INV_ON&&vw==='acc');
+    if(inv) face.appendChild(invRow('open'));
+    seq.forEach((n,i)=>buildNode(face,n,vw,!inv&&i===seq.length-1));
+    if(inv) face.appendChild(invRow('close'));
 
     /* סה״כ קבוצה */
     const tr=el('div','gr tot');
@@ -1424,14 +1521,16 @@ function buildFace(face,vw){
     }
   });
 }
+/* מלאי: עלות המכר = קניות + מלאי פתיחה − מלאי סגירה (הוצאות שליליות, לכן −פתיחה +סגירה) */
+const invAdj=(vw,gid,m)=>(INV_ON&&vw==='acc'&&gid==='cogs')?(-(+INV.open[m]||0)+(+INV.close[m]||0)):0;
 function totFor(vw,gid,m){
   return TREE.filter(n=>n.g===gid&&incl(n))
-    .reduce((s,n)=>s+(m<PAST()?actualOf(vw,n,m):targetOf(vw,n,m)),0);
+    .reduce((s,n)=>s+(m<PAST()?actualOf(vw,n,m):targetOf(vw,n,m)),0)+invAdj(vw,gid,m);
 }
 /* סכום הבפועל בלבד — שורת הסה״כ של חודש פתוח צריכה אותו, שם totFor
    כבר עובר ליעד בכל מה שאינו חודש סגור. */
 const actFor=(vw,gid,m)=>TREE.filter(n=>n.g===gid&&incl(n))
-  .reduce((s,n)=>s+actualOf(vw==='acc'?'acc':'cf',n,m),0);
+  .reduce((s,n)=>s+actualOf(vw==='acc'?'acc':'cf',n,m),0)+invAdj(vw,gid,m);
 const gp=(vw,m)=>totFor(vw,'rev',m)+totFor(vw,'cogs',m);
 const op=(vw,m)=>gp(vw,m)+totFor(vw,'opex',m);
 /* רווח נקי לפני מס = רווח תפעולי פחות הוצאות מימון; מס = אחוז מהרווח לפני מס (רק כשהוא חיובי) */
@@ -1735,8 +1834,15 @@ function openEditor(vw,node,m,cellEl){
     '<h4>'+node.name+'</h4>'+
     '<div class="who">'+mo.n+' '+mo.y+' · '+lvlName+' · '+(inc?'קטגוריית הכנסה':'קטגוריית הוצאה')+'</div>'+
     '<label class="fld">יעד לחודש (₪)</label>'+
-    '<input class="ci" id="edT" inputmode="numeric" value="'+Math.round(Math.abs(tgt))+'">'+
-    '<div class="chgnote" id="edC"></div>'+
+    '<div class="tmode"><button type="button" class="tm'+(PCT[node.key]?'':' on')+'" data-tm="amt">סכום</button><button type="button" class="tm'+(PCT[node.key]?' on':'')+'" data-tm="pct">% מסעיף אחר</button></div>'+
+    '<input class="ci" id="edT" inputmode="numeric" value="'+Math.round(Math.abs(tgt))+'"'+(PCT[node.key]?' hidden':'')+'>'+
+    '<div class="chgnote" id="edC"'+(PCT[node.key]?' hidden':'')+'></div>'+
+    '<div class="pctbox" id="edP"'+(PCT[node.key]?'':' hidden')+'>'+
+      '<div class="prow"><input class="ci sm" id="edPv" inputmode="numeric" value="'+((PCT[node.key]||{}).pct||20)+'"><span>% מ־</span><b id="edPn">'+(pctBaseName((PCT[node.key]||{}).base)||'בחרו בסיס')+'</b></div>'+
+      '<div class="pills" id="edPb">'+GROUPS.filter(g=>g.id!==node.g||node.lvl>1).map(g=>'<button type="button" class="pl'+((PCT[node.key]||{}).base==='g:'+g.id?' on':'')+'" data-b="g:'+g.id+'">'+g.name+'</button>').join('')+
+        TREE.filter(n=>n.key!==node.key&&!n.ghost).map(n=>'<button type="button" class="pl sec'+((PCT[node.key]||{}).base==='a:'+n.key?' on':'')+'" data-b="a:'+n.key+'">'+n.name+'</button>').join('')+'</div>'+
+      '<div class="hint">חל על כל החודשים. כשהבסיס משתנה — היעד משתנה איתו. סכום שיוזן לחודש מסוים גובר עליו.</div>'+
+    '</div>'+
     (canAct?'<label class="fld">בפועל · מהנהלת חשבונות (₪)</label>'+
       '<input class="ci" id="edA" inputmode="numeric" placeholder="מהנה״ח" value="'+(pick(BOOKS,node.key,m)!=null?Math.round(Math.abs(pick(BOOKS,node.key,m))):'')+'">'+
       /* עדכון ידני: מה קורה בטעינת הכרטסת הבאה */
@@ -1758,6 +1864,17 @@ function openEditor(vw,node,m,cellEl){
   ed.style.top=top+'px'; ed.style.left=left+'px';
 
   const iT=ed.querySelector('#edT'), iA=ed.querySelector('#edA'), g=ed.querySelector('#edG'), dn=ed.querySelector('#edD');
+  /* מצב היעד: סכום / אחוז מסעיף */
+  let tmode=PCT[node.key]?'pct':'amt', pbase=(PCT[node.key]||{}).base||null;
+  const pBox=ed.querySelector('#edP'), pV=ed.querySelector('#edPv'), pN=ed.querySelector('#edPn');
+  ed.querySelectorAll('.tm').forEach(b=>b.addEventListener('click',()=>{
+    tmode=b.dataset.tm; ed.querySelectorAll('.tm').forEach(x=>x.classList.toggle('on',x===b));
+    iT.hidden=(tmode==='pct'); ed.querySelector('#edC').hidden=(tmode==='pct'); pBox.hidden=(tmode!=='pct');
+    if(tmode==='pct') pV.focus(); else iT.focus();
+  }));
+  ed.querySelectorAll('#edPb .pl').forEach(b=>b.addEventListener('click',()=>{
+    pbase=b.dataset.b; ed.querySelectorAll('#edPb .pl').forEach(x=>x.classList.toggle('on',x===b)); pN.textContent=pctBaseName(pbase);
+  }));
   const syncD=()=>dn.classList.toggle('show',g.checked);
   syncD(); g.addEventListener('change',syncD);
   const chg=ed.querySelector('#edC');
@@ -1776,6 +1893,16 @@ function openEditor(vw,node,m,cellEl){
   ed.querySelector('#edX').addEventListener('click',closeEditor);
   const commit=()=>{
     const neg=!inc;
+    if(tmode==='pct'){
+      const pv=parseFloat(pV.value);
+      if(!pbase||isNaN(pv)){ toast('בחרו בסיס ואחוז'); return; }
+      PCT[node.key]={base:pbase,pct:pv};
+      delete TGT[vw][node.key];                     /* האחוז חל על כל החודשים — סכומים ישנים יורדים */
+      put(GOAL[vw],node.key,m,g.checked?1:null);
+      persist(); closeEditor(); rerender();
+      toast('היעד נקבע: '+pv+'% מ'+pctBaseName(pbase)+' · לכל החודשים'); return;
+    }
+    if(PCT[node.key]) delete PCT[node.key];
     let t=parseNum(iT.value); if(t!=null&&neg) t=-Math.abs(t);
     put(TGT[vw],node.key,m,t);
     put(GOAL[vw],node.key,m,g.checked?1:null);
@@ -1926,6 +2053,18 @@ document.getElementById('balTg').addEventListener('click',()=>{
    17 · סימולציה / טען מחדש / ייצוא
    ======================================================================= */
 document.getElementById('gearBtn').addEventListener('click',mapOpen);
+/* הגדרות המסך */
+(function(){
+  const btn=document.getElementById('setBtn'), pop=document.getElementById('setPop'), cb=document.getElementById('setInv');
+  cb.checked=INV_ON;
+  btn.addEventListener('click',e=>{ e.stopPropagation();
+    const r=btn.getBoundingClientRect(); pop.style.top=(r.bottom+8)+'px'; pop.style.left=Math.max(10,Math.min(r.left-120,innerWidth-330))+'px';
+    pop.classList.toggle('on'); });
+  pop.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',()=>pop.classList.remove('on'));
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') pop.classList.remove('on'); });
+  cb.addEventListener('change',()=>{ INV_ON=cb.checked; persist(); rerender(); toast(INV_ON?'מלאי פתיחה וסגירה נוספו לעלות המכר':'שורות המלאי ירדו'); });
+})();
 document.getElementById('reloadBtn').addEventListener('click',()=>{
   /* העלאה חוזרת דורסת סכומים ולא החלטות: הכרטסת מסכמת מחדש כל כרטיס,
      והשיוך — של ה-AI ושל האדם — נשמר לפי מספר הכרטיס. */
@@ -2052,6 +2191,7 @@ function mapDraw(){
           +'<span>'+mine.length+' כרטיסים</span>'
           +'<span class="amt">'+fmtN(sumOf(a.id))+' ₪</span>'
           +'<button class="mw-sadd" title="הוספת תת־סעיף" onclick="subNew(\''+a.id+'\')">＋ תת־סעיף</button>'
+          +'<span class="mw-mv" title="העברת הסעיף כולו לקבוצה אחרת">'+GROUPS.filter(x=>x.id!==a.g).map(x=>'<button onclick="secMove(\''+a.id+'\',\''+x.id+'\')">→ '+x.name+'</button>').join('')+'</span>'
           +'</div>'
           +(SNEW===a.id?'<div class="mw-new"><input id="mwS" placeholder="שם תת־הסעיף" '
             +'onkeydown="if(event.key===\'Enter\')subAdd(\''+a.id+'\')"><button onclick="subAdd(\''+a.id+'\')">הוספה</button></div>':'')
