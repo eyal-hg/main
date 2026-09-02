@@ -184,13 +184,18 @@
       return `<div class="db-sec ${open?'open':''}" onclick="oqsToggle('${key}')">
         <div class="db-l">${label}</div><div class="db-big">${big}</div><div class="db-sub">${sub}</div>
         ${open?oqsPop(key):''}</div>`;};
-    const mrepN=FC.filter(c=>c.mReport).length;
+    /* דוחות חודשיים — רק לקוחות עם Money / Money+ (מוצרים 3, 4); "נשלח" = רשומת שליחה מהמסך */
+    const MR=FC.filter(c=>c.product==='money'||c.product==='money+');
+    const mrepN=MR.filter(c=>c.mReport).length;
+    /* פגישות חודשיות — לקוחות Money+ (מוצר 4), וכמה מהם עם פגישה שנקבעה החודש */
+    const MP=CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c)&&coActive(o.c)&&o.c.product==='money+');
+    const mpSet=MP.filter(o=>mplusMeet(o.c,o.i).set).length;
     document.getElementById('opsqStrip').innerHTML=`<div class="daybar">
       ${sec('time','זמני תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
       ${sec('status','סטטוס תפעול',doneN+'<i>/'+T+'</i>','תופעלו · '+(T-doneN)+' נותרו להיום')}
       ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות · לפי מקור')}
-      ${sec('sheet','הזנות ואוטומציה','<span class="db-ago">לפני 3 דק׳</span>','תשלומי ספקים ולקוחות · 3 שורות לאישור')}
-      ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+T+'</i>','עד 10.7 · '+(T-mrepN)+' נותרו')}
+      ${sec('meet','פגישות חודשיות',mpSet+'<i>/'+MP.length+'</i>','Money+ · '+(MP.length-mpSet)+' בלי פגישה החודש')}
+      ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+MR.length+'</i>','Money · Money+ · עד 10.7 · '+(MR.length-mrepN)+' נותרו')}
     </div>`;
     renderOpsInfo();
     const SS=[['active','פעילים'],['setup','בהקמה'],['arch','ארכיון']];
@@ -216,6 +221,16 @@
       <div class="oqc-prod">מוצר</div><div class="oqc-alert">חריגה</div><div class="oqc-debt">חוב</div><div class="oqc-msg">הודעות</div><div class="oqc-status">תפעול</div><div></div></div>`;
     listEl.innerHTML = order.length ? HDR+order.map(opsqRow).join('') : '<div class="ops-empty" style="padding:40px">אין חברות בסינון הזה</div>';
     renderMgrCal();
+  }
+  /* האם ללקוח Money+ נקבעה פגישה החודש.
+     במערכת: meetings של החברה בחודש הנוכחי עם status ∈ {approve, processed}
+     או (status = scheduled ו-scheduled_at >= היום). בפרוטוטיפ: החמישה מטבלת הקצב
+     (MEETS_CAD), והשאר דטרמיניסטי לפי השם. */
+  function mplusMeet(c,i){
+    const cad=(typeof MEETS_CAD!=='undefined')&&MEETS_CAD.find(r=>r.ci===i);
+    if(cad) return cad.ok&&!cad.none?{set:true,when:cad.next}:{set:false,gap:cad.gap||''};
+    let h=0; for(const ch of c.name) h=(h*31+ch.charCodeAt(0))%97;
+    return h%10<6?{set:true,when:''}:{set:false,gap:''};
   }
   /* תצוגה מקדימה לקוביות הסטטיסטיקה */
   let OQS_OPEN=null;
@@ -295,7 +310,7 @@
     return `<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;${act}"><b>${name}</b><span>${sub}</span>${OQS_CHEV}</div>`;
   }
   function oqsPop(key){
-    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',sheet:'טבלאות ההזנה — שורות חדשות לאישור · לחיצה פותחת את הטבלה',time:'פירוט זמני תפעול — לפי חברה',status:'סטטוס תפעול — לפי חברה',mrep:'דוח חודשי — עד 10.7'};
+    const H={wait:'ממתינות לתפעול',prog:'בתהליך תפעול',done:'הושלמו היום',msg:'הודעות פתוחות מלקוחות',doc:'מסמכים שממתינים להזנה',meet:'פגישה חודשית — לקוחות Money+ · מי נקבע החודש ומי עוד לא',time:'פירוט זמני תפעול — לפי חברה',status:'סטטוס תפעול — לפי חברה',mrep:'דוח חודשי — לקוחות Money ו-Money+ · עד 10.7'};
     let rows='',foot='';
     if(key==='wait') CLIENTS.forEach((c,i)=>{const k='c'+i;
       if(!opsDoneSet.has(k)&&!opsAccum[k]&&pendOf(i)>0) rows+=oqsRow(`opsQueueEnter(${i})`,c.name,pendOf(i)+' משימות'+(c.opsAlert?' · חריגה':''));});
@@ -324,15 +339,16 @@
             <b>${t.name}</b><span class="oqs-src ${t.src==='טבלת הזנה'?'gs':''}">${t.src||'הודעת לקוח'}</span></div>`;});
       });
     }
-    if(key==='sheet') [
-      [0,'אנרגי אינטרנשיונל','תשלומים לספקים · צפי — נוספו 2 שורות','לפני 3 דק׳',false,'תשלומים לספקים · צפי'],
-      [0,'אנרגי אינטרנשיונל','תשלומים לספקים — שיק מהבוט בקבוצה','לפני 20 דק׳',false,'תשלומים לספקים · צפי'],
-      [0,'אנרגי אינטרנשיונל','תקבולים מלקוחות · צפי — עודכן מרכז הבנייה','08:55',false,'תקבולים מלקוחות · צפי'],
-      [1,'מטעי גבעון','תקבולים מלקוחות · צפי — נוספו 2 שורות','לפני 25 דק׳',false,'תקבולים מלקוחות · צפי'],
-      [4,'משה עובד','תשלומים לספקים · צפי — שורה ראשונה!','08:40',true,'תשלומים לספקים · צפי'],
-    ].forEach(x=>rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;openDataTable('${x[5]}',${x[0]})">
-        <b>${x[1]}<i class="oqs-sub">${x[2]} · ${x[3]}</i></b><span class="oqs-src ${x[4]?'okk':'gs'}">${x[4]?'✓ אושר':'לאישור'}</span></div>`);
+    if(key==='meet'){
+      const MP=CLIENTS.map((c,i)=>({c,i,m:mplusMeet(c,i)})).filter(o=>firmOk(o.c)&&coActive(o.c)&&o.c.product==='money+')
+        .sort((a,b)=>(a.m.set?1:0)-(b.m.set?1:0)||a.c.name.localeCompare(b.c.name,'he'));
+      MP.forEach(o=>{
+        rows+=o.m.set
+          ?`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')"><b>${o.c.name}${o.m.when?`<i class="oqs-sub">${o.m.when}</i>`:''}</b><span class="oqs-src okk">✓ נקבעה</span></div>`
+          :`<div class="oqs-row"><b>${o.c.name}${o.m.gap?`<i class="oqs-sub">${o.m.gap}</i>`:''}</b><button class="mt-btn view" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')">לתיאום</button></div>`;});
+    }
     if(key==='mrep') CLIENTS.forEach((c,i)=>{
+      if(!firmOk(c)||!coActive(c)||!(c.product==='money'||c.product==='money+')) return;
       rows+=c.mReport
         ?oqsRow(`toast('הדוח של ${c.name} כבר נשלח')`,c.name,'✓ נשלח')
         :`<div class="oqs-row"><b>${c.name}</b><button class="mt-btn view" onclick="event.stopPropagation();mrSend(${i})">שליחת דוח</button></div>`;});

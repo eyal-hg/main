@@ -56,6 +56,8 @@
 
     /* ---------- מנהל התזרים ---------- */
     'mgr-ops'     :[R('manager'),G('ops')],
+    'mgr-ops-meet':[R('manager'),G('ops'),F(function(){oqsToggle('meet')},900)],
+    'mgr-ops-mrep':[R('manager'),G('ops'),F(function(){oqsToggle('mrep')},900)],
     'mgr-comm'    :[R('manager'),G('meets')],
     'mgr-opsmode' :[R('manager'),C(0),F(function(){enterOps()},1600)],
 
