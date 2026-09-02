@@ -125,10 +125,8 @@
     ROLE=r; isOperator=(r==='manager');
     const rs=document.getElementById('roleSel'); if(rs&&rs.value!==r+':'+SUBROLE) rs.value=r+':'+SUBROLE;
     const _mr=document.getElementById('meRole'); if(_mr) _mr.textContent=SUBROLE_LBL[SUBROLE]||'';
-    /* בורר התצוגה קיים רק בממשק מנהל התזרים (תפקידי HK). ביועץ ובלקוח — אין.
-       לדמו: "חזרה לתצוגת מנהל תזרים" בתפריט המשתמש. */
-    const _rsw=document.querySelector('.role-sel'); if(_rsw) _rsw.style.display=(r==='manager')?'flex':'none';
-    const _back=document.getElementById('meBack'); if(_back) _back.style.display=(r==='manager')?'none':'';
+    /* במוצר בורר התצוגה קיים רק בממשק מנהל התזרים (docs/ROLES.md). במוקאפ הוא גלוי בכל
+       תצוגה — אייל צריך אותו כדי לעבור מאחת לאחרת. */
     if(OPSMODE) exitOps();
     const client=(r==='client1'||r==='clientN'), single=(r==='client1');
     if(client){   /* משטחים של היועץ שנשארו פתוחים מהתפקיד הקודם — פס טרום-פגישה ופס הקלטה */
