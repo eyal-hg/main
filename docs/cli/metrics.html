@@ -385,7 +385,6 @@
 .sh .tg{width:16px;height:16px;border-radius:4px;border:1px solid #C9D6E3;background:#fff;color:var(--navy);
   display:inline-grid;place-items:center;flex:none;padding:0;transition:.12s}
 .sh button.tg:hover{border-color:var(--sky);background:#EAF3FA}
-.sh .tg.fx{border-color:transparent;background:#D7E7F4;color:var(--navy)}
 /* יעד ובפועל נבדלים בטיפוגרפיה בלבד: בפועל — מודגש, נייבי; יעד — משקל רגיל, אפור־כחול.
    בלי מילוי ובלי קווים. תא שמתעדכן לבד — רקע אפור עדין. */
 /* כל מדד תחום בשני קווים — עליון ותחתון — ורווח לבן ביניהם לבין המדד הבא */
@@ -1298,7 +1297,8 @@ function moWin(){var a=[];for(var i=RF;i<=RT;i++)a.push(i);return a;}
 function fixedOpen(){return (CUR_MI>=RF&&CUR_MI<=RT)?CUR_MI:RT;}
 function setRange(f,t){
   RF=Math.max(0,Math.min(f,11)); RT=Math.max(RF,Math.min(t,11));
-  MI=fixedOpen(); render();
+  MI=fixedOpen(); if(!moWin().some(moOpen)) OPEN[MI]=true;
+  render();
 }
 function drawRange(){
   var f=document.getElementById('rFrom'), t=document.getElementById('rTo');
@@ -1326,8 +1326,8 @@ function pctTxt(m){
 }
 /* חודשים פתוחים: פתוח = יעד · בפועל · ביצוע; מקופל = בפועל בלבד.
    החודש המוצג (האחרון בטווח) פתוח תמיד. */
-var OPEN={};
-function moOpen(i){return i===fixedOpen()||!!OPEN[i];}
+var OPEN={}; OPEN[fixedOpen()]=true;          /* החודש הנוכחי פתוח כברירת מחדל — ואפשר לסגור */
+function moOpen(i){return !!OPEN[i];}
 function pctTxtAt(m,i){var o=MI;MI=i;var h=pctTxt(m);MI=o;return h;}
 var CV2=CV;
 var ICO_PLUS='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
@@ -1342,8 +1342,7 @@ function shHead(){
   W.forEach(function(i,wi){
     var op=moOpen(i), fixed=(i===fixedOpen()), last=(wi===W.length-1);
     h+='<th class="c-mg ms'+(last?' me':'')+(op?' open':'')+(fixed?' cur':'')+'" colspan="'+(op?3:1)+'"><span class="mo-h">'+
-       (fixed?'<i class="tg fx" title="החודש הנוכחי — פתוח תמיד">'+ICO_MINUS+'</i>'
-             :'<button class="tg" data-mo-tg="'+i+'" title="'+(op?'קיפול':'פתיחה — יעד, בפועל וביצוע')+'" aria-expanded="'+(op?'true':'false')+'">'+(op?ICO_MINUS:ICO_PLUS)+'</button>')+
+       '<button class="tg" data-mo-tg="'+i+'" title="'+(op?'קיפול':'פתיחה — בפועל, יעד וביצוע')+'" aria-expanded="'+(op?'true':'false')+'">'+(op?ICO_MINUS:ICO_PLUS)+'</button>'+
        '<b>'+MONTHS[i]+'</b></span></th>';
     var c=(fixed?' cur':''), me=(last?' me':'');
     var TG='<span class="tglb">'+ICO_TGT+'יעד</span>';
