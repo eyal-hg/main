@@ -941,8 +941,10 @@
   .clibar-t{font-size:15px;font-weight:600;color:#fff}
   .clibar-s{font-size:12.5px;color:rgba(255,255,255,.84)}
   .clibar-sp{flex:1}
-  .clibar-when{font-size:12.5px;color:rgba(255,255,255,.84);font-variant-numeric:tabular-nums}
+  .clibar-when{font-size:12.5px;color:rgba(255,255,255,.84);font-variant-numeric:tabular-nums;
+    padding-inline-start:12px;border-inline-start:1px solid rgba(255,255,255,.22)}
   .clibar-when b{color:#fff;font-weight:600}
+  .clibar-when + .clibar-s{padding-inline-start:12px;border-inline-start:1px solid rgba(255,255,255,.22)}
   .clibar-btn{border:0;background:#fff;color:var(--navy);font:inherit;font-size:12px;font-weight:600;
     border-radius:99px;padding:6px 15px;cursor:pointer;transition:.13s}
   .clibar-btn:hover{background:#EAF4FB}
@@ -952,7 +954,7 @@
   /* ===== הפס הקבוע בדשבורד בעל העסק =====
      ימין נייבי — המצב הכספי, שני מספרים שהוא צריך לדעת בלי ללחוץ.
      שמאל לבן — מה שהוא עושה: מה ביקש ומה קורה איתו, ומה הוא מעלה. */
-  .chero{display:grid;grid-template-columns:minmax(0,42fr) minmax(0,58fr);
+  .chero{display:grid;grid-template-columns:minmax(0,46fr) minmax(0,54fr);
     border-radius:16px;overflow:hidden;margin-bottom:14px;background:#fff;
     border:1px solid #E3E9EF;box-shadow:0 10px 26px -18px rgba(12,64,104,.34)}
   @media (max-width:1080px){.chero{grid-template-columns:minmax(0,1fr)}}
@@ -983,7 +985,7 @@
     font-weight:600;color:#C43D30;background:#FDECEB;border:1px solid #F6DCD5;
     border-radius:999px;padding:3px 10px}
 
-  .chero-a{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(0,1fr)}
+  .chero-a{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
   @media (max-width:760px){.chero-n,.chero-a{grid-template-columns:minmax(0,1fr)}}
   .chero-p{padding:16px 18px;min-width:0;display:flex;flex-direction:column}
   .chero-p+.chero-p{border-inline-start:1px solid #EDF1F5}
@@ -996,6 +998,8 @@
   .chero-add{border:0;background:#E4826E;color:#fff;font:inherit;font-size:11.5px;font-weight:600;
     border-radius:999px;padding:5px 13px;cursor:pointer;transition:.13s;white-space:nowrap}
   .chero-add:hover{background:#C96A57}
+  .chero-done{border:0;background:none;font:inherit;font-size:10.5px;color:#8FA3B5;cursor:pointer;padding:0;white-space:nowrap}
+  .chero-done:hover{color:#14618F;text-decoration:underline}
   /* יותר משלוש משימות — הרשימה גוללת בתוך עצמה והפס לא מתארך */
   .chero-list{display:flex;flex-direction:column;gap:6px;max-height:142px;overflow-y:auto;
     padding-inline-end:2px}
@@ -1012,12 +1016,12 @@
   .ct-st.done{background:#E7F7EF;color:#0B6E4B}
   .ct-row .ur{font-size:10px;font-weight:700;color:#C43D30;background:#FDECEB;
     border-radius:5px;padding:1px 6px;flex:none}
-  .chero-drop{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:4px;border:1.5px dashed #CFDBE6;border-radius:12px;padding:14px 10px;cursor:pointer;
-    color:#5A7590;transition:.15s;text-align:center;min-height:78px}
+  /* העלאה היא פעולה מזדמנת — רצועה אחת, לא אזור שתופס רבע מהפס */
+  .chero-drop{display:flex;align-items:center;gap:8px;border:1.5px dashed #CFDBE6;border-radius:10px;
+    padding:8px 12px;cursor:pointer;color:#5A7590;transition:.15s;min-height:40px}
   .chero-drop:hover,.chero-drop.over{border-color:#39ABE2;background:#F2F9FD;color:#14618F}
-  .chero-drop b{font-size:12.5px;font-weight:600}
-  .chero-drop span{font-size:10.5px;color:#8FA3B5}
+  .chero-drop b{font-size:12px;font-weight:600;color:#14618F;white-space:nowrap}
+  .chero-drop span{font-size:10.5px;color:#8FA3B5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .chero-files{display:flex;flex-direction:column;gap:5px;margin-top:9px;
     max-height:64px;overflow-y:auto}
   .chero-files::-webkit-scrollbar{width:5px}
@@ -1025,7 +1029,7 @@
   .cf-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#41586C}
   .cf-row .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .cf-row .fs{font-size:10px;font-weight:700;border-radius:999px;padding:1px 8px;flex:none}
-  .cf-row .fs.ai{background:#EDE9FD;color:#5B41C4}
+  .cf-row .fs.ai{background:#E8F4FB;color:#14618F}
   .cf-row .fs.ops{background:#E8F4FB;color:#14618F}
   .cf-row .fs.done{background:#E7F7EF;color:#0B6E4B}
   /* סלוט ריק ביומן — בלוק מקווקו כמו ביומן המלא */

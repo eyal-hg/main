@@ -72,9 +72,9 @@
     el.innerHTML=`<div class="clibar">
       <span class="clibar-k">הפגישה הבאה</span>
       <b class="clibar-t">סקירת רבעון Q3</b>
+      <span class="clibar-when"><b>10 ביולי · 14:00–15:00</b> · בעוד 4 ימים</span>
       <span class="clibar-s">עם ${c.adv||'אילון שחר'} · ${c.firm||'שחר ייעוץ עסקי'} · Zoom</span>
       <span class="clibar-sp"></span>
-      <span class="clibar-when"><b>10 ביולי</b> · 14:00–15:00 · בעוד 4 ימים</span>
       <button class="clibar-btn" onclick="toast('נוספה ליומן שלך')">הוספה ליומן</button>
       <button class="clibar-btn gh" onclick="toast('נשלחה בקשה לתיאום מחדש')">תיאום מחדש</button>
     </div>`;
@@ -88,9 +88,11 @@
   const HICO={
     bal:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 11h20M6 15h4"/></svg>',
     od:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'};
+  let HERO_DONE=false;   /* המשימות שהושלמו מקופלות — בעל העסק רואה מה פתוח */
   function heroTasksHTML(){
-    if(!CLIENT_TASKS.length) return '<div class="ct-row"><span class="t2">אין משימות פתוחות</span></div>';
-    return CLIENT_TASKS.map(k=>`
+    const list=CLIENT_TASKS.filter(k=>HERO_DONE||k.st!=='done');
+    if(!list.length) return '<div class="ct-row"><span class="t2">אין משימות פתוחות</span></div>';
+    return list.map(k=>`
       <div class="ct-row">
         <span class="ct-st ${k.st}">${CT_ST[k.st]}</span>
         <span class="t2">${k.t}</span>
@@ -112,7 +114,12 @@
     if(b) b.innerHTML=heroFilesHTML();
     if(n){const k=CLIENT_TASKS.filter(x=>x.st!=='done').length;
       n.textContent=k===0?'הכול סגור':k===1?'פתוחה אחת':k+' פתוחות';}
+    const d=document.getElementById('heroDone');
+    if(d){const k=CLIENT_TASKS.filter(x=>x.st==='done').length;
+      d.style.display=k?'':'none'; d.textContent=(HERO_DONE?'הסתרת ':'')+k+' הושלמו';}
   }
+  function heroToggleDone(){HERO_DONE=!HERO_DONE;refreshHero();}
+  window.heroToggleDone=heroToggleDone;
   function renderCliHero(){
     const el=document.getElementById('cliHero'); if(!el) return;
     const isCli=(ROLE==='client1'||ROLE==='clientN');
@@ -142,7 +149,8 @@
       <div class="chero-a">
         <div class="chero-p">
           <div class="chero-h"><b>המשימות שלי</b>
-            <span class="n2" id="heroTaskN">${openTxt(open)}</span><span class="sp"></span>
+            <span class="n2" id="heroTaskN">${openTxt(open)}</span>
+            <button class="chero-done" id="heroDone" onclick="heroToggleDone()">${CLIENT_TASKS.filter(x=>x.st==='done').length} הושלמו</button><span class="sp"></span>
             <button class="chero-add" onclick="openCt()">＋ משימה חדשה</button></div>
           <div class="chero-list" id="heroTasks">${heroTasksHTML()}</div>
         </div>
@@ -152,8 +160,8 @@
                ondragover="event.preventDefault();this.classList.add('over')"
                ondragleave="this.classList.remove('over')"
                ondrop="cxDrop(event)" onclick="cxPick()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
-            <b>גררו קובץ לכאן</b><span>PDF · Excel · תמונות</span></div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+            <b>בחירת קובץ</b><span>או גררו לכאן</span></div>
           <div class="chero-files" id="heroFiles">${heroFilesHTML()}</div>
         </div>
       </div>
