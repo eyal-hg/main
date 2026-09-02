@@ -22,14 +22,7 @@
   document.addEventListener('click',e=>{ if(!e.target.closest('.me-wrap')) meClose(); });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') meClose(); });
 
-  /* בורר התצוגה מוסתר; דאבל-קליק על הלוגו חושף אותו ומסתיר בחזרה. */
-  (function(){
-    const lg=document.querySelector('.logo'); if(!lg) return;
-    lg.addEventListener('dblclick',function(){
-      const on=document.body.classList.toggle('dev');
-      if(typeof toast==='function') toast(on?'בורר התצוגה נחשף':'בורר התצוגה הוסתר');
-    });
-  })();
+  /* בורר התצוגה גלוי תמיד — ההסתרה עם דאבל-קליק על הלוגו ירדה לבקשת אייל. */
   /* כניסה ישירה לדשבורד חברה — ?hp=<ח.פ> (ממסך הלקוחות של היועץ) */
   (function(){
     const hp=new URLSearchParams(location.search).get('hp'); if(!hp) return;
