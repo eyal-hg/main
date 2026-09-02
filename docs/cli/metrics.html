@@ -334,11 +334,11 @@
 .sh tr.s-off  .ml-dot{background:#E0A32B}
 .sh tr.s-near .ml-dot{background:#8CB8D8}
 .sh tr.s-ok   .ml-dot{background:var(--good)}
-.sh .c-nm{min-width:200px}
+.sh .c-nm{min-width:190px;width:230px}
 .sh .c-kd{width:118px}
 .sh .c-un{width:58px}
-.sh .c-mo{width:118px}
-.sh .c-pc{width:84px}
+.sh .c-mo{width:142px}
+.sh .c-pc{width:92px}
 .sh .c-tl{width:44px}
 .ci{display:block;width:100%;height:38px;border:0;background:transparent;padding:0 10px;
   font:inherit;font-size:12.5px;color:var(--ink);outline:none;border-radius:0;min-width:0}
@@ -372,29 +372,23 @@
 .sh .tg.fx{border-color:transparent;background:#D7E7F4;color:var(--navy)}
 .sh td.op.first{border-inline-start:2px solid #D7E3EE}
 .sh td.op.last{border-inline-end:2px solid #D7E3EE}
-/* יעד ובפועל נראים אחרת: יעד — תא תכלת עם קו תחתון מקווקו, ספרות נייבי במשקל רגיל;
-   בפועל — תא לבן, ספרות מודגשות. תא שמתעדכן לבד — אפור. */
-/* רווח בין מדד למדד — גבול עליון שקוף על תאי הגוף; הרקע נחתך לתוך התא ולא לגבול */
+/* יעד ובפועל נבדלים בטיפוגרפיה בלבד: בפועל — מודגש, נייבי; יעד — משקל רגיל, אפור־כחול.
+   בלי מילוי ובלי קווים. תא שמתעדכן לבד — רקע אפור עדין. */
 .sh tbody tr[data-k] td,.sh tbody tr.new td{border-top:7px solid transparent;background-clip:padding-box;height:45px}
 .sh tbody tr[data-k] td{border-bottom:1px solid var(--cardbd)}
-.sh td.tc{background:#EEF5FB}
-.sh td.tc.cur{background:#E6F0F9}
-.sh th.c-sub.tgh{background:#E4EEF7;color:var(--navy)}
-.sh th.c-sub.tgh .tglb{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.sh th.c-sub.ac{background:#fff;color:var(--ink2)}
-.sh .ci.t{color:var(--navy);font-weight:500;background:transparent;
-  background-image:linear-gradient(to left,#9DBBD6 50%,transparent 50%);background-size:6px 1px;
-  background-repeat:repeat-x;background-position:center calc(100% - 7px)}
-.sh .ci.t:focus{background-image:none}
+.sh th.c-sub.tgh .tglb{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:var(--ink3)}
+.sh th.c-sub.ac{color:var(--navy);font-weight:700}
+.sh .ci.t{color:#5C7590;font-weight:400}
+.sh .ci.t::placeholder{color:#B9C6D3}
 .sh .ci.a{font-weight:700;color:var(--navy)}
-.sh td.ro{font-weight:600;color:var(--ink);background:#F6F8FB}
-.sh td.ro .nil{font-weight:400}
-.sh tbody tr:hover td.ro{background:#F1F4F8}
+.sh td.ro{font-weight:700;color:var(--navy);background:#F5F7FA}
+.sh td.ro .nil{font-weight:400;color:var(--faint)}
+.sh tbody tr:hover td.ro{background:#F0F3F7}
 .shf .lg{display:inline-flex;align-items:center;gap:6px}
-.shf .sw{width:14px;height:11px;border-radius:3px;border:1px solid var(--bd);display:inline-block}
-.shf .sw.tc{background:#EEF5FB;border-color:#B7CFE3}
-.shf .sw.ac{background:#fff}
-.shf .sw.ro{background:#EDF1F5;border-color:#D5DDE6}
+.shf .lg .sm{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block}
+.shf .lg .sm.a{font-weight:700;color:var(--navy)}
+.shf .lg .sm.t{font-weight:400;color:#5C7590}
+.shf .lg .sm.r{font-weight:700;color:var(--navy);background:#EDF1F5;border-radius:4px;padding:0 5px}
 .sh tr.new td{background:#FBFCFE;border-bottom:0;height:42px}
 .sh tr.new:hover td{background:#F7FAFD}
 .sh tr.new .plus{color:var(--coral);font-weight:800;font-size:17px;line-height:1}
@@ -1301,9 +1295,9 @@ function shFoot(){
     '<span>· <span class="mn">'+M.length+'</span> מדדים</span>'+
     '<span class="sp"></span>'+
     '<span id="shSaved" class="saved"></span>'+
-    '<span class="lg"><i class="sw tc"></i>יעד — נקבע, נערך תמיד</span>'+
-    '<span class="lg"><i class="sw ac"></i>בפועל — מה שקרה</span>'+
-    '<span class="lg"><i class="sw ro"></i>מתעדכן לבד</span>'+
+    '<span class="lg"><span class="sm a">12,500</span>בפועל — מה שקרה</span>'+
+    '<span class="lg"><span class="sm t">12,500</span>יעד — נקבע, נערך תמיד</span>'+
+    '<span class="lg"><span class="sm r">12,500</span>מתעדכן לבד</span>'+
     '<span><kbd>Enter</kbd> שורה למטה · <kbd>Tab</kbd> התא הבא · <kbd>Esc</kbd> ביטול</span>';
 }
 function renderSheet(){
