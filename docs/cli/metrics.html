@@ -502,6 +502,10 @@
 .md.xl .state{margin:6px 0 0}
 /* התראה — משפט אחד */
 .alrow{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink2)}
+.pillrow.days{gap:4px}
+.pillrow.days .pill{width:34px;justify-content:center;padding:3px 0;font-size:11.5px}
+.asksum{margin-top:10px;font-size:12.5px;color:var(--navy);font-weight:600;display:flex;align-items:center;gap:7px}
+.asksum svg{color:var(--sky);flex:none}
 .alrule{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--ink2)}
 .alrule .pillrow{gap:4px}
 .alrule input.th{width:70px;text-align:center;padding:5px 8px;border-radius:999px}
@@ -670,9 +674,17 @@
       <!-- הזנה -->
       <div class="srcpane" id="mxPaneManual">
         <div class="fld"><label>מי מזין</label><div class="optrow" id="mxWho"></div></div>
+        <div id="mxAskF">
+          <div class="fld"><label>מתי לבקש מהלקוח</label><div class="pillrow" id="mxAskFreq"></div></div>
+          <div class="fld hid" id="mxAskDowF"><label>באיזה יום</label><div class="pillrow" id="mxAskDow"></div></div>
+          <div class="fld hid" id="mxAskDomF"><label>באיזה תאריך</label><div class="pillrow" id="mxAskDom"></div></div>
+          <div class="fld hid" id="mxAskDaysF"><label>באילו ימים בחודש</label><div class="pillrow days" id="mxAskDays"></div></div>
+          <div class="fld"><label>באיזו שעה</label><div class="pillrow" id="mxAskAt"></div></div>
+          <div class="asksum" id="mxAskSum"></div>
+        </div>
         <div class="fld" id="mxActualF"><label for="mxActual" id="mxActualLb">הבפועל לחודש</label>
           <input id="mxActual" class="s num" inputmode="numeric" placeholder="מספר">
-          <div class="hint">אפשר להזין גם כאן וגם ישירות בטבלה. אם החודש נסגר ואין מספר — המדד יופיע כ"ממתין" עם כפתור "בקש מהלקוח".</div></div>
+          <div class="hint">אפשר להזין גם כאן וגם ישירות בטבלה. הזנה יומית או שבועית מצטברת למספר של החודש. אם החודש נסגר ואין מספר — המדד יופיע כ"ממתין" עם כפתור "בקש מהלקוח".</div></div>
       </div>
 
       <!-- Google Sheets -->
@@ -788,12 +800,12 @@ var M=[
   alerts:[{on:true,mode:'pct',dir:'below',th:85,sev:'mid'}],
   note:'הכמות מספרת אם הפער במחזור הוא פער מחיר או פער כמות. כאן הכמות ירדה.'},
 
- {k:'collect', name:'גבייה במזומן בשטח', src:'hand', who:'client', unit:'₪', target:25000, freq:'חודשי',
+ {k:'collect', name:'גבייה במזומן בשטח', src:'hand', who:'client', ask:{freq:'weekly',dow:['ראשון'],at:'09:00'}, unit:'₪', target:25000, freq:'חודשי',
   hist:[22400,19800,24100,26300,23900,null],
   alerts:[{on:false,mode:'pct',dir:'below',th:70,sev:'mid'}],
   note:'המזומן שנאסף בשטח ולא עבר דרך הסליקה. בלעדיו תמונת ההכנסות של החודש חסרה.'},
 
- {k:'inventory', name:'שווי מלאי נוכחי', src:'hand', who:'client', unit:'₪', target:null, freq:'חודשי',
+ {k:'inventory', name:'שווי מלאי נוכחי', src:'hand', who:'client', ask:{freq:'monthly',dom:['סוף החודש'],at:'09:00'}, unit:'₪', target:null, freq:'חודשי',
   hist:[512000,548000,571000,596000,618400,null], alerts:[],
   note:'מדד מעקב בלי יעד. עולה חמישה חודשים ברצף — כסף שיושב במכלים ולא בחשבון.'},
 
@@ -903,7 +915,7 @@ var FLAG={
 /* משפט המקור — כמו srcLine ב-screens.js */
 function srcTxt(m){
   if(m.src==='sheets') return '<b>Google Sheets</b> · '+esc(m.logic)+' · תא '+esc(m.cell);
-  if(m.src==='hand')   return '<b>הזנה ידנית</b> · '+(m.who==='advisor'?'היועץ מזין':'הלקוח מזין בוואטסאפ')+' כל חודש';
+  if(m.src==='hand')   return '<b>הזנה ידנית</b> · '+(m.who==='advisor'?'היועץ מזין':'הלקוח מזין בוואטסאפ · '+askTxt(m.ask));
   if(m.src==='cats')   return '<b>Bizibox</b> · נתוני אמת · '+esc((m.cats||[]).join(' + '));
   if(m.src==='calc')   return '<b>ƒ</b> '+esc(m.f?fTxt(m.f):m.calc);
   if(m.src==='acct')   return '<b>דוח רווח והפסד</b> · שורת '+esc(m.line||PL_LINES[0]);
@@ -1604,6 +1616,23 @@ var DIRS=[
 var WHOS=[
   ['client', 'הלקוח מזין',  'מקבל בקשה בוואטסאפ בסוף החודש, ועונה במספר'],
   ['advisor','היועץ מזין',  'בטבלה או כאן, אחרי שקיבל את המספר מהלקוח']];
+var DOWS=['ראשון','שני','שלישי','רביעי','חמישי','שישי'];
+var DOMS=['1','5','10','15','20','25','סוף החודש'];
+var ATS=['08:00','09:00','12:00','17:00'];
+var FREQS=[
+  ['daily',  'כל יום',        'בקשה בוואטסאפ בכל יום עבודה — הלקוח עונה במספר של אותו יום'],
+  ['weekly', 'פעם בשבוע',     'בקשה ביום קבוע בשבוע'],
+  ['monthly','פעם בחודש',     'בקשה בתאריך קבוע — למספר של החודש'],
+  ['days',   'ימים בחודש',    'בקשה בכמה תאריכים קבועים בחודש']];
+var ICO_WA='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg>';
+function askTxt(a){
+  if(!a) return '';
+  var w= a.freq==='daily'?'כל יום עבודה'
+       : a.freq==='weekly'?'כל יום '+((a.dow||[])[0]||'ראשון')
+       : a.freq==='monthly'?'ב-'+(((a.dom||[])[0]||'1')==='סוף החודש'?'סוף החודש':(a.dom||[])[0]+' לחודש')
+       : 'ב-'+(a.days||[]).join(', ')+' לחודש';
+  return w+' ב-'+(a.at||'09:00');
+}
 var LOGICS=[
   [LOGIC[1],'אותו תא כל חודש',   'הלקוח מעדכן את אותו תא בכל חודש'],
   [LOGIC[2],'חודשים לפי עמודות', 'כל חודש בעמודה משלו — התא זז ימינה'],
@@ -1615,6 +1644,23 @@ function drawMx(){
   opts('mxDir',DIRS,D.dir,'dir');
   opts('mxSrc',SRCS,D.src,'kind');
   opts('mxWho',WHOS,D.who||'client','who');
+  /* לוח הבקשות — רק כשהלקוח מזין */
+  var client=(D.who||'client')==='client';
+  document.getElementById('mxAskF').classList.toggle('hid',!client);
+  if(client){
+    if(!D.ask) D.ask={freq:'monthly',dom:['סוף החודש'],at:'09:00'};
+    var fq=document.getElementById('mxAskFreq');
+    fq.innerHTML=FREQS.map(function(f){return '<button class="pill'+(f[0]===D.ask.freq?' on':'')+'" data-askfreq="'+f[0]+'" title="'+esc(f[2])+'">'+esc(f[1])+'</button>';}).join('');
+    document.getElementById('mxAskDowF').classList.toggle('hid',D.ask.freq!=='weekly');
+    document.getElementById('mxAskDomF').classList.toggle('hid',D.ask.freq!=='monthly');
+    document.getElementById('mxAskDaysF').classList.toggle('hid',D.ask.freq!=='days');
+    pills('mxAskDow',DOWS,(D.ask.dow||['ראשון'])[0],'askdow');
+    pills('mxAskDom',DOMS,(D.ask.dom||['סוף החודש'])[0],'askdom');
+    var days=[]; for(var d=1;d<=31;d++) days.push(String(d));
+    pills('mxAskDays',days,D.ask.days||[],'askday');
+    pills('mxAskAt',ATS,D.ask.at||'09:00','askat');
+    document.getElementById('mxAskSum').innerHTML=ICO_WA+'<span>בקשה בוואטסאפ '+esc(askTxt(D.ask))+'</span>';
+  }
   opts('mxLogic',LOGICS,(D.logic&&D.logic!==LOGIC[0])?D.logic:LOGIC[1],'logic');
   pills('mxCats',CATLIST,D.cats||[],'cat');
   pills('mxLine',PL_LINES,D.line||PL_LINES[0],'line');
@@ -1733,6 +1779,14 @@ document.addEventListener('click',function(e){
     if(D.dir!=='trk'&&!(D.target>0)) setTimeout(function(){document.getElementById('mxTarget').focus();},10);
     drawMx();return;}
   if(t.dataset.who){D.who=t.dataset.who;drawMx();return;}
+  if(t.dataset.askfreq){D.ask.freq=t.dataset.askfreq;drawMx();return;}
+  if(t.dataset.askdow){D.ask.dow=[t.dataset.askdow];drawMx();return;}
+  if(t.dataset.askdom){D.ask.dom=[t.dataset.askdom];drawMx();return;}
+  if(t.dataset.askday){
+    D.ask.days=D.ask.days||[]; var di=D.ask.days.indexOf(t.dataset.askday);
+    if(di>=0) D.ask.days.splice(di,1); else D.ask.days.push(t.dataset.askday);
+    D.ask.days.sort(function(a,b){return a-b;}); drawMx();return;}
+  if(t.dataset.askat){D.ask.at=t.dataset.askat;drawMx();return;}
   if(t.id==='mxAlOn'){
     D.alerts=D.alerts||[];
     if(!D.alerts[0]) D.alerts[0]={on:true,mode:'pct',dir:D.dir==='cap'?'above':'below',th:D.dir==='cap'?100:85,sev:'mid'};
