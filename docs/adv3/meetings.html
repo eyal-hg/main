@@ -398,7 +398,7 @@ tr.m.call .k-ic{background:#EDE9FD;color:#5B41C4}
 .kchip svg{flex:none}
 /* אפור בהיר נקרא כ״מושבת״. פגישה היא הערוץ הראשי — ולכן פחם, לא דהוי,
    ובלי להוסיף עוד כחול למסך. */
-.kchip.meet{background:#E8EAED;color:#333F4B;border-color:#D2D7DD}
+.kchip.meet{background:#E1F0FA;color:#1B6C9C;border-color:#C3DEF0}
 .kchip.call{background:#EDE9FD;color:#5B41C4;border-color:#DCD3F8}
 .kchip.wa{background:#DEF0F3;color:#0A6675;border-color:#BCE1E8}
 /* פס צד לכל שורה — שלושה מסלולים צבעוניים שנסרקים במבט */
@@ -561,6 +561,23 @@ tr.m.wa .nm{color:#0B5A68}
   .ar-sec{padding:10px 18px 2px}
   .ar-acts{padding:10px 18px 12px}
 }
+
+/* בורר הנמענים לסיכום */
+.sov{position:fixed;inset:0;z-index:90;background:rgba(12,38,58,.42);display:none;align-items:flex-start;justify-content:center;padding-top:60px}
+.sov.on{display:flex}
+.smd{position:relative;width:min(420px,92vw);background:#fff;border-radius:14px;padding:20px 22px 18px;box-shadow:0 24px 60px rgba(12,64,104,.28)}
+.smd .sx{position:absolute;inset-inline-end:12px;top:10px;width:28px;height:28px;border:0;background:none;color:#8A9AA8;font-size:14px;cursor:pointer;border-radius:8px}
+.smd .sx:hover{background:#F0F4F8;color:#0C4068}
+.smd h3{font-size:16px;font-weight:700;color:#0C4068;margin:0 0 4px}
+.smd .ssub{font-size:12.5px;color:#7A8B9B;margin:0 0 12px}
+.sd-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid #E6ECF4;border-radius:10px;margin-bottom:6px;cursor:pointer;font-size:13.5px}
+.sd-row:hover{background:#F7FAFD}
+.sd-row:has(input:checked){border-color:#0C4068;background:#F4F8FC}
+.sd-row input{width:16px;height:16px;accent-color:#0C4068;margin:0}
+.sd-row b{font-weight:600;color:#0C4068}
+.sd-row span{font-size:12px;color:#7A8B9B}
+.sft{display:flex;gap:8px;margin-top:14px}
+.sft .btn:disabled{opacity:.45;cursor:default}
 </style>
 <link rel="stylesheet" href="brand.css">
 </head>
@@ -647,7 +664,7 @@ tr.m.wa .nm{color:#0B5A68}
           <td class="d num">02.07<small class="num">09:00</small></td>
           <td class="who"><svg class="k-ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><a href="clients.html?c=511327876">אנרגי אינטרנשיונל</a><span class="dot">·</span><span class="nm">פגישה שוטפת — סקירת תזרים</span><span class="hit"></span></td>
           <td class="st"><span class="al warn">סיכום לא אושר</span><i>מהיום</i></td>
-          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">אישור ושליחה</button></td>
+          <td class="ac"><button class="btn pri sm" onclick="event.stopPropagation();arenaShow('r0207')">לאישור</button></td>
         </tr>
         <tr class="m wa" tabindex="0" role="button" data-tags="ok" data-k="אנרגי אינטרנשיונל קבוצה וואטסאפ" id="w0107">
           <td class="d num">01.07<small class="dy">סיכום לילי</small></td>
@@ -715,6 +732,17 @@ tr.m.wa .nm{color:#0B5A68}
         </tr>
       </tbody>
     </table>
+    </div>
+
+    <!-- למי לשלוח את הסיכום — אנשי הקשר של החברה -->
+    <div class="sov" id="sendOv" onclick="if(event.target===this)arSendClose()">
+      <div class="smd" role="dialog" aria-modal="true" aria-labelledby="sendTtl">
+        <button class="sx" onclick="arSendClose()" aria-label="סגירה">✕</button>
+        <h3 id="sendTtl">למי לשלוח את הסיכום</h3>
+        <p class="ssub">בוואטסאפ, בשם המשרד. מסמנים את מי שמקבל.</p>
+        <div id="sendTo"></div>
+        <div class="sft"><button class="btn pri" id="sendGo" onclick="arSendGo()" disabled>אישור ושליחה</button><button class="btn" onclick="arSendClose()">ביטול</button></div>
+      </div>
     </div>
 
     <!-- ===== שיחות שלא נקשרו לחברה ===== -->
@@ -941,7 +969,7 @@ tr.m.wa .nm{color:#0B5A68}
     /* ===== שיחות טלפון — אותה ישות בדיוק, רק kind אחר =====
        לשיחה יש סיכום, משימות, זיכרון, משוב ותמלול — כמו לפגישה.
        ההבדל היחיד הוא בשפה שהמסך מדבר עליה: "שיחה" ולא "פגישה". ===== */
-    c0207:{kind:'call', co:'אנרגי אינטרנשיונל', contact:'צחי', name:'שיחה — דחיית התשלום לבז״ן',
+    c0207:{kind:'call', co:'אנרגי אינטרנשיונל', contact:'צחי', name:'שיחה עם צחי עובד',
       meta:'היום · 09:14 · נכנסת · 4 דק׳ · צחי עובד', st:'סיכום נוצר', stc:'ok',
       base:['צחי ראה את התראת החריגה וביקש לדחות את התשלום לבז״ן — 38,400 ₪ ב-30.07.',
             'תנאי התשלום של בז״ן הם שוטף+30; דחייה של עשרה ימים אינה גוררת קנס.',
@@ -958,7 +986,7 @@ tr.m.wa .nm{color:#0B5A68}
           ['יועץ','רגע, אני מסתכלת בתנאי התשלום שלהם… בז״ן זה שוטף+30. אם נדחה בעשרה ימים אנחנו עדיין בתוך מה שסיכמנו איתם, בלי קנס.'],
           ['לקוח','אז בוא נדחה. אני לא רוצה להיכנס למסגרת בגלל תזמון.'],
           ['יועץ','מסכימה. אני מדברת איתם היום ומעדכנת בקבוצה.']]},
-    c0107:{kind:'call', co:'אנרגי אינטרנשיונל', contact:'רות', name:'שיחה — החשבוניות שלא נצבעו בתזרים',
+    c0107:{kind:'call', co:'אנרגי אינטרנשיונל', contact:'רות', name:'שיחה עם רות אלמוג',
       meta:'01.07 · 16:05 · יוצאת · 9 דק׳ · רות אלמוג', st:'סיכום נוצר', stc:'ok',
       base:['25,000 ₪ מקניות המלאי של יוני עדיין לא הועברו להנהלת החשבונות.',
             'רות תסרוק ותעביר עד סוף השבוע — שלוש חשבוניות ספק.',
@@ -973,7 +1001,7 @@ tr.m.wa .nm{color:#0B5A68}
           ['יועץ','תוכלי לסרוק ולהעביר עד סוף השבוע?'],
           ['לקוח','כן, אני עושה את זה מחר בבוקר.'],
           ['יועץ','תודה. ורק שנסגור לעתיד — במקום לצבור, תשלחי אותן לקבוצה ביום שהן מגיעות.']]},
-    c2406:{kind:'call', co:'מטעי גבעון', contact:'תומר', name:'שיחה — מסגרת אשראי נוספת מול הבנק',
+    c2406:{kind:'call', co:'מטעי גבעון', contact:'יוסי', name:'שיחה עם יוסי גבעון',
       meta:'24.06 · 15:10 · יוצאת · 12 דק׳ · תומר לוי', st:'סיכום נוצר', stc:'ok',
       base:['הבנק מוכן לדון במסגרת נוספת של 100 אש״ח.',
             'נדרש תכנון תזרימי לשישה חודשים — יופק מהמערכת ויישלח לסניף.',
@@ -1135,8 +1163,8 @@ tr.m.wa .nm{color:#0B5A68}
        פנימי של היועץ, ולכן אין כאן פס פעולות. */
     const acts=(a.kind==='wa'||a.kind==='call'||a.kind==='ai')?''
       :a.acts==='pending'
-      ?`<button class="btn pri" onclick="arApprove(true)">אישור ושליחה ל${a.contact||'לקוח'}</button><button class="btn" onclick="arApprove(false)">אישור ללא שליחה</button>`
-      :a.acts==='send'?`<button class="btn pri" onclick="arSend()">שליחת הסיכום ללקוח</button>`
+      ?`<button class="btn pri" onclick="arSendPop('approve')">אישור ושליחה</button><button class="btn" onclick="arApprove(false)">אישור ללא שליחה</button>`
+      :a.acts==='send'?`<button class="btn pri" onclick="arSendPop('send')">שליחת הסיכום ללקוח</button>`
       :`<a class="btn" href="../../meeting-room.html">הזירה המלאה ↗</a>`;
     host.innerHTML=head
       +`<div class="ar-tabs">${tabs.map(x=>`<button class="${_arTab===x[0]?'on':''}" onclick="arTab('${x[0]}')">${x[1]}</button>`).join('')}</div>`
@@ -1160,14 +1188,40 @@ tr.m.wa .nm{color:#0B5A68}
     const made=(a.tasks||[]).filter(k=>k.ok).length;
     (a.tasks||[]).forEach(k=>{ if(send&&k.ok) k.made=1; });
     if(send){ a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
-      toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ'+(made?' · נוצרו '+made+' משימות':' · לא נוצרו משימות')); arRowClose(); }
+      toast('הסיכום נשלח ל'+(window._arTo||[a.contact||'הלקוח']).join(', ')+' בוואטסאפ'+(made?' · נוצרו '+made+' משימות':' · לא נוצרו משימות')); window._arTo=null; arRowClose(); }
     else{ a.st='אושר — לא נשלח'; a.stc='wait'; a.acts='send'; toast('הסיכום אושר · לא נשלח ללקוח'); arRowSendBtn(); }
     arenaShow(window._arSel);
+  }
+  /* אנשי הקשר של החברה — למי אפשר לשלוח את הסיכום (מטבלת contact) */
+  const CONTACTS={
+    'אנרגי אינטרנשיונל':[{n:'צחי עובד',r:'בעלים'},{n:'רות אלמוג',r:'מנהלת כספים'},{n:'תומר לוי',r:''}],
+    'מטעי גבעון':[{n:'יוסי גבעון',r:''}],
+    'אנרגי גולני':[{n:'יעל גולני',r:''}],
+  };
+  /* "אישור ושליחה" לא שולח מיד — פותח בורר: למי מאנשי הקשר לשלוח. בלי סימון אין שליחה. */
+  function arSendPop(mode){
+    const a=ARENA[window._arSel]; if(!a) return;
+    window._arMode=mode;
+    const list=CONTACTS[a.co]||[{n:a.contact||'הלקוח',r:''}];
+    document.getElementById('sendTo').innerHTML=list.map((c,i)=>`<label class="sd-row">
+      <input type="checkbox" data-nm="${c.n}" onchange="arSendChk()"><b>${c.n}</b>${c.r?`<span>${c.r}</span>`:''}</label>`).join('');
+    document.getElementById('sendGo').disabled=true;
+    document.getElementById('sendOv').classList.add('on');
+    if(window.parent!==window) parent.postMessage({hkCliTop:1},'*');
+  }
+  function arSendChk(){ document.getElementById('sendGo').disabled=!document.querySelector('#sendTo input:checked'); }
+  function arSendClose(){ document.getElementById('sendOv').classList.remove('on'); }
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') arSendClose(); });
+  function arSendGo(){
+    const to=[...document.querySelectorAll('#sendTo input:checked')].map(i=>i.dataset.nm);
+    if(!to.length) return;
+    window._arTo=to; arSendClose();
+    if(window._arMode==='approve') arApprove(true); else arSend();
   }
   function arSend(){
     const a=ARENA[window._arSel];
     a.st='נסגרה ✓'; a.stc='ok'; a.acts=null;
-    toast('הסיכום נשלח ל'+(a.contact||'הלקוח')+' בוואטסאפ');
+    toast('הסיכום נשלח ל'+(window._arTo||[a.contact||'הלקוח']).join(', ')+' בוואטסאפ'); window._arTo=null;
     arRowClose(); arenaShow(window._arSel);
   }
   function arRowState(tags,st,ac){
@@ -1509,6 +1563,10 @@ unidRender(); stripQ();
   if(q.get('tab')&&typeof arTab==='function') arTab(q.get('tab'));
 })();
 
+</script>
+<script>
+/* צילום: ?pop=send פותח את בורר הנמענים על הזירה הטעונה */
+(function(){ if(new URLSearchParams(location.search).get('pop')==='send') setTimeout(function(){ if(typeof arSendPop==='function') arSendPop('approve'); },900); })();
 </script>
 </body>
 </html>

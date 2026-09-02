@@ -70,6 +70,7 @@
     /* ---------- הפגישה ---------- */
     'meet-prep'   :[R('advisor'),C(0),T('prep')],
     'meet-feedback':[R('advisor'),G('meets'),FR('&m=r0207&tab=fb')],
+    'meet-sendpop':[R('advisor'),G('meets'),FR('&m=r0207&pop=send')],
     'meet-tasks'  :[R('advisor'),G('meets'),FR('&m=r0207&tab=tasks')],
     'meet-mem'    :[R('advisor'),G('meets'),FR('&m=r0207&tab=mem')],
 
