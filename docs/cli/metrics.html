@@ -370,12 +370,13 @@
   display:inline-grid;place-items:center;flex:none;padding:0;transition:.12s}
 .sh button.tg:hover{border-color:var(--sky);background:#EAF3FA}
 .sh .tg.fx{border-color:transparent;background:#D7E7F4;color:var(--navy)}
-.sh td.op.first{border-inline-start:2px solid #D7E3EE}
-.sh td.op.last{border-inline-end:2px solid #D7E3EE}
 /* יעד ובפועל נבדלים בטיפוגרפיה בלבד: בפועל — מודגש, נייבי; יעד — משקל רגיל, אפור־כחול.
    בלי מילוי ובלי קווים. תא שמתעדכן לבד — רקע אפור עדין. */
-.sh tbody tr[data-k] td,.sh tbody tr.new td{border-top:14px solid transparent;background-clip:padding-box;height:52px}
-.sh tbody tr[data-k] td{border-bottom:1px solid var(--cardbd);border-inline-end:0}   /* בלי קווים אנכיים — הרווח בין השורות נקי */
+/* כל מדד תחום בשני קווים — עליון ותחתון — ורווח לבן ביניהם לבין המדד הבא */
+.sh tbody tr[data-k] td,.sh tbody tr.new td{border-top:8px solid transparent;background-clip:padding-box;height:46px}
+.sh tbody tr[data-k] td{border-bottom:1px solid var(--cardbd);border-inline-end:0;box-shadow:inset 0 1px 0 var(--cardbd)}
+.sh tbody tr[data-k] td.first{box-shadow:inset 0 1px 0 var(--cardbd),inset 2px 0 0 #D7E3EE}
+.sh tbody tr[data-k] td.last{box-shadow:inset 0 1px 0 var(--cardbd),inset -2px 0 0 #D7E3EE}
 .sh th.c-sub.tgh .tglb{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:var(--ink3)}
 .sh th.c-sub.ac{color:var(--navy);font-weight:700}
 .sh .ci.t{color:#5C7590;font-weight:400}
