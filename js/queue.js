@@ -194,8 +194,8 @@
       ${sec('time','זמני תפעול',fmtDur(totalOpsTime()),'היום · '+done+' הושלמו')}
       ${sec('status','סטטוס תפעול',doneN+'<i>/'+T+'</i>','תופעלו · '+(T-doneN)+' נותרו להיום')}
       ${sec('doc','מסמכים להזנה',docsN,'ב-'+docsCos.size+' חברות · לפי מקור')}
-      ${sec('meet','פגישות חודשיות',mpSet+'<i>/'+MP.length+'</i>','Money+ · '+(MP.length-mpSet)+' בלי פגישה החודש')}
-      ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+MR.length+'</i>','Money · Money+ · עד 10.7 · '+(MR.length-mrepN)+' נותרו')}
+      ${sec('meet','פגישות חודשיות',mpSet+'<i>/'+MP.length+'</i>',(MP.length-mpSet)+' בלי פגישה החודש')}
+      ${sec('mrep','דוחות חודשיים',mrepN+'<i>/'+MR.length+'</i>','עד 10.7 · '+(MR.length-mrepN)+' נותרו')}
     </div>`;
     renderOpsInfo();
     const SS=[['active','פעילים'],['setup','בהקמה'],['arch','ארכיון']];
