@@ -78,7 +78,6 @@
     'cli-entries' :[R('client1'),F(function(){selectClient(0)},900),T('entries')],
 
     /* ---------- אזור הניהול ---------- */
-    'adm-meetings':[R('manager'),F(function(){openAdmin()},900)],
     'adm-dailyops':[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('dailyops')},1100)],
     'adm-leads'   :[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('leads')},1100)],
     'adm-advisors':[R('manager'),F(function(){openAdmin()},700),F(function(){admGo('advisors')},1100)],

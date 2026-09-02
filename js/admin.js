@@ -1,7 +1,7 @@
 /* ===== איזור האדמין — כל מסכי HK Money מוטמעים כ-iframe ===== */
+/* "פגישות ודוחות" (adminScreens/index.html) ירד מהסרגל — ישן, מוחלף בקוביות "פגישות
+   חודשיות" ו"דוחות חודשיים" במנהל התזרים. הקובץ נשמר, לא בשימוש (הכרעת אייל, 02.09). */
 const ADMIN_SCREENS=[
-  {k:'meetings',label:'פגישות ודוחות',file:'adminScreens/index.html?embed=1',
-   ic:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'},
   /* תפעול יומי — מבט העל של התפעול. חי רק בתצוגת מנהל התזרים, ורק
      ל-Super Admin: היועץ והלקוח לא אמורים לדעת שהוא קיים. */
   {k:'dailyops',label:'תפעול יומי', file:'adminScreens/daily-ops.html?embed=1', mgrOnly:true,
@@ -27,11 +27,12 @@ const ADMIN_SCREENS=[
   {k:'memory', label:'זיכרון לקוח — קטגוריות', panel:true,
    ic:'<path d="M12 2a3 3 0 0 0-3 3 3 3 0 0 0-3 3v1a3 3 0 0 0 0 6v1a3 3 0 0 0 6 0M12 2a3 3 0 0 1 3 3 3 3 0 0 1 3 3v1a3 3 0 0 1 0 6v1a3 3 0 0 1-6 0M12 2v20"/>'},
 ];
-let ADM_CUR='meetings';
+let ADM_CUR='leads';
 function openAdmin(){
   document.getElementById('adminShell').classList.add('show');
   renderAdmRail();
-  admGo('meetings');
+  /* המסך הראשון: תפעול יומי למנהל התזרים, לידים לשאר */
+  admGo(ADMIN_SCREENS.filter(admVisible).find(x=>!x.sep).k);
 }
 function closeAdmin(){ document.getElementById('adminShell').classList.remove('show'); }
 const admVisible=s=>!s.mgrOnly||(typeof ROLE!=='undefined'&&ROLE==='manager');
