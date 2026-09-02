@@ -626,7 +626,15 @@
         list=list.filter(x=>typeof firmOk!=='function'||firmOk(x.c))
                  .filter(x=>typeof statOk!=='function'||statOk(x.c))
                  .filter(x=>!MGR_FILTER||x.c.mgr===MGR_FILTER)
-                 .sort((a,b)=>opsqRank(a.i)-opsqRank(b.i));
+                 /* הסדר: מי שלא תופעל למעלה, מי שתופעל למטה; בתוך כל קבוצה — חריגה בפועל ראשונה;
+                    ואז סדר התור הרגיל */
+                 .sort((a,b)=>{
+                   const da=opsDoneSet.has('c'+a.i)?1:0, db=opsDoneSet.has('c'+b.i)?1:0;
+                   if(da!==db) return da-db;
+                   const ra=(typeof riskOf==='function'&&riskOf(a.c.name))?0:1, rb=(typeof riskOf==='function'&&riskOf(b.c.name))?0:1;
+                   if(ra!==rb) return ra-rb;
+                   return opsqRank(a.i)-opsqRank(b.i);
+                 });
       }else{
         /* אותם מסננים של הפס העליון — חברת הייעוץ, מנהל התזרים והסטטוס.
            בלעדיהם הבורר בפס לא היה משפיע על הסרגל של היועץ. */
