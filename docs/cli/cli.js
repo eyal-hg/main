@@ -29,7 +29,6 @@ const CO = {
 const NAVI = [
   {k:'dash',   f:'dashboard.html', l:'דשבורד'},
   {k:'msgs',   f:'messages.html',  l:'קבוצת הוואטסאפ', badge:()=>CO.unread},
-  {k:'calls',  f:'calls.html',     l:'שיחות טלפון'},
   {k:'meets',  f:'meetings.html',  l:'פגישות'},
   {k:'ai',     f:'ai.html',        l:'עוזר AI'},
   {k:'metric', f:'metrics.html',   l:'מדדים'},

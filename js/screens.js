@@ -69,7 +69,8 @@
     /* ===== מסכי היועץ המוטמעים — היום / משימות / פגישות / זיכרון =====
        ליועץ המסכים האלה מחליפים את התצוגות הישנות; למנהל התפעול שום דבר לא משתנה. */
     /* מסכי "היום" ו"משימות" המוטמעים משמשים גם את מנהל התזרים */
-    const advScr = inPortfolio && (ROLE==='advisor' || (isOperator && (pView==='alerts'||pView==='tasks')));
+    /* המסכים זהים לשני התפקידים — גם "תקשורת" של המנהל הוא מסך התקשורת של היועץ */
+    const advScr = inPortfolio && (ROLE==='advisor' || (isOperator && (pView==='alerts'||pView==='tasks'||pView==='meets')));
     const ADVMAP = {alerts:['advToday','advTodayFrame'], tasks:['advTasks','advTasksFrame'],
                     meets:['advMeets','advMeetsFrame'],  how:['advMem','advMemFrame']};
     Object.keys(ADVMAP).forEach(k=>{
@@ -528,7 +529,8 @@
       const isClientP=(ROLE==='client1'||ROLE==='clientN');
       const backGo=ROLE==='manager'?"gnavGo('ops')":ROLE==='advisor'?"gnavGo('clients')":"gnavGo('home')";
       const backLbl=ROLE==='manager'?'חזרה':ROLE==='advisor'?'כל הלקוחות':'הבית';
-      const SEC=[['dash',0],['msgs',1],['calls',0],['chat',0],['metrics',1],['meetings',0],['mem',1],['prep',1]];
+      /* 1 = לא לבעל העסק. שיחות טלפון — "ללקוח אין שיחות טלפון" (אייל, 02.09) */
+      const SEC=[['dash',0],['msgs',1],['calls',1],['chat',0],['metrics',1],['meetings',0],['mem',1],['prep',1]];
       /* החזרה והשם עברו לפס העליון — כאן הם היו חוזרים על עצמם */
       html=(ROLE==='client1'?`<div class="gn-co big">${(CLIENTS[CUR]||{}).name||''}</div>`:'')+
         // במצב תפעול — בלי ניווט סקציות: מתרכזים בעבודה (החזרה למעלה יוצאת מהמצב)
@@ -671,6 +673,21 @@
         /* מסומן רק כשבאמת נמצאים בלקוח — CUR הוא 0 כברירת מחדל,
            ובלי התנאי הלקוח הראשון נראה נבחר גם במבט על כל התיק. */
         const cur = (SCOPE==='client' && i===CUR);
+        if(ROLE==='manager'){
+          /* שורת מנהל התזרים: עיגול מצב התפעול · שם · מנהל התזרים של הלקוח · קישור ל-Bizibox.
+             ירוק = סיים תפעול, צהוב = באמצע, אדום = בעיה בנתונים, אפור = עוד לא התחיל. */
+          const k='c'+i;
+          const st = c.dataIssue ? 'bad'
+                   : opsDoneSet.has(k) ? 'done'
+                   : (opsAccum[k]||(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k)) ? 'prog'
+                   : 'idle';
+          const stT={done:'סיים תפעול',prog:'באמצע תפעול',bad:'בעיה בנתונים',idle:'עוד לא התחיל'}[st];
+          return `<div class="cl-row mg ${cur?'on':''}" onclick="selectClient(${i})">
+            <span class="cl-dot ${st}" title="${stT}"></span>
+            <div class="cl-t"><div class="cl-n">${c.name}</div><div class="cl-s">${c.mgr||'ללא מנהל תזרים'}</div></div>
+            <button class="cl-bz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></button>
+          </div>`;
+        }
         return `<div class="cl-row ${cur?'on':''}" onclick="selectClient(${i})">
           <div class="cl-n">${c.name}</div>
           <div class="cl-s">${sub}</div>
