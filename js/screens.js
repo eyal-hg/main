@@ -383,11 +383,6 @@
       const want=bf.dataset.src+((ROLE==='client1'||ROLE==='clientN')?'&r=cli':'');
       if(bf.dataset.cur!==want){ bf.dataset.cur=want; bf.src=want; }
     }
-    else if(t==='past'){
-      document.getElementById('viewPast').style.display='';
-      const pf=document.getElementById('pastFrame');
-      if(!pf.src) pf.src=pf.dataset.src;
-    }
     else if(t==='fcast'){
       document.getElementById('viewFcast').style.display='';
       const ff=document.getElementById('fcastFrame');

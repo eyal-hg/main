@@ -11,7 +11,8 @@
 <style>
 /* =====================================================================
    תמונת תזרים · החודשים הסגורים — הסבה לשפת HK
-   המבנה, הדאטה והדריל־דאון זהים ל-past-cashflow.html. מה שהשתנה:
+   זה המסך היחיד של "תמונת תזרים" — נטען מ-index.html לכל התפקידים (הגרסה
+   העצמאית הישנה עברה ל-legacy/past-cashflow.html ואינה בשימוש). מה שהשתנה מול המקור:
    · הכרום המשותף (cli.css / cli.js) במקום עמוד עצמאי עם גופן Rubik.
    · התובנות ירדו מעמודה צדדית לרצועה אופקית מעל הטבלה — הטבלה מקבלת
      את כל הרוחב, והתובנות נקראות לפני שיורדים למספרים.
@@ -23,8 +24,9 @@
 
 /* ---------- רצועה אחת: סיכום + כלים. אותו דפוס של הפס בדשבורד ---------- */
 .pv-sum{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.pv{display:flex;align-items:center;gap:14px;flex-wrap:wrap;row-gap:10px;
-  background:var(--band);color:#fff;border-radius:12px;padding:10px 18px;margin-bottom:14px}
+.pv{display:flex;align-items:center;gap:10px;min-height:56px;
+  background:var(--band);color:#fff;border-radius:12px;padding:8px 18px;margin-bottom:10px}
+.pv .pv-sum{flex-wrap:nowrap;min-width:0}
 .pv .sp{margin-inline-start:auto}
 /* הפקדים על רקע כהה — קו-מתאר שקוף, כמו .btn.gh */
 .pv .grp{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);
@@ -41,7 +43,7 @@
 .pv .btn.pln svg{color:var(--on-navy2)}
 .pv h1{font-size:15px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
 .pv .rng{font-size:11.5px;color:var(--on-navy3);white-space:nowrap}
-.pv .figs{display:flex;align-items:baseline;gap:18px;margin-inline-start:auto;flex-wrap:wrap}
+.pv .figs{display:flex;align-items:baseline;gap:18px;margin-inline-start:14px;padding-inline-start:18px;border-inline-start:1px solid rgba(255,255,255,.2)}
 .pv .fig{display:flex;align-items:baseline;gap:7px;white-space:nowrap}
 .pv .fig span{font-size:11.5px;color:var(--on-navy3)}
 .pv .fig b{font-size:14px;font-weight:700;color:var(--on-navy);font-variant-numeric:tabular-nums}
@@ -65,7 +67,8 @@
 .story.open .rest{display:block}
 
 /* ---------- סרגל הכלים ---------- */
-.tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tools .grp .btn.pri{padding:5px 14px;font-size:12px}
 .tools .sp{margin-inline-start:auto}
 /* קבוצת בקרה אחת = כלל אחד. טווח נכנס לתוקף בהפקה, חשבון מתחלף מיד. */
 .grp{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--cardbd);
@@ -114,7 +117,13 @@
 .aiside .ah svg{color:#8EC9EC;flex:none}
 .aiside .ah b{font-size:13.5px;font-weight:600;color:#fff}
 .aiside .ah .src{margin-inline-start:auto;font-size:10.5px;color:var(--on-navy4)}
+.aiside .aiscope{display:flex;align-items:center;gap:7px;padding:7px 14px;font-size:11px;line-height:1.4;color:var(--ink3);
+  background:#fff;border-bottom:1px solid var(--tint)}
+.aiside .aiscope span{min-width:0}
+.aiside .aiscope b{font-weight:600;color:var(--navy)}
+.aiside .aiscope .dotv{width:6px;height:6px;border-radius:50%;background:var(--good);flex:none}
 .aiside .ab{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.aiside .note{font-size:11.5px;color:var(--ink3);padding:6px 10px;border-radius:9px;background:#fff;border:1px dashed var(--bd)}
 /* כל תובנה היא כרטיס — הקו הצבעוני נשאר, אבל יש לו על מה לשבת */
 .aiside .ins{position:relative;padding:10px 13px 10px 13px;padding-inline-start:16px;
   font-size:12.5px;line-height:1.6;color:var(--ink2);
@@ -228,10 +237,20 @@
 
   <!-- הראש הכהה — העוגן של המסך. השורה התחתונה של התקופה למעלה, לא בסוף. -->
   <!-- רצועה אחת: הסיכום מימין, הכלים משמאל -->
+  <!-- שורה אחת: הסיכום מימין, שתי הפעולות על הדוח משמאל. הבקרות יושבות בשורה בהירה מתחת -->
   <header class="pv">
     <div class="pv-sum" id="pvSum"></div>
     <span class="sp"></span>
+    <button class="btn pln" onclick="toast('הדוח יוצא לאקסל')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>
+      ייצוא</button>
+    <button class="btn pln" onclick="toast('הדוח נשלח ללקוח בוואטסאפ')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.7-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
+      שליחה ללקוח</button>
+  </header>
 
+  <!-- הבקרות: טווח (נכנס לתוקף בהפקה) וחשבונות (מיד) -->
+  <div class="tools">
     <span class="grp">
       <i class="lb">טווח הדוח · מתעדכן בהפקה</i>
       <span class="dd" id="ddFrom"></span>
@@ -243,14 +262,7 @@
       <i class="lb">חשבונות · מתעדכן מיד</i>
       <span class="dd" id="ddAcct"></span>
     </span>
-    <button class="btn pln" onclick="toast('הדוח יוצא לאקסל')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>
-      ייצוא</button>
-    <span class="sp"></span>
-    <button class="btn pln" onclick="toast('הדוח נשלח ללקוח בוואטסאפ')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 20.5l1.7-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
-      שליחה ללקוח</button>
-  </header>
+  </div>
 
   <div class="dirty hid" id="dirtyBar">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>
@@ -268,6 +280,8 @@
         <b>עוזר AI · על הדוח</b>
         <span class="src">מנתוני הדוח</span>
       </div>
+      <!-- מה הסוכן מקבל: בדיוק הדוח שמוצג — הטווח, החשבון וכל השורות. מתעדכן עם הדוח. -->
+      <div class="aiscope" id="aiScope"></div>
       <div class="ab" id="aiBody">
         <div class="ins warn"><b>משיכות בעלים גבוהות</b>
           <span><span class="num" dir="ltr">1.46</span> מ׳ ₪ בתקופה — פי 1.5 מההפרש התפעולי המצטבר.</span></div>
@@ -387,7 +401,7 @@ function txOf(f,ci){
 }
 var CV='<svg class="cv" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>';
 var WIC='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4M12 17h.01"/></svg>';
-var CELL=function(x,cls){ return x==null?'<div class="c dash">---</div>'
+var CELL=function(x,cls){ return x==null?'<div class="c dash">—</div>'
   :'<div class="c '+(x<0?'neg ':'')+(cls||'')+'">'+nf.format(x)+'</div>'; };
 var ROW=function(label,cells,cls){ return '<div class="r '+(cls||'')+'">'+
   '<div class="c cat">'+label+'</div>'+cells+'</div>'; };
@@ -443,7 +457,7 @@ function render(){
         h+=ROW('<button class="caret '+(fOpen?'open':'')+'" onclick="tg(\''+fkey+'\')" '+
                'aria-expanded="'+fOpen+'" aria-label="תנועות '+f.n+'">'+CV+'</button>'+f.n,
           f.v.map(function(x,ci){
-            if(x==null) return '<div class="c dash">---</div>';
+            if(x==null) return '<div class="c dash">—</div>';
             var mini=fOpen?'<span class="txmini">'+txOf(f,ci)+' · <b>'+nf.format(x)+'</b></span>':'';
             return '<div class="c '+(x<0?'neg':'')+'">'+nf.format(x)+mini+'</div>';
           }).join('')+CELL(ftot),'factor');
@@ -476,8 +490,37 @@ function render(){
       '<div class="fig sep"><span>פתיחה</span><b>'+nf.format(opens[0])+'</b></div>'+
       '<div class="fig"><span>סגירה</span><b>'+nf.format(opens[opens.length-1])+' ₪</b></div>'+
     '</div>';
+  aiScopeDraw();
 }
 function tg(k){ open.has(k)?open['delete'](k):open.add(k); render(); }
+
+/* ---------- מה נשלח לסוכן: הדוח כפי שהוא מוצג עכשיו ----------
+   לא "נתוני החברה" — הדוח הזה: הטווח שהופק, החשבון שנבחר, יתרות, כל
+   הקבוצות/הקטגוריות/הגורמים והרצועות המחושבות, והתובנות שמוצגות. נבנה
+   מחדש בכל render, כך שאחרי הפקה או החלפת חשבון הסוכן עונה על מה שרואים. */
+function reportContext(){
+  var monthly=calcTotals(['הכנסות','עלות המכר','הוצאות תפעוליות','מימון, השקעות ובעלים']);
+  var opens=[OPEN_CUR]; monthly.forEach(function(d,i){opens.push(opens[i]+d)});
+  var rows=0;
+  var sections=SECTIONS.map(function(sec){
+    if(sec.calc) return {calc:sec.calc, v:calcTotals(sec.from)};
+    return {group:sec.label, total:secTotals(sec), cats:sec.cats.map(function(c){ rows++;
+      return {name:c.label, v:c.v, factors:(c.factors||[]).map(function(f){ rows++; return {name:f.n, v:f.v}; })}; })};
+  });
+  return {
+    screen:'תמונת תזרים', company:document.title.split(' · ')[0],
+    months:MONTHS.slice(), account:DDS.acct.opts[DDS.acct.sel],
+    opening:opens[0], closing:opens[opens.length-1], monthly:monthly,
+    sections:sections,
+    insights:[].map.call(document.querySelectorAll('#aiBody .ins b'),function(b){return b.textContent}),
+    rows:rows
+  };
+}
+function aiScopeDraw(){
+  var c=reportContext(), el=document.getElementById('aiScope'); if(!el) return;
+  var m=c.months[0].split(' ')[0]+'–'+c.months[c.months.length-1];
+  el.innerHTML='<span class="dotv"></span><span>עונה על הדוח שמוצג · <b>'+m+'</b> · <b>'+c.account+'</b></span>';
+}
 
 /* ================= בוררים מותאמים — טווח וחשבונות ================= */
 var DDS={
@@ -526,7 +569,7 @@ function ddPick(k,i){
       });
     });
     OPEN_CUR=Math.round(OPEN0*f);
-    render();
+    render(); aiNote('הדוח התחלף ל־'+DDS.acct.opts[i]+' — העוזר עונה מעכשיו על הדוח הזה');
     toast('הנתונים הוחלפו — '+DDS.acct.opts[i]);
   }else{
     document.getElementById('dirtyBar').classList.remove('hid');
@@ -543,7 +586,7 @@ function produce(){
   four.forEach(function(m){MONTHS.push(m)});
   document.getElementById('dirtyBar').classList.add('hid');
   var btn=document.getElementById('prodBtn'); btn.classList.remove('attn'); btn.textContent='הפקה';
-  render();
+  render(); aiNote('הדוח הופק מחדש — העוזר עונה מעכשיו על הטווח החדש');
   toast('הדוח הופק לטווח '+DDS.from.opts[DDS.from.sel]+' – '+DDS.to.opts[DDS.to.sel]+' — נשמר בתיק');
 }
 function pinIns(){ toast('התובנה הוצמדה לדוח — תופיע גם בגרסה שנשלחת ללקוח'); }
@@ -563,9 +606,15 @@ var A_ANS={
  'מה קרה באפריל?':'אפריל נסגר ב-<b>753,266- ₪</b> — החודש החריג בתקופה. 635 א׳ ₪ מתוכו משיכות בעלים, והשאר העברות בין החשבונות.',
  'כמה יצא למשיכות בעלים?':'<b>1.46 מ׳ ₪</b> לאורך ארבעת החודשים, בקבוצת "מימון, השקעות ובעלים" — פי 1.5 מההפרש התפעולי המצטבר.'
 };
+function aiNote(t){
+  var b=document.getElementById('aiBody'); if(!b) return;
+  b.insertAdjacentHTML('beforeend','<div class="note">'+t+'</div>'); b.scrollTop=b.scrollHeight;
+}
 function aiAsk(q){
   var b=document.getElementById('aiBody');
-  var a=A_ANS[q]||'על השאלה הזאת אין לי מספיק מהדוח הזה — במסך העוזר טעון כל ההקשר של החברה.';
+  /* במוצר: השאלה + reportContext() נשלחים לסוכן. כאן — תשובות דמו על הדוח הזה. */
+  window.__aiPayload={question:q, report:reportContext()};
+  var a=A_ANS[q]||'על השאלה הזאת אין לי תשובה מתוך הדוח הזה ('+MONTHS[0].split(' ')[0]+'–'+MONTHS[MONTHS.length-1]+'). במסך העוזר טעון כל ההקשר של החברה.';
   b.insertAdjacentHTML('beforeend','<div class="q">'+q+'</div><div class="a">'+a+'</div>');
   b.scrollTop=b.scrollHeight;
 }
