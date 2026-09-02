@@ -169,6 +169,8 @@
       const f=document.getElementById(MAP[d.hkAdv]);
       if(f){ f.dataset.h=d.h; fitFrame(f); }
       return; }
+    /* מסגרת פותחת פופאפ — הדף נגלל למעלה כדי שהפופאפ ייראה כולו */
+    if(d.hkCliTop){ window.scrollTo({top:0,behavior:'smooth'}); return; }
     /* מסכי החברה (docs/cli) — דיווח גובה והחלפת טאב מתוך המסגרת */
     if(d.hkCli&&d.h>200){
       const M={dash:'cliDashFrame',msgs:'cliMsgsFrame',meets:'cliMeetsFrame',ai:'cliAiFrame',

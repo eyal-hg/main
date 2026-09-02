@@ -466,6 +466,9 @@
 /* ---------- עורך המדד ---------- */
 .md.wide{width:min(720px,94vw);max-height:88vh;overflow-y:auto;padding:21px 24px 20px}
 .md.wide.xl{width:min(1180px,96vw);max-height:94vh;padding:20px 26px 18px}
+/* בהטמעה המסגרת גבוהה מהחלון — הפופאפ נצמד לראש המסגרת ולא למרכזה */
+html.embed .ov.on{align-items:start;padding-top:22px}
+html.embed .md{max-height:none}
 .mxcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:0 28px;align-items:start}
 @media(max-width:900px){.mxcols{grid-template-columns:minmax(0,1fr)}}
 .mxcol.wide .srcgrid{grid-template-columns:repeat(5,minmax(0,1fr))}
@@ -503,7 +506,12 @@
 /* התראה — משפט אחד */
 .alrow{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink2)}
 /* בורר הקטגוריות — סעיפים, תיבות סימון, וכל הסעיף */
-.cp{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:8px 12px 6px;max-height:290px;overflow-y:auto}
+.cp{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:8px 12px 6px}
+.cp .cx{width:16px;height:16px;border-radius:4px;border:1px solid #C9D6E3;background:#fff;color:var(--navy);
+  display:inline-grid;place-items:center;flex:none;padding:0}
+.cp .cx:hover{border-color:var(--sky);background:#EAF3FA}
+.cp .pk{font-size:11px;color:var(--ink3)}
+.cp.compact .cp-gh{padding:3px 0}
 .cp-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .cp-top input.s{width:150px;padding:5px 11px;font-size:12px;border-radius:999px}
 .cp-n{font-size:11px;color:var(--ink3)}
@@ -511,8 +519,8 @@
 .cp-g:first-child{border-top:0}
 .cp-gh{display:flex;align-items:center;gap:8px;padding:2px 0 4px}
 .cp-gh .dot{width:8px;height:8px;border-radius:50%;flex:none}
-.cp-gh b{font-size:12.5px;font-weight:700;color:var(--navy)}
-.cp-gh .all{margin-inline-start:auto;font:inherit;font-size:11px;font-weight:600;color:var(--ink3);
+.cp-gh b{font-size:12.5px;font-weight:700;color:var(--navy);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cp-gh .all{margin-inline-start:auto;flex:none;white-space:nowrap;font:inherit;font-size:11px;font-weight:600;color:var(--ink3);
   border:1px solid var(--bd);border-radius:999px;padding:2px 9px;transition:.12s}
 .cp-gh .all:hover{border-color:var(--sky);color:var(--navy)}
 .cp-gh .all.on{background:var(--band);border-color:var(--band);color:#fff}
@@ -537,13 +545,21 @@
 .fmet .fm.on{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);background:#F4F8FC}
 .fsheet{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .fsheet input.s{width:130px}
-.mxcalc .fval .cp{max-height:240px}
 .mxcalc .fval .cp-rows{grid-template-columns:minmax(0,1fr)}
 .mxcalc .fval .cp-n{display:none}
 .mxcalc .fval .cp-top input.s{width:100%}
 .pillrow.days{gap:4px}
 .pillrow.days .pill{width:34px;justify-content:center;padding:3px 0;font-size:11.5px}
 .asksum{margin-top:10px;font-size:12.5px;color:var(--navy);font-weight:600;display:flex;align-items:center;gap:7px}
+.lbn{font-weight:500;color:var(--ink3);margin-inline-start:6px}
+.wamsg{position:relative}
+.wamsg textarea{display:block;width:100%;font:inherit;font-size:13px;line-height:1.6;color:var(--ink);
+  background:#F0FAF4;border:1px solid #CFE8DA;border-radius:12px 12px 12px 3px;padding:10px 12px 30px;resize:vertical;outline:none;min-height:82px}
+.wamsg textarea:focus{border-color:#7FC9A0;box-shadow:0 0 0 3px rgba(76,175,125,.14)}
+.wamsg .reset{position:absolute;inset-inline-end:8px;bottom:8px;font:inherit;font-size:11px;font-weight:600;color:var(--ink3);
+  border:1px solid var(--bd);border-radius:999px;padding:2px 9px;background:#fff}
+.wamsg .reset:hover{color:var(--navy);border-color:var(--sky)}
+.wamsg .reset.hid{display:none}
 .asksum svg{color:var(--sky);flex:none}
 .alrule{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--ink2)}
 .alrule .pillrow{gap:4px}
@@ -720,6 +736,10 @@
           <div class="fld hid" id="mxAskDaysF"><label>באילו ימים בחודש</label><div class="pillrow days" id="mxAskDays"></div></div>
           <div class="fld"><label>באיזו שעה</label><div class="pillrow" id="mxAskAt"></div></div>
           <div class="asksum" id="mxAskSum"></div>
+          <div class="fld"><label>ההודעה שהלקוח יקבל <span class="lbn" id="mxAskMsgSt"></span></label>
+            <div class="wamsg"><textarea id="mxAskMsg" rows="3"></textarea>
+              <button class="reset" id="mxAskReset" type="button">חזרה להמלצה</button></div>
+            <div class="hint">המלצה שנבנתה מהשם ומהתדירות. אפשר לשנות — הנוסח נשמר עם המדד ונשלח בשם המשרד.</div></div>
         </div>
         <div class="fld" id="mxActualF"><label for="mxActual" id="mxActualLb">הבפועל לחודש</label>
           <input id="mxActual" class="s num" inputmode="numeric" placeholder="מספר">
@@ -1347,7 +1367,9 @@ function applyView(){
   /* ניהול המדדים חוזר על מה שהגיליון כבר מראה — יורד בתצוגת הטבלה */
   document.querySelector('.mgr').classList.toggle('hid',tbl);
 }
-function openArena(k){ mArena(k); document.getElementById('arOv').classList.add('on'); }
+function openArena(k){ mArena(k); document.getElementById('arOv').classList.add('on'); popTop(); }
+/* בהטמעה: ההורה נגלל למעלה כדי שהפופאפ ייראה כולו */
+function popTop(){ if(document.documentElement.classList.contains('embed')&&window.parent!==window) parent.postMessage({hkCliTop:1},'*'); }
 function closeArena(){ document.getElementById('arOv').classList.remove('on'); }
 
 /* טווח החודשים בגיליון: מחודש עד חודש. החודש האחרון בטווח הוא החודש המוצג —
@@ -1635,6 +1657,7 @@ function openMx(i){
   drawMx();
   document.getElementById('mxOv').classList.add('on');
   document.querySelector('#mxOv .md').scrollTop=0;
+  popTop();
   setTimeout(function(){document.getElementById('mxName').focus();},60);
 }
 function closeMx(){document.getElementById('mxOv').classList.remove('on');EX=-1;D=null;}
@@ -1674,6 +1697,12 @@ var FREQS=[
   ['monthly','פעם בחודש',     'בקשה בתאריך קבוע — למספר של החודש'],
   ['days',   'ימים בחודש',    'בקשה בכמה תאריכים קבועים בחודש']];
 var ICO_WA='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg>';
+/* ההודעה המומלצת ללקוח — מהשם ומהתדירות; היועץ יכול לשנות */
+var CLIENT_FIRST='צחי';   /* איש הקשר של החברה (צחי עובד) */
+function askMsgSuggest(name,a){
+  var when=(a&&a.freq==='daily')?'היום':(a&&a.freq==='weekly')?'השבוע':'החודש';
+  return 'שלום '+CLIENT_FIRST+', עדכון קצר ל'+when+': מה המספר של "'+name+'"? אפשר לענות כאן במספר בלבד — הוא נכנס ישר לדוח.';
+}
 function askTxt(a){
   if(!a) return '';
   var w= a.freq==='daily'?'כל יום עבודה'
@@ -1709,6 +1738,11 @@ function drawMx(){
     pills('mxAskDays',days,D.ask.days||[],'askday');
     pills('mxAskAt',ATS,D.ask.at||'09:00','askat');
     document.getElementById('mxAskSum').innerHTML=ICO_WA+'<span>בקשה בוואטסאפ '+esc(askTxt(D.ask))+'</span>';
+    var nm=document.getElementById('mxName').value.trim()||D.name||'המדד';
+    var ta=document.getElementById('mxAskMsg'), custom=!!D.askMsg;
+    if(document.activeElement!==ta) ta.value=custom?D.askMsg:askMsgSuggest(nm,D.ask);
+    document.getElementById('mxAskMsgSt').textContent=custom?'· נוסח של היועץ':'· המלצה';
+    document.getElementById('mxAskReset').classList.toggle('hid',!custom);
   }
   opts('mxLogic',LOGICS,(D.logic&&D.logic!==LOGIC[0])?D.logic:LOGIC[1],'logic');
   drawCats();
@@ -1750,17 +1784,26 @@ function drawMx(){
    tag מזהה את הבורר ('m' = מקור המדד, 'a'/'b' = אגפי הנוסחה). */
 var CATQ={m:'',a:'',b:''};
 var ICO_CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-function cpHtml(tag,sel){
+/* CPX — אילו סעיפים פתוחים בבורר המצומצם (אגפי הנוסחה): סעיף עם בחירה פתוח, השאר סגורים */
+var CPX={a:{},b:{}};
+function cpHtml(tag,sel,compact){
   sel=sel||[]; var q=(CATQ[tag]||'').trim(), h='', n=0;
   CATG.forEach(function(g){n+=g.rows.length;});
-  h+='<div class="cp"><div class="cp-top"><input class="s" data-cpq="'+tag+'" value="'+esc(CATQ[tag]||'')+'" placeholder="חיפוש…"><span class="cp-n">'+n+' קטגוריות מורשות</span></div>';
+  h+='<div class="cp'+(compact?' compact':'')+'"><div class="cp-top"><input class="s" data-cpq="'+tag+'" value="'+esc(CATQ[tag]||'')+'" placeholder="חיפוש…"><span class="cp-n">'+n+' קטגוריות מורשות</span></div>';
   var any=false;
   CATG.forEach(function(g){
     var gOn=sel.indexOf(g.label)>=0;
     var rows=g.rows.filter(function(r){return !q||r.indexOf(q)>-1||g.label.indexOf(q)>-1;});
     if(!rows.length) return; any=true;
-    h+='<div class="cp-g"><div class="cp-gh"><span class="dot" style="background:'+g.color+'"></span><b>'+esc(g.label)+'</b>'+
-       '<button class="all'+(gOn?' on':'')+'" data-cpt="'+tag+'" data-cpg="'+esc(g.label)+'">'+(gOn?'כל הסעיף ✓':'כל הסעיף')+'</button></div><div class="cp-rows">';
+    var picked=g.rows.filter(function(r){return sel.indexOf(r)>=0;}).length;
+    var open=!compact||q||(CPX[tag]&&CPX[tag][g.label]!=null?CPX[tag][g.label]:(picked>0));
+    h+='<div class="cp-g"><div class="cp-gh">'+
+       (compact?'<button class="cx" data-cpt="'+tag+'" data-cpx="'+esc(g.label)+'" aria-expanded="'+(open?'true':'false')+'">'+(open?ICO_MINUS:ICO_PLUS)+'</button>':'')+
+       '<span class="dot" style="background:'+g.color+'"></span><b>'+esc(g.label)+'</b>'+
+       (compact&&!gOn&&picked?'<span class="pk">'+picked+' נבחרו</span>':'')+
+       '<button class="all'+(gOn?' on':'')+'" data-cpt="'+tag+'" data-cpg="'+esc(g.label)+'">'+(gOn?'כל הסעיף ✓':'כל הסעיף')+'</button></div>';
+    if(!open){ h+='</div>'; return; }
+    h+='<div class="cp-rows">';
     rows.forEach(function(r){
       var on=gOn||sel.indexOf(r)>=0;
       h+='<button class="cp-r'+(on?' on':'')+(gOn?' g':'')+'" data-cpt="'+tag+'" data-cpr="'+esc(r)+'" data-cpg="'+esc(g.label)+'">'+
@@ -1811,7 +1854,7 @@ function drawFormula(){
       var others=M.filter(function(m){return m.k!==D.k&&m.src!=='calc';});
       h='<div class="fmet">'+others.map(function(m){return '<button class="fm'+(m.k===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(m.k)+'"><b>'+esc(m.name)+'</b>'+kindTag(m)+'</button>';}).join('')+'</div>';
     }else if(side.src==='cats'){
-      h=cpHtml(sd,side.vals||[]);                   /* אותו בורר של מקור המדד */
+      h=cpHtml(sd,side.vals||[],true);              /* אותו בורר של מקור המדד, מקופל לסעיפים */
     }else if(side.src==='acct'){
       h='<div class="pillrow">'+PL_LINES.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>'+
         '<div class="hint" style="margin-top:6px">שורה בדוח רווח והפסד של החודש</div>';
@@ -1894,6 +1937,7 @@ document.addEventListener('click',function(e){
     if(di>=0) D.ask.days.splice(di,1); else D.ask.days.push(t.dataset.askday);
     D.ask.days.sort(function(a,b){return a-b;}); drawMx();return;}
   if(t.dataset.askat){D.ask.at=t.dataset.askat;drawMx();return;}
+  if(t.id==='mxAskReset'){delete D.askMsg;drawMx();return;}
   if(t.id==='mxAlOn'){
     D.alerts=D.alerts||[];
     if(!D.alerts[0]) D.alerts[0]={on:true,mode:'pct',dir:D.dir==='cap'?'above':'below',th:D.dir==='cap'?100:85,sev:'mid'};
@@ -1908,6 +1952,7 @@ document.addEventListener('click',function(e){
   if(t.dataset.fsrc){var sdA=D.f[t.dataset.fs]; if(sdA.src!==t.dataset.fsrc){sdA.src=t.dataset.fsrc;sdA.val='';} drawFormula();return;}
   if(t.dataset.fv!=null&&t.dataset.fs){D.f[t.dataset.fs].val=t.dataset.fv;drawFormula();return;}
   if(t.dataset.fop){D.f.op=t.dataset.fop;drawFormula();return;}
+  if(t.dataset.cpx){var tx=t.dataset.cpt; CPX[tx][t.dataset.cpx]=(t.getAttribute('aria-expanded')!=='true'); drawFormula(); return;}
   if(t.dataset.cpt&&(t.dataset.cpg||t.dataset.cpr)){
     var tg=t.dataset.cpt; cpSet(tg,cpToggle(cpSel(tg),t.dataset.cpg,t.dataset.cpr||null)); redrawCp(tg); return;}
   if(t.dataset.flogic){D.f[t.dataset.fs].logic=t.dataset.flogic;drawFormula();return;}
@@ -1935,6 +1980,14 @@ document.addEventListener('click',function(e){
 /* קלט בעורך — יעד יומי מתעדכן חי, וחוקי ההתראה נשמרים בעותק העבודה */
 document.addEventListener('input',function(e){
   if(!D) return;
+  if(e.target.id==='mxAskMsg'){
+    var v=e.target.value; var sug=askMsgSuggest(document.getElementById('mxName').value.trim()||D.name||'המדד',D.ask);
+    if(v.trim()===sug.trim()||!v.trim()) delete D.askMsg; else D.askMsg=v;
+    document.getElementById('mxAskMsgSt').textContent=D.askMsg?'· נוסח של היועץ':'· המלצה';
+    document.getElementById('mxAskReset').classList.toggle('hid',!D.askMsg);
+    return;}
+  if(e.target.id==='mxName'&&D.src==='hand'&&(D.who||'client')==='client'&&!D.askMsg){
+    document.getElementById('mxAskMsg').value=askMsgSuggest(e.target.value.trim()||'המדד',D.ask);}
   if(e.target.dataset&&e.target.dataset.cpq){CATQ[e.target.dataset.cpq]=e.target.value;redrawCp(e.target.dataset.cpq);return;}
   if(e.target.dataset&&e.target.dataset.fin){
     D.f[e.target.dataset.fin][e.target.dataset.fk||'val']=e.target.value.trim();
