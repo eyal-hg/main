@@ -322,16 +322,11 @@ function closeUserSet(){
 function renderUserSet(){
   const u=(MEM_USERS[MEM_CUR]||[])[US_IX]; if(!u) return;
   u.off=u.off||[];
+  /* "סוג" (אדמין/עובד) ירד מהפופאפ לבקשת אייל — "לא קשור". הנתון נשאר לסינון בלבד. */
   const cats=MEM_CATS.filter(c=>c.scope==='user').filter(c=>!c.appliesTo||c.appliesTo==='all'||c.appliesTo===u.type);
   document.getElementById('userSetBody').innerHTML=`
     <div class="us-row"><label>שם</label><input class="mx2-inp" value="${u.n}" oninput="MEM_USERS[MEM_CUR][${US_IX}].n=this.value" style="flex:1"></div>
     <div class="us-row"><label>תפקיד</label><input class="mx2-inp" value="${u.role}" oninput="MEM_USERS[MEM_CUR][${US_IX}].role=this.value" style="flex:1"></div>
-    <div class="us-row"><label>סוג</label>
-      <span class="cr-modes">
-        <span class="mtk-chip ${u.type==='admin'?'on':''}" onclick="MEM_USERS[MEM_CUR][${US_IX}].type='admin';renderUserSet()">אדמין</span>
-        <span class="mtk-chip ${u.type==='employee'?'on':''}" onclick="MEM_USERS[MEM_CUR][${US_IX}].type='employee';renderUserSet()">עובד</span>
-      </span>
-      <i class="us-hint">הסוג קובע אילו קטגוריות חלות עליו ומה יראה כשאדמין</i></div>
     <div class="us-cats-h">קטגוריות זיכרון פעילות על היוזר</div>
     ${cats.map(c=>`<label class="us-cat">
       <input type="checkbox" ${u.off.includes(c.key)?'':'checked'} onchange="usTgCat('${c.key}',this.checked)">
