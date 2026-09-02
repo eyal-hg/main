@@ -502,9 +502,9 @@
 .md.xl .state{margin:6px 0 0}
 /* התראה — משפט אחד */
 .alrow{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink2)}
-.alrule{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--ink2);
-  background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
-.alrule input.th{width:78px;text-align:center;padding:6px 8px}
+.alrule{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--ink2)}
+.alrule .pillrow{gap:4px}
+.alrule input.th{width:70px;text-align:center;padding:5px 8px;border-radius:999px}
 .fld{margin-top:13px}
 .fld>label{display:block;font-size:11.5px;font-weight:700;color:var(--ink3);margin:0 2px 6px}
 .fld .hint{font-size:11px;color:var(--faint);margin-top:5px}
@@ -655,10 +655,9 @@
         <span class="altx" id="mxAlTx"></span>
       </div>
       <div class="alrule hid" id="mxAlRule">
-        <span>כשהמדד</span><div class="pillrow" id="mxAlDir"></div>
+        <span>להתריע כשהמדד</span><div class="pillrow" id="mxAlDir"></div>
         <input id="mxAlTh" class="s num th" inputmode="numeric" placeholder="85">
         <div class="pillrow" id="mxAlMode"></div>
-        <span>—</span><div class="pillrow" id="mxAlSev"></div>
       </div>
     </section>
       </div>
@@ -1647,8 +1646,7 @@ function drawMx(){
   document.getElementById('mxAlTx').textContent= on ? 'ההתראה פעילה — תופיע במוקד ההתראות כשהחוק מתקיים' : 'בלי התראה — המדד רק מוצג';
   if(r){
     pills('mxAlDir',['מתחת ל','מעל ל'],r.dir==='above'?'מעל ל':'מתחת ל','aldir');
-    pills('mxAlMode',['% מהיעד','בערך עצמו'],r.mode==='abs'?'בערך עצמו':'% מהיעד','almode');
-    pills('mxAlSev',['דחוף','לבדיקה'],r.sev==='high'?'דחוף':'לבדיקה','alsev');
+    pills('mxAlMode',['% מהיעד','בסכום'],r.mode==='abs'?'בסכום':'% מהיעד','almode');
   }
 }
 
@@ -1742,8 +1740,7 @@ document.addEventListener('click',function(e){
     document.getElementById('mxAlTh').value=D.alerts[0].th;
     drawMx();return;}
   if(t.dataset.aldir){D.alerts[0].dir=(t.dataset.aldir==='מעל ל')?'above':'below';drawMx();return;}
-  if(t.dataset.almode){D.alerts[0].mode=(t.dataset.almode==='בערך עצמו')?'abs':'pct';drawMx();return;}
-  if(t.dataset.alsev){D.alerts[0].sev=(t.dataset.alsev==='דחוף')?'high':'mid';drawMx();return;}
+  if(t.dataset.almode){D.alerts[0].mode=(t.dataset.almode==='בסכום')?'abs':'pct';drawMx();return;}
   if(t.dataset.logic){D.logic=t.dataset.logic;drawMx();return;}
   if(t.dataset.calc){D.calc=t.dataset.calc;drawMx();return;}
   if(t.dataset.line){D.line=t.dataset.line;drawMx();return;}
