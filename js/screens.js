@@ -643,7 +643,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
           <input id="advQ" placeholder="חיפוש לקוח" autocomplete="off" value="${q.replace(/"/g,'&quot;')}" oninput="advQSet(this.value)">
         </div>
-        ${ROLE==='manager'?`<div class="cl-lg"><span><i class="cl-dot done"></i>סיים</span><span><i class="cl-dot prog"></i>באמצע</span><span><i class="cl-dot bad"></i>בעיה בנתונים</span><span><i class="cl-dot"></i>לא התחיל</span></div>`:''}
+        ${ROLE==='manager'?`<div class="cl-lg"><span><i class="cl-dot done"></i>סיים</span><span><i class="cl-dot prog"></i>באמצע</span><span><i class="cl-dot bad"></i>בעיה בנתונים</span><span><i class="cl-dot"></i>לא התחיל</span><span class="lg-warn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>חריגה בפועל</span></div>`:''}
         <div class="cl-list">`;
       /* הסרגל נקי: שם ושורת משנה. בלי נקודות, בלי מונים ובלי התראות —
          ההתראות חיות במסכים שנועדו להן, לא בניווט. */
@@ -683,9 +683,13 @@
                    : (opsAccum[k]||(typeof FIN_STATE!=='undefined'&&FIN_STATE&&FIN_STATE.key===k)) ? 'prog'
                    : 'idle';
           const stT={done:'סיים תפעול',prog:'באמצע תפעול',bad:'בעיה בנתונים',idle:'עוד לא התחיל'}[st];
+          /* חריגה בפועל — אזהרה אדומה. יתרת סוף יום מתחת למסגרת, לא תחזית. */
+          const rk=(typeof riskOf==='function')?riskOf(c.name):null;
+          const warn=rk?`<span class="cl-warn" title="חריגה בפועל · ${rk.days} ימים · -${rk.amt.toLocaleString('en-US')} ₪ · ${rk.bank}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>`:'';
           return `<div class="cl-row mg ${cur?'on':''}" onclick="selectClient(${i})">
             <span class="cl-dot ${st}" title="${stT}"></span>
             <div class="cl-t"><div class="cl-n">${c.name}</div><div class="cl-s">${c.mgr||'ללא מנהל תזרים'}</div></div>
+            ${warn}
             <button class="cl-bz" title="פתיחה ב-Bizibox" onclick="event.stopPropagation();toast('נפתח ב-Bizibox — ${c.name}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></button>
           </div>`;
         }
