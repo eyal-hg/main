@@ -259,6 +259,91 @@
   border:1px solid var(--bd);color:var(--ink3);white-space:nowrap}
 .marn-b .rule .st.on{color:var(--good);border-color:#CFE6DA;background:#F1F9F5}
 .marn-acts{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+
+/* =====================================================================
+   תצוגת טבלה (02.09) — גיליון. שורה למדד, עמודה לחודש; תא שאפשר להזין
+   בו נערך במקום, תא שמתעדכן לבד אפור. השורה האחרונה ריקה — שם ויעד
+   יוצרים מדד, כמו שורה חדשה בגיליון. אותם נתונים של תצוגת הכרטיסים.
+   ===================================================================== */
+.vseg{display:inline-flex;gap:2px;border:1px solid var(--bd);border-radius:999px;padding:2px;flex:none}
+.vseg button{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+  color:var(--ink3);border-radius:999px;padding:3px 11px;transition:.12s}
+.vseg button:hover{color:var(--navy)}
+.vseg button.on{background:var(--band);color:#fff}
+.mt.tbl{grid-template-columns:minmax(0,1fr)}
+.sheet{position:relative}
+.shx{overflow-x:auto}
+.sh{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:1150px}
+.sh th{background:var(--bg);text-align:start;font-size:11px;font-weight:700;color:var(--ink3);
+  letter-spacing:.2px;padding:0 10px;height:34px;border-bottom:1px solid var(--cardbd);
+  border-inline-end:1px solid var(--cardbd);white-space:nowrap}
+.sh th:last-child,.sh td:last-child{border-inline-end:0}
+.sh th button{font:inherit;color:inherit;display:inline-flex;align-items:center;gap:4px}
+.sh th button:hover,.sh th button.on{color:var(--navy)}
+.sh th button .cv{opacity:0;transition:transform .15s}
+.sh th button.on .cv{opacity:1}
+.sh th button.on.desc .cv{transform:rotate(180deg)}
+.sh th.num,.sh td.num{text-align:end}
+.sh th.cur{background:#EAF3FA;color:var(--navy)}
+.sh td.cur{background:#F3F8FC}
+.sh td{padding:0;height:38px;border-bottom:1px solid var(--tint);border-inline-end:1px solid var(--tint);
+  color:var(--ink2);vertical-align:middle;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sh tbody tr:hover td{background:#FAFCFE}
+.sh tbody tr:hover td.cur{background:#EEF5FB}
+.sh td.ro,.sh td.cp{padding:0 10px}
+.sh td.cp{color:var(--ink3)}
+.sh td .nil{color:var(--faint)}
+.sh td.c-st{width:30px;text-align:center}
+.sh .c-st .ml-dot{display:inline-block;margin:0;vertical-align:middle}
+.sh tr.s-dng  .ml-dot{background:var(--bad);box-shadow:0 0 0 3px rgba(196,61,48,.14)}
+.sh tr.s-wait .ml-dot{background:#B07A00;box-shadow:0 0 0 3px rgba(176,122,0,.15)}
+.sh tr.s-off  .ml-dot{background:#E0A32B}
+.sh tr.s-near .ml-dot{background:#8CB8D8}
+.sh tr.s-ok   .ml-dot{background:var(--good)}
+.sh .c-nm{min-width:200px}
+.sh .c-kd{width:118px}
+.sh .c-un{width:58px}
+.sh .c-tg{width:104px}
+.sh .c-dy{width:88px}
+.sh .c-mo{width:84px}
+.sh .c-pc{width:96px}
+.sh .c-tl{width:44px}
+.ci{display:block;width:100%;height:38px;border:0;background:transparent;padding:0 10px;
+  font:inherit;font-size:12.5px;color:var(--ink);outline:none;border-radius:0;min-width:0}
+.ci.num{text-align:end;direction:ltr;font-variant-numeric:tabular-nums}
+.ci:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--sky);position:relative;z-index:1}
+.ci::placeholder{color:var(--faint);font-weight:400}
+.c-nm .ci{font-weight:600;color:var(--navy)}
+.sh .c-kd{padding:0 8px}
+.sh .kind{margin:0;cursor:pointer;transition:.12s}
+.sh .kind:hover{box-shadow:0 0 0 2px var(--sky)}
+.ub{font:inherit;font-size:12.5px;color:var(--ink);border-radius:6px;padding:3px 9px;margin:0 4px;
+  border:1px solid transparent;min-width:40px}
+.ub:hover{border-color:var(--bd);background:#fff}
+.pc{font-weight:700;color:var(--ink2)}
+.pc.ok{color:var(--good)} .pc.off{color:var(--warn)} .pc.dng{color:var(--bad)}
+.pc.pale{color:var(--faint);font-weight:500}
+.sh tr.new td{background:#FBFCFE;border-bottom:0;height:42px}
+.sh tr.new:hover td{background:#F7FAFD}
+.sh tr.new .plus{color:var(--coral);font-weight:800;font-size:17px;line-height:1}
+.sh tr.new .ghost{color:var(--faint)}
+.sh tr.new .ghost.kind{background:transparent;border:1px dashed var(--bd);margin:0}
+.sh tr.new td.ghost-td{color:var(--faint);font-size:11.5px;padding:0 12px;white-space:normal}
+.sh tr.new .ci::placeholder{color:var(--ink3)}
+.pop{position:absolute;z-index:6;background:#fff;border:1px solid var(--bd);border-radius:10px;
+  box-shadow:0 10px 28px rgba(12,64,104,.14);padding:5px;min-width:152px;
+  display:flex;flex-direction:column;gap:2px}
+.pop button{text-align:start;font:inherit;font-size:12.5px;color:var(--ink);border-radius:7px;padding:7px 10px}
+.pop button:hover{background:var(--tint)}
+.pop button.on{color:var(--navy);font-weight:600;background:#ECF4FA}
+.shf{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:11px 16px;
+  border-top:1px solid var(--tint);font-size:11.5px;color:var(--ink3)}
+.shf .lb{font-weight:600;color:var(--ink2)}
+.shf .sp{flex:1}
+.shf kbd{font:inherit;font-size:10.5px;border:1px solid var(--bd);border-radius:5px;padding:0 5px;
+  background:#fff;color:var(--ink2)}
+.shf .saved{color:var(--good);font-weight:600}
+.shf .pillrow .pill{padding:2px 9px;font-size:11.5px}
 /* ---------- ניהול המדדים — מקופל בתחתית ---------- */
 .mgr{margin-top:22px;background:#fff;border:1px solid var(--cardbd);border-radius:14px;
   box-shadow:var(--lift);overflow:hidden}
@@ -339,6 +424,10 @@
           <button id="moNext" aria-label="החודש הבא">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
         </div>
+        <div class="vseg" id="vseg" role="tablist" aria-label="תצוגה">
+          <button data-view="cards" class="on" role="tab">כרטיסים</button>
+          <button data-view="table" role="tab">טבלה</button>
+        </div>
         <span class="cnt" id="mlCnt"></span>
         <div class="sp"></div>
         <div class="msr">
@@ -354,6 +443,11 @@
         מקומם בדשבורד ובפגישות.</span></p>
       <div class="ml-hd" id="mlHd"></div>
       <div class="ml" id="mlist"></div>
+      <!-- תצוגת הטבלה — גיליון: שורה למדד, עמודה לחודש -->
+      <div class="sheet hid" id="msheet">
+        <div class="shx"><table class="sh" id="shT"><thead id="shHd"></thead><tbody id="shB"></tbody></table></div>
+        <div class="shf" id="shF"></div>
+      </div>
     </section>
     <!-- זירת המדד — מה שעומדים עליו נפתח כאן -->
     <section id="marena"></section>
@@ -567,7 +661,7 @@ function julValue(m){
 function valOf(m){
   if(m.rate){var b=byKey(m.from); var v=b&&b.hist[MI]; return v==null?null:v/WORKDAYS;}
   if(MI>CUR_MI) return null;                    /* חודש שטרם התחיל */
-  if(MI===CUR_MI) return m.src==='hand'?null:julValue(m);
+  if(MI===CUR_MI) return m.src==='hand'?((m.hist&&m.hist[MI]!=null)?m.hist[MI]:null):julValue(m);
   return (m.hist&&m.hist[MI]!=null)?m.hist[MI]:null;
 }
 function byKey(k){for(var i=0;i<M.length;i++) if(M[i].k===k) return M[i]; return null;}
@@ -929,12 +1023,235 @@ function render(){
      waiting.length===2?'בקשו את שני המספרים':'בקשו את '+waiting.length+' המספרים')+'</button>';
   if(elF) elF.innerHTML=facts;
 
+  if(VIEW==='table') renderSheet();
   document.getElementById('moPrev').disabled=(MI<=0);
   document.getElementById('moNext').disabled=(MI>=MONTHS.length-1);
   var st=document.getElementById('moTag');
   if(st) st.textContent = MI<CUR_MI?'נסגר' : MI===CUR_MI?'בעיצומו' : 'עתידי';
   renderMgr();
 }
+
+
+/* =====================================================================
+   תצוגת הטבלה — גיליון
+   שורה למדד; עמודות: מצב · שם · סוג · יחידה · יעד · יעד יומי · ששת
+   החודשים עד החודש המוצג · ביצוע. תא של מדד ידני נערך במקום (Enter יורד
+   שורה, Tab עובר תא, Esc מבטל); תא שמתעדכן לבד — גיליון, קטגוריות,
+   נוסחה — אפור ואינו נערך. השורה האחרונה ריקה: שם + יעד יוצרים מדד.
+   ===================================================================== */
+var VIEW=(function(){
+  try{
+    var u=new URLSearchParams(location.search).get('view');
+    if(u==='table'||u==='cards') return u;
+    var s=localStorage.getItem('hkMetricsView');
+    if(s==='table'||s==='cards') return s;
+  }catch(e){}
+  return 'cards';
+})();
+function setView(v){
+  VIEW=v; try{localStorage.setItem('hkMetricsView',v);}catch(e){}
+  applyView(); render();
+}
+function applyView(){
+  var tbl=(VIEW==='table');
+  document.querySelector('.mt').classList.toggle('tbl',tbl);
+  ['marena','mlHd','mlist'].forEach(function(id){document.getElementById(id).classList.toggle('hid',tbl);});
+  document.getElementById('msheet').classList.toggle('hid',!tbl);
+  /* ניהול המדדים חוזר על מה שהגיליון כבר מראה — יורד בתצוגת הטבלה */
+  document.querySelector('.mgr').classList.toggle('hid',tbl);
+  var b=document.querySelectorAll('#vseg button');
+  for(var i=0;i<b.length;i++){
+    var on=b[i].dataset.view===VIEW;
+    b[i].classList.toggle('on',on); b[i].setAttribute('aria-selected',on?'true':'false');
+  }
+}
+
+/* חלון החודשים: ששה, שהאחרון בהם הוא החודש המוצג */
+function moWin(){var e=MI,s=Math.max(0,e-5),a=[];for(var i=s;i<=e;i++)a.push(i);return a;}
+function valAt(m,i){var o=MI;MI=i;var v=valOf(m);MI=o;return v;}
+function canEdit(m,i){return m.src==='hand'&&i<=CUR_MI;}
+function parseNum(s){s=String(s==null?'':s).replace(/[^\d.\-]/g,'');return s===''||isNaN(parseFloat(s))?null:parseFloat(s);}
+function stripTags(h){return String(h).replace(/<[^>]+>/g,'');}
+function dailyTxt(m){
+  if(m.rate) return m.target?nf(m.target):'<span class="nil">—</span>';
+  return (m.target&&!m.invert&&m.unit!=='%'&&m.unit!=='ימים')?nf(m.target/WORKDAYS):'<span class="nil">—</span>';
+}
+function pctTxt(m){
+  var st=stateOf(m);
+  if(st==='wait')   return '<span class="pc pale">ממתין</span>';
+  if(st==='future') return '<span class="pc pale">—</span>';
+  if(st==='trk')    return '<span class="pc pale">מעקב</span>';
+  var p=pctOf(m); if(p==null) return '<span class="pc pale">—</span>';
+  return '<span class="pc '+st+'">'+Math.round(p)+'%</span>';
+}
+var SH_COLS=[[null,   '',       'c-st'],
+             ['name','שם המדד','c-nm'],
+             ['kind','סוג',    'c-kd'],
+             [null,  'יחידה',  'c-un'],
+             ['tgt', 'יעד',    'c-tg num'],
+             [null,  'יעד יומי','c-dy num']];
+function shHead(){
+  var h='<tr>';
+  SH_COLS.forEach(function(c){
+    h+='<th class="'+c[2]+'">'+(c[0]?'<button data-sort="'+c[0]+'" class="'+(SORT===c[0]?'on':'')+(SORT===c[0]&&DESC?' desc':'')+'">'+c[1]+CV+'</button>':c[1])+'</th>';
+  });
+  moWin().forEach(function(i){
+    var cur=(i===MI);
+    h+='<th class="c-mo num'+(cur?' cur':'')+'">'+
+       (cur?'<button data-sort="val" class="'+(SORT==='val'?'on':'')+(SORT==='val'&&DESC?' desc':'')+'">'+MONTHS[i]+CV+'</button>':MONTHS[i])+'</th>';
+  });
+  h+='<th class="c-pc num">ביצוע · '+MONTHS[MI]+'</th><th class="c-tl"></th></tr>';
+  return h;
+}
+var ICO_ED='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+function shRow(m){
+  var ix=M.indexOf(m), st=stateOf(m);
+  var s='<tr class="s-'+st+'" data-k="'+m.k+'">';
+  s+='<td class="c-st"><span class="ml-dot" title="'+FLAG[st].t+'"></span></td>';
+  s+='<td class="c-nm ed"><input class="ci" data-f="name" value="'+esc(m.name)+'" aria-label="שם המדד"></td>';
+  s+='<td class="c-kd"><button class="kind '+SRC[m.src].cls+'" data-pop="kind" data-k="'+m.k+'" title="'+esc(stripTags(srcTxt(m)))+'">'+esc(SRC[m.src].lbl)+'</button></td>';
+  s+='<td class="c-un"><button class="ub" data-pop="unit" data-k="'+m.k+'">'+esc(m.unit)+'</button></td>';
+  s+='<td class="c-tg ed num"><input class="ci num" data-f="target" inputmode="numeric" value="'+(m.target!=null?nf(m.target):'')+'" placeholder="ללא יעד" aria-label="יעד"></td>';
+  s+='<td class="c-dy num cp" data-c="daily">'+dailyTxt(m)+'</td>';
+  moWin().forEach(function(i){
+    var v=valAt(m,i), cur=(i===MI);
+    if(canEdit(m,i))
+      s+='<td class="c-mo ed num'+(cur?' cur':'')+'"><input class="ci num" data-f="hist" data-i="'+i+'" inputmode="numeric" value="'+(v!=null?nf(v):'')+'" placeholder="—" aria-label="'+MONTHS[i]+'"></td>';
+    else
+      s+='<td class="c-mo num ro'+(cur?' cur':'')+'" data-c="mo" data-i="'+i+'">'+(v!=null?nf(v):'<span class="nil">—</span>')+'</td>';
+  });
+  s+='<td class="c-pc num cp" data-c="pct">'+pctTxt(m)+'</td>';
+  s+='<td class="c-tl"><button class="ibtn" title="עריכה מלאה — מקור, נוסחה, התראות" data-edit="'+ix+'">'+ICO_ED+'</button></td>';
+  return s+'</tr>';
+}
+function shNewRow(){
+  var span=moWin().length+2;
+  return '<tr class="new">'+
+    '<td class="c-st"><span class="plus">+</span></td>'+
+    '<td class="c-nm ed"><input class="ci" data-f="nname" placeholder="מדד חדש — שם ו-Enter" aria-label="שם המדד החדש"></td>'+
+    '<td class="c-kd"><span class="kind ghost">הזנה ידנית</span></td>'+
+    '<td class="c-un"><span class="ub ghost">₪</span></td>'+
+    '<td class="c-tg ed num"><input class="ci num" data-f="ntarget" inputmode="numeric" placeholder="יעד" aria-label="יעד המדד החדש"></td>'+
+    '<td class="ghost-td" colspan="'+span+'">כמו שורה בגיליון — שם ויעד, והשאר מתמלא. סוג ויחידה משנים אחר כך בלחיצה.</td>'+
+    '</tr>';
+}
+function shFoot(){
+  var f='<span class="lb">ימי עבודה</span><div class="pillrow" id="shWd">'+
+    [20,21,22,23].map(function(d){return '<button class="pill'+(d===WORKDAYS?' on':'')+'" data-wd="'+d+'">'+d+'</button>';}).join('')+'</div>'+
+    '<span>· <span class="mn">'+M.length+'</span> מדדים</span>'+
+    '<span class="sp"></span>'+
+    '<span id="shSaved" class="saved"></span>'+
+    '<span><kbd>Enter</kbd> שורה למטה · <kbd>Tab</kbd> התא הבא · <kbd>Esc</kbd> ביטול</span>'+
+    '<span>תא אפור מתעדכן לבד</span>';
+  return f;
+}
+function renderSheet(){
+  var list=sortList();
+  document.getElementById('shHd').innerHTML=shHead();
+  document.getElementById('shB').innerHTML=list.map(shRow).join('')+shNewRow();
+  document.getElementById('shF').innerHTML=shFoot();
+}
+/* עדכון התאים המחושבים בלבד — בלי לבנות מחדש ובלי לאבד את הפוקוס */
+function refreshComputed(){
+  var rows=document.querySelectorAll('#shB tr[data-k]');
+  for(var r=0;r<rows.length;r++){
+    var tr=rows[r], m=byKey(tr.dataset.k); if(!m) continue;
+    var st=stateOf(m);
+    tr.className='s-'+st;
+    var dot=tr.querySelector('.ml-dot'); if(dot) dot.title=FLAG[st].t;
+    var d=tr.querySelector('[data-c="daily"]'); if(d) d.innerHTML=dailyTxt(m);
+    var p=tr.querySelector('[data-c="pct"]');   if(p) p.innerHTML=pctTxt(m);
+    var mos=tr.querySelectorAll('[data-c="mo"]');
+    for(var j=0;j<mos.length;j++){var v=valAt(m,+mos[j].dataset.i); mos[j].innerHTML=v!=null?nf(v):'<span class="nil">—</span>';}
+  }
+  var sv=document.getElementById('shSaved');
+  if(sv){var t=new Date(); sv.textContent='נשמר · '+('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2);}
+}
+function shCommit(inp){
+  var tr=inp.closest('tr'); if(!tr) return;
+  var f=inp.dataset.f;
+  if(tr.classList.contains('new')){ if(f==='nname') shCreate(tr); return; }
+  var m=byKey(tr.dataset.k); if(!m) return;
+  var changed=false;
+  if(f==='name'){
+    var nm=inp.value.trim();
+    if(!nm){inp.value=m.name;return;}
+    if(nm!==m.name){m.name=nm;changed=true;}
+  }else if(f==='target'){
+    var t=parseNum(inp.value); t=(t!=null&&t>0)?t:null;
+    if(t!==m.target){m.target=t;changed=true;}
+    inp.value=m.target!=null?nf(m.target):'';
+  }else if(f==='hist'){
+    var i=+inp.dataset.i, v=parseNum(inp.value);
+    m.hist=m.hist||[]; var cur=(m.hist[i]==null?null:m.hist[i]);
+    if(v!==cur){m.hist[i]=v;changed=true;}
+    inp.value=v!=null?nf(v):'';
+  }
+  if(changed) refreshComputed();
+}
+function shCreate(tr){
+  var nmI=tr.querySelector('[data-f="nname"]'), tgI=tr.querySelector('[data-f="ntarget"]');
+  var nm=(nmI.value||'').trim(); if(!nm) return;
+  var t=parseNum(tgI.value); t=(t!=null&&t>0)?t:null;
+  var m={k:'m'+Date.now(), name:nm, src:'hand', unit:'₪', target:t, freq:'חודשי',
+         cell:'', gid:'', logic:LOGIC[0], cats:[], calc:'',
+         hist:[null,null,null,null,null,null,null], alerts:[], note:''};
+  M.push(m); render();
+  /* ההמשך הטבעי: אם אין יעד — היעד; אם יש — שורה חדשה */
+  var row=document.querySelector('#shB tr[data-k="'+m.k+'"]');
+  var nxt=(t==null&&row)?row.querySelector('[data-f="target"]'):document.querySelector('#shB tr.new [data-f="nname"]');
+  if(nxt) nxt.focus();
+  toast('נוסף המדד «'+nm+'»'+(t==null?' — עכשיו היעד':''));
+}
+/* מעבר בין תאים: אותה עמודה, שורה למטה/למעלה */
+function shMove(inp,dir){
+  var tr=inp.closest('tr'), f=inp.dataset.f, i=inp.dataset.i;
+  var rows=Array.prototype.slice.call(document.querySelectorAll('#shB tr'));
+  var ix=rows.indexOf(tr)+dir;
+  var map={name:'name',nname:'name',target:'target',ntarget:'target',hist:'hist'};
+  while(ix>=0&&ix<rows.length){
+    var r=rows[ix], want=map[f];
+    var sel=r.classList.contains('new')?'[data-f="n'+want+'"]':'[data-f="'+want+'"]'+(want==='hist'?'[data-i="'+i+'"]':'');
+    var el=r.querySelector(sel); if(el){el.focus();return;}
+    ix+=dir;
+  }
+}
+/* בורר קטן לסוג וליחידה — בתוך הדף, בלי select */
+var POP=null;
+function closePop(){if(POP&&POP.parentNode)POP.parentNode.removeChild(POP);POP=null;}
+var KIND_OPTS=[['hand','הזנה ידנית'],['sheets','Google Sheets'],['cats','לפי קטגוריות'],['calc','מחושב']];
+function openPop(btn,kind){
+  closePop();
+  var m=byKey(btn.dataset.k); if(!m) return;
+  var opts=kind==='kind'?KIND_OPTS:UNITS.concat(['ליטר']).map(function(u){return [u,u];});
+  var cur=kind==='kind'?m.src:m.unit;
+  var pop=document.createElement('div'); pop.className='pop'; pop.dataset.kind=kind; pop.dataset.k=m.k;
+  pop.innerHTML=opts.map(function(o){return '<button data-po="'+esc(o[0])+'" class="'+(o[0]===cur?'on':'')+'">'+esc(o[1])+'</button>';}).join('');
+  var host=document.getElementById('msheet'); host.appendChild(pop);
+  var r=btn.getBoundingClientRect(), h=host.getBoundingClientRect();
+  pop.style.top=(r.bottom-h.top+4)+'px';
+  pop.style.insetInlineEnd=(h.right-r.right)+'px';
+  POP=pop;
+}
+(function wireSheet(){
+  var B=document.getElementById('shB');
+  B.addEventListener('focusin',function(e){var t=e.target;if(t.classList&&t.classList.contains('ci')){t.dataset.o=t.value;t.select();}});
+  B.addEventListener('focusout',function(e){var t=e.target;if(t.classList&&t.classList.contains('ci'))shCommit(t);});
+  B.addEventListener('keydown',function(e){
+    var t=e.target; if(!t.classList||!t.classList.contains('ci')) return;
+    if(e.key==='Enter'){e.preventDefault();
+      if(t.dataset.f==='nname'||t.dataset.f==='ntarget'){shCreate(t.closest('tr'));return;}
+      shMove(t,1);return;}
+    if(e.key==='ArrowDown'){e.preventDefault();shMove(t,1);return;}
+    if(e.key==='ArrowUp'){e.preventDefault();shMove(t,-1);return;}
+    if(e.key==='Escape'){t.value=t.dataset.o||'';t.blur();e.stopPropagation();return;}
+  });
+  document.addEventListener('mousedown',function(e){
+    if(POP&&!e.target.closest('.pop')&&!e.target.closest('[data-pop]')) closePop();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&POP)closePop();});
+  applyView();
+})();
 
 /* ---------- ניהול המדדים ---------- */
 function renderMgr(){
@@ -1041,6 +1358,15 @@ document.addEventListener('click',function(e){
     var w=M.filter(function(x){return stateOf(x)==='wait'&&!SENT[x.k];});
     w.forEach(function(x){SENT[x.k]=1;}); render();
     toast('נשלחה בקשה לצחי עובד — '+w.map(function(x){return x.name;}).join(' · ')); return;}
+
+  /* תצוגת הטבלה */
+  if(t.dataset.view){setView(t.dataset.view);return;}
+  if(t.dataset.sort){mSort(t.dataset.sort);return;}
+  if(t.dataset.pop){openPop(t,t.dataset.pop);return;}
+  if(t.dataset.po&&t.closest('.pop')){
+    var pp=t.closest('.pop'), pm=byKey(pp.dataset.k);
+    if(pm){ if(pp.dataset.kind==='kind') pm.src=t.dataset.po; else pm.unit=t.dataset.po; }
+    closePop(); render(); return;}
 
   /* בורר החודש */
   if(t.id==='moPrev'){MI=Math.max(0,MI-1);render();return;}
