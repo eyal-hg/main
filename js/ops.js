@@ -175,11 +175,11 @@
     if(_ms2) _ms2.style.display=(r==='manager')?'':'none';
     /* מנהלי תזרים / מוצרים / סטטוסים הם כלי המשרד של מנהל התפעול.
        ליועץ נשאר רק "יועץ אחראי" — הוא רלוונטי לו בתיק. */
-    const advOnly = (ROLE==='advisor');
-    document.querySelector('.top-mid').style.display = (isOperator||advOnly) ? 'flex' : 'none';
+    /* המסננים בפס העליון (מנהלי תזרים · חברות ייעוץ · מוצרים · סטטוסים) — רק בממשק
+       מנהל התזרים (אייל, 02.09). ליועץ ולבעל העסק אין. */
+    document.querySelector('.top-mid').style.display = isOperator ? 'flex' : 'none';
     ['mgrDdl','prodDdl','statDdl'].forEach(id=>{
-      const w=document.getElementById(id); if(w&&w.parentElement)
-        w.parentElement.style.display = advOnly ? 'none' : '';
+      const w=document.getElementById(id); if(w&&w.parentElement) w.parentElement.style.display='';
     });
     /* מחפש הלקוחות הוסר מהפס — נשמר null כדי שהטעינה לא תיפול */
     const _sw=document.querySelector('.switcher'); if(_sw)_sw.style.display = single ? 'none' : 'flex';
