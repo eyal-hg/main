@@ -35,7 +35,8 @@ function openAdmin(){
   admGo(ADMIN_SCREENS.filter(admVisible).find(x=>!x.sep).k);
 }
 function closeAdmin(){ document.getElementById('adminShell').classList.remove('show'); }
-const admVisible=s=>!s.mgrOnly||(typeof ROLE!=='undefined'&&ROLE==='manager');
+/* mgrOnly = למנהל מערכת בלבד (SUPER_ADMIN); שאר הטאבים לפי ההרשאות הקיימות */
+const admVisible=s=>!s.mgrOnly||(typeof SUBROLE!=='undefined'&&SUBROLE==='super');
 function renderAdmRail(){
   document.getElementById('admRail').innerHTML=ADMIN_SCREENS.filter(admVisible).map(s=>{
     if(s.sep) return `<div class="adm-sep">${s.sep}</div>`;

@@ -115,9 +115,16 @@
     else btn.innerHTML=OPS_ICO_GEAR+' תפעל';
   }
   let ROLE='manager';
+  /* התפקיד המדויק בתוך הממשק (docs/ROLES.md). שלושה תפקידי HK → ממשק מנהל תזרים,
+     שניים של משרד הייעוץ → ממשק יועץ, בעל העסק → ממשק לקוח. */
+  let SUBROLE='super';
+  const SUBROLE_LBL={super:'מנהל מערכת',hkcons:'יועץ HK',hkrep:'מנהל תזרים',admin:'מנהל חברת ייעוץ',rep:'יועץ',customer:'בעל העסק'};
+  const SUBROLE_DEF={manager:'super',advisor:'rep',client1:'customer',clientN:'customer'};
   function setRole(r){
+    const parts=String(r).split(':'); r=parts[0]; SUBROLE=parts[1]||SUBROLE_DEF[r]||'super';
     ROLE=r; isOperator=(r==='manager');
-    const rs=document.getElementById('roleSel'); if(rs&&rs.value!==r) rs.value=r;
+    const rs=document.getElementById('roleSel'); if(rs&&rs.value!==r+':'+SUBROLE) rs.value=r+':'+SUBROLE;
+    const _mr=document.getElementById('meRole'); if(_mr) _mr.textContent=SUBROLE_LBL[SUBROLE]||'';
     if(OPSMODE) exitOps();
     const client=(r==='client1'||r==='clientN'), single=(r==='client1');
     if(client){   /* משטחים של היועץ שנשארו פתוחים מהתפקיד הקודם — פס טרום-פגישה ופס הקלטה */

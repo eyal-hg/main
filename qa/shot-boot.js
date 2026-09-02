@@ -56,6 +56,8 @@
 
     /* ---------- מנהל התזרים ---------- */
     'mgr-ops'     :[R('manager'),G('ops')],
+    'top-hkrep'   :[R('manager:hkrep'),G('ops')],
+    'top-admin'   :[R('advisor:admin'),G('today')],
     'mgr-me'      :[R('manager'),G('ops'),F(function(){document.getElementById('meMenu').classList.add('on')},500)],
     'adv-me'      :[R('advisor'),G('today'),F(function(){document.getElementById('meMenu').classList.add('on')},500)],
     'mgr-today'   :[R('manager'),G('today')],
