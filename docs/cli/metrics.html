@@ -397,11 +397,11 @@
 .sh tr.h2 th.c-sub{border-inline-end:0}
 .sh tr.h2 th.c-sub:not(.me){box-shadow:inset -1px 0 0 #EEF2F6}
 .sh th.c-sub.tgh .tglb{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:var(--ink3)}
-.sh th.c-sub.ac{color:var(--navy);font-weight:700}
+.sh th.c-sub.ac{color:#1A5A8E;font-weight:700}
 .sh .ci.t{color:#5C7590;font-weight:400}
 .sh .ci.t::placeholder{color:#B9C6D3}
-.sh .ci.a{font-weight:700;color:var(--navy)}
-.sh td.ro{font-weight:700;color:var(--navy);background:#F5F7FA}
+.sh .ci.a{font-weight:700;color:#1A5A8E}
+.sh td.ro{font-weight:700;color:#1A5A8E;background:#F5F7FA}
 .sh td.ro .nil{font-weight:400;color:var(--faint)}
 .shf .lg{display:inline-flex;align-items:center;gap:6px}
 .shf .lg .sm{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block}
@@ -502,6 +502,45 @@
 .md.xl .state{margin:6px 0 0}
 /* התראה — משפט אחד */
 .alrow{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ink2)}
+/* בורר הקטגוריות — סעיפים, תיבות סימון, וכל הסעיף */
+.cp{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:8px 12px 6px;max-height:290px;overflow-y:auto}
+.cp-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.cp-top input.s{width:150px;padding:5px 11px;font-size:12px;border-radius:999px}
+.cp-n{font-size:11px;color:var(--ink3)}
+.cp-g{padding:6px 0 4px;border-top:1px solid var(--tint)}
+.cp-g:first-child{border-top:0}
+.cp-gh{display:flex;align-items:center;gap:8px;padding:2px 0 4px}
+.cp-gh .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.cp-gh b{font-size:12.5px;font-weight:700;color:var(--navy)}
+.cp-gh .all{margin-inline-start:auto;font:inherit;font-size:11px;font-weight:600;color:var(--ink3);
+  border:1px solid var(--bd);border-radius:999px;padding:2px 9px;transition:.12s}
+.cp-gh .all:hover{border-color:var(--sky);color:var(--navy)}
+.cp-gh .all.on{background:var(--band);border-color:var(--band);color:#fff}
+.cp-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px 12px}
+.cp-r{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:7px;font:inherit;font-size:12.5px;
+  color:var(--ink);text-align:start;min-width:0}
+.cp-r:hover{background:var(--tint)}
+.cp-r.on{background:#EAF4FB}
+.cp-r.g{opacity:.75}
+.cp-r .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb{width:15px;height:15px;border:1.5px solid #B9C6D3;border-radius:5px;display:grid;place-items:center;flex:none;background:#fff;color:#fff}
+.cb svg{width:9px;height:9px}
+.cb.on{background:var(--band);border-color:var(--band)}
+.cp-r .deb{font-size:10px;font-weight:600;color:var(--bad);background:#FDEDEB;border-radius:999px;padding:1px 6px;flex:none}
+.cp-sum{margin-top:8px;font-size:12px;color:var(--navy);font-weight:600;line-height:1.5}
+.cp-sum.none{color:var(--ink3);font-weight:400}
+.fmet{display:flex;flex-direction:column;gap:4px}
+.fmet .fm{display:flex;align-items:center;gap:8px;text-align:start;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;background:#fff;font:inherit}
+.fmet .fm b{font-size:12.5px;font-weight:600;color:var(--navy);flex:1}
+.fmet .fm .kind{margin:0}
+.fmet .fm:hover{border-color:var(--sky)}
+.fmet .fm.on{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);background:#F4F8FC}
+.fsheet{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fsheet input.s{width:130px}
+.mxcalc .fval .cp{max-height:240px}
+.mxcalc .fval .cp-rows{grid-template-columns:minmax(0,1fr)}
+.mxcalc .fval .cp-n{display:none}
+.mxcalc .fval .cp-top input.s{width:100%}
 .pillrow.days{gap:4px}
 .pillrow.days .pill{width:34px;justify-content:center;padding:3px 0;font-size:11.5px}
 .asksum{margin-top:10px;font-size:12.5px;color:var(--navy);font-weight:600;display:flex;align-items:center;gap:7px}
@@ -701,8 +740,9 @@
 
       <!-- קטגוריות תזרים -->
       <div class="srcpane hid" id="mxPaneCats">
-        <div class="fld"><label>אילו קטגוריות לסכום</label><div class="pillrow" id="mxCats"></div>
-          <div class="hint">הבפועל = סכום התנועות בקטגוריות שנבחרו באותו חודש, מנתוני האמת ב-Bizibox. אפשר לבחור כמה. זה המקור הכי אמין — לא תלוי באף אחד.</div></div>
+        <div class="fld"><label>אילו קטגוריות לסכום</label>
+          <div id="mxCatsHost"></div>
+          <div class="hint">הבפועל = סכום התנועות בקטגוריות שנבחרו באותו חודש, מנתוני האמת ב-Bizibox. אפשר לבחור קטגוריות בודדות או סעיף שלם. זה המקור הכי אמין — לא תלוי באף אחד.</div></div>
       </div>
 
       <!-- דוח חשבונאי -->
@@ -782,8 +822,17 @@ var UNITS=['₪','מספר'];   /* כרגע רק שתי יחידות — ש״ח 
 var FREQ=['חודשי','שבועי','יומי'];
 var CALCS=['מחזור הכנסות − כל קטגוריות ההוצאות','מחזור הכנסות ÷ ימי עבודה',
            'הכנסות ממכירות + הכנסות סליקה','מחזור הכנסות − עלות המכר'];
-var CATLIST=['כל קטגוריות ההוצאות','הכנסות ממכירות - סליקה','הכנסות אחרות',
-             'ספקים','הוצאות שכר','שכירות','אחזקת עסק','גבייה מלקוחות'];
+/* קטגוריות התזרים המורשות לחברה, לפי סעיפי הדוח — כמו במסך הקטגוריות */
+var CATG=[
+ {label:'הכנסות',               color:'#1B6C9C', rows:['הכנסות - מזומן','הכנסות ממכירות - סליקה','הכנסות ממכירות']},
+ {label:'עלות המכר',            color:'#C98404', rows:['קניות חומרי גלם']},
+ {label:'הוצאות תפעוליות',      color:'#7557E3', rows:['אחזקת עסק','אחזקת רכב ונסיעות','דמי ניהול מבנה','הוצאות שכירות',
+                                                       'ייעוץ ושירותים מקצועיים','לא לקיטלוג','מוסדות מס','עמלות וריביות בנקים',
+                                                       'פרסום ושיווק','שכר וסוציאליות']},
+ {label:'מימון, השקעות ובעלים', color:'#4CAF7D', rows:['הוצאות פרטיות','משיכות והזרמות בעלים','תשלומי הלוואה'], deb:true}];
+var CATLIST=[]; CATG.forEach(function(g){CATLIST.push(g.label+' (כל הסעיף)'); g.rows.forEach(function(r){CATLIST.push(r);});});
+function isGrp(name){return CATG.some(function(g){return g.label===name;});}
+function catsTxt(arr){return (arr||[]).map(function(c){return isGrp(c)?c+' (כל הסעיף)':c;}).join(' + ');}
 
 var M=[
  /* tgt — יעד לכל חודש; target הוא מאפיין־גישה שמחזיר את היעד של החודש
@@ -816,7 +865,7 @@ var M=[
   note:'הכסף שבאמת נכנס לבנק, להבדיל מהמחזור שנרשם.'},
 
  {k:'budget', name:'עמידה בתקציב', src:'cats', unit:'מספר', target:100, invert:true, freq:'חודשי',
-  cats:['כל קטגוריות ההוצאות'],
+  cats:['עלות המכר','הוצאות תפעוליות'],
   hist:[103,99,101,96,102,82],
   alerts:[{on:true,mode:'pct',dir:'above',th:100,sev:'high'},
           {on:true,mode:'pct',dir:'above',th:95,sev:'mid'}],
@@ -829,9 +878,9 @@ var M=[
   note:'חשבוניות שעבר מועד התשלום שלהן. גדל חמישה חודשים ברצף.'},
 
  {k:'cfprofit', name:'רווח / הפסד תזרימי', src:'calc', unit:'₪', target:30000, freq:'חודשי',
-  calc:'מחזור הכנסות − כל קטגוריות ההוצאות',
+  calc:'מחזור הכנסות − עלות המכר (כל הסעיף) + הוצאות תפעוליות (כל הסעיף)',
   /* שני אגפים ממקורות שונים: מדד (שנמשך מהדוח החשבונאי) פחות קטגוריות תזרים */
-  f:{a:{src:'metric',val:'revenue'},op:'−',b:{src:'cats',val:'כל קטגוריות ההוצאות'}},
+  f:{a:{src:'metric',val:'revenue'},op:'−',b:{src:'cats',vals:['עלות המכר','הוצאות תפעוליות']}},
   hist:[24800,19600,27300,33100,28400,31200],
   alerts:[{on:true,mode:'pct',dir:'below',th:80,sev:'mid'}],
   note:'ההפרש בין הכסף שנכנס לכסף שיצא בפועל.'},
@@ -916,7 +965,7 @@ var FLAG={
 function srcTxt(m){
   if(m.src==='sheets') return '<b>Google Sheets</b> · '+esc(m.logic)+' · תא '+esc(m.cell);
   if(m.src==='hand')   return '<b>הזנה ידנית</b> · '+(m.who==='advisor'?'היועץ מזין':'הלקוח מזין בוואטסאפ · '+askTxt(m.ask));
-  if(m.src==='cats')   return '<b>Bizibox</b> · נתוני אמת · '+esc((m.cats||[]).join(' + '));
+  if(m.src==='cats')   return '<b>Bizibox</b> · נתוני אמת · '+esc(catsTxt(m.cats));
   if(m.src==='calc')   return '<b>ƒ</b> '+esc(m.f?fTxt(m.f):m.calc);
   if(m.src==='acct')   return '<b>דוח רווח והפסד</b> · שורת '+esc(m.line||PL_LINES[0]);
   return '<b>אוטומטי</b> · מיומן הפגישות';
@@ -927,8 +976,10 @@ function kindTag(m){var s=SRC[m.src];return '<span class="kind '+s.cls+'">'+esc(
 var FSRC=[['metric','מדד'],['cats','קטגוריה'],['acct','דוח חשבונאי'],['sheets','גיליון'],['const','מספר']];
 var FOPS=['−','+','÷','×'];
 function fSideTxt(side){
-  if(!side||side.val==null||side.val==='') return '…';
+  if(!side) return '…';
+  if(side.src!=='cats'&&(side.val==null||side.val==='')) return '…';
   if(side.src==='metric'){var m=byKey(side.val);return m?m.name:'…';}
+  if(side.src==='cats'){return (side.vals&&side.vals.length)?catsTxt(side.vals):'…';}
   if(side.src==='sheets') return 'תא '+side.val;
   return String(side.val);
 }
@@ -1414,9 +1465,6 @@ function shFoot(){
     '<span>· <span class="mn">'+M.length+'</span> מדדים</span>'+
     '<span class="sp"></span>'+
     '<span id="shSaved" class="saved"></span>'+
-    '<span class="lg"><span class="sm a">12,500</span>בפועל — מה שקרה</span>'+
-    '<span class="lg"><span class="sm t">12,500</span>יעד — נקבע, נערך תמיד</span>'+
-    '<span class="lg"><span class="sm r">12,500</span>מתעדכן לבד</span>'+
     '<span><kbd>Enter</kbd> שורה למטה · <kbd>Tab</kbd> התא הבא · <kbd>Esc</kbd> ביטול</span>';
 }
 function renderSheet(){
@@ -1574,6 +1622,7 @@ function openMx(i){
             cell:'', gid:'', logic:LOGIC[0], cats:[], calc:'', line:PL_LINES[0],
             hist:[null,null,null,null,null,null,null], alerts:[], note:''};
   D.dir = D.invert?'cap':(D.target==null&&!(D.tgt||[]).some(function(v){return v!=null;})?'trk':'floor');
+  CATQ={m:'',a:'',b:''};
   document.getElementById('mxTtl').textContent = i>=0?'עריכת מדד':'מדד חדש';
   document.getElementById('mxName').value=D.name;
   document.getElementById('mxTarget').value=D.target==null?'':D.target;
@@ -1662,7 +1711,7 @@ function drawMx(){
     document.getElementById('mxAskSum').innerHTML=ICO_WA+'<span>בקשה בוואטסאפ '+esc(askTxt(D.ask))+'</span>';
   }
   opts('mxLogic',LOGICS,(D.logic&&D.logic!==LOGIC[0])?D.logic:LOGIC[1],'logic');
-  pills('mxCats',CATLIST,D.cats||[],'cat');
+  drawCats();
   pills('mxLine',PL_LINES,D.line||PL_LINES[0],'line');
   drawFormula();
 
@@ -1696,6 +1745,60 @@ function drawMx(){
   }
 }
 
+/* בורר הקטגוריות — רכיב אחד לכל מקום שבוחרים בו קטגוריות: מקור המדד, ואגפי הנוסחה.
+   הבחירה היא מערך של שמות קטגוריות, או שם סעיף שמשמעו כל הקטגוריות שבו.
+   tag מזהה את הבורר ('m' = מקור המדד, 'a'/'b' = אגפי הנוסחה). */
+var CATQ={m:'',a:'',b:''};
+var ICO_CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+function cpHtml(tag,sel){
+  sel=sel||[]; var q=(CATQ[tag]||'').trim(), h='', n=0;
+  CATG.forEach(function(g){n+=g.rows.length;});
+  h+='<div class="cp"><div class="cp-top"><input class="s" data-cpq="'+tag+'" value="'+esc(CATQ[tag]||'')+'" placeholder="חיפוש…"><span class="cp-n">'+n+' קטגוריות מורשות</span></div>';
+  var any=false;
+  CATG.forEach(function(g){
+    var gOn=sel.indexOf(g.label)>=0;
+    var rows=g.rows.filter(function(r){return !q||r.indexOf(q)>-1||g.label.indexOf(q)>-1;});
+    if(!rows.length) return; any=true;
+    h+='<div class="cp-g"><div class="cp-gh"><span class="dot" style="background:'+g.color+'"></span><b>'+esc(g.label)+'</b>'+
+       '<button class="all'+(gOn?' on':'')+'" data-cpt="'+tag+'" data-cpg="'+esc(g.label)+'">'+(gOn?'כל הסעיף ✓':'כל הסעיף')+'</button></div><div class="cp-rows">';
+    rows.forEach(function(r){
+      var on=gOn||sel.indexOf(r)>=0;
+      h+='<button class="cp-r'+(on?' on':'')+(gOn?' g':'')+'" data-cpt="'+tag+'" data-cpr="'+esc(r)+'" data-cpg="'+esc(g.label)+'">'+
+         '<span class="cb'+(on?' on':'')+'">'+ICO_CK+'</span><span class="nm">'+esc(r)+'</span>'+(g.deb?'<i class="deb">חובה</i>':'')+'</button>';
+    });
+    h+='</div></div>';
+  });
+  if(!any) h+='<div class="state">לא נמצאה קטגוריה</div>';
+  h+='</div><div class="cp-sum'+(sel.length?'':' none')+'">'+(sel.length?'נבחרו: '+esc(catsTxt(sel)):'עוד לא נבחרו קטגוריות')+'</div>';
+  return h;
+}
+/* החלפת סעיף שלם / שורה אחת במערך הבחירה */
+function cpToggle(sel,grp,row){
+  var g=CATG.filter(function(x){return x.label===grp;})[0]; if(!g) return sel;
+  var gi=sel.indexOf(g.label);
+  if(row==null){                                   /* כל הסעיף */
+    if(gi>=0) sel.splice(gi,1);
+    else { sel=sel.filter(function(c){return g.rows.indexOf(c)<0;}); sel.push(g.label); }
+    return sel;
+  }
+  if(gi>=0){ sel.splice(gi,1); g.rows.forEach(function(r){if(r!==row) sel.push(r);}); return sel; }
+  var ri=sel.indexOf(row);
+  if(ri>=0) sel.splice(ri,1); else sel.push(row);
+  if(g.rows.every(function(r){return sel.indexOf(r)>=0;})){ sel=sel.filter(function(c){return g.rows.indexOf(c)<0;}); sel.push(g.label); }
+  return sel;
+}
+/* מי מחזיק את המערך של כל בורר */
+function cpSel(tag){ if(tag==='m'){D.cats=D.cats||[];return D.cats;} var sd=D.f[tag]; sd.vals=sd.vals||[]; return sd.vals; }
+function cpSet(tag,arr){ if(tag==='m') D.cats=arr; else D.f[tag].vals=arr; }
+function drawCats(){ document.getElementById('mxCatsHost').innerHTML=cpHtml('m',D.cats||[]); }
+function redrawCp(tag){
+  /* ציור מחדש של הבורר בלבד — שדה החיפוש שומר פוקוס */
+  var host=document.getElementById(tag==='m'?'mxCatsHost':(tag==='a'?'mxOpA':'mxOpB'));
+  var q=host.querySelector('[data-cpq]'), focus=q&&document.activeElement===q, pos=q?q.selectionStart:0;
+  if(tag==='m') drawCats(); else drawFormula();
+  if(focus){ var q2=host.querySelector('[data-cpq]'); if(q2){q2.focus(); try{q2.setSelectionRange(pos,pos);}catch(e){}} }
+}
+
 /* עורך הנוסחה — אגף א, אופרטור, אגף ב. כל אגף: סוג מקור + ערך לפי הסוג */
 function drawFormula(){
   if(!D.f) D.f={a:{src:'metric',val:''},op:'−',b:{src:'cats',val:''}};
@@ -1704,17 +1807,21 @@ function drawFormula(){
     box.innerHTML=FSRC.map(function(x){return '<button class="pill'+(x[0]===side.src?' on':'')+'" data-fs="'+sd+'" data-fsrc="'+x[0]+'">'+x[1]+'</button>';}).join('');
     var val=document.getElementById(sd==='a'?'mxOpA':'mxOpB'), h='';
     if(side.src==='metric'){
+      /* מדד אחר — עם התג של המקור שלו, כדי לדעת מאיפה הוא מגיע */
       var others=M.filter(function(m){return m.k!==D.k&&m.src!=='calc';});
-      h='<div class="pillrow">'+others.map(function(m){return '<button class="pill'+(m.k===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(m.k)+'">'+esc(m.name)+'</button>';}).join('')+'</div>';
+      h='<div class="fmet">'+others.map(function(m){return '<button class="fm'+(m.k===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(m.k)+'"><b>'+esc(m.name)+'</b>'+kindTag(m)+'</button>';}).join('')+'</div>';
     }else if(side.src==='cats'){
-      h='<div class="pillrow">'+CATLIST.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>';
+      h=cpHtml(sd,side.vals||[]);                   /* אותו בורר של מקור המדד */
     }else if(side.src==='acct'){
-      h='<div class="pillrow">'+PL_LINES.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>';
+      h='<div class="pillrow">'+PL_LINES.map(function(c){return '<button class="pill'+(c===side.val?' on':'')+'" data-fs="'+sd+'" data-fv="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div>'+
+        '<div class="hint" style="margin-top:6px">שורה בדוח רווח והפסד של החודש</div>';
     }else if(side.src==='sheets'){
-      h='<input class="s" data-fin="'+sd+'" value="'+esc(side.val||'')+'" placeholder="תא, למשל B4">';
+      h='<div class="fsheet"><input class="s" data-fin="'+sd+'" data-fk="val" value="'+esc(side.val||'')+'" placeholder="תא, למשל B4">'+
+        '<input class="s" data-fin="'+sd+'" data-fk="gid" value="'+esc(side.gid||'')+'" placeholder="gid של הטאב"></div>'+
+        '<div class="pillrow" style="margin-top:8px">'+LOGICS.map(function(l){return '<button class="pill'+((side.logic||LOGIC[1])===l[0]?' on':'')+'" data-fs="'+sd+'" data-flogic="'+esc(l[0])+'" title="'+esc(l[2])+'">'+esc(l[1])+'</button>';}).join('')+'</div>';
     }else{
-      h='<input class="s" data-fin="'+sd+'" inputmode="numeric" value="'+esc(side.val||'')+'" placeholder="מספר">'+
-        ' <button class="pill'+(side.val==='ימי עבודה'?' on':'')+'" data-fs="'+sd+'" data-fv="ימי עבודה">ימי עבודה</button>';
+      h='<div class="fsheet"><input class="s" data-fin="'+sd+'" data-fk="val" inputmode="numeric" value="'+esc(side.val||'')+'" placeholder="מספר קבוע">'+
+        '<button class="pill'+(side.val==='ימי עבודה'?' on':'')+'" data-fs="'+sd+'" data-fv="ימי עבודה">ימי עבודה בחודש</button></div>';
     }
     val.innerHTML=h;
   });
@@ -1801,10 +1908,9 @@ document.addEventListener('click',function(e){
   if(t.dataset.fsrc){var sdA=D.f[t.dataset.fs]; if(sdA.src!==t.dataset.fsrc){sdA.src=t.dataset.fsrc;sdA.val='';} drawFormula();return;}
   if(t.dataset.fv!=null&&t.dataset.fs){D.f[t.dataset.fs].val=t.dataset.fv;drawFormula();return;}
   if(t.dataset.fop){D.f.op=t.dataset.fop;drawFormula();return;}
-  if(t.dataset.cat){
-    D.cats=D.cats||[]; var ix=D.cats.indexOf(t.dataset.cat);
-    if(ix>=0)D.cats.splice(ix,1); else D.cats.push(t.dataset.cat);
-    drawMx();return;}
+  if(t.dataset.cpt&&(t.dataset.cpg||t.dataset.cpr)){
+    var tg=t.dataset.cpt; cpSet(tg,cpToggle(cpSel(tg),t.dataset.cpg,t.dataset.cpr||null)); redrawCp(tg); return;}
+  if(t.dataset.flogic){D.f[t.dataset.fs].logic=t.dataset.flogic;drawFormula();return;}
   if(t.id==='mxDel'){document.getElementById('mxDelBar').classList.remove('hid');return;}
   if(t.id==='mxDelNo'){document.getElementById('mxDelBar').classList.add('hid');return;}
   if(t.id==='mxDelYes'){var nm=M[EX].name;M.splice(EX,1);closeMx();render();toast('המדד "'+nm+'" נמחק');return;}
@@ -1829,8 +1935,9 @@ document.addEventListener('click',function(e){
 /* קלט בעורך — יעד יומי מתעדכן חי, וחוקי ההתראה נשמרים בעותק העבודה */
 document.addEventListener('input',function(e){
   if(!D) return;
+  if(e.target.dataset&&e.target.dataset.cpq){CATQ[e.target.dataset.cpq]=e.target.value;redrawCp(e.target.dataset.cpq);return;}
   if(e.target.dataset&&e.target.dataset.fin){
-    D.f[e.target.dataset.fin].val=e.target.value.trim();
+    D.f[e.target.dataset.fin][e.target.dataset.fk||'val']=e.target.value.trim();
     document.getElementById('mxFsum').innerHTML='ƒ '+esc(fSideTxt(D.f.a))+' <b>'+esc(D.f.op)+'</b> '+esc(fSideTxt(D.f.b));
     return;}
   if(e.target.id==='mxTarget'){
