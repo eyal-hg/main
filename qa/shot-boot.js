@@ -33,6 +33,7 @@
     'adv-cal'     :[R('advisor'),G('cal')],
     'adv-comm'    :[R('advisor'),G('meets')],
     'adv-comm-unid':[R('advisor'),G('meets'),FR('&v=unid')],
+    'adv-comm-pick':[R('advisor'),G('meets'),FR('&pick=1')],
     'adv-comm-q'  :[R('advisor'),G('meets'),FR('&q='+encodeURIComponent('מסגרת אשראי'))],
     'meet-q'      :[R('advisor'),G('meets'),FR('&m=r0106&q='+encodeURIComponent('מסגרת אשראי'))],
     'adv-comm-wa' :[R('advisor'),G('meets'),FR('&m=w0207')],

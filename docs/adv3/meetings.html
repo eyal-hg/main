@@ -223,9 +223,11 @@ body.calls-on .arena{display:none}
 /* הבורר סוגר על התוכן שלו. תיבה לבנה רחבה וריקה נקראת כשדה טקסט
    ריק — לא ככפתור, ובטח לא כבקרה הראשית של המסך. */
 .cpick{position:relative;flex:none}
-.cpick .b{display:flex;align-items:center;gap:7px;font:inherit;font-size:13.5px;font-weight:500;
-  border:1px solid var(--bd);border-radius:8px;padding:9px 13px;background:var(--surface2,#F1F5F9);
-  color:var(--ink);cursor:pointer;text-align:start;white-space:nowrap}
+.cpick .b{display:flex;align-items:center;gap:8px;font:inherit;font-size:13.5px;font-weight:600;height:40px;
+  border:1px solid #C9D8E6;border-radius:10px;padding:0 14px;background:#fff;
+  color:var(--navy);cursor:pointer;text-align:start;white-space:nowrap;box-shadow:0 1px 2px rgba(12,64,104,.05)}
+.cpick .b::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--navy);flex:none;opacity:.85}
+.cpick.pick .b::before{background:#fff}
 .cpick .b>svg{flex:none;color:var(--ink3)}
 .cpick.pick .b>svg{color:rgba(255,255,255,.72)}
 /* כשיש לקוח נבחר — הכל במסך הוא עליו, ולכן זה חייב לצעוק */
@@ -237,24 +239,24 @@ body.calls-on .arena{display:none}
 .cpick-x{flex:none;border:0;background:rgba(255,255,255,.18);color:#fff;width:19px;height:19px;
   border-radius:50%;font:inherit;font-size:12px;line-height:1;cursor:pointer;padding:0}
 .cpick-x:hover{background:rgba(255,255,255,.32)}
-.cpick .b:hover{border-color:var(--navy);color:var(--navy)}
-.cpick.on .b{border-color:var(--navy);color:var(--navy)}
+.cpick .b:hover{border-color:var(--navy);background:#F7FAFD}
+.cpick.on .b{border-color:var(--navy);box-shadow:0 0 0 3px rgba(57,171,226,.16)}
 .cpick .b .chev{margin-inline-start:2px;flex:none;display:inline-flex;align-items:center;justify-content:center;
   width:14px;height:14px;transition:transform .15s;color:var(--ink3)}
 .cpick.pick .b .chev{color:rgba(255,255,255,.8)}
 .cpick .b .chev svg{width:11px;height:11px;display:block}
 .cpick.on .b .chev{transform:rotate(180deg)}
-.cpick .m{position:absolute;z-index:40;top:calc(100% + 5px);inset-inline-start:0;min-width:230px;
-  background:var(--white);border:1px solid var(--bd);border-radius:9px;
-  box-shadow:0 12px 30px rgba(16,42,67,.16);padding:7px;display:none}
+.cpick .m{position:absolute;z-index:40;top:calc(100% + 6px);inset-inline-start:0;min-width:270px;
+  background:var(--white);border:1px solid #C9D8E6;border-radius:12px;
+  box-shadow:0 16px 40px rgba(16,42,67,.18);padding:8px;display:none}
 .cpick.on .m{display:block}
 .cpick .m .s{position:relative;margin-bottom:5px}
-.cpick .m .s input{width:100%;font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--bd);
-  border-radius:6px;background:var(--bg,#F7F9FB);color:var(--ink)}
+.cpick .m .s input{width:100%;font:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--bd);
+  border-radius:8px;background:var(--bg,#F7F9FB);color:var(--ink)}
 .cpick .m .s input:focus{outline:0;border-color:var(--navy);background:var(--white)}
 .cpick .m .o{max-height:236px;overflow:auto}
-.cpick .m button{display:flex;align-items:center;gap:7px;width:100%;text-align:start;border:0;
-  background:none;font:inherit;font-size:12.5px;color:var(--ink);padding:7px 10px;border-radius:6px;cursor:pointer}
+.cpick .m button{display:flex;align-items:center;gap:8px;width:100%;text-align:start;border:0;
+  background:none;font:inherit;font-size:13px;color:var(--ink);padding:8px 10px;border-radius:8px;cursor:pointer}
 .cpick .m button:hover{background:#EAF4FB;color:var(--navy)}
 .cpick .m button.sel{background:#EAF4FB;color:var(--navy);font-weight:600}
 .cpick .m button .tick{flex:none;width:12px;color:var(--navy);opacity:0}
@@ -510,6 +512,10 @@ tr.m.wa .nm{color:#0B5A68}
 .ar-ins2{margin-bottom:12px}
 .ar-ins2 b{display:block;font-size:14px;color:var(--navy);margin-bottom:3px}
 .ar-ins2 p{font-size:13px;color:var(--ink2);line-height:1.55;margin:0}
+.ar-ins2 p .more{display:none}
+.ar-ins2.open p .more{display:inline}
+.ar-more{font:inherit;font-size:12px;font-weight:600;color:var(--sky);background:none;border:0;padding:2px 0;cursor:pointer;margin-top:2px}
+.ar-more:hover{text-decoration:underline}
 .ar-who2{color:var(--ink3);font-size:12px}
 .ar-ins{background:var(--info-bg);border:1px solid var(--info-bd);border-radius:10px;padding:10px 14px;margin-bottom:8px}
 .ar-ins b{display:block;font-size:13px;color:var(--ink);margin-bottom:3px}
@@ -941,6 +947,7 @@ tr.m.wa .nm{color:#0B5A68}
     toast(on?'ההקלטה התחילה — '+co:'ההקלטה נעצרה');
   }
   window.recTg=recTg;
+  window.arSendPop=arSendPop; window.arSendChk=arSendChk; window.arSendClose=arSendClose; window.arSendGo=arSendGo;
 
   const ARENA={
     prep:{cap:'הכנה לפגישה · הבאה', co:'מטעי גבעון', meta:'היום 13:00 · שיחת מעקב · תומר לוי', next:true,
@@ -949,7 +956,10 @@ tr.m.wa .nm{color:#0B5A68}
       talk:'"תמונה גדולה, לא פירוט. שאלות ישירות. עונה מהר בקבוצה — פחות במייל."'},
     r0207:{co:'אנרגי אינטרנשיונל', contact:'צחי', name:'פגישה שוטפת — סקירת תזרים', meta:'02.07 · 09:00–10:00 · 46 דק׳', st:'ממתין לאישור', stc:'wait',
       base:['סקירת המזומנים בחשבונות: מזרחי 295199 בעודף, מרכנתיל בחריגה 42,445 ₪.','זוהה ריכוז מסוכן: רימון מוצרי אנרגיה ≈ 70% מהמחזור.','שביעות רצון — ירידה: תסכול מקצב התגובה בוואטסאפ.'],
-      insights:[{t:'תלות בלקוח מרכזי — סיכון מבני',d:'כ-70% מהמחזור מרימון מוצרי אנרגיה. סוכם לבחון פיזור לקוחות ויעד: לקוח חדש עד ספטמבר.'},{t:'צפי החריגה עודכן',d:'אחרי דחיית תשלום ספק — החריגה הצפויה ב-24.08 קטנה ב-8,000 ₪.'}],
+      insights:[{t:'תלות בלקוח מרכזי — סיכון מבני',d:'כ-70% מהמחזור מרימון מוצרי אנרגיה. סוכם לבחון פיזור לקוחות ויעד: לקוח חדש עד ספטמבר.',
+                 more:' בפגישה עלה שהריכוזיות היא הסיכון המבני הגדול בעסק: כל עיכוב תשלום של רימון מיתרגם ישר לחריגה בעו״ש. צחי לוקח על עצמו רשימת 5 לקוחות פוטנציאליים לפיזור, והנושא נכנס לזיכרון החברה כדי שיעלה שוב בפגישה הבאה.'},
+                {t:'צפי החריגה עודכן',d:'אחרי דחיית תשלום ספק — החריגה הצפויה ב-24.08 קטנה ב-8,000 ₪.',
+                 more:' הדחייה סוכמה בשיחת הטלפון של הבוקר עם הספק. התזרים קדימה נצבע מחדש, וההתראה על החריגה הצפויה תתעדכן אוטומטית ברענון הבוקר.'}],
       tasks:[{t:'בדיקת מסגרת אשראי נוספת מול הבנק',who:'צחי'},{t:'רשימת 5 לקוחות פוטנציאליים לפיזור',who:'צחי'},{t:'עדכון יעדי הגבייה במערכת',who:'צוות הייעוץ'}],
       fbTab:{d:'02.07.2026', sections:[
         {t:'מיקוד, תכליתיות וחיבור ללמה', open:1,
@@ -1183,7 +1193,7 @@ tr.m.wa .nm{color:#0B5A68}
               :a.kind==='ai'?'מה הוא שאל · '+a.day:'תמונת מצב ונתוני יסוד'}</h4>
         <ol class="ar-ol">${a.base.map(r=>`<li>${r}</li>`).join('')}</ol>
         ${a.insights?`<h4>תובנות מרכזיות</h4>
-          ${a.insights.map((x,i)=>`<div class="ar-ins2"><b>${i+1}. ${x.t}</b><p>${x.d}</p></div>`).join('')}`:''}
+          ${a.insights.map((x,i)=>`<div class="ar-ins2${x.more?' has':''}"><b>${i+1}. ${x.t}</b><p>${x.d}${x.more?`<span class="more">${x.more}</span>`:''}</p>${x.more?`<button class="ar-more" type="button" onclick="this.parentElement.classList.toggle('open');this.textContent=this.parentElement.classList.contains('open')?'פחות':'קרא עוד'">קרא עוד</button>`:''}</div>`).join('')}`:''}
         ${a.tasks&&a.tasks.length?`<h4>משימות לביצוע</h4>
           <ol class="ar-ol">${a.tasks.map(k=>`<li>${k.t} <span class="ar-who2">— ${k.who}</span></li>`).join('')}</ol>`:''}
         ${a.kind==='wa'?`<div class="wa-dec ${a.mem&&a.mem.length?'':'none'}">${
@@ -1647,6 +1657,7 @@ unidRender(); stripQ();
 </script>
 <script>
 /* צילום: ?pop=send פותח את בורר הנמענים על הזירה הטעונה */
+(function(){ if(new URLSearchParams(location.search).get('pick')==='1') setTimeout(function(){ var b=document.querySelector('#cfil .b'); if(b) b.click(); },700); })();
 (function(){ if(new URLSearchParams(location.search).get('pop')!=='send') return;
   let n=0; (function tick(){ if(document.querySelector('#arena .ar-acts .btn.pri')||n++>30){ if(typeof arSendPop==='function') arSendPop('approve'); } else setTimeout(tick,150); })(); })();
 </script>
