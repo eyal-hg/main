@@ -84,7 +84,7 @@
      איתו, ואיפה מעלים מסמך. המספרים הם אותם מספרים של הווידג'טים —
      היתרה מ-BAL לפי חברה, והחריגה מהתחזית המאוחדת. */
   const OD={amt:'-289,161', date:'13.7.2026', days:12};
-  const CF_ST={ai:['ai','בקיטלוג AI'],ops:['ops','אצל המתפעל'],done:['done','✓ קוטלג']};
+  const CF_ST={ai:['ai','בקיטלוג AI'],ops:['ops','אצל המתפעל'],done:['done','✓ הוזן']};
   const HICO={
     bal:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 11h20M6 15h4"/></svg>',
     od:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>'};
@@ -253,7 +253,7 @@
       <div class="cxf">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
         <span class="cxf-n">${f.name}</span>
-        <span class="cxf-st ${f.st}">${f.st==='ai'?'<span class="ai-spin"></span> בקיטלוג AI':f.st==='ops'?((ROLE==='client1'||ROLE==='clientN')?'אצל HK':'אצל המתפעל'):'✓ קוטלג'}</span>
+        <span class="cxf-st ${f.st}">${f.st==='ai'?'<span class="ai-spin"></span> בקיטלוג AI':f.st==='ops'?((ROLE==='client1'||ROLE==='clientN')?'אצל מנהל התזרים':'אצל המתפעל'):'✓ הוזן'}</span>
         <span class="cxf-w">${f.when}</span>
       </div>`).join('');
   }
@@ -302,7 +302,7 @@
         cards:'<div class="aic bad"><b>חריגה צפויה</b><span dir="ltr">-289,161 ₪</span><i>13.7.2026 · בעוד 12 ימים</i></div>'};
     }
     if(q.includes('מתפעל')||q.includes('HK')){
-      return {t:'השבוע ב-HK הושלם תפעול מלא (32 דק׳), קוטלגו 4 תנועות חדשות, טופלה חשבונית סונול, נשלח אליך עדכון תזרים והוסר חיוב כפול של 3,540 ₪. הפירוט המלא בכרטיס "מה HK עשתה עבורך החודש".'};
+      return {t:'השבוע אצל מנהל התזרים הושלם תפעול מלא (32 דק׳), קוטלגו 4 תנועות חדשות, טופלה חשבונית סונול, נשלח אליך עדכון תזרים והוסר חיוב כפול של 3,540 ₪. הפירוט המלא בכרטיס "מה HK עשתה עבורך החודש".'};
     }
     if(q.includes('פגישה')){
       return {t:'הפגישה הבאה שלך: סקירת רבעון Q3 עם אילון שחר ב-10.07 בשעה 14:00. רוצה שאשלח תזכורת יום לפני?'};
