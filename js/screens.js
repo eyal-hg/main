@@ -643,6 +643,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
           <input id="advQ" placeholder="חיפוש לקוח" autocomplete="off" value="${q.replace(/"/g,'&quot;')}" oninput="advQSet(this.value)">
         </div>
+        ${ROLE==='manager'?`<div class="cl-lg"><span><i class="cl-dot done"></i>סיים</span><span><i class="cl-dot prog"></i>באמצע</span><span><i class="cl-dot bad"></i>בעיה בנתונים</span><span><i class="cl-dot"></i>לא התחיל</span></div>`:''}
         <div class="cl-list">`;
       /* הסרגל נקי: שם ושורת משנה. בלי נקודות, בלי מונים ובלי התראות —
          ההתראות חיות במסכים שנועדו להן, לא בניווט. */
