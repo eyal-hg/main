@@ -266,6 +266,12 @@
    בו נערך במקום, תא שמתעדכן לבד אפור. השורה האחרונה ריקה — שם ויעד
    יוצרים מדד, כמו שורה חדשה בגיליון. אותם נתונים של תצוגת הכרטיסים.
    ===================================================================== */
+.mrange{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--bd);border-radius:999px;
+  padding:2px 8px;font-size:12.5px;flex:none}
+.mrange .lb,.mrange .to{font-size:11.5px;color:var(--ink3)}
+.mrange button{font-weight:600;color:var(--navy);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.mrange button:hover{background:var(--bg)}
+.pop.months{max-height:300px;overflow-y:auto}
 .vseg{display:inline-flex;gap:2px;border:1px solid var(--bd);border-radius:999px;padding:2px;flex:none}
 .vseg button{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
   color:var(--ink3);border-radius:999px;padding:3px 11px;transition:.12s}
@@ -436,6 +442,11 @@
           <b id="moName">יוני 2026</b><span class="motag" id="moTag">נסגר</span>
           <button id="moNext" aria-label="החודש הבא">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        </div>
+        <!-- בתצוגת הטבלה: טווח חודשים במקום חודש בודד -->
+        <div class="mrange hid" id="mrange">
+          <span class="lb">מ</span><button id="rFrom" data-rpop="from"></button>
+          <span class="to">עד</span><button id="rTo" data-rpop="to"></button>
         </div>
         <div class="vseg" id="vseg" role="tablist" aria-label="תצוגה">
           <button data-view="cards" class="on" role="tab">כרטיסים</button>
@@ -1105,6 +1116,9 @@ function applyView(){
   document.querySelector('.mt').classList.toggle('tbl',tbl);
   ['marena','mlHd','mlist'].forEach(function(id){document.getElementById(id).classList.toggle('hid',tbl);});
   document.getElementById('msheet').classList.toggle('hid',!tbl);
+  document.querySelector('.ph .mstep').classList.toggle('hid',tbl);
+  document.getElementById('mrange').classList.toggle('hid',!tbl);
+  if(tbl){ RT=MI; RF=Math.min(RF,RT); if(RT-RF>11) RF=RT-11; drawRange(); }
   /* ניהול המדדים חוזר על מה שהגיליון כבר מראה — יורד בתצוגת הטבלה */
   document.querySelector('.mgr').classList.toggle('hid',tbl);
   var b=document.querySelectorAll('#vseg button');
@@ -1114,8 +1128,19 @@ function applyView(){
   }
 }
 
-/* חלון החודשים: ששה, שהאחרון בהם הוא החודש המוצג */
-function moWin(){var e=MI,s=Math.max(0,e-5),a=[];for(var i=s;i<=e;i++)a.push(i);return a;}
+/* טווח החודשים בגיליון: מחודש עד חודש. החודש האחרון בטווח הוא החודש המוצג —
+   מולו מחושבים הביצוע, היעד היומי והמצב. */
+var RF=Math.max(0,MI-5), RT=MI;
+function moWin(){var a=[];for(var i=RF;i<=RT;i++)a.push(i);return a;}
+function setRange(f,t){
+  RF=Math.max(0,Math.min(f,11)); RT=Math.max(RF,Math.min(t,11));
+  MI=RT; render();
+}
+function drawRange(){
+  var f=document.getElementById('rFrom'), t=document.getElementById('rTo');
+  if(f) f.textContent=MONTHS[RF]+' 2026';
+  if(t) t.textContent=MONTHS[RT]+' 2026';
+}
 function valAt(m,i){var o=MI;MI=i;var v=valOf(m);MI=o;return v;}
 function pctAt(m,i){var o=MI;MI=i;var v=pctOf(m);MI=o;return v;}
 function tgtAt(m,i){var v=(m.tgt||[])[i];return v==null?null:v;}
@@ -1210,6 +1235,7 @@ function renderSheet(){
     if(g.name) html+=shGrp(g.name,g.items.length);
     html+=g.items.map(shRows).join('');
   });
+  drawRange();
   document.getElementById('shHd').innerHTML=shHead();
   document.getElementById('shB').innerHTML=html+shNewRow();
   document.getElementById('shF').innerHTML=shFoot();
@@ -1290,16 +1316,24 @@ function closePop(){if(POP&&POP.parentNode)POP.parentNode.removeChild(POP);POP=n
 var KIND_OPTS=[['hand','הזנה ידנית'],['sheets','Google Sheets'],['cats','לפי קטגוריות'],['acct','דוח חשבונאי'],['calc','מחושב']];
 function openPop(btn,kind){
   closePop();
-  var m=byKey(btn.dataset.k); if(!m) return;
-  var opts=kind==='kind'?KIND_OPTS:UNITS.concat(['ליטר']).map(function(u){return [u,u];});
-  var cur=kind==='kind'?m.src:m.unit;
-  var pop=document.createElement('div'); pop.className='pop'; pop.dataset.kind=kind; pop.dataset.k=m.k;
+  var m=null, opts, cur;
+  if(kind==='from'||kind==='to'){
+    /* "מ" לא אחרי "עד", ו"עד" לא לפני "מ" */
+    opts=[]; for(var i=0;i<12;i++){ if((kind==='from'&&i<=RT)||(kind==='to'&&i>=RF)) opts.push([String(i),MONTHS[i]+' 2026']); }
+    cur=String(kind==='from'?RF:RT);
+  }else{
+    m=byKey(btn.dataset.k); if(!m) return;
+    opts=kind==='kind'?KIND_OPTS:UNITS.concat(['ליטר']).map(function(u){return [u,u];});
+    cur=kind==='kind'?m.src:m.unit;
+  }
+  var pop=document.createElement('div'); pop.className='pop'+(m?'':' months'); pop.dataset.kind=kind; pop.dataset.k=m?m.k:'';
   pop.innerHTML=opts.map(function(o){return '<button data-po="'+esc(o[0])+'" class="'+(o[0]===cur?'on':'')+'">'+esc(o[1])+'</button>';}).join('');
   var host=document.getElementById('msheet'); host.appendChild(pop);
   var r=btn.getBoundingClientRect(), h=host.getBoundingClientRect();
   pop.style.top=(r.bottom-h.top+4)+'px';
-  pop.style.insetInlineEnd=(h.right-r.right)+'px';
+  pop.style.right=(h.right-r.right)+'px';        /* RTL: inset-inline-end היה שמאל */
   POP=pop;
+  var on=pop.querySelector('button.on'); if(on&&on.scrollIntoView) on.scrollIntoView({block:'nearest'});
 }
 (function wireSheet(){
   var B=document.getElementById('shB');
@@ -1315,7 +1349,7 @@ function openPop(btn,kind){
     if(e.key==='Escape'){t.value=t.dataset.o||'';t.blur();e.stopPropagation();return;}
   });
   document.addEventListener('mousedown',function(e){
-    if(POP&&!e.target.closest('.pop')&&!e.target.closest('[data-pop]')) closePop();
+    if(POP&&!e.target.closest('.pop')&&!e.target.closest('[data-pop],[data-rpop]')) closePop();
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&POP)closePop();});
   applyView();
@@ -1437,8 +1471,12 @@ document.addEventListener('click',function(e){
   if(t.dataset.view){setView(t.dataset.view);return;}
   if(t.dataset.sort){mSort(t.dataset.sort);return;}
   if(t.dataset.pop){openPop(t,t.dataset.pop);return;}
+  if(t.dataset.rpop){openPop(t,t.dataset.rpop);return;}
   if(t.dataset.po&&t.closest('.pop')){
-    var pp=t.closest('.pop'), pm=byKey(pp.dataset.k);
+    var pp=t.closest('.pop');
+    if(pp.dataset.kind==='from'){closePop();setRange(+t.dataset.po,RT);return;}
+    if(pp.dataset.kind==='to'){closePop();setRange(RF,+t.dataset.po);return;}
+    var pm=byKey(pp.dataset.k);
     if(pm){ if(pp.dataset.kind==='kind') pm.src=t.dataset.po; else pm.unit=t.dataset.po; }
     closePop(); render(); return;}
 
