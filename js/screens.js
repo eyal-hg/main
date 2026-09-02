@@ -651,7 +651,11 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
           <input id="advQ" placeholder="חיפוש לקוח" autocomplete="off" value="${q.replace(/"/g,'&quot;')}" oninput="advQSet(this.value)">
         </div>
-        ${ROLE==='manager'?`<div class="cl-lg"><span><i class="cl-dot done"></i>סיים</span><span><i class="cl-dot prog"></i>באמצע</span><span><i class="cl-dot bad"></i>בעיה בנתונים</span><span><i class="cl-dot"></i>לא התחיל</span><span class="lg-warn"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>חריגה בפועל</span></div>`:''}
+        ${ROLE==='manager'?`<div class="cl-lg">
+          <span><i class="cl-dot"></i>לא התחיל</span><span><i class="cl-dot prog"></i>באמצע תפעול</span>
+          <span><i class="cl-dot done"></i>סיים תפעול</span><span><i class="cl-dot bad"></i>בעיה בנתונים</span>
+          <span class="lg-warn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>חריגה בפועל בבנק</span>
+        </div>`:''}
         <div class="cl-list">`;
       /* הסרגל נקי: שם ושורת משנה. בלי נקודות, בלי מונים ובלי התראות —
          ההתראות חיות במסכים שנועדו להן, לא בניווט. */

@@ -78,6 +78,18 @@
   const stageTasksDone=()=>{const st=curTasks().filter(t=>STAGE_TASK_TYPES.includes(t.type));return st.length?st.every(t=>t.done):true;};
   function opsPeek(i){window._opsPeek=(i==null||window._opsPeek===i)?null:i;renderOps();}
   const opsDoneSet=new Set(), opsDur={}, opsAccum={};
+  /* דוגמאות למצבי התפעול בסרגל מנהל התזרים (אייל: "כרגע הכל אפור"):
+     שניים סיימו, אחד באמצע, אחד עם בעיה בנתונים. לפי שם, כדי שלא יזוז עם הסדר. */
+  (function(){
+    if(typeof CLIENTS==='undefined') return;
+    const byName=n=>CLIENTS.findIndex(c=>c.name===n);
+    [['הראל טכנולוגיות','done',1860],['סהר חשמל','done',1240],['רימון תקשורת','prog',420],['שחף פלסטיק','bad',0]]
+      .forEach(([n,st,sec])=>{ const i=byName(n); if(i<0) return;
+        if(st==='done'){opsDoneSet.add('c'+i);opsDur['c'+i]=sec;}
+        else if(st==='prog') opsAccum['c'+i]=sec;
+        else CLIENTS[i].dataIssue='יתרת סוף יום לא התקבלה מהבנק';
+      });
+  })();
   let opsStart=0, opsTimer=null, opsTotal=0, opsActiveKey=null;
   const opsKey=()=>SCOPE==='portfolio'?'portfolio':'c'+CUR;
   const OPS_ICO_GEAR='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/><circle cx="12" cy="12" r="3"/></svg>';
