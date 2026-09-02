@@ -347,11 +347,9 @@
           ?`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')"><b>${o.c.name}${o.m.when?`<i class="oqs-sub">${o.m.when}</i>`:''}</b><span class="oqs-src okk">✓ נקבעה</span></div>`
           :`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${o.i});showTab('meetings')"><b>${o.c.name}${o.m.gap?`<i class="oqs-sub">${o.m.gap}</i>`:''}</b><span class="oqs-src none">לא נקבעה</span></div>`;});
     }
-    if(key==='mrep') CLIENTS.forEach((c,i)=>{
-      if(!firmOk(c)||!coActive(c)||!(c.product==='money'||c.product==='money+')) return;
-      rows+=c.mReport
-        ?oqsRow(`toast('הדוח של ${c.name} כבר נשלח')`,c.name,'✓ נשלח')
-        :`<div class="oqs-row"><b>${c.name}</b><button class="mt-btn view" onclick="event.stopPropagation();mrSend(${i})">שליחת דוח</button></div>`;});
+    if(key==='mrep') CLIENTS.map((c,i)=>({c,i})).filter(o=>firmOk(o.c)&&coActive(o.c)&&(o.c.product==='money'||o.c.product==='money+'))
+      .sort((a,b)=>(a.c.mReport?1:0)-(b.c.mReport?1:0)||a.c.name.localeCompare(b.c.name,'he')).forEach(({c,i})=>{
+      rows+=`<div class="oqs-row" onclick="event.stopPropagation();OQS_OPEN=null;selectClient(${i})"><b>${c.name}</b><span class="oqs-src ${c.mReport?'okk':'none'}">${c.mReport?'✓ נשלח':'לא נשלח'}</span></div>`;});
     if(key==='status') CLIENTS.forEach((c,i)=>{
       if(!firmOk(c)) return; const st=opsStatusOf(i);
       const tot=(c.tasks||[]).length, dn=(c.tasks||[]).filter(t=>t.done).length;
