@@ -107,10 +107,13 @@
 .dirty .btn{margin-inline-start:auto}
 
 /* ---------- הדוח + העוזר בצד ---------- */
-.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 318px;gap:16px;align-items:start}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 318px;gap:16px;align-items:stretch}
 @media(max-width:1080px){.pgrid{grid-template-columns:minmax(0,1fr)}}
-.aiside{position:sticky;top:14px;background:#fff;border:1px solid var(--cardbd);border-radius:14px;
-  box-shadow:var(--lift);display:flex;flex-direction:column;overflow:hidden;max-height:calc(100vh - 30px)}
+/* הפאנל נמתח לגובה הדוח (אייל 03.09): השיחה ממלאת את האמצע, השדה בתחתית. במערכת, כשהעמוד גולל —
+   sticky לגובה החלון עם גלילה פנימית; במוטמע (iframe בגובה התוכן) אין מה להדביק, אז נמתח. */
+.aiside{background:#fff;border:1px solid var(--cardbd);border-radius:14px;
+  box-shadow:var(--lift);display:flex;flex-direction:column;overflow:hidden;min-height:420px}
+html:not(.embed) .aiside{position:sticky;top:14px;max-height:calc(100vh - 30px)}
 /* ראש כהה כמו לכל פאנל אחר — העוזר הוא רובד, לא הערה בצד */
 .aiside .ah{display:flex;align-items:center;gap:8px;padding:13px 16px;background:var(--band)}
 .aiside .ah svg{color:#8EC9EC;flex:none}
