@@ -14,8 +14,7 @@
    זה המסך היחיד של "תמונת תזרים" — נטען מ-index.html לכל התפקידים (הגרסה
    העצמאית הישנה עברה ל-legacy/past-cashflow.html ואינה בשימוש). מה שהשתנה מול המקור:
    · הכרום המשותף (cli.css / cli.js) במקום עמוד עצמאי עם גופן Rubik.
-   · התובנות ירדו מעמודה צדדית לרצועה אופקית מעל הטבלה — הטבלה מקבלת
-     את כל הרוחב, והתובנות נקראות לפני שיורדים למספרים.
+   · אין תובנות אוטומטיות (הכרעת אייל 03.09): העוזר הוא צ׳אט על הדוח, נקודה.
    · צבע: אדום עמוק שמור לסכנה כספית בלבד — יתרה שלילית, הפרש שלילי
      ואחוז עלות המכר מהמחזור. הוצאה רגילה היא מבנה, לא סכנה: מינוס
      בספרות טבלאיות, בלי צבע.
@@ -123,6 +122,8 @@
 .aiside .aiscope b{font-weight:600;color:var(--navy)}
 .aiside .aiscope .dotv{width:6px;height:6px;border-radius:50%;background:var(--good);flex:none}
 .aiside .ab{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:8px;background:var(--bg)}
+.aiside .hello{font-size:12.5px;line-height:1.6;color:var(--ink2);padding:12px 14px;background:#fff;border:1px solid var(--cardbd);border-radius:11px}
+.aiside .hello b{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:3px}
 .aiside .note{font-size:11.5px;color:var(--ink3);padding:6px 10px;border-radius:9px;background:#fff;border:1px dashed var(--bd)}
 /* כל תובנה היא כרטיס — הקו הצבעוני נשאר, אבל יש לו על מה לשבת */
 .aiside .ins{position:relative;padding:10px 13px 10px 13px;padding-inline-start:16px;
@@ -290,15 +291,9 @@
       </div>
       <!-- מה הסוכן מקבל: בדיוק הדוח שמוצג — הטווח, החשבון וכל השורות. מתעדכן עם הדוח. -->
       <div class="aiscope" id="aiScope"></div>
+      <!-- בלי תובנות: העוזר הוא צ׳אט על הדוח. הגוף מתחיל ריק עם הסבר קצר, והשיחה נבנית מלמטה -->
       <div class="ab" id="aiBody">
-        <div class="ins warn"><b>משיכות בעלים גבוהות</b>
-          <span><span class="num" dir="ltr">1.46</span> מ׳ ₪ בתקופה — פי 1.5 מההפרש התפעולי המצטבר.</span></div>
-        <div class="ins"><b>אפריל חריג</b>
-          <span>הפרש חודשי <span class="num" dir="ltr">753-</span> א׳ ₪, בעיקרו משיכות בעלים
-            (<span class="num" dir="ltr">635</span> א׳) והעברות.</span></div>
-        <div class="ins good"><b>מגמה תפעולית חיובית</b>
-          <span>ההפרש התפעולי עלה מ־<span class="num" dir="ltr">173-</span> א׳ באפריל
-            ל־<span class="num" dir="ltr">367</span> א׳ ביולי.</span></div>
+        <div class="hello"><b>שאלו אותי על הדוח</b>אני עונה רק מתוך הדוח שמוצג — הטווח, החשבון והשורות שעל המסך. לא מנחש ולא מביא מבחוץ.</div>
       </div>
       <div class="asug" id="aiSug"></div>
       <form class="acomp" onsubmit="event.preventDefault();aiSend()">
@@ -520,7 +515,6 @@ function reportContext(){
     months:MONTHS.slice(), account:DDS.acct.opts[DDS.acct.sel],
     opening:opens[0], closing:opens[opens.length-1], monthly:monthly,
     sections:sections,
-    insights:[].map.call(document.querySelectorAll('#aiBody .ins b'),function(b){return b.textContent}),
     rows:rows
   };
 }
