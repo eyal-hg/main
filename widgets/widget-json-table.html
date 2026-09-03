@@ -81,6 +81,7 @@
   var TYPES=['text','number','money','date','percent','status'];
 
   var S={cols:[],rows:[],title:'',sub:'',sortK:null,asc:true,q:'',search:false,total:false,at:''};
+  var TITLE='';
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   function isNum(v){return typeof v==='number'&&isFinite(v)}
@@ -117,7 +118,7 @@
       if(data.types&&typeof data.types==='object'){ types=data.types;
         var bad=Object.keys(types).filter(function(k){return TYPES.indexOf(types[k])<0});
         if(bad.length) return fail('טיפוס לא מוכר','types.'+bad[0]+' = "'+types[bad[0]]+'" · המותרים: '+TYPES.join(' · ')); }
-      S.title=data.title||''; S.sub=data.subtitle||''; S.at=data.received_at||'';
+      S.title=data.title||TITLE||''; S.sub=data.subtitle||''; S.at=data.received_at||'';
       S.search=data.search!==false; S.total=data.total!==false; cols=data.columns||null;
     } else return fail('קלט לא מזוהה','צפוי מערך של אובייקטים או אובייקט עם rows');
     if(!rows.length){ S.rows=[]; S.cols=[]; return render(); }
@@ -172,14 +173,28 @@
   /* ---- גובה להורה (כמו שאר הווידג׳טים) ---- */
   function report(){ if(self===top&&location.hash!=='#embed') return;
     var h=Math.ceil(W.getBoundingClientRect().height)+2;
-    parent.postMessage({hkEmbed:1,src:(location.pathname.split('/').pop()||''),h:h},'*'); }
+    parent.postMessage({hkEmbed:1,src:(location.pathname.split('/').pop()||'')+location.search,h:h},'*'); }
   addEventListener('resize',report);
 
   /* ---- מקורות ---- */
   addEventListener('message',function(e){ if(e.data&&e.data.hkJson!==undefined) load(e.data.hkJson); });
-  var P=new URLSearchParams(location.search), src=P.get('src');
+  var P=new URLSearchParams(location.search), src=P.get('src'), file=P.get('file');
+  /* כותרת: מה-JSON אם יש (title), אחרת ?title= מה-URL, אחרת שם הקובץ */
+  TITLE=P.get('title')||(file?file.split('/').pop().replace(/[_-]+/g,' '):'');
   if(!src&&P.get('company')&&P.get('widget')) src=(P.get('api')||'')+'/api/widgets/'+encodeURIComponent(P.get('company'))+'/'+encodeURIComponent(P.get('widget'));
-  if(src){
+  /* ?file=company/widget → data/widgets/company/widget.json. מ-file:// ה-fetch חסום, אז נופלים
+     ל-<script> של אותו קובץ כ-.js (tools/widgets-json2js.py מייצר אותו). */
+  window.hkWidgetJson=function(name,json){load(json)};
+  function viaScript(rel){
+    var sc=document.createElement('script'); sc.src='../data/widgets/'+rel+'.js';
+    sc.onerror=function(){fail('אין קובץ '+rel,'הנח data/widgets/'+rel+'.json והרץ python3 tools/widgets-json2js.py')};
+    document.head.appendChild(sc);
+  }
+  if(file){
+    W.innerHTML='<div class="st">טוען…</div>';
+    if(location.protocol==='file:') viaScript(file);
+    else fetch('../data/widgets/'+file+'.json').then(function(r){if(!r.ok)throw 0;return r.text()}).then(load).catch(function(){viaScript(file)});
+  } else if(src){
     W.innerHTML='<div class="st">טוען…</div>';
     fetch(src,{credentials:'include'}).then(function(r){if(!r.ok)throw new Error(r.status+' '+r.statusText);return r.text()}).then(load)
       .catch(function(e){fail('לא הצלחתי לטעון את הקובץ',e.message)});

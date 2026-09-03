@@ -20,7 +20,7 @@
       {f:'widget-budget-control.html',      t:'בקרת תקציב',         d:'חריגות תקציב לפי קטגוריה',                     cat:'תקציב',   h:470},
       {f:'widget-process-full.html',        t:'תהליך ליווי',        d:'שלבי ליווי עסקי עם התקדמות',                   cat:'ליווי',   h:540},
       {f:'widget-next-process.html',        t:'השלב הבא',           d:'השלב הבא בתהליך עם אג׳נדה',                    cat:'ליווי',   h:500},
-      {f:'widget-json-table.html',          t:'טבלה מ-JSON',        d:'טבלה דינמית מכל JSON — עמודות מהמפתחות, מיון, חיפוש וסה״כ', cat:'כללי', h:470},
+      {f:'widget-json-table.html?file=haviv/payment_terms&title=תנאי תשלום', t:'טבלה מ-JSON', d:'טבלה דינמית מקובץ ב-data/widgets — עמודות מהמפתחות, מיון, חיפוש וסה״כ', cat:'כללי', h:470},
     ],
     portfolio:[
       {f:'widget-pf-kpi-balance.html',       t:'יתרה מצרפית',            d:'סך יתרות עו״ש לכלל החברות',                    cat:'מספרים', h:160, s:'sm'},
@@ -39,7 +39,7 @@
   };
   let SCOPE='client';
   const BOARDS={
-    client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-budget-gaps.html','widget-cashflow-full.html','widget-profitability-full.html','widget-metric-full.html'],
+    client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-budget-gaps.html','widget-cashflow-full.html','widget-json-table.html?file=haviv/payment_terms&title=תנאי תשלום','widget-profitability-full.html','widget-metric-full.html'],
     portfolio:['widget-pf-kpi-balance.html','widget-pf-kpi-budget.html','widget-pf-kpi-risk.html','widget-pf-kpi-overdraft.html','widget-pf-cashflow-budget.html','widget-pf-alerts.html','widget-pf-budget-companies.html','widget-pf-budget-categories.html','widget-pf-risk-list.html','widget-pf-collections.html'],
   };
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};
