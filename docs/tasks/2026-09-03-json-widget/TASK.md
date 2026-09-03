@@ -43,13 +43,22 @@ JWT של המערכת ב-`Authorization: Bearer`, אותו middleware של `/api
 בכפתור **הגדרות** של הלוח (איפה שמוסיפים ווידג׳ט היום) נוסף פריט **"טבלה מהשרת"**. לחיצה עליו פותחת
 **רשימה** (בורר עם חיפוש, לא `<select>`) של הטבלאות של החברה **שעדיין אין להן ווידג׳ט על הלוח**.
 
-- **מאיפה הרשימה:** מהטבלה שנקודת הקצה `POST /api/company-widgets-external/{ח.פ}/{widget}` כותבת
-  אליה — טבלת הווידג׳טים החיצוניים (שם הטבלה לפי `EXTERNAL_WIDGETS_INTEGRATION.md` של עידו; מפתח:
-  ח.פ + `widget`). שאילתה: כל השורות של ח.פ החברה, פחות ה-`widget` שכבר מונחים על הלוח של החברה.
-  זה מקור אחד — אין רשימה שנייה לתחזק.
-- **מה מוצג לכל פריט:** `widget_he_name` (או `view.title`) · המסך (`gviya` → גבייה, `sales` → מכירות,
-  `tazrim` → תזרים, `bank` → בנק, מהחלק שלפני `__`) · מספר שורות · "עודכן dd.mm HH:mm" מ-`received_at`.
-  לא מציגים את המזהה הטכני `sales__sales` לבעל העסק.
+- **מאיפה הרשימה:** הטבלה **`Company_Widgets_External`** (עמודות: `id`, `company_id`, `organization_number`,
+  `widget`, `body` jsonb, `row_count`, `received_at`, `created_at`, `updated_at`, `widget_he_name`).
+  **מה שמוצג ברשימה הוא `widget_he_name`.** שאילתה: כל השורות של `company_id` של החברה, פחות ה-`widget`
+  שכבר מונחים על הלוח שלה. זה מקור אחד — אין רשימה שנייה לתחזק.
+
+  ```sql
+  SELECT widget, widget_he_name, row_count, received_at
+  FROM   Company_Widgets_External
+  WHERE  company_id = :company_id
+    AND  widget NOT IN (SELECT widget FROM <לוח הווידג׳טים של החברה> WHERE company_id = :company_id)
+  ORDER  BY widget_he_name;
+  ```
+  הווידג׳ט עצמו מרנדר את `body` (שם יושבים `types`, `rows`, `view`), עם `widget_he_name` ככותרת כשאין `view.title`.
+- **מה מוצג לכל פריט:** `widget_he_name` (השורה הראשית) · ומתחתיו קטן: המסך (`gviya` → גבייה, `sales` →
+  מכירות, `tazrim` → תזרים, `bank` → בנק, מהחלק של `widget` שלפני `__`) · `row_count` שורות · "עודכן
+  dd.mm HH:mm" מ-`received_at`. לא מציגים את המזהה הטכני `sales__sales` לבעל העסק.
 - **בחירה:** מוסיפה מופע של הווידג׳ט ללוח עם `company` = ח.פ החברה, `widget` = המזהה, `title` =
   `widget_he_name`. חצי מסך, בסוף הלוח. הפריט יורד מהרשימה.
 - **הסרה** של ווידג׳ט מהלוח מחזירה את הטבלה לרשימה.
