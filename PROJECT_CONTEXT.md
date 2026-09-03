@@ -1635,3 +1635,7 @@ align/color{neg,pos,zero}/rules[{lt,gt…,color}]/bar{max,color}/chip/colors/lin
 ל-**`widgets/json-table.js`** (`hkJsonTable.render(el,json,{title,onRender})`) — זה מה שהמתכנת לוקח
 למערכת הווידג׳טים הקיימת. משימה: `docs/tasks/2026-09-03-json-widget/TASK.md`. המפה לשרת:
 `docs/WIDGET_JSON_CONTRACT.md`.
+**תמונת תזרים — בלי תובנות (03.09, אייל: "בכלל לא רוצה תובנות, מעדיף AI רגיל"):** העוזר בצד הדוח הוא צ׳אט
+בלבד — גוף ריק עם הסבר, שאלות מוצעות, שדה פעיל מיד, בלי קריאה לסוכן בטעינה. "שליחה" של הדוח לא תלויה
+בעוזר, ואין תובנות בדוח החודשי ובאקסל. תשובה נושאת חתימת דוח (טווח+חשבון) ונזרקת אם הדוח התחלף. הכרטיסים
+הוסרו מהפרוטוטיפ; המשימה `docs/tasks/2026-09-02-cashflow-ai/TASK.md` (מקור יחיד, הוחזרה ל-In Progress).
