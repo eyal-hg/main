@@ -20,6 +20,7 @@
       {f:'widget-budget-control.html',      t:'בקרת תקציב',         d:'חריגות תקציב לפי קטגוריה',                     cat:'תקציב',   h:470},
       {f:'widget-process-full.html',        t:'תהליך ליווי',        d:'שלבי ליווי עסקי עם התקדמות',                   cat:'ליווי',   h:540},
       {f:'widget-next-process.html',        t:'השלב הבא',           d:'השלב הבא בתהליך עם אג׳נדה',                    cat:'ליווי',   h:500},
+      {f:'widget-json-table.html',          t:'טבלה מ-JSON',        d:'טבלה דינמית מכל JSON — עמודות מהמפתחות, מיון, חיפוש וסה״כ', cat:'כללי', h:470},
     ],
     portfolio:[
       {f:'widget-pf-kpi-balance.html',       t:'יתרה מצרפית',            d:'סך יתרות עו״ש לכלל החברות',                    cat:'מספרים', h:160, s:'sm'},

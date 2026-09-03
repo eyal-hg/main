@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>טבלה מ-JSON</title>
+<style>
+  :root{--navy:#0C4068;--cyan:#39ABE2;--warm:#E48375;--ink:#28425C;--ink2:#51677A;--gray:#818181;--faint:#9AA7BB;
+    --line:#e6ecf2;--tint:#EAF4FB;--bad:#C43D30;--shadow:0px 1px 50px rgba(0,0,0,0.08)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Rubik',sans-serif;background:transparent;color:var(--ink)}
+  .w{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+  .hd{display:flex;align-items:center;gap:10px;padding:14px 18px 10px}
+  .hd h2{font-size:15px;font-weight:600;color:var(--navy)}
+  .hd .sub{font-size:12px;color:var(--gray)}
+  .hd .sp{flex:1}
+  .hd .q{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:#F7FAFD}
+  .hd .q svg{color:var(--faint);flex:none}
+  .hd .q input{border:0;background:none;font:inherit;font-size:12.5px;width:150px;outline:none;color:var(--ink)}
+  .hd .q input::placeholder{color:var(--faint)}
+  .tw{overflow:auto;max-height:420px;border-top:1px solid var(--line)}
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+  th{position:sticky;top:0;z-index:1;background:var(--tint);color:var(--navy);font-weight:600;font-size:12px;
+    text-align:start;padding:9px 14px;border-bottom:1px solid #D8EAF6;white-space:nowrap;cursor:pointer;user-select:none}
+  th .ar{display:inline-block;width:0;height:0;margin-inline-start:6px;border-inline-start:4px solid transparent;
+    border-inline-end:4px solid transparent;border-top:5px solid var(--faint);vertical-align:2px;opacity:0}
+  th.on .ar{opacity:1;border-top-color:var(--navy)}
+  th.on.asc .ar{transform:rotate(180deg)}
+  th.num,td.num{text-align:end}
+  td{padding:9px 14px;border-bottom:1px solid #F0F4F8;color:var(--ink);white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
+  td.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+  td .cur{color:var(--gray);font-size:11px;margin-inline-start:2px}
+  tr:hover td{background:#FAFCFE}
+  tr.tot td{background:#F5F8FB;font-weight:600;color:var(--navy);border-top:2px solid #D3DDE8;border-bottom:0}
+  .ft{display:flex;align-items:center;gap:12px;padding:9px 18px;font-size:11.5px;color:var(--gray)}
+  .ft .sp{flex:1}
+  .st{padding:34px 18px;text-align:center;color:var(--gray);font-size:13px;line-height:1.6}
+  .st b{display:block;color:var(--navy);font-weight:600;margin-bottom:3px}
+  .st.err b{color:var(--bad)}
+  .st code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--ink2);background:#F4F7FA;border-radius:6px;padding:1px 6px}
+</style>
+</head>
+<body>
+<div class="w" id="w"></div>
+<script>
+/* =====================================================================
+   widget-json-table — טבלה דינמית מ-JSON. אין כאן ידע על הנתונים: הכל נגזר מהקלט.
+
+   מקורות, לפי סדר: 1) postMessage מההורה: {hkJson: <json>}
+                     2) ?src=<url>  (fetch)
+                     3) בלי שניהם — נתוני דוגמה (DEMO) כדי שהווידג׳ט יראה משהו בגלריה.
+
+   צורות קלט:
+     • מערך של אובייקטים  → עמודות = המפתחות, בסדר הופעתם.
+     • {title, subtitle, columns:[{key,label,type,total}], rows:[…], total:true, search:true}
+       type: text · number · money · percent · date  (לא חובה — מזוהה מהערכים)
+   ===================================================================== */
+(function(){
+  var W=document.getElementById('w');
+  var NF=new Intl.NumberFormat('he-IL'), NF2=new Intl.NumberFormat('he-IL',{maximumFractionDigits:2});
+  var DEMO={title:'פערי תקציב — יוני 2026',subtitle:'דוגמה: מבוסס על הווידג׳ט "מעקב ופערים"',search:true,total:true,
+    columns:[{key:'cat',label:'קטגוריה'},{key:'target',label:'יעד',type:'money'},{key:'actual',label:'בפועל',type:'money'},
+             {key:'gap',label:'פער',type:'money'},{key:'pct',label:'% מהיעד',type:'percent'}],
+    rows:[{cat:'קניות מלאי',target:155000,actual:130000,gap:-25000,pct:-16},
+          {cat:'הכנסות ממכירות · מזומן',target:89950,actual:82000,gap:-7950,pct:-9},
+          {cat:'משיכות בעלים',target:15000,actual:10000,gap:-5000,pct:-33},
+          {cat:'הכנסות מסליקה · דיירקט',target:23501,actual:28000,gap:4499,pct:19},
+          {cat:'הוצאות תפעול',target:18433,actual:14000,gap:-4433,pct:-24}]};
+
+  var S={cols:[],rows:[],title:'',sub:'',sortK:null,asc:true,q:'',search:false,total:false};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function isNum(v){return typeof v==='number'&&isFinite(v)}
+  function isDate(v){return typeof v==='string'&&/^\d{4}-\d{2}-\d{2}/.test(v)&&!isNaN(Date.parse(v))}
+  function guessType(key,rows){
+    var vals=rows.map(function(r){return r[key]}).filter(function(v){return v!=null&&v!==''});
+    if(!vals.length) return 'text';
+    if(vals.every(isNum)){
+      if(/pct|percent|אחוז|%/i.test(key)) return 'percent';
+      if(/sum|amount|total|balance|price|cost|target|actual|gap|₪|סכום|יתרה|יעד|בפועל|פער|חריגה|הכנס|הוצא|תשלום|חוב/i.test(key)) return 'money';
+      return 'number';
+    }
+    if(vals.every(isDate)) return 'date';
+    return 'text';
+  }
+  function fmt(v,t){
+    if(v==null||v==='') return '<span style="color:var(--faint)">—</span>';
+    if(t==='money') return (v<0?'-':'')+NF.format(Math.abs(Math.round(v)))+'<span class="cur">₪</span>';
+    if(t==='percent') return (v<0?'-':'')+NF2.format(Math.abs(v))+'%';
+    if(t==='number') return (v<0?'-':'')+NF2.format(Math.abs(v));
+    if(t==='date'){var d=new Date(v);return d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear()}
+    return esc(v);
+  }
+
+  function load(json){
+    var data=json;
+    if(typeof data==='string'){ try{data=JSON.parse(data)}catch(e){return fail('ה-JSON לא תקין',e.message)} }
+    var rows,cols;
+    if(Array.isArray(data)){ rows=data; S.title=''; S.sub=''; S.search=rows.length>8; S.total=false; cols=null; }
+    else if(data&&typeof data==='object'){
+      rows=data.rows||data.data||data.items||[];
+      if(!Array.isArray(rows)) return fail('לא נמצאה רשימת שורות','צפוי מערך ב-rows / data / items, או מערך ברמה העליונה');
+      S.title=data.title||''; S.sub=data.subtitle||''; S.search=!!data.search; S.total=!!data.total; cols=data.columns||null;
+    } else return fail('קלט לא מזוהה','צפוי מערך של אובייקטים או אובייקט עם rows');
+    if(!rows.length){ S.rows=[]; S.cols=[]; return render(); }
+    if(!cols){ var seen=[]; rows.forEach(function(r){Object.keys(r||{}).forEach(function(k){if(seen.indexOf(k)<0)seen.push(k)})}); cols=seen.map(function(k){return {key:k,label:k.replace(/_/g,' ')}}); }
+    S.cols=cols.map(function(c){var t=c.type||guessType(c.key,rows);return {key:c.key,label:c.label||c.key,type:t,num:t!=='text'&&t!=='date'}});
+    S.rows=rows; S.sortK=null; S.q=''; render();
+  }
+  function fail(t,d){ W.innerHTML='<div class="st err"><b>'+esc(t)+'</b>'+esc(d||'')+'</div>'; report(); }
+
+  function render(){
+    var rows=S.rows.slice();
+    if(S.q){var q=S.q.toLowerCase();rows=rows.filter(function(r){return S.cols.some(function(c){return String(r[c.key]==null?'':r[c.key]).toLowerCase().indexOf(q)>=0})})}
+    if(S.sortK){var c=S.cols.filter(function(x){return x.key===S.sortK})[0];
+      rows.sort(function(a,b){var x=a[S.sortK],y=b[S.sortK];if(x==null)return 1;if(y==null)return -1;
+        var r=c.num?(x-y):String(x).localeCompare(String(y),'he');return S.asc?r:-r})}
+    var h='';
+    if(S.title||S.search){
+      h+='<div class="hd">'+(S.title?'<h2>'+esc(S.title)+'</h2>':'')+(S.sub?'<span class="sub">'+esc(S.sub)+'</span>':'')+'<span class="sp"></span>'+
+        (S.search?'<label class="q"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="חיפוש בטבלה" value="'+esc(S.q)+'"></label>':'')+'</div>';
+    }
+    if(!S.cols.length){ h+='<div class="st"><b>אין נתונים להצגה</b>שלחו JSON דרך <code>?src=</code> או <code>postMessage({hkJson})</code></div>'; W.innerHTML=h; return report(); }
+    h+='<div class="tw"><table><thead><tr>'+S.cols.map(function(c){
+      return '<th class="'+(c.num?'num ':'')+(S.sortK===c.key?'on '+(S.asc?'asc':'desc'):'')+'" data-k="'+esc(c.key)+'">'+esc(c.label)+'<i class="ar"></i></th>'}).join('')+'</tr></thead><tbody>';
+    if(!rows.length) h+='<tr><td colspan="'+S.cols.length+'" class="st">אין שורות שמתאימות ל״'+esc(S.q)+'״</td></tr>';
+    rows.forEach(function(r){ h+='<tr>'+S.cols.map(function(c){return '<td class="'+(c.num?'num':'')+'">'+fmt(r[c.key],c.type)+'</td>'}).join('')+'</tr>'; });
+    if(S.total&&rows.length){ h+='<tr class="tot">'+S.cols.map(function(c,i){
+      if(i===0) return '<td>סה״כ</td>';
+      if(c.type==='money'||c.type==='number'){var s=rows.reduce(function(a,r){return a+(isNum(r[c.key])?r[c.key]:0)},0);return '<td class="num">'+fmt(s,c.type)+'</td>'}
+      return '<td></td>'}).join('')+'</tr>'; }
+    h+='</tbody></table></div>';
+    h+='<div class="ft"><span>'+rows.length+(rows.length!==S.rows.length?' מתוך '+S.rows.length:'')+' שורות</span><span class="sp"></span>'+(S.sortK?'<span>ממוין לפי '+esc((S.cols.filter(function(x){return x.key===S.sortK})[0]||{}).label)+'</span>':'')+'</div>';
+    W.innerHTML=h;
+    W.querySelectorAll('th').forEach(function(th){th.addEventListener('click',function(){var k=th.dataset.k;if(S.sortK===k)S.asc=!S.asc;else{S.sortK=k;S.asc=true}render()})});
+    var q=W.querySelector('#q'); if(q){q.addEventListener('input',function(){S.q=q.value;var pos=q.selectionStart;render();var q2=W.querySelector('#q');if(q2){q2.focus();q2.setSelectionRange(pos,pos)}})}
+    report();
+  }
+
+  /* ---- גובה להורה (כמו שאר הווידג׳טים) ---- */
+  function report(){ if(self===top&&location.hash!=='#embed') return;
+    var h=Math.ceil(W.getBoundingClientRect().height)+2;
+    parent.postMessage({hkEmbed:1,src:(location.pathname.split('/').pop()||''),h:h},'*'); }
+  addEventListener('resize',report);
+
+  /* ---- מקורות ---- */
+  addEventListener('message',function(e){ if(e.data&&e.data.hkJson!==undefined) load(e.data.hkJson); });
+  var src=new URLSearchParams(location.search).get('src');
+  if(src){
+    W.innerHTML='<div class="st">טוען…</div>';
+    fetch(src).then(function(r){if(!r.ok)throw new Error(r.status+' '+r.statusText);return r.text()}).then(load)
+      .catch(function(e){fail('לא הצלחתי לטעון את הקובץ',e.message)});
+  } else load(DEMO);
+  window.hkJsonTable={load:load};
+})();
+</script>
+</body>
+</html>
