@@ -6,46 +6,65 @@
 <title>טבלה מ-JSON</title>
 <style>
   :root{--navy:#0C4068;--cyan:#39ABE2;--warm:#E48375;--ink:#28425C;--ink2:#51677A;--gray:#818181;--faint:#9AA7BB;
-    --line:#e6ecf2;--tint:#EAF4FB;--bad:#C43D30;--shadow:0px 1px 50px rgba(0,0,0,0.08)}
+    --line:#E6ECF2;--tint:#EEF5FB;--tint2:#F7FAFD;--bad:#C43D30;--shadow:0px 1px 50px rgba(0,0,0,0.08)}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Rubik',sans-serif;background:transparent;color:var(--ink)}
-  .w{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-  .hd{display:flex;align-items:center;gap:10px;padding:14px 18px 10px}
-  .hd h2{font-size:15px;font-weight:600;color:var(--navy)}
+  .w{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  /* ראש: כותרת + "עודכן" מימין, חיפוש ו-CSV משמאל */
+  .hd{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+  .hd h2{font-size:16px;font-weight:600;color:var(--navy);letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+  .hd h2::before{content:"";width:4px;height:18px;border-radius:99px;background:var(--cyan)}
   .hd .sub{font-size:12px;color:var(--gray)}
+  .hd .at{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink2);background:var(--tint2);
+    border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-variant-numeric:tabular-nums}
+  .hd .at svg{color:var(--faint)}
   .hd .sp{flex:1}
-  .hd .q{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;background:#F7FAFD}
+  .hd .q{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;transition:.15s}
+  .hd .q:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
   .hd .q svg{color:var(--faint);flex:none}
-  .hd .q input{border:0;background:none;font:inherit;font-size:12.5px;width:150px;outline:none;color:var(--ink)}
+  .hd .q input{border:0;background:none;font:inherit;font-size:12.5px;width:160px;outline:none;color:var(--ink)}
   .hd .q input::placeholder{color:var(--faint)}
-  .tw{overflow:auto;max-height:420px;border-top:1px solid var(--line)}
-  table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
-  th{position:sticky;top:0;z-index:1;background:var(--tint);color:var(--navy);font-weight:600;font-size:12px;
-    text-align:start;padding:9px 14px;border-bottom:1px solid #D8EAF6;white-space:nowrap;cursor:pointer;user-select:none}
+  .csv{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink2);font:inherit;
+    font-size:12px;font-weight:600;border-radius:999px;padding:6px 13px;cursor:pointer;transition:.15s}
+  .csv svg{color:var(--faint)}
+  .csv:hover{border-color:var(--navy);color:var(--navy)}
+  .csv:hover svg{color:var(--navy)}
+  /* הטבלה: העמודה הראשונה נושאת את הרוחב, המספרים צמודים לתוכן שלהם */
+  .tw{overflow:auto;max-height:440px}
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px}
+  th{position:sticky;top:0;z-index:1;background:var(--tint);color:var(--navy);font-weight:600;font-size:12px;letter-spacing:.1px;
+    text-align:start;padding:10px 18px;border-bottom:1px solid #D8E6F1;white-space:nowrap;cursor:pointer;user-select:none;transition:.12s}
+  th:hover{background:#E3EFF8}
   th .ar{display:inline-block;width:0;height:0;margin-inline-start:6px;border-inline-start:4px solid transparent;
-    border-inline-end:4px solid transparent;border-top:5px solid var(--faint);vertical-align:2px;opacity:0}
+    border-inline-end:4px solid transparent;border-top:5px solid var(--faint);vertical-align:2px;opacity:0;transition:.12s}
+  th:hover .ar{opacity:.5}
   th.on .ar{opacity:1;border-top-color:var(--navy)}
   th.on.asc .ar{transform:rotate(180deg)}
-  th.num,td.num{text-align:end}
-  td{padding:9px 14px;border-bottom:1px solid #F0F4F8;color:var(--ink);white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
-  td.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
-  td .cur{color:var(--gray);font-size:11px;margin-inline-start:2px}
-  tr:hover td{background:#FAFCFE}
-  tr.tot td{background:#F5F8FB;font-weight:600;color:var(--navy);border-top:2px solid #D3DDE8;border-bottom:0}
-  .ft{display:flex;align-items:center;gap:12px;padding:9px 18px;font-size:11.5px;color:var(--gray)}
+  th.num,td.num,th.ltr,td.ltr,th.sta,td.sta,th.tx,td.tx{width:1%;white-space:nowrap}
+  td.tx{padding-inline-end:34px}
+  th.num,td.num,td.ltr{text-align:end}
+  td{padding:11px 18px;border-bottom:1px solid #EEF2F6;color:var(--ink);white-space:nowrap;max-width:360px;overflow:hidden;text-overflow:ellipsis}
+  td:first-child{font-weight:500;color:var(--navy)}
+  td.num,td.ltr{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+  td.ltr{color:var(--ink2)}
+  td .cur{color:var(--faint);font-size:11px;margin-inline-end:2px}
+  td .neg{color:var(--bad)}
+  tbody tr:nth-child(even) td{background:#FBFCFE}
+  tbody tr:hover td{background:#F2F8FD}
+  tr.tot td{background:var(--tint);font-weight:700;color:var(--navy);border-top:2px solid #C9DAE8;border-bottom:0;padding:12px 18px}
+  tr.tot td:first-child{font-weight:600}
+  tr.tot td:first-child small{font-weight:400;color:var(--ink2);margin-inline-start:6px;font-size:11.5px}
+  tr.tot .avg{display:block;font-size:9.5px;font-weight:400;color:var(--gray);line-height:1.2}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 10px 3px 11px;line-height:1.4}
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
+  .chip.g{background:#E7F7EF;color:#0B6E4B}.chip.b{background:#E1F0FA;color:#14618F}.chip.r{background:#FDECEB;color:#C43D30}.chip.n{background:#EEF2F6;color:#5A6B7C}
+  .ft{display:flex;align-items:center;gap:12px;padding:9px 20px;font-size:11.5px;color:var(--gray);border-top:1px solid var(--line);background:#fff}
+  .ft b{font-weight:600;color:var(--ink2)}
   .ft .sp{flex:1}
   .st{padding:34px 18px;text-align:center;color:var(--gray);font-size:13px;line-height:1.6}
   .st b{display:block;color:var(--navy);font-weight:600;margin-bottom:3px}
   .st.err b{color:var(--bad)}
   .st code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--ink2);background:#F4F7FA;border-radius:6px;padding:1px 6px}
-  td.ltr{direction:ltr;unicode-bidi:isolate;text-align:end;font-variant-numeric:tabular-nums}
-  td .neg{color:var(--bad)}
-  .chip{display:inline-block;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 10px;line-height:1.5}
-  .chip.g{background:#E7F7EF;color:#0B6E4B}.chip.b{background:#E1F0FA;color:#14618F}.chip.r{background:#FDECEB;color:#C43D30}.chip.n{background:#EEF2F6;color:#5A6B7C}
-  .hd .at{padding-inline-start:10px;border-inline-start:1px solid var(--line)}
-  .csv{border:1px solid var(--line);background:#fff;color:var(--ink2);font:inherit;font-size:11.5px;font-weight:600;border-radius:999px;padding:5px 12px;cursor:pointer}
-  .csv:hover{border-color:var(--cyan);color:var(--navy)}
-  tr.tot .avg{display:block;font-size:9.5px;font-weight:400;color:var(--gray)}
 </style>
 </head>
 <body>
@@ -138,22 +157,22 @@
     var h='';
     var at=''; if(S.at){var d=new Date(S.at); if(!isNaN(d)) at='עודכן '+String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
     if(S.title||S.search||at){
-      h+='<div class="hd">'+(S.title?'<h2>'+esc(S.title)+'</h2>':'')+(S.sub?'<span class="sub">'+esc(S.sub)+'</span>':'')+(at?'<span class="sub at">'+at+'</span>':'')+'<span class="sp"></span>'+
+      h+='<div class="hd">'+(S.title?'<h2>'+esc(S.title)+'</h2>':'')+(S.sub?'<span class="sub">'+esc(S.sub)+'</span>':'')+(at?'<span class="at"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+at+'</span>':'')+'<span class="sp"></span>'+
         (S.search?'<label class="q"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="חיפוש" value="'+esc(S.q)+'"></label>':'')+
-        '<button class="csv" id="csv" type="button" title="הורדת CSV של מה שמוצג">CSV</button></div>';
+        '<button class="csv" id="csv" type="button" title="הורדת CSV של מה שמוצג"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>CSV</button></div>';
     }
     if(!S.cols.length){ h+='<div class="st"><b>אין נתונים להצגה</b>שלחו JSON דרך <code>?src=</code> או <code>postMessage({hkJson})</code></div>'; W.innerHTML=h; return report(); }
-    h+='<div class="tw"><table><thead><tr>'+S.cols.map(function(c){
-      return '<th class="'+(c.num?'num ':'')+(S.sortK===c.key?'on '+(S.asc?'asc':'desc'):'')+'" data-k="'+esc(c.key)+'">'+esc(c.label)+'<i class="ar"></i></th>'}).join('')+'</tr></thead><tbody>';
+    h+='<div class="tw"><table><thead><tr>'+S.cols.map(function(c,i){
+      return '<th class="'+(c.num?'num ':c.type==='status'?'sta ':c.ltr?'ltr ':(i>0?'tx ':''))+(S.sortK===c.key?'on '+(S.asc?'asc':'desc'):'')+'" data-k="'+esc(c.key)+'">'+esc(c.label)+'<i class="ar"></i></th>'}).join('')+'</tr></thead><tbody>';
     if(!rows.length) h+='<tr><td colspan="'+S.cols.length+'" class="st">אין שורות שמתאימות ל״'+esc(S.q)+'״</td></tr>';
-    rows.forEach(function(r){ h+='<tr>'+S.cols.map(function(c){return '<td class="'+(c.num?'num':c.ltr?'ltr':'')+'">'+fmt(r[c.key],c.type)+'</td>'}).join('')+'</tr>'; });
+    rows.forEach(function(r){ h+='<tr>'+S.cols.map(function(c,i){return '<td class="'+(c.num?'num':c.type==='status'?'sta':c.ltr?'ltr':(i>0?'tx':''))+'">'+fmt(r[c.key],c.type)+'</td>'}).join('')+'</tr>'; });
     if(S.total&&rows.length){ h+='<tr class="tot">'+S.cols.map(function(c,i){
-      if(i===0) return '<td>סה״כ</td>';
+      if(i===0) return '<td>סה״כ<small>'+rows.length+' שורות</small></td>';
       if(c.type==='money'||c.type==='number'){var s=rows.reduce(function(a,r){return a+(isNum(r[c.key])?r[c.key]:0)},0);return '<td class="num">'+fmt(s,c.type)+'</td>'}
       if(c.type==='percent'){var vs=rows.map(function(r){return r[c.key]}).filter(isNum);return '<td class="num">'+(vs.length?fmt(vs.reduce(function(a,b){return a+b},0)/vs.length,'percent')+'<small class="avg">ממוצע</small>':'')+'</td>'}
       return '<td></td>'}).join('')+'</tr>'; }
     h+='</tbody></table></div>';
-    h+='<div class="ft"><span>מוצגות '+rows.length+' מתוך '+S.rows.length+'</span><span class="sp"></span>'+(S.sortK?'<span>ממוין לפי '+esc((S.cols.filter(function(x){return x.key===S.sortK})[0]||{}).label)+'</span>':'')+'</div>';
+    h+='<div class="ft"><span>מוצגות <b>'+rows.length+'</b> מתוך '+S.rows.length+'</span><span class="sp"></span>'+(S.sortK?'<span>ממוין לפי '+esc((S.cols.filter(function(x){return x.key===S.sortK})[0]||{}).label)+'</span>':'')+'</div>';
     S.view=rows;
     W.innerHTML=h;
     W.querySelectorAll('th').forEach(function(th){th.addEventListener('click',function(){var k=th.dataset.k;if(S.sortK===k)S.asc=!S.asc;else{S.sortK=k;S.asc=true}render()})});
