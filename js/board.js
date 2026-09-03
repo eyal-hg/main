@@ -57,6 +57,7 @@
      חוזרת ב-rAF ובכל resize, כי המיקום של המסגרת משתנה גם בלי שהתוכן משתנה. */
   function fitFrame(f){
     if(!f||!f.dataset.h) return;
+    if(f.id==='cliPastFrame') return;   /* תמונת תזרים: גובה קבוע לחלון (screens.js fitTall), לא לפי התוכן */
     requestAnimationFrame(()=>{
       const top=f.getBoundingClientRect().top+(window.scrollY||0);
       f.style.minHeight=Math.max(+f.dataset.h, innerHeight-top-16)+'px';

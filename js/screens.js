@@ -243,11 +243,10 @@
       /* תמונת תזרים: המסגרת נעולה לגובה החלון והעמוד גולל בתוכה — כך פאנל העוזר
          דביק לגובה המסך (אייל 03.09: "פיקס לגובה של המסך"). שאר המסגרות גדלות עם התוכן. */
       if(f.id==='cliPastFrame'){
-        let fix=innerHeight-top-16;
+        /* גובה קבוע = מהמקום של המסגרת ועד תחתית החלון. בלי תיקונים לפי גלילת העמוד —
+           כל ניסיון כזה יצר לולאה (המסגרת מתקצרת בכל פריים, "עולה למעלה"). */
+        const fix=Math.max(360, innerHeight-top-16);
         if(Math.abs((parseFloat(f.style.height)||0)-fix)>2){ f.style.height=fix+'px'; f.style.minHeight=fix+'px'; }
-        /* אם העמוד החיצוני עדיין גולל (ריפוד, שוליים) — מקצרים בדיוק בעודף, כדי שהגלילה תהיה רק בתוך המסגרת */
-        for(let k=0;k<2;k++){ const over=document.documentElement.scrollHeight-innerHeight;
-          if(over>0&&over<400){ fix-=over; f.style.height=fix+'px'; f.style.minHeight=fix+'px'; } else break; }
         return;
       }
       const want=Math.max(+(f.dataset.h||0), innerHeight-top-16);
