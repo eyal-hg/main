@@ -114,9 +114,9 @@
    המסגרת ב-index.html נעולה לגובה החלון (screens.js) ולכן גם שם sticky עובד. */
 .aiside{background:#fff;border:1px solid var(--cardbd);border-radius:14px;
   box-shadow:var(--lift);display:flex;flex-direction:column;overflow:hidden;min-height:420px}
-html:not(.embed) .aiside{position:sticky;top:14px;max-height:calc(100vh - 30px)}
-/* במוטמע: המסגרת (index.html) נעולה לגובה החלון והעמוד גולל בתוכה — הפאנל דביק לגובה המסך */
-html.embed .aiside{position:sticky;top:0;height:calc(100vh - 14px);align-self:start}
+/* דביק לראש החלון; הגובה נקבע ב-JS (fitAside): בגלילה 0 — מהמקום שבו הפאנל מתחיל ועד תחתית החלון,
+   ואחרי גלילה — כל החלון. ככה השדה תמיד נראה בלי לגלול, וגם הפאנל לא חורג מהמסך. */
+.aiside{position:sticky;top:14px;align-self:start}
 /* ראש כהה כמו לכל פאנל אחר — העוזר הוא רובד, לא הערה בצד */
 .aiside .ah{display:flex;align-items:center;gap:8px;padding:13px 16px;background:var(--band)}
 .aiside .ah svg{color:#8EC9EC;flex:none}
@@ -524,6 +524,13 @@ function reportContext(){
     rows:rows
   };
 }
+/* גובה הפאנל = מה שנשאר מהמסך מתחת לראש שלו. נמדד בגלילה ובשינוי גודל. */
+var AS=document.querySelector('.aiside'), PG=document.querySelector('.pgrid');
+function fitAside(){ if(!AS||!PG) return;
+  var t=Math.max(14, PG.getBoundingClientRect().top);
+  AS.style.height=Math.max(360, innerHeight - t - 14)+'px'; }
+addEventListener('scroll',fitAside,{passive:true}); addEventListener('resize',fitAside);
+[0,200,800].forEach(function(ms){setTimeout(fitAside,ms)});
 function aiScopeDraw(){
   var c=reportContext(), el=document.getElementById('aiScope'); if(!el) return;
   var m=c.months[0].split(' ')[0]+'–'+c.months[c.months.length-1];

@@ -243,8 +243,11 @@
       /* תמונת תזרים: המסגרת נעולה לגובה החלון והעמוד גולל בתוכה — כך פאנל העוזר
          דביק לגובה המסך (אייל 03.09: "פיקס לגובה של המסך"). שאר המסגרות גדלות עם התוכן. */
       if(f.id==='cliPastFrame'){
-        const fix=innerHeight-top-16;
+        let fix=innerHeight-top-16;
         if(Math.abs((parseFloat(f.style.height)||0)-fix)>2){ f.style.height=fix+'px'; f.style.minHeight=fix+'px'; }
+        /* אם העמוד החיצוני עדיין גולל (ריפוד, שוליים) — מקצרים בדיוק בעודף, כדי שהגלילה תהיה רק בתוך המסגרת */
+        for(let k=0;k<2;k++){ const over=document.documentElement.scrollHeight-innerHeight;
+          if(over>0&&over<400){ fix-=over; f.style.height=fix+'px'; f.style.minHeight=fix+'px'; } else break; }
         return;
       }
       const want=Math.max(+(f.dataset.h||0), innerHeight-top-16);
@@ -302,6 +305,7 @@
       cliHost.style.display=useCli?'':'none';
       cliHost.querySelectorAll('.cliframe').forEach(f=>f.style.display='none');
       if(useCli){
+        if(t==='past') [60,300,900,1800].forEach(ms=>setTimeout(()=>{try{fitTall()}catch(e){}},ms));
         const f=document.getElementById(CLI_TABS[t]);
         /* ערך מפורש — display:'' נופל חזרה ל-display:none של .cliframe.
            ה-r מסמן למסך מי צופה בו, ומוגדר מחדש כשמחליפים תפקיד. */
