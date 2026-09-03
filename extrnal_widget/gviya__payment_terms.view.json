@@ -1,0 +1,63 @@
+{
+  "title": "תנאי תשלום",
+  "subtitle": "גבייה · ימי אשראי בפועל מול 30 יום נומינלי",
+  "sort": {
+    "by": "פתוח",
+    "dir": "desc"
+  },
+  "column_order": [
+    "לקוח",
+    "פתוח",
+    "בפועל",
+    "פער"
+  ],
+  "columns": {
+    "חשבוניות": {
+      "hidden": true
+    },
+    "שולם": {
+      "hidden": true
+    },
+    "נומינלי": {
+      "hidden": true
+    },
+    "בפועל": {
+      "unit": "ימים",
+      "footer": "avg"
+    },
+    "פער": {
+      "unit": "ימים",
+      "color": {
+        "neg": "green",
+        "pos": "red",
+        "zero": "gray"
+      },
+      "rules": [
+        {
+          "gt": 30,
+          "color": "red"
+        },
+        {
+          "gt": 0,
+          "color": "amber"
+        },
+        {
+          "lte": 0,
+          "color": "green"
+        }
+      ],
+      "footer": "avg"
+    },
+    "פתוח": {
+      "rules": [
+        {
+          "gt": 0,
+          "color": "navy"
+        }
+      ]
+    },
+    "חויב": {
+      "hidden": true
+    }
+  }
+}

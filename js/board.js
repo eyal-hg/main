@@ -22,9 +22,9 @@
       {f:'widget-next-process.html',        t:'השלב הבא',           d:'השלב הבא בתהליך עם אג׳נדה',                    cat:'ליווי',   h:500},
       /* טבלאות מ-JSON — הקבצים ב-extrnal_widget/, הווידג׳ט אחד לכולן */
       {f:'widget-json-table.html?file=gviya__customer_balances&title=יתרות לקוחות', t:'יתרות לקוחות',   d:'גבייה · יתרה פתוחה ומתוכה באיחור לכל לקוח',   cat:'גבייה', h:560},
-      {f:'widget-json-table.html?file=gviya__payment_terms&title=תנאי תשלום',       t:'תנאי תשלום',     d:'גבייה · ימי אשראי נומינלי מול בפועל לכל לקוח', cat:'גבייה', h:560, s:'xl'},
+      {f:'widget-json-table.html?file=gviya__payment_terms&title=תנאי תשלום',       t:'תנאי תשלום',     d:'גבייה · ימי אשראי נומינלי מול בפועל לכל לקוח', cat:'גבייה', h:560},
       {f:'widget-json-table.html?file=gviya__unbilled&title=טרם חויב',              t:'טרם חויב',       d:'גבייה · תעודות שטרם הפכו לחשבונית, לפי גיל',    cat:'גבייה', h:560},
-      {f:'widget-json-table.html?file=sales__sales&title=מכירות',                   t:'מכירות',         d:'חשבוניות מכירה עם יתרה וסטטוס',               cat:'מכירות', h:560, s:'xl'},
+      {f:'widget-json-table.html?file=sales__sales&title=מכירות',                   t:'מכירות',         d:'חשבוניות מכירה עם יתרה וסטטוס',               cat:'מכירות', h:560},
       {f:'widget-json-table.html?file=tazrim__future_cashflow&title=תקבולים צפויים', t:'תקבולים צפויים', d:'תזרים · מסמכים פתוחים לפי תאריך תשלום',        cat:'תזרים', h:560},
     ],
     portfolio:[
