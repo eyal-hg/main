@@ -1619,3 +1619,8 @@ text/status, "מוצגות N מתוך M", "עודכן dd.mm.yyyy HH:mm", CSV ע�
 `{hkJson}`, `?src=`, או `?company=&widget=` → `/api/widgets/{company}/{widget}` באותו origin. הדוגמה
 המובנית היא הקובץ מסעיף 03 באפיון (haviv/payment_terms). מערך פשוט של אובייקטים עדיין נתמך (זיהוי
 טיפוס מהערכים).
+**חמישה ווידג׳טים מ-JSON בדשבורד בעל העסק (03.09):** התיקייה שאייל בחר היא **`extrnal_widget/`**
+(במקום data/widgets), קבצים שטוחים `<company>__<widget>.json`. חמשת הקבצים שלו: gviya__customer_balances
+(140), gviya__payment_terms (160), gviya__unbilled (50), sales__sales (531), tazrim__future_cashflow (95).
+כל אחד = שורה ב-`CATALOG.client` (עם `&title=` בעברית, `s:'xl'` לרחבים) ו-`BOARDS.client`. `tools/widgets-json2js.py`
+עוטף ל-.js בגלל file://. שורת הסה״כ דביקה לתחתית כי הטבלאות גוללות בתוך עצמן.

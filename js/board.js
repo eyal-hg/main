@@ -20,7 +20,12 @@
       {f:'widget-budget-control.html',      t:'בקרת תקציב',         d:'חריגות תקציב לפי קטגוריה',                     cat:'תקציב',   h:470},
       {f:'widget-process-full.html',        t:'תהליך ליווי',        d:'שלבי ליווי עסקי עם התקדמות',                   cat:'ליווי',   h:540},
       {f:'widget-next-process.html',        t:'השלב הבא',           d:'השלב הבא בתהליך עם אג׳נדה',                    cat:'ליווי',   h:500},
-      {f:'widget-json-table.html?file=haviv/payment_terms&title=תנאי תשלום', t:'טבלה מ-JSON', d:'טבלה דינמית מקובץ ב-data/widgets — עמודות מהמפתחות, מיון, חיפוש וסה״כ', cat:'כללי', h:470},
+      /* טבלאות מ-JSON — הקבצים ב-extrnal_widget/, הווידג׳ט אחד לכולן */
+      {f:'widget-json-table.html?file=gviya__customer_balances&title=יתרות לקוחות', t:'יתרות לקוחות',   d:'גבייה · יתרה פתוחה ומתוכה באיחור לכל לקוח',   cat:'גבייה', h:560},
+      {f:'widget-json-table.html?file=gviya__payment_terms&title=תנאי תשלום',       t:'תנאי תשלום',     d:'גבייה · ימי אשראי נומינלי מול בפועל לכל לקוח', cat:'גבייה', h:560, s:'xl'},
+      {f:'widget-json-table.html?file=gviya__unbilled&title=טרם חויב',              t:'טרם חויב',       d:'גבייה · תעודות שטרם הפכו לחשבונית, לפי גיל',    cat:'גבייה', h:560},
+      {f:'widget-json-table.html?file=sales__sales&title=מכירות',                   t:'מכירות',         d:'חשבוניות מכירה עם יתרה וסטטוס',               cat:'מכירות', h:560, s:'xl'},
+      {f:'widget-json-table.html?file=tazrim__future_cashflow&title=תקבולים צפויים', t:'תקבולים צפויים', d:'תזרים · מסמכים פתוחים לפי תאריך תשלום',        cat:'תזרים', h:560},
     ],
     portfolio:[
       {f:'widget-pf-kpi-balance.html',       t:'יתרה מצרפית',            d:'סך יתרות עו״ש לכלל החברות',                    cat:'מספרים', h:160, s:'sm'},
@@ -39,7 +44,7 @@
   };
   let SCOPE='client';
   const BOARDS={
-    client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-budget-gaps.html','widget-cashflow-full.html','widget-json-table.html?file=haviv/payment_terms&title=תנאי תשלום','widget-profitability-full.html','widget-metric-full.html'],
+    client:['widget-kpi-balance.html','widget-kpi-overdraft.html','widget-kpi-profit.html','widget-kpi-debt.html','widget-budget-gaps.html','widget-cashflow-full.html','widget-json-table.html?file=gviya__customer_balances&title=יתרות לקוחות','widget-json-table.html?file=tazrim__future_cashflow&title=תקבולים צפויים','widget-json-table.html?file=gviya__unbilled&title=טרם חויב','widget-json-table.html?file=gviya__payment_terms&title=תנאי תשלום','widget-json-table.html?file=sales__sales&title=מכירות','widget-profitability-full.html','widget-metric-full.html'],
     portfolio:['widget-pf-kpi-balance.html','widget-pf-kpi-budget.html','widget-pf-kpi-risk.html','widget-pf-kpi-overdraft.html','widget-pf-cashflow-budget.html','widget-pf-alerts.html','widget-pf-budget-companies.html','widget-pf-budget-categories.html','widget-pf-risk-list.html','widget-pf-collections.html'],
   };
   const wmeta=f=>CATALOG.client.concat(CATALOG.portfolio).find(w=>w.f===f)||{h:480};
