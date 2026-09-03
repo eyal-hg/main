@@ -59,6 +59,19 @@
   .chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 10px 3px 11px;line-height:1.4}
   .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
   .chip.g{background:#E7F7EF;color:#0B6E4B}.chip.b{background:#E1F0FA;color:#14618F}.chip.r{background:#FDECEB;color:#C43D30}.chip.n{background:#EEF2F6;color:#5A6B7C}
+  .chip.a{background:#FFF4E0;color:#8A5A00}.chip.v{background:#E3EDF6;color:var(--navy)}
+  /* צבעי ערך לפי view.columns[].color / rules */
+  .c-r{color:#C43D30}.c-g{color:#0B6E4B}.c-b{color:#14618F}.c-a{color:#B4700A}.c-n{color:#7A8898}.c-v{color:var(--navy);font-weight:600}
+  td .unit{font-size:11px;color:var(--faint);margin-inline-start:3px}
+  td .lnk{color:#14618F;text-decoration:none;border-bottom:1px solid #BFD8EA}
+  td .lnk:hover{color:var(--navy);border-bottom-color:var(--navy)}
+  td .bar{display:block;height:4px;border-radius:99px;background:#EEF2F6;margin-top:4px;overflow:hidden;direction:rtl}
+  td .bar b{display:block;height:100%;border-radius:99px;background:#39ABE2}
+  td .bar.r b{background:#C43D30}td .bar.g b{background:#0B6E4B}td .bar.a b{background:#E1A23A}td .bar.n b{background:#9AA7BB}td .bar.v b{background:var(--navy)}
+  tr.rc-r td{background:#FFF6F5}tr.rc-a td{background:#FFFAF0}tr.rc-g td{background:#F3FBF6}tr.rc-b td{background:#F2F8FD}
+  td.al-s{text-align:start}td.al-c{text-align:center}
+  th.fz,td.fz{position:sticky;inset-inline-start:0;background:#fff;z-index:2;box-shadow:-1px 0 0 var(--line)}
+  th.fz{z-index:3;background:var(--tint)}
   .ft{display:flex;align-items:center;gap:12px;padding:9px 20px;font-size:11.5px;color:var(--gray);border-top:1px solid var(--line);background:#fff}
   .ft b{font-weight:600;color:var(--ink2)}
   .ft .sp{flex:1}
@@ -91,16 +104,23 @@
   var W=document.getElementById('w');
   var NF=new Intl.NumberFormat('he-IL'), NF2=new Intl.NumberFormat('he-IL',{maximumFractionDigits:2});
   /* דוגמה = הקובץ מסעיף 03 באפיון השרת (haviv / payment_terms), בתוספת שורה עם ערך חסר */
-  var DEMO={title:'תנאי תשלום · haviv',received_at:'2026-09-03T09:00:12+03:00',
+  var DEMO={received_at:'2026-09-03T09:00:12+03:00',
+    view:{title:'תנאי תשלום',subtitle:'haviv · דוגמה לחוזה view',sort:{by:'חויב',dir:'desc'},
+      columns:{'גבייה':{decimals:1,bar:{max:100,color:'green'},rules:[{lt:50,color:'red'},{lt:90,color:'amber'},{gte:90,color:'green'}]},
+               'ימים בפועל':{unit:'ימים',color:{pos:'gray'}},'חויב':{footer:'sum'},'שולם':{footer:'sum'},'גבייה ':{}},
+      row_color:{col:'סטטוס',map:{'באיחור':'red'}}},
     types:{'לקוח':'text','מספר חשבונית':'text','חויב':'money','שולם':'money','ימים בפועל':'number','תאריך אחרון לתשלום':'date','סטטוס':'status','גבייה':'percent'},
     rows:[{'לקוח':'אופטיקנה','מספר חשבונית':'5023509','חויב':424891,'שולם':397751,'ימים בפועל':14,'תאריך אחרון לתשלום':'2026-09-03','סטטוס':'פתוח','גבייה':93.6},
           {'לקוח':'אופטיסטור.נט','מספר חשבונית':'5023508','חויב':44869,'שולם':31913,'ימים בפועל':16,'תאריך אחרון לתשלום':'2026-09-10','סטטוס':'פתוח','גבייה':71.1},
           {'לקוח':'אופטיקנה','מספר חשבונית':'5023491','חויב':12400,'שולם':12400,'ימים בפועל':9,'תאריך אחרון לתשלום':'2026-08-28','סטטוס':'שולם','גבייה':100},
           {'לקוח':'אופטיסטור.נט','מספר חשבונית':'5023470','חויב':-3150,'שולם':null,'ימים בפועל':41,'תאריך אחרון לתשלום':'2026-07-30','סטטוס':'באיחור','גבייה':0}]};
   var STATUS={'סגור':'g','שולם':'g','הושלמה':'g','פתוח':'b','מחכה לתשלום':'b','בביצוע':'b','באיחור':'r','באיחור לא שולם':'r','טיוטה':'n','מבוטל':'n','לא נשלחה':'n'};
+  /* צבעים בשם בלבד — זו הפלטה של המוצר. השרת לא שולח hex. */
+  var COLOR={red:'r',green:'g',blue:'b',amber:'a',gray:'n',navy:'v'};
+  var V={};   /* בלוק view מה-JSON (docs/WIDGET_JSON_CONTRACT.md) */
   var TYPES=['text','number','money','date','percent','status'];
 
-  var S={cols:[],rows:[],title:'',sub:'',sortK:null,asc:true,q:'',search:false,total:false,at:''};
+  var S={cols:[],rows:[],title:'',sub:'',sortK:null,asc:true,q:'',search:false,total:false,at:'',cur:'₪',csv:true,freeze:false,rowColor:null};
   var TITLE='';
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -117,15 +137,31 @@
     if(vals.every(isDate)) return 'date';
     return 'text';
   }
-  function fmt(v,t){
+  function nfd(v,d){ return new Intl.NumberFormat('he-IL',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v); }
+  /* צבע לערך לפי הגדרת העמודה: color:{neg,pos,zero} או rules:[{lt|lte|gt|gte|eq, color}] */
+  function colorOf(v,c){
+    if(!c||!isNum(v)) return '';
+    var k=null;
+    if(c.rules) c.rules.some(function(r){ var ok=('lt' in r&&v<r.lt)||('lte' in r&&v<=r.lte)||('gt' in r&&v>r.gt)||('gte' in r&&v>=r.gte)||('eq' in r&&v===r.eq); if(ok){k=r.color;return true} });
+    else if(c.color){ k=v<0?c.color.neg:v>0?c.color.pos:c.color.zero; }
+    return k?(' c-'+(COLOR[k]||'n')):'';
+  }
+  function fmt(v,t,c){
+    c=c||{};
     if(v==null||v==='') return '<span style="color:var(--faint)">—</span>';
-    if(t==='money') return '<span class="'+(v<0?'neg':'')+'">'+(v<0?'-':'')+'<span class="cur">₪</span>'+NF.format(Math.abs(Math.round(v)))+'</span>';
-    if(t==='percent') return (v<0?'-':'')+NF2.format(Math.abs(v))+'%';
-    if(t==='number') return (v<0?'-':'')+NF.format(Math.abs(Math.round(v)));
-    if(t==='status') return '<span class="chip '+(STATUS[v]||'n')+'">'+esc(v)+'</span>';
+    var unit=c.unit?'<span class="unit">'+esc(c.unit)+'</span>':'';
+    if(t==='money'){ var cur=c.currency||S.cur, d=c.decimals!=null?c.decimals:0;
+      return '<span class="'+(v<0?'neg':'')+colorOf(v,c)+'">'+(v<0?'-':'')+'<span class="cur">'+esc(cur)+'</span>'+nfd(Math.abs(v),d)+'</span>'+bar(v,c); }
+    if(t==='percent'){ var d2=c.decimals!=null?c.decimals:(Math.abs(v)%1?1:0); return '<span class="'+colorOf(v,c)+'">'+(v<0?'-':'')+nfd(Math.abs(v),d2)+'%</span>'+bar(v,c); }
+    if(t==='number'){ var d3=c.decimals!=null?c.decimals:0; return '<span class="'+colorOf(v,c)+'">'+(v<0?'-':'')+nfd(Math.abs(v),d3)+unit+'</span>'+bar(v,c); }
+    if(t==='status'){ var k=(c.colors&&c.colors[v])?COLOR[c.colors[v]]:STATUS[v]; return '<span class="chip '+(k||'n')+'">'+esc(v)+'</span>'; }
+    if(t==='text'&&c.link){ var href=c.link.replace(/\{([^}]+)\}/g,function(_,key){return encodeURIComponent(fmt._row&&fmt._row[key]!=null?fmt._row[key]:'')}); return '<a class="lnk" href="'+esc(href)+'" target="_blank" rel="noopener">'+esc(v)+'</a>'; }
     if(t==='date'){var d=new Date(v);return d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear()}
     return esc(v);
   }
+  /* פס קטן מתחת למספר — bar:{max, color} */
+  function bar(v,c){ if(!c.bar||!isNum(v)) return ''; var max=c.bar.max||1, w=Math.max(0,Math.min(100,Math.abs(v)/max*100));
+    return '<i class="bar '+(COLOR[c.bar.color]||'b')+'"><b style="width:'+w.toFixed(1)+'%"></b></i>'; }
 
   function load(json){
     var data=json;
@@ -138,14 +174,25 @@
       if(data.types&&typeof data.types==='object'){ types=data.types;
         var bad=Object.keys(types).filter(function(k){return TYPES.indexOf(types[k])<0});
         if(bad.length) return fail('טיפוס לא מוכר','types.'+bad[0]+' = "'+types[bad[0]]+'" · המותרים: '+TYPES.join(' · ')); }
-      S.title=data.title||TITLE||''; S.sub=data.subtitle||''; S.at=data.received_at||'';
-      S.search=data.search!==false; S.total=data.total!==false; cols=data.columns||null;
+      V=(data.view&&typeof data.view==='object')?data.view:{};
+      S.title=V.title||data.title||TITLE||''; S.sub=V.subtitle||data.subtitle||''; S.at=data.received_at||'';
+      S.search=V.search!==false&&data.search!==false; S.total=V.total!==false&&data.total!==false; S.csv=V.csv!==false;
+      S.cur=V.currency||'₪'; S.freeze=!!V.freeze_first; S.rowColor=V.row_color||null;
+      cols=data.columns||null;
     } else return fail('קלט לא מזוהה','צפוי מערך של אובייקטים או אובייקט עם rows');
     if(!rows.length){ S.rows=[]; S.cols=[]; return render(); }
     if(!cols){ var seen=[]; rows.forEach(function(r){Object.keys(r||{}).forEach(function(k){if(seen.indexOf(k)<0)seen.push(k)})}); cols=seen.map(function(k){return {key:k,label:k.replace(/_/g,' ')}}); }
-    S.cols=cols.map(function(c){var t=c.type||(types?(types[c.key]||'text'):guessType(c.key,rows));
-      return {key:c.key,label:c.label||c.key,type:t,num:t==='number'||t==='money'||t==='percent',ltr:t!=='text'&&t!=='status'}});
-    S.rows=rows; S.sortK=null; S.q=''; render();
+    var VC=V.columns||{};
+    S.cols=cols.map(function(c){var cfg=VC[c.key]||{}; var t=cfg.type||c.type||(types?(types[c.key]||'text'):guessType(c.key,rows));
+      if(cfg.chip&&t==='text') t='status';
+      return {key:c.key,label:cfg.label||c.label||c.key,type:t,cfg:cfg,hidden:!!cfg.hidden,
+              num:t==='number'||t==='money'||t==='percent',ltr:t!=='text'&&t!=='status',
+              foot:cfg.footer||(V.footer||{})[c.key]||null}}).filter(function(c){return !c.hidden});
+    if(V.column_order){ var ord=V.column_order; S.cols.sort(function(a,b){var ia=ord.indexOf(a.key),ib=ord.indexOf(b.key);return (ia<0?999:ia)-(ib<0?999:ib)}); }
+    S.rows=rows; S.q='';
+    S.sortK=null; S.asc=true;
+    if(V.sort&&V.sort.by&&S.cols.some(function(c){return c.key===V.sort.by})){ S.sortK=V.sort.by; S.asc=(V.sort.dir!=='desc'); }
+    render();
   }
   function fail(t,d){ W.innerHTML='<div class="st err"><b>'+esc(t)+'</b>'+esc(d||'')+'</div>'; report(); }
 
@@ -157,21 +204,33 @@
         var r=c.num?(x-y):String(x).localeCompare(String(y),'he');return S.asc?r:-r})}
     var h='';
     var at=''; if(S.at){var d=new Date(S.at); if(!isNaN(d)) at='עודכן '+String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
-    if(S.title||S.search||at){
+    if(S.title||S.search||at||S.csv){
       h+='<div class="hd">'+(S.title?'<h2>'+esc(S.title)+'</h2>':'')+(S.sub?'<span class="sub">'+esc(S.sub)+'</span>':'')+(at?'<span class="at"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+at+'</span>':'')+'<span class="sp"></span>'+
         (S.search?'<label class="q"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" placeholder="חיפוש" value="'+esc(S.q)+'"></label>':'')+
-        '<button class="csv" id="csv" type="button" title="הורדת CSV של מה שמוצג"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>CSV</button></div>';
+        (S.csv?'<button class="csv" id="csv" type="button" title="הורדת CSV של מה שמוצג"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>':'')+'</div>';
     }
     if(!S.cols.length){ h+='<div class="st"><b>אין נתונים להצגה</b>שלחו JSON דרך <code>?src=</code> או <code>postMessage({hkJson})</code></div>'; W.innerHTML=h; return report(); }
     h+='<div class="tw"><table><thead><tr>'+S.cols.map(function(c,i){
-      return '<th class="'+(c.num?'num ':c.type==='status'?'sta ':c.ltr?'ltr ':(i>0?'tx ':''))+(S.sortK===c.key?'on '+(S.asc?'asc':'desc'):'')+'" data-k="'+esc(c.key)+'">'+esc(c.label)+'<i class="ar"></i></th>'}).join('')+'</tr></thead><tbody>';
+      return '<th class="'+(c.num?'num ':c.type==='status'?'sta ':c.ltr?'ltr ':(i>0?'tx ':''))+(i===0&&S.freeze?'fz ':'')+(S.sortK===c.key?'on '+(S.asc?'asc':'desc'):'')+'" data-k="'+esc(c.key)+'">'+esc(c.label)+'<i class="ar"></i></th>'}).join('')+'</tr></thead><tbody>';
     if(!rows.length) h+='<tr><td colspan="'+S.cols.length+'" class="st">אין שורות שמתאימות ל״'+esc(S.q)+'״</td></tr>';
-    rows.forEach(function(r){ h+='<tr>'+S.cols.map(function(c,i){return '<td class="'+(c.num?'num':c.type==='status'?'sta':c.ltr?'ltr':(i>0?'tx':''))+'">'+fmt(r[c.key],c.type)+'</td>'}).join('')+'</tr>'; });
+    var rc=S.rowColor;
+    rows.forEach(function(r){ fmt._row=r;
+      var tint=(rc&&rc.col&&rc.map&&rc.map[r[rc.col]])?' class="rc-'+(COLOR[rc.map[r[rc.col]]]||'n')+'"':'';
+      h+='<tr'+tint+'>'+S.cols.map(function(c,i){var al=c.cfg.align==='start'?' al-s':c.cfg.align==='center'?' al-c':'';
+        return '<td class="'+(c.num?'num':c.type==='status'?'sta':c.ltr?'ltr':(i>0?'tx':''))+al+(i===0&&S.freeze?' fz':'')+'">'+fmt(r[c.key],c.type,c.cfg)+'</td>'}).join('')+'</tr>'; });
+    fmt._row=null;
     if(S.total&&rows.length){ h+='<tr class="tot">'+S.cols.map(function(c,i){
-      if(i===0) return '<td>סה״כ<small>'+rows.length+' שורות</small></td>';
-      if(c.type==='money'||c.type==='number'){var s=rows.reduce(function(a,r){return a+(isNum(r[c.key])?r[c.key]:0)},0);return '<td class="num">'+fmt(s,c.type)+'</td>'}
-      if(c.type==='percent'){var vs=rows.map(function(r){return r[c.key]}).filter(isNum);return '<td class="num">'+(vs.length?fmt(vs.reduce(function(a,b){return a+b},0)/vs.length,'percent')+'<small class="avg">ממוצע</small>':'')+'</td>'}
-      return '<td></td>'}).join('')+'</tr>'; }
+      var mode=c.foot||(i===0?'label':(c.type==='money'||c.type==='number')?'sum':c.type==='percent'?'avg':'none');
+      if(mode==='label') return '<td'+(S.freeze?' class="fz"':'')+'>סה״כ<small>'+rows.length+' שורות</small></td>';
+      if(mode==='none') return '<td></td>';
+      var vs=rows.map(function(r){return r[c.key]}).filter(isNum), val=null, lab='';
+      if(mode==='sum') val=vs.reduce(function(a,b){return a+b},0);
+      else if(mode==='avg'){ val=vs.length?vs.reduce(function(a,b){return a+b},0)/vs.length:null; lab='ממוצע'; }
+      else if(mode==='min'){ val=vs.length?Math.min.apply(null,vs):null; lab='מינימום'; }
+      else if(mode==='max'){ val=vs.length?Math.max.apply(null,vs):null; lab='מקסימום'; }
+      else if(mode==='count'){ return '<td class="num">'+rows.filter(function(r){return r[c.key]!=null&&r[c.key]!==''}).length+'<small class="avg">מונה</small></td>'; }
+      var cfg2={}; for(var k in c.cfg){cfg2[k]=c.cfg[k]} delete cfg2.bar; delete cfg2.color; delete cfg2.rules;
+      return '<td class="num">'+(val==null?'':fmt(val,c.type==='status'||c.type==='text'||c.type==='date'?'number':c.type,cfg2)+(lab?'<small class="avg">'+lab+'</small>':''))+'</td>'}).join('')+'</tr>'; }
     h+='</tbody></table></div>';
     h+='<div class="ft"><span>מוצגות <b>'+rows.length+'</b> מתוך '+S.rows.length+'</span><span class="sp"></span>'+(S.sortK?'<span>ממוין לפי '+esc((S.cols.filter(function(x){return x.key===S.sortK})[0]||{}).label)+'</span>':'')+'</div>';
     S.view=rows;

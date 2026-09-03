@@ -1624,3 +1624,8 @@ text/status, "מוצגות N מתוך M", "עודכן dd.mm.yyyy HH:mm", CSV ע�
 (140), gviya__payment_terms (160), gviya__unbilled (50), sales__sales (531), tazrim__future_cashflow (95).
 כל אחד = שורה ב-`CATALOG.client` (עם `&title=` בעברית, `s:'xl'` לרחבים) ו-`BOARDS.client`. `tools/widgets-json2js.py`
 עוטף ל-.js בגלל file://. שורת הסה״כ דביקה לתחתית כי הטבלאות גוללות בתוך עצמן.
+**חוזה view (03.09, רעיון של אייל: "אתה והשרת תסגרו על פורמט עיצוב"):** `docs/WIDGET_JSON_CONTRACT.md` —
+בלוק `view` אופציונלי ב-JSON (1.1, תואם 1.0): title/subtitle, currency, sort, search/csv/total, freeze_first,
+column_order, footer (sum/avg/min/max/count/none), row_color, ופר עמודה label/type/hidden/decimals/unit/currency/
+align/color{neg,pos,zero}/rules[{lt,gt…,color}]/bar{max,color}/chip/colors/link/footer. צבעים בשם בלבד מפלטה
+סגורה (red=סכנה, amber, green, blue, gray, navy). ממומש בווידג׳ט; הדוגמה המובנית מדגימה.
