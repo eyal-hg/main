@@ -111,11 +111,12 @@
 @media(max-width:1080px){.pgrid{grid-template-columns:minmax(0,1fr)}}
 /* הפאנל בגובה מסך (אייל 03.09): לא נגמר באמצע הטבלה, אבל גם לא יורד מתחת לקצה החלון — השדה חייב
    להיראות בלי לגלול. במערכת: sticky לגובה החלון עם גלילה פנימית לשיחה. במוטמע (iframe בגובה התוכן)
-   אין חלון להידבק אליו, אז הפאנל מקבל גובה קבוע שנכנס במסך 1000px יחד עם הכרום של האפליקציה. */
+   המסגרת ב-index.html נעולה לגובה החלון (screens.js) ולכן גם שם sticky עובד. */
 .aiside{background:#fff;border:1px solid var(--cardbd);border-radius:14px;
   box-shadow:var(--lift);display:flex;flex-direction:column;overflow:hidden;min-height:420px}
 html:not(.embed) .aiside{position:sticky;top:14px;max-height:calc(100vh - 30px)}
-html.embed .aiside{position:sticky;top:0;height:620px;align-self:start}
+/* במוטמע: המסגרת (index.html) נעולה לגובה החלון והעמוד גולל בתוכה — הפאנל דביק לגובה המסך */
+html.embed .aiside{position:sticky;top:0;height:calc(100vh - 14px);align-self:start}
 /* ראש כהה כמו לכל פאנל אחר — העוזר הוא רובד, לא הערה בצד */
 .aiside .ah{display:flex;align-items:center;gap:8px;padding:13px 16px;background:var(--band)}
 .aiside .ah svg{color:#8EC9EC;flex:none}

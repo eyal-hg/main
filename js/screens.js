@@ -240,6 +240,13 @@
     document.querySelectorAll('.cliframe').forEach(f=>{
       if(getComputedStyle(f).display==='none') return;
       const top=f.getBoundingClientRect().top+(window.scrollY||0);
+      /* תמונת תזרים: המסגרת נעולה לגובה החלון והעמוד גולל בתוכה — כך פאנל העוזר
+         דביק לגובה המסך (אייל 03.09: "פיקס לגובה של המסך"). שאר המסגרות גדלות עם התוכן. */
+      if(f.id==='cliPastFrame'){
+        const fix=innerHeight-top-16;
+        if(Math.abs((parseFloat(f.style.height)||0)-fix)>2){ f.style.height=fix+'px'; f.style.minHeight=fix+'px'; }
+        return;
+      }
       const want=Math.max(+(f.dataset.h||0), innerHeight-top-16);
       /* רק כשיש הפרש אמיתי — אחרת ה-ResizeObserver מזין את עצמו */
       const cur=parseFloat(f.style.minHeight)||0;   /* '' → NaN, וכל השוואה איתו false */
