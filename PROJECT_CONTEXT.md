@@ -1629,3 +1629,9 @@ text/status, "מוצגות N מתוך M", "עודכן dd.mm.yyyy HH:mm", CSV ע�
 column_order, footer (sum/avg/min/max/count/none), row_color, ופר עמודה label/type/hidden/decimals/unit/currency/
 align/color{neg,pos,zero}/rules[{lt,gt…,color}]/bar{max,color}/chip/colors/link/footer. צבעים בשם בלבד מפלטה
 סגורה (red=סכנה, amber, green, blue, gray, navy). ממומש בווידג׳ט; הדוגמה המובנית מדגימה.
+**ווידג׳ט JSON — סגירה (03.09):** אייל: "ווידג׳ט יכול להיות רק על חצי מסך" ו"המתכנת כבר הגדיר שווידג׳ט זה
+חצי מסך" — לא מסתירים עמודות אוטומטית (ניסיתי, ירד); מה שנכנס בחצי מסך נקבע ב-`view` (`hidden`), השרת
+שולט. חמשת הקבצים ב-`extrnal_widget/` קיבלו `<name>.view.json` ליד (הממיר ממזג). הרינדור הוצא
+ל-**`widgets/json-table.js`** (`hkJsonTable.render(el,json,{title,onRender})`) — זה מה שהמתכנת לוקח
+למערכת הווידג׳טים הקיימת. משימה: `docs/tasks/2026-09-03-json-widget/TASK.md`. המפה לשרת:
+`docs/WIDGET_JSON_CONTRACT.md`.
