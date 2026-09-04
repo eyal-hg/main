@@ -57,6 +57,7 @@ export default async (req) => {
   if (len > MAX) return json(413, { error: "גדול מדי" });
   let body; try { body = await req.json(); } catch { return json(400, { error: "JSON לא תקין" }); }
   if (!same(body.password || "", pass)) return json(401, { error: "סיסמה שגויה" });
+  if (body.action === "check") return json(200, { ok: true });   // כניסה לממשק — בדיקת סיסמה בלבד
   let board; try { board = clean(body.board); } catch (e) { return json(422, { error: e.message }); }
   const when = new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
   board.updated = when;
