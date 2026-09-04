@@ -9,14 +9,15 @@
   if(!ONLINE) return;
   try{ if(localStorage.getItem('hkBoardPass')) return; }catch(e){ return; }
   var css='#hkGate{position:fixed;inset:0;z-index:99999;background:#F6F8FB;display:grid;place-items:center;font-family:Heebo,Rubik,system-ui,sans-serif;direction:rtl}'
-   +'#hkGate .box{width:360px;max-width:92vw;background:#fff;border:1px solid #E3EAF3;border-radius:14px;box-shadow:0 10px 28px -18px rgba(12,64,104,.18);padding:22px 22px 18px}'
-   +'#hkGate h1{margin:0 0 4px;font-size:22px;font-weight:800;color:#0C4068;letter-spacing:-.4px}#hkGate p{margin:0 0 14px;color:#7A8898;font-size:13px}'
-   +'#hkGate input{width:100%;box-sizing:border-box;font:inherit;font-size:15px;border:1px solid #CBD6E2;border-radius:10px;padding:9px 12px;margin-bottom:10px}#hkGate input:focus{outline:none;border-color:#39ABE2}'
-   +'#hkGate .err{color:#C43D30;font-size:12.5px;min-height:1.2em;margin-bottom:8px}'
-   +'#hkGate button{width:100%;font:inherit;font-size:14px;font-weight:600;border-radius:999px;padding:9px;border:0;background:#E4826E;color:#fff;cursor:pointer}#hkGate button[disabled]{opacity:.5}';
+   +'#hkGate .box{width:720px;max-width:94vw;background:#fff;border:1px solid #E3EAF3;border-radius:16px;box-shadow:0 10px 28px -18px rgba(12,64,104,.18);padding:56px 64px 100px;text-align:center}'
+   +'#hkGate .logo{height:56px;margin:0 auto 34px;display:block}'
+   +'#hkGate h1{margin:0 0 14px;font-size:28px;font-weight:800;color:#0C4068;letter-spacing:-.4px}#hkGate p{margin:0 0 34px;color:#4C6A88;font-size:20px;font-weight:300}'
+   +'#hkGate input{width:100%;box-sizing:border-box;font:inherit;font-size:22px;letter-spacing:6px;text-align:center;border:1px solid #CBD6E2;border-radius:10px;padding:24px 16px;margin-bottom:18px}#hkGate input:focus{outline:none;border-color:#39ABE2}'
+   +'#hkGate .err{color:#C43D30;font-size:14px;min-height:1.3em;margin:-8px 0 8px}'
+   +'#hkGate button{width:100%;font:inherit;font-size:22px;font-weight:600;border-radius:10px;padding:18px;border:0;background:#1E3D63;color:#fff;cursor:pointer}#hkGate button:hover{background:#0C4068}#hkGate button[disabled]{opacity:.5}';
   var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
   var g=document.createElement('div'); g.id='hkGate';
-  g.innerHTML='<div class="box"><h1>HK · סביבת הפיתוח</h1><p>סיסמה, פעם אחת בדפדפן הזה.</p><input id="hkGateI" type="password" placeholder="סיסמה" autocomplete="current-password"><div class="err" id="hkGateE"></div><button id="hkGateB" type="button">כניסה</button></div>';
+  g.innerHTML='<div class="box"><img class="logo" src="/logo.b96db34a449db8db7eaea328a06ad8e2.svg" alt="חזות קריספין"><h1>פיתוח</h1><p>הזן סיסמה</p><input id="hkGateI" type="password" autocomplete="current-password"><div class="err" id="hkGateE"></div><button id="hkGateB" type="button">כניסה</button></div>';
   (document.body||document.documentElement).appendChild(g);
   var i=g.querySelector('#hkGateI'), e=g.querySelector('#hkGateE'), b=g.querySelector('#hkGateB');
   setTimeout(function(){i.focus()},50);

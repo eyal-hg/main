@@ -162,6 +162,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 <div class="gate" id="gate" hidden><div class="box"><h1>לוח המשימות</h1><p>סיסמת הלוח, פעם אחת בדפדפן הזה.</p><input id="gateI" type="password" placeholder="סיסמה" autocomplete="current-password"><div class="err" id="gateE"></div><button class="btn pri" id="gateB">כניסה</button></div></div>
 <div class="pop" id="pop"><div class="md"><h3 id="popT"></h3><p id="popP"></p><input id="popI" type="password" placeholder="סיסמה"><div class="f"><button class="btn pri" id="popOk">אישור</button><button class="btn" id="popX">ביטול</button></div></div></div>
 <div class="toast" id="toast"></div>
+<script src="../js/gate.js" defer></script>
 <script src="data.js"></script>
 <script>
 (function(){
@@ -362,6 +363,8 @@ function gate(){
   var g=document.getElementById('gate'), i=document.getElementById('gateI'), e=document.getElementById('gateE'), b=document.getElementById('gateB');
   function ok(){g.hidden=true;render()}
   if(!ONLINE||localStorage.getItem('hkBoardPass')){ok();return}
+  /* השער של האתר (js/gate.js) כבר מוצג מעל הכל — כאן רק מחכים שהסיסמה תישמר */
+  var w=setInterval(function(){if(localStorage.getItem('hkBoardPass')){clearInterval(w);ok()}},400); return;
   g.hidden=false; document.getElementById('app').innerHTML=''; setTimeout(function(){i.focus()},50);
   function tryIn(){var v=i.value.trim(); if(!v)return; b.disabled=true; e.textContent='';
     fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'check',password:v})})
