@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 04.09.2026, 13:03 */
 window.HK_BOARD = {
- "version": 6,
+ "version": 7,
  "updated": "04.09.2026, 13:03",
  "devs": [
   "אייל",
@@ -443,10 +443,27 @@ window.HK_BOARD = {
      "updated": "04.09.2026"
     },
     {
+     "id": "imtmsbudz3hp2",
+     "kind": "check",
+     "title": "בדיקה חדשה",
+     "what": "מה בודקים ואיך",
+     "need": "",
+     "sev": "",
+     "dev": "אייל",
+     "who": "",
+     "status": "open",
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "04.09.2026",
+     "updated": "04.09.2026"
+    },
+    {
      "id": "imtmsbvillpc0",
      "kind": "check",
      "title": "ניסיון",
-     "what": "מה בודקים ואיך",
+     "what": "מה בודקים ואיךדדד",
      "need": "",
      "sev": "",
      "dev": "אייל",
