@@ -11,6 +11,7 @@
 /* ---------- 1 · באיזה מסך אנחנו עכשיו ----------
    הרזולוציה נשענת על אותם משתני מצב שהניווט עצמו משתמש בהם, כדי שלא
    ייווצר מקור אמת שני שיכול להתנתק מהמסך שבאמת מוצג. */
+window.hkHelpKey=function(){return helpKey()};
 function helpKey(){
   var adm=document.getElementById('adminShell');
   if(adm&&adm.classList.contains('show'))
