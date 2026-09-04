@@ -131,14 +131,6 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .pop p{margin:0 0 12px;color:var(--ink3);font-size:13px}
 .pop input{width:100%;font:inherit;border:1px solid var(--line2);border-radius:10px;padding:8px 12px;margin-bottom:12px}
 .pop .f{display:flex;gap:8px;justify-content:flex-start}
-.gate{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:70}
-.gate .box{width:360px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:22px 22px 18px}
-.gate h1{margin:0 0 4px;font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.4px}
-.gate p{margin:0 0 14px;color:var(--ink3);font-size:13px}
-.gate input{width:100%;font:inherit;font-size:15px;border:1px solid var(--line2);border-radius:10px;padding:9px 12px;margin-bottom:10px}
-.gate input:focus{outline:none;border-color:var(--sky)}
-.gate .err{color:var(--bad);font-size:12.5px;min-height:1.2em;margin-bottom:8px}
-.gate .btn{width:100%;padding:9px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:60}
 .toast.on{opacity:1}
 @media (max-width:760px){.ib{grid-template-columns:1fr}.col+.col{border-inline-start:0;border-top:1px solid var(--line)}.band{grid-template-columns:1fr}.quick{grid-template-columns:1fr 1fr}.row{grid-template-columns:26px 1fr;}.row>*:nth-child(n+3){display:none}}
@@ -159,7 +151,6 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
   <div id="banner"></div>
   <div id="app"></div>
 </div>
-<div class="gate" id="gate" hidden><div class="box"><h1>לוח המשימות</h1><p>סיסמת הלוח, פעם אחת בדפדפן הזה.</p><input id="gateI" type="password" placeholder="סיסמה" autocomplete="current-password"><div class="err" id="gateE"></div><button class="btn pri" id="gateB">כניסה</button></div></div>
 <div class="pop" id="pop"><div class="md"><h3 id="popT"></h3><p id="popP"></p><input id="popI" type="password" placeholder="סיסמה"><div class="f"><button class="btn pri" id="popOk">אישור</button><button class="btn" id="popX">ביטול</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script src="../js/gate.js" defer></script>
@@ -316,13 +307,13 @@ function save(){
   try{localStorage.setItem('hkBoardDraft',JSON.stringify(B))}catch(e){}
   if(!ONLINE){download('data.js',fileText());toast('data.js ירד — להחליף את board/data.js בריפו');EDIT=false;render();return}
   var pass=localStorage.getItem('hkBoardPass')||'';
-  if(!pass){gate();return}
+  if(!pass){toast('הסיסמה לא שמורה — רענן את הדף והיכנס שוב');return}
   var b=document.getElementById('bSave');if(b)b.disabled=true;
   fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,board:B,who:localStorage.getItem('hkBoardWho')||''})})
    .then(function(r){return r.json().then(function(j){return {ok:r.ok,status:r.status,j:j}})})
    .then(function(x){if(b)b.disabled=false;
      if(x.ok){FILE.version=B.version;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}toast('נשמר לגיט (קומיט '+x.j.commit+'). נטליפיי מתעדכן תוך דקה.');EDIT=false;render();}
-     else if(x.status===401){localStorage.removeItem('hkBoardPass');toast('הסיסמה השתנתה — כניסה מחדש');gate();}
+     else if(x.status===401){localStorage.removeItem('hkBoardPass');toast('הסיסמה השתנתה — רענן את הדף והיכנס שוב');}
      else{toast('השמירה נכשלה: '+(x.j.error||x.status)+' — הקובץ ירד במקום');download('data.js',fileText());}
    }).catch(function(){if(b)b.disabled=false;toast('אין חיבור לשרת — הקובץ ירד במקום');download('data.js',fileText())});
 }
@@ -358,22 +349,7 @@ document.getElementById('bCancel').onclick=function(){EDIT=false;render()};
 document.getElementById('bSave').onclick=save;
 document.getElementById('bMd').onclick=md;
 window.addEventListener('hashchange',render);
-/* ---------- כניסה לממשק ---------- */
-function gate(){
-  var g=document.getElementById('gate'), i=document.getElementById('gateI'), e=document.getElementById('gateE'), b=document.getElementById('gateB');
-  function ok(){g.hidden=true;render()}
-  if(!ONLINE||localStorage.getItem('hkBoardPass')){ok();return}
-  /* השער של האתר (js/gate.js) כבר מוצג מעל הכל — כאן רק מחכים שהסיסמה תישמר */
-  var w=setInterval(function(){if(localStorage.getItem('hkBoardPass')){clearInterval(w);ok()}},400); return;
-  g.hidden=false; document.getElementById('app').innerHTML=''; setTimeout(function(){i.focus()},50);
-  function tryIn(){var v=i.value.trim(); if(!v)return; b.disabled=true; e.textContent='';
-    fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'check',password:v})})
-     .then(function(r){return r.json().then(function(j){return {s:r.status,j:j}})})
-     .then(function(x){b.disabled=false; if(x.s===200){localStorage.setItem('hkBoardPass',v);ok()} else if(x.s===401){e.textContent='סיסמה שגויה'} else {e.textContent=x.j.error||('שגיאה '+x.s)}})
-     .catch(function(){b.disabled=false;e.textContent='אין חיבור לשרת'});}
-  b.onclick=tryIn; i.onkeydown=function(ev){if(ev.key==='Enter')tryIn()};
-}
-gate();
+render();
 })();
 </script>
 </body>
