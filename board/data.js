@@ -1,7 +1,7 @@
-/* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
+/* לוח המשימות — נשמר מהמסך 05.09.2026, 09:58 */
 window.HK_BOARD = {
- "version": 9,
- "updated": "05.09.2026",
+ "version": 10,
+ "updated": "05.09.2026, 09:58",
  "devs": [
   "אייל",
   "אופיר",
@@ -31,7 +31,9 @@ window.HK_BOARD = {
      "imgB": "img/owner-proto-hero.jpg",
      "capB": "הפרוטוטיפ.",
      "created": "04.09.2026",
-     "updated": "05.09.2026"
+     "updated": "05.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-2",
@@ -48,7 +50,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-4",
@@ -65,7 +69,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-5",
@@ -82,7 +88,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-6",
@@ -99,7 +107,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-7",
@@ -116,7 +126,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-8",
@@ -133,7 +145,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-9",
@@ -150,7 +164,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026",
-     "updated": "05.09.2026"
+     "updated": "05.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "owner-dash-10",
@@ -167,7 +183,9 @@ window.HK_BOARD = {
      "imgB": "img/owner-proto-docs-all.jpg",
      "capB": "הפרוטוטיפ: פופאפ \"המסמכים שהעליתי\" — בטיפול / הוזנו, פתיחה, מחיקה רק למה שלא הוזן.",
      "created": "05.09.2026",
-     "updated": "05.09.2026"
+     "updated": "05.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -193,7 +211,9 @@ window.HK_BOARD = {
      "imgB": "img/portfolio-proto.jpg",
      "capB": "הפרוטוטיפ.",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "portfolio-10",
@@ -210,7 +230,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "portfolio-11",
@@ -227,7 +249,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "portfolio-12",
@@ -244,7 +268,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "portfolio-13",
@@ -261,7 +287,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -287,7 +315,9 @@ window.HK_BOARD = {
      "imgB": "img/today-proto.jpg",
      "capB": "הפרוטוטיפ: משימות + ציר בכרטיס אחד, תשומת לב משמאל.",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-15",
@@ -304,7 +334,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-16",
@@ -321,7 +353,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-17",
@@ -338,7 +372,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-18",
@@ -355,7 +391,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-19",
@@ -372,7 +410,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-20",
@@ -389,7 +429,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-21",
@@ -406,7 +448,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "today-22",
@@ -423,7 +467,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "imtmsbvillpc0",
@@ -440,7 +486,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -466,7 +514,9 @@ window.HK_BOARD = {
      "imgB": "img/tasks-proto-hk.jpg",
      "capB": "הפרוטוטיפ: הטאב \"ביקשתי מ-HK\".",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-24",
@@ -483,7 +533,9 @@ window.HK_BOARD = {
      "imgB": "img/tasks-proto-editor.jpg",
      "capB": "הפרוטוטיפ: העורך בשורה.",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-25",
@@ -500,7 +552,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-26",
@@ -517,7 +571,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-27",
@@ -534,7 +590,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-28",
@@ -551,7 +609,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-29",
@@ -568,7 +628,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "tasks-30",
@@ -585,7 +647,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -611,7 +675,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-32",
@@ -628,7 +694,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-33",
@@ -645,7 +713,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-34",
@@ -662,7 +732,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-35",
@@ -679,7 +751,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-36",
@@ -696,7 +770,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-37",
@@ -713,7 +789,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-38",
@@ -730,7 +808,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-39",
@@ -747,7 +827,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-40",
@@ -764,7 +846,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "comm-spec-11",
@@ -781,7 +865,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -807,7 +893,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "company-meetings-42",
@@ -824,7 +912,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "company-meetings-43",
@@ -841,7 +931,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "company-meetings-44",
@@ -858,7 +950,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "company-meetings-45",
@@ -875,7 +969,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "company-meetings-46",
@@ -892,7 +988,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -918,7 +1016,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -944,7 +1044,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "metrics-49",
@@ -961,7 +1063,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "metrics-50",
@@ -978,7 +1082,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "metrics-51",
@@ -995,7 +1101,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -1021,7 +1129,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "acct-53",
@@ -1038,7 +1148,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "acct-54",
@@ -1055,7 +1167,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "acct-55",
@@ -1072,7 +1186,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -1098,7 +1214,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "cashflow-ai-57",
@@ -1115,7 +1233,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "cashflow-ai-58",
@@ -1132,7 +1252,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -1158,7 +1280,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "json-widget-60",
@@ -1175,7 +1299,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "json-widget-61",
@@ -1192,7 +1318,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -1218,7 +1346,9 @@ window.HK_BOARD = {
      "imgB": "img/client-ai-proto.jpg",
      "capB": "הפרוטוטיפ: הכפתור לצד השדה.",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-ai-63",
@@ -1235,7 +1365,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-ai-64",
@@ -1252,7 +1384,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-ai-65",
@@ -1269,7 +1403,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-ai-66",
@@ -1286,7 +1422,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-ai-67",
@@ -1303,7 +1441,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -1329,7 +1469,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-readonly-69",
@@ -1346,7 +1488,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-readonly-70",
@@ -1363,7 +1507,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-readonly-71",
@@ -1380,7 +1526,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-readonly-72",
@@ -1397,7 +1545,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-readonly-73",
@@ -1414,7 +1564,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "client-readonly-spec-7",
@@ -1431,7 +1583,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     }
    ]
   },
@@ -1457,7 +1611,9 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "general-todo-2",
@@ -1474,16 +1630,18 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026"
+     "updated": "04.09.2026",
+     "log": [],
+     "ask": null
     },
     {
      "id": "general-3",
-     "kind": "todo",
+     "kind": "check",
      "title": "משימת דוגמה — לנסות את הסבב המלא",
-     "what": "פריט ניסיון בשביל לראות שהלוח עובד מקצה לקצה. אין מה לבנות.",
-     "need": "עידו: פותח את השורה, מסמן \"נבנה\" וכותב הערה קצרה. הפריט צריך לעבור לבדיקות אצל אייל ולהישמר לגיט בלי בנייה בנטליפיי. אייל: לוחץ \"נכשל\" עם הערה, רואה שחזר לעידו, ואז מסמן שוב ו\"נבדק\" סוגר.",
+     "what": "לבדוק: עידו: פותח את השורה, מסמן \"נבנה\" וכותב הערה קצרה. הפריט צריך לעבור לבדיקות אצל אייל ולהישמר לגיט בלי בנייה בנטליפיי. אייל: לוחץ \"נכשל\" עם הערה, רואה שחזר לעידו, ואז מסמן שוב ו\"נבדק\" סוגר. (נבנה על ידי עידו)",
+     "need": "",
      "sev": "",
-     "dev": "עידו",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -1491,7 +1649,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026",
-     "updated": "05.09.2026"
+     "updated": "05.09.2026",
+     "log": [
+      {
+       "when": "05.09.2026",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "בוא נראה מה רואים"
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "todo",
+      "dev": "עידו",
+      "sev": "",
+      "what": "פריט ניסיון בשביל לראות שהלוח עובד מקצה לקצה. אין מה לבנות.",
+      "need": "עידו: פותח את השורה, מסמן \"נבנה\" וכותב הערה קצרה. הפריט צריך לעבור לבדיקות אצל אייל ולהישמר לגיט בלי בנייה בנטליפיי. אייל: לוחץ \"נכשל\" עם הערה, רואה שחזר לעידו, ואז מסמן שוב ו\"נבדק\" סוגר."
+     }
     }
    ]
   }
