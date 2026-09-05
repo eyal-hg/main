@@ -140,6 +140,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .toast.on{opacity:1}
 @media (max-width:760px){.ib{grid-template-columns:1fr}.col+.col{border-inline-start:0;border-top:1px solid var(--line)}.band{grid-template-columns:1fr}.row{grid-template-columns:26px 1fr;}.row>*:nth-child(n+3){display:none}}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.sec{display:flex;align-items:center;gap:10px}.secmd{margin-inline-start:auto;font-weight:600}
 </style>
 </head>
 <body>
@@ -238,9 +239,10 @@ function renderDev(d){
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על פריט פותחת את המסך שלו. MD ⤓ למעלה מוריד את הרשימה הזאת כקובץ ל-AI.</span></div></div>'
    +(mine.length?'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+mine.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>':'<div class="closedmsg">✓ אין פריטים פתוחים</div>')+'</div>';
   var byScreen={};mine.forEach(function(x){(byScreen[x.s.key]=byScreen[x.s.key]||[]).push(x)});
-  Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a></h2>'+byScreen[k].map(function(x,i){return '<div class="row" data-go="#screen='+k+'&tab='+x.it.kind+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(x.it.title)+'<small>'+esc((x.it.kind==='check'?x.it.what:x.it.need)||x.it.what).slice(0,140)+'</small></span><span class="kind">'+KN[x.it.kind]+'</span>'+(x.it.sev?'<span class="sev '+sevCls(x.it.sev)+'">'+esc(x.it.sev)+'</span>':'<span></span>')+'<span></span><span></span></div>'}).join('')});
+  Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){return '<div class="row" data-go="#screen='+k+'&tab='+x.it.kind+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(x.it.title)+'<small>'+esc(String((x.it.kind==='check'?x.it.what:x.it.need)||x.it.what).slice(0,140))+'</small></span><span class="kind">'+KN[x.it.kind]+'</span>'+(x.it.sev?'<span class="sev '+sevCls(x.it.sev)+'">'+esc(x.it.sev)+'</span>':'<span></span>')+'<span></span><span></span></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   app.innerHTML=h; app.querySelectorAll('.row').forEach(function(r){r.onclick=function(){go(r.dataset.go)}});
+  app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
 }
 /* ---------- דף מסך ---------- */
 var TAB='todo';
@@ -344,8 +346,8 @@ function openAdd(kind,screen){
 /* ---------- MD ----------
    ה-MD תמיד פר מסך: גם הקובץ של מתכנת וגם של המרכז בנויים מסך-מסך —
    כותרת המסך, קישור לאפיון ולפרוטוטיפ, ואז הפריטים לפי טאב. */
-function md(){
-  var q=route(), lines=[];
+function md(sk,dv){
+  var q=sk?{screen:sk}:route(), lines=[];
   function item(it){lines.push('### '+it.title+(it.sev?'  \n*חומרה: '+it.sev+'*':'')+(it.dev?'  \n*על: '+it.dev+'*':''));
     if(it.what)lines.push('\n**'+(it.kind==='check'?'מה בודקים ואיך':it.kind==='fix'?'היום בסטייג׳ינג':'מה חסר')+':** '+it.what);
     if(it.need)lines.push('\n**'+(it.kind==='spec'?'מה צריך להחליט':'צריך להיות')+':** '+it.need);
@@ -363,8 +365,8 @@ function md(){
       lines.push(lvl+'# '+k[1]+' ('+l.length+')','');l.forEach(item)});
   }
   function byScreens(filter){B.screens.forEach(function(s){screen(s,s.items.filter(function(it){return open_(it)&&filter(it)}),'##')})}
-  if(q.screen){var s=scr(q.screen);lines.push('# '+s.name+' — מה נשאר ('+B.updated+')','');
-    screen(s,s.items.filter(open_),'#');download('hk-'+q.screen+'.md',lines.join('\n'));}
+  if(q.screen){var s=scr(q.screen);lines.push('# '+s.name+(dv?' — מה על '+dv:' — מה נשאר')+' ('+B.updated+')','');
+    screen(s,s.items.filter(function(it){return open_(it)&&(!dv||it.dev===dv)}),'#');download('hk-'+q.screen+(dv?'-'+dv:'')+'.md',lines.join('\n'));}
   else if(q.dev){lines.push('# מה על '+q.dev+' ('+B.updated+')','');
     byScreens(function(it){return it.dev===q.dev});download('hk-'+q.dev+'.md',lines.join('\n'));}
   else{lines.push('# לוח המשימות — כל הפתוחים ('+B.updated+')','');
