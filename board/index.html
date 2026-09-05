@@ -201,6 +201,7 @@ function sevCls(s){return s==='חוסם'?'s1':s==='גבוה'?'s2':'s3'}
 function open_(it){return it.status!=='done'}
 function scr(k){return B.screens.filter(function(s){return s.key===k})[0]}
 function today(){return new Date().toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function now(){return new Date().toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}).replace(',','')}
 function uid(){return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('on')},2600)}
 function allItems(){var out=[];B.screens.forEach(function(s){s.items.forEach(function(it){out.push({s:s,it:it})})});return out}
@@ -253,7 +254,7 @@ function renderDev(d){
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
    +(mine.length?'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+mine.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>':'<div class="closedmsg">✓ אין פריטים פתוחים</div>')+'</div>';
   if(mine.length&&d!=='אייל') h+='<div class="howto"><b>איך עובדים</b><ol>'
-   +'<li><b>מסך אחד בכל פעם.</b> מורידים MD ⤓ של המסך ומוסרים ל-AI. הפרוטוטיפ כבר אצלך (הריפו של dev.hak.co.il) והוא האמת: מבנה, טקסטים, מרווחים. לא נוגעים במה שלא ברשימה.</li>'
+   +'<li><b>מסך אחד בכל פעם.</b> מורידים MD ⤓ של המסך ומוסרים ל-AI. הפרוטוטיפ כבר אצלך (הריפו של dev.hak.co.il) והוא האמת. ה-AI קורא קודם את <code>docs/AI-GUIDE.md</code> — מה אייל רוצה, מה אסור, והכרעות שכבר נפלו. לא נוגעים במה שלא ברשימה.</li>'
    +'<li><b>בודקים לבד לפני שמסמנים.</b> בסטייג׳ינג, עם משתמש CUSTOMER אמיתי של גבדור, לא בתצוגה מקדימה של אדמין. עוברים על "צריך להיות" סעיף-סעיף.</li>'
    +'<li><b>מסמנים "נבנה / תוקן"</b> בקצה השורה. הפריט עובר לבדיקות אצל אייל ונשמר לגיט מיד. עד 3 פריטים לסבב, לא הכל ביחד.</li>'
    +'<li><b>עבר: נסגר. נכשל: חוזר לכאן</b> עם מה נכשל. פריט שחזר קודם לכל דבר חדש.</li>'
@@ -322,7 +323,7 @@ app.addEventListener('click',function(e){
 });
 /* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. משותף לדף המסך ולדף המתכנת.
    בדרך לבדיקות נשמר "back" — המצב המקורי — כדי ש"נכשל" יחזיר את הפריט למי שבנה, עם החומרה והדרישה שהיו. */
-function logAdd(f,ev,who,txt){(f.log=f.log||[]).push({when:today(),who:who||'',ev:ev,txt:txt||''})}
+function logAdd(f,ev,who,txt){(f.log=f.log||[]).push({when:now(),who:who||'',ev:ev,txt:txt||''})}
 function advance(f,checked,note){
   if(!checked){f.status='open';f.updated=today();markDirty();return}
   var from=f.kind;
@@ -335,7 +336,7 @@ function advance(f,checked,note){
 function fail(f,note){
   var b=f.back||{};
   f.kind='fix';f.dev=b.dev||f.dev||'עידו';f.sev=b.sev||'גבוה';f.need=b.need||f.what.replace(/^לבדוק: /,'');
-  f.what='נכשל בבדיקה '+today()+': '+note;f.status='open';logAdd(f,'failed','אייל',note);
+  f.what='נכשל בבדיקה '+now()+': '+note;f.status='open';logAdd(f,'failed','אייל',note);
   f.updated=today();markDirty();toast('חזר לתיקונים — על '+f.dev);
 }
 /* פופאפ הערה: ב"נבנה/תוקן" רשות (מה עשיתי ואיך לבדוק), ב"נכשל" חובה (מה נכשל) */
@@ -365,7 +366,7 @@ app.addEventListener('click',function(e){
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
   askNote('נכשל — '+f.title,'מה לא עבד. הפריט חוזר לתיקונים אצל '+((f.back&&f.back.dev)||f.dev||'המתכנת')+'.',true,function(v){fail(f,v);afterChange(q)});
 });
-function ask(f,txt){f.ask={who:f.dev||'',txt:txt,when:today()};logAdd(f,'question',f.dev,txt);f.updated=today();markDirty();toast('ה-Reject נשלח לאייל')}
+function ask(f,txt){f.ask={who:f.dev||'',txt:txt,when:now()};logAdd(f,'question',f.dev,txt);f.updated=today();markDirty();toast('ה-Reject נשלח לאייל')}
 function answer(f,txt){logAdd(f,'answer','אייל',txt);f.ask=null;f.updated=today();markDirty();toast('התשובה נשמרה — '+(f.dev||'')+' יראה אותה בפריט')}
 app.addEventListener('click',function(e){
   var t=e.target.closest('[data-act="ask"],[data-act="answer"]'); if(!t)return; e.stopPropagation();
@@ -433,6 +434,7 @@ function md(sk,dv){
   function screen(s,items,lvl){
     if(!items.length)return;
     lines.push(lvl+' '+s.name+' ('+items.length+')','');
+    lines.push('לפני שמתחילים: לקרוא את docs/AI-GUIDE.md בריפו — מה אייל רוצה, מה אסור, והכרעות שכבר נפלו.');
     if(s.task)lines.push('האפיון המלא: '+s.task);
     if(s.proto)lines.push('הפרוטוטיפ: '+s.proto);
     lines.push('');
