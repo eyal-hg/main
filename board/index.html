@@ -341,22 +341,34 @@ function openAdd(kind,screen){
     toast('נוסף ל'+sc.name+' — שומר…'); save();
   };
 }
-/* ---------- MD ---------- */
+/* ---------- MD ----------
+   ה-MD תמיד פר מסך: גם הקובץ של מתכנת וגם של המרכז בנויים מסך-מסך —
+   כותרת המסך, קישור לאפיון ולפרוטוטיפ, ואז הפריטים לפי טאב. */
 function md(){
-  var q=route(), lines=[], title;
-  function item(x){var it=x.it||x, s=x.s;lines.push('### '+it.title+(s?'  \n*מסך: '+s.name+'*':'')+(it.sev?'  \n*חומרה: '+it.sev+'*':'')+(it.dev?'  \n*על: '+it.dev+'*':''));
+  var q=route(), lines=[];
+  function item(it){lines.push('### '+it.title+(it.sev?'  \n*חומרה: '+it.sev+'*':'')+(it.dev?'  \n*על: '+it.dev+'*':''));
     if(it.what)lines.push('\n**'+(it.kind==='check'?'מה בודקים ואיך':it.kind==='fix'?'היום בסטייג׳ינג':'מה חסר')+':** '+it.what);
     if(it.need)lines.push('\n**'+(it.kind==='spec'?'מה צריך להחליט':'צריך להיות')+':** '+it.need);
     if(it.imgA)lines.push('\nצילום (סטייג׳ינג): board/'+it.imgA+(it.capA?' — '+it.capA:''));
     if(it.imgB)lines.push('\nצילום (פרוטוטיפ): board/'+it.imgB+(it.capB?' — '+it.capB:''));
     lines.push('');}
-  if(q.screen){var s=scr(q.screen);title='# '+s.name+' — מה נשאר ('+B.updated+')';lines.push(title,'',s.task?'האפיון המלא: '+s.task:'',s.proto?'הפרוטוטיפ: '+s.proto:'','');
-    KINDS.forEach(function(k){var l=s.items.filter(function(it){return it.kind===k[0]&&open_(it)});if(!l.length)return;lines.push('## '+k[1]+' ('+l.length+')','');l.forEach(function(it){item({it:it,s:null})})});
-    download('hk-'+q.screen+'.md',lines.join('\n'));}
-  else if(q.dev){var mine=allItems().filter(function(x){return x.it.dev===q.dev&&open_(x.it)});lines.push('# מה על '+q.dev+' ('+B.updated+')','');
-    KINDS.forEach(function(k){var l=mine.filter(function(x){return x.it.kind===k[0]});if(!l.length)return;lines.push('## '+k[1]+' ('+l.length+')','');l.forEach(item)});
-    download('hk-'+q.dev+'.md',lines.join('\n'));}
-  else{var all=allItems().filter(function(x){return open_(x.it)});lines.push('# לוח המשימות — כל הפתוחים ('+B.updated+')','');all.forEach(item);download('hk-board.md',lines.join('\n'));}
+  /* מסך אחד: כותרת + קישורים + הפריטים לפי טאב. lvl = רמת הכותרת */
+  function screen(s,items,lvl){
+    if(!items.length)return;
+    lines.push(lvl+' '+s.name+' ('+items.length+')','');
+    if(s.task)lines.push('האפיון המלא: '+s.task);
+    if(s.proto)lines.push('הפרוטוטיפ: '+s.proto);
+    lines.push('');
+    KINDS.forEach(function(k){var l=items.filter(function(it){return it.kind===k[0]});if(!l.length)return;
+      lines.push(lvl+'# '+k[1]+' ('+l.length+')','');l.forEach(item)});
+  }
+  function byScreens(filter){B.screens.forEach(function(s){screen(s,s.items.filter(function(it){return open_(it)&&filter(it)}),'##')})}
+  if(q.screen){var s=scr(q.screen);lines.push('# '+s.name+' — מה נשאר ('+B.updated+')','');
+    screen(s,s.items.filter(open_),'#');download('hk-'+q.screen+'.md',lines.join('\n'));}
+  else if(q.dev){lines.push('# מה על '+q.dev+' ('+B.updated+')','');
+    byScreens(function(it){return it.dev===q.dev});download('hk-'+q.dev+'.md',lines.join('\n'));}
+  else{lines.push('# לוח המשימות — כל הפתוחים ('+B.updated+')','');
+    byScreens(function(){return true});download('hk-board.md',lines.join('\n'));}
   toast('קובץ ה-MD ירד');
 }
 /* ---------- רינדור ---------- */
