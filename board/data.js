@@ -1,6 +1,6 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 65,
+ "version": 66,
  "seq": 110,
  "updated": "06.09.2026 21:49",
  "emails": [
@@ -961,7 +961,7 @@ window.HK_BOARD = {
      "kind": "fix",
      "title": "המסך לא נטען בכלל",
      "what": "גם כמנהל מערכת וגם כיועץ: \"לא הצלחנו לטעון את התיק — insert or update on table client_status_def violates foreign key constraint client_status_def_business_id_fkey\". יצירת סטטוסי ברירת המחדל נופלת כשלמשתמש אין business.",
-     "need": "הסטטוסים ברמת העסק. למשתמשי HK — העסק של HK. אין business: לא ליצור, להציג את המסך בלי סטטוסים ולתת \"הגדרת סטטוסים\" ליצירה. לא שגיאה.",
+     "need": "הכרעת אייל 06.09: ב\"התיק שלי\" של SUPER_ADMIN לוקחים את הסטטוסים מ-company.status (הסטטוסים הקיימים של החברות, /api/companies/get-company-statuses), לא יוצרים client_status_def למשרד שאין לו. ל-ADMIN/REPRESENTATIVE עם business — ההתנהגות הקיימת. בדיקה: המסך נטען כמנהל מערכת וכיועץ, עם עמודת סטטוס מלאה.",
      "sev": "חוסם",
      "dev": "עידו",
      "who": "",
@@ -978,6 +978,12 @@ window.HK_BOARD = {
        "who": "אייל (Claude)",
        "ev": "note",
        "txt": "ניסיתי לעקוף מהקליינט 06.09: GET /api/workspace/advisor/portfolio מחזיר 500 גם עם ?business_id=1 / ?businessId=1 / ?preview=advisor. ה-access-profile של אייל: role SUPER ADMIN, businessIds (רשימה), בלי business יחיד — השרת מנסה ליצור client_status_def עם business_id ריק. תיקון מוצע: כשאין business למשתמש (SUPER_ADMIN), לא ליצור ברירות מחדל אלא להחזיר את הסטטוסים של ה-business הראשון ב-businessIds (או של המשרד שנבחר בתצוגה המקדימה), ורק ל-ADMIN/REPRESENTATIVE עם business ליצור. אין נקודת קצה אחרת לתיק, אז המסך חסום עד אז."
+      },
+      {
+       "when": "06.09.2026 21:49",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "בסופר אדמין לוקחים את הסטטוסים של company.status."
       }
      ],
      "ask": null
