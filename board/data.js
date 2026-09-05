@@ -1,6 +1,6 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 38,
+ "version": 39,
  "seq": 94,
  "updated": "05.09.2026, 16:55",
  "emails": [
@@ -2096,24 +2096,6 @@ window.HK_BOARD = {
      "capB": "",
      "created": "05.09.2026 18:01",
      "updated": "05.09.2026 18:01"
-    },
-    {
-     "id": "general-10",
-     "n": 94,
-     "kind": "todo",
-     "title": "כניסה עם גוגל מ-localhost:3000 מול שרת הסטייג׳ינג",
-     "what": "אייל מריץ את hk-client מקומית (npm start) מול השרת של הסטייג׳ינג כדי לראות תיקוני עיצוב לפני PR. הכניסה עם גוגל עובדת, אבל השרת מחזיר אחרי הכניסה תמיד ל-https://stg.hak.co.il/auth/callback, אז הטוקן נוחת בסטייג׳ינג ולא ב-localhost.",
-     "need": "בשרת הסטייג׳ינג (hk-stage-462507): /auth/google מקבל פרמטר redirect (או מזהה Referer/Origin) ומחזיר ל-http://localhost:3000/auth/callback?token=… כשהבקשה הגיעה מ-localhost:3000. רשימה סגורה של יעדים מותרים: stg.hak.co.il, localhost:3000. רק בסטייג׳ינג, לא בפרודקשן. בצד הלקוח, GoogleLogin.tsx שולח את redirect הנוכחי. בדיקה: אייל נכנס מ-localhost:3000 ונשאר שם מחובר.",
-     "sev": "",
-     "dev": "עידו",
-     "who": "",
-     "status": "open",
-     "imgA": "",
-     "capA": "",
-     "imgB": "",
-     "capB": "",
-     "created": "05.09.2026 18:33",
-     "updated": "05.09.2026 18:33"
     }
    ]
   }
