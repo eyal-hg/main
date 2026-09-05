@@ -1,6 +1,6 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 16,
+ "version": 17,
  "updated": "05.09.2026, 10:18",
  "devs": [
   "אייל",
@@ -1736,10 +1736,6 @@ window.HK_BOARD = {
    "email": "ofir@hak.co.il"
   },
   {
-   "who": "אופיר",
-   "email": "ohhabas@gmail.com"
-  },
-  {
    "who": "טל",
    "email": "tal@hak.co.il"
   },
@@ -1753,7 +1749,7 @@ window.HK_BOARD = {
   },
   {
    "who": "עומרי",
-   "email": "omri@hak.co.il"
+   "email": "ohabas@gmail.com"
   }
  ]
 };
