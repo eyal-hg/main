@@ -13,7 +13,7 @@
   readUser();
   if(!ONLINE) return;
   try{ if(localStorage.getItem('hkSession')||localStorage.getItem('hkBoardPass')) return; }catch(e){ return; }
-  var css='#hkGate{position:fixed;inset:0;z-index:99999;background:#F6F8FB;display:grid;place-items:center;font-family:Rubik,Heebo,system-ui,sans-serif;direction:rtl}'
+  var css='#hkGate{position:fixed;inset:0;z-index:99999;background:#F6F8FB;display:grid;place-items:center;font-family:Rubik,Rubik,Heebo,system-ui,sans-serif;direction:rtl}'
    +'#hkGate .box{width:360px;max-width:92vw;background:#fff;border:1px solid #E3EAF3;border-radius:10px;padding:32px;text-align:center}'
    +'#hkGate .logo{height:40px;margin:0 auto 22px;display:block}'
    +'#hkGate h1{margin:0 0 4px;font-size:17px;font-weight:600;color:#0C4068}#hkGate p{margin:0 0 18px;color:#5B7186;font-size:12.5px}'
