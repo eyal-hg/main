@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 66,
+ "version": 67,
  "seq": 110,
- "updated": "06.09.2026 21:49",
+ "updated": "06.09.2026 21:50",
  "emails": [
   {
    "who": "אייל",
@@ -961,7 +961,7 @@ window.HK_BOARD = {
      "kind": "fix",
      "title": "המסך לא נטען בכלל",
      "what": "גם כמנהל מערכת וגם כיועץ: \"לא הצלחנו לטעון את התיק — insert or update on table client_status_def violates foreign key constraint client_status_def_business_id_fkey\". יצירת סטטוסי ברירת המחדל נופלת כשלמשתמש אין business.",
-     "need": "הכרעת אייל 06.09: ב\"התיק שלי\" של SUPER_ADMIN לוקחים את הסטטוסים מ-company.status (הסטטוסים הקיימים של החברות, /api/companies/get-company-statuses), לא יוצרים client_status_def למשרד שאין לו. ל-ADMIN/REPRESENTATIVE עם business — ההתנהגות הקיימת. בדיקה: המסך נטען כמנהל מערכת וכיועץ, עם עמודת סטטוס מלאה.",
+     "need": "הכרעת אייל 06.09: בכל תצוגת מנהל התזרים (HK_REPRESENTATIVE, HK_CONSULTANT, SUPER_ADMIN — לא רק סופר אדמין) \"התיק שלי\" לוקח את הסטטוסים מ-company.status (הסטטוסים הקיימים של החברות, /api/companies/get-company-statuses), ולא יוצר client_status_def. רק ליועץ (ADMIN/REPRESENTATIVE עם business) נשארת הגדרת הסטטוסים של המשרד. בדיקה: המסך נטען כמנהל מערכת וכמנהל תזרים עם עמודת הסטטוס מ-company.status, וכיועץ עם הסטטוסים של המשרד.",
      "sev": "חוסם",
      "dev": "עידו",
      "who": "",
@@ -971,7 +971,7 @@ window.HK_BOARD = {
      "imgB": "img/portfolio-proto.jpg",
      "capB": "הפרוטוטיפ.",
      "created": "04.09.2026",
-     "updated": "06.09.2026 21:49",
+     "updated": "06.09.2026 21:50",
      "log": [
       {
        "when": "06.09.2026 21:49",
@@ -984,6 +984,12 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "בסופר אדמין לוקחים את הסטטוסים של company.status."
+      },
+      {
+       "when": "06.09.2026 21:50",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "בכל התצוגה של מנהל תזרים, לא רק בסופר אדמין: הסטטוסים מ-company.status."
       }
      ],
      "ask": null
