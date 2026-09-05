@@ -8,7 +8,7 @@
    ===================================================================== */
 export default function audit(opts = {}) {
   const T = {
-    font: 'Heebo',
+    font: 'Rubik',
     fs: [28, 22, 19, 17, 14, 13, 12.5, 12, 11.5, 27],            // סקאלה סגורה (+27 למספר חי)
     colors: { navy: '#0c4068', navy2: '#104a76', coral: '#e4826e', coral2: '#d96a55', danger: '#c43d30', dangerText: '#dc4436',
       sky: '#39abe2', link: '#14618f', ok: '#13895b', okBg: '#e7f7ef', warn: '#c98404', warnBg: '#fff6e6', infoBg: '#e8f4fb',
@@ -32,7 +32,7 @@ export default function audit(opts = {}) {
 
   /* 1. גופן */
   const bodyFont = getComputedStyle(document.body).fontFamily;
-  if (!/heebo/i.test(bodyFont)) add('font', document.body, bodyFont, T.font, 'גופן ברירת המחדל');
+  if (!/rubik/i.test(bodyFont)) add('font', document.body, bodyFont, T.font, 'גופן ברירת המחדל');
 
   /* 2. גדלי גופן מחוץ לסקאלה (על אלמנטים עם טקסט ישיר) */
   const fsSeen = {};
