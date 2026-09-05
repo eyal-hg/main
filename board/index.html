@@ -265,6 +265,9 @@ function renderCenter(){
   var h='<div class="band"><div><div class="eyebrow">כל המסכים · עודכן '+esc(B.updated||'')+'</div><h1>מרכז</h1><div class="meta"><span>פריט שלא שייך למסך נכנס ל"כללי".</span></div></div>'
    +'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+openAll.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div></div>';
   h+='<div style="margin:0 0 16px"><button class="btn pri" id="qAdd">＋ פריט חדש</button></div>';
+  /* מיזוגים ממתינים — תמיד בראש הלוח, עד שעידו ממזג ומסמן */
+  var merges=openAll.filter(function(x){return /^למזג PR/.test(x.it.title)});
+  if(merges.length)h+='<h2 class="sec pinhdr"><span>מיזוגים ממתינים</span> <span class="qn">'+merges.length+'</span></h2>'+merges.map(function(x){var f=x.it;return '<div class="row" data-go="#screen='+x.s.key+'&tab='+f.kind+'"><span class="num">'+(f.n||'')+'</span><span class="t">'+esc(f.title)+'<small>'+esc(x.s.name)+' · על '+esc(f.dev||'—')+' · '+esc(String(f.what||'').slice(0,110))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<span></span><span></span></div>'}).join('');
   /* אנשים */
   h+='<h2 class="sec">לפי אדם</h2><div class="grid">'+B.devs.map(function(d){var c=counts(all.filter(function(x){return x.it.dev===d}).map(function(x){return x.it}));var tot=c.spec+c.todo+c.fix+c.check;
     return '<a class="card'+(tot?'':' closed')+'" href="#dev='+encodeURIComponent(d)+'"><b>'+esc(d)+'</b>'+(tot?'<div class="n"><span>אפיון <em>'+c.spec+'</em></span><span>לפתח <em>'+c.todo+'</em></span><span>תיקונים <em>'+c.fix+'</em></span><span>בדיקות <em>'+c.check+'</em></span></div>':'<div class="ok">✓ אין פריטים פתוחים</div>')+'</a>'}).join('')+'</div>';
