@@ -205,7 +205,7 @@ var KINDS=[['spec','אפיון','מה שעוד לא אופיין. פריט = מ�
 var KN={spec:'אפיון',todo:'לפתח',fix:'תיקון',check:'בדיקה'};
 var DONE_LABEL={spec:'אופיין',todo:'נבנה',fix:'תוקן',check:'נבדק'};
 var GENERAL={key:'general',name:'כללי (לא קשור למסך)',task:'',asana:'',proto:'',items:[]};
-var FILE=window.HK_BOARD||{version:0,devs:['אייל','אופיר','עומרי','עידו'],screens:[]};
+var FILE=window.HK_BOARD||{version:0,devs:['אייל','עידו','עומרי'],screens:[]};
 var B=FILE, DRAFT=false;
 try{var d=JSON.parse(localStorage.getItem('hkBoardDraft')||'null'); if(d&&d.version>FILE.version){B=d;DRAFT=true;}}catch(e){}
 if(!B.screens.some(function(s){return s.key==='general'})) B.screens.push(GENERAL);
@@ -216,7 +216,7 @@ function numberItems(bd){bd.seq=Number(bd.seq)||0;bd.screens.forEach(function(sc
 function renumber(){B.seq=0;B.screens.forEach(function(sc){sc.items.forEach(function(it){it.n=++B.seq})});markDirty();toast('המספור התחיל מחדש מ-1')}
 numberItems(B);
 function supportNew(){return allItems().filter(function(x){return x.it.src==='support'&&open_(x.it)&&!x.it.dev})}
-B.devs=B.devs&&B.devs.length?B.devs:['אייל','אופיר','עומרי','עידו'];
+B.devs=B.devs&&B.devs.length?B.devs:['אייל','עידו','עומרי'];
 var ONLINE=/^https?:/.test(location.protocol)&&!/localhost|127\.0\.0\.1/.test(location.hostname);
 var EDIT=false;
 var app=document.getElementById('app');
