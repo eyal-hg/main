@@ -41,7 +41,7 @@
   // Esc סוגר כל חלונית פתוחה
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
-    [['cfOv','show'],['ctOv','show'],['ctAllOv','show'],['mxOv','show'],['acOv','show'],['msOv','show'],['pkOv','show'],['pk','show'],['crOv','show'],['drawerOv','show'],['drawer','show'],['inboxOv','show'],['inbox','show'],['swDD','show'],['prodMenu','show'],['statMenu','show']]
+    [['cfOv','show'],['ctOv','show'],['ctAllOv','show'],['cdAllOv','show'],['mxOv','show'],['acOv','show'],['msOv','show'],['pkOv','show'],['pk','show'],['crOv','show'],['drawerOv','show'],['drawer','show'],['inboxOv','show'],['inbox','show'],['swDD','show'],['prodMenu','show'],['statMenu','show']]
       .forEach(([id,cls])=>{const el=document.getElementById(id);if(el)el.classList.remove(cls);});
   });
 

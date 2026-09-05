@@ -92,9 +92,12 @@
 
   /* ---- client documents ---- */
   let CLIENT_DOCS=[
-    {name:'חשבונית ספק — סונול 06.pdf', when:'30.06', st:'done'},
-    {name:'דוח סליקה יוני.xlsx',         when:'28.06', st:'done'},
+    {name:'חשבונית ספק — סונול 06.pdf', when:'30.06', st:'done', who:'אני'},
+    {name:'דוח סליקה יוני.xlsx',         when:'28.06', st:'done', who:'אני'},
+    {name:'דף בנק — מאי.pdf',            when:'02.06', st:'done', who:'אני'},
+    {name:'חשבונית ספק — פז 05.pdf',     when:'28.05', st:'done', who:'רונית (הנה״ח)'},
   ];
+  const HERO_DOCS_MAX=3;   /* הפס מראה שלושה מסמכים אחרונים; השאר ב"כל המסמכים" */
   /* כרטיסי שירות — ווидג'טים קבועים: שורה נמוכה (רבע/רבע/חצי) ושורה גבוהה (חצי/חצי).
      מסך חברה אחיד: היועץ רואה בדיוק את מה שהלקוח רואה; המתפעל במצב עבודה — בלעדיהם. */
   /* הפס של בעל העסק — פגישה אחת, שורה אחת. הוא מחליף את וידג'ט
@@ -146,7 +149,7 @@
     return list.slice(0,HERO_MAX).map(k=>ctRowHTML(k)).join('');   /* בלי map(ctRowHTML) — האינדקס היה נכנס כ-acts */
   }
   function heroFilesHTML(){
-    return CLIENT_DOCS.map(f=>{
+    return CLIENT_DOCS.slice(0,HERO_DOCS_MAX).map(f=>{
       const [c,l]=CF_ST[f.st]||CF_ST.ai;
       return `<div class="cf-row"><span class="fn">${f.name}</span>
         <span class="fs ${c}">${l}</span><span class="w2">${f.when}</span></div>`;}).join('');
@@ -164,6 +167,46 @@
       d.textContent='ניהול המשימות ('+CLIENT_TASKS.length+')';}
     const ov=document.getElementById('ctAllOv');
     if(ov&&ov.classList.contains('show')) renderCtAll();
+    const da=document.getElementById('heroDocsAll');
+    if(da){da.style.display=CLIENT_DOCS.length?'':'none';
+      da.textContent='כל המסמכים ('+CLIENT_DOCS.length+')';}
+    const dov=document.getElementById('cdAllOv');
+    if(dov&&dov.classList.contains('show')) renderCdAll();
+  }
+  /* ===== פופאפ "כל המסמכים" =====
+     אותו דפוס כמו המשימות: הפס מראה שלושה, כאן הרשימה המלאה עם הניהול.
+     מחיקה רק למסמך שעוד לא הוזן — מסמך שהוזן הוא תיעוד ונעול; מי שטעה פונה למנהל התזרים.
+     מחיקה במילים ועם ביטול, לא ✕ זעיר בריחוף. */
+  function cdRowHTML(f){
+    const i=CLIENT_DOCS.indexOf(f), [c,l]=CF_ST[f.st]||CF_ST.ai;
+    return `<div class="ct-row">
+        <span class="ct-st cd-${c}">${l}</span>
+        <span class="t2">${f.name}</span>
+        <span class="cd-who">${f.who||'אני'}</span>
+        <span class="w2">${f.when}</span>
+        <span class="ct-acts">
+          <button class="ct-act" onclick="toast('הקובץ נפתח בחלון חדש')">פתיחה</button>
+          ${f.st!=='done'?`<button class="ct-act del" onclick="cdDel(${i})">מחיקה</button>`:''}
+        </span>
+        ${f.st==='done'?'<span class="ct-lock">הוזן — נעול</span>':''}
+      </div>`;
+  }
+  function renderCdAll(){
+    const el=document.getElementById('cdAllList'); if(!el) return;
+    const wip=CLIENT_DOCS.filter(f=>f.st!=='done'), done=CLIENT_DOCS.filter(f=>f.st==='done');
+    const sec=(ttl,arr)=>arr.length?`<div class="cta-sec">${ttl} · ${arr.length}</div>`+arr.map(cdRowHTML).join(''):'';
+    el.innerHTML=(sec('בטיפול',wip)+sec('הוזנו',done))||
+      '<div class="ct-row"><span class="t2">עדיין לא הועלו מסמכים</span></div>';
+    const n=document.getElementById('cdAllN');
+    if(n) n.textContent=(wip.length?wip.length+' בטיפול מתוך '+CLIENT_DOCS.length:'הכול הוזן')
+      +' · מסמך שעלה בטעות אפשר למחוק כל עוד לא הוזן';
+  }
+  function openCdAll(){renderCdAll();document.getElementById('cdAllOv').classList.add('show');}
+  function closeCdAll(){document.getElementById('cdAllOv').classList.remove('show');}
+  function cdDel(i){
+    const f=CLIENT_DOCS[i]; if(!f||f.st==='done') return;
+    CLIENT_DOCS.splice(i,1); renderCxFiles(); refreshHero();
+    toastUndo('המסמך נמחק, גם מהתקשורת',()=>{CLIENT_DOCS.splice(i,0,f);renderCxFiles();refreshHero();});
   }
   /* ===== פופאפ "כל המשימות" =====
      הפס מראה שלוש; מהרביעית והלאה הן היו נעלמות בגלילה פנימית בלי סימן.
@@ -223,6 +266,7 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
             <b>בחירת קובץ</b><span>או גררו לכאן</span></div>
           <div class="chero-files" id="heroFiles">${heroFilesHTML()}</div>
+          <button class="chero-all" id="heroDocsAll" onclick="openCdAll()">כל המסמכים (${CLIENT_DOCS.length})</button>
         </div>
       </div>
     </div>`;
@@ -318,7 +362,7 @@
       </div>`).join('');
   }
   function cxAdd(name){
-    const f={name, when:'עכשיו', st:'ai'};
+    const f={name, when:'עכשיו', st:'ai', who:'אני'};
     CLIENT_DOCS.unshift(f); renderCxFiles(); refreshHero();
     toast('הקובץ הועלה — נשלח לקיטלוג AI');
     setTimeout(()=>{f.st='ops';renderCxFiles();refreshHero();},2600);   // סימולציה: AI סיים → עבר למתפעל
