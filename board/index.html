@@ -471,6 +471,14 @@ function loadLatest(cb){
    }).catch(function(){cb()});
 }
 loadLatest(render);
+/* רענון אוטומטי כל דקה: מביא מגיט, ומצייר מחדש רק אם יש גרסה חדשה יותר.
+   לא בזמן עריכה ולא כשפופאפ פתוח — כדי לא למחוק למישהו טקסט באמצע. */
+setInterval(function(){
+  if(EDIT||DRAFT)return;
+  if(document.querySelector('.pop.on'))return;
+  var before=B.version||0;
+  loadLatest(function(){ if((B.version||0)>before){render();toast('הלוח התעדכן')} });
+},60000);
 })();
 </script>
 </body>
