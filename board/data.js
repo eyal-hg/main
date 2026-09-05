@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 05.09.2026, 16:52 */
+/* לוח המשימות — נשמר מהמסך 05.09.2026, 16:55 */
 window.HK_BOARD = {
- "version": 23,
+ "version": 24,
  "seq": 84,
- "updated": "05.09.2026, 16:52",
+ "updated": "05.09.2026, 16:55",
  "emails": [
   {
    "who": "אייל",
@@ -80,6 +80,35 @@ window.HK_BOARD = {
      ],
      "src": "support",
      "rep": "אייל",
+     "ask": null
+    },
+    {
+     "id": "bug-2",
+     "kind": "fix",
+     "title": "ניסיון 1000",
+     "what": "גדכדג",
+     "need": "",
+     "sev": "בינוני",
+     "dev": "",
+     "who": "אייל",
+     "status": "open",
+     "imgA": "img/bugs/bug-2.jpg",
+     "capA": "צילום מהתמיכה · אייל",
+     "imgB": "",
+     "capB": "",
+     "created": "05.09.2026, 16:55",
+     "updated": "05.09.2026, 16:55",
+     "log": [
+      {
+       "when": "05.09.2026, 16:55",
+       "who": "אייל",
+       "ev": "reported",
+       "txt": "מסך: התיק שלי"
+      }
+     ],
+     "src": "support",
+     "rep": "אייל",
+     "hint": "portfolio",
      "ask": null
     }
    ]
