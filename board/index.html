@@ -140,7 +140,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .toast.on{opacity:1}
 @media (max-width:760px){.ib{grid-template-columns:1fr}.col+.col{border-inline-start:0;border-top:1px solid var(--line)}.band{grid-template-columns:1fr}.row{grid-template-columns:26px 1fr;}.row>*:nth-child(n+3){display:none}}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
-.howto{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px 10px;margin:14px 0 6px;font-size:13px;color:var(--ink2)}.howto>b{display:block;color:var(--navy);font-size:13.5px;margin-bottom:4px}.howto ol{margin:0;padding-inline-start:18px}.howto li{margin:3px 0;line-height:1.5}.howto li b{color:var(--ink)}.howto code{font-size:12px;background:#F0F4F8;border-radius:4px;padding:0 4px}
+.howto{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 18px;margin:14px 0 6px;font-size:13px;color:var(--ink2)}.howto>summary{cursor:pointer;color:var(--navy);font-size:13.5px;font-weight:700;list-style:none;display:flex;align-items:center;gap:8px}.howto>summary::-webkit-details-marker{display:none}.howto>summary:before{content:'›';display:inline-block;transition:.15s;color:var(--ink3)}.howto[open]>summary:before{transform:rotate(90deg)}.howto[open]>summary{margin-bottom:6px}.howto ol{margin:0;padding-inline-start:18px}.howto li{margin:3px 0;line-height:1.5}.howto li b{color:var(--ink)}.howto code{font-size:12px;background:#F0F4F8;border-radius:4px;padding:0 4px}
 .fail{border:1px solid #E9B4AB;background:#fff;color:#C43D30;font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer}.fail:hover{background:#FDECEB}
 .btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
 .askb{border:1px solid var(--line2);background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.askb:hover{border-color:var(--sky);color:#14618F}.askb.on{border-color:#c98404;color:#c98404}
@@ -285,16 +285,17 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();d
 function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
 var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
+var HOWTO_OPEN=false; try{HOWTO_OPEN=localStorage.getItem('hkHowto')==='1'}catch(e){}
 function renderDev(d){
   var mine=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)});
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
    +(mine.length?'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+mine.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>':'<div class="closedmsg">✓ אין פריטים פתוחים</div>')+'</div>';
-  if(mine.length&&d!=='אייל') h+='<div class="howto"><b>איך עובדים</b><ol>'
+  if(mine.length&&d!=='אייל') h+='<details class="howto"'+(HOWTO_OPEN?' open':'')+'><summary>איך עובדים</summary><ol>'
    +'<li><b>מסך אחד בכל פעם.</b> מורידים MD ⤓ של המסך ומוסרים ל-AI. הפרוטוטיפ כבר אצלך (הריפו של dev.hak.co.il) והוא האמת. ה-AI קורא קודם את <code>docs/AI-GUIDE.md</code> — מה אייל רוצה, מה אסור, והכרעות שכבר נפלו. לא נוגעים במה שלא ברשימה.</li>'
    +'<li><b>בודקים לבד לפני שמסמנים.</b> בסטייג׳ינג, עם משתמש CUSTOMER אמיתי של גבדור, לא בתצוגה מקדימה של אדמין. עוברים על "צריך להיות" סעיף-סעיף.</li>'
    +'<li><b>מסמנים "נבנה / תוקן"</b> בקצה השורה. הפריט עובר לבדיקות אצל אייל ונשמר לגיט מיד. עד 3 פריטים לסבב, לא הכל ביחד.</li>'
    +'<li><b>עבר: נסגר. נכשל: חוזר לכאן</b> עם מה נכשל. פריט שחזר קודם לכל דבר חדש.</li>'
-   +'<li><b>לא ברור, תקוע, או לא מסכים?</b> Reject על השורה, עם מה הבעיה. אייל עונה בפריט עצמו, לא בוואטסאפ.</li></ol></div>';
+   +'<li><b>לא ברור, תקוע, או לא מסכים?</b> Reject על השורה, עם מה הבעיה. אייל עונה בפריט עצמו, לא בוואטסאפ.</li></ol></details>';
   if(d==='אייל'){var qs=allItems().filter(function(x){return x.it.ask&&open_(x.it)});
     if(qs.length)h+='<h2 class="sec">Reject ממתכנתים <span class="qn">'+qs.length+'</span></h2>'+qs.map(function(x){var f=x.it;return '<div class="qrow"><div><b>'+esc(f.ask.who)+'</b> על <a href="#screen='+x.s.key+'&tab='+f.kind+'">'+esc(f.title)+'</a> <span class="w">'+esc(f.ask.when)+'</span><p>'+esc(f.ask.txt)+'</p></div><button class="btn sm pri" data-act="answer" data-screen="'+x.s.key+'" data-id="'+f.id+'">תשובה</button></div>'}).join('');}
   var byScreen={};mine.forEach(function(x){(byScreen[x.s.key]=byScreen[x.s.key]||[]).push(x)});
@@ -309,6 +310,7 @@ function renderDev(d){
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
+  var ht=app.querySelector('details.howto'); if(ht)ht.ontoggle=function(){HOWTO_OPEN=ht.open;try{localStorage.setItem('hkHowto',ht.open?'1':'0')}catch(e){}};
 }
 /* ---------- הגיע מפיתוח ----------
    כל מה שמתכנת סימן "נבנה/תוקן" ועוד לא נבדק, לפי סדר ההגעה, מקובץ ליום. זה מה שאייל (וה-AI שלו) בודקים קודם. */
