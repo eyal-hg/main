@@ -141,8 +141,11 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 @media (max-width:760px){.ib{grid-template-columns:1fr}.col+.col{border-inline-start:0;border-top:1px solid var(--line)}.band{grid-template-columns:1fr}.row{grid-template-columns:26px 1fr;}.row>*:nth-child(n+3){display:none}}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
 .howto{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px 10px;margin:14px 0 6px;font-size:13px;color:var(--ink2)}.howto>b{display:block;color:var(--navy);font-size:13.5px;margin-bottom:4px}.howto ol{margin:0;padding-inline-start:18px}.howto li{margin:3px 0;line-height:1.5}.howto li b{color:var(--ink)}.howto code{font-size:12px;background:#F0F4F8;border-radius:4px;padding:0 4px}
+.fail{border:1px solid #E9B4AB;background:#fff;color:#C43D30;font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer}.fail:hover{background:#FDECEB}
+.btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
+.log{border-top:1px dashed var(--line);padding:8px 16px;font-size:12px;color:var(--ink2)}.log>div{padding:2px 0}.log span{color:var(--ink3)}.log .failed b{color:#C43D30}.log .built b,.log .passed b{color:#0B6E4B}
 .sec{display:flex;align-items:center;gap:10px}
-.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
+.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
 </style>
 </head>
 <body>
@@ -165,6 +168,9 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
   <label class="fl"><span id="aWhatL">מה חסר</span><textarea id="aWhat" rows="3"></textarea></label>
   <label class="fl" id="aNeedW"><span id="aNeedL">מה צריך להיות</span><textarea id="aNeed" rows="3"></textarea></label>
   <div class="f"><button class="btn pri" id="aOk">שמירה לגיט</button><button class="btn" id="aX">ביטול</button></div></div></div>
+<div class="pop" id="npop"><div class="md"><h3 id="nTitle">הערה</h3><p id="nSub"></p>
+  <label class="fl"><textarea id="nTxt" rows="4"></textarea></label>
+  <div class="f"><button class="btn pri" id="nOk">אישור</button><button class="btn" id="nX">ביטול</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script src="../js/gate.js" defer></script>
 <script src="data.js"></script>
@@ -233,7 +239,7 @@ function wireSel(id,fn){var el=document.getElementById(id);if(!el)return;el.quer
   el.querySelectorAll('.dd button').forEach(function(b){b.onclick=function(e){e.stopPropagation();el.dataset.v=b.dataset.v;el.querySelector(':scope>button').textContent=b.textContent+' ▾';el.querySelectorAll('.dd button').forEach(function(x){x.classList.toggle('on',x===b)});el.classList.remove('open');fn(b.dataset.v)}})}
 function closeDD(){document.querySelectorAll('.sel.open,.dev.open').forEach(function(e){e.classList.remove('open')})}
 document.addEventListener('click',closeDD);
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();document.getElementById('pop').classList.remove('on')}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();document.getElementById('pop').classList.remove('on');document.getElementById('npop').classList.remove('on')}});
 function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
 var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
@@ -242,16 +248,16 @@ function renderDev(d){
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
    +(mine.length?'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+mine.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>':'<div class="closedmsg">✓ אין פריטים פתוחים</div>')+'</div>';
   if(mine.length&&d!=='אייל') h+='<div class="howto"><b>איך עובדים</b><ol>'
-   +'<li><b>מסך אחד בכל פעם.</b> מורידים MD ⤓ של המסך ומוסרים ל-AI יחד עם הפרוטוטיפ (<code>index.html</code>). הפרוטוטיפ הוא האמת: מבנה, טקסטים, מרווחים. לא נוגעים במה שלא ברשימה.</li>'
+   +'<li><b>מסך אחד בכל פעם.</b> מורידים MD ⤓ של המסך ומוסרים ל-AI. הפרוטוטיפ כבר אצלך (הריפו של dev.hak.co.il) והוא האמת: מבנה, טקסטים, מרווחים. לא נוגעים במה שלא ברשימה.</li>'
    +'<li><b>בודקים לבד לפני שמסמנים.</b> בסטייג׳ינג, עם משתמש CUSTOMER אמיתי של גבדור, לא בתצוגה מקדימה של אדמין. עוברים על "צריך להיות" סעיף-סעיף.</li>'
    +'<li><b>מסמנים "נבנה / תוקן"</b> בקצה השורה. הפריט עובר לבדיקות אצל אייל ונשמר לגיט מיד. עד 3 פריטים לסבב, לא הכל ביחד.</li>'
    +'<li><b>עבר: נסגר. נכשל: חוזר לכאן</b> עם מה נכשל. פריט שחזר קודם לכל דבר חדש.</li></ol></div>';
   var byScreen={};mine.forEach(function(x){(byScreen[x.s.key]=byScreen[x.s.key]||[]).push(x)});
   Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){var f=x.it, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
-      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(f.title)+'<small>'+esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label><span class="car">›</span></div>'
+      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(f.title)+'<small>'+esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+'<span class="car">›</span></div>'
        +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
        +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
-       +'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
+       +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(){var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
@@ -277,11 +283,12 @@ function renderScreen(key,tab){
      +(tab==='fix'?'<span class="sev '+sevCls(f.sev)+'" data-act="sev">'+esc(f.sev||'בינוני')+'</span>':'')
      +'<span class="dev"><button type="button" data-act="dev">'+esc(f.dev||'—')+'</button><div class="dd">'+B.devs.map(function(d){return '<button type="button" data-dev="'+esc(d)+'"'+(d===f.dev?' class="on"':'')+'>'+esc(d)+'</button>'}).join('')+'</div></span>'
      +'<label class="st"><input type="checkbox" data-act="done"'+(f.status==='done'?' checked':'')+'> '+DONE_LABEL[tab]+'</label>'
+     +(tab==='check'&&f.status!=='done'?'<button class="fail" data-act="fail">נכשל</button>':'')
      +'<button class="del editonly" data-act="del">הסרה</button></div>'
      +'<div class="ib"><div class="col"><h3>'+hA+'</h3><p class="ed" data-k="what">'+esc(f.what)+'</p>'
      +(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption class="ed" data-k="capA">'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
      +(one?'':'<div class="col"><h3>'+hB+'</h3><p class="ed" data-k="need">'+esc(f.need)+'</p>'
-     +(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption class="ed" data-k="capB">'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div></section>';
+     +(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption class="ed" data-k="capB">'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'+logHTML(f)+'</section>';
   }).join('');
   app.innerHTML=h;
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
@@ -301,24 +308,52 @@ app.addEventListener('click',function(e){
   if(t.dataset.act==='sev'&&EDIT){collect(s);f.sev=f.sev==='חוסם'?'גבוה':f.sev==='גבוה'?'בינוני':'חוסם';f.updated=today();markDirty();renderScreen(q.screen,TAB);}
   if(t.dataset.act==='del'){collect(s);s.items=s.items.filter(function(x){return x!==f});markDirty();renderScreen(q.screen,TAB);}
 });
-/* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. משותף לדף המסך ולדף המתכנת. */
-function advance(f,checked){
+/* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. משותף לדף המסך ולדף המתכנת.
+   בדרך לבדיקות נשמר "back" — המצב המקורי — כדי ש"נכשל" יחזיר את הפריט למי שבנה, עם החומרה והדרישה שהיו. */
+function logAdd(f,ev,who,txt){(f.log=f.log||[]).push({when:today(),who:who||'',ev:ev,txt:txt||''})}
+function advance(f,checked,note){
   if(!checked){f.status='open';f.updated=today();markDirty();return}
   var from=f.kind;
-  if(from==='spec'){f.kind='todo';f.what=f.need||f.what;f.need='';toast('עבר ל"נשאר לפתח"')}
-  else if(from==='todo'||from==='fix'){var by=f.dev;f.kind='check';f.what='לבדוק: '+(f.need||f.what)+(by?' (נבנה על ידי '+by+')':'');f.need='';f.sev='';f.dev='אייל';toast('עבר ל"בדיקות" — על אייל')}
-  else{f.status='done';toast('נבדק ✓')}
+  if(from==='spec'){f.kind='todo';f.what=f.need||f.what;f.need='';logAdd(f,'spec',f.dev,note);toast('עבר ל"נשאר לפתח"')}
+  else if(from==='todo'||from==='fix'){var by=f.dev;f.back={kind:from,dev:f.dev,sev:f.sev,what:f.what,need:f.need};
+    f.kind='check';f.what='לבדוק: '+(f.need||f.what)+(by?' (נבנה על ידי '+by+')':'');f.need='';f.sev='';f.dev='אייל';logAdd(f,'built',by,note);toast('עבר ל"בדיקות" — על אייל')}
+  else{f.status='done';logAdd(f,'passed','אייל',note);toast('נבדק ✓')}
   f.updated=today();markDirty();
 }
+function fail(f,note){
+  var b=f.back||{};
+  f.kind='fix';f.dev=b.dev||f.dev||'עידו';f.sev=b.sev||'גבוה';f.need=b.need||f.what.replace(/^לבדוק: /,'');
+  f.what='נכשל בבדיקה '+today()+': '+note;f.status='open';logAdd(f,'failed','אייל',note);
+  f.updated=today();markDirty();toast('חזר לתיקונים — על '+f.dev);
+}
+/* פופאפ הערה: ב"נבנה/תוקן" רשות (מה עשיתי ואיך לבדוק), ב"נכשל" חובה (מה נכשל) */
+function askNote(title,sub,required,cb){
+  var p=document.getElementById('npop'),t=document.getElementById('nTxt');
+  document.getElementById('nTitle').textContent=title;document.getElementById('nSub').textContent=sub;t.value='';t.placeholder=required?'מה בדיוק לא עבד, ואיפה':'לא חובה';
+  p.classList.add('on');setTimeout(function(){t.focus()},50);
+  var ok=document.getElementById('nOk');ok.textContent=required?'החזרה לתיקונים':'אישור';ok.className='btn '+(required?'danger':'pri');
+  document.getElementById('nX').onclick=function(){p.classList.remove('on')};
+  p.onclick=function(e){if(e.target===p)p.classList.remove('on')};
+  ok.onclick=function(){var v=t.value.trim();if(required&&!v){t.focus();return}p.classList.remove('on');cb(v)};
+}
+function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else renderScreen(q.screen,TAB)}
+function findItem(t){var q=route();if(q.dev){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
-  var q=route();
-  if(q.dev){var sx=scr(t.dataset.screen), fx=byId(sx,t.dataset.id); advance(fx,t.checked); if(!EDIT)save(); renderDev(q.dev); return}
-  var s=scr(q.screen); var sec=t.closest('.item'); var f=byId(s,sec.dataset.id); collect(s);
-  advance(f,t.checked);
-  if(!t.checked){renderScreen(q.screen,TAB);return}
-  if(!EDIT)save(); else renderScreen(q.screen,TAB);
+  var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
+  if(!t.checked){advance(f,false);renderNow(q);return}
+  if(f.kind==='check'){advance(f,true);afterChange(q);return}
+  askNote(DONE_LABEL[f.kind]+' — '+f.title,'מה עשית ואיך לבדוק, בשורה. אייל יראה את זה בפריט הבדיקה.',false,function(v){advance(f,true,v);afterChange(q)});
+  t.checked=false;
 });
+function renderNow(q){if(q.dev)renderDev(q.dev);else renderScreen(q.screen,TAB)}
+app.addEventListener('click',function(e){
+  var t=e.target.closest('[data-act="fail"]'); if(!t)return; e.stopPropagation();
+  var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
+  askNote('נכשל — '+f.title,'מה לא עבד. הפריט חוזר לתיקונים אצל '+((f.back&&f.back.dev)||f.dev||'המתכנת')+'.',true,function(v){fail(f,v);afterChange(q)});
+});
+function logHTML(f){if(!f.log||!f.log.length)return '';var L={built:'נבנה',failed:'נכשל',passed:'נבדק',spec:'אופיין'};
+  return '<div class="log">'+f.log.map(function(l){return '<div class="'+esc(l.ev)+'"><span>'+esc(l.when)+' · '+esc(l.who)+' · <b>'+(L[l.ev]||l.ev)+'</b></span>'+(l.txt?' '+esc(l.txt):'')+'</div>'}).join('')+'</div>'}
 /* ---------- שמירה ---------- */
 function markDirty(){B.version=(FILE.version||0)+1;B.updated=today();DRAFT=true;try{localStorage.setItem('hkBoardDraft',JSON.stringify(B))}catch(e){}renderNav(route())}
 function fileText(){return '/* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */\nwindow.HK_BOARD = '+JSON.stringify(B,null,1)+';\n'}
@@ -371,6 +406,7 @@ function md(sk,dv){
     if(it.need)lines.push('\n**'+(it.kind==='spec'?'מה צריך להחליט':'צריך להיות')+':** '+it.need);
     if(it.imgA)lines.push('\nצילום (סטייג׳ינג): board/'+it.imgA+(it.capA?' — '+it.capA:''));
     if(it.imgB)lines.push('\nצילום (פרוטוטיפ): board/'+it.imgB+(it.capB?' — '+it.capB:''));
+    if(it.log&&it.log.length)lines.push('\nהיסטוריה: '+it.log.map(function(l){return l.when+' '+l.who+' '+({built:'נבנה',failed:'נכשל',passed:'נבדק',spec:'אופיין'}[l.ev]||l.ev)+(l.txt?': '+l.txt:'')}).join(' | '));
     lines.push('');}
   /* מסך אחד: כותרת + קישורים + הפריטים לפי טאב. lvl = רמת הכותרת */
   function screen(s,items,lvl){

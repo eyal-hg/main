@@ -19,7 +19,9 @@ function clean(board) {
   const item = it => ({ id: S(it.id).slice(0, 40), kind: ["spec","todo","fix","check"].includes(it.kind) ? it.kind : "fix",
     title: S(it.title).slice(0, 300), what: S(it.what), need: S(it.need), sev: S(it.sev).slice(0, 20), dev: S(it.dev).slice(0, 40),
     who: S(it.who).slice(0, 60), status: it.status === "done" ? "done" : "open", imgA: S(it.imgA).slice(0, 200), capA: S(it.capA).slice(0, 300),
-    imgB: S(it.imgB).slice(0, 200), capB: S(it.capB).slice(0, 300), created: S(it.created).slice(0, 30), updated: S(it.updated).slice(0, 30) });
+    imgB: S(it.imgB).slice(0, 200), capB: S(it.capB).slice(0, 300), created: S(it.created).slice(0, 30), updated: S(it.updated).slice(0, 30),
+    log: (Array.isArray(it.log) ? it.log : []).slice(0, 50).map(l => ({ when: S(l.when).slice(0, 30), who: S(l.who).slice(0, 40), ev: S(l.ev).slice(0, 20), txt: S(l.txt).slice(0, 1000) })),
+    back: it.back && typeof it.back === "object" ? { kind: S(it.back.kind).slice(0, 10), dev: S(it.back.dev).slice(0, 40), sev: S(it.back.sev).slice(0, 20), what: S(it.back.what), need: S(it.back.need) } : undefined });
   return { version: Number(board.version) || 1, updated: S(board.updated).slice(0, 40), devs: (Array.isArray(board.devs) ? board.devs : []).map(d => S(d).slice(0, 40)).slice(0, 10),
     screens: screens.map(sc => ({ key: S(sc.key).slice(0, 40), name: S(sc.name).slice(0, 120), task: S(sc.task).slice(0, 200), asana: S(sc.asana).slice(0, 300),
       proto: S(sc.proto).slice(0, 200), items: (Array.isArray(sc.items) ? sc.items : []).slice(0, 300).map(item) })) };
