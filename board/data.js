@@ -1,6 +1,6 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 14,
+ "version": 15,
  "updated": "05.09.2026, 10:18",
  "devs": [
   "אייל",
@@ -1720,6 +1720,36 @@ window.HK_BOARD = {
      }
     }
    ]
+  }
+ ],
+ "emails": [
+  {
+   "who": "אייל",
+   "email": "eyal@ifact.co.il"
+  },
+  {
+   "who": "אייל",
+   "email": "info@hak.co.il"
+  },
+  {
+   "who": "אופיר",
+   "email": "ofir@hak.co.il"
+  },
+  {
+   "who": "אופיר",
+   "email": "ohabas@gmail.com"
+  },
+  {
+   "who": "טל",
+   "email": "tal@hak.co.il"
+  },
+  {
+   "who": "נועם",
+   "email": "noam@hak.co.il"
+  },
+  {
+   "who": "עידו",
+   "email": "idoaizenshtein@gmail.com"
   }
  ]
 };
