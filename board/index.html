@@ -140,7 +140,8 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .toast.on{opacity:1}
 @media (max-width:760px){.ib{grid-template-columns:1fr}.col+.col{border-inline-start:0;border-top:1px solid var(--line)}.band{grid-template-columns:1fr}.row{grid-template-columns:26px 1fr;}.row>*:nth-child(n+3){display:none}}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
-.sec{display:flex;align-items:center;gap:10px}.secmd{margin-inline-start:auto;font-weight:600}
+.sec{display:flex;align-items:center;gap:10px}
+.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
 </style>
 </head>
 <body>
@@ -234,14 +235,19 @@ document.addEventListener('click',closeDD);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();document.getElementById('pop').classList.remove('on')}});
 function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
+var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
 function renderDev(d){
   var mine=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)});
-  var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על פריט פותחת את המסך שלו. MD ⤓ למעלה מוריד את הרשימה הזאת כקובץ ל-AI.</span></div></div>'
+  var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
    +(mine.length?'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+mine.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>':'<div class="closedmsg">✓ אין פריטים פתוחים</div>')+'</div>';
   var byScreen={};mine.forEach(function(x){(byScreen[x.s.key]=byScreen[x.s.key]||[]).push(x)});
-  Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){return '<div class="row" data-go="#screen='+k+'&tab='+x.it.kind+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(x.it.title)+'<small>'+esc(String((x.it.kind==='check'?x.it.what:x.it.need)||x.it.what).slice(0,140))+'</small></span><span class="kind">'+KN[x.it.kind]+'</span>'+(x.it.sev?'<span class="sev '+sevCls(x.it.sev)+'">'+esc(x.it.sev)+'</span>':'<span></span>')+'<span></span><span></span></div>'}).join('')});
+  Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){var f=x.it, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
+      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(f.title)+'<small>'+esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label><span class="car">›</span></div>'
+       +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
+       +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
+       +'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
-  app.innerHTML=h; app.querySelectorAll('.row').forEach(function(r){r.onclick=function(){go(r.dataset.go)}});
+  app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(){var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
 }
 /* ---------- דף מסך ---------- */
@@ -289,16 +295,22 @@ app.addEventListener('click',function(e){
   if(t.dataset.act==='sev'&&EDIT){collect(s);f.sev=f.sev==='חוסם'?'גבוה':f.sev==='גבוה'?'בינוני':'חוסם';f.updated=today();markDirty();renderScreen(q.screen,TAB);}
   if(t.dataset.act==='del'){collect(s);s.items=s.items.filter(function(x){return x!==f});markDirty();renderScreen(q.screen,TAB);}
 });
-app.addEventListener('change',function(e){
-  var t=e.target; if(t.dataset.act!=='done')return;
-  var q=route(); var s=scr(q.screen); var sec=t.closest('.item'); var f=byId(s,sec.dataset.id); collect(s);
-  if(!t.checked){f.status='open';f.updated=today();markDirty();renderScreen(q.screen,TAB);return}
-  /* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. */
+/* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. משותף לדף המסך ולדף המתכנת. */
+function advance(f,checked){
+  if(!checked){f.status='open';f.updated=today();markDirty();return}
   var from=f.kind;
   if(from==='spec'){f.kind='todo';f.what=f.need||f.what;f.need='';toast('עבר ל"נשאר לפתח"')}
   else if(from==='todo'||from==='fix'){var by=f.dev;f.kind='check';f.what='לבדוק: '+(f.need||f.what)+(by?' (נבנה על ידי '+by+')':'');f.need='';f.sev='';f.dev='אייל';toast('עבר ל"בדיקות" — על אייל')}
   else{f.status='done';toast('נבדק ✓')}
   f.updated=today();markDirty();
+}
+app.addEventListener('change',function(e){
+  var t=e.target; if(t.dataset.act!=='done')return;
+  var q=route();
+  if(q.dev){var sx=scr(t.dataset.screen), fx=byId(sx,t.dataset.id); advance(fx,t.checked); if(!EDIT)save(); renderDev(q.dev); return}
+  var s=scr(q.screen); var sec=t.closest('.item'); var f=byId(s,sec.dataset.id); collect(s);
+  advance(f,t.checked);
+  if(!t.checked){renderScreen(q.screen,TAB);return}
   if(!EDIT)save(); else renderScreen(q.screen,TAB);
 });
 /* ---------- שמירה ---------- */
