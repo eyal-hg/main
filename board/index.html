@@ -245,10 +245,12 @@ function route(){var h=location.hash.replace('#','');var q={};h.split('&').forEa
 function go(h){location.hash=h}
 /* ---------- ניווט ---------- */
 function renderNav(q){
-  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined&&q.q===undefined)?' class="on"':'')+'>מרכז</a>';
+  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined&&q.q===undefined&&q.spec===undefined)?' class="on"':'')+'>מרכז</a>';
   B.devs.forEach(function(d){var n=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)}).length;h+='<a href="#dev='+encodeURIComponent(d)+'"'+(q.dev===d?' class="on"':'')+'>'+esc(d)+(n?' <i>'+n+'</i>':'')+'</a>'});
   var sn=supportNew().length;
   h+='<a href="#screen=inbox"'+(q.screen==='inbox'?' class="on"':'')+' style="margin-inline-start:14px">תמיכה'+(sn?' <i class="hot">'+sn+'</i>':'')+'</a>';
+  var ns=allItems().filter(function(x){return x.it.kind==='spec'&&open_(x.it)}).length;
+  h+='<a href="#spec"'+(q.spec!==undefined?' class="on"':'')+' style="margin-inline-start:14px">אפיון'+(ns?' <i>'+ns+'</i>':'')+'</a>';
   var na=arrived().length;
   h+='<a href="#arrived"'+(q.arrived!==undefined?' class="on"':'')+'>הגיע מפיתוח'+(na?' <i class="hot">'+na+'</i>':'')+'</a>';
   document.getElementById('nav').innerHTML=h;
@@ -389,6 +391,19 @@ function renderSearch(qs){
   app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   if(L.length===1){OPEN[L[0].it.id]=true;var d=app.querySelector('.drow');if(d)d.classList.add('open')}
 }
+/* ---------- אפיון: מה עוד לא אופיין, בכל המסכים ---------- */
+function renderSpec(){
+  var L=allItems().filter(function(x){return x.it.kind==='spec'&&open_(x.it)});
+  var h='<div class="band'+(L.length?'':' closed')+'"><div><div class="eyebrow">כל המסכים</div><h1>אפיון</h1><div class="meta"><span>מה שעוד לא אופיין. פריט = מה חסר, ומה צריך להחליט. "אופיין" מעביר לנשאר לפתח.</span></div></div>'
+   +(L.length?'<div class="counts"><div><b>'+L.length+'</b><span>לאפיין</span></div></div>':'<div class="closedmsg">✓ הכל מאופיין</div>')+'</div>';
+  h+='<div style="margin:0 0 16px"><button class="btn pri" id="specAdd">＋ מה חסר לאפיין</button></div>';
+  h+=L.map(function(x){var f=x.it,k=x.s.key;
+    return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'" style="grid-template-columns:26px 1fr auto auto auto 14px"><span class="num">'+(f.n||'')+'</span><span class="t">'+esc(f.title)+'<small>'+esc(x.s.name)+' · '+esc(String(f.what||'').slice(0,120))+'</small></span><span class="kind">'+KN.spec+'</span><span class="dev" style="pointer-events:none"><button type="button">'+esc(f.dev||'—')+'</button></span><label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> אופיין</label><span class="car">›</span></div>'
+     +'<div class="dbody"><div class="ib"><div class="col"><h3>מה חסר באפיון</h3><p>'+esc(f.what)+'</p></div><div class="col"><h3>מה צריך להחליט</h3><p>'+esc(f.need)+'</p></div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=spec">לדף המסך ›</a></div></div></div>'}).join('');
+  app.innerHTML=h;
+  app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
+  var b=document.getElementById('specAdd'); if(b)b.onclick=function(){openAdd('spec','general')};
+}
 /* ---------- הגיע מפיתוח ----------
    כל מה שמתכנת סימן "נבנה/תוקן" ועוד לא נבדק, לפי סדר ההגעה, מקובץ ליום. זה מה שאייל (וה-AI שלו) בודקים קודם. */
 function arrived(){return allItems().filter(function(x){var f=x.it,lg=f.log||[],z=lg[lg.length-1];return open_(f)&&f.kind==='check'&&z&&z.ev==='built'}).map(function(x){var lg=x.it.log,z=lg[lg.length-1];return {x:x,bl:z,t:parseWhen(z.when)}}).sort(function(a,b){return b.t-a.t})}
@@ -490,8 +505,8 @@ function askNote(title,sub,o,cb){
   p.onclick=function(e){if(e.target===p)p.classList.remove('on')};
   ok.onclick=function(){var v=t.value.trim();if(required&&!v){t.focus();return}p.classList.remove('on');cb(v)};
 }
-function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.arrived!==undefined)renderArrived();else if(q.q!==undefined)renderSearch(q.q);else renderScreen(q.screen,TAB)}
-function findItem(t){var q=route();if(q.dev||q.arrived!==undefined||q.q!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
+function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.arrived!==undefined)renderArrived();else if(q.spec!==undefined)renderSpec();else if(q.q!==undefined)renderSearch(q.q);else renderScreen(q.screen,TAB)}
+function findItem(t){var q=route();if(q.dev||q.arrived!==undefined||q.q!==undefined||q.spec!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
@@ -623,7 +638,7 @@ function hydrateBugImages(root){
 function imgSrc(p){return /^img\/bugs\//.test(p)?'data-bug="'+esc(p)+'" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="':'src="'+esc(p)+'"'}
 function render(){
   var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
-  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else if(q.q!==undefined)renderSearch(q.q); else renderCenter();
+  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else if(q.spec!==undefined)renderSpec(); else if(q.q!==undefined)renderSearch(q.q); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
   hydrateBugImages(app);
 }
