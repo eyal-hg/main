@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 57,
- "seq": 106,
- "updated": "05.09.2026 21:05",
+ "version": 58,
+ "seq": 107,
+ "updated": "05.09.2026 21:12",
  "emails": [
   {
    "who": "אייל",
@@ -2415,6 +2415,27 @@ window.HK_BOARD = {
    "proto": "",
    "items": [
     {
+     "id": "general-107",
+     "n": 107,
+     "kind": "fix",
+     "who": "",
+     "status": "open",
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "05.09.2026 21:12",
+     "updated": "05.09.2026 21:12",
+     "log": [],
+     "ask": null,
+     "pin": true,
+     "dev": "עידו",
+     "sev": "בינוני",
+     "title": "למזג ‎PR #8‎ — קובץ שפת העיצוב hk-tokens.css בפרויקט",
+     "what": "https://github.com/h-beehive/hk-client/pull/8 — ענף design/tokens אל stg. קובץ אחד חדש (src/styles/hk-tokens.css, העתק של css/tokens.css) ו-@import אחד ב-src/index.css. לא משנה שום דבר קיים — רק מגדיר משתנים ומחלקות.",
+     "need": "למזג ראשון או אחרון — לא משנה. אחרי המיזוג #90 ממשיך: מיפוי הממשק הקיים למשתנים --hk-* לפי מפת השימוש בתחתית הקובץ."
+    },
+    {
      "id": "general-todo-1",
      "n": 80,
      "kind": "todo",
@@ -2583,7 +2604,15 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 17:27",
-     "updated": "05.09.2026 17:27"
+     "updated": "05.09.2026 21:12",
+     "log": [
+      {
+       "when": "05.09.2026 21:12",
+       "who": "אייל (Claude)",
+       "ev": "note",
+       "txt": "שלב 1 נעשה אצלנו: הקובץ נכנס לפרויקט כ-src/styles/hk-tokens.css עם import אחד ב-index.css — PR https://github.com/h-beehive/hk-client/pull/8. נשאר לעידו: המיפוי של הממשק הקיים למשתנים (לפי מפת השימוש בתחתית הקובץ)."
+      }
+     ]
     },
     {
      "id": "general-7",
