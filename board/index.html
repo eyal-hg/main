@@ -31,7 +31,7 @@ button{font:inherit}
 .btn:hover{background:var(--chip)}
 .btn.pri{background:var(--coral);border-color:var(--coral);color:#fff}
 .btn.pri:hover{background:var(--coral2)}
-.btn.sm{padding:4px 11px;font-size:12.5px}
+.btn.sm{padding:4px 11px;font-size:12.5px}.btn.ico{padding:4px 8px;display:inline-flex;align-items:center}.btn.ico svg{display:block}
 .btn[disabled]{opacity:.5;cursor:default}
 .btn:focus-visible,.pill:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .editonly{display:none!important}
@@ -170,6 +170,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
     <button class="btn sm pri editonly" id="bSave">שמירה</button>
     <button class="btn sm" id="bMd" title="הורדת MD">MD ⤓</button>
     <button class="btn sm" id="bRefresh" title="מביא את הגרסה האחרונה מגיט, בלי לטעון את הדף">↻ רענון</button>
+    <button class="btn sm ico" id="bSet" title="הגדרות: מי מורשה להיכנס" aria-label="הגדרות"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <span class="meid" id="meid"></span>
   </div>
   <div id="banner"></div>
@@ -181,6 +182,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
   <label class="fl"><span id="aWhatL">מה חסר</span><textarea id="aWhat" rows="3"></textarea></label>
   <label class="fl" id="aNeedW"><span id="aNeedL">מה צריך להיות</span><textarea id="aNeed" rows="3"></textarea></label>
   <div class="f"><button class="btn pri" id="aOk">שמירה לגיט</button><button class="btn" id="aX">ביטול</button></div></div></div>
+<div class="pop" id="setpop"><div class="md" style="width:520px"><h3>מי מורשה להיכנס</h3><p>הרשימה שנכנסת ל-ALLOWED_EMAILS בנטליפיי. אחרי שינוי: שמירה, ואז העתקה והדבקה בנטליפיי.</p><div id="setbody"></div><div class="f"><button class="btn pri" id="setSave">שמירה לגיט</button><button class="btn" id="copyEm" type="button">העתקה ל-ALLOWED_EMAILS</button><button class="btn" id="setX">סגירה</button></div></div></div>
 <div class="pop" id="npop"><div class="md"><h3 id="nTitle">הערה</h3><p id="nSub"></p>
   <label class="fl"><textarea id="nTxt" rows="4"></textarea></label>
   <div class="f"><button class="btn pri" id="nOk">אישור</button><button class="btn" id="nX">ביטול</button></div></div></div>
@@ -239,11 +241,6 @@ function renderCenter(){
   var h='<div class="band"><div><div class="eyebrow">כל המסכים · עודכן '+esc(B.updated||'')+'</div><h1>מרכז</h1><div class="meta"><span>פריט שלא שייך למסך נכנס ל"כללי".</span></div></div>'
    +'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+openAll.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div></div>';
   h+='<div style="margin:0 0 16px"><button class="btn pri" id="qAdd">＋ פריט חדש</button></div>';
-  /* מי מורשה להיכנס: הרשימה שנכנסת ל-ALLOWED_EMAILS בנטליפיי. עריכה במצב עריכה, העתקה בלחיצה */
-  var EM=B.emails||[];
-  h+='<details class="settings"'+(EDIT?' open':'')+'><summary>מי מורשה להיכנס · '+EM.length+' כתובות <span class="sp"></span><button class="btn sm" id="copyEm" type="button">העתקה ל-ALLOWED_EMAILS</button></summary>'
-   +'<div class="emgrid" id="emgrid">'+EM.map(function(e,i){return '<div class="emrow" data-i="'+i+'"><span class="ed" data-ek="who">'+esc(e.who)+'</span><span class="ed em" data-ek="email" dir="ltr">'+esc(e.email)+'</span><button class="del editonly" data-emdel="'+i+'" type="button">הסרה</button></div>'}).join('')
-   +'</div>'+(EDIT?'<button class="btn sm" id="emAdd" type="button" style="margin-top:8px">＋ כתובת</button>':'')+'<p class="lead" style="margin:8px 0 0">כל שינוי כאן = להעתיק שוב לנטליפיי (Environment variables → ALLOWED_EMAILS) — עד שהשער יקרא את זה לבד.</p></details>';
   /* אנשים */
   h+='<h2 class="sec">לפי אדם</h2><div class="grid">'+B.devs.map(function(d){var c=counts(all.filter(function(x){return x.it.dev===d}).map(function(x){return x.it}));var tot=c.spec+c.todo+c.fix+c.check;
     return '<a class="card'+(tot?'':' closed')+'" href="#dev='+encodeURIComponent(d)+'"><b>'+esc(d)+'</b>'+(tot?'<div class="n"><span>אפיון <em>'+c.spec+'</em></span><span>לפתח <em>'+c.todo+'</em></span><span>תיקונים <em>'+c.fix+'</em></span><span>בדיקות <em>'+c.check+'</em></span></div>':'<div class="ok">✓ אין פריטים פתוחים</div>')+'</a>'}).join('')+'</div>';
@@ -259,20 +256,29 @@ function renderCenter(){
   app.querySelectorAll('.row').forEach(function(r){r.onclick=function(){go(r.dataset.go)}});
   app.querySelectorAll('.pill[data-f]').forEach(function(b){b.onclick=function(){CF[b.dataset.f]=b.dataset.v;renderCenter()}});
   document.getElementById('qAdd').onclick=function(){openAdd(CF.qkind||'todo',CF.qscreen||'general')};
+}
+/* הגדרות (⚙ למעלה): מי מורשה להיכנס. נערך תמיד, נשמר לגיט מהפופאפ */
+function renderSettings(){
+  var EM=B.emails||[];
+  document.getElementById('setbody').innerHTML='<div class="emgrid" id="emgrid">'+EM.map(function(e,i){return '<div class="emrow" data-i="'+i+'"><span class="ed" data-ek="who">'+esc(e.who)+'</span><span class="ed em" data-ek="email" dir="ltr">'+esc(e.email)+'</span><button class="del" data-emdel="'+i+'" type="button">הסרה</button></div>'}).join('')+'</div><button class="btn sm" id="emAdd" type="button" style="margin-top:8px">＋ כתובת</button>';
   var ce=document.getElementById('copyEm'); if(ce)ce.onclick=function(e){e.preventDefault();e.stopPropagation();collectEmails();var t=(B.emails||[]).map(function(x){return x.email}).filter(Boolean).join(',');
     var done=function(){toast('הועתק: '+t.split(',').length+' כתובות')};
     var fb=function(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(_){}ta.remove()};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb()};
-  var ea=document.getElementById('emAdd'); if(ea)ea.onclick=function(){collectEmails();(B.emails=B.emails||[]).push({who:'',email:''});markDirty();renderCenter()};
-  app.querySelectorAll('[data-emdel]').forEach(function(b){b.onclick=function(){collectEmails();B.emails.splice(+b.dataset.emdel,1);markDirty();renderCenter()}});
-  app.querySelectorAll('#emgrid .ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
+  var ea=document.getElementById('emAdd'); if(ea)ea.onclick=function(){collectEmails();(B.emails=B.emails||[]).push({who:'',email:''});markDirty();renderSettings()};
+  document.querySelectorAll('#setbody [data-emdel]').forEach(function(b){b.onclick=function(){collectEmails();B.emails.splice(+b.dataset.emdel,1);markDirty();renderSettings()}});
+  document.querySelectorAll('#emgrid .ed').forEach(function(el){el.contentEditable='true'});
 }
+document.getElementById('bSet').onclick=function(){renderSettings();document.getElementById('setpop').classList.add('on')};
+document.getElementById('setX').onclick=function(){collectEmails();document.getElementById('setpop').classList.remove('on');if(DRAFT)renderNav(route())};
+document.getElementById('setSave').onclick=function(){collectEmails();document.getElementById('setpop').classList.remove('on');save()};
+document.getElementById('setpop').onclick=function(e){if(e.target===this){collectEmails();this.classList.remove('on');if(DRAFT)renderNav(route())}};
 function sel(id,opts,val){var cur=opts.filter(function(o){return o[0]===val})[0]||opts[0];return '<span class="sel" id="'+id+'" data-v="'+esc(cur[0])+'"><button type="button">'+esc(cur[1])+' ▾</button><div class="dd">'+opts.map(function(o){return '<button type="button" data-v="'+esc(o[0])+'"'+(o[0]===cur[0]?' class="on"':'')+'>'+esc(o[1])+'</button>'}).join('')+'</div></span>'}
 function wireSel(id,fn){var el=document.getElementById(id);if(!el)return;el.querySelector(':scope>button').onclick=function(e){e.stopPropagation();closeDD();el.classList.add('open')};
   el.querySelectorAll('.dd button').forEach(function(b){b.onclick=function(e){e.stopPropagation();el.dataset.v=b.dataset.v;el.querySelector(':scope>button').textContent=b.textContent+' ▾';el.querySelectorAll('.dd button').forEach(function(x){x.classList.toggle('on',x===b)});el.classList.remove('open');fn(b.dataset.v)}})}
 function closeDD(){document.querySelectorAll('.sel.open,.dev.open').forEach(function(e){e.classList.remove('open')})}
 document.addEventListener('click',closeDD);
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();document.getElementById('pop').classList.remove('on');document.getElementById('npop').classList.remove('on')}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();document.getElementById('pop').classList.remove('on');document.getElementById('npop').classList.remove('on');document.getElementById('setpop').classList.remove('on')}});
 function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
 var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
