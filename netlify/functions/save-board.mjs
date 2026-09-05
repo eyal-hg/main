@@ -21,6 +21,7 @@ function clean(board) {
     who: S(it.who).slice(0, 60), status: it.status === "done" ? "done" : "open", imgA: S(it.imgA).slice(0, 200), capA: S(it.capA).slice(0, 300),
     imgB: S(it.imgB).slice(0, 200), capB: S(it.capB).slice(0, 300), created: S(it.created).slice(0, 30), updated: S(it.updated).slice(0, 30),
     log: (Array.isArray(it.log) ? it.log : []).slice(0, 50).map(l => ({ when: S(l.when).slice(0, 30), who: S(l.who).slice(0, 40), ev: S(l.ev).slice(0, 20), txt: S(l.txt).slice(0, 1000) })),
+    ask: it.ask && typeof it.ask === "object" ? { who: S(it.ask.who).slice(0, 40), txt: S(it.ask.txt).slice(0, 1000), when: S(it.ask.when).slice(0, 30) } : null,
     back: it.back && typeof it.back === "object" ? { kind: S(it.back.kind).slice(0, 10), dev: S(it.back.dev).slice(0, 40), sev: S(it.back.sev).slice(0, 20), what: S(it.back.what), need: S(it.back.need) } : undefined });
   return { version: Number(board.version) || 1, updated: S(board.updated).slice(0, 40), devs: (Array.isArray(board.devs) ? board.devs : []).map(d => S(d).slice(0, 40)).slice(0, 10),
     screens: screens.map(sc => ({ key: S(sc.key).slice(0, 40), name: S(sc.name).slice(0, 120), task: S(sc.task).slice(0, 200), asana: S(sc.asana).slice(0, 300),
