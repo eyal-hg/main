@@ -3,86 +3,120 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>דיווח באג</title>
+<title>באגים</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0C4068;--coral:#E4826E;--coral2:#D96A55;--sky:#39ABE2;--bg:#F6F8FB;--panel:#fff;--line:#E3EAF3;--line2:#CBD6E2;--ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--chip:#F0F4F8;--ok:#13895B;--bad:#C43D30}
+:root{--navy:#0C4068;--navy2:#104A76;--coral:#E4826E;--coral2:#D96A55;--sky:#39ABE2;--bg:#F6F8FB;--panel:#fff;--line:#E3EAF3;--line2:#CBD6E2;--ink:#12263A;--ink2:#44566A;--ink3:#7A8898;--chip:#F0F4F8;--ok:#13895B;--bad:#C43D30;--amber:#c98404}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Heebo,Rubik,system-ui,sans-serif}
-.wrap{max-width:640px;margin:0 auto;padding:28px 18px 60px}
-h1{font-size:22px;font-weight:800;color:var(--navy);margin:0 0 4px}
-.sub{color:var(--ink3);font-size:12.5px;margin:0 0 20px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 1px 2px rgba(12,64,104,.04)}
-.fl{display:block;margin-bottom:14px}
+.band{background:var(--navy);color:#fff;padding:26px 0 22px}
+.band .in{max-width:640px;margin:0 auto;padding:0 18px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.band h1{font-size:24px;font-weight:800;margin:0;line-height:1.2}
+.band h1:after{content:"";display:block;width:26px;height:3px;background:var(--coral);border-radius:2px;margin-top:8px}
+.band p{margin:6px 0 0;color:#DCEBF5;font-size:13px}
+.band .sp{flex:1}
+.who{display:flex;gap:8px;align-items:center}
+.who .lbl{font-size:12px;color:#9FC0DA;margin-inline-end:2px}
+.av{width:40px;height:40px;border-radius:999px;border:2px solid rgba(255,255,255,.35);background:transparent;color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:grid;place-items:center;transition:.15s}
+.av:hover{border-color:#fff}
+.av.on{background:var(--coral);border-color:var(--coral)}
+.wrap{max-width:640px;margin:0 auto;padding:18px 18px 70px}
+.tabs{display:flex;gap:6px;margin:0 0 16px}
+.tab{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line2);background:#fff;color:var(--ink2);border-radius:999px;padding:7px 16px;cursor:pointer}
+.tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.tab i{font-style:normal;font-size:11px;background:rgba(255,255,255,.25);border-radius:999px;padding:0 6px;margin-inline-start:4px}.tab i:empty{display:none}.tab:not(.on) i{background:var(--chip);color:var(--ink2)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 1px 2px rgba(12,64,104,.04),0 10px 28px -18px rgba(12,64,104,.18)}
+.step{display:flex;gap:12px;align-items:flex-start;padding:16px 0;border-top:1px solid var(--line)}
+.step:first-child{border-top:0;padding-top:0}
+.step .n{flex:none;width:26px;height:26px;border-radius:999px;background:var(--navy);color:#fff;font-size:12.5px;font-weight:700;display:grid;place-items:center;margin-top:2px}
+.step .b{flex:1;min-width:0}
+.step h3{margin:0 0 2px;font-size:15px;font-weight:600;color:var(--navy)}
+.step .h{font-size:12px;color:var(--ink3);margin:0 0 8px}
+.fl{display:block;margin-bottom:12px}
 .fl>span{display:block;font-size:11.5px;color:var(--ink3);margin-bottom:4px}
-.fl>span b{color:var(--bad);font-weight:400}
-input[type=text],textarea{width:100%;font:inherit;font-size:14px;color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:8px 12px;background:#fff;resize:vertical}
-input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky)}
+input[type=text],textarea{width:100%;font:inherit;font-size:14px;color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;background:#fff;resize:vertical}
+input.big{font-size:16px;padding:12px 14px}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:1px solid var(--line2);background:var(--chip);color:var(--ink2);border-radius:999px;padding:5px 13px;font:inherit;font-size:13px;cursor:pointer}
 .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.drop{border:1.5px dashed var(--line2);border-radius:10px;padding:14px;text-align:center;color:var(--ink3);cursor:pointer;transition:.15s;font-size:13px}
+.drop{border:1.5px dashed var(--line2);border-radius:12px;padding:18px 14px;text-align:center;color:var(--ink3);cursor:pointer;transition:.15s;font-size:13px;background:#FBFDFE}
 .drop:hover,.drop.over{border-color:var(--sky);background:#F2F9FD;color:#14618F}
-.drop b{color:#14618F;font-weight:600}
+.drop svg{display:block;margin:0 auto 6px;color:#14618F}
+.drop b{color:#14618F;font-weight:600;font-size:14px}
+.drop small{display:block;margin-top:4px;font-size:12px}
+.drop kbd{font:inherit;font-size:11.5px;background:#fff;border:1px solid var(--line2);border-radius:5px;padding:0 5px}
 .prev{position:relative;margin-top:10px;display:none}
-.prev img{max-width:100%;border-radius:10px;border:1px solid var(--line);display:block}
+.prev img{max-width:100%;max-height:260px;border-radius:10px;border:1px solid var(--line);display:block}
 .prev button{position:absolute;top:8px;left:8px;border:0;background:rgba(12,38,58,.7);color:#fff;border-radius:999px;width:26px;height:26px;cursor:pointer;font-size:14px}
-.f{display:flex;gap:8px;align-items:center;margin-top:6px}
-.btn{font:inherit;font-size:13.5px;font-weight:600;border-radius:999px;padding:9px 20px;border:1px solid var(--line2);background:#fff;color:var(--navy);cursor:pointer}
-.btn.pri{background:var(--coral);border-color:var(--coral);color:#fff}
+.prev .okc{position:absolute;top:8px;right:8px;background:var(--ok);color:#fff;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 9px}
+.more{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:#14618F;cursor:pointer;padding:0}
+.more:after{content:" ▾"}.more.open:after{content:" ▴"}
+.moreb{display:none;margin-top:10px}.moreb.open{display:block}
+.f{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;font-weight:600;border-radius:999px;padding:10px 22px;border:1px solid var(--line2);background:#fff;color:var(--navy);cursor:pointer}
+.btn.pri{background:var(--coral);border-color:var(--coral);color:#fff;padding-inline:28px}
 .btn.pri:hover{background:var(--coral2)}
 .btn:disabled{opacity:.5;cursor:default}
 .msg{font-size:12.5px;color:var(--ink3)}
 .msg.err{color:var(--bad)}
-.done{display:none;text-align:center;padding:40px 20px}
-.done h2{color:var(--ok);font-size:20px;margin:0 0 6px}
+.done{display:none;text-align:center;padding:44px 20px}
+.done .ck{width:56px;height:56px;border-radius:999px;background:#E7F7EF;color:var(--ok);display:grid;place-items:center;margin:0 auto 12px;font-size:26px}
+.done h2{color:var(--navy);font-size:20px;margin:0 0 6px}
 .done p{color:var(--ink2);margin:0 0 18px}
 .hint{font-size:11.5px;color:var(--ink3);margin-top:4px}
-.sel{position:relative;display:inline-block}
-.sel>button{font:inherit;font-size:13px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer;min-width:200px;text-align:right}
-.sel .dd{display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px -12px rgba(12,64,104,.3);z-index:5;min-width:240px;max-height:280px;overflow:auto;padding:4px}
+.sel{position:relative;display:inline-block;width:100%}
+.sel>button{width:100%;font:inherit;font-size:14px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:10px;padding:9px 12px;cursor:pointer;text-align:right}
+.sel .dd{display:none;position:absolute;right:0;left:0;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px -12px rgba(12,64,104,.3);z-index:5;max-height:280px;overflow:auto;padding:4px}
 .sel.open .dd{display:block}
-.sel .dd button{display:block;width:100%;text-align:right;border:0;background:none;font:inherit;font-size:13px;padding:7px 10px;border-radius:7px;cursor:pointer;color:var(--ink)}
+.sel .dd button{display:block;width:100%;text-align:right;border:0;background:none;font:inherit;font-size:13.5px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--ink)}
 .sel .dd button:hover{background:var(--chip)}
 .sel .dd button.on{color:var(--navy);font-weight:600}
-
-.rep{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.two{grid-template-columns:1fr}.band .in{align-items:flex-start}}
+.rep{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px 12px 16px;margin-bottom:8px;overflow:hidden}
+.rep:before{content:"";position:absolute;top:0;bottom:0;right:0;width:4px;background:var(--amber)}
+.rep.done:before{background:var(--ok)}
 .rep .h{display:flex;align-items:center;gap:10px}
-.rep .h b{flex:1;font-size:14px;color:var(--ink)}
+.rep .h b{flex:1;font-size:14.5px;color:var(--ink)}
 .rep .st{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
 .st.new{background:#FFF6E6;color:#9A6300}.st.done{background:#E7F7EF;color:#0B6E4B}
 .rep .m{font-size:11.5px;color:var(--ink3);margin-top:2px}
 .rep .a{margin-top:8px;font-size:13px;color:var(--ink);background:#FFF9EC;border-radius:8px;padding:6px 10px}
 .rep .a span{color:var(--ink3);font-size:11.5px}
 .rep img{max-width:100%;max-height:160px;object-fit:cover;object-position:top right;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:block}
-.empty{color:var(--ink3);font-size:13px;padding:14px 4px}
-.tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line2);background:#fff;color:var(--ink2);border-radius:999px;padding:7px 16px;cursor:pointer}
-.tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.tab i{font-style:normal;font-size:11px;background:rgba(255,255,255,.25);border-radius:999px;padding:0 6px;margin-inline-start:4px}.tab i:empty{display:none}.tab:not(.on) i{background:var(--chip);color:var(--ink2)}
+.empty{color:var(--ink3);font-size:13px;padding:24px 4px;text-align:center}
+.sub{color:var(--ink3);font-size:12.5px;margin:0 0 14px}
 </style>
 </head>
 <body>
+<div class="band"><div class="in">
+  <div><h1 id="hello">משהו לא עובד?</h1><p>כתבו מה קרה, הדביקו צילום, וזה אצל אייל. אתם רואים כאן מה נסגר.</p></div>
+  <span class="sp"></span>
+  <div class="who"><span class="lbl">אני</span><div id="who" style="display:flex;gap:6px"></div></div>
+</div></div>
 <div class="wrap">
-  <h1>באגים</h1>
-  <p class="sub">משהו לא עובד אצל לקוח? כתבו כאן, עם צילום. זה נכנס ללוח של אייל והוא מסדר.</p>
   <div class="tabs"><button type="button" class="tab on" data-t="new">דיווח חדש</button><button type="button" class="tab" data-t="list">הדיווחים <i id="nOpen"></i></button></div>
   <div id="pNew">
   <div class="card" id="form">
-    <label class="fl"><span>מי מדווח <b>*</b></span><div class="chips" id="who"></div></label>
-    <label class="fl"><span>מה קרה <b>*</b></span><input type="text" id="title" placeholder="משפט אחד. למשל: הלקוח לא מצליח להעלות מסמך"></label>
-    <label class="fl"><span>איפה</span><span class="sel" id="scr"><button type="button">לא יודע ▾</button><div class="dd" id="scrDD"></div></span></label>
-    <label class="fl"><span>איזה לקוח / משתמש</span><input type="text" id="client" placeholder="שם החברה, ומי המשתמש אם יודעים"></label>
-    <label class="fl"><span>מה עשיתם לפני, ומה ציפיתם שיקרה</span><textarea id="steps" rows="4" placeholder="נכנסתי ל… לחצתי על… ואז…"></textarea></label>
-    <label class="fl"><span>צילום מסך</span>
-      <div class="drop" id="drop"><b>בחירת קובץ</b> · או גררו לכאן · או הדביקו (Ctrl+V) כשהדף פתוח<input type="file" id="file" accept="image/*" hidden></div>
-      <div class="prev" id="prev"><img id="pimg" alt=""><button type="button" id="pdel" title="הסרה">✕</button></div>
-      <div class="hint">תמונה אחת. סרטון לא מעלים כאן — מקליטים ב-Loom או מעלים לדרייב ומדביקים קישור למטה.</div>
-    </label>
-    <label class="fl"><span>קישור לסרטון</span><input type="text" id="video" placeholder="https://…"></label>
-    <div class="f"><button class="btn pri" id="send">שליחה</button><span class="msg" id="msg"></span></div>
+    <div class="step"><span class="n">1</span><div class="b"><h3>מה קרה?</h3><p class="h">משפט אחד, כמו שהייתם אומרים בטלפון.</p>
+      <input type="text" id="title" class="big" placeholder="למשל: הלקוח לא מצליח להעלות מסמך"></div></div>
+    <div class="step"><span class="n">2</span><div class="b"><h3>צילום מסך</h3><p class="h">שווה אלף מילים. אפשר גם בלי.</p>
+      <div class="drop" id="drop"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 15l-5-5-8 8"/></svg><b>הדביקו כאן</b> <kbd>Ctrl</kbd>+<kbd>V</kbd><small>או גררו קובץ · או לחצו לבחירה</small><input type="file" id="file" accept="image/*" hidden></div>
+      <div class="prev" id="prev"><img id="pimg" alt=""><span class="okc">✓ צורף</span><button type="button" id="pdel" title="הסרה">✕</button></div></div></div>
+    <div class="step"><span class="n">3</span><div class="b"><h3>עוד פרטים</h3><p class="h">לא חובה, אבל עוזר למצוא מהר.</p>
+      <button type="button" class="more" id="moreBtn">איפה, איזה לקוח, מה עשיתם לפני</button>
+      <div class="moreb" id="moreB">
+        <div class="two">
+          <label class="fl"><span>איפה</span><span class="sel" id="scr"><button type="button">לא יודע ▾</button><div class="dd" id="scrDD"></div></span></label>
+          <label class="fl"><span>איזה לקוח / משתמש</span><input type="text" id="client" placeholder="שם החברה"></label>
+        </div>
+        <label class="fl"><span>מה עשיתם לפני, ומה ציפיתם שיקרה</span><textarea id="steps" rows="3" placeholder="נכנסתי ל… לחצתי על… ואז…"></textarea></label>
+        <label class="fl"><span>קישור לסרטון</span><input type="text" id="video" placeholder="Loom או דרייב"><div class="hint">סרטון לא מעלים כאן — מקליטים ומדביקים קישור.</div></label>
+      </div></div></div>
+    <div class="f"><button class="btn pri" id="send">שליחה לאייל</button><span class="msg" id="msg"></span></div>
   </div>
-  <div class="card done" id="ok"><h2>✓ נשמר, תודה</h2><p>הדיווח נכנס ללוח תחת "מהתמיכה". אייל יסדר אותו.</p><button class="btn" id="again">דיווח נוסף</button></div>
+  <div class="card done" id="ok"><div class="ck">✓</div><h2>נשמר, תודה</h2><p>אייל יראה את זה. כשזה ייסגר תראו כאן.</p><button class="btn" id="again">דיווח נוסף</button></div>
   </div>
   <div id="pList" style="display:none">
   <p class="sub">מי פתח, ומתי נסגר. <span class="chips" id="flt" style="display:inline-flex;vertical-align:middle;margin-inline-start:6px"><button type="button" class="chip on" data-f="mine">שלי</button><button type="button" class="chip" data-f="all">כולם</button><button type="button" class="chip" data-f="closed">נסגרו</button></span></p>
@@ -96,11 +130,11 @@ input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky)}
 var REPORTERS=['אופיר','טל','נועם'];
 var who='', screenKey='', screens=[], img=null;
 var $=function(id){return document.getElementById(id)};
-$('who').innerHTML=REPORTERS.map(function(n){return '<button type="button" class="chip" data-n="'+n+'">'+n+'</button>'}).join('');
+$('who').innerHTML=REPORTERS.map(function(n){return '<button type="button" class="av" data-n="'+n+'" title="'+n+'">'+n.charAt(0)+'</button>'}).join('');
 try{who=localStorage.getItem('hkBugWho')||''}catch(e){}
-function paintWho(){[].forEach.call($('who').children,function(b){b.classList.toggle('on',b.dataset.n===who)})}
+function paintWho(){[].forEach.call($('who').children,function(b){b.classList.toggle('on',b.dataset.n===who)});$('hello').textContent=who?'היי '+who+', משהו לא עובד?':'משהו לא עובד?'}
 paintWho();
-$('who').onclick=function(e){var b=e.target.closest('.chip');if(!b)return;who=b.dataset.n;try{localStorage.setItem('hkBugWho',who)}catch(_){}paintWho();if(typeof renderList==='function')renderList()};
+$('who').onclick=function(e){var b=e.target.closest('.av');if(!b)return;who=b.dataset.n;try{localStorage.setItem('hkBugWho',who)}catch(_){}paintWho();if(typeof renderList==='function')renderList()};
 /* רשימת המסכים מהלוח (מגיט דרך הפונקציה; אם אין — מהקובץ הפרוס) */
 function fillScreens(list){screens=list;$('scrDD').innerHTML='<button type="button" data-k="" class="on">לא יודע</button>'+list.map(function(s){return '<button type="button" data-k="'+s.key+'">'+s.name+'</button>'}).join('')}
 var pass=null; try{pass=localStorage.getItem('hkBoardPass')}catch(e){}
@@ -119,11 +153,12 @@ function renderList(){
   var mine=[];BOARD.screens.forEach(function(s){s.items.forEach(function(it){if(it.src==='support'&&it.status!=='done'&&it.rep===who)mine.push(it)})});$('nOpen').textContent=mine.length||'';
   if(!L.length){el.innerHTML='<div class="empty">'+(FLT==='mine'?'אין דיווחים פתוחים שלך':FLT==='closed'?'עוד לא נסגר כלום':'אין דיווחים פתוחים')+'</div>';return}
   el.innerHTML=L.map(function(x){var it=x.it,st=status(it),last=(it.log||[]).filter(function(l){return (l.ev==='reply'||l.ev==='closed'||l.ev==='failed')&&l.txt}).pop();
-    return '<div class="rep"><div class="h"><b>'+esc(it.title)+'</b><span class="st '+st[0]+'">'+st[1]+'</span></div><div class="m">'+esc(it.rep||'')+' · '+esc(it.created||'')+(x.s.key!=='inbox'?' · '+esc(x.s.name):'')+(it.client?' · '+esc(it.client):'')+'</div>'
+    return '<div class="rep'+(it.status==='done'?' done':'')+'"><div class="h"><b>'+esc(it.title)+'</b><span class="st '+st[0]+'">'+st[1]+'</span></div><div class="m">'+esc(it.rep||'')+' · '+esc(it.created||'')+(x.s.key!=='inbox'?' · '+esc(x.s.name):'')+(it.client?' · '+esc(it.client):'')+'</div>'
      +(last?'<div class="a"><span>אייל · '+esc(last.when)+'</span><br>'+esc(last.txt)+'</div>':'')+(it.imgA?'<img src="../board/'+esc(it.imgA)+'" alt="" loading="lazy">':'')+'</div>'}).join('');
 }
 function showTab(t){[].forEach.call(document.querySelectorAll('.tab'),function(b){b.classList.toggle('on',b.dataset.t===t)});$('pNew').style.display=t==='new'?'':'none';$('pList').style.display=t==='list'?'':'none';window.scrollTo(0,0)}
 document.querySelector('.tabs').onclick=function(e){var b=e.target.closest('.tab');if(b)showTab(b.dataset.t)};
+$('moreBtn').onclick=function(){this.classList.toggle('open');$('moreB').classList.toggle('open')};
 $('flt').onclick=function(e){var b=e.target.closest('.chip');if(!b)return;FLT=b.dataset.f;[].forEach.call($('flt').children,function(x){x.classList.toggle('on',x===b)});renderList()};
 var sel=$('scr'); sel.querySelector('button').onclick=function(e){e.stopPropagation();sel.classList.toggle('open')};
 $('scrDD').onclick=function(e){var b=e.target.closest('button');if(!b)return;screenKey=b.dataset.k;sel.querySelector(':scope>button').textContent=b.textContent+' ▾';[].forEach.call($('scrDD').children,function(x){x.classList.toggle('on',x===b)});sel.classList.remove('open')};
@@ -140,7 +175,7 @@ $('pdel').onclick=function(){img=null;$('prev').style.display='none';$('pimg').s
 /* שליחה */
 $('send').onclick=function(){
   var m=$('msg'); m.className='msg'; m.textContent='';
-  if(!who){m.className='msg err';m.textContent='מי מדווח?';return}
+  if(!who){m.className='msg err';m.textContent='מי אתם? בחרו למעלה';return}
   var t=$('title').value.trim(); if(!t){m.className='msg err';m.textContent='מה קרה? משפט אחד.';$('title').focus();return}
   if(!pass){m.className='msg err';m.textContent='הסיסמה לא שמורה — רענן את הדף והיכנס שוב';return}
   var b=$('send'); b.disabled=true; m.textContent='שומר…';
