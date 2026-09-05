@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 64,
+ "version": 65,
  "seq": 110,
- "updated": "06.09.2026 21:46",
+ "updated": "06.09.2026 21:49",
  "emails": [
   {
    "who": "אייל",
@@ -971,8 +971,15 @@ window.HK_BOARD = {
      "imgB": "img/portfolio-proto.jpg",
      "capB": "הפרוטוטיפ.",
      "created": "04.09.2026",
-     "updated": "04.09.2026",
-     "log": [],
+     "updated": "06.09.2026 21:49",
+     "log": [
+      {
+       "when": "06.09.2026 21:49",
+       "who": "אייל (Claude)",
+       "ev": "note",
+       "txt": "ניסיתי לעקוף מהקליינט 06.09: GET /api/workspace/advisor/portfolio מחזיר 500 גם עם ?business_id=1 / ?businessId=1 / ?preview=advisor. ה-access-profile של אייל: role SUPER ADMIN, businessIds (רשימה), בלי business יחיד — השרת מנסה ליצור client_status_def עם business_id ריק. תיקון מוצע: כשאין business למשתמש (SUPER_ADMIN), לא ליצור ברירות מחדל אלא להחזיר את הסטטוסים של ה-business הראשון ב-businessIds (או של המשרד שנבחר בתצוגה המקדימה), ורק ל-ADMIN/REPRESENTATIVE עם business ליצור. אין נקודת קצה אחרת לתיק, אז המסך חסום עד אז."
+      }
+     ],
      "ask": null
     },
     {
