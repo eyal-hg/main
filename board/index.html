@@ -150,7 +150,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .qrow{display:flex;align-items:flex-start;gap:12px;background:#FFF9EC;border:1px solid #F3DFA8;border-radius:12px;padding:10px 16px;margin-bottom:8px;font-size:13px}.qrow>div{flex:1}.qrow .w{color:var(--ink3);font-size:11.5px}.qrow p{margin:4px 0 0;color:var(--ink)}.qrow a{color:#14618F;text-decoration:none;font-weight:600}
 .log{border-top:1px dashed var(--line);padding:8px 16px;font-size:12px;color:var(--ink2)}.log>div{padding:2px 0}.log span{color:var(--ink3)}.log .failed b{color:#C43D30}.log .built b,.log .passed b{color:#0B6E4B}
 .sec{display:flex;align-items:center;gap:10px}
-.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow.done{opacity:.6}.drow.done .row{cursor:default}.donehdr{margin-top:26px}
+.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow.done{opacity:.75}.cwhen{font-size:11.5px;color:var(--ink3);white-space:nowrap}.golink{font-size:12px;color:#14618F;text-decoration:none;font-weight:600;white-space:nowrap}.drow.done .row{cursor:default}.donehdr{margin-top:26px}
 .drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
 </style>
 </head>
@@ -164,6 +164,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
     <button class="btn sm editonly" id="bCancel">ביטול</button>
     <button class="btn sm pri editonly" id="bSave">שמירה</button>
     <button class="btn sm" id="bMd" title="הורדת MD">MD ⤓</button>
+    <button class="btn sm" id="bRefresh" title="מביא את הגרסה האחרונה מגיט, בלי לטעון את הדף">↻ רענון</button>
   </div>
   <div id="banner"></div>
   <div id="app"></div>
@@ -211,8 +212,10 @@ function route(){var h=location.hash.replace('#','');var q={};h.split('&').forEa
 function go(h){location.hash=h}
 /* ---------- ניווט ---------- */
 function renderNav(q){
-  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev)?' class="on"':'')+'>מרכז</a>';
+  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.closed===undefined)?' class="on"':'')+'>מרכז</a>';
   B.devs.forEach(function(d){var n=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)}).length;h+='<a href="#dev='+encodeURIComponent(d)+'"'+(q.dev===d?' class="on"':'')+'>'+esc(d)+(n?' <i>'+n+'</i>':'')+'</a>'});
+  var nd=allItems().filter(function(x){return x.it.status==='done'}).length;
+  h+='<a href="#closed"'+(q.closed!==undefined?' class="on"':'')+' style="margin-inline-start:14px">נסגרו לאחרונה'+(nd?' <i>'+nd+'</i>':'')+'</a>';
   document.getElementById('nav').innerHTML=h;
   var bn=document.getElementById('banner');
   bn.innerHTML=DRAFT?'<div class="banner">יש שינויים שנשמרו רק בדפדפן הזה (גרסה '+B.version+'). <span class="sp"></span><button class="btn sm pri" id="bSaveNow">'+(ONLINE?'שמירה לגיט':'הורדת data.js')+'</button></div>':'';
@@ -250,7 +253,6 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();d
 function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
 var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
-var SHOWDONE=false;
 function renderDev(d){
   var mine=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)});
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
@@ -273,14 +275,37 @@ function renderDev(d){
        +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
        +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
+  var byScreen={};mine.forEach(function(x){(byScreen[x.s.key]=byScreen[x.s.key]||[]).push(x)});
+  /* אצל אייל: מה שחזר מפיתוח (יש "נבנה" בהיסטוריה) קודם לבדיקות שהוא רשם לעצמו */
+  var fromDev=function(it){var l=it.log||[],z=l[l.length-1];return !!z&&((it.kind==='check'&&z.ev==='built')||(it.kind!=='check'&&z.ev==='failed'))};
+  Object.keys(byScreen).forEach(function(k){byScreen[k].sort(function(a,b){return (fromDev(b.it)?1:0)-(fromDev(a.it)?1:0)})});
+  Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){var f=x.it, lg=f.log||[], last=lg[lg.length-1], bl=(f.kind==='check'&&last&&last.ev==='built')?last:null, fl=(f.kind!=='check'&&last&&last.ev==='failed')?last:null, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
+      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(f.title)+(bl?'<span class="from">'+esc(bl.who||'')+' · '+esc(bl.when)+'</span>':'')+(fl?'<span class="from bad">הוחזר · '+esc(fl.who||'אייל')+' · '+esc(fl.when)+'</span>':'')+'<small>'+(bl&&bl.txt?'<b>'+esc(bl.who)+':</b> '+esc(bl.txt):fl&&fl.txt?'<b>נכשל:</b> '+esc(fl.txt):esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140)))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+(f.ask?'<span class="wait">Reject · ממתין לתשובה</span>':(d!=='אייל'?'<button class="askb" data-act="ask" data-screen="'+k+'" data-id="'+f.id+'">Reject</button>':''))+'<span class="car">›</span></div>'
+       +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
+       +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
+       +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
+  if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   /* סגורים: מה שסומן "נבדק". מקופל, ואפשר להחזיר — ביטול הסימון פותח מחדש */
   var doneL=allItems().filter(function(x){return x.it.status==='done'&&(d==='אייל'||(x.it.back&&x.it.back.dev===d)||x.it.dev===d)});
   if(doneL.length){h+='<h2 class="sec donehdr"><button class="btn sm" id="bDone">'+(SHOWDONE?'הסתרת הסגורים':'סגורים · '+doneL.length)+'</button></h2>';
     if(SHOWDONE)h+=doneL.map(function(x){var f=x.it,lg=f.log||[],pz=lg.filter(function(l){return l.ev==='passed'}).pop();
       return '<div class="drow done"><div class="row" data-tog="'+f.id+'"><span class="num">✓</span><span class="t">'+esc(f.title)+'<small>'+esc(x.s.name)+(pz?' · נבדק '+esc(pz.when):'')+(f.back&&f.back.dev?' · בנה '+esc(f.back.dev):'')+'</small></span><span class="kind">'+KN[f.kind]+'</span><span></span><label class="st" onclick="event.stopPropagation()" title="ביטול הסימון פותח את הפריט מחדש"><input type="checkbox" checked data-act="done" data-screen="'+x.s.key+'" data-id="'+f.id+'"> נבדק</label><span></span><span class="car"></span></div></div>'}).join('');}
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
-  var bd=document.getElementById('bDone'); if(bd)bd.onclick=function(){SHOWDONE=!SHOWDONE;renderDev(d)};
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
+}
+/* ---------- נסגרו לאחרונה ---------- */
+function parseWhen(w){var m=String(w||'').match(/(\d\d)\.(\d\d)\.(\d{4})(?:\D+(\d\d):(\d\d))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0}
+function renderClosed(){
+  var L=allItems().filter(function(x){return x.it.status==='done'}).map(function(x){var lg=x.it.log||[],pz=lg.filter(function(l){return l.ev==='passed'}).pop()||{};return {x:x,pz:pz,t:parseWhen(pz.when||x.it.updated)}});
+  L.sort(function(a,b){return b.t-a.t});
+  var h='<div class="band closed"><div><div class="eyebrow">כל המסכים</div><h1>נסגרו לאחרונה</h1><div class="meta"><span>לפי סדר הסגירה. ביטול הסימון פותח את הפריט מחדש ומחזיר אותו למי שהיה עליו.</span></div></div>'
+   +'<div class="counts"><div><b>'+L.length+'</b><span>סגורים</span></div></div></div>';
+  if(!L.length)h+='<div class="empty">עוד לא נסגר כלום</div>';
+  h+=L.map(function(r){var f=r.x.it,pz=r.pz,bl=(f.log||[]).filter(function(l){return l.ev==='built'}).pop();
+    return '<div class="drow done"><div class="row" style="grid-template-columns:26px 1fr auto auto auto auto"><span class="num">✓</span><span class="t">'+esc(f.title)+'<small>'+esc(r.x.s.name)+(bl?' · בנה '+esc(bl.who):'')+'</small></span>'
+     +'<span class="kind">'+KN[f.kind]+'</span><span class="cwhen">'+(pz.when?'נסגר '+esc(pz.when):'')+(pz.who?' · '+esc(pz.who):'')+(pz.via?' · מ'+esc(pz.via):'')+'</span>'
+     +'<label class="st" title="ביטול הסימון פותח מחדש"><input type="checkbox" checked data-act="done" data-screen="'+r.x.s.key+'" data-id="'+f.id+'"> נבדק</label><a class="golink" href="#screen='+r.x.s.key+'&tab='+f.kind+'">לדף המסך ›</a></div></div>'}).join('');
+  app.innerHTML=h;
 }
 /* ---------- דף מסך ---------- */
 var TAB='todo';
@@ -331,14 +356,14 @@ app.addEventListener('click',function(e){
 });
 /* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. משותף לדף המסך ולדף המתכנת.
    בדרך לבדיקות נשמר "back" — המצב המקורי — כדי ש"נכשל" יחזיר את הפריט למי שבנה, עם החומרה והדרישה שהיו. */
-function logAdd(f,ev,who,txt){(f.log=f.log||[]).push({when:now(),who:who||'',ev:ev,txt:txt||''})}
+function logAdd(f,ev,who,txt,via){var e={when:now(),who:who||'',ev:ev,txt:txt||''};if(via)e.via=via;(f.log=f.log||[]).push(e)}
 function advance(f,checked,note){
-  if(!checked){f.status='open';logAdd(f,'reopened','אייל','');f.updated=today();markDirty();toast('נפתח מחדש');return}
+  if(!checked){f.status='open';if(f.kind==='check'&&f.back&&f.back.dev&&f.dev!=='אייל'){}logAdd(f,'reopened','אייל','');f.updated=today();markDirty();toast('נפתח מחדש — חזר ל'+(f.dev||'הלוח'));return}
   var from=f.kind;
   if(from==='spec'){f.kind='todo';f.what=f.need||f.what;f.need='';logAdd(f,'spec',f.dev,note);toast('עבר ל"נשאר לפתח"')}
   else if(from==='todo'||from==='fix'){var by=f.dev;f.back={kind:from,dev:f.dev,sev:f.sev,what:f.what,need:f.need};
     f.kind='check';f.what='לבדוק: '+(f.need||f.what)+(by?' (נבנה על ידי '+by+')':'');f.need='';f.sev='';f.dev='אייל';logAdd(f,'built',by,note);toast('עבר ל"בדיקות" — על אייל')}
-  else{f.status='done';logAdd(f,'passed','אייל',note);toast('נבדק ✓')}
+  else{f.status='done';var qq=route();logAdd(f,'passed','אייל',note,qq.dev?'דף '+qq.dev:qq.screen?'מסך '+((scr(qq.screen)||{}).name||qq.screen):'מרכז');toast('נבדק ✓')}
   f.updated=today();markDirty();
 }
 function fail(f,note){
@@ -358,8 +383,8 @@ function askNote(title,sub,o,cb){
   p.onclick=function(e){if(e.target===p)p.classList.remove('on')};
   ok.onclick=function(){var v=t.value.trim();if(required&&!v){t.focus();return}p.classList.remove('on');cb(v)};
 }
-function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else renderScreen(q.screen,TAB)}
-function findItem(t){var q=route();if(q.dev){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
+function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.closed!==undefined)renderClosed();else renderScreen(q.screen,TAB)}
+function findItem(t){var q=route();if(q.dev||q.closed!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
@@ -461,10 +486,15 @@ function md(sk,dv){
 /* ---------- רינדור ---------- */
 function render(){
   var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
-  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else renderCenter();
+  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.closed!==undefined)renderClosed(); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
 }
 document.getElementById('bEdit').onclick=function(){EDIT=true;render()};
+document.getElementById('bRefresh').onclick=function(){
+  var b=document.getElementById('bRefresh'); if(EDIT||DRAFT){toast('יש שינויים לא שמורים — קודם שמירה או ביטול');return}
+  b.disabled=true; var before=B.version||0;
+  loadLatest(function(){b.disabled=false; render(); toast((B.version||0)>before?'הלוח התעדכן':'אין חדש')});
+};
 document.getElementById('bCancel').onclick=function(){EDIT=false;render()};
 document.getElementById('bSave').onclick=save;
 document.getElementById('bMd').onclick=md;
