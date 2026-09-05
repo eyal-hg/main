@@ -153,6 +153,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .card.hot{border-color:var(--coral);box-shadow:0 0 0 2px rgba(228,130,110,.25)}.nav a i.hot{background:var(--coral);color:#fff}
 .settings{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;margin:0 0 18px}.settings summary{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;color:var(--navy);font-size:13.5px;list-style:none}.settings summary::-webkit-details-marker{display:none}.settings summary .sp{flex:1}
 .emgrid{display:flex;flex-direction:column;gap:4px;margin-top:10px}.emrow{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;font-size:13px;padding:4px 0;border-top:1px solid var(--line)}.emrow .em{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--ink2);text-align:left}.emrow .ed:empty:before{content:"…";color:var(--ink3)}
+.meid{font-size:12.5px;color:var(--ink2);margin-inline-start:6px;white-space:nowrap}.meid .out{border:0;background:none;font:inherit;font-size:11.5px;color:var(--ink3);cursor:pointer;text-decoration:underline;padding:0 2px}
 .sec{display:flex;align-items:center;gap:10px}
 .drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow.done{opacity:.75}.cwhen{font-size:11.5px;color:var(--ink3);white-space:nowrap}.golink{font-size:12px;color:#14618F;text-decoration:none;font-weight:600;white-space:nowrap}.drow.done .row{cursor:default}.donehdr{margin-top:26px}
 .drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
@@ -169,6 +170,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
     <button class="btn sm pri editonly" id="bSave">שמירה</button>
     <button class="btn sm" id="bMd" title="הורדת MD">MD ⤓</button>
     <button class="btn sm" id="bRefresh" title="מביא את הגרסה האחרונה מגיט, בלי לטעון את הדף">↻ רענון</button>
+    <span class="meid" id="meid"></span>
   </div>
   <div id="banner"></div>
   <div id="app"></div>
@@ -384,18 +386,18 @@ app.addEventListener('click',function(e){
    בדרך לבדיקות נשמר "back" — המצב המקורי — כדי ש"נכשל" יחזיר את הפריט למי שבנה, עם החומרה והדרישה שהיו. */
 function logAdd(f,ev,who,txt,via){var e={when:now(),who:who||'',ev:ev,txt:txt||''};if(via)e.via=via;(f.log=f.log||[]).push(e)}
 function advance(f,checked,note){
-  if(!checked){f.status='open';if(f.kind==='check'&&f.back&&f.back.dev&&f.dev!=='אייל'){}logAdd(f,'reopened','אייל','');f.updated=today();markDirty();toast('נפתח מחדש — חזר ל'+(f.dev||'הלוח'));return}
+  if(!checked){f.status='open';if(f.kind==='check'&&f.back&&f.back.dev&&f.dev!=='אייל'){}logAdd(f,'reopened',(me()||'אייל'),'');f.updated=today();markDirty();toast('נפתח מחדש — חזר ל'+(f.dev||'הלוח'));return}
   var from=f.kind;
   if(from==='spec'){f.kind='todo';f.what=f.need||f.what;f.need='';logAdd(f,'spec',f.dev,note);toast('עבר ל"נשאר לפתח"')}
   else if(from==='todo'||from==='fix'){var by=f.dev;f.back={kind:from,dev:f.dev,sev:f.sev,what:f.what,need:f.need};
     f.kind='check';f.what='לבדוק: '+(f.need||f.what)+(by?' (נבנה על ידי '+by+')':'');f.need='';f.sev='';f.dev='אייל';logAdd(f,'built',by,note);toast('עבר ל"בדיקות" — על אייל')}
-  else{f.status='done';var qq=route();logAdd(f,'passed','אייל',note,qq.dev?'דף '+qq.dev:qq.screen?'מסך '+((scr(qq.screen)||{}).name||qq.screen):'מרכז');toast('נבדק ✓')}
+  else{f.status='done';var qq=route();logAdd(f,'passed',(me()||'אייל'),note,qq.dev?'דף '+qq.dev:qq.screen?'מסך '+((scr(qq.screen)||{}).name||qq.screen):'מרכז');toast('נבדק ✓')}
   f.updated=today();markDirty();
 }
 function fail(f,note){
   var b=f.back||{};
   f.kind='fix';f.dev=b.dev||f.dev||'עידו';f.sev=b.sev||'גבוה';f.need=b.need||f.what.replace(/^לבדוק: /,'');
-  f.what='נכשל בבדיקה '+now()+': '+note;f.status='open';logAdd(f,'failed','אייל',note);
+  f.what='נכשל בבדיקה '+now()+': '+note;f.status='open';logAdd(f,'failed',(me()||'אייל'),note);
   f.updated=today();markDirty();toast('חזר לתיקונים — על '+f.dev);
 }
 /* פופאפ הערה: ב"נבנה/תוקן" רשות (מה עשיתי ואיך לבדוק), ב"נכשל" חובה (מה נכשל) */
@@ -426,12 +428,12 @@ app.addEventListener('click',function(e){
   askNote('נכשל — '+f.title,'מה לא עבד. הפריט חוזר לתיקונים אצל '+((f.back&&f.back.dev)||f.dev||'המתכנת')+'.',true,function(v){fail(f,v);afterChange(q)});
 });
 function ask(f,txt){f.ask={who:f.dev||'',txt:txt,when:now()};logAdd(f,'question',f.dev,txt);f.updated=today();markDirty();toast('ה-Reject נשלח לאייל')}
-function answer(f,txt){logAdd(f,'answer','אייל',txt);f.ask=null;f.updated=today();markDirty();toast('התשובה נשמרה — '+(f.dev||'')+' יראה אותה בפריט')}
+function answer(f,txt){logAdd(f,'answer',(me()||'אייל'),txt);f.ask=null;f.updated=today();markDirty();toast('התשובה נשמרה — '+(f.dev||'')+' יראה אותה בפריט')}
 app.addEventListener('click',function(e){
   var t=e.target.closest('[data-act="ask"],[data-act="answer"],[data-act="reply"],[data-act="closeq"]'); if(!t)return; e.stopPropagation();
   if(t.dataset.act==='reply'||t.dataset.act==='closeq'){var q0=route(), r0=findItem(t), s0=r0[0], f0=r0[1]; if(q0.screen)collect(s0);
-    if(t.dataset.act==='reply')askNote('תשובה לתמיכה — '+f0.title,'מה שתכתוב יופיע ל'+(f0.rep||'מדווח')+' בדף הדיווחים, ליד הבאג.',{required:true,ok:'שליחה',ph:'מה קורה עם זה, בשורה'},function(v){logAdd(f0,'reply','אייל',v);f0.updated=today();markDirty();toast('נשמר');afterChange(q0)});
-    else askNote('סגירה עם תשובה — '+f0.title,'הבאג נסגר בלי תיקון (לא באג / כפילות / לא משחזר). התשובה מוצגת ל'+(f0.rep||'מדווח')+'.',{required:true,ok:'סגירה',ph:'למה זה נסגר',danger:true},function(v){f0.status='done';logAdd(f0,'closed','אייל',v,'מסך '+((scr(q0.screen)||{}).name||''));f0.updated=today();markDirty();toast('נסגר');afterChange(q0)});
+    if(t.dataset.act==='reply')askNote('תשובה לתמיכה — '+f0.title,'מה שתכתוב יופיע ל'+(f0.rep||'מדווח')+' בדף הדיווחים, ליד הבאג.',{required:true,ok:'שליחה',ph:'מה קורה עם זה, בשורה'},function(v){logAdd(f0,'reply',(me()||'אייל'),v);f0.updated=today();markDirty();toast('נשמר');afterChange(q0)});
+    else askNote('סגירה עם תשובה — '+f0.title,'הבאג נסגר בלי תיקון (לא באג / כפילות / לא משחזר). התשובה מוצגת ל'+(f0.rep||'מדווח')+'.',{required:true,ok:'סגירה',ph:'למה זה נסגר',danger:true},function(v){f0.status='done';logAdd(f0,'closed',(me()||'אייל'),v,'מסך '+((scr(q0.screen)||{}).name||''));f0.updated=today();markDirty();toast('נסגר');afterChange(q0)});
     return}
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
   if(t.dataset.act==='ask') askNote('Reject — '+f.title,'מה לא ברור או מה תקוע. אייל רואה את זה בראש הדף שלו ועונה כאן, בפריט.',{required:true,ok:'שליחה לאייל',ph:'מה לא ברור, או מה תקוע ואיפה'},function(v){ask(f,v);afterChange(q)});
@@ -440,6 +442,11 @@ app.addEventListener('click',function(e){
 function logHTML(f){if(!f.log||!f.log.length)return '';var L={built:'נבנה',failed:'נכשל',passed:'נבדק',spec:'אופיין',question:'Reject',answer:'תשובה',reopened:'נפתח מחדש',reported:'דווח',moved:'הועבר',reply:'תשובה לתמיכה',closed:'נסגר'};
   return '<div class="log">'+f.log.map(function(l){return '<div class="'+esc(l.ev)+'"><span>'+esc(l.when)+' · '+esc(l.who)+' · <b>'+(L[l.ev]||l.ev)+'</b></span>'+(l.txt?' '+esc(l.txt):'')+'</div>'}).join('')+'</div>'}
 /* ---------- שמירה ---------- */
+/* אימות מול הפונקציה: session מגוגל, או סיסמת הלוח (גיבוי). מי אני — מהכניסה בגוגל, אחרת מהשם ששמור */
+function auth(){var o={};try{var s=localStorage.getItem('hkSession');if(s)o.session=s;var p=localStorage.getItem('hkBoardPass');if(p)o.password=p}catch(e){}return o}
+function hasAuth(){var a=auth();return !!(a.session||a.password)}
+function me(){try{var u=window.hkUser||JSON.parse(localStorage.getItem('hkUser')||'null');if(u&&u.name)return u.name}catch(e){}try{return localStorage.getItem('hkBoardWho')||''}catch(e){return ''}}
+function logout(){try{['hkSession','hkUser','hkBoardPass','hkBoardWho'].forEach(function(k){localStorage.removeItem(k)})}catch(e){}location.reload()}
 function markDirty(){B.version=(FILE.version||0)+1;B.updated=today();DRAFT=true;try{localStorage.setItem('hkBoardDraft',JSON.stringify(B))}catch(e){}renderNav(route())}
 function fileText(){return '/* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */\nwindow.HK_BOARD = '+JSON.stringify(B,null,1)+';\n'}
 function download(name,text){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
@@ -448,14 +455,13 @@ function save(){
   B.updated=today();
   try{localStorage.setItem('hkBoardDraft',JSON.stringify(B))}catch(e){}
   if(!ONLINE){download('data.js',fileText());toast('data.js ירד — להחליף את board/data.js בריפו');EDIT=false;render();return}
-  var pass=localStorage.getItem('hkBoardPass')||'';
-  if(!pass){toast('הסיסמה לא שמורה — רענן את הדף והיכנס שוב');return}
+  if(!hasAuth()){toast('לא מחובר — רענן את הדף והיכנס שוב');return}
   var b=document.getElementById('bSave');if(b)b.disabled=true;
-  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,board:B,who:localStorage.getItem('hkBoardWho')||''})})
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{board:B,who:me()}))})
    .then(function(r){return r.json().then(function(j){return {ok:r.ok,status:r.status,j:j}})})
    .then(function(x){if(b)b.disabled=false;
      if(x.ok){FILE.version=B.version;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}toast('נשמר לגיט (קומיט '+x.j.commit+')');EDIT=false;render();}
-     else if(x.status===401){localStorage.removeItem('hkBoardPass');toast('הסיסמה השתנתה — רענן את הדף והיכנס שוב');}
+     else if(x.status===401){logout();}
      else{toast('השמירה נכשלה: '+(x.j.error||x.status)+' — הקובץ ירד במקום');download('data.js',fileText());}
    }).catch(function(){if(b)b.disabled=false;toast('אין חיבור לשרת — הקובץ ירד במקום');download('data.js',fileText())});
 }
@@ -520,6 +526,7 @@ function render(){
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
 }
 document.getElementById('bEdit').onclick=function(){EDIT=true;render()};
+(function(){var el=document.getElementById('meid');function paint(){var n=me();el.innerHTML=n?esc(n)+' <button type="button" class="out" title="יציאה">יציאה</button>':'';var o=el.querySelector('.out');if(o)o.onclick=logout}paint();document.addEventListener('hk:login',paint)})();
 document.getElementById('bRefresh').onclick=function(){
   var b=document.getElementById('bRefresh'); if(EDIT||DRAFT){toast('יש שינויים לא שמורים — קודם שמירה או ביטול');return}
   b.disabled=true; var before=B.version||0;
@@ -531,9 +538,8 @@ document.getElementById('bMd').onclick=md;
 window.addEventListener('hashchange',render);
 /* באתר החי: הגרסה העדכנית מגיט, לא הקובץ שנפרס. אם יש טיוטה מקומית חדשה יותר — היא גוברת. */
 function loadLatest(cb){
-  var pass=null; try{pass=localStorage.getItem('hkBoardPass')}catch(e){}
-  if(!ONLINE||!pass){cb();return}
-  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'load'})})
+  if(!ONLINE||!hasAuth()){cb();return}
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'load'}))})
    .then(function(r){return r.json()}).then(function(j){
      if(j&&j.ok&&j.board&&j.board.screens){var g=j.board; g.devs=g.devs&&g.devs.length?g.devs:FILE.devs;
        if(!g.screens.some(function(x){return x.key==='general'}))g.screens.push(GENERAL);
@@ -541,7 +547,8 @@ function loadLatest(cb){
      cb();
    }).catch(function(){cb()});
 }
-loadLatest(render);
+loadLatest(function(){ if(!location.hash&&me()&&B.devs.indexOf(me())>=0) location.hash='#dev='+encodeURIComponent(me()); render(); });
+document.addEventListener('hk:login',function(){ if(me()&&B.devs.indexOf(me())>=0) go('#dev='+encodeURIComponent(me())); loadLatest(render); });
 /* רענון אוטומטי כל דקה: מביא מגיט, ומצייר מחדש רק אם יש גרסה חדשה יותר.
    לא בזמן עריכה ולא כשפופאפ פתוח — כדי לא למחוק למישהו טקסט באמצע. */
 setInterval(function(){

@@ -137,8 +137,10 @@ paintWho();
 $('who').onclick=function(e){var b=e.target.closest('.av');if(!b)return;who=b.dataset.n;try{localStorage.setItem('hkBugWho',who)}catch(_){}paintWho();if(typeof renderList==='function')renderList()};
 /* רשימת המסכים מהלוח (מגיט דרך הפונקציה; אם אין — מהקובץ הפרוס) */
 function fillScreens(list){screens=list;$('scrDD').innerHTML='<button type="button" data-k="" class="on">לא יודע</button>'+list.map(function(s){return '<button type="button" data-k="'+s.key+'">'+s.name+'</button>'}).join('')}
-var pass=null; try{pass=localStorage.getItem('hkBoardPass')}catch(e){}
-fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass||'',action:'load'})})
+function auth(){var o={};try{var s=localStorage.getItem('hkSession');if(s)o.session=s;var p=localStorage.getItem('hkBoardPass');if(p)o.password=p}catch(e){}return o}
+var pass=true; /* מי מחובר בגוגל — זה המדווח, בלי לבחור */
+(function(){try{var u=JSON.parse(localStorage.getItem('hkUser')||'null');if(u&&u.name){who=u.name;if(REPORTERS.indexOf(who)<0)REPORTERS.push(who);$('who').innerHTML='<span class="av on" title="'+u.email+'">'+who.charAt(0)+'</span>';$('who').onclick=null;paintWho()}}catch(e){}})();
+fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'load'}))})
  .then(function(r){return r.json()}).then(function(j){if(j&&j.board){fillScreens(j.board.screens.filter(function(s){return s.key!=='inbox'}).map(function(s){return {key:s.key,name:s.name}}));BOARD=j.board;renderList()}}).catch(function(){});
 /* הדיווחים: כל פריט שמקורו בתמיכה, בכל מסך, עם המצב שלו */
 var BOARD=null, FLT='mine';
@@ -177,11 +179,11 @@ $('send').onclick=function(){
   var m=$('msg'); m.className='msg'; m.textContent='';
   if(!who){m.className='msg err';m.textContent='מי אתם? בחרו למעלה';return}
   var t=$('title').value.trim(); if(!t){m.className='msg err';m.textContent='מה קרה? משפט אחד.';$('title').focus();return}
-  if(!pass){m.className='msg err';m.textContent='הסיסמה לא שמורה — רענן את הדף והיכנס שוב';return}
+  if(!auth().session&&!auth().password){m.className='msg err';m.textContent='לא מחובר — רענן את הדף והיכנס שוב';return}
   var b=$('send'); b.disabled=true; m.textContent='שומר…';
-  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'bug',bug:{who:who,title:t,screen:screenKey,client:$('client').value.trim(),steps:$('steps').value.trim(),video:$('video').value.trim(),image:img||''}})})
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'bug',bug:{who:who,title:t,screen:screenKey,client:$('client').value.trim(),steps:$('steps').value.trim(),video:$('video').value.trim(),image:img||''}}))})
    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
-   .then(function(x){b.disabled=false;if(x.ok){$('form').style.display='none';$('ok').style.display='block';window.scrollTo(0,0);setTimeout(function(){$('again').click();showTab('list')},1800);fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'load'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.board){BOARD=j.board;renderList()}}).catch(function(){})}else{m.className='msg err';m.textContent='לא נשמר: '+(x.j.error||'שגיאה')}})
+   .then(function(x){b.disabled=false;if(x.ok){$('form').style.display='none';$('ok').style.display='block';window.scrollTo(0,0);setTimeout(function(){$('again').click();showTab('list')},1800);fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'load'}))}).then(function(r){return r.json()}).then(function(j){if(j&&j.board){BOARD=j.board;renderList()}}).catch(function(){})}else{m.className='msg err';m.textContent='לא נשמר: '+(x.j.error||'שגיאה')}})
    .catch(function(){b.disabled=false;m.className='msg err';m.textContent='אין חיבור לשרת'});
 };
 $('again').onclick=function(){$('title').value='';$('client').value='';$('steps').value='';$('video').value='';img=null;$('prev').style.display='none';$('form').style.display='block';$('ok').style.display='none';$('title').focus()};

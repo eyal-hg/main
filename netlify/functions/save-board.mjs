@@ -1,7 +1,7 @@
 // שמירת לוח המשימות (board/data.js) מהדפדפן ישירות ל-GitHub — commit אחד.
 // אימות: סיסמת הלוח (BOARD_PASSWORD). כתיבה: GITHUB_TOKEN (Fine-grained, Contents: write, לריפו הזה בלבד).
 // שני המשתנים ב-Netlify → Site configuration → Environment variables. אותו דפוס כמו save-registry במונדיי.
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 const REPO   = process.env.GITHUB_REPO   || "eyal-hg/main";
 const BRANCH = process.env.GITHUB_BRANCH || "main";
@@ -12,6 +12,22 @@ const sha  = s => createHash("sha256").update(String(s)).digest();
 const same = (a, b) => { const x = sha(a), y = sha(b); return x.length === y.length && timingSafeEqual(x, y); };
 
 const S = s => String(s == null ? "" : s).slice(0, 4000);
+
+/* ---- כניסה עם Google ----
+   הדפדפן מקבל מגוגל credential (ID token). הפונקציה מאמתת אותו מול גוגל (tokeninfo), בודקת שה-aud הוא
+   ה-Client ID שלנו ושהמייל ברשימת ALLOWED_EMAILS, ומחזירה session חתום (HMAC) ל-30 יום.
+   המפתח לחתימה נגזר מהסודות הקיימים — בלי משתנה נוסף. סיסמת הלוח נשארת כגיבוי. */
+const secret = () => sha("hk-session|" + (process.env.GITHUB_TOKEN || "") + "|" + (process.env.BOARD_PASSWORD || ""));
+const b64u = b => Buffer.from(b).toString("base64url");
+const signSession = (email, name) => { const p = b64u(JSON.stringify({ e: email, n: name, x: Date.now() + 30 * 864e5 })); return p + "." + createHmac("sha256", secret()).update(p).digest("base64url"); };
+function readSession(tok) {
+  try { const [p, sig] = String(tok || "").split("."); if (!p || !sig) return null;
+    const want = createHmac("sha256", secret()).update(p).digest("base64url");
+    if (want.length !== sig.length || !timingSafeEqual(Buffer.from(want), Buffer.from(sig))) return null;
+    const o = JSON.parse(Buffer.from(p, "base64url").toString("utf8")); if (!o.e || Date.now() > o.x) return null; return { email: o.e, name: o.n || "" };
+  } catch { return null; }
+}
+const allowed = () => String(process.env.ALLOWED_EMAILS || "").split(",").map(x => x.trim().toLowerCase()).filter(Boolean);
 function clean(board) {
   if (!board || typeof board !== "object") throw new Error("board חסר");
   const screens = Array.isArray(board.screens) ? board.screens : [];
@@ -65,21 +81,37 @@ export default async (req) => {
   const len = Number(req.headers.get("content-length") || 0);
   if (len > MAX) return json(413, { error: "גדול מדי" });
   let body; try { body = await req.json(); } catch { return json(400, { error: "JSON לא תקין" }); }
-  if (!same(body.password || "", pass)) return json(401, { error: "סיסמה שגויה" });
-  if (body.action === "check") return json(200, { ok: true });   // כניסה לממשק — בדיקת סיסמה בלבד
   async function loadBoard() {
     const f = await gh(token, `/repos/${REPO}/contents/board/data.js?ref=${BRANCH}`, { headers: { accept: "application/vnd.github.raw+json" } }, true);
     const m = String(f).match(/window\.HK_BOARD\s*=\s*(\{[\s\S]*\});?\s*$/);
     if (!m) throw new Error("data.js לא בפורמט הצפוי");
     return JSON.parse(m[1]);
   }
+  const gcid = process.env.GOOGLE_CLIENT_ID || "";
+  if (body.action === "config") return json(200, { ok: true, googleClientId: gcid, passwordLogin: true });   // ציבורי: מה השער צריך כדי להיבנות
+  if (body.action === "google") {   // credential מגוגל → session שלנו
+    if (!gcid) return json(501, { error: "GOOGLE_CLIENT_ID לא מוגדר ב-Netlify" });
+    const cred = String(body.credential || ""); if (!cred || cred.length > 4000) return json(400, { error: "credential חסר" });
+    let info; try { const r = await fetch("https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(cred)); info = await r.json(); if (!r.ok) throw new Error(info.error_description || "token"); }
+    catch (e) { return json(401, { error: "גוגל לא אישר את הכניסה" }); }
+    if (info.aud !== gcid) return json(401, { error: "הכניסה לא שייכת לאתר הזה" });
+    if (String(info.email_verified) !== "true") return json(401, { error: "המייל לא מאומת בגוגל" });
+    const email = String(info.email || "").toLowerCase();
+    if (!allowed().includes(email)) return json(403, { error: "הכתובת " + email + " לא ברשימת המורשים. אייל יכול להוסיף אותה בלוח." });
+    let name = ""; try { const b = await loadBoard(); const m = (b.emails || []).find(x => String(x.email).toLowerCase() === email); if (m) name = m.who; } catch {}
+    return json(200, { ok: true, session: signSession(email, name || String(info.given_name || info.name || "")), email, name: name || String(info.given_name || info.name || "") });
+  }
+  /* אימות לכל השאר: session מגוגל, או סיסמת הלוח (גיבוי) */
+  const ses = readSession(body.session);
+  if (!ses && !same(body.password || "", pass)) return json(401, { error: "סיסמה שגויה" });
+  if (body.action === "check") return json(200, { ok: true, who: ses ? ses.name : "", email: ses ? ses.email : "" });
   const stamp = () => new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
   if (body.action === "load") {   // הלוח קורא את הגרסה האחרונה מגיט — בלי לחכות לפריסה, ובלי לבנות בכלל
     try { return json(200, { ok: true, board: await loadBoard() }); } catch (e) { return json(502, { error: e.message }); }
   }
   if (body.action === "bug") {    // דיווח מהתמיכה: פריט תיקון בתיבה "מהתמיכה" + צילום ב-board/img/bugs/. קומיט אחד, בלי פריסה
     const g = body.bug || {};
-    const title = S(g.title).slice(0, 300).trim(), who = S(g.who).slice(0, 40).trim();
+    const title = S(g.title).slice(0, 300).trim(), who = ((ses && ses.name) || S(g.who)).slice(0, 40).trim();
     if (!title || !who) return json(422, { error: "חסר מה קרה או מי מדווח" });
     let board; try { board = await loadBoard(); } catch (e) { return json(502, { error: e.message }); }
     let inbox = board.screens.find(x => x.key === "inbox");
@@ -106,7 +138,7 @@ export default async (req) => {
   board.updated = when;
   const content = "/* לוח המשימות — נשמר מהמסך " + when + " */\nwindow.HK_BOARD = " + JSON.stringify(board, null, 1) + ";\n";
   try {
-    const sha = await commitFiles(token, { "board/data.js": content }, `לוח המשימות — נשמר מהמסך ${when}${body.who ? " · " + String(body.who).slice(0, 40) : ""}`);
+    const sha = await commitFiles(token, { "board/data.js": content }, `לוח המשימות — נשמר מהמסך ${when}${(ses && ses.name) || body.who ? " · " + String((ses && ses.name) || body.who).slice(0, 40) : ""}`);
     return json(200, { ok: true, commit: sha.slice(0, 7), when });
   } catch (e) { return json(502, { error: e.message }); }
 };
