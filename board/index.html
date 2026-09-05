@@ -369,7 +369,7 @@ function save(){
   fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,board:B,who:localStorage.getItem('hkBoardWho')||''})})
    .then(function(r){return r.json().then(function(j){return {ok:r.ok,status:r.status,j:j}})})
    .then(function(x){if(b)b.disabled=false;
-     if(x.ok){FILE.version=B.version;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}toast('נשמר לגיט (קומיט '+x.j.commit+'). נטליפיי מתעדכן תוך דקה.');EDIT=false;render();}
+     if(x.ok){FILE.version=B.version;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}toast('נשמר לגיט (קומיט '+x.j.commit+')');EDIT=false;render();}
      else if(x.status===401){localStorage.removeItem('hkBoardPass');toast('הסיסמה השתנתה — רענן את הדף והיכנס שוב');}
      else{toast('השמירה נכשלה: '+(x.j.error||x.status)+' — הקובץ ירד במקום');download('data.js',fileText());}
    }).catch(function(){if(b)b.disabled=false;toast('אין חיבור לשרת — הקובץ ירד במקום');download('data.js',fileText())});
@@ -438,7 +438,19 @@ document.getElementById('bCancel').onclick=function(){EDIT=false;render()};
 document.getElementById('bSave').onclick=save;
 document.getElementById('bMd').onclick=md;
 window.addEventListener('hashchange',render);
-render();
+/* באתר החי: הגרסה העדכנית מגיט, לא הקובץ שנפרס. אם יש טיוטה מקומית חדשה יותר — היא גוברת. */
+function loadLatest(cb){
+  var pass=null; try{pass=localStorage.getItem('hkBoardPass')}catch(e){}
+  if(!ONLINE||!pass){cb();return}
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'load'})})
+   .then(function(r){return r.json()}).then(function(j){
+     if(j&&j.ok&&j.board&&j.board.screens){var g=j.board; g.devs=g.devs&&g.devs.length?g.devs:FILE.devs;
+       if(!g.screens.some(function(x){return x.key==='general'}))g.screens.push(GENERAL);
+       if((g.version||0)>=(FILE.version||0)){FILE=g; if(!DRAFT||(B.version||0)<=(g.version||0)){B=g;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}}}}
+     cb();
+   }).catch(function(){cb()});
+}
+loadLatest(render);
 })();
 </script>
 </body>

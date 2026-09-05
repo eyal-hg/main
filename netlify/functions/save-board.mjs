@@ -27,10 +27,11 @@ function clean(board) {
       proto: S(sc.proto).slice(0, 200), items: (Array.isArray(sc.items) ? sc.items : []).slice(0, 300).map(item) })) };
 }
 
-async function gh(token, path, init = {}) {
+async function gh(token, path, init = {}, raw = false) {
   const r = await fetch(`https://api.github.com${path}`, { ...init,
     headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "x-github-api-version": "2022-11-28",
                "content-type": "application/json", ...(init.headers || {}) } });
+  if (raw) { if (!r.ok) throw new Error(`GitHub ${r.status} ב-${path}`); return await r.text(); }
   const body = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(`GitHub ${r.status} ב-${path}: ${body.message || ""}`);
   return body;
@@ -60,6 +61,14 @@ export default async (req) => {
   let body; try { body = await req.json(); } catch { return json(400, { error: "JSON לא תקין" }); }
   if (!same(body.password || "", pass)) return json(401, { error: "סיסמה שגויה" });
   if (body.action === "check") return json(200, { ok: true });   // כניסה לממשק — בדיקת סיסמה בלבד
+  if (body.action === "load") {   // הלוח קורא את הגרסה האחרונה מגיט — בלי לחכות לפריסה, ובלי לבנות בכלל
+    try {
+      const f = await gh(token, `/repos/${REPO}/contents/board/data.js?ref=${BRANCH}`, { headers: { accept: "application/vnd.github.raw+json" } }, true);
+      const m = String(f).match(/window\.HK_BOARD\s*=\s*(\{[\s\S]*\});?\s*$/);
+      if (!m) throw new Error("data.js לא בפורמט הצפוי");
+      return json(200, { ok: true, board: JSON.parse(m[1]) });
+    } catch (e) { return json(502, { error: e.message }); }
+  }
   let board; try { board = clean(body.board); } catch (e) { return json(422, { error: e.message }); }
   const when = new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
   board.updated = when;

@@ -2,6 +2,9 @@
 [build]
   publish = "."
   command = ""
+  # שמירה מהלוח = קומיט של board/data.js בלבד. הלוח קורא אותו ישירות מגיט (action:load),
+  # אז קומיט כזה לא צריך פריסה. יציאה 0 = לדלג על הבנייה.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)board/data.js'"
 
 [functions]
   directory = "netlify/functions"
