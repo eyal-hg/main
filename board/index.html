@@ -145,6 +145,12 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
 .askb{border:1px solid var(--line2);background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.askb:hover{border-color:var(--sky);color:#14618F}.askb.on{border-color:#c98404;color:#c98404}
 .from.bad{background:var(--bad)}
+.stabs{display:flex;gap:6px;margin-bottom:10px}.stab{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line2);background:#fff;color:var(--ink2);border-radius:999px;padding:6px 14px;cursor:pointer}.stab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+#dsbody h4{margin:14px 0 6px;font-size:12px;color:var(--ink3);font-weight:700;letter-spacing:.03em}
+.tok{display:grid;grid-template-columns:150px 92px 1fr 1fr;gap:10px;align-items:center;padding:4px 0;border-top:1px solid var(--line);font-size:12px}
+.tok code{font-size:11.5px;color:var(--navy);direction:ltr;text-align:left}.tok .val{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--ink2);direction:ltr;text-align:left}.tok .note{color:var(--ink3);font-size:11.5px}
+.tok .sw{display:inline-block;width:28px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.08)}.tok .tx{color:var(--ink);line-height:1}.tok .bar{display:inline-block;height:6px;background:var(--sky);border-radius:2px}.tok .rad{display:inline-block;width:28px;height:18px;border:1.5px solid var(--navy)}
+.comps{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 0}
 .pinchip{color:var(--coral);margin-inline-end:6px}.pinhdr span{color:var(--coral)}.itemmd{margin-inline-start:10px}.askb.on{border-color:var(--coral);color:var(--coral)}
 .srch{font:inherit;font-size:12.5px;border:1px solid var(--line2);border-radius:999px;padding:5px 12px;width:150px;color:var(--ink);background:var(--panel)}.srch:focus{outline:none;border-color:var(--sky);width:200px}
 mark{background:#FFF1B8;color:inherit;border-radius:3px;padding:0 1px}
@@ -190,11 +196,15 @@ mark{background:#FFF1B8;color:inherit;border-radius:3px;padding:0 1px}
   <label class="fl"><span id="aWhatL">מה חסר</span><textarea id="aWhat" rows="3"></textarea></label>
   <label class="fl" id="aNeedW"><span id="aNeedL">מה צריך להיות</span><textarea id="aNeed" rows="3"></textarea></label>
   <div class="f"><button class="btn pri" id="aOk">שמירה לגיט</button><button class="btn" id="aX">ביטול</button></div></div></div>
-<div class="pop" id="setpop"><div class="md" style="width:520px"><h3>מי מורשה להיכנס</h3><p>הרשימה שנכנסת ל-ALLOWED_EMAILS בנטליפיי. אחרי שינוי: שמירה, ואז העתקה והדבקה בנטליפיי.</p><div id="setbody"></div><div class="f"><button class="btn pri" id="setSave">שמירה לגיט</button><button class="btn" id="copyEm" type="button">העתקה ל-ALLOWED_EMAILS</button><button class="btn" id="setX">סגירה</button></div><div class="f" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><span style="font-size:12.5px;color:var(--ink3);flex:1">מספור הפריטים (#) — הפריט הבא יקבל <b id="seqNext"></b></span><button class="btn sm" id="setRenum">איפוס המספור</button></div></div></div>
+<div class="pop" id="setpop"><div class="md" style="width:640px;max-height:86vh;overflow:auto"><div class="stabs"><button class="stab on" data-st="who">מי מורשה להיכנס</button><button class="stab" data-st="ds">שפת עיצוב</button></div>
+  <div class="spane" id="sp-who"><p>הרשימה שנכנסת ל-ALLOWED_EMAILS בנטליפיי. אחרי שינוי: שמירה, ואז העתקה והדבקה בנטליפיי.</p><div id="setbody"></div><div class="f"><button class="btn pri" id="setSave">שמירה לגיט</button><button class="btn" id="copyEm" type="button">העתקה ל-ALLOWED_EMAILS</button><button class="btn" id="setX">סגירה</button></div><div class="f" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><span style="font-size:12.5px;color:var(--ink3);flex:1">מספור הפריטים (#) — הפריט הבא יקבל <b id="seqNext"></b></span><button class="btn sm" id="setRenum">איפוס המספור</button></div></div>
+  <div class="spane" id="sp-ds" hidden><p>המקור: <code>css/tokens.css</code>. מה שכתוב שם הוא מה שרואים כאן — שם, ערך, והאלמנט עצמו. הקובץ נכנס לפרויקט הלקוח כמו שהוא.</p><div id="dsbody"><div class="empty">טוען…</div></div><div class="f"><button class="btn" id="setX2">סגירה</button></div></div>
+</div></div>
 <div class="pop" id="npop"><div class="md"><h3 id="nTitle">הערה</h3><p id="nSub"></p>
   <label class="fl"><textarea id="nTxt" rows="4"></textarea></label>
   <div class="f"><button class="btn pri" id="nOk">אישור</button><button class="btn" id="nX">ביטול</button></div></div></div>
 <div class="toast" id="toast"></div>
+<link rel="stylesheet" href="../css/tokens.css">
 <script src="../js/gate.js" defer></script>
 <script src="data.js"></script>
 <script>
@@ -280,6 +290,34 @@ function renderSettings(){
   var ea=document.getElementById('emAdd'); if(ea)ea.onclick=function(){collectEmails();(B.emails=B.emails||[]).push({who:'',email:''});markDirty();renderSettings()};
   document.querySelectorAll('#setbody [data-emdel]').forEach(function(b){b.onclick=function(){collectEmails();B.emails.splice(+b.dataset.emdel,1);markDirty();renderSettings()}});
   document.querySelectorAll('#emgrid .ed').forEach(function(el){el.contentEditable='true'});
+}
+document.querySelectorAll('.stab').forEach(function(b){b.onclick=function(){document.querySelectorAll('.stab').forEach(function(x){x.classList.toggle('on',x===b)});document.getElementById('sp-who').hidden=b.dataset.st!=='who';document.getElementById('sp-ds').hidden=b.dataset.st!=='ds';if(b.dataset.st==='ds')renderDS()}});
+document.getElementById('setX2').onclick=function(){document.getElementById('setpop').classList.remove('on')};
+/* שפת עיצוב: קורא את css/tokens.css ומצייר שם · ערך · האלמנט */
+var DS=null;
+function renderDS(){
+  var host=document.getElementById('dsbody');
+  function draw(css){
+    var out='',sec='';
+    css.split('\n').forEach(function(line){
+      var m=line.match(/^\s*\/\*\s*---\s*(.+?)\s*---\s*\*\/\s*$/); if(m){sec=m[1];out+='<h4>'+esc(sec)+'</h4>';return}
+      var re=/--(hk-[a-z0-9-]+):\s*([^;]+);(?:\s*\/\*\s*(.*?)\s*\*\/)?/g,mm;
+      while((mm=re.exec(line))){var name=mm[1],val=mm[2].trim(),note=(mm[3]||'').trim();
+        var sample='';
+        if(/^#[0-9a-f]{6}$/i.test(val))sample='<span class="sw" style="background:'+val+'"></span>';
+        else if(/^\d+(\.\d+)?px$/.test(val)&&/-fs-|-num/.test(name))sample='<span class="tx" style="font-size:'+val+'">אבג 123</span>';
+        else if(/^\d+px$/.test(val)&&/-sp-|-pad-/.test(name))sample='<span class="bar" style="width:'+val+'"></span>';
+        else if(/^\d+px$/.test(val)&&/-r-/.test(name))sample='<span class="rad" style="border-radius:'+val+'"></span>';
+        else if(/^\d+px$/.test(val)&&/-h$|-w$/.test(name))sample='<span class="bar" style="width:'+Math.min(parseInt(val),200)+'px;height:8px"></span>';
+        else if(/shadow/.test(name))sample='<span class="rad" style="box-shadow:'+val+';border:0;background:#fff"></span>';
+        else if(/^\d{3}$/.test(val))sample='<span class="tx" style="font-weight:'+val+'">אבג</span>';
+        out+='<div class="tok"><code>--'+esc(name)+'</code><span class="val">'+esc(val)+'</span><span class="smp">'+sample+'</span><span class="note">'+esc(note)+'</span></div>';}
+    });
+    out+='<h4>רכיבי בסיס</h4><div class="comps"><button class="hk-btn hk-btn--primary">פעולה ראשית</button><button class="hk-btn">משני</button><button class="hk-btn hk-btn--sm">קטן</button><span class="hk-chip">צ׳יפ</span><span class="hk-chip hk-chip--on">פעיל</span><span class="hk-alert">התראה</span><span class="hk-num">-289,161<span class="hk-num__cur">₪</span></span><input class="hk-input" value="שדה קלט"></div>';
+    host.innerHTML=out;
+  }
+  if(DS){draw(DS);return}
+  fetch('../css/tokens.css').then(function(r){return r.text()}).then(function(t){DS=t;draw(t)}).catch(function(){host.innerHTML='<div class="empty">לא הצלחתי לקרוא את css/tokens.css</div>'});
 }
 document.getElementById('bSet').onclick=function(){renderSettings();document.getElementById('seqNext').textContent='#'+((B.seq||0)+1);document.getElementById('setpop').classList.add('on')};
 document.getElementById('setRenum').onclick=function(){var b=this;if(b.dataset.arm){renumber();delete b.dataset.arm;b.textContent='איפוס המספור';document.getElementById('seqNext').textContent='#'+((B.seq||0)+1);render();return}b.dataset.arm='1';b.textContent='בטוח? לחיצה נוספת מאפסת';b.classList.add('danger')};
