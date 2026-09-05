@@ -1,7 +1,7 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 47,
- "seq": 96,
+ "version": 48,
+ "seq": 98,
  "updated": "05.09.2026, 16:55",
  "emails": [
   {
@@ -767,6 +767,44 @@ window.HK_BOARD = {
      "capB": "",
      "created": "05.09.2026 19:19",
      "updated": "05.09.2026 19:19"
+    },
+    {
+     "id": "comm-51",
+     "n": 97,
+     "pin": true,
+     "kind": "todo",
+     "title": "למזג PR #2 — שיחות טלפון לא מזוהות + תיקון הנגן",
+     "what": "https://github.com/h-beehive/hk-client/pull/2 — ענף design/unidentified-calls אל stg. נבנה אצלנו לפי הפרוטוטיפ, נבדק מקומית מול שרת הסטייג׳ינג, אייל אישר.",
+     "need": "לעבור על ה-diff (קובץ CSS חדש UnidentifiedCalls.css, 60 שורות JSX בתור, תיקון AbortError בנגן, client.ts רק ל-localhost), למזג ל-stg, לוודא שהפריסה ל-Firebase עברה, ולסמן כאן \"נבנה\". אם משהו לא מסתדר עם הקוד שלך — Reject עם מה, לא לשכתב.",
+     "sev": "",
+     "dev": "עידו",
+     "who": "",
+     "status": "open",
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "05.09.2026 20:05",
+     "updated": "05.09.2026 20:05"
+    },
+    {
+     "id": "comm-52",
+     "n": 98,
+     "pin": true,
+     "kind": "todo",
+     "title": "למזג PR #3 — מסך תקשורת לפי הפרוטוטיפ (ראש הזירה, רשימה, רצועה, תובנות)",
+     "what": "https://github.com/h-beehive/hk-client/pull/3 — ענף design/arena-header אל stg, יושב על PR #2 (למזג אחריו). שני קבצי CSS חדשים (ArenaHeader.css, CommunicationsProto.css) ושינויי JSX בתקשורת בלבד.",
+     "need": "למזג אחרי #2, לוודא פריסה, לסמן \"נבנה\". הלוגיקה (טעינה, שיוך, אישור ושליחה) לא השתנתה — אם משהו נשבר בנתונים, זה ב-JSX של הראש או של תא התאריך.",
+     "sev": "",
+     "dev": "עידו",
+     "who": "",
+     "status": "open",
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "05.09.2026 20:05",
+     "updated": "05.09.2026 20:05"
     }
    ]
   },
