@@ -308,11 +308,6 @@ function renderDev(d){
        +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
        +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
-  /* סגורים: מה שסומן "נבדק". מקופל, ואפשר להחזיר — ביטול הסימון פותח מחדש */
-  var doneL=allItems().filter(function(x){return x.it.status==='done'&&(d==='אייל'||(x.it.back&&x.it.back.dev===d)||x.it.dev===d)});
-  if(doneL.length){h+='<h2 class="sec donehdr"><button class="btn sm" id="bDone">'+(SHOWDONE?'הסתרת הסגורים':'סגורים · '+doneL.length)+'</button></h2>';
-    if(SHOWDONE)h+=doneL.map(function(x){var f=x.it,lg=f.log||[],pz=lg.filter(function(l){return l.ev==='passed'}).pop();
-      return '<div class="drow done"><div class="row" data-tog="'+f.id+'"><span class="num">✓</span><span class="t">'+esc(f.title)+'<small>'+esc(x.s.name)+(pz?' · נבדק '+esc(pz.when):'')+(f.back&&f.back.dev?' · בנה '+esc(f.back.dev):'')+'</small></span><span class="kind">'+KN[f.kind]+'</span><span></span><label class="st" onclick="event.stopPropagation()" title="ביטול הסימון פותח את הפריט מחדש"><input type="checkbox" checked data-act="done" data-screen="'+x.s.key+'" data-id="'+f.id+'"> נבדק</label><span></span><span class="car"></span></div></div>'}).join('');}
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
 }
@@ -543,6 +538,7 @@ function loadLatest(cb){
    .then(function(r){return r.json()}).then(function(j){
      if(j&&j.ok&&j.board&&j.board.screens){var g=j.board; g.devs=g.devs&&g.devs.length?g.devs:FILE.devs;
        if(!g.screens.some(function(x){return x.key==='general'}))g.screens.push(GENERAL);
+       if(!g.screens.some(function(x){return x.key==='inbox'}))g.screens.unshift(INBOX);
        if((g.version||0)>=(FILE.version||0)){FILE=g; if(!DRAFT||(B.version||0)<=(g.version||0)){B=g;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}}}}
      cb();
    }).catch(function(){cb()});
