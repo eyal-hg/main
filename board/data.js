@@ -2,7 +2,7 @@
 window.HK_BOARD = {
  "version": 54,
  "seq": 101,
- "updated": "06.09.2026 01:20",
+ "updated": "05.09.2026 20:33",
  "emails": [
   {
    "who": "אייל",
@@ -130,8 +130,8 @@ window.HK_BOARD = {
      "capA": "",
      "imgB": "",
      "capB": "",
-     "created": "06.09.2026 01:10",
-     "updated": "06.09.2026 01:10",
+     "created": "05.09.2026 20:25",
+     "updated": "05.09.2026 20:25",
      "log": [],
      "ask": null,
      "pin": true,
@@ -177,10 +177,10 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "06.09.2026 01:10",
+     "updated": "05.09.2026 20:25",
      "log": [
       {
-       "when": "06.09.2026 01:10",
+       "when": "05.09.2026 20:25",
        "who": "אייל (Claude)",
        "ev": "built",
        "txt": "נבנה בריפו של הלקוח, PR https://github.com/h-beehive/hk-client/pull/4. השורה ירדה; הרצועה יושבת ישר מתחת לפס העליון. נמדד מקומית."
@@ -331,10 +331,10 @@ window.HK_BOARD = {
      "imgB": "img/owner-proto-docs-all.jpg",
      "capB": "הפרוטוטיפ: פופאפ \"המסמכים שהעליתי\" — בטיפול / הוזנו, פתיחה, מחיקה רק למה שלא הוזן.",
      "created": "05.09.2026",
-     "updated": "06.09.2026 01:10",
+     "updated": "05.09.2026 20:25",
      "log": [
       {
-       "when": "06.09.2026 01:10",
+       "when": "05.09.2026 20:25",
        "who": "אייל (Claude)",
        "ev": "built",
        "txt": "הצד של הממשק נבנה בריפו של הלקוח, PR https://github.com/h-beehive/hk-client/pull/4: הקישור \"כל המסמכים (N)\", הפופאפ \"המסמכים שהעליתי\", מחיקה עם ביטול 5 שניות. הצד של השרת (DELETE, מי העלה, קישור) — פריט נפרד לעידו."
@@ -365,7 +365,7 @@ window.HK_BOARD = {
      "imgB": "img/owner-proto-hero.jpg",
      "capB": "הפרוטוטיפ: שני המספרים על אותו קו בסיס, ₪ קטן, מינוס משמאל.",
      "created": "05.09.2026 17:11",
-     "updated": "06.09.2026 01:10",
+     "updated": "05.09.2026 20:25",
      "back": {
       "kind": "fix",
       "dev": "עידו",
@@ -375,7 +375,7 @@ window.HK_BOARD = {
      },
      "log": [
       {
-       "when": "06.09.2026 01:10",
+       "when": "05.09.2026 20:25",
        "who": "אייל (Claude)",
        "ev": "built",
        "txt": "נבנה בריפו של הלקוח, PR https://github.com/h-beehive/hk-client/pull/4. אותו שלד כמו .chero בפרוטוטיפ: כותרת 24px · מספר 27px · שורת משנה · גלולה. 43 סלקטורים נמדדו מול הפרוטוטיפ — זהים."
@@ -392,8 +392,8 @@ window.HK_BOARD = {
      "capA": "",
      "imgB": "",
      "capB": "",
-     "created": "06.09.2026 01:10",
-     "updated": "06.09.2026 01:10",
+     "created": "05.09.2026 20:25",
+     "updated": "05.09.2026 20:25",
      "log": [],
      "ask": null,
      "dev": "עידו",
@@ -418,8 +418,8 @@ window.HK_BOARD = {
      "capA": "",
      "imgB": "",
      "capB": "",
-     "created": "06.09.2026 01:20",
-     "updated": "06.09.2026 01:20",
+     "created": "05.09.2026 20:33",
+     "updated": "05.09.2026 20:33",
      "log": [],
      "ask": null
     }
