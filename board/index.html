@@ -145,6 +145,8 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
 .askb{border:1px solid var(--line2);background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.askb:hover{border-color:var(--sky);color:#14618F}.askb.on{border-color:#c98404;color:#c98404}
 .from.bad{background:var(--bad)}
+.srch{font:inherit;font-size:12.5px;border:1px solid var(--line2);border-radius:999px;padding:5px 12px;width:150px;color:var(--ink);background:var(--panel)}.srch:focus{outline:none;border-color:var(--sky);width:200px}
+mark{background:#FFF1B8;color:inherit;border-radius:3px;padding:0 1px}
 .item.col .ih{cursor:pointer}.item.col .ih .car{color:var(--ink3);transition:.15s;display:inline-block;margin-inline-start:4px}.item.col.open .ih .car{transform:rotate(90deg)}
 .item.col:not(.open) .ib,.item.col:not(.open) .smeta,.item.col:not(.open) .log{display:none}.item.col:not(.open) .ih{border-bottom:0;padding-bottom:12px}.ih .snip{display:none;flex-basis:100%;order:9;font-size:12px;color:var(--ink3);margin:-8px 0 0 0;padding-inline-start:36px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.item.col:not(.open) .ih .snip{display:block}body.edit .item.col .ih{cursor:default}body.edit .item.col .car{display:none}
 .num{width:auto;min-width:26px;padding:0 6px;border-radius:999px}.num.done{background:var(--ok)}
@@ -169,6 +171,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
     <span class="brand">לוח המשימות</span>
     <nav class="nav" id="nav"></nav>
     <span class="sp"></span>
+    <input class="srch" id="srch" type="search" placeholder="חיפוש: מספר או מילה" autocomplete="off">
     <button class="btn sm viewonly" id="bEdit">עריכה</button>
     <button class="btn sm editonly" id="bCancel">ביטול</button>
     <button class="btn sm pri editonly" id="bSave">שמירה</button>
@@ -231,7 +234,7 @@ function route(){var h=location.hash.replace('#','');var q={};h.split('&').forEa
 function go(h){location.hash=h}
 /* ---------- ניווט ---------- */
 function renderNav(q){
-  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined)?' class="on"':'')+'>מרכז</a>';
+  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined&&q.q===undefined)?' class="on"':'')+'>מרכז</a>';
   B.devs.forEach(function(d){var n=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)}).length;h+='<a href="#dev='+encodeURIComponent(d)+'"'+(q.dev===d?' class="on"':'')+'>'+esc(d)+(n?' <i>'+n+'</i>':'')+'</a>'});
   var sn=supportNew().length;
   h+='<a href="#screen=inbox"'+(q.screen==='inbox'?' class="on"':'')+' style="margin-inline-start:14px">תמיכה'+(sn?' <i class="hot">'+sn+'</i>':'')+'</a>';
@@ -319,6 +322,27 @@ function renderDev(d){
   var ht=app.querySelector('details.howto'); if(ht)ht.ontoggle=function(){HOWTO_OPEN=ht.open;try{localStorage.setItem('hkHowto',ht.open?'1':'0')}catch(e){}};
 }
 function parseWhen(w){var m=String(w||'').match(/(\d\d)\.(\d\d)\.(\d{4})(?:\D+(\d\d):(\d\d))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0}
+/* ---------- חיפוש ----------
+   מספר (#84 או 84) — הפריט הזה. מילה — בכותרת, בטקסטים ובהיסטוריה, פתוחים וסגורים, בכל המסכים. */
+function searchItems(qs){
+  var t=String(qs||'').trim(); if(!t)return [];
+  var m=t.match(/^#?(\d+)$/); if(m){var n=+m[1];return allItems().filter(function(x){return x.it.n===n})}
+  var lc=t.toLowerCase();
+  return allItems().filter(function(x){var f=x.it;var hay=[f.title,f.what,f.need,f.client,f.rep,f.dev,x.s.name].concat((f.log||[]).map(function(l){return l.txt})).join(' ').toLowerCase();return hay.indexOf(lc)>=0});
+}
+function hl(txt,qs){var e=esc(txt);if(!qs||/^#?\d+$/.test(qs))return e;var re=new RegExp(esc(qs).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');return e.replace(re,function(m){return '<mark>'+m+'</mark>'})}
+function renderSearch(qs){
+  var L=searchItems(qs);
+  var h='<div class="band"><div><div class="eyebrow">חיפוש</div><h1>'+esc(qs)+'</h1><div class="meta"><span>'+(L.length?L.length+' פריטים, פתוחים וסגורים, בכל המסכים.':'לא נמצא. מספר = הפריט הזה; מילה = בכותרת, בטקסטים ובהיסטוריה.')+'</span></div></div></div>';
+  h+=L.map(function(x){var f=x.it,k=x.s.key,done=f.status==='done',lg=f.log||[],last=lg[lg.length-1];
+    return '<div class="drow'+(OPEN[f.id]?' open':'')+(done?' done':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'" style="grid-template-columns:26px 1fr auto auto auto auto 14px"><span class="num'+(done?' done':'')+'">'+(f.n||'')+'</span><span class="t">'+hl(f.title,qs)+'<small>'+esc(x.s.name)+(f.dev?' · על '+esc(f.dev):'')+(last?' · '+esc(last.when)+' '+esc(last.who)+' '+({built:'נבנה',failed:'נכשל',passed:'נבדק',spec:'אופיין',question:'Reject',answer:'תשובה',reopened:'נפתח מחדש',reported:'דווח',moved:'הועבר',reply:'תשובה לתמיכה',closed:'נסגר'}[last.ev]||last.ev):'')+'</small></span>'
+     +'<span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"'+(done?' checked':'')+'> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'&&!done?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'<span></span>')+'<span class="car">›</span></div>'
+     +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+(f.kind==='check'?'מה בודקים ואיך':f.kind==='fix'?'היום בסטייג׳ינג':'מה חסר')+'</h3><p>'+hl(f.what,qs)+'</p>'+(f.imgA?'<figure><img '+imgSrc(f.imgA)+' alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
+     +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+(f.kind==='spec'?'מה צריך להחליט':'צריך להיות')+'</h3><p>'+hl(f.need,qs)+'</p>'+(f.imgB?'<figure><img '+imgSrc(f.imgB)+' alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('');
+  app.innerHTML=h;
+  app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
+  if(L.length===1){OPEN[L[0].it.id]=true;var d=app.querySelector('.drow');if(d)d.classList.add('open')}
+}
 /* ---------- הגיע מפיתוח ----------
    כל מה שמתכנת סימן "נבנה/תוקן" ועוד לא נבדק, לפי סדר ההגעה, מקובץ ליום. זה מה שאייל (וה-AI שלו) בודקים קודם. */
 function arrived(){return allItems().filter(function(x){var f=x.it,lg=f.log||[],z=lg[lg.length-1];return open_(f)&&f.kind==='check'&&z&&z.ev==='built'}).map(function(x){var lg=x.it.log,z=lg[lg.length-1];return {x:x,bl:z,t:parseWhen(z.when)}}).sort(function(a,b){return b.t-a.t})}
@@ -418,8 +442,8 @@ function askNote(title,sub,o,cb){
   p.onclick=function(e){if(e.target===p)p.classList.remove('on')};
   ok.onclick=function(){var v=t.value.trim();if(required&&!v){t.focus();return}p.classList.remove('on');cb(v)};
 }
-function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.arrived!==undefined)renderArrived();else renderScreen(q.screen,TAB)}
-function findItem(t){var q=route();if(q.dev||q.arrived!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
+function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.arrived!==undefined)renderArrived();else if(q.q!==undefined)renderSearch(q.q);else renderScreen(q.screen,TAB)}
+function findItem(t){var q=route();if(q.dev||q.arrived!==undefined||q.q!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
@@ -542,11 +566,18 @@ function hydrateBugImages(root){
 function imgSrc(p){return /^img\/bugs\//.test(p)?'data-bug="'+esc(p)+'" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="':'src="'+esc(p)+'"'}
 function render(){
   var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
-  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else renderCenter();
+  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else if(q.q!==undefined)renderSearch(q.q); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
   hydrateBugImages(app);
 }
 document.getElementById('bEdit').onclick=function(){EDIT=true;render()};
+(function(){var el=document.getElementById('srch'),tm=null;
+  function goQ(){var v=el.value.trim();if(!v){if(route().q!==undefined)go('#center');return}go('#q='+encodeURIComponent(v))}
+  el.onkeydown=function(e){if(e.key==='Enter'){clearTimeout(tm);goQ()}if(e.key==='Escape'){el.value='';goQ()}};
+  el.oninput=function(){clearTimeout(tm);tm=setTimeout(goQ,350)};
+  window.addEventListener('hashchange',function(){var q=route();if(q.q===undefined&&document.activeElement!==el)el.value=''});
+  var q0=route();if(q0.q!==undefined)el.value=q0.q;
+})();
 (function(){var el=document.getElementById('meid');function paint(){var n=me();el.innerHTML=n?esc(n)+' <button type="button" class="out" title="יציאה">יציאה</button>':'';var o=el.querySelector('.out');if(o)o.onclick=logout}paint();document.addEventListener('hk:login',paint)})();
 document.getElementById('bRefresh').onclick=function(){
   var b=document.getElementById('bRefresh'); if(EDIT||DRAFT){toast('יש שינויים לא שמורים — קודם שמירה או ביטול');return}
