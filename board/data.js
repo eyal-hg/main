@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 05.09.2026, 16:49 */
+/* לוח המשימות — נשמר מהמסך 05.09.2026, 16:50 */
 window.HK_BOARD = {
- "version": 21,
- "seq": 83,
- "updated": "05.09.2026, 16:49",
+ "version": 22,
+ "seq": 84,
+ "updated": "05.09.2026, 16:50",
  "emails": [
   {
    "who": "אייל",
@@ -49,6 +49,7 @@ window.HK_BOARD = {
    "items": [
     {
      "id": "bug-1",
+     "n": 84,
      "kind": "fix",
      "title": "ניסיון 222",
      "what": "בלי פירוט.",
@@ -1883,7 +1884,7 @@ window.HK_BOARD = {
      "sev": "",
      "dev": "אייל",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
@@ -1896,6 +1897,13 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "built",
        "txt": "בניתי"
+      },
+      {
+       "when": "05.09.2026 16:50",
+       "who": "אייל",
+       "ev": "passed",
+       "txt": "",
+       "via": "מרכז"
       }
      ],
      "ask": null,
