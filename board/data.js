@@ -1737,7 +1737,7 @@ window.HK_BOARD = {
   },
   {
    "who": "אופיר",
-   "email": "ohabas@gmail.com"
+   "email": "ohhabas@gmail.com"
   },
   {
    "who": "טל",
