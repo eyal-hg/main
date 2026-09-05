@@ -350,7 +350,7 @@ function renderScreen(key,tab){
      +(tab==='check'&&f.status!=='done'?'<button class="fail" data-act="fail">נכשל</button>':'')
      +(f.ask?'<button class="askb on" data-act="answer">Reject · תשובה</button>':(f.status!=='done'?'<button class="askb" data-act="ask">שאלה / בעיה</button>':''))
      +'<button class="del editonly" data-act="del">הסרה</button></div>'
-     +(f.src==='support'?'<div class="smeta"><span>מהתמיכה · <b>'+esc(f.rep||f.who||'')+'</b> · '+esc(f.created||'')+'</span>'+(f.client?'<span>לקוח: <b>'+esc(f.client)+'</b></span>':'')+(f.video?'<a href="'+esc(f.video)+'" target="_blank" rel="noopener">סרטון ↗</a>':'')
+     +(f.src==='support'?'<div class="smeta"><span>מהתמיכה · <b>'+esc(f.rep||f.who||'')+'</b> · '+esc(f.created||'')+'</span>'+(f.client?'<span>לקוח: <b>'+esc(f.client)+'</b></span>':'')+(f.video&&/^https:\/\//i.test(f.video)?'<a href="'+esc(f.video)+'" target="_blank" rel="noopener noreferrer">סרטון ↗</a>':'')
        +(key==='inbox'?'<span class="mv"><span class="sel" id="mv-'+f.id+'" data-v=""><button type="button">העברה למסך ▾</button><div class="dd">'+B.screens.filter(function(x){return x.key!=='inbox'}).map(function(x){return '<button type="button" data-v="'+x.key+'"'+(f.hint===x.key?' class="on"':'')+'>'+esc(x.name)+(f.hint===x.key?' · הצעת המדווח':'')+'</button>'}).join('')+'</div></span></span>':'')+'</div>':'')
      +'<div class="ib"><div class="col"><h3>'+hA+'</h3><p class="ed" data-k="what">'+esc(f.what)+'</p>'
      +(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption class="ed" data-k="capA">'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'

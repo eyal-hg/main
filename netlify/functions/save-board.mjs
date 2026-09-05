@@ -12,6 +12,7 @@ const sha  = s => createHash("sha256").update(String(s)).digest();
 const same = (a, b) => { const x = sha(a), y = sha(b); return x.length === y.length && timingSafeEqual(x, y); };
 
 const S = s => String(s == null ? "" : s).slice(0, 4000);
+const URL_ = s => { const v = S(s).slice(0, 300).trim(); return /^https:\/\/[^\s"'<>]+$/i.test(v) ? v : ""; };   // קישור = https בלבד, אחרת נזרק
 
 /* ---- כניסה עם Google ----
    הדפדפן מקבל מגוגל credential (ID token). הפונקציה מאמתת אותו מול גוגל (tokeninfo), בודקת שה-aud הוא
@@ -37,7 +38,7 @@ function clean(board) {
     who: S(it.who).slice(0, 60), status: it.status === "done" ? "done" : "open", imgA: S(it.imgA).slice(0, 200), capA: S(it.capA).slice(0, 300),
     imgB: S(it.imgB).slice(0, 200), capB: S(it.capB).slice(0, 300), created: S(it.created).slice(0, 30), updated: S(it.updated).slice(0, 30),
     log: (Array.isArray(it.log) ? it.log : []).slice(0, 50).map(l => ({ when: S(l.when).slice(0, 30), who: S(l.who).slice(0, 40), ev: S(l.ev).slice(0, 20), txt: S(l.txt).slice(0, 1000), ...(l.via ? { via: S(l.via).slice(0, 80) } : {}) })),
-    src: it.src === "support" ? "support" : undefined, rep: S(it.rep).slice(0, 40) || undefined, client: S(it.client).slice(0, 120) || undefined, video: S(it.video).slice(0, 300) || undefined,
+    src: it.src === "support" ? "support" : undefined, rep: S(it.rep).slice(0, 40) || undefined, client: S(it.client).slice(0, 120) || undefined, video: URL_(it.video) || undefined,
     hint: S(it.hint).slice(0, 40) || undefined,
     ask: it.ask && typeof it.ask === "object" ? { who: S(it.ask.who).slice(0, 40), txt: S(it.ask.txt).slice(0, 1000), when: S(it.ask.when).slice(0, 30) } : null,
     back: it.back && typeof it.back === "object" ? { kind: S(it.back.kind).slice(0, 10), dev: S(it.back.dev).slice(0, 40), sev: S(it.back.sev).slice(0, 20), what: S(it.back.what), need: S(it.back.need) } : undefined });
@@ -122,7 +123,7 @@ export default async (req) => {
     const img = String(g.image || "");
     const mm = img.match(/^data:image\/(png|jpe?g|webp);base64,([A-Za-z0-9+/=]+)$/);
     if (mm) { imgA = "img/bugs/" + id + ".jpg"; files["board/" + imgA] = { base64: mm[2] }; }
-    const client = S(g.client).slice(0, 120).trim(), steps = S(g.steps).slice(0, 3000).trim(), video = S(g.video).slice(0, 300).trim();
+    const client = S(g.client).slice(0, 120).trim(), steps = S(g.steps).slice(0, 3000).trim(), video = URL_(g.video);
     const target = board.screens.find(x => x.key === S(g.screen).slice(0, 40)) || inbox;
     inbox.items.push({ id, kind: "fix", title, what: (client ? "לקוח: " + client + ". " : "") + (steps || "בלי פירוט."), need: "", sev: "בינוני", dev: "", who, status: "open",
       imgA, capA: imgA ? "צילום מהתמיכה · " + who : "", imgB: "", capB: "", created: when, updated: when,
