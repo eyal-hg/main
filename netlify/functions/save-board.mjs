@@ -33,7 +33,7 @@ function clean(board) {
   if (!board || typeof board !== "object") throw new Error("board חסר");
   const screens = Array.isArray(board.screens) ? board.screens : [];
   if (!screens.length || screens.length > 100) throw new Error("screens: ריק או גדול מדי");
-  const item = it => ({ id: S(it.id).slice(0, 40), kind: ["spec","todo","fix","check"].includes(it.kind) ? it.kind : "fix",
+  const item = it => ({ id: S(it.id).slice(0, 40), n: Number(it.n) || undefined, kind: ["spec","todo","fix","check"].includes(it.kind) ? it.kind : "fix",
     title: S(it.title).slice(0, 300), what: S(it.what), need: S(it.need), sev: S(it.sev).slice(0, 20), dev: S(it.dev).slice(0, 40),
     who: S(it.who).slice(0, 60), status: it.status === "done" ? "done" : "open", imgA: S(it.imgA).slice(0, 200), capA: S(it.capA).slice(0, 300),
     imgB: S(it.imgB).slice(0, 200), capB: S(it.capB).slice(0, 300), created: S(it.created).slice(0, 30), updated: S(it.updated).slice(0, 30),
@@ -42,7 +42,7 @@ function clean(board) {
     hint: S(it.hint).slice(0, 40) || undefined,
     ask: it.ask && typeof it.ask === "object" ? { who: S(it.ask.who).slice(0, 40), txt: S(it.ask.txt).slice(0, 1000), when: S(it.ask.when).slice(0, 30) } : null,
     back: it.back && typeof it.back === "object" ? { kind: S(it.back.kind).slice(0, 10), dev: S(it.back.dev).slice(0, 40), sev: S(it.back.sev).slice(0, 20), what: S(it.back.what), need: S(it.back.need) } : undefined });
-  return { version: Number(board.version) || 1, updated: S(board.updated).slice(0, 40),
+  return { version: Number(board.version) || 1, seq: Number(board.seq) || 0, updated: S(board.updated).slice(0, 40),
     emails: (Array.isArray(board.emails) ? board.emails : []).slice(0, 50).map(e => ({ who: S(e.who).slice(0, 40), email: S(e.email).slice(0, 120).trim().toLowerCase() })).filter(e => e.email),
     devs: (Array.isArray(board.devs) ? board.devs : []).map(d => S(d).slice(0, 40)).slice(0, 10),
     screens: screens.map(sc => ({ key: S(sc.key).slice(0, 40), name: S(sc.name).slice(0, 120), task: S(sc.task).slice(0, 200), asana: S(sc.asana).slice(0, 300),

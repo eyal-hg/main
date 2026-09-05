@@ -1,6 +1,6 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 17,
+ "version": 18,
  "updated": "05.09.2026, 10:18",
  "devs": [
   "אייל",
@@ -33,7 +33,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "05.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 1
     },
     {
      "id": "owner-dash-2",
@@ -52,7 +53,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 2
     },
     {
      "id": "owner-dash-4",
@@ -71,7 +73,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 3
     },
     {
      "id": "owner-dash-5",
@@ -90,7 +93,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 4
     },
     {
      "id": "owner-dash-6",
@@ -109,7 +113,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 5
     },
     {
      "id": "owner-dash-7",
@@ -128,7 +133,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 6
     },
     {
      "id": "owner-dash-8",
@@ -147,7 +153,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 7
     },
     {
      "id": "owner-dash-9",
@@ -166,7 +173,8 @@ window.HK_BOARD = {
      "created": "05.09.2026",
      "updated": "05.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 8
     },
     {
      "id": "owner-dash-10",
@@ -185,7 +193,8 @@ window.HK_BOARD = {
      "created": "05.09.2026",
      "updated": "05.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 9
     }
    ]
   },
@@ -213,7 +222,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 10
     },
     {
      "id": "portfolio-10",
@@ -232,7 +242,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 11
     },
     {
      "id": "portfolio-11",
@@ -251,7 +262,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 12
     },
     {
      "id": "portfolio-12",
@@ -270,7 +282,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 13
     },
     {
      "id": "portfolio-13",
@@ -289,7 +302,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 14
     }
    ]
   },
@@ -317,7 +331,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 15
     },
     {
      "id": "today-15",
@@ -336,7 +351,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 16
     },
     {
      "id": "today-16",
@@ -355,7 +371,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 17
     },
     {
      "id": "today-17",
@@ -374,7 +391,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 18
     },
     {
      "id": "today-18",
@@ -393,7 +411,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 19
     },
     {
      "id": "today-19",
@@ -412,7 +431,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 20
     },
     {
      "id": "today-20",
@@ -431,7 +451,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 21
     },
     {
      "id": "today-21",
@@ -450,7 +471,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 22
     },
     {
      "id": "today-22",
@@ -469,7 +491,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 23
     },
     {
      "id": "imtmsbvillpc0",
@@ -488,7 +511,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 24
     }
    ]
   },
@@ -516,7 +540,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 25
     },
     {
      "id": "tasks-24",
@@ -535,7 +560,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 26
     },
     {
      "id": "tasks-25",
@@ -554,7 +580,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 27
     },
     {
      "id": "tasks-26",
@@ -573,7 +600,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 28
     },
     {
      "id": "tasks-27",
@@ -592,7 +620,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 29
     },
     {
      "id": "tasks-28",
@@ -611,7 +640,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 30
     },
     {
      "id": "tasks-29",
@@ -630,7 +660,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 31
     },
     {
      "id": "tasks-30",
@@ -649,7 +680,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 32
     }
    ]
   },
@@ -677,7 +709,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 33
     },
     {
      "id": "comm-32",
@@ -696,7 +729,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 34
     },
     {
      "id": "comm-33",
@@ -715,7 +749,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 35
     },
     {
      "id": "comm-34",
@@ -734,7 +769,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 36
     },
     {
      "id": "comm-35",
@@ -753,7 +789,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 37
     },
     {
      "id": "comm-36",
@@ -772,7 +809,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 38
     },
     {
      "id": "comm-37",
@@ -791,7 +829,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 39
     },
     {
      "id": "comm-38",
@@ -810,7 +849,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 40
     },
     {
      "id": "comm-39",
@@ -829,7 +869,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 41
     },
     {
      "id": "comm-40",
@@ -848,7 +889,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 42
     },
     {
      "id": "comm-spec-11",
@@ -867,7 +909,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 43
     }
    ]
   },
@@ -895,7 +938,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 44
     },
     {
      "id": "company-meetings-42",
@@ -914,7 +958,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 45
     },
     {
      "id": "company-meetings-43",
@@ -933,7 +978,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 46
     },
     {
      "id": "company-meetings-44",
@@ -952,7 +998,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 47
     },
     {
      "id": "company-meetings-45",
@@ -971,7 +1018,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 48
     },
     {
      "id": "company-meetings-46",
@@ -990,7 +1038,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 49
     }
    ]
   },
@@ -1018,7 +1067,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 50
     }
    ]
   },
@@ -1046,7 +1096,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 51
     },
     {
      "id": "metrics-49",
@@ -1065,7 +1116,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 52
     },
     {
      "id": "metrics-50",
@@ -1084,7 +1136,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 53
     },
     {
      "id": "metrics-51",
@@ -1103,7 +1156,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 54
     }
    ]
   },
@@ -1131,7 +1185,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 55
     },
     {
      "id": "acct-53",
@@ -1150,7 +1205,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 56
     },
     {
      "id": "acct-54",
@@ -1169,7 +1225,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 57
     },
     {
      "id": "acct-55",
@@ -1188,7 +1245,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 58
     }
    ]
   },
@@ -1216,7 +1274,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 59
     },
     {
      "id": "cashflow-ai-57",
@@ -1235,7 +1294,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 60
     },
     {
      "id": "cashflow-ai-58",
@@ -1254,7 +1314,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 61
     }
    ]
   },
@@ -1282,7 +1343,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 62
     },
     {
      "id": "json-widget-60",
@@ -1301,7 +1363,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 63
     },
     {
      "id": "json-widget-61",
@@ -1320,7 +1383,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 64
     }
    ]
   },
@@ -1348,7 +1412,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "05.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 65
     },
     {
      "id": "client-ai-63",
@@ -1367,7 +1432,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "05.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 66
     },
     {
      "id": "client-ai-64",
@@ -1386,7 +1452,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "05.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 67
     },
     {
      "id": "client-ai-65",
@@ -1405,7 +1472,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 68
     },
     {
      "id": "client-ai-66",
@@ -1424,7 +1492,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 69
     },
     {
      "id": "client-ai-67",
@@ -1443,7 +1512,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 70
     },
     {
      "kind": "todo",
@@ -1460,7 +1530,8 @@ window.HK_BOARD = {
      "who": "",
      "status": "open",
      "created": "05.09.2026",
-     "updated": "05.09.2026"
+     "updated": "05.09.2026",
+     "n": 71
     },
     {
      "kind": "todo",
@@ -1477,7 +1548,8 @@ window.HK_BOARD = {
      "who": "",
      "status": "open",
      "created": "05.09.2026",
-     "updated": "05.09.2026"
+     "updated": "05.09.2026",
+     "n": 72
     }
    ]
   },
@@ -1505,7 +1577,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 73
     },
     {
      "id": "client-readonly-69",
@@ -1524,7 +1597,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 74
     },
     {
      "id": "client-readonly-70",
@@ -1543,7 +1617,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 75
     },
     {
      "id": "client-readonly-71",
@@ -1562,7 +1637,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 76
     },
     {
      "id": "client-readonly-72",
@@ -1581,7 +1657,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 77
     },
     {
      "id": "client-readonly-73",
@@ -1600,7 +1677,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 78
     },
     {
      "id": "client-readonly-spec-7",
@@ -1619,7 +1697,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 79
     }
    ]
   },
@@ -1647,7 +1726,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 80
     },
     {
      "id": "general-todo-2",
@@ -1666,7 +1746,8 @@ window.HK_BOARD = {
      "created": "04.09.2026",
      "updated": "04.09.2026",
      "log": [],
-     "ask": null
+     "ask": null,
+     "n": 81
     },
     {
      "id": "general-3",
@@ -1717,7 +1798,8 @@ window.HK_BOARD = {
       "sev": "גבוה",
       "what": "נכשל בבדיקה 05.09.2026: לא עובד",
       "need": "עידו: פותח את השורה, מסמן \"נבנה\" וכותב הערה קצרה. הפריט צריך לעבור לבדיקות אצל אייל ולהישמר לגיט בלי בנייה בנטליפיי. אייל: לוחץ \"נכשל\" עם הערה, רואה שחזר לעידו, ואז מסמן שוב ו\"נבדק\" סוגר."
-     }
+     },
+     "n": 82
     }
    ]
   }
@@ -1751,5 +1833,6 @@ window.HK_BOARD = {
    "who": "עומרי",
    "email": "ohabas@gmail.com"
   }
- ]
+ ],
+ "seq": 82
 };

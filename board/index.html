@@ -145,6 +145,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
 .askb{border:1px solid var(--line2);background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.askb:hover{border-color:var(--sky);color:#14618F}.askb.on{border-color:#c98404;color:#c98404}
 .from.bad{background:var(--bad)}
+.num{width:auto;min-width:26px;padding:0 6px;border-radius:999px}.num.done{background:var(--ok)}
 .tm{font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums;white-space:nowrap}
 .from{display:inline-block;margin-inline-start:8px;font-size:11px;font-weight:700;color:#fff;background:var(--coral);border-radius:999px;padding:1px 8px;vertical-align:middle}
 .wait{font-size:11.5px;font-weight:600;color:#c98404;white-space:nowrap}.qn{display:inline-block;background:#c98404;color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;margin-inline-start:6px}
@@ -183,7 +184,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
   <label class="fl"><span id="aWhatL">מה חסר</span><textarea id="aWhat" rows="3"></textarea></label>
   <label class="fl" id="aNeedW"><span id="aNeedL">מה צריך להיות</span><textarea id="aNeed" rows="3"></textarea></label>
   <div class="f"><button class="btn pri" id="aOk">שמירה לגיט</button><button class="btn" id="aX">ביטול</button></div></div></div>
-<div class="pop" id="setpop"><div class="md" style="width:520px"><h3>מי מורשה להיכנס</h3><p>הרשימה שנכנסת ל-ALLOWED_EMAILS בנטליפיי. אחרי שינוי: שמירה, ואז העתקה והדבקה בנטליפיי.</p><div id="setbody"></div><div class="f"><button class="btn pri" id="setSave">שמירה לגיט</button><button class="btn" id="copyEm" type="button">העתקה ל-ALLOWED_EMAILS</button><button class="btn" id="setX">סגירה</button></div></div></div>
+<div class="pop" id="setpop"><div class="md" style="width:520px"><h3>מי מורשה להיכנס</h3><p>הרשימה שנכנסת ל-ALLOWED_EMAILS בנטליפיי. אחרי שינוי: שמירה, ואז העתקה והדבקה בנטליפיי.</p><div id="setbody"></div><div class="f"><button class="btn pri" id="setSave">שמירה לגיט</button><button class="btn" id="copyEm" type="button">העתקה ל-ALLOWED_EMAILS</button><button class="btn" id="setX">סגירה</button></div><div class="f" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"><span style="font-size:12.5px;color:var(--ink3);flex:1">מספור הפריטים (#) — הפריט הבא יקבל <b id="seqNext"></b></span><button class="btn sm" id="setRenum">איפוס המספור</button></div></div></div>
 <div class="pop" id="npop"><div class="md"><h3 id="nTitle">הערה</h3><p id="nSub"></p>
   <label class="fl"><textarea id="nTxt" rows="4"></textarea></label>
   <div class="f"><button class="btn pri" id="nOk">אישור</button><button class="btn" id="nX">ביטול</button></div></div></div>
@@ -204,6 +205,10 @@ try{var d=JSON.parse(localStorage.getItem('hkBoardDraft')||'null'); if(d&&d.vers
 if(!B.screens.some(function(s){return s.key==='general'})) B.screens.push(GENERAL);
 var INBOX={key:'inbox',name:'מהתמיכה',task:'',asana:'',proto:'',items:[]};
 if(!B.screens.some(function(s){return s.key==='inbox'})) B.screens.unshift(INBOX);
+/* מספר יוניקי לכל פריט (#N) — כדי לדבר עליו בשם. רץ מ-B.seq; "איפוס מספור" בהגדרות מתחיל מ-1 מחדש */
+function numberItems(bd){bd.seq=Number(bd.seq)||0;bd.screens.forEach(function(sc){sc.items.forEach(function(it){if(!it.n){it.n=++bd.seq}})})}
+function renumber(){B.seq=0;B.screens.forEach(function(sc){sc.items.forEach(function(it){it.n=++B.seq})});markDirty();toast('המספור התחיל מחדש מ-1')}
+numberItems(B);
 function supportNew(){return allItems().filter(function(x){return x.it.src==='support'&&open_(x.it)&&!x.it.dev})}
 B.devs=B.devs&&B.devs.length?B.devs:['אייל','אופיר','עומרי','עידו'];
 var ONLINE=/^https?:/.test(location.protocol)&&!/localhost|127\.0\.0\.1/.test(location.hostname);
@@ -254,7 +259,7 @@ function renderCenter(){
   h+='<h2 class="sec">כל הפריטים הפתוחים</h2><div class="filters"><span class="lbl">מי</span><button class="pill'+(CF.dev?'':' on')+'" data-f="dev" data-v="">הכל</button>'+B.devs.map(function(d){return '<button class="pill'+(CF.dev===d?' on':'')+'" data-f="dev" data-v="'+esc(d)+'">'+esc(d)+'</button>'}).join('')
    +'<span class="lbl" style="margin-inline-start:10px">מה</span><button class="pill'+(CF.kind?'':' on')+'" data-f="kind" data-v="">הכל</button>'+KINDS.map(function(k){return '<button class="pill'+(CF.kind===k[0]?' on':'')+'" data-f="kind" data-v="'+k[0]+'">'+k[1]+'</button>'}).join('')+'</div>';
   var list=openAll.filter(function(x){return (!CF.dev||x.it.dev===CF.dev)&&(!CF.kind||x.it.kind===CF.kind)});
-  h+=list.length?list.map(function(x,i){return '<div class="row" data-go="#screen='+x.s.key+'&tab='+x.it.kind+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(x.it.title)+'<small>'+esc(x.s.name)+'</small></span><span class="kind">'+KN[x.it.kind]+'</span>'+(x.it.sev?'<span class="sev '+sevCls(x.it.sev)+'">'+esc(x.it.sev)+'</span>':'<span></span>')+'<span class="dev"><button>'+esc(x.it.dev||'—')+'</button></span><span></span></div>'}).join(''):'<div class="empty">✓ אין פריטים פתוחים</div>';
+  h+=list.length?list.map(function(x,i){return '<div class="row" data-go="#screen='+x.s.key+'&tab='+x.it.kind+'"><span class="num">'+(x.it.n||'')+'</span><span class="t">'+esc(x.it.title)+'<small>'+esc(x.s.name)+'</small></span><span class="kind">'+KN[x.it.kind]+'</span>'+(x.it.sev?'<span class="sev '+sevCls(x.it.sev)+'">'+esc(x.it.sev)+'</span>':'<span></span>')+'<span class="dev"><button>'+esc(x.it.dev||'—')+'</button></span><span></span></div>'}).join(''):'<div class="empty">✓ אין פריטים פתוחים</div>';
   app.innerHTML=h;
   app.querySelectorAll('.row').forEach(function(r){r.onclick=function(){go(r.dataset.go)}});
   app.querySelectorAll('.pill[data-f]').forEach(function(b){b.onclick=function(){CF[b.dataset.f]=b.dataset.v;renderCenter()}});
@@ -272,7 +277,8 @@ function renderSettings(){
   document.querySelectorAll('#setbody [data-emdel]').forEach(function(b){b.onclick=function(){collectEmails();B.emails.splice(+b.dataset.emdel,1);markDirty();renderSettings()}});
   document.querySelectorAll('#emgrid .ed').forEach(function(el){el.contentEditable='true'});
 }
-document.getElementById('bSet').onclick=function(){renderSettings();document.getElementById('setpop').classList.add('on')};
+document.getElementById('bSet').onclick=function(){renderSettings();document.getElementById('seqNext').textContent='#'+((B.seq||0)+1);document.getElementById('setpop').classList.add('on')};
+document.getElementById('setRenum').onclick=function(){var b=this;if(b.dataset.arm){renumber();delete b.dataset.arm;b.textContent='איפוס המספור';document.getElementById('seqNext').textContent='#'+((B.seq||0)+1);render();return}b.dataset.arm='1';b.textContent='בטוח? לחיצה נוספת מאפסת';b.classList.add('danger')};
 document.getElementById('setX').onclick=function(){collectEmails();document.getElementById('setpop').classList.remove('on');if(DRAFT)renderNav(route())};
 document.getElementById('setSave').onclick=function(){collectEmails();document.getElementById('setpop').classList.remove('on');save()};
 document.getElementById('setpop').onclick=function(e){if(e.target===this){collectEmails();this.classList.remove('on');if(DRAFT)renderNav(route())}};
@@ -282,7 +288,7 @@ function wireSel(id,fn){var el=document.getElementById(id);if(!el)return;el.quer
 function closeDD(){document.querySelectorAll('.sel.open,.dev.open').forEach(function(e){e.classList.remove('open')})}
 document.addEventListener('click',closeDD);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();document.getElementById('pop').classList.remove('on');document.getElementById('npop').classList.remove('on');document.getElementById('setpop').classList.remove('on')}});
-function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
+function newItem(kind,title,dev){return {id:uid(),n:++B.seq,kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
 var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
 var HOWTO_OPEN=false; try{HOWTO_OPEN=localStorage.getItem('hkHowto')==='1'}catch(e){}
@@ -303,7 +309,7 @@ function renderDev(d){
   var fromDev=function(it){var l=it.log||[],z=l[l.length-1];return !!z&&((it.kind==='check'&&z.ev==='built')||(it.kind!=='check'&&z.ev==='failed'))};
   Object.keys(byScreen).forEach(function(k){byScreen[k].sort(function(a,b){return (fromDev(b.it)?1:0)-(fromDev(a.it)?1:0)})});
   Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){var f=x.it, lg=f.log||[], last=lg[lg.length-1], bl=(f.kind==='check'&&last&&last.ev==='built')?last:null, fl=(f.kind!=='check'&&last&&last.ev==='failed')?last:null, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
-      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(i+1)+'</span><span class="t">'+esc(f.title)+(bl?'<span class="from">'+esc(bl.who||'')+' · '+esc(bl.when)+'</span>':'')+(fl?'<span class="from bad">הוחזר · '+esc(fl.who||'אייל')+' · '+esc(fl.when)+'</span>':'')+'<small>'+(bl&&bl.txt?'<b>'+esc(bl.who)+':</b> '+esc(bl.txt):fl&&fl.txt?'<b>נכשל:</b> '+esc(fl.txt):esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140)))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+(f.ask?'<span class="wait">Reject · ממתין לתשובה</span>':(d!=='אייל'?'<button class="askb" data-act="ask" data-screen="'+k+'" data-id="'+f.id+'">Reject</button>':''))+'<span class="car">›</span></div>'
+      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(f.n||'')+'</span><span class="t">'+esc(f.title)+(bl?'<span class="from">'+esc(bl.who||'')+' · '+esc(bl.when)+'</span>':'')+(fl?'<span class="from bad">הוחזר · '+esc(fl.who||'אייל')+' · '+esc(fl.when)+'</span>':'')+'<small>'+(bl&&bl.txt?'<b>'+esc(bl.who)+':</b> '+esc(bl.txt):fl&&fl.txt?'<b>נכשל:</b> '+esc(fl.txt):esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140)))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+(f.ask?'<span class="wait">Reject · ממתין לתשובה</span>':(d!=='אייל'?'<button class="askb" data-act="ask" data-screen="'+k+'" data-id="'+f.id+'">Reject</button>':''))+'<span class="car">›</span></div>'
        +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
        +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
        +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
@@ -322,7 +328,7 @@ function renderArrived(){
    +(L.length?'<div class="counts"><div><b>'+L.length+'</b><span>לבדיקה</span></div><div><b>'+L.filter(function(r){return dayLabel(r.t)==='היום'}).length+'</b><span>היום</span></div><div><b>'+L.filter(function(r){return dayLabel(r.t)==='אתמול'}).length+'</b><span>אתמול</span></div></div>':'<div class="closedmsg">✓ אין מה לבדוק — הכל נבדק</div>')+'</div>';
   var last='';
   h+=L.map(function(r){var f=r.x.it,k=r.x.s.key,bl=r.bl,lab=dayLabel(r.t),hd=lab!==last?'<h2 class="sec">'+lab+'</h2>':'';last=lab;
-    return hd+'<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'" style="grid-template-columns:44px 1fr auto auto auto auto 14px"><span class="tm">'+esc((bl.when||'').replace(/^\S+\s*/,''))+'</span><span class="t">'+esc(f.title)+'<span class="from">'+esc(bl.who||'')+'</span><small>'+esc(r.x.s.name)+(bl.txt?' · <b>'+esc(bl.who)+':</b> '+esc(bl.txt):'')+'</small></span>'
+    return hd+'<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'" style="grid-template-columns:26px 44px 1fr auto auto auto auto 14px"><span class="num">'+(f.n||'')+'</span><span class="tm">'+esc((bl.when||'').replace(/^\S+\s*/,''))+'</span><span class="t">'+esc(f.title)+'<span class="from">'+esc(bl.who||'')+'</span><small>'+esc(r.x.s.name)+(bl.txt?' · <b>'+esc(bl.who)+':</b> '+esc(bl.txt):'')+'</small></span>'
      +'<span class="kind">'+KN[f.kind]+'</span><span></span><label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> נבדק</label><button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button><span class="car">›</span></div>'
      +'<div class="dbody"><div class="ib one"><div class="col"><h3>מה בודקים ואיך</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=check">לדף המסך ›</a></div></div></div>'}).join('');
   app.innerHTML=h;
@@ -337,7 +343,7 @@ function renderClosed(){
    +'<div class="counts"><div><b>'+L.length+'</b><span>סגורים</span></div></div></div>';
   if(!L.length)h+='<div class="empty">עוד לא נסגר כלום</div>';
   h+=L.map(function(r){var f=r.x.it,pz=r.pz,bl=(f.log||[]).filter(function(l){return l.ev==='built'}).pop();
-    return '<div class="drow done"><div class="row" style="grid-template-columns:26px 1fr auto auto auto auto"><span class="num">✓</span><span class="t">'+esc(f.title)+'<small>'+esc(r.x.s.name)+(bl?' · בנה '+esc(bl.who):'')+'</small></span>'
+    return '<div class="drow done"><div class="row" style="grid-template-columns:26px 1fr auto auto auto auto"><span class="num done">'+(f.n||'✓')+'</span><span class="t">'+esc(f.title)+'<small>'+esc(r.x.s.name)+(bl?' · בנה '+esc(bl.who):'')+'</small></span>'
      +'<span class="kind">'+KN[f.kind]+'</span><span class="cwhen">'+(pz.when?'נסגר '+esc(pz.when):'')+(pz.who?' · '+esc(pz.who):'')+(pz.via?' · מ'+esc(pz.via):'')+'</span>'
      +'<label class="st" title="ביטול הסימון פותח מחדש"><input type="checkbox" checked data-act="done" data-screen="'+r.x.s.key+'" data-id="'+f.id+'"> נבדק</label><a class="golink" href="#screen='+r.x.s.key+'&tab='+f.kind+'">לדף המסך ›</a></div></div>'}).join('');
   app.innerHTML=h;
@@ -359,7 +365,7 @@ function renderScreen(key,tab){
     var one=(tab==='check')||(!f.need&&!f.imgB);
     var hA=tab==='check'?'מה בודקים ואיך':tab==='spec'?'מה חסר באפיון':tab==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=tab==='spec'?'מה צריך להחליט':tab==='todo'?'מה צריך להיות':'צריך להיות';
     return '<section class="item'+(f.status==='done'?' done':'')+(one?' one':'')+'" data-id="'+f.id+'">'
-     +'<div class="ih"><span class="num">'+(i+1)+'</span><h2 class="ed" data-k="title">'+esc(f.title)+'</h2>'
+     +'<div class="ih"><span class="num">'+(f.n||'')+'</span><h2 class="ed" data-k="title">'+esc(f.title)+'</h2>'
      +(tab==='fix'?'<span class="sev '+sevCls(f.sev)+'" data-act="sev">'+esc(f.sev||'בינוני')+'</span>':'')
      +'<span class="dev"><button type="button" data-act="dev">'+esc(f.dev||'—')+'</button><div class="dd">'+B.devs.map(function(d){return '<button type="button" data-dev="'+esc(d)+'"'+(d===f.dev?' class="on"':'')+'>'+esc(d)+'</button>'}).join('')+'</div></span>'
      +(f.src==='support'&&f.status!=='done'?'<button class="askb" data-act="reply">תשובה לתמיכה</button><button class="fail" data-act="closeq">סגירה עם תשובה</button>':'')
@@ -504,7 +510,7 @@ function openAdd(kind,screen){
    כותרת המסך, קישור לאפיון ולפרוטוטיפ, ואז הפריטים לפי טאב. */
 function md(sk,dv){
   var q=sk?{screen:sk}:route(), lines=[];
-  function item(it){lines.push('### '+it.title+(it.sev?'  \n*חומרה: '+it.sev+'*':'')+(it.dev?'  \n*על: '+it.dev+'*':''));
+  function item(it){lines.push('### #'+(it.n||'')+' · '+it.title+(it.sev?'  \n*חומרה: '+it.sev+'*':'')+(it.dev?'  \n*על: '+it.dev+'*':''));
     if(it.what)lines.push('\n**'+(it.kind==='check'?'מה בודקים ואיך':it.kind==='fix'?'היום בסטייג׳ינג':'מה חסר')+':** '+it.what);
     if(it.need)lines.push('\n**'+(it.kind==='spec'?'מה צריך להחליט':'צריך להיות')+':** '+it.need);
     if(it.imgA)lines.push('\nצילום (סטייג׳ינג): board/'+it.imgA+(it.capA?' — '+it.capA:''));
@@ -557,6 +563,7 @@ function loadLatest(cb){
      if(j&&j.ok&&j.board&&j.board.screens){var g=j.board; g.devs=g.devs&&g.devs.length?g.devs:FILE.devs;
        if(!g.screens.some(function(x){return x.key==='general'}))g.screens.push(GENERAL);
        if(!g.screens.some(function(x){return x.key==='inbox'}))g.screens.unshift(INBOX);
+       numberItems(g);
        if((g.version||0)>=(FILE.version||0)){FILE=g; if(!DRAFT||(B.version||0)<=(g.version||0)){B=g;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}}}}
      cb();
    }).catch(function(){cb()});
