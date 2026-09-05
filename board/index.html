@@ -16,7 +16,7 @@ button{font:inherit}
 .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .top .brand{font-weight:800;font-size:18px;color:var(--navy);letter-spacing:-.3px;margin-inline-end:8px}
 .nav{display:flex;gap:4px;flex-wrap:wrap}
-.nav a{text-decoration:none;font-size:13px;font-weight:600;color:var(--ink2);padding:6px 12px;border-radius:999px}
+.nav a{text-decoration:none;font-size:13px;font-weight:600;color:var(--ink2);padding:6px 10px;border-radius:999px;white-space:nowrap}
 .nav a:hover{background:var(--chip)}
 .nav a.on{background:var(--navy);color:#fff}
 .nav a i{font-style:normal;font-size:11px;background:var(--chip);color:var(--ink2);border-radius:999px;padding:0 6px;line-height:16px;margin-inline-start:4px;font-variant-numeric:tabular-nums}
@@ -145,6 +145,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
 .askb{border:1px solid var(--line2);background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.askb:hover{border-color:var(--sky);color:#14618F}.askb.on{border-color:#c98404;color:#c98404}
 .from.bad{background:var(--bad)}
+.tm{font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums;white-space:nowrap}
 .from{display:inline-block;margin-inline-start:8px;font-size:11px;font-weight:700;color:#fff;background:var(--coral);border-radius:999px;padding:1px 8px;vertical-align:middle}
 .wait{font-size:11.5px;font-weight:600;color:#c98404;white-space:nowrap}.qn{display:inline-block;background:#c98404;color:#fff;border-radius:999px;font-size:11px;padding:1px 8px;margin-inline-start:6px}
 .qrow{display:flex;align-items:flex-start;gap:12px;background:#FFF9EC;border:1px solid #F3DFA8;border-radius:12px;padding:10px 16px;margin-bottom:8px;font-size:13px}.qrow>div{flex:1}.qrow .w{color:var(--ink3);font-size:11.5px}.qrow p{margin:4px 0 0;color:var(--ink)}.qrow a{color:#14618F;text-decoration:none;font-weight:600}
@@ -223,10 +224,12 @@ function route(){var h=location.hash.replace('#','');var q={};h.split('&').forEa
 function go(h){location.hash=h}
 /* ---------- ניווט ---------- */
 function renderNav(q){
-  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.closed===undefined)?' class="on"':'')+'>מרכז</a>';
+  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.closed===undefined&&q.arrived===undefined)?' class="on"':'')+'>מרכז</a>';
   B.devs.forEach(function(d){var n=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)}).length;h+='<a href="#dev='+encodeURIComponent(d)+'"'+(q.dev===d?' class="on"':'')+'>'+esc(d)+(n?' <i>'+n+'</i>':'')+'</a>'});
   var sn=supportNew().length;
   h+='<a href="#screen=inbox"'+(q.screen==='inbox'?' class="on"':'')+' style="margin-inline-start:14px">תמיכה'+(sn?' <i class="hot">'+sn+'</i>':'')+'</a>';
+  var na=arrived().length;
+  h+='<a href="#arrived"'+(q.arrived!==undefined?' class="on"':'')+'>הגיע מפיתוח'+(na?' <i class="hot">'+na+'</i>':'')+'</a>';
   var nd=allItems().filter(function(x){return x.it.status==='done'}).length;
   h+='<a href="#closed"'+(q.closed!==undefined?' class="on"':'')+' style="margin-inline-start:14px">נסגרו לאחרונה'+(nd?' <i>'+nd+'</i>':'')+'</a>';
   document.getElementById('nav').innerHTML=h;
@@ -316,6 +319,22 @@ function renderDev(d){
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
+}
+/* ---------- הגיע מפיתוח ----------
+   כל מה שמתכנת סימן "נבנה/תוקן" ועוד לא נבדק, לפי סדר ההגעה, מקובץ ליום. זה מה שאייל (וה-AI שלו) בודקים קודם. */
+function arrived(){return allItems().filter(function(x){var f=x.it,lg=f.log||[],z=lg[lg.length-1];return open_(f)&&f.kind==='check'&&z&&z.ev==='built'}).map(function(x){var lg=x.it.log,z=lg[lg.length-1];return {x:x,bl:z,t:parseWhen(z.when)}}).sort(function(a,b){return b.t-a.t})}
+function dayLabel(t){if(!t)return 'בלי תאריך';var d=new Date(t),n=new Date();var d0=new Date(d.getFullYear(),d.getMonth(),d.getDate()),n0=new Date(n.getFullYear(),n.getMonth(),n.getDate());var diff=Math.round((n0-d0)/864e5);return diff===0?'היום':diff===1?'אתמול':diff<7?'לפני '+diff+' ימים':d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'})}
+function renderArrived(){
+  var L=arrived();
+  var h='<div class="band'+(L.length?'':' closed')+'"><div><div class="eyebrow">כל המסכים</div><h1>הגיע מפיתוח</h1><div class="meta"><span>מה שהמתכנתים סימנו "נבנה / תוקן" ועוד לא נבדק. לפי סדר ההגעה. "נבדק" סוגר, "נכשל" מחזיר עם הערה.</span></div></div>'
+   +(L.length?'<div class="counts"><div><b>'+L.length+'</b><span>לבדיקה</span></div><div><b>'+L.filter(function(r){return dayLabel(r.t)==='היום'}).length+'</b><span>היום</span></div><div><b>'+L.filter(function(r){return dayLabel(r.t)==='אתמול'}).length+'</b><span>אתמול</span></div></div>':'<div class="closedmsg">✓ אין מה לבדוק — הכל נבדק</div>')+'</div>';
+  var last='';
+  h+=L.map(function(r){var f=r.x.it,k=r.x.s.key,bl=r.bl,lab=dayLabel(r.t),hd=lab!==last?'<h2 class="sec">'+lab+'</h2>':'';last=lab;
+    return hd+'<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'" style="grid-template-columns:44px 1fr auto auto auto auto 14px"><span class="tm">'+esc((bl.when||'').replace(/^\S+\s*/,''))+'</span><span class="t">'+esc(f.title)+'<span class="from">'+esc(bl.who||'')+'</span><small>'+esc(r.x.s.name)+(bl.txt?' · <b>'+esc(bl.who)+':</b> '+esc(bl.txt):'')+'</small></span>'
+     +'<span class="kind">'+KN[f.kind]+'</span><span></span><label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> נבדק</label><button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button><span class="car">›</span></div>'
+     +'<div class="dbody"><div class="ib one"><div class="col"><h3>מה בודקים ואיך</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=check">לדף המסך ›</a></div></div></div>'}).join('');
+  app.innerHTML=h;
+  app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
 }
 /* ---------- נסגרו לאחרונה ---------- */
 function parseWhen(w){var m=String(w||'').match(/(\d\d)\.(\d\d)\.(\d{4})(?:\D+(\d\d):(\d\d))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0}
@@ -412,8 +431,8 @@ function askNote(title,sub,o,cb){
   p.onclick=function(e){if(e.target===p)p.classList.remove('on')};
   ok.onclick=function(){var v=t.value.trim();if(required&&!v){t.focus();return}p.classList.remove('on');cb(v)};
 }
-function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.closed!==undefined)renderClosed();else renderScreen(q.screen,TAB)}
-function findItem(t){var q=route();if(q.dev||q.closed!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
+function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.closed!==undefined)renderClosed();else if(q.arrived!==undefined)renderArrived();else renderScreen(q.screen,TAB)}
+function findItem(t){var q=route();if(q.dev||q.closed!==undefined||q.arrived!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
@@ -514,6 +533,7 @@ function md(sk,dv){
   function byScreens(filter){B.screens.forEach(function(s){screen(s,s.items.filter(function(it){return open_(it)&&filter(it)}),'##')})}
   if(q.screen){var s=scr(q.screen);lines.push('# '+s.name+(dv?' — מה על '+dv:' — מה נשאר')+' ('+B.updated+')','');
     screen(s,s.items.filter(function(it){return open_(it)&&(!dv||it.dev===dv)}),'#');download('hk-'+q.screen+(dv?'-'+dv:'')+'.md',lines.join('\n'));}
+  else if(q.arrived!==undefined){lines.push('# הגיע מפיתוח — לבדיקה ('+B.updated+')','');var ids={};arrived().forEach(function(r){ids[r.x.it.id]=1});byScreens(function(it){return !!ids[it.id]});download('hk-arrived.md',lines.join('\n'));}
   else if(q.dev){lines.push('# מה על '+q.dev+' ('+B.updated+')','');
     byScreens(function(it){return it.dev===q.dev});download('hk-'+q.dev+'.md',lines.join('\n'));}
   else{lines.push('# לוח המשימות — כל הפתוחים ('+B.updated+')','');
@@ -523,7 +543,7 @@ function md(sk,dv){
 /* ---------- רינדור ---------- */
 function render(){
   var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
-  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.closed!==undefined)renderClosed(); else renderCenter();
+  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.closed!==undefined)renderClosed(); else if(q.arrived!==undefined)renderArrived(); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
 }
 document.getElementById('bEdit').onclick=function(){EDIT=true;render()};
@@ -549,8 +569,10 @@ function loadLatest(cb){
      cb();
    }).catch(function(){cb()});
 }
-loadLatest(function(){ if(!location.hash&&me()&&B.devs.indexOf(me())>=0) location.hash='#dev='+encodeURIComponent(me()); render(); });
-document.addEventListener('hk:login',function(){ if(me()&&B.devs.indexOf(me())>=0) go('#dev='+encodeURIComponent(me())); loadLatest(render); });
+/* מי שמחובר ולא רשום כמתכנת — הלוח לא בשבילו; עובר לדף הדיווח של התמיכה */
+function notDev(){return ONLINE&&me()&&B.devs.indexOf(me())<0}
+loadLatest(function(){ if(notDev()){location.replace('../bug/index.html');return} if(!location.hash&&me()&&B.devs.indexOf(me())>=0) location.hash='#dev='+encodeURIComponent(me()); render(); });
+document.addEventListener('hk:login',function(){ if(notDev()){location.replace('../bug/index.html');return} if(me()&&B.devs.indexOf(me())>=0) go('#dev='+encodeURIComponent(me())); loadLatest(render); });
 /* רענון אוטומטי כל דקה: מביא מגיט, ומצייר מחדש רק אם יש גרסה חדשה יותר.
    לא בזמן עריכה ולא כשפופאפ פתוח — כדי לא למחוק למישהו טקסט באמצע. */
 setInterval(function(){
