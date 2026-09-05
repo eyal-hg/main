@@ -1,6 +1,6 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 25,
+ "version": 26,
  "seq": 86,
  "updated": "05.09.2026, 16:55",
  "emails": [
@@ -1967,7 +1967,8 @@ window.HK_BOARD = {
      "imgB": "img/topbar-icons-proto.jpg",
      "capB": "הפרוטוטיפ: הפס העליון בתצוגת יועץ — \"?\", באג, פיתוח.",
      "created": "05.09.2026 17:03",
-     "updated": "05.09.2026 17:03"
+     "updated": "05.09.2026 17:03",
+     "pin": true
     }
    ]
   }

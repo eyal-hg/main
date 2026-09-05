@@ -145,6 +145,7 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .btn.danger{background:#C43D30;color:#fff;border-color:#C43D30}
 .askb{border:1px solid var(--line2);background:#fff;color:var(--ink2);font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.askb:hover{border-color:var(--sky);color:#14618F}.askb.on{border-color:#c98404;color:#c98404}
 .from.bad{background:var(--bad)}
+.pinchip{color:var(--coral);margin-inline-end:6px}.pinhdr span{color:var(--coral)}.itemmd{margin-inline-start:10px}.askb.on{border-color:var(--coral);color:var(--coral)}
 .srch{font:inherit;font-size:12.5px;border:1px solid var(--line2);border-radius:999px;padding:5px 12px;width:150px;color:var(--ink);background:var(--panel)}.srch:focus{outline:none;border-color:var(--sky);width:200px}
 mark{background:#FFF1B8;color:inherit;border-radius:3px;padding:0 1px}
 .item.col .ih{cursor:pointer}.item.col .ih .car{color:var(--ink3);transition:.15s;display:inline-block;margin-inline-start:4px}.item.col.open .ih .car{transform:rotate(90deg)}
@@ -307,18 +308,20 @@ function renderDev(d){
    +'<li><b>לא ברור, תקוע, או לא מסכים?</b> Reject על השורה, עם מה הבעיה. אייל עונה בפריט עצמו, לא בוואטסאפ.</li></ol></details>';
   if(d==='אייל'){var qs=allItems().filter(function(x){return x.it.ask&&open_(x.it)});
     if(qs.length)h+='<h2 class="sec">Reject ממתכנתים <span class="qn">'+qs.length+'</span></h2>'+qs.map(function(x){var f=x.it;return '<div class="qrow"><div><b>'+esc(f.ask.who)+'</b> על <a href="#screen='+x.s.key+'&tab='+f.kind+'">'+esc(f.title)+'</a> <span class="w">'+esc(f.ask.when)+'</span><p>'+esc(f.ask.txt)+'</p></div><button class="btn sm pri" data-act="answer" data-screen="'+x.s.key+'" data-id="'+f.id+'">תשובה</button></div>'}).join('');}
-  var byScreen={};mine.forEach(function(x){(byScreen[x.s.key]=byScreen[x.s.key]||[]).push(x)});
+  var byScreen={};mine.forEach(function(x){(byScreen[x.it.pin?'_pin':x.s.key]=byScreen[x.it.pin?'_pin':x.s.key]||[]).push(x)});
   /* אצל אייל: מה שחזר מפיתוח (יש "נבנה" בהיסטוריה) קודם לבדיקות שהוא רשם לעצמו */
   var fromDev=function(it){var l=it.log||[],z=l[l.length-1];return !!z&&((it.kind==='check'&&z.ev==='built')||(it.kind!=='check'&&z.ev==='failed'))};
   Object.keys(byScreen).forEach(function(k){byScreen[k].sort(function(a,b){return (fromDev(b.it)?1:0)-(fromDev(a.it)?1:0)})});
-  Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){var f=x.it, lg=f.log||[], last=lg[lg.length-1], bl=(f.kind==='check'&&last&&last.ev==='built')?last:null, fl=(f.kind!=='check'&&last&&last.ev==='failed')?last:null, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
-      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(f.n||'')+'</span><span class="t">'+esc(f.title)+(bl?'<span class="from">'+esc(bl.who||'')+' · '+esc(bl.when)+'</span>':'')+(fl?'<span class="from bad">הוחזר · '+esc(fl.who||'אייל')+' · '+esc(fl.when)+'</span>':'')+'<small>'+(bl&&bl.txt?'<b>'+esc(bl.who)+':</b> '+esc(bl.txt):fl&&fl.txt?'<b>נכשל:</b> '+esc(fl.txt):esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140)))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+(f.ask?'<span class="wait">Reject · ממתין לתשובה</span>':(d!=='אייל'?'<button class="askb" data-act="ask" data-screen="'+k+'" data-id="'+f.id+'">Reject</button>':''))+'<span class="car">›</span></div>'
+  var keys=Object.keys(byScreen).sort(function(a,b){return (a==='_pin'?-1:b==='_pin'?1:0)});
+  keys.forEach(function(k){var pin=k==='_pin',s=pin?{name:'קודם כל'}:scr(k);h+='<h2 class="sec'+(pin?' pinhdr':'')+'">'+(pin?'<span>קודם כל</span>':'<a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a>')+(pin||k==='general'?'':'<button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button>')+'</h2>'+byScreen[k].map(function(x,i){var k=x.s.key;var f=x.it, lg=f.log||[], last=lg[lg.length-1], bl=(f.kind==='check'&&last&&last.ev==='built')?last:null, fl=(f.kind!=='check'&&last&&last.ev==='failed')?last:null, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
+      return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(f.n||'')+'</span><span class="t">'+(f.pin?'<span class="pinchip">★</span>':'')+esc(f.title)+(bl?'<span class="from">'+esc(bl.who||'')+' · '+esc(bl.when)+'</span>':'')+(fl?'<span class="from bad">הוחזר · '+esc(fl.who||'אייל')+' · '+esc(fl.when)+'</span>':'')+'<small>'+(bl&&bl.txt?'<b>'+esc(bl.who)+':</b> '+esc(bl.txt):fl&&fl.txt?'<b>נכשל:</b> '+esc(fl.txt):esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140)))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+(f.ask?'<span class="wait">Reject · ממתין לתשובה</span>':(d!=='אייל'?'<button class="askb" data-act="ask" data-screen="'+k+'" data-id="'+f.id+'">Reject</button>':''))+'<span class="car">›</span></div>'
        +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img '+imgSrc(f.imgA)+' alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
        +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img '+imgSrc(f.imgB)+' alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
-       +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
+       +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a>'+((k==='general'||f.pin)?' <button class="btn sm itemmd" data-mdi="'+f.id+'" data-scr="'+k+'">MD של הפריט ⤓</button>':'')+'</div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
+  app.querySelectorAll('.itemmd').forEach(function(b){b.onclick=function(e){e.preventDefault();e.stopPropagation();mdItem(scr(b.dataset.scr),byId(scr(b.dataset.scr),b.dataset.mdi))}});
   var ht=app.querySelector('details.howto'); if(ht)ht.ontoggle=function(){HOWTO_OPEN=ht.open;try{localStorage.setItem('hkHowto',ht.open?'1':'0')}catch(e){}};
 }
 function parseWhen(w){var m=String(w||'').match(/(\d\d)\.(\d\d)\.(\d{4})(?:\D+(\d\d):(\d\d))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0}
@@ -383,7 +386,7 @@ function renderScreen(key,tab){
      +'<label class="st"><input type="checkbox" data-act="done"'+(f.status==='done'?' checked':'')+'> '+DONE_LABEL[tab]+'</label>'
      +(tab==='check'&&f.status!=='done'?'<button class="fail" data-act="fail">נכשל</button>':'')
      +(f.ask?'<button class="askb on" data-act="answer">Reject · תשובה</button>':(f.status!=='done'?'<button class="askb" data-act="ask">Reject</button>':''))
-     +'<button class="del editonly" data-act="del">הסרה</button><span class="car">›</span></div>'
+     +'<button class="askb editonly'+(f.pin?' on':'')+'" data-act="pin" title="ראשון בדף של המתכנת">'+(f.pin?'★ ראשון':'☆ ראשון')+'</button>'+(key==='general'?'<button class="askb" data-act="mdi">MD ⤓</button>':'')+'<button class="del editonly" data-act="del">הסרה</button><span class="car">›</span></div>'
      +(f.src==='support'?'<div class="smeta"><span>מהתמיכה · <b>'+esc(f.rep||f.who||'')+'</b> · '+esc(f.created||'')+'</span>'+(f.client?'<span>לקוח: <b>'+esc(f.client)+'</b></span>':'')+(f.video&&/^https:\/\//i.test(f.video)?'<a href="'+esc(f.video)+'" target="_blank" rel="noopener noreferrer">סרטון ↗</a>':'')
        +(key==='inbox'?'<span class="mv"><span class="sel" id="mv-'+f.id+'" data-v=""><button type="button">העברה למסך ▾</button><div class="dd">'+B.screens.filter(function(x){return x.key!=='inbox'}).map(function(x){return '<button type="button" data-v="'+x.key+'"'+(f.hint===x.key?' class="on"':'')+'>'+esc(x.name)+(f.hint===x.key?' · הצעת המדווח':'')+'</button>'}).join('')+'</div></span></span>':'')+'</div>':'')
      +'<div class="ib"><div class="col"><h3>'+hA+'</h3><p class="ed" data-k="what">'+esc(f.what)+'</p>'
@@ -411,6 +414,8 @@ app.addEventListener('click',function(e){
   var q=route(); if(!q.screen)return; var s=scr(q.screen);
   var t=e.target.closest('[data-act]'); if(!t)return; var sec=t.closest('.item'); if(!sec)return; var f=byId(s,sec.dataset.id);
   if(t.dataset.act==='sev'&&EDIT){collect(s);f.sev=f.sev==='חוסם'?'גבוה':f.sev==='גבוה'?'בינוני':'חוסם';f.updated=today();markDirty();renderScreen(q.screen,TAB);}
+  if(t.dataset.act==='pin'&&EDIT){collect(s);f.pin=!f.pin;f.updated=today();markDirty();renderScreen(q.screen,TAB);}
+  if(t.dataset.act==='mdi'){e.stopPropagation();mdItem(s,f);}
   if(t.dataset.act==='del'){collect(s);s.items=s.items.filter(function(x){return x!==f});markDirty();renderScreen(q.screen,TAB);}
 });
 /* סימון "אופיין/נבנה/תוקן" לא סוגר — מעביר לשלב הבא. רק "נבדק" סוגר. משותף לדף המסך ולדף המתכנת.
@@ -517,6 +522,15 @@ function openAdd(kind,screen){
     var sc=scr(AD.screen)||scr('general'); sc.items.push(it); markDirty(); p.classList.remove('on');
     toast('נוסף ל'+sc.name+' — שומר…'); save();
   };
+}
+function mdItem(s,f){
+  var lines=['# #'+(f.n||'')+' · '+f.title+' ('+B.updated+')','','לפני שמתחילים: לקרוא את docs/AI-GUIDE.md בריפו — מה אייל רוצה, מה אסור, והכרעות שכבר נפלו.','מסך: '+s.name+(s.task?' · האפיון המלא: '+s.task:'')+(s.proto?' · הפרוטוטיפ: '+s.proto:''),''];
+  lines.push('**'+(f.kind==='check'?'מה בודקים ואיך':f.kind==='fix'?'היום בסטייג׳ינג':'מה חסר')+':** '+f.what);
+  if(f.need)lines.push('','**'+(f.kind==='spec'?'מה צריך להחליט':'צריך להיות')+':** '+f.need);
+  if(f.imgA)lines.push('','צילום (סטייג׳ינג): board/'+f.imgA+(f.capA?' — '+f.capA:''));
+  if(f.imgB)lines.push('','צילום (פרוטוטיפ): board/'+f.imgB+(f.capB?' — '+f.capB:''));
+  if(f.log&&f.log.length)lines.push('','היסטוריה: '+f.log.map(function(l){return l.when+' '+l.who+' '+l.ev+(l.txt?': '+l.txt:'')}).join(' | '));
+  download('hk-'+(f.n||f.id)+'.md',lines.join('\n'));toast('MD של #'+(f.n||'')+' ירד');
 }
 /* ---------- MD ----------
    ה-MD תמיד פר מסך: גם הקובץ של מתכנת וגם של המרכז בנויים מסך-מסך —

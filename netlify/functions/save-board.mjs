@@ -33,7 +33,7 @@ function clean(board) {
   if (!board || typeof board !== "object") throw new Error("board חסר");
   const screens = Array.isArray(board.screens) ? board.screens : [];
   if (!screens.length || screens.length > 100) throw new Error("screens: ריק או גדול מדי");
-  const item = it => ({ id: S(it.id).slice(0, 40), n: Number(it.n) || undefined, kind: ["spec","todo","fix","check"].includes(it.kind) ? it.kind : "fix",
+  const item = it => ({ id: S(it.id).slice(0, 40), n: Number(it.n) || undefined, pin: it.pin ? true : undefined, kind: ["spec","todo","fix","check"].includes(it.kind) ? it.kind : "fix",
     title: S(it.title).slice(0, 300), what: S(it.what), need: S(it.need), sev: S(it.sev).slice(0, 20), dev: S(it.dev).slice(0, 40),
     who: S(it.who).slice(0, 60), status: it.status === "done" ? "done" : "open", imgA: S(it.imgA).slice(0, 200), capA: S(it.capA).slice(0, 300),
     imgB: S(it.imgB).slice(0, 200), capB: S(it.capB).slice(0, 300), created: S(it.created).slice(0, 30), updated: S(it.updated).slice(0, 30),
