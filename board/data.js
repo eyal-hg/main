@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 61,
- "seq": 109,
- "updated": "06.09.2026 21:39",
+ "version": 62,
+ "seq": 110,
+ "updated": "06.09.2026 21:44",
  "emails": [
   {
    "who": "אייל",
@@ -56,13 +56,13 @@ window.HK_BOARD = {
      "sev": "בינוני",
      "dev": "",
      "who": "אייל",
-     "status": "open",
+     "status": "done",
      "imgA": "img/bugs/bug-1.jpg",
      "capA": "צילום מהתמיכה · אייל",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026, 16:49",
-     "updated": "05.09.2026",
+     "updated": "06.09.2026 21:44",
      "log": [
       {
        "when": "05.09.2026, 16:49",
@@ -75,6 +75,13 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "reply",
        "txt": "לא מבין"
+      },
+      {
+       "when": "06.09.2026 21:44",
+       "who": "אייל (Claude)",
+       "ev": "passed",
+       "txt": "פריט ניסיון מדף הדיווח — נסגר.",
+       "via": "בדיקה מקומית"
       }
      ],
      "src": "support",
@@ -90,19 +97,26 @@ window.HK_BOARD = {
      "sev": "בינוני",
      "dev": "",
      "who": "אייל",
-     "status": "open",
+     "status": "done",
      "imgA": "img/bugs/bug-2.jpg",
      "capA": "צילום מהתמיכה · אייל",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026, 16:55",
-     "updated": "05.09.2026, 16:55",
+     "updated": "06.09.2026 21:44",
      "log": [
       {
        "when": "05.09.2026, 16:55",
        "who": "אייל",
        "ev": "reported",
        "txt": "מסך: התיק שלי"
+      },
+      {
+       "when": "06.09.2026 21:44",
+       "who": "אייל (Claude)",
+       "ev": "passed",
+       "txt": "פריט ניסיון מדף הדיווח — נסגר.",
+       "via": "בדיקה מקומית"
       }
      ],
      "src": "support",
@@ -1769,14 +1783,22 @@ window.HK_BOARD = {
      "sev": "",
      "dev": "אייל",
      "who": "אייל כלקוח",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026",
-     "log": [],
+     "updated": "06.09.2026 21:44",
+     "log": [
+      {
+       "when": "06.09.2026 21:44",
+       "who": "אייל (Claude)",
+       "ev": "passed",
+       "txt": "נבדק מקומית על גבדור בתצוגת בעל העסק: שלושת המצבים, בלי שיחות. השמות האוטומטיים נשארים עד #46 בשרת. נכנס ב-‎PR #7‎.",
+       "via": "בדיקה מקומית"
+      }
+     ],
      "ask": null
     },
     {
@@ -2555,6 +2577,23 @@ window.HK_BOARD = {
    "proto": "",
    "items": [
     {
+     "id": "general-110",
+     "n": 110,
+     "kind": "fix",
+     "dev": "עידו",
+     "sev": "בינוני",
+     "who": "",
+     "status": "open",
+     "pin": true,
+     "created": "06.09.2026 21:44",
+     "updated": "06.09.2026 21:44",
+     "log": [],
+     "ask": null,
+     "title": "למזג ‎PR #10‎ — אייקוני פיתוח ודיווח באג בפס העליון",
+     "what": "https://github.com/h-beehive/hk-client/pull/10 — ענף design/topbar-icons אל stg, עצמאי. שינוי קטן ב-Workspace.tsx/.css (שני כפתורים ליד ההודעות, רק לאנשי המשרד) ו-client.ts רק ל-localhost.",
+     "need": "למזג ל-stg ולסמן \"נבנה\". נבדק מקומית: מנהל תזרים רואה, בעל העסק לא (לא ב-DOM)."
+    },
+    {
      "id": "general-109",
      "n": 109,
      "kind": "check",
@@ -2735,14 +2774,23 @@ window.HK_BOARD = {
      "sev": "",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "img/topbar-icons-proto.jpg",
      "capB": "הפרוטוטיפ: הפס העליון בתצוגת יועץ — \"?\", באג, פיתוח.",
      "created": "05.09.2026 17:03",
-     "updated": "05.09.2026 17:03",
-     "pin": true
+     "updated": "06.09.2026 21:44",
+     "pin": true,
+     "log": [
+      {
+       "when": "06.09.2026 21:44",
+       "who": "אייל (Claude)",
+       "ev": "passed",
+       "txt": "נבנה בריפו של הלקוח ונבדק מקומית: בתצוגת מנהל תזרים שני הכפתורים ליד ההודעות עם הקישורים ללוח ולדף הדיווח; בתצוגת בעל העסק לא קיימים ב-DOM. נכנס ב-‎PR #10‎. אם אחרי המיזוג ל-stg זה לא ככה — פותחים מחדש.",
+       "via": "בדיקה מקומית"
+      }
+     ]
     },
     {
      "id": "general-6",
