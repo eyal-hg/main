@@ -150,7 +150,8 @@ h2.sec{font-size:14px;font-weight:700;color:var(--navy);margin:18px 0 8px}
 .qrow{display:flex;align-items:flex-start;gap:12px;background:#FFF9EC;border:1px solid #F3DFA8;border-radius:12px;padding:10px 16px;margin-bottom:8px;font-size:13px}.qrow>div{flex:1}.qrow .w{color:var(--ink3);font-size:11.5px}.qrow p{margin:4px 0 0;color:var(--ink)}.qrow a{color:#14618F;text-decoration:none;font-weight:600}
 .log{border-top:1px dashed var(--line);padding:8px 16px;font-size:12px;color:var(--ink2)}.log>div{padding:2px 0}.log span{color:var(--ink3)}.log .failed b{color:#C43D30}.log .built b,.log .passed b{color:#0B6E4B}
 .sec{display:flex;align-items:center;gap:10px}
-.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
+.drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:26px 1fr auto auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow.done{opacity:.6}.drow.done .row{cursor:default}.donehdr{margin-top:26px}
+.drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
 </style>
 </head>
 <body>
@@ -249,6 +250,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDD();d
 function newItem(kind,title,dev){return {id:uid(),kind:kind,title:title,what:kind==='check'?'מה בודקים ואיך':kind==='spec'?'מה חסר באפיון':kind==='todo'?'מה חסר':'מה רואים היום',need:kind==='check'?'':'מה צריך להיות',sev:kind==='fix'?'בינוני':'',dev:dev,who:'',status:'open',imgA:'',capA:'',imgB:'',capB:'',created:today(),updated:today()}}
 /* ---------- דף אדם ---------- */
 var OPEN={};   /* אילו שורות פתוחות בדף המתכנת */
+var SHOWDONE=false;
 function renderDev(d){
   var mine=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)});
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
@@ -271,7 +273,13 @@ function renderDev(d){
        +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
        +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
+  /* סגורים: מה שסומן "נבדק". מקופל, ואפשר להחזיר — ביטול הסימון פותח מחדש */
+  var doneL=allItems().filter(function(x){return x.it.status==='done'&&(d==='אייל'||(x.it.back&&x.it.back.dev===d)||x.it.dev===d)});
+  if(doneL.length){h+='<h2 class="sec donehdr"><button class="btn sm" id="bDone">'+(SHOWDONE?'הסתרת הסגורים':'סגורים · '+doneL.length)+'</button></h2>';
+    if(SHOWDONE)h+=doneL.map(function(x){var f=x.it,lg=f.log||[],pz=lg.filter(function(l){return l.ev==='passed'}).pop();
+      return '<div class="drow done"><div class="row" data-tog="'+f.id+'"><span class="num">✓</span><span class="t">'+esc(f.title)+'<small>'+esc(x.s.name)+(pz?' · נבדק '+esc(pz.when):'')+(f.back&&f.back.dev?' · בנה '+esc(f.back.dev):'')+'</small></span><span class="kind">'+KN[f.kind]+'</span><span></span><label class="st" onclick="event.stopPropagation()" title="ביטול הסימון פותח את הפריט מחדש"><input type="checkbox" checked data-act="done" data-screen="'+x.s.key+'" data-id="'+f.id+'"> נבדק</label><span></span><span class="car"></span></div></div>'}).join('');}
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
+  var bd=document.getElementById('bDone'); if(bd)bd.onclick=function(){SHOWDONE=!SHOWDONE;renderDev(d)};
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
 }
 /* ---------- דף מסך ---------- */
@@ -325,7 +333,7 @@ app.addEventListener('click',function(e){
    בדרך לבדיקות נשמר "back" — המצב המקורי — כדי ש"נכשל" יחזיר את הפריט למי שבנה, עם החומרה והדרישה שהיו. */
 function logAdd(f,ev,who,txt){(f.log=f.log||[]).push({when:now(),who:who||'',ev:ev,txt:txt||''})}
 function advance(f,checked,note){
-  if(!checked){f.status='open';f.updated=today();markDirty();return}
+  if(!checked){f.status='open';logAdd(f,'reopened','אייל','');f.updated=today();markDirty();toast('נפתח מחדש');return}
   var from=f.kind;
   if(from==='spec'){f.kind='todo';f.what=f.need||f.what;f.need='';logAdd(f,'spec',f.dev,note);toast('עבר ל"נשאר לפתח"')}
   else if(from==='todo'||from==='fix'){var by=f.dev;f.back={kind:from,dev:f.dev,sev:f.sev,what:f.what,need:f.need};
@@ -355,7 +363,7 @@ function findItem(t){var q=route();if(q.dev){var sx=scr(t.dataset.screen);return
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
-  if(!t.checked){advance(f,false);renderNow(q);return}
+  if(!t.checked){advance(f,false);afterChange(q);return}
   if(f.kind==='check'){advance(f,true);afterChange(q);return}
   askNote(DONE_LABEL[f.kind]+' — '+f.title,'מה עשית ואיך לבדוק, בשורה. אייל יראה את זה בפריט הבדיקה.',false,function(v){advance(f,true,v);afterChange(q)});
   t.checked=false;
@@ -374,7 +382,7 @@ app.addEventListener('click',function(e){
   if(t.dataset.act==='ask') askNote('Reject — '+f.title,'מה לא ברור או מה תקוע. אייל רואה את זה בראש הדף שלו ועונה כאן, בפריט.',{required:true,ok:'שליחה לאייל',ph:'מה לא ברור, או מה תקוע ואיפה'},function(v){ask(f,v);afterChange(q)});
   else askNote('תשובה — '+f.title,(f.ask?'ה-Reject של '+f.ask.who+': '+f.ask.txt:''),{required:true,ok:'שמירת התשובה',ph:'התשובה, בשורה או שתיים'},function(v){answer(f,v);afterChange(q)});
 });
-function logHTML(f){if(!f.log||!f.log.length)return '';var L={built:'נבנה',failed:'נכשל',passed:'נבדק',spec:'אופיין',question:'Reject',answer:'תשובה'};
+function logHTML(f){if(!f.log||!f.log.length)return '';var L={built:'נבנה',failed:'נכשל',passed:'נבדק',spec:'אופיין',question:'Reject',answer:'תשובה',reopened:'נפתח מחדש'};
   return '<div class="log">'+f.log.map(function(l){return '<div class="'+esc(l.ev)+'"><span>'+esc(l.when)+' · '+esc(l.who)+' · <b>'+(L[l.ev]||l.ev)+'</b></span>'+(l.txt?' '+esc(l.txt):'')+'</div>'}).join('')+'</div>'}
 /* ---------- שמירה ---------- */
 function markDirty(){B.version=(FILE.version||0)+1;B.updated=today();DRAFT=true;try{localStorage.setItem('hkBoardDraft',JSON.stringify(B))}catch(e){}renderNav(route())}
