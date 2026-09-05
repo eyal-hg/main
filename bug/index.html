@@ -56,12 +56,18 @@ input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky)}
 .rep .a span{color:var(--ink3);font-size:11.5px}
 .rep img{max-width:100%;max-height:160px;object-fit:cover;object-position:top right;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:block}
 .empty{color:var(--ink3);font-size:13px;padding:14px 4px}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line2);background:#fff;color:var(--ink2);border-radius:999px;padding:7px 16px;cursor:pointer}
+.tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.tab i{font-style:normal;font-size:11px;background:rgba(255,255,255,.25);border-radius:999px;padding:0 6px;margin-inline-start:4px}.tab i:empty{display:none}.tab:not(.on) i{background:var(--chip);color:var(--ink2)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>דיווח באג</h1>
+  <h1>באגים</h1>
   <p class="sub">משהו לא עובד אצל לקוח? כתבו כאן, עם צילום. זה נכנס ללוח של אייל והוא מסדר.</p>
+  <div class="tabs"><button type="button" class="tab on" data-t="new">דיווח חדש</button><button type="button" class="tab" data-t="list">הדיווחים <i id="nOpen"></i></button></div>
+  <div id="pNew">
   <div class="card" id="form">
     <label class="fl"><span>מי מדווח <b>*</b></span><div class="chips" id="who"></div></label>
     <label class="fl"><span>מה קרה <b>*</b></span><input type="text" id="title" placeholder="משפט אחד. למשל: הלקוח לא מצליח להעלות מסמך"></label>
@@ -76,10 +82,12 @@ input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky)}
     <label class="fl"><span>קישור לסרטון</span><input type="text" id="video" placeholder="https://…"></label>
     <div class="f"><button class="btn pri" id="send">שליחה</button><span class="msg" id="msg"></span></div>
   </div>
-  <h1 style="margin-top:34px;font-size:18px">הדיווחים</h1>
+  <div class="card done" id="ok"><h2>✓ נשמר, תודה</h2><p>הדיווח נכנס ללוח תחת "מהתמיכה". אייל יסדר אותו.</p><button class="btn" id="again">דיווח נוסף</button></div>
+  </div>
+  <div id="pList" style="display:none">
   <p class="sub">מי פתח, ומתי נסגר. <span class="chips" id="flt" style="display:inline-flex;vertical-align:middle;margin-inline-start:6px"><button type="button" class="chip on" data-f="mine">שלי</button><button type="button" class="chip" data-f="all">כולם</button><button type="button" class="chip" data-f="closed">נסגרו</button></span></p>
   <div id="list"></div>
-  <div class="card done" id="ok"><h2>✓ נשמר, תודה</h2><p>הדיווח נכנס ללוח תחת "מהתמיכה". אייל יסדר אותו.</p><button class="btn" id="again">דיווח נוסף</button></div>
+  </div>
 </div>
 <script src="../js/gate.js" defer></script>
 <script>
@@ -108,11 +116,14 @@ function renderList(){
   var L=[]; BOARD.screens.forEach(function(s){s.items.forEach(function(it){if(it.src==='support')L.push({s:s,it:it})})});
   L=L.filter(function(x){var d=x.it.status==='done';return FLT==='closed'?d:(!d&&(FLT==='all'||x.it.rep===who))});
   L.sort(function(a,b){return String(b.it.created).localeCompare(String(a.it.created))});
+  var mine=[];BOARD.screens.forEach(function(s){s.items.forEach(function(it){if(it.src==='support'&&it.status!=='done'&&it.rep===who)mine.push(it)})});$('nOpen').textContent=mine.length||'';
   if(!L.length){el.innerHTML='<div class="empty">'+(FLT==='mine'?'אין דיווחים פתוחים שלך':FLT==='closed'?'עוד לא נסגר כלום':'אין דיווחים פתוחים')+'</div>';return}
   el.innerHTML=L.map(function(x){var it=x.it,st=status(it),last=(it.log||[]).filter(function(l){return (l.ev==='reply'||l.ev==='closed'||l.ev==='failed')&&l.txt}).pop();
     return '<div class="rep"><div class="h"><b>'+esc(it.title)+'</b><span class="st '+st[0]+'">'+st[1]+'</span></div><div class="m">'+esc(it.rep||'')+' · '+esc(it.created||'')+(x.s.key!=='inbox'?' · '+esc(x.s.name):'')+(it.client?' · '+esc(it.client):'')+'</div>'
      +(last?'<div class="a"><span>אייל · '+esc(last.when)+'</span><br>'+esc(last.txt)+'</div>':'')+(it.imgA?'<img src="../board/'+esc(it.imgA)+'" alt="" loading="lazy">':'')+'</div>'}).join('');
 }
+function showTab(t){[].forEach.call(document.querySelectorAll('.tab'),function(b){b.classList.toggle('on',b.dataset.t===t)});$('pNew').style.display=t==='new'?'':'none';$('pList').style.display=t==='list'?'':'none';window.scrollTo(0,0)}
+document.querySelector('.tabs').onclick=function(e){var b=e.target.closest('.tab');if(b)showTab(b.dataset.t)};
 $('flt').onclick=function(e){var b=e.target.closest('.chip');if(!b)return;FLT=b.dataset.f;[].forEach.call($('flt').children,function(x){x.classList.toggle('on',x===b)});renderList()};
 var sel=$('scr'); sel.querySelector('button').onclick=function(e){e.stopPropagation();sel.classList.toggle('open')};
 $('scrDD').onclick=function(e){var b=e.target.closest('button');if(!b)return;screenKey=b.dataset.k;sel.querySelector(':scope>button').textContent=b.textContent+' ▾';[].forEach.call($('scrDD').children,function(x){x.classList.toggle('on',x===b)});sel.classList.remove('open')};
@@ -135,7 +146,7 @@ $('send').onclick=function(){
   var b=$('send'); b.disabled=true; m.textContent='שומר…';
   fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'bug',bug:{who:who,title:t,screen:screenKey,client:$('client').value.trim(),steps:$('steps').value.trim(),video:$('video').value.trim(),image:img||''}})})
    .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j}})})
-   .then(function(x){b.disabled=false;if(x.ok){$('form').style.display='none';$('ok').style.display='block';window.scrollTo(0,0);fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'load'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.board){BOARD=j.board;renderList()}}).catch(function(){})}else{m.className='msg err';m.textContent='לא נשמר: '+(x.j.error||'שגיאה')}})
+   .then(function(x){b.disabled=false;if(x.ok){$('form').style.display='none';$('ok').style.display='block';window.scrollTo(0,0);setTimeout(function(){$('again').click();showTab('list')},1800);fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:pass,action:'load'})}).then(function(r){return r.json()}).then(function(j){if(j&&j.board){BOARD=j.board;renderList()}}).catch(function(){})}else{m.className='msg err';m.textContent='לא נשמר: '+(x.j.error||'שגיאה')}})
    .catch(function(){b.disabled=false;m.className='msg err';m.textContent='אין חיבור לשרת'});
 };
 $('again').onclick=function(){$('title').value='';$('client').value='';$('steps').value='';$('video').value='';img=null;$('prev').style.display='none';$('form').style.display='block';$('ok').style.display='none';$('title').focus()};
