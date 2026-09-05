@@ -84,7 +84,9 @@ input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky);box-s
 .rep .m{font-size:11.5px;color:var(--ink3);margin-top:2px}
 .rep .a{margin-top:8px;font-size:13px;color:var(--ink);background:#FFF9EC;border-radius:8px;padding:6px 10px}
 .rep .a span{color:var(--ink3);font-size:11.5px}
-.rep img{max-width:100%;max-height:160px;object-fit:cover;object-position:top right;border-radius:8px;border:1px solid var(--line);margin-top:8px;display:block}
+.rep .h{cursor:pointer}.rep .car{color:var(--ink3);transition:.15s;display:inline-block}.rep.open .car{transform:rotate(90deg)}
+.rep .body{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.rep.open .body{display:block}.rep .what{font-size:13.5px;color:var(--ink);white-space:pre-wrap}.rep .vid{display:inline-block;margin-top:6px;font-size:13px;font-weight:600;color:#14618F;text-decoration:none}
+.rep img{max-width:100%;border-radius:8px;border:1px solid var(--line);margin-top:10px;display:block}
 .empty{color:var(--ink3);font-size:13px;padding:24px 4px;text-align:center}
 .sub{color:var(--ink3);font-size:12.5px;margin:0 0 14px}
 </style>
@@ -147,6 +149,9 @@ var BOARD=null, FLT='mine';
 function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 /* לתמיכה יש שני מצבים: פתוח או נסגר (ומתי). מי מתקן — לא עניינם */
 function status(it){if(it.status==='done'){var c=(it.log||[]).filter(function(l){return l.ev==='closed'||l.ev==='passed'}).pop();return ['done','נסגר'+(c&&c.when?' · '+c.when:'')]}return ['new','פתוח']}
+var IMGC={}, OPENR={};   /* אילו דיווחים פתוחים לפירוט */
+function hydrate(){document.querySelectorAll('img[data-bug]').forEach(function(im){var pth=im.dataset.bug;delete im.dataset.bug;if(IMGC[pth]){im.src=IMGC[pth];return}
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'img',path:pth}))}).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){IMGC[pth]=URL.createObjectURL(b);im.src=IMGC[pth]}).catch(function(){im.style.display='none'})})}
 function renderList(){
   var el=$('list'); if(!BOARD){el.innerHTML='';return}
   var L=[]; BOARD.screens.forEach(function(s){s.items.forEach(function(it){if(it.src==='support')L.push({s:s,it:it})})});
@@ -155,8 +160,12 @@ function renderList(){
   var mine=[];BOARD.screens.forEach(function(s){s.items.forEach(function(it){if(it.src==='support'&&it.status!=='done'&&it.rep===who)mine.push(it)})});$('nOpen').textContent=mine.length||'';
   if(!L.length){el.innerHTML='<div class="empty">'+(FLT==='mine'?'אין דיווחים פתוחים שלך':FLT==='closed'?'עוד לא נסגר כלום':'אין דיווחים פתוחים')+'</div>';return}
   el.innerHTML=L.map(function(x){var it=x.it,st=status(it),last=(it.log||[]).filter(function(l){return (l.ev==='reply'||l.ev==='closed'||l.ev==='failed')&&l.txt}).pop();
-    return '<div class="rep'+(it.status==='done'?' done':'')+'"><div class="h"><b>'+esc(it.title)+'</b><span class="st '+st[0]+'">'+st[1]+'</span></div><div class="m">'+esc(it.rep||'')+' · '+esc(it.created||'')+(x.s.key!=='inbox'?' · '+esc(x.s.name):'')+(it.client?' · '+esc(it.client):'')+'</div>'
-     +(last?'<div class="a"><span>אייל · '+esc(last.when)+'</span><br>'+esc(last.txt)+'</div>':'')+(it.imgA?'<img src="../board/'+esc(it.imgA)+'" alt="" loading="lazy">':'')+'</div>'}).join('');
+    var open=!!OPENR[it.id];
+    return '<div class="rep'+(it.status==='done'?' done':'')+(open?' open':'')+'" data-id="'+esc(it.id)+'"><div class="h"><b>'+esc(it.title)+'</b><span class="st '+st[0]+'">'+st[1]+'</span><span class="car">›</span></div><div class="m">'+esc(it.rep||'')+' · '+esc(it.created||'')+(x.s.key!=='inbox'?' · '+esc(x.s.name):'')+(it.client?' · '+esc(it.client):'')+'</div>'
+     +(last?'<div class="a"><span>אייל · '+esc(last.when)+'</span><br>'+esc(last.txt)+'</div>':'')
+     +'<div class="body"><div class="what">'+esc(it.what||'')+'</div>'+(it.video?'<a class="vid" href="'+esc(it.video)+'" target="_blank" rel="noopener noreferrer">סרטון ↗</a>':'')+(it.imgA?'<img data-bug="'+esc(it.imgA)+'" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="">':'')+'</div></div>'}).join('');
+  [].forEach.call(el.querySelectorAll('.rep .h'),function(h){h.onclick=function(){var r=h.parentNode,id=r.dataset.id;OPENR[id]=!OPENR[id];r.classList.toggle('open',!!OPENR[id])}});
+  hydrate();
 }
 function showTab(t){[].forEach.call(document.querySelectorAll('.tab'),function(b){b.classList.toggle('on',b.dataset.t===t)});$('pNew').style.display=t==='new'?'':'none';$('pList').style.display=t==='list'?'':'none';window.scrollTo(0,0)}
 document.querySelector('.tabs').onclick=function(e){var b=e.target.closest('.tab');if(b)showTab(b.dataset.t)};

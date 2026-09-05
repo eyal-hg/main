@@ -308,8 +308,8 @@ function renderDev(d){
   Object.keys(byScreen).forEach(function(k){byScreen[k].sort(function(a,b){return (fromDev(b.it)?1:0)-(fromDev(a.it)?1:0)})});
   Object.keys(byScreen).forEach(function(k){var s=scr(k);h+='<h2 class="sec"><a href="#screen='+k+'" style="text-decoration:none">'+esc(s.name)+'</a><button class="btn sm secmd" data-md="'+k+'" title="MD של המסך הזה, רק מה שעל '+esc(d)+'">MD ⤓</button></h2>'+byScreen[k].map(function(x,i){var f=x.it, lg=f.log||[], last=lg[lg.length-1], bl=(f.kind==='check'&&last&&last.ev==='built')?last:null, fl=(f.kind!=='check'&&last&&last.ev==='failed')?last:null, hA=f.kind==='check'?'מה בודקים ואיך':f.kind==='spec'?'מה חסר באפיון':f.kind==='todo'?'מה חסר':'היום בסטייג׳ינג', hB=f.kind==='spec'?'מה צריך להחליט':f.kind==='todo'?'מה צריך להיות':'צריך להיות';
       return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'"><span class="num">'+(f.n||'')+'</span><span class="t">'+esc(f.title)+(bl?'<span class="from">'+esc(bl.who||'')+' · '+esc(bl.when)+'</span>':'')+(fl?'<span class="from bad">הוחזר · '+esc(fl.who||'אייל')+' · '+esc(fl.when)+'</span>':'')+'<small>'+(bl&&bl.txt?'<b>'+esc(bl.who)+':</b> '+esc(bl.txt):fl&&fl.txt?'<b>נכשל:</b> '+esc(fl.txt):esc(String((f.kind==='check'?f.what:f.need)||f.what).slice(0,140)))+'</small></span><span class="kind">'+KN[f.kind]+'</span>'+(f.sev?'<span class="sev '+sevCls(f.sev)+'">'+esc(f.sev)+'</span>':'<span></span>')+'<label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> '+DONE_LABEL[f.kind]+'</label>'+(f.kind==='check'?'<button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button>':'')+(f.ask?'<span class="wait">Reject · ממתין לתשובה</span>':(d!=='אייל'?'<button class="askb" data-act="ask" data-screen="'+k+'" data-id="'+f.id+'">Reject</button>':''))+'<span class="car">›</span></div>'
-       +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
-       +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
+       +'<div class="dbody"><div class="ib'+((f.kind==='check')||(!f.need&&!f.imgB)?' one':'')+'"><div class="col"><h3>'+hA+'</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img '+imgSrc(f.imgA)+' alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
+       +((f.kind==='check')||(!f.need&&!f.imgB)?'':'<div class="col"><h3>'+hB+'</h3><p>'+esc(f.need)+'</p>'+(f.imgB?'<figure><img '+imgSrc(f.imgB)+' alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'
        +logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab='+f.kind+'">לדף המסך ›</a></div></div></div>'}).join('')});
   if(!mine.length)h+='<div class="empty">✓ הכל סגור</div>';
   app.innerHTML=h; app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
@@ -329,7 +329,7 @@ function renderArrived(){
   h+=L.map(function(r){var f=r.x.it,k=r.x.s.key,bl=r.bl,lab=dayLabel(r.t),hd=lab!==last?'<h2 class="sec">'+lab+'</h2>':'';last=lab;
     return hd+'<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row" data-tog="'+f.id+'" style="grid-template-columns:26px 44px 1fr auto auto auto auto 14px"><span class="num">'+(f.n||'')+'</span><span class="tm">'+esc((bl.when||'').replace(/^\S+\s*/,''))+'</span><span class="t">'+esc(f.title)+'<span class="from">'+esc(bl.who||'')+'</span><small>'+esc(r.x.s.name)+(bl.txt?' · <b>'+esc(bl.who)+':</b> '+esc(bl.txt):'')+'</small></span>'
      +'<span class="kind">'+KN[f.kind]+'</span><span></span><label class="st" onclick="event.stopPropagation()"><input type="checkbox" data-act="done" data-screen="'+k+'" data-id="'+f.id+'"> נבדק</label><button class="fail" data-act="fail" data-screen="'+k+'" data-id="'+f.id+'">נכשל</button><span class="car">›</span></div>'
-     +'<div class="dbody"><div class="ib one"><div class="col"><h3>מה בודקים ואיך</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=check">לדף המסך ›</a></div></div></div>'}).join('');
+     +'<div class="dbody"><div class="ib one"><div class="col"><h3>מה בודקים ואיך</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img '+imgSrc(f.imgA)+' alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+(f.imgB?'<figure><img '+imgSrc(f.imgB)+' alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=check">לדף המסך ›</a></div></div></div>'}).join('');
   app.innerHTML=h;
   app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
 }
@@ -356,14 +356,14 @@ function renderScreen(key,tab){
      +(f.src==='support'&&f.status!=='done'?'<button class="askb" data-act="reply">תשובה לתמיכה</button><button class="fail" data-act="closeq">סגירה עם תשובה</button>':'')
      +'<label class="st"><input type="checkbox" data-act="done"'+(f.status==='done'?' checked':'')+'> '+DONE_LABEL[tab]+'</label>'
      +(tab==='check'&&f.status!=='done'?'<button class="fail" data-act="fail">נכשל</button>':'')
-     +(f.ask?'<button class="askb on" data-act="answer">Reject · תשובה</button>':(f.status!=='done'?'<button class="askb" data-act="ask">שאלה / בעיה</button>':''))
+     +(f.ask?'<button class="askb on" data-act="answer">Reject · תשובה</button>':(f.status!=='done'?'<button class="askb" data-act="ask">Reject</button>':''))
      +'<button class="del editonly" data-act="del">הסרה</button></div>'
      +(f.src==='support'?'<div class="smeta"><span>מהתמיכה · <b>'+esc(f.rep||f.who||'')+'</b> · '+esc(f.created||'')+'</span>'+(f.client?'<span>לקוח: <b>'+esc(f.client)+'</b></span>':'')+(f.video&&/^https:\/\//i.test(f.video)?'<a href="'+esc(f.video)+'" target="_blank" rel="noopener noreferrer">סרטון ↗</a>':'')
        +(key==='inbox'?'<span class="mv"><span class="sel" id="mv-'+f.id+'" data-v=""><button type="button">העברה למסך ▾</button><div class="dd">'+B.screens.filter(function(x){return x.key!=='inbox'}).map(function(x){return '<button type="button" data-v="'+x.key+'"'+(f.hint===x.key?' class="on"':'')+'>'+esc(x.name)+(f.hint===x.key?' · הצעת המדווח':'')+'</button>'}).join('')+'</div></span></span>':'')+'</div>':'')
      +'<div class="ib"><div class="col"><h3>'+hA+'</h3><p class="ed" data-k="what">'+esc(f.what)+'</p>'
-     +(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption class="ed" data-k="capA">'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
+     +(f.imgA?'<figure><img '+imgSrc(f.imgA)+' alt="" loading="lazy"><figcaption class="ed" data-k="capA">'+esc(f.capA)+'</figcaption></figure>':'')+'</div>'
      +(one?'':'<div class="col"><h3>'+hB+'</h3><p class="ed" data-k="need">'+esc(f.need)+'</p>'
-     +(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption class="ed" data-k="capB">'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'+logHTML(f)+'</section>';
+     +(f.imgB?'<figure><img '+imgSrc(f.imgB)+' alt="" loading="lazy"><figcaption class="ed" data-k="capB">'+esc(f.capB)+'</figcaption></figure>':'')+'</div>')+'</div>'+logHTML(f)+'</section>';
   }).join('');
   app.innerHTML=h;
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
@@ -524,10 +524,23 @@ function md(sk,dv){
   toast('קובץ ה-MD ירד');
 }
 /* ---------- רינדור ---------- */
+/* צילומי באגים: לא באתר הפרוס — מגיע מגיט דרך הפונקציה, פעם אחת לכל צילום */
+var IMGC={};
+function hydrateBugImages(root){
+  if(!ONLINE)return;
+  (root||document).querySelectorAll('img[data-bug]').forEach(function(im){
+    var pth=im.dataset.bug; delete im.dataset.bug;
+    if(IMGC[pth]){im.src=IMGC[pth];return}
+    fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'img',path:pth}))})
+     .then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){IMGC[pth]=URL.createObjectURL(b);im.src=IMGC[pth]}).catch(function(){im.alt='הצילום לא נטען';im.style.display='none'});
+  });
+}
+function imgSrc(p){return /^img\/bugs\//.test(p)?'data-bug="'+esc(p)+'" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="':'src="'+esc(p)+'"'}
 function render(){
   var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
   if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
+  hydrateBugImages(app);
 }
 document.getElementById('bEdit').onclick=function(){EDIT=true;render()};
 (function(){var el=document.getElementById('meid');function paint(){var n=me();el.innerHTML=n?esc(n)+' <button type="button" class="out" title="יציאה">יציאה</button>':'';var o=el.querySelector('.out');if(o)o.onclick=logout}paint();document.addEventListener('hk:login',paint)})();

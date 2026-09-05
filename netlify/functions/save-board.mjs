@@ -107,6 +107,16 @@ export default async (req) => {
   if (!ses && !same(body.password || "", pass)) return json(401, { error: "סיסמה שגויה" });
   if (body.action === "check") return json(200, { ok: true, who: ses ? ses.name : "", email: ses ? ses.email : "" });
   const stamp = () => new Date().toLocaleString("he-IL", { timeZone: "Asia/Jerusalem", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  if (body.action === "img") {    // צילומי באגים לא נפרסים (כלל ה-ignore), אז הלוח מביא אותם מגיט דרך כאן
+    const path = String(body.path || "");
+    if (!/^img\/bugs\/bug-\d+\.jpg$/.test(path)) return json(400, { error: "נתיב לא חוקי" });
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO}/contents/board/${path}?ref=${BRANCH}`, { headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github.raw+json", "x-github-api-version": "2022-11-28" } });
+      if (!r.ok) return json(404, { error: "אין צילום" });
+      const buf = Buffer.from(await r.arrayBuffer());
+      return new Response(buf, { status: 200, headers: { "content-type": "image/jpeg", "cache-control": "private, max-age=86400", "x-content-type-options": "nosniff" } });
+    } catch (e) { return json(502, { error: e.message }); }
+  }
   if (body.action === "load") {   // הלוח קורא את הגרסה האחרונה מגיט — בלי לחכות לפריסה, ובלי לבנות בכלל
     try { return json(200, { ok: true, board: await loadBoard() }); } catch (e) { return json(502, { error: e.message }); }
   }
