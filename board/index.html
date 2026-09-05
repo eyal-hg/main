@@ -295,6 +295,8 @@ document.querySelectorAll('.stab').forEach(function(b){b.onclick=function(){docu
 document.getElementById('setX2').onclick=function(){document.getElementById('setpop').classList.remove('on')};
 /* שפת עיצוב: קורא את css/tokens.css ומצייר שם · ערך · האלמנט */
 var DS=null;
+/* מקומית (file://) אי אפשר לקרוא קובץ — אז השמות מכאן והערכים מה-CSS שכבר נטען (getComputedStyle). באתר החי הכל מהקובץ. */
+var DS_NAMES=[["#", "צבע: מבנה · פעולה · סכנה · מידע"], ["hk-navy", "מבנה: פסים, כותרות פאנל, צ׳יפ פעיל. בלוק נייבי אחד בגוף הדף"], ["hk-navy-2", "משטח נייבי בהיר יותר (hover, שורה שנייה בפס)"], ["hk-coral", "הפעולה הראשית. אחת לפאנל. קורל = פעולה, לא סטטוס"], ["hk-coral-2", "hover של קורל"], ["hk-danger", "רק סכנה כספית / איחור. לא לכל הדגשה"], ["hk-danger-text", ""], ["hk-sky", "מידע, קישור, focus. לא טקסט לבן עליו"], ["hk-link", "טקסט קישור על לבן"], ["hk-ok", "אישור, חיובי"], ["hk-ok-bg", ""], ["hk-warn", "אזהרה רכה"], ["hk-warn-bg", ""], ["hk-info-bg", "רקע צ׳יפ מידע"], ["#", "דיו"], ["hk-ink", "טקסט ראשי"], ["hk-ink-2", "משני"], ["hk-ink-3", "שקט: מטא, תוויות, רמזים"], ["hk-on-navy", "טקסט על נייבי"], ["hk-on-navy-2", "טקסט משני על נייבי"], ["#", "רקעים וגבולות"], ["hk-bg", "קרקע הדף"], ["hk-panel", ""], ["hk-chip", "צ׳יפ לא פעיל, פקד שקט"], ["hk-row-on", "שורה נבחרת"], ["hk-tint", ""], ["hk-line", "גבול. 1px, לא יותר"], ["hk-line-2", "גבול פקד"], ["#", "טיפוגרפיה: Heebo, סקאלה סגורה. אין 15, אין 13.5"], ["hk-font", ""], ["hk-fs-28", "כותרת מסך"], ["hk-fs-22", ""], ["hk-fs-19", ""], ["hk-fs-17", "כותרת פאנל"], ["hk-fs-14", "גוף"], ["hk-fs-13", "תווית מעל מספר חי"], ["hk-fs-12-5", ""], ["hk-fs-12", "מטא, כיתוב תחת מספר"], ["hk-fs-11-5", ""], ["hk-fw-thin", ""], ["hk-fw-body", ""], ["hk-fw-mid", ""], ["hk-fw-head", ""], ["hk-num", "מספר חי: 27px/600, tabular-nums, dir=ltr, מינוס משמאל, ₪ קטן וקבוע"], ["#", "מרווחים: 4 · 6 · 8 · 10 · 12 · 14 · 18 · 20 · 24 · 32"], ["hk-sp-1", ""], ["hk-sp-2", ""], ["hk-sp-3", ""], ["hk-sp-4", ""], ["hk-sp-5", ""], ["hk-sp-6", ""], ["hk-sp-7", ""], ["hk-sp-8", ""], ["hk-sp-9", ""], ["hk-sp-10", ""], ["hk-pad-panel", "ריפוד אופקי בפאנל ובמודאל"], ["#", "רדיוסים"], ["hk-r-check", "תיבת סימון"], ["hk-r-ctl", "פקדים"], ["hk-r-chip", ""], ["hk-r-panel", "10–14"], ["hk-r-modal", ""], ["hk-r-pill", "כפתורים וצ׳יפים"], ["#", "צל: עדין. לא צללים כבדים"], ["hk-shadow", ""], ["hk-shadow-modal", ""], ["#", "מידות רכיבים"], ["hk-row-h", "שורת טבלה. עד 6 עמודות. לא גוללים אופקית"], ["hk-btn-h", "כפתור רגיל"], ["hk-btn-sm-h", ""], ["hk-input-h", ""], ["hk-side-w", "עמודה צדדית: 430–470, נמתחת לגובה הגריד"], ["hk-topbar-h", ""], ["#", "רכיבי בסיס: מה שכל ספריית רכיבים אצל הלקוח צריכה להגיע אליו"]];
 function renderDS(){
   var host=document.getElementById('dsbody');
   function draw(css){
@@ -317,7 +319,9 @@ function renderDS(){
     host.innerHTML=out;
   }
   if(DS){draw(DS);return}
-  fetch('../css/tokens.css').then(function(r){return r.text()}).then(function(t){DS=t;draw(t)}).catch(function(){host.innerHTML='<div class="empty">לא הצלחתי לקרוא את css/tokens.css</div>'});
+  function fallback(){var cs=getComputedStyle(document.documentElement);var t=DS_NAMES.map(function(r){return r[0]==='#'?'/* --- '+r[1]+' --- */':'--'+r[0]+':'+cs.getPropertyValue('--'+r[0]).trim()+';'+(r[1]?' /* '+r[1]+' */':'')}).join('\n');draw(t)}
+  if(!ONLINE){fallback();return}
+  fetch('../css/tokens.css').then(function(r){return r.text()}).then(function(t){DS=t;draw(t)}).catch(fallback);
 }
 document.getElementById('bSet').onclick=function(){renderSettings();document.getElementById('seqNext').textContent='#'+((B.seq||0)+1);document.getElementById('setpop').classList.add('on')};
 document.getElementById('setRenum').onclick=function(){var b=this;if(b.dataset.arm){renumber();delete b.dataset.arm;b.textContent='איפוס המספור';document.getElementById('seqNext').textContent='#'+((B.seq||0)+1);render();return}b.dataset.arm='1';b.textContent='בטוח? לחיצה נוספת מאפסת';b.classList.add('danger')};
