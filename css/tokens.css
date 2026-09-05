@@ -1,0 +1,104 @@
+/* =====================================================================
+   css/tokens.css — שפת העיצוב של HK, במקום אחד.
+   הקובץ הזה נכנס כמו שהוא לפרויקט הלקוח (import פעם אחת, ברמת האפליקציה).
+   כל צבע, גודל, מרווח ורדיוס בממשק מגיע מכאן — לא מספרים ידניים, לא
+   ברירות מחדל של ספריית רכיבים. הפרוטוטיפ (index.html) משתמש באותם ערכים.
+   ===================================================================== */
+:root{
+  /* --- צבע: מבנה · פעולה · סכנה · מידע --- */
+  --hk-navy:#0C4068;        /* מבנה: פסים, כותרות פאנל, צ׳יפ פעיל. בלוק נייבי אחד בגוף הדף */
+  --hk-navy-2:#104A76;      /* משטח נייבי בהיר יותר (hover, שורה שנייה בפס) */
+  --hk-coral:#E4826E;       /* הפעולה הראשית. אחת לפאנל. קורל = פעולה, לא סטטוס */
+  --hk-coral-2:#D96A55;     /* hover של קורל */
+  --hk-danger:#C43D30;      /* רק סכנה כספית / איחור. לא לכל הדגשה */
+  --hk-danger-text:#dc4436;
+  --hk-sky:#39ABE2;         /* מידע, קישור, focus. לא טקסט לבן עליו */
+  --hk-link:#14618F;        /* טקסט קישור על לבן */
+  --hk-ok:#13895b;          /* אישור, חיובי */
+  --hk-ok-bg:#E7F7EF;
+  --hk-warn:#c98404;        /* אזהרה רכה */
+  --hk-warn-bg:#FFF6E6;
+  --hk-info-bg:#E8F4FB;     /* רקע צ׳יפ מידע */
+
+  /* --- דיו --- */
+  --hk-ink:#12263A;         /* טקסט ראשי */
+  --hk-ink-2:#44566A;       /* משני */
+  --hk-ink-3:#7A8898;       /* שקט: מטא, תוויות, רמזים */
+  --hk-on-navy:#DCEBF5;     /* טקסט על נייבי */
+  --hk-on-navy-2:#9FC0DA;   /* טקסט משני על נייבי */
+
+  /* --- רקעים וגבולות --- */
+  --hk-bg:#F6F8FB;          /* קרקע הדף */
+  --hk-panel:#FFFFFF;
+  --hk-chip:#F0F4F8;        /* צ׳יפ לא פעיל, פקד שקט */
+  --hk-row-on:#EEF6FC;      /* שורה נבחרת */
+  --hk-tint:#EAF3FA;
+  --hk-line:#E3EAF3;        /* גבול. 1px, לא יותר */
+  --hk-line-2:#CBD6E2;      /* גבול פקד */
+
+  /* --- טיפוגרפיה: Heebo, סקאלה סגורה. אין 15, אין 13.5 --- */
+  --hk-font:'Heebo','Rubik',system-ui,-apple-system,sans-serif;
+  --hk-fs-28:28px;  /* כותרת מסך */
+  --hk-fs-22:22px;
+  --hk-fs-19:19px;
+  --hk-fs-17:17px;  /* כותרת פאנל */
+  --hk-fs-14:14px;  /* גוף */
+  --hk-fs-13:13px;  /* תווית מעל מספר חי */
+  --hk-fs-12-5:12.5px;
+  --hk-fs-12:12px;  /* מטא, כיתוב תחת מספר */
+  --hk-fs-11-5:11.5px;
+  --hk-fw-thin:300; --hk-fw-body:400; --hk-fw-mid:600; --hk-fw-head:800;
+  --hk-num:27px;    /* מספר חי: 27px/600, tabular-nums, dir=ltr, מינוס משמאל, ₪ קטן וקבוע */
+
+  /* --- מרווחים: 4 · 6 · 8 · 10 · 12 · 14 · 18 · 20 · 24 · 32 --- */
+  --hk-sp-1:4px; --hk-sp-2:6px; --hk-sp-3:8px; --hk-sp-4:10px; --hk-sp-5:12px;
+  --hk-sp-6:14px; --hk-sp-7:18px; --hk-sp-8:20px; --hk-sp-9:24px; --hk-sp-10:32px;
+  --hk-pad-panel:20px;      /* ריפוד אופקי בפאנל ובמודאל */
+
+  /* --- רדיוסים --- */
+  --hk-r-check:4px;   /* תיבת סימון */
+  --hk-r-ctl:6px;     /* פקדים */
+  --hk-r-chip:7px;
+  --hk-r-panel:12px;  /* 10–14 */
+  --hk-r-modal:12px;
+  --hk-r-pill:999px;  /* כפתורים וצ׳יפים */
+
+  /* --- צל: עדין. לא צללים כבדים --- */
+  --hk-shadow:0 1px 2px rgba(12,64,104,.04),0 10px 28px -18px rgba(12,64,104,.18);
+  --hk-shadow-modal:0 20px 50px rgba(0,0,0,.25);
+
+  /* --- מידות רכיבים --- */
+  --hk-row-h:44px;          /* שורת טבלה. עד 6 עמודות. לא גוללים אופקית */
+  --hk-btn-h:37px;          /* כפתור רגיל */
+  --hk-btn-sm-h:28px;
+  --hk-input-h:45px;
+  --hk-side-w:450px;        /* עמודה צדדית: 430–470, נמתחת לגובה הגריד */
+  --hk-topbar-h:64px;
+}
+
+/* --- רכיבי בסיס: מה שכל ספריית רכיבים אצל הלקוח צריכה להגיע אליו --- */
+.hk-btn{font:600 14px/1 var(--hk-font);height:var(--hk-btn-h);padding:0 22px;border-radius:var(--hk-r-pill);
+  border:1px solid var(--hk-line-2);background:var(--hk-panel);color:var(--hk-navy);cursor:pointer}
+.hk-btn--primary{background:var(--hk-coral);border-color:var(--hk-coral);color:#fff}
+.hk-btn--primary:hover{background:var(--hk-coral-2)}
+.hk-btn--danger{background:var(--hk-danger);border-color:var(--hk-danger);color:#fff}
+.hk-btn--sm{height:var(--hk-btn-sm-h);padding:0 12px;font-size:12.5px}
+.hk-chip{display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 var(--hk-font);padding:6px 13px;
+  border-radius:var(--hk-r-pill);background:var(--hk-chip);color:var(--hk-ink-2);border:1px solid transparent}
+.hk-chip--on{background:var(--hk-navy);color:#fff}
+.hk-panel{background:var(--hk-panel);border:1px solid var(--hk-line);border-radius:var(--hk-r-panel);box-shadow:var(--hk-shadow)}
+.hk-panel__head{display:flex;align-items:center;gap:10px;padding:14px var(--hk-pad-panel) 10px;
+  font:600 var(--hk-fs-17)/1.2 var(--hk-font);color:var(--hk-navy)}
+.hk-panel__hint{font-size:12.5px;font-weight:400;color:var(--hk-ink-3)}
+.hk-num{font:600 var(--hk-num)/1.1 var(--hk-font);color:var(--hk-navy);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.hk-num__cur{font-size:14px;font-weight:400;margin-inline-start:3px}
+.hk-num--bad{color:var(--hk-danger)}
+.hk-label{font-size:var(--hk-fs-13);color:var(--hk-ink-2)}
+.hk-meta{font-size:var(--hk-fs-12);color:var(--hk-ink-3)}
+.hk-alert{color:var(--hk-danger-text)}                       /* התראה = טקסט צבוע + נקודה, לא גלולה */
+.hk-alert::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-inline-end:6px;vertical-align:middle}
+.hk-input{font:400 14px var(--hk-font);height:var(--hk-input-h);padding:0 12px;border:1px solid var(--hk-line-2);
+  border-radius:10px;background:#fff;color:var(--hk-ink)}
+.hk-input:focus{outline:none;border-color:var(--hk-sky);box-shadow:0 0 0 3px rgba(57,171,226,.15)}
+.hk-table td{height:var(--hk-row-h);border-top:1px solid var(--hk-line);font-size:13px}
+.hk-table th{font-size:12px;font-weight:600;color:var(--hk-ink-3);text-align:start}
