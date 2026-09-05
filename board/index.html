@@ -232,6 +232,8 @@ var EDIT=false;
 var app=document.getElementById('app');
 /* ---------- עזרים ---------- */
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+/* טקסט של פריט: קישורים לחיצים ושורות חדשות נשמרות */
+function rich(t){return esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g,'<br>')}
 function sevCls(s){return s==='חוסם'?'s1':s==='גבוה'?'s2':'s3'}
 function open_(it){return it.status!=='done'}
 function scr(k){return B.screens.filter(function(s){return s.key===k})[0]}
