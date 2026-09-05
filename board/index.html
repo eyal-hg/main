@@ -229,14 +229,12 @@ function route(){var h=location.hash.replace('#','');var q={};h.split('&').forEa
 function go(h){location.hash=h}
 /* ---------- ניווט ---------- */
 function renderNav(q){
-  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.closed===undefined&&q.arrived===undefined)?' class="on"':'')+'>מרכז</a>';
+  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined)?' class="on"':'')+'>מרכז</a>';
   B.devs.forEach(function(d){var n=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)}).length;h+='<a href="#dev='+encodeURIComponent(d)+'"'+(q.dev===d?' class="on"':'')+'>'+esc(d)+(n?' <i>'+n+'</i>':'')+'</a>'});
   var sn=supportNew().length;
   h+='<a href="#screen=inbox"'+(q.screen==='inbox'?' class="on"':'')+' style="margin-inline-start:14px">תמיכה'+(sn?' <i class="hot">'+sn+'</i>':'')+'</a>';
   var na=arrived().length;
   h+='<a href="#arrived"'+(q.arrived!==undefined?' class="on"':'')+'>הגיע מפיתוח'+(na?' <i class="hot">'+na+'</i>':'')+'</a>';
-  var nd=allItems().filter(function(x){return x.it.status==='done'}).length;
-  h+='<a href="#closed"'+(q.closed!==undefined?' class="on"':'')+' style="margin-inline-start:14px">נסגרו לאחרונה'+(nd?' <i>'+nd+'</i>':'')+'</a>';
   document.getElementById('nav').innerHTML=h;
   var bn=document.getElementById('banner');
   bn.innerHTML=DRAFT?'<div class="banner">יש שינויים שנשמרו רק בדפדפן הזה (גרסה '+B.version+'). <span class="sp"></span><button class="btn sm pri" id="bSaveNow">'+(ONLINE?'שמירה לגיט':'הורדת data.js')+'</button></div>':'';
@@ -318,6 +316,7 @@ function renderDev(d){
   app.querySelectorAll('.secmd').forEach(function(b){b.onclick=function(e){e.preventDefault();md(b.dataset.md,d)}});
   var ht=app.querySelector('details.howto'); if(ht)ht.ontoggle=function(){HOWTO_OPEN=ht.open;try{localStorage.setItem('hkHowto',ht.open?'1':'0')}catch(e){}};
 }
+function parseWhen(w){var m=String(w||'').match(/(\d\d)\.(\d\d)\.(\d{4})(?:\D+(\d\d):(\d\d))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0}
 /* ---------- הגיע מפיתוח ----------
    כל מה שמתכנת סימן "נבנה/תוקן" ועוד לא נבדק, לפי סדר ההגעה, מקובץ ליום. זה מה שאייל (וה-AI שלו) בודקים קודם. */
 function arrived(){return allItems().filter(function(x){var f=x.it,lg=f.log||[],z=lg[lg.length-1];return open_(f)&&f.kind==='check'&&z&&z.ev==='built'}).map(function(x){var lg=x.it.log,z=lg[lg.length-1];return {x:x,bl:z,t:parseWhen(z.when)}}).sort(function(a,b){return b.t-a.t})}
@@ -333,20 +332,6 @@ function renderArrived(){
      +'<div class="dbody"><div class="ib one"><div class="col"><h3>מה בודקים ואיך</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img src="'+esc(f.imgA)+'" alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+(f.imgB?'<figure><img src="'+esc(f.imgB)+'" alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=check">לדף המסך ›</a></div></div></div>'}).join('');
   app.innerHTML=h;
   app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
-}
-/* ---------- נסגרו לאחרונה ---------- */
-function parseWhen(w){var m=String(w||'').match(/(\d\d)\.(\d\d)\.(\d{4})(?:\D+(\d\d):(\d\d))?/);return m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)).getTime():0}
-function renderClosed(){
-  var L=allItems().filter(function(x){return x.it.status==='done'}).map(function(x){var lg=x.it.log||[],pz=lg.filter(function(l){return l.ev==='passed'||l.ev==='closed'}).pop()||{};return {x:x,pz:pz,t:parseWhen(pz.when||x.it.updated)}});
-  L.sort(function(a,b){return b.t-a.t});
-  var h='<div class="band closed"><div><div class="eyebrow">כל המסכים</div><h1>נסגרו לאחרונה</h1><div class="meta"><span>לפי סדר הסגירה. ביטול הסימון פותח את הפריט מחדש ומחזיר אותו למי שהיה עליו.</span></div></div>'
-   +'<div class="counts"><div><b>'+L.length+'</b><span>סגורים</span></div></div></div>';
-  if(!L.length)h+='<div class="empty">עוד לא נסגר כלום</div>';
-  h+=L.map(function(r){var f=r.x.it,pz=r.pz,bl=(f.log||[]).filter(function(l){return l.ev==='built'}).pop();
-    return '<div class="drow done"><div class="row" style="grid-template-columns:26px 1fr auto auto auto auto"><span class="num done">'+(f.n||'✓')+'</span><span class="t">'+esc(f.title)+'<small>'+esc(r.x.s.name)+(bl?' · בנה '+esc(bl.who):'')+'</small></span>'
-     +'<span class="kind">'+KN[f.kind]+'</span><span class="cwhen">'+(pz.when?'נסגר '+esc(pz.when):'')+(pz.who?' · '+esc(pz.who):'')+(pz.via?' · מ'+esc(pz.via):'')+'</span>'
-     +'<label class="st" title="ביטול הסימון פותח מחדש"><input type="checkbox" checked data-act="done" data-screen="'+r.x.s.key+'" data-id="'+f.id+'"> נבדק</label><a class="golink" href="#screen='+r.x.s.key+'&tab='+f.kind+'">לדף המסך ›</a></div></div>'}).join('');
-  app.innerHTML=h;
 }
 /* ---------- דף מסך ---------- */
 var TAB='todo';
@@ -429,8 +414,8 @@ function askNote(title,sub,o,cb){
   p.onclick=function(e){if(e.target===p)p.classList.remove('on')};
   ok.onclick=function(){var v=t.value.trim();if(required&&!v){t.focus();return}p.classList.remove('on');cb(v)};
 }
-function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.closed!==undefined)renderClosed();else if(q.arrived!==undefined)renderArrived();else renderScreen(q.screen,TAB)}
-function findItem(t){var q=route();if(q.dev||q.closed!==undefined||q.arrived!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
+function afterChange(q){if(!EDIT)save();if(q.dev)renderDev(q.dev);else if(q.arrived!==undefined)renderArrived();else renderScreen(q.screen,TAB)}
+function findItem(t){var q=route();if(q.dev||q.arrived!==undefined){var sx=scr(t.dataset.screen);return [sx,byId(sx,t.dataset.id)]}var sx2=scr(q.screen);var sec=t.closest('.item');return [sx2,byId(sx2,sec.dataset.id)]}
 app.addEventListener('change',function(e){
   var t=e.target; if(t.dataset.act!=='done')return;
   var q=route(), r=findItem(t), s=r[0], f=r[1]; if(q.screen)collect(s);
@@ -541,7 +526,7 @@ function md(sk,dv){
 /* ---------- רינדור ---------- */
 function render(){
   var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
-  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.closed!==undefined)renderClosed(); else if(q.arrived!==undefined)renderArrived(); else renderCenter();
+  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
 }
 document.getElementById('bEdit').onclick=function(){EDIT=true;render()};
