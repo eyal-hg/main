@@ -301,7 +301,8 @@ function renderDev(d){
   var h='<div class="band'+(mine.length?'':' closed')+'"><div><div class="eyebrow">מה על '+esc(d)+' · עודכן '+esc(B.updated||'')+'</div><h1>'+esc(d)+'</h1><div class="meta"><span>לחיצה על שורה פותחת את הפירוט; הסימון בקצה מעביר את הפריט לשלב הבא. MD ⤓ ליד כל מסך מוריד קובץ ל-AI.</span></div></div>'
    +(mine.length?'<div class="counts">'+KINDS.map(function(k){return '<div><b>'+mine.filter(function(x){return x.it.kind===k[0]}).length+'</b><span>'+k[1]+'</span></div>'}).join('')+'</div>':'<div class="closedmsg">✓ אין פריטים פתוחים</div>')+'</div>';
   if(mine.length&&d!=='אייל') h+='<details class="howto"'+(HOWTO_OPEN?' open':'')+'><summary>איך עובדים</summary><ol>'
-   +'<li><b>מסך אחד בכל פעם.</b> מורידים MD ⤓ של המסך ומוסרים ל-AI. הפרוטוטיפ כבר אצלך (הריפו של dev.hak.co.il) והוא האמת. ה-AI קורא קודם את <code>docs/AI-GUIDE.md</code> — מה אייל רוצה, מה אסור, והכרעות שכבר נפלו. לא נוגעים במה שלא ברשימה.</li>'
+   +'<li><b>ה-AI שלך לוקח את המשימות לבד.</b> הלוח שמור בריפו (<code>board/data.js</code>). אחרי <code>git pull</code>: <code>node board/md.mjs '+esc(d)+'</code> = כל מה שעליך, <code>node board/md.mjs 86</code> = פריט אחד. אין צורך להוריד MD. הפרוטוטיפ (<code>index.html</code>) הוא האמת, וה-AI קורא קודם את <code>docs/AI-GUIDE.md</code>.</li>'
+   +'<li><b>מסך אחד בכל פעם.</b> לא נוגעים במה שלא ברשימה. פריט ★ ("קודם כל") לפני הכל.</li>'
    +'<li><b>בודקים לבד לפני שמסמנים.</b> בסטייג׳ינג, עם משתמש CUSTOMER אמיתי של גבדור, לא בתצוגה מקדימה של אדמין. עוברים על "צריך להיות" סעיף-סעיף.</li>'
    +'<li><b>מסמנים "נבנה / תוקן"</b> בקצה השורה. הפריט עובר לבדיקות אצל אייל ונשמר לגיט מיד. עד 3 פריטים לסבב, לא הכל ביחד.</li>'
    +'<li><b>עבר: נסגר. נכשל: חוזר לכאן</b> עם מה נכשל. פריט שחזר קודם לכל דבר חדש.</li>'
