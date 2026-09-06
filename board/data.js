@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 104,
+ "version": 105,
  "seq": 187,
- "updated": "06.09.2026 09:44",
+ "updated": "06.09.2026 09:50",
  "emails": [
   {
    "who": "אייל",
@@ -2191,15 +2191,22 @@ window.HK_BOARD = {
      "n": 119,
      "kind": "fix",
      "who": "",
-     "status": "open",
+     "status": "done",
      "pin": false,
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:01",
-     "updated": "06.09.2026 09:38",
-     "log": [],
+     "updated": "06.09.2026 09:50",
+     "log": [
+      {
+       "when": "06.09.2026 09:50",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "נסגר בפתרון עיצובי (אייל 06.09): כשהפגישה עלתה כקובץ (uploads_finished_count>0 בלי recording_started_at ובלי call_started_at) פס העיבוד מציג \"הועלה קובץ\" בלי דקות, ובציר אין \"N דק׳\". לא ממציאים משך. אם בעתיד השרת יחלץ משך מהקובץ — יוצג."
+      }
+     ],
      "ask": null,
      "dev": "עידו",
      "sev": "נמוך",
