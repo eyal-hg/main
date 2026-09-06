@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 19:41 */
 window.HK_BOARD = {
- "version": 221,
+ "version": 222,
  "seq": 215,
  "updated": "06.09.2026, 19:41",
  "emails": [
@@ -1490,12 +1490,12 @@ window.HK_BOARD = {
      "id": "portfolio-9",
      "n": 10,
      "pin": true,
-     "kind": "fix",
+     "kind": "check",
      "title": "המסך לא נטען בכלל",
-     "what": "גם כמנהל מערכת וגם כיועץ: \"לא הצלחנו לטעון את התיק — insert or update on table client_status_def violates foreign key constraint client_status_def_business_id_fkey\". יצירת סטטוסי ברירת המחדל נופלת כשלמשתמש אין business.",
-     "need": "הכרעת אייל 06.09: בכל תצוגת מנהל התזרים (HK_REPRESENTATIVE, HK_CONSULTANT, SUPER_ADMIN — לא רק סופר אדמין) \"התיק שלי\" לוקח את הסטטוסים מ-company.status (הסטטוסים הקיימים של החברות, /api/companies/get-company-statuses), ולא יוצר client_status_def. רק ליועץ (ADMIN/REPRESENTATIVE עם business) נשארת הגדרת הסטטוסים של המשרד. בדיקה: המסך נטען כמנהל מערכת וכמנהל תזרים עם עמודת הסטטוס מ-company.status, וכיועץ עם הסטטוסים של המשרד.\nבדיקה (במקום #11, כל המסך, 25 הקריטריונים): אחרי התיקון: סבב מלא כיועץ וכמנהל תזרים לפי סעיף ד בקובץ.",
-     "sev": "חוסם",
-     "dev": "עידו",
+     "what": "לבדוק: הכרעת אייל 06.09: בכל תצוגת מנהל התזרים (HK_REPRESENTATIVE, HK_CONSULTANT, SUPER_ADMIN — לא רק סופר אדמין) \"התיק שלי\" לוקח את הסטטוסים מ-company.status (הסטטוסים הקיימים של החברות, /api/companies/get-company-statuses), ולא יוצר client_status_def. רק ליועץ (ADMIN/REPRESENTATIVE עם business) נשארת הגדרת הסטטוסים של המשרד. בדיקה: המסך נטען כמנהל מערכת וכמנהל תזרים עם עמודת הסטטוס מ-company.status, וכיועץ עם הסטטוסים של המשרד.\nבדיקה (במקום #11, כל המסך, 25 הקריטריונים): אחרי התיקון: סבב מלא כיועץ וכמנהל תזרים לפי סעיף ד בקובץ. (נבנה על ידי עידו)",
+     "need": "",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "img/portfolio-stg.jpg",
@@ -1503,7 +1503,7 @@ window.HK_BOARD = {
      "imgB": "img/portfolio-proto.jpg",
      "capB": "הפרוטוטיפ.",
      "created": "04.09.2026",
-     "updated": "06.09.2026 15:52",
+     "updated": "06.09.2026",
      "log": [
       {
        "when": "05.09.2026 21:49",
@@ -1534,9 +1534,22 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "אייל 06.09: הפריט היחיד לעידו בתיק שלי — חוסם. השאר בצד עד שהמסך עולה ואייל בודק."
+      },
+      {
+       "when": "06.09.2026 11:41",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg בשרת ובקליינט. בתפקידי HK וב-SUPER_ADMIN הסטטוסים מגיעים מ-company.status ללא כתיבה ל-client_status_def; ADMIN/REP עם משרד תקין ממשיכים עם סטטוסי המשרד. אומתו מול DB סטייג׳ינג SUPER_ADMIN, ADMIN ו-REP, ותרחישי תפקידי HK בבדיקות מבודדות. בדיקת אתר: התיק נטען עם 126 חברות, 10 סטטוסים וגבדור פעיל, ללא שגיאת FK."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "חוסם",
+      "what": "גם כמנהל מערכת וגם כיועץ: \"לא הצלחנו לטעון את התיק — insert or update on table client_status_def violates foreign key constraint client_status_def_business_id_fkey\". יצירת סטטוסי ברירת המחדל נופלת כשלמשתמש אין business.",
+      "need": "הכרעת אייל 06.09: בכל תצוגת מנהל התזרים (HK_REPRESENTATIVE, HK_CONSULTANT, SUPER_ADMIN — לא רק סופר אדמין) \"התיק שלי\" לוקח את הסטטוסים מ-company.status (הסטטוסים הקיימים של החברות, /api/companies/get-company-statuses), ולא יוצר client_status_def. רק ליועץ (ADMIN/REPRESENTATIVE עם business) נשארת הגדרת הסטטוסים של המשרד. בדיקה: המסך נטען כמנהל מערכת וכמנהל תזרים עם עמודת הסטטוס מ-company.status, וכיועץ עם הסטטוסים של המשרד.\nבדיקה (במקום #11, כל המסך, 25 הקריטריונים): אחרי התיקון: סבב מלא כיועץ וכמנהל תזרים לפי סעיף ד בקובץ."
+     }
     },
     {
      "id": "portfolio-10",
