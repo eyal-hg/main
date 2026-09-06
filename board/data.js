@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 15:26 */
 window.HK_BOARD = {
- "version": 182,
+ "version": 183,
  "seq": 202,
- "updated": "06.09.2026 15:40",
+ "updated": "06.09.2026 15:41",
  "emails": [
   {
    "who": "אייל",
@@ -5965,7 +5965,7 @@ window.HK_BOARD = {
     {
      "id": "general-110",
      "n": 110,
-     "pin": false,
+     "pin": true,
      "kind": "fix",
      "title": "למזג ‎PR #10‎ — אייקוני פיתוח ודיווח באג בפס העליון",
      "what": "https://github.com/h-beehive/hk-client/pull/10 — ענף design/topbar-icons אל stg, עצמאי. שינוי קטן ב-Workspace.tsx/.css (שני כפתורים ליד ההודעות, רק לאנשי המשרד) ו-client.ts רק ל-localhost.",
@@ -5979,8 +5979,15 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 21:44",
-     "updated": "05.09.2026 21:44",
-     "log": [],
+     "updated": "06.09.2026 15:41",
+     "log": [
+      {
+       "when": "06.09.2026 15:41",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "אייל 06.09: מיזוג קטן ועצמאי — בראש הלוח (\"קודם כל\")."
+      }
+     ],
      "ask": null
     },
     {
@@ -6026,7 +6033,7 @@ window.HK_BOARD = {
     {
      "id": "general-107",
      "n": 107,
-     "pin": false,
+     "pin": true,
      "kind": "fix",
      "title": "למזג ‎PR #8‎ — קובץ שפת העיצוב hk-tokens.css בפרויקט",
      "what": "https://github.com/h-beehive/hk-client/pull/8 — ענף design/tokens אל stg. קובץ אחד חדש (src/styles/hk-tokens.css, העתק של css/tokens.css) ו-@import אחד ב-src/index.css. לא משנה שום דבר קיים — רק מגדיר משתנים ומחלקות.",
@@ -6040,8 +6047,15 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 21:12",
-     "updated": "05.09.2026 21:12",
-     "log": [],
+     "updated": "06.09.2026 15:41",
+     "log": [
+      {
+       "when": "06.09.2026 15:41",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "אייל 06.09: מיזוג קטן ועצמאי — בראש הלוח (\"קודם כל\")."
+      }
+     ],
      "ask": null
     },
     {
