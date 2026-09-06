@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 20:50 */
 window.HK_BOARD = {
- "version": 245,
+ "version": 248,
  "seq": 215,
  "updated": "06.09.2026, 20:50",
  "emails": [
@@ -3453,12 +3453,12 @@ window.HK_BOARD = {
     {
      "id": "calls-company-113",
      "n": 113,
-     "kind": "fix",
+     "kind": "check",
      "title": "למזג ‎PR #11‎ — שיחות טלפון בכרטיס החברה לפי הפרוטוטיפ",
      "what": "https://github.com/h-beehive/hk-client/pull/11 — ענף design/company-calls אל stg, עצמאי. WorkspacePhoneCalls.tsx/.css, כלל אחד ממוקד ב-Workspace.css (.workspace-view--phone-calls), ו-client.ts רק ל-localhost.",
      "need": "לעבור על ה-diff, למזג ל-stg, לוודא שהפריסה עברה, ולסמן \"נבנה\".\n\nמה כבר נבדק (מקומית, גבדור): הרשימה, המסננים, שיחה עם הקלטה ותמלול (הנגן, הטאבים), שיחה שלא נענתה, ראש הזירה. tsc ו-eslint נקיים.",
-     "sev": "גבוה",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -3466,7 +3466,7 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 22:32",
-     "updated": "06.09.2026 13:00",
+     "updated": "06.09.2026",
      "log": [
       {
        "when": "06.09.2026 11:56",
@@ -3515,9 +3515,22 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "passed",
        "txt": "אושר על ידי אייל · 06.09 — סבב הבדיקה על design/company-calls הסתיים. מה שנשאר לשרת: #116, #197 (עידו), #199 (עומרי)."
+      },
+      {
+       "when": "06.09.2026 12:50",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "PR #11 מוזג ל-stg ונפרס בהצלחה (07c0a71, Firebase 34049535758). עברו TypeScript, build ו-15 בדיקות. שיחות גבדור נטענות בסטייג׳ינג עם הרשימה, סינון ופירוט שיחה שלא נענתה, ללא שגיאות טעינה/גלילה אופקית. תוקנו התאמת נמען בין מזהי אנשי קשר/משתמשים ומרוצי בקשות בהחלפת שיחה; בדיקות אינטראקציה עברו. לא נשלחו סיכומים בפועל."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "גבוה",
+      "what": "https://github.com/h-beehive/hk-client/pull/11 — ענף design/company-calls אל stg, עצמאי. WorkspacePhoneCalls.tsx/.css, כלל אחד ממוקד ב-Workspace.css (.workspace-view--phone-calls), ו-client.ts רק ל-localhost.",
+      "need": "לעבור על ה-diff, למזג ל-stg, לוודא שהפריסה עברה, ולסמן \"נבנה\".\n\nמה כבר נבדק (מקומית, גבדור): הרשימה, המסננים, שיחה עם הקלטה ותמלול (הנגן, הטאבים), שיחה שלא נענתה, ראש הזירה. tsc ו-eslint נקיים."
+     }
     },
     {
      "id": "calls-company-47",
