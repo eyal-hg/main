@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 16:23 */
 window.HK_BOARD = {
- "version": 203,
+ "version": 204,
  "seq": 204,
- "updated": "06.09.2026 16:56",
+ "updated": "06.09.2026 16:59",
  "emails": [
   {
    "who": "אייל",
@@ -5000,18 +5000,18 @@ window.HK_BOARD = {
      "n": 144,
      "kind": "fix",
      "title": "צ׳אט של בעל העסק (CUSTOMER): לפנות ל-entrypoint בשם customer_chat_message במקום chat_message",
-     "what": "היום בשליחת הודעת צ׳אט (POST /api/chat-conversations/:companyId/conversations/:id/messages) השרת מפעיל את הטריגר chat_message לכל משתמש. לבעל עסק אמיתי (תפקיד CUSTOMER) זה נופל / לא מותאם — זו הסיבה ל-#59 (\"This operation requires unrestricted company access\") ולפער ב-#144.\n\nהתסמין (היה #59): כל שאלה של בעל עסק אמיתי מחזירה \"This operation requires unrestricted company access\". בתצוגה המקדימה (טוקן של יועץ) זה עובד.",
-     "need": "הכרעת אייל 06.09: אם תפקיד המשתמש = CUSTOMER — לפנות, באותה לוגיקה בדיוק שמתקיימת היום, ל-entrypoint בשם customer_chat_message (במקום chat_message). שאר התפקידים נשארים על chat_message. אותם type ו-chat_context עוברים כרגיל.\nבדיקה: כניסה כלקוח אמיתי (למשל גבדור) → תמונת תזרים → שאלה על הדוח → תשובה מהדוח, בלי שגיאת הרשאה; יועץ באותה שיחה — ללא שינוי.",
+     "what": "היום בשליחת הודעת צ׳אט (POST /api/chat-conversations/:companyId/conversations/:id/messages) השרת מפעיל את הטריגר chat_message לכל משתמש. לבעל עסק אמיתי (תפקיד CUSTOMER) זה נופל / לא מותאם — זו הסיבה ל-#59 (\"This operation requires unrestricted company access\") ולפער ב-#144.\n\nהתסמין (היה #59): כל שאלה של בעל עסק אמיתי מחזירה \"This operation requires unrestricted company access\". בתצוגה המקדימה (טוקן של יועץ) זה עובד.\n\nבסטייג׳ינג 06.09 16:58 (תצוגת בעל העסק, חברה 61): הקליינט יצר שיחות 45 ו-46 עם entry_point=customer_chat_message (השרת קיבל ושמר), אבל שליחת הודעה נכשלה עם קוד NO_CHAT_FLOW_ROUTED — הזרימה של customer_chat_message עוד לא מחוברת במנהל הזרימות.",
+     "need": "הכרעת אייל 06.09: אם תפקיד המשתמש = CUSTOMER — לפנות, באותה לוגיקה בדיוק שמתקיימת היום, ל-entrypoint בשם customer_chat_message (במקום chat_message). שאר התפקידים נשארים על chat_message. אותם type ו-chat_context עוברים כרגיל.\nבדיקה: כניסה כלקוח אמיתי (למשל גבדור) → תמונת תזרים → שאלה על הדוח → תשובה מהדוח, בלי שגיאת הרשאה; יועץ באותה שיחה — ללא שינוי.\n\nנשאר: לחבר במנהל הזרימות את ה-entrypoint customer_chat_message לזרימה (route), כמו chat_message. בדיקה: בתצוגת בעל העסק על חברה 61 — שאלה מקבלת תשובה, בלי NO_CHAT_FLOW_ROUTED.",
      "sev": "גבוה",
      "dev": "עידו",
      "who": "",
-     "status": "done",
+     "status": "open",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:42",
-     "updated": "06.09.2026 16:56",
+     "updated": "06.09.2026 16:59",
      "log": [
       {
        "when": "06.09.2026 14:04",
@@ -5042,10 +5042,16 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "אייל 06.09 16:55: \"הקליינט שולח לסרביס אחר כשהוא מזהה שאתה בממשק בעל עסק\" — הקליינט (design/client-ai) שולח עכשיו בממשק בעל העסק entry_point=\"customer_chat_message\" גם ביצירת השיחה (POST …/conversations) וגם בכל הודעה (POST …/messages). עידו: לוודא שהשרת קורא את entry_point מהבקשה/מהשיחה ומפעיל את ה-entrypoint הזה."
+      },
+      {
+       "when": "06.09.2026 16:59",
+       "who": "אייל",
+       "ev": "failed",
+       "txt": "נפתח מחדש: השרת שומר entry_point=customer_chat_message אבל מחזיר NO_CHAT_FLOW_ROUTED בשליחה — הזרימה לא מחוברת במנהל הזרימות."
       }
      ],
      "ask": null,
-     "pin": false
+     "pin": true
     },
     {
      "id": "cashflow-ai-145",
