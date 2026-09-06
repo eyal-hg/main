@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 12:34 */
 window.HK_BOARD = {
- "version": 171,
+ "version": 172,
  "seq": 201,
  "updated": "06.09.2026 14:04",
  "emails": [
@@ -4586,7 +4586,7 @@ window.HK_BOARD = {
      "sev": "חוסם",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "img/cashflow-stg-client.jpg",
      "capA": "סטייג׳ינג 04.09, תצוגה מקדימה של בעל העסק.",
      "imgB": "",
@@ -4611,6 +4611,12 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "תלוי ב-#144."
+      },
+      {
+       "when": "06.09.2026 14:04",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "אייל 06.09: אותו דבר כמו #144 — מוזג לתוכו ונסגר."
       }
      ],
      "ask": null
@@ -4845,7 +4851,7 @@ window.HK_BOARD = {
      "n": 144,
      "kind": "fix",
      "title": "צ׳אט של בעל העסק (CUSTOMER): לפנות ל-entrypoint בשם customer_chat_message במקום chat_message",
-     "what": "היום בשליחת הודעת צ׳אט (POST /api/chat-conversations/:companyId/conversations/:id/messages) השרת מפעיל את הטריגר chat_message לכל משתמש. לבעל עסק אמיתי (תפקיד CUSTOMER) זה נופל / לא מותאם — זו הסיבה ל-#59 (\"This operation requires unrestricted company access\") ולפער ב-#144.",
+     "what": "היום בשליחת הודעת צ׳אט (POST /api/chat-conversations/:companyId/conversations/:id/messages) השרת מפעיל את הטריגר chat_message לכל משתמש. לבעל עסק אמיתי (תפקיד CUSTOMER) זה נופל / לא מותאם — זו הסיבה ל-#59 (\"This operation requires unrestricted company access\") ולפער ב-#144.\n\nהתסמין (היה #59): כל שאלה של בעל עסק אמיתי מחזירה \"This operation requires unrestricted company access\". בתצוגה המקדימה (טוקן של יועץ) זה עובד.",
      "need": "הכרעת אייל 06.09: אם תפקיד המשתמש = CUSTOMER — לפנות, באותה לוגיקה בדיוק שמתקיימת היום, ל-entrypoint בשם customer_chat_message (במקום chat_message). שאר התפקידים נשארים על chat_message. אותם type ו-chat_context עוברים כרגיל.\nבדיקה: כניסה כלקוח אמיתי (למשל גבדור) → תמונת תזרים → שאלה על הדוח → תשובה מהדוח, בלי שגיאת הרשאה; יועץ באותה שיחה — ללא שינוי.",
      "sev": "גבוה",
      "dev": "עידו",
@@ -4863,6 +4869,12 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "אייל 06.09: \"זה הפתרון ל-144\" — CUSTOMER → customer_chat_message."
+      },
+      {
+       "when": "06.09.2026 14:04",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "#59 מוזג לכאן."
       }
      ],
      "ask": null,
