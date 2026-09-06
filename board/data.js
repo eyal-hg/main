@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 06.09.2026, 20:55 */
+/* לוח המשימות — נשמר מהמסך 06.09.2026, 20:57 */
 window.HK_BOARD = {
- "version": 267,
+ "version": 270,
  "seq": 215,
- "updated": "06.09.2026, 20:55",
+ "updated": "06.09.2026, 20:57",
  "emails": [
   {
    "who": "אייל",
@@ -6177,12 +6177,12 @@ window.HK_BOARD = {
     {
      "id": "client-readonly-108",
      "n": 108,
-     "kind": "fix",
+     "kind": "check",
      "title": "למזג ‎PR #9‎ — בעל העסק: תכנון תזרימי לקריאה בלבד, המתג \"פתח יעד ללקוח\" יורד",
      "what": "https://github.com/h-beehive/hk-client/pull/9 — ענף design/owner-readonly אל stg, עצמאי. FutureCashflowReportModal מקבל readOnly (מ-customerMode ב-WorkspaceCompanyReports), המתג הוסר מעורך היעד, ו-client.ts רק ל-localhost.",
      "need": "לעבור על ה-diff, למזג ל-stg, לוודא שהפריסה ל-Firebase עברה, ולסמן כאן \"נבנה\". במקביל #76: כתיבה כ-CUSTOMER מה-API מחזירה 403 — הממשק לא מספיק.\n\nמה כבר נבדק (מקומית, גבדור בתצוגת בעל העסק):\n• 0 תאים לחיצים, בלי עיפרון, בלי הכפתורים (#73)\n• המתג ירד גם ליועץ (#75)\n• tsc ו-eslint נקיים",
-     "sev": "גבוה",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -6203,9 +6203,22 @@ window.HK_BOARD = {
        "who": "עידו",
        "ev": "reopened",
        "txt": ""
+      },
+      {
+       "when": "06.09.2026 12:57",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "עדכון מנהלי: פריט #108 היה סגור ככפילות של #202 ונפתח בטעות בעת בדיקת הסימונים. המיזוג עצמו הושלם: PR #9 וגם PR #18 כלולים ב-stg, גרסה 07c0a71, ו-Firebase 34049535758 הצליח. אני מסמן את המיזוג מחדש; אין כאן משימת פיתוח נוספת או אישור בדיקת CUSTOMER. יש לבדוק את המימוש במסגרת #202 בלבד, בהתאם להערת אייל המקורית."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "גבוה",
+      "what": "https://github.com/h-beehive/hk-client/pull/9 — ענף design/owner-readonly אל stg, עצמאי. FutureCashflowReportModal מקבל readOnly (מ-customerMode ב-WorkspaceCompanyReports), המתג הוסר מעורך היעד, ו-client.ts רק ל-localhost.",
+      "need": "לעבור על ה-diff, למזג ל-stg, לוודא שהפריסה ל-Firebase עברה, ולסמן כאן \"נבנה\". במקביל #76: כתיבה כ-CUSTOMER מה-API מחזירה 403 — הממשק לא מספיק.\n\nמה כבר נבדק (מקומית, גבדור בתצוגת בעל העסק):\n• 0 תאים לחיצים, בלי עיפרון, בלי הכפתורים (#73)\n• המתג ירד גם ליועץ (#75)\n• tsc ו-eslint נקיים"
+     }
     },
     {
      "id": "client-readonly-68",
