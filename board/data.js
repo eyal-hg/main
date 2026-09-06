@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 16:23 */
 window.HK_BOARD = {
- "version": 192,
+ "version": 193,
  "seq": 204,
- "updated": "06.09.2026 16:26",
+ "updated": "06.09.2026 16:27",
  "emails": [
   {
    "who": "אייל",
@@ -5319,14 +5319,21 @@ window.HK_BOARD = {
      "sev": "בינוני",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:47",
-     "updated": "06.09.2026 09:38",
-     "log": [],
+     "updated": "06.09.2026 16:27",
+     "log": [
+      {
+       "when": "06.09.2026 16:27",
+       "who": "אייל",
+       "ev": "passed",
+       "txt": "נבדק 06.09 16:30 על חביב שיווק (338): GET /api/widgets/338/gviya__payment_terms מחזיר rows, view (sort, title, columns, subtitle, column_order), types, widget_he_name=\"תנאי תשלום\", received_at ISO — עובד."
+      }
+     ],
      "ask": null
     },
     {
@@ -5339,14 +5346,21 @@ window.HK_BOARD = {
      "sev": "בינוני",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:47",
-     "updated": "06.09.2026 09:38",
-     "log": [],
+     "updated": "06.09.2026 16:27",
+     "log": [
+      {
+       "when": "06.09.2026 16:27",
+       "who": "אייל",
+       "ev": "passed",
+       "txt": "נבדק 06.09: GET /api/widgets/338 מחזיר רק את הטבלה שלא על הלוח (\"תנאי תשלום\"; \"תקבולים צפויים\" שכבר על הלוח לא ברשימה), עם row_count=160, received_at ו-screen — עובד."
+      }
+     ],
      "ask": null
     },
     {
@@ -5359,14 +5373,21 @@ window.HK_BOARD = {
      "sev": "נמוך",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:47",
-     "updated": "06.09.2026 09:38",
-     "log": [],
+     "updated": "06.09.2026 16:27",
+     "log": [
+      {
+       "when": "06.09.2026 16:27",
+       "who": "אייל",
+       "ev": "passed",
+       "txt": "נבדק 06.09: מפתח שגוי ב-GET מחזיר JSON {error} ולא דף HTML — עובד."
+      }
+     ],
      "ask": null
     },
     {
