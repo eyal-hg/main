@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 12:34 */
 window.HK_BOARD = {
- "version": 170,
+ "version": 171,
  "seq": 201,
- "updated": "06.09.2026 14:03",
+ "updated": "06.09.2026 14:04",
  "emails": [
   {
    "who": "אייל",
@@ -4582,7 +4582,7 @@ window.HK_BOARD = {
      "kind": "fix",
      "title": "העוזר לא עונה לבעל עסק אמיתי",
      "what": "כל שאלה מחזירה \"This operation requires unrestricted company access\". בתצוגה המקדימה זה נראה תקין.",
-     "need": "הצ׳אט על הדוח (type=cashflow + chat_context) עובד ל-CUSTOMER על החברה שלו. זה המשתמש העיקרי של המסך.",
+     "need": "הצ׳אט על הדוח (type=cashflow + chat_context) עובד ל-CUSTOMER על החברה שלו. זה המשתמש העיקרי של המסך.\n\nהפתרון: #144 (CUSTOMER → entrypoint בשם customer_chat_message). אחרי #144 — לסגור גם את זה.",
      "sev": "חוסם",
      "dev": "עידו",
      "who": "",
@@ -4592,7 +4592,7 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "06.09.2026 14:03",
+     "updated": "06.09.2026 14:04",
      "log": [
       {
        "when": "05.09.2026 23:42",
@@ -4605,6 +4605,12 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "נבדק 06.09 14:05 בתצוגת בעל העסק (preview=client1:customer, חברה 61): \"מה ההפרש ביולי?\" → \"ההפרש התזרימי לחודש יולי הוא -₪205,726.25\" — תואם לטבלה. בתצוגה המקדימה עובד; הטענה המקורית היא על משתמש CUSTOMER אמיתי (טוקן של לקוח), שאי אפשר לבדוק בלי כניסה אמיתית."
+      },
+      {
+       "when": "06.09.2026 14:04",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "תלוי ב-#144."
       }
      ],
      "ask": null
@@ -4838,10 +4844,10 @@ window.HK_BOARD = {
      "id": "cashflow-ai-144",
      "n": 144,
      "kind": "fix",
-     "title": "תמונת תזרים למשתמש CUSTOMER אמיתי — לוודא שהקריאות מחזירות 200 על החברה שלו",
-     "what": "התצוגה המקדימה של מנהל המערכת עוברת; לא אומת שמשתמש CUSTOMER אמיתי מקבל 200 (AI-GUIDE §1.3 — כל מסכי הלקוח נפלו במשתמש אמיתי). קשור ל-#7.",
-     "need": "200 על החברה שלו, 403 על חברה אחרת. בדיקה: כניסה כגבדור, Network.",
-     "sev": "בינוני",
+     "title": "צ׳אט של בעל העסק (CUSTOMER): לפנות ל-entrypoint בשם customer_chat_message במקום chat_message",
+     "what": "היום בשליחת הודעת צ׳אט (POST /api/chat-conversations/:companyId/conversations/:id/messages) השרת מפעיל את הטריגר chat_message לכל משתמש. לבעל עסק אמיתי (תפקיד CUSTOMER) זה נופל / לא מותאם — זו הסיבה ל-#59 (\"This operation requires unrestricted company access\") ולפער ב-#144.",
+     "need": "הכרעת אייל 06.09: אם תפקיד המשתמש = CUSTOMER — לפנות, באותה לוגיקה בדיוק שמתקיימת היום, ל-entrypoint בשם customer_chat_message (במקום chat_message). שאר התפקידים נשארים על chat_message. אותם type ו-chat_context עוברים כרגיל.\nבדיקה: כניסה כלקוח אמיתי (למשל גבדור) → תמונת תזרים → שאלה על הדוח → תשובה מהדוח, בלי שגיאת הרשאה; יועץ באותה שיחה — ללא שינוי.",
+     "sev": "גבוה",
      "dev": "עידו",
      "who": "",
      "status": "open",
@@ -4850,9 +4856,17 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:42",
-     "updated": "06.09.2026 09:38",
-     "log": [],
-     "ask": null
+     "updated": "06.09.2026 14:04",
+     "log": [
+      {
+       "when": "06.09.2026 14:04",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "אייל 06.09: \"זה הפתרון ל-144\" — CUSTOMER → customer_chat_message."
+      }
+     ],
+     "ask": null,
+     "pin": true
     },
     {
      "id": "cashflow-ai-145",
