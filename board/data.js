@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 19:41 */
 window.HK_BOARD = {
- "version": 222,
+ "version": 223,
  "seq": 215,
  "updated": "06.09.2026, 19:41",
  "emails": [
@@ -2227,12 +2227,12 @@ window.HK_BOARD = {
      "id": "today-102",
      "n": 102,
      "pin": true,
-     "kind": "fix",
+     "kind": "check",
      "title": "מסך \"היום\" לא נטען: /api/workspace/advisor/today מחזיר 500 (FK על Calendar_Events.company_id); ולפני כן החזיר אירועים מימים אחרים",
-     "what": "06.09 10:45, תצוגת יועץ (preview=advisor:rep): GET /api/workspace/advisor/today → 500 {\"success\":false,\"message\":\"insert or update on table \\\"Calendar_Events\\\" violates foreign key constraint \\\"Calendar_Events_company_id_fkey\\\"\"} — הקריאה מנסה לכתוב ל-Calendar_Events עם company_id שלא קיים. המסך מציג את השגיאה. (אתמול 05.09 20:45 הקריאה החזירה 200 עם 14 אירועים — כולם מימים אחרים: 2025-03-04, 2025-08-24, 2026-01-01, 2026-05-03…, לא מהיום; בקליינט נוסף סינון לפי היום.)",
-     "need": "1. הקריאה לא נופלת: GET לא כותב ל-Calendar_Events, או כותב עם company_id תקין. 2. events = הפגישות/השיחות/המשימות-עם-שעה של המשתמש מהיום בלבד (לפי timezone שמוחזר), ממוין לפי שעה. בדיקה: preview=advisor:rep → 200; משתמש עם פגישה היום רואה אותה בציר ולא רואה פגישות מ-2025.",
-     "sev": "חוסם",
-     "dev": "עידו",
+     "what": "לבדוק: 1. הקריאה לא נופלת: GET לא כותב ל-Calendar_Events, או כותב עם company_id תקין. 2. events = הפגישות/השיחות/המשימות-עם-שעה של המשתמש מהיום בלבד (לפי timezone שמוחזר), ממוין לפי שעה. בדיקה: preview=advisor:rep → 200; משתמש עם פגישה היום רואה אותה בציר ולא רואה פגישות מ-2025. (נבנה על ידי עידו)",
+     "need": "",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -2240,7 +2240,7 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 20:50",
-     "updated": "06.09.2026 15:54",
+     "updated": "06.09.2026",
      "log": [
       {
        "when": "06.09.2026 10:47",
@@ -2253,9 +2253,22 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "אייל 06.09: הפריט היחיד לעידו במסך היום — חוסם. המיזוג (#103) בצד עד שאייל בודק."
+      },
+      {
+       "when": "06.09.2026 11:41",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg. GET של היום הוא לקריאה בלבד: ללא יצירה/עדכון ב-Calendar_Events. ציר הזמן מוגבל ליום הנוכחי באזור הזמן המוחזר ולפגישות, שיחות ומשימות מתוזמנות השייכות למשתמש לפי האפיון. נבדקו גבולות יום, חזרות וחריגים; מול DB סטייג׳ינג אומתו אפס ניסיונות כתיבה. באתר מסך היום נטען ללא 500 והציג 6 משימות ו-0 אירועי ציר להיום."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "חוסם",
+      "what": "06.09 10:45, תצוגת יועץ (preview=advisor:rep): GET /api/workspace/advisor/today → 500 {\"success\":false,\"message\":\"insert or update on table \\\"Calendar_Events\\\" violates foreign key constraint \\\"Calendar_Events_company_id_fkey\\\"\"} — הקריאה מנסה לכתוב ל-Calendar_Events עם company_id שלא קיים. המסך מציג את השגיאה. (אתמול 05.09 20:45 הקריאה החזירה 200 עם 14 אירועים — כולם מימים אחרים: 2025-03-04, 2025-08-24, 2026-01-01, 2026-05-03…, לא מהיום; בקליינט נוסף סינון לפי היום.)",
+      "need": "1. הקריאה לא נופלת: GET לא כותב ל-Calendar_Events, או כותב עם company_id תקין. 2. events = הפגישות/השיחות/המשימות-עם-שעה של המשתמש מהיום בלבד (לפי timezone שמוחזר), ממוין לפי שעה. בדיקה: preview=advisor:rep → 200; משתמש עם פגישה היום רואה אותה בציר ולא רואה פגישות מ-2025."
+     }
     }
    ]
   },
