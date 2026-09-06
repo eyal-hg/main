@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 92,
- "seq": 184,
- "updated": "06.09.2026 08:55",
+ "version": 93,
+ "seq": 186,
+ "updated": "06.09.2026 09:10",
  "emails": [
   {
    "who": "אייל",
@@ -2330,6 +2330,48 @@ window.HK_BOARD = {
       "what": "ראש הזירה לבן עם צ׳יפים צבעוניים, <audio controls> נייטיב, תפריט \"ייצוא\", טאבים 16px; הציר בלי מקצב/קבוצות/סמן.",
       "need": "כמו docs/cli/meetings.html — ראה ‎PR #7‎."
      }
+    },
+    {
+     "id": "company-meetings-185",
+     "n": 185,
+     "kind": "fix",
+     "who": "",
+     "status": "open",
+     "pin": false,
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "06.09.2026 09:10",
+     "updated": "06.09.2026 09:10",
+     "log": [],
+     "ask": null,
+     "dev": "עידו",
+     "sev": "גבוה",
+     "title": "פגישות — ניגון הקלטה של שיחת טלפון נכשל (recordings/playback מחזיר 503 ואז 404)",
+     "what": "בכרטיס חברה 69, פגישה 525 (\"שיחה עם דודו גביש\", 1 דק׳, 03.09): לחיצה על play בנגן → GET /api/meetings/525/recordings/playback מחזיר 503, ובניסיון השני 404, והקליינט מציג \"לא הצלחנו לטעון את הקלטת הפגישה\". recording_url ריק בפגישה. אייל ראה את זה בבדיקה 06.09.",
+     "need": "לפגישות שנוצרו משיחת טלפון — playback עם tracks[].url תקין (או recording_url על הפגישה עצמה). בדיקה: GET /api/meetings/525/recordings/playback → 200 עם url שמתנגן."
+    },
+    {
+     "id": "company-meetings-186",
+     "n": 186,
+     "kind": "fix",
+     "who": "",
+     "status": "open",
+     "pin": false,
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "06.09.2026 09:10",
+     "updated": "06.09.2026 09:10",
+     "log": [],
+     "ask": null,
+     "dev": "עידו",
+     "sev": "בינוני",
+     "title": "פגישות — שעת התחלה וסיום בפועל לפי ההקלטה (recording_started_at / recording_ended_at) בכל פגישה שהוקלטה",
+     "what": "השעון בזירה מציג עכשיו התחלה–סיום לפי recording_started_at / recording_ended_at, ורק בלי הקלטה — את המועד שנקבע (אייל 06.09: \"לפי ההקלטות, לא לפי מה שנקבע\"). בפגישה 525 (שיחת טלפון) השדות ריקים ולכן רואים 16:02 מהמועד.",
+     "need": "לכל פגישה שהוקלטה (כולל שיחות טלפון ותמלולים שהועלו) למלא recording_started_at ו-recording_ended_at ב-ISO. בדיקה: פגישה 525 מחזירה את שני השדות והזירה מציגה \"hh:mm–hh:mm\"."
     }
    ]
   },
