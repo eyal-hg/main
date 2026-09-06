@@ -1,8 +1,8 @@
 /* לוח המשימות — מקור האמת. נערך מהמסך (board/index.html) ונשמר לגיט. */
 window.HK_BOARD = {
- "version": 110,
+ "version": 111,
  "seq": 187,
- "updated": "06.09.2026 09:57",
+ "updated": "06.09.2026 10:00",
  "emails": [
   {
    "who": "אייל",
@@ -2058,7 +2058,7 @@ window.HK_BOARD = {
      "kind": "fix",
      "title": "הוספת פגישה: לא בוחרים עם מי הפגישה — ולכן אין משתתפים בשום מקום",
      "what": "אייל 06.09: הבעיה הגדולה היא בהוספת פגישה. הדיאלוג \"תיאום פגישה\" שולח ל-POST /api/meetings/create רק title, scheduled_at, company_id, remind_*; אין שדה משתתף, והפגישה נשמרת עם user_id = היועץ שיצר אותה. לכן בכרטיס כתוב \"עם עידו אייזנשטיין\" ולכן \"שלח את הסיכום\" לא יודע למי. צריך לתקן קודם את הבחירה בהוספה — ואז יהיו משתתפים. עדכון: הקליינט כבר עושה את שלו (‎PR #7‎, קומיט \"עם מי\"): בדיאלוג התיאום שדה \"עם מי\" עם צ׳יפים של אנשי הקשר של החברה (GET /api/users/get-users-by-company), הראשי (is_main_user ב-Company_Contacts) מסומן כברירת מחדל ואפשר להוסיף; ב-POST /api/meetings/create נשלח participant_ids: number[] (מזהי Company_Contacts).",
-     "need": "שרת בלבד עכשיו: (1) POST /api/meetings/create ו-PUT /api/meetings/:id שומרים participant_ids (Company_Contacts). (2) הפגישה חוזרת עם participants: [{id, name, is_main_user}] בכל GET של פגישות. (3) הנמענים של \"שלח את הסיכום\" = המשתתפים. הקליינט יציג \"עם {שמות}\" ברגע ש-participants חוזר. בדיקה: לתאם פגישה לחברה 69 עם \"אייל מיתוקית\" → GET מחזיר participants עם השם.",
+     "need": "הכרעת אייל 06.09 — עמודה אחת: ב-Meeting להוסיף participant_ids (מערך של מזהי Company_Contacts, למשל int8[] או jsonb). (1) POST /api/meetings/create ו-PUT /api/meetings/:id שומרים אותה מה-body (הקליינט כבר שולח participant_ids). (2) כל קריאה שמחזירה פגישה מחזירה participants: [{id, first_name, last_name, is_main_user}] לפי העמודה. (3) הנמענים של \"שלח את הסיכום\" = המשתתפים. בדיקה: לתאם פגישה לחברה 69 עם \"אייל מיתוקית\" → GET הפגישה מחזיר participants עם השם, והזירה מציגה \"עם אייל מיתוקית\".",
      "sev": "גבוה",
      "dev": "עידו",
      "who": "",
@@ -2068,7 +2068,7 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "06.09.2026 09:42",
+     "updated": "06.09.2026 10:00",
      "log": [
       {
        "when": "05.09.2026 23:01",
@@ -2093,6 +2093,12 @@ window.HK_BOARD = {
        "who": "אייל (Claude)",
        "ev": "note",
        "txt": "הקליינט מוכן: \"עם מי\" בדיאלוג, הראשי כברירת מחדל, participant_ids נשלח. נשאר השרת."
+      },
+      {
+       "when": "06.09.2026 10:00",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "הכרעת אייל: עמודה אחת participant_ids ב-Meeting (לא טבלת קישור)."
       }
      ],
      "ask": null
