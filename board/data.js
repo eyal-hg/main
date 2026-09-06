@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 16:23 */
 window.HK_BOARD = {
- "version": 194,
+ "version": 195,
  "seq": 204,
  "updated": "06.09.2026 16:30",
  "emails": [
@@ -6527,19 +6527,25 @@ window.HK_BOARD = {
      "kind": "fix",
      "who": "",
      "status": "open",
-     "pin": false,
+     "pin": true,
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 16:26",
-     "updated": "06.09.2026 16:26",
+     "updated": "06.09.2026 16:30",
      "log": [
       {
        "when": "06.09.2026 16:26",
        "who": "אייל",
        "ev": "opened",
        "txt": "אייל 06.09: \"לא לעשות סינכרון לחברות שאין להם bci בטבלת company\"."
+      },
+      {
+       "when": "06.09.2026 16:30",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "אייל 06.09: מוצמד — קודם כל."
       }
      ],
      "ask": null,
