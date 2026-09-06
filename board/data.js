@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 16:23 */
 window.HK_BOARD = {
- "version": 198,
+ "version": 199,
  "seq": 204,
- "updated": "06.09.2026 16:34",
+ "updated": "06.09.2026 16:42",
  "emails": [
   {
    "who": "אייל",
@@ -6281,14 +6281,21 @@ window.HK_BOARD = {
      "sev": "",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "04.09.2026",
-     "log": [],
+     "updated": "06.09.2026 16:42",
+     "log": [
+      {
+       "when": "06.09.2026 16:42",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "אייל 06.09: למחוק — נסגר."
+      }
+     ],
      "ask": null
     },
     {
