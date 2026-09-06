@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 16:23 */
 window.HK_BOARD = {
- "version": 204,
+ "version": 205,
  "seq": 204,
- "updated": "06.09.2026 16:59",
+ "updated": "06.09.2026 17:02",
  "emails": [
   {
    "who": "אייל",
@@ -5005,13 +5005,13 @@ window.HK_BOARD = {
      "sev": "גבוה",
      "dev": "עידו",
      "who": "",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:42",
-     "updated": "06.09.2026 16:59",
+     "updated": "06.09.2026 17:02",
      "log": [
       {
        "when": "06.09.2026 14:04",
@@ -5048,10 +5048,16 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "failed",
        "txt": "נפתח מחדש: השרת שומר entry_point=customer_chat_message אבל מחזיר NO_CHAT_FLOW_ROUTED בשליחה — הזרימה לא מחוברת במנהל הזרימות."
+      },
+      {
+       "when": "06.09.2026 17:02",
+       "who": "אייל",
+       "ev": "passed",
+       "txt": "אייל 06.09 17:05: \"תוקן בשרת\" — נבדק בתצוגת בעל העסק (חברה 61, מסך העוזר): \"מה היתרה הנוכחית שלי?\" → תשובה \"היתרה הנוכחית שלך עומדת על 184,266 ₪\" דרך customer_chat_message. הקליינט שולח entry_point בשני המסכים (design/client-ai, design/cashflow-ai)."
       }
      ],
      "ask": null,
-     "pin": true
+     "pin": false
     },
     {
      "id": "cashflow-ai-145",
@@ -5696,13 +5702,19 @@ window.HK_BOARD = {
      "imgB": "img/client-ai-proto-full.jpg",
      "capB": "הפרוטוטיפ: המסך המלא בתצוגת בעל העסק — כותרת, שאלות מוכנות לפי \"הכסף שלי\" ו\"הליווי שלי\", שדה, שיחה קולית מחוץ לשדה.",
      "created": "05.09.2026",
-     "updated": "05.09.2026 23:54",
+     "updated": "06.09.2026 17:02",
      "log": [
       {
        "when": "05.09.2026 23:54",
        "who": "אייל (Claude)",
        "ev": "reported",
        "txt": "הקליינט (‎PR #15‎) שולח לבעל העסק אותן בקשות כמו ליועץ; הפער בשרת. בנוסף: הפרוטוטיפ מבקש 3 סוגי תשובה — מצב-עכשיו (כרטיס גרפי: מספרים גדולים + מגמה 6 חודשים + \"מה זה אומר\"), שאלה מהזיכרון (כרטיס שורות עם מקור/סטטוס) וטקסט. מוצע: message_type: \"text\" | \"state_card\" | \"memory_card\" + metadata.card (state: {label, nums:[{label,value,sub,bad?}], trend:{title,months,values}, meaning, foot}; memory: {label, rows:[{text, source|status}], foot}). ה-CSS לכרטיסים כבר ב-PR (.workspace-ai-chat__card-*); ה-JSX ייכנס כשהפורמט ייסגר. וגם: GET starter-context {topSupplierName, hasExpectedOverdraft} כדי להציג \"כמה קניתי מ{ספק} החודש?\" ו\"מתי צפויה חריגה?\" רק כשזה אמיתי."
+      },
+      {
+       "when": "06.09.2026 17:02",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "06.09: בתצוגת בעל העסק העוזר עונה על החברה (אחרי #144). נשאר לבדוק עם לקוח אמיתי. הערה: התשובה מגיעה עם אימוג׳ים בכותרות (📊 💡) — לפי הכלל של #34/#40 בלי אימוג׳ים."
       }
      ],
      "ask": null
