@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 10:58 */
 window.HK_BOARD = {
- "version": 134,
- "seq": 192,
- "updated": "06.09.2026, 10:58",
+ "version": 135,
+ "seq": 193,
+ "updated": "06.09.2026 11:02",
  "emails": [
   {
    "who": "אייל",
@@ -2002,8 +2002,15 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 20:58",
-     "updated": "05.09.2026 20:58",
-     "log": [],
+     "updated": "06.09.2026 11:02",
+     "log": [
+      {
+       "when": "06.09.2026 11:02",
+       "who": "אייל",
+       "ev": "note",
+       "txt": "676f80a — סבב הבדיקה של אייל 06.09: סינון \"שכתבתי / מפגישות\" בשורת הסינון; העורך בשורה סודר כטופס עם עמודת תוויות ושורת פעולות מופרדת; שדה הטקסט ב\"משימה חדשה\" וב\"בקשה חדשה ל-HK\" נראה כשדה ולא ככותרת; רשימת הלקוחות ב\"בקשה חדשה\" לא נחתכת."
+      }
+     ],
      "ask": null
     },
     {
@@ -2286,6 +2293,34 @@ window.HK_BOARD = {
      "updated": "06.09.2026 09:38",
      "log": [],
      "ask": null
+    },
+    {
+     "id": "tasks-193",
+     "n": 193,
+     "kind": "fix",
+     "who": "",
+     "status": "open",
+     "pin": false,
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "06.09.2026 11:02",
+     "updated": "06.09.2026 11:02",
+     "log": [
+      {
+       "when": "06.09.2026 11:02",
+       "who": "אייל",
+       "ev": "opened",
+       "txt": "אייל ניסה לשלוח בקשה ל-HK בסבב הבדיקה של 06.09 — לא נוצר כלום; נבדק: 404 על הנתיב."
+      }
+     ],
+     "ask": null,
+     "dev": "עידו",
+     "sev": "גבוה",
+     "title": "משימות: שליחת בקשה ל-HK נכשלת — הנתיב POST /api/workspace/advisor/tasks/requests לא קיים בשרת (404)",
+     "what": "בסטייג׳ינג 06.09 10:58, תצוגת יועץ (preview=advisor:rep), הטאב \"ביקשתי מ-HK\": ממלאים בקשה ולקוח ולוחצים \"שליחה ל-HK\" — השרת מחזיר 404 \"Cannot POST /api/workspace/advisor/tasks/requests\" (עמוד HTML), ושום דבר לא נוצר. הקריאה GET /api/workspace/advisor/tasks עובדת.",
+     "need": "לפי האפיון (docs/tasks/2026-09-03-tasks/TASK.md, סעיף ג — הבקשות ל-HK): POST /api/workspace/advisor/tasks/requests עם {text, company_id, note?, due_on?} יוצר בקשה אצל מנהל התזרים של הלקוח ומחזיר אותה (id, text, company_id, company_name, operations_manager{id,name}, status=open, due_on, created_at).\nבדיקה: אחרי התיקון — שליחה מהטאב מוסיפה שורה \"פתוח\" בראש הטבלה וטוסט \"נשלח ל{מנהל התזרים}\"; הבקשה מופיעה אצל מנהל התזרים כאירוע."
     }
    ]
   },
