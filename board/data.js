@@ -1,8 +1,8 @@
 /* לוח המשימות — נשמר מהמסך 06.09.2026, 15:26 */
 window.HK_BOARD = {
- "version": 178,
+ "version": 179,
  "seq": 202,
- "updated": "06.09.2026 15:28",
+ "updated": "06.09.2026 15:29",
  "emails": [
   {
    "who": "אייל",
@@ -4887,7 +4887,7 @@ window.HK_BOARD = {
     {
      "id": "cashflow-ai-144",
      "n": 144,
-     "pin": false,
+     "pin": true,
      "kind": "fix",
      "title": "צ׳אט של בעל העסק (CUSTOMER): לפנות ל-entrypoint בשם customer_chat_message במקום chat_message",
      "what": "היום בשליחת הודעת צ׳אט (POST /api/chat-conversations/:companyId/conversations/:id/messages) השרת מפעיל את הטריגר chat_message לכל משתמש. לבעל עסק אמיתי (תפקיד CUSTOMER) זה נופל / לא מותאם — זו הסיבה ל-#59 (\"This operation requires unrestricted company access\") ולפער ב-#144.\n\nהתסמין (היה #59): כל שאלה של בעל עסק אמיתי מחזירה \"This operation requires unrestricted company access\". בתצוגה המקדימה (טוקן של יועץ) זה עובד.",
@@ -4895,13 +4895,13 @@ window.HK_BOARD = {
      "sev": "גבוה",
      "dev": "עידו",
      "who": "",
-     "status": "done",
+     "status": "open",
      "imgA": "",
      "capA": "",
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:42",
-     "updated": "06.09.2026 15:28",
+     "updated": "06.09.2026 15:29",
      "log": [
       {
        "when": "06.09.2026 14:04",
@@ -4916,10 +4916,10 @@ window.HK_BOARD = {
        "txt": "#59 מוזג לכאן."
       },
       {
-       "when": "06.09.2026 15:28",
+       "when": "06.09.2026 15:29",
        "who": "אייל",
-       "ev": "passed",
-       "txt": "אייל 06.09: \"עשינו את זה\" — CUSTOMER → customer_chat_message בוצע בשרת."
+       "ev": "note",
+       "txt": "נפתח מחדש — סומן \"בוצע\" בטעות (אי-הבנה); עדיין אצל עידו."
       }
      ],
      "ask": null
