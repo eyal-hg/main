@@ -874,7 +874,7 @@ function meetArena(m){
     <span class="in">${up?inTxt(m):c[0]}</span>
     <div class="name">${m.name}</div>
     <div class="who">${ICONS.usr} ${m.who.length?'עם '+whoTxt(m):'ללא משתתף משויך'}</div>
-    ${m.rec&&!document.documentElement.classList.contains('r-cli')?`<button class="arn-play" onclick="trOpen('${m.id}')">
+    ${false&&m.rec&&!document.documentElement.classList.contains('r-cli')?`<button class="arn-play" onclick="trOpen('${m.id}')">   /* אייל 06.09: בלי נגן בזירה */
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       <span class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
       <b class="num" dir="ltr">${m.rec}</b></button>`:''}
@@ -947,10 +947,15 @@ function tabBody(m){
 
 function arnActs(m){
   /* האישור הוא פעולה של היועץ. ללקוח הסיכום כבר נשלח — נשארת רק ההורדה. */
-  if(document.documentElement.classList.contains('r-cli')) return `<div class="arn-f">
+  if(document.documentElement.classList.contains('r-cli')){
+    /* בעל העסק: ההורדה וההודעה "נשלח אליך" רק אחרי שהיועץ אישר ושלח; לפני כן — "יישלח כשיהיה מוכן"; לא התקיימה — בלי פוטר */
+    if(m.status==='noshow') return '';
+    if(m.status!=='done') return `<div class="arn-f"><span class="arn-note">הסיכום יישלח אליך בוואטסאפ כשיהיה מוכן.</span></div>`;
+    return `<div class="arn-f">
     <button class="btn pln" onclick="toast('הסיכום ירד כ-PDF')">הורדת הסיכום</button>
     <span class="arn-note">הסיכום נשלח אליך בוואטסאפ בסיום הפגישה.</span>
   </div>`;
+  }
   const noWho=!m.who.length;
   if(m.status==='summary') return `<div class="arn-f">
     ${noWho?`<div class="whowarn">חובה לשייך משתתף לפני אישור — הזיכרון מתעדכן פר אדם.
@@ -998,8 +1003,8 @@ function noShow(id){const m=MT.find(x=>x.id===id);if(m)m.status='noshow';CONF=fa
 
 /* ---------- 2 · זירת הפגישות ---------- */
 /* ---------- ציר הזמן ---------- */
-const CHIP={upcoming:['מתוכננת','up'],ai:['הסיכום בדרך — חוזר תוך דקות','ai'],
-  summary:[document.documentElement.classList.contains('r-cli')?'הסיכום מוכן':'הסיכום ממתין לאישורך','sum'],
+const CHIP={upcoming:['מתוכננת','up'],ai:[document.documentElement.classList.contains('r-cli')?'התקיימה':'הסיכום בדרך — חוזר תוך דקות','ai'],
+  summary:[document.documentElement.classList.contains('r-cli')?'התקיימה':'הסיכום ממתין לאישורך','sum'],
   done:[document.documentElement.classList.contains('r-cli')?'הסיכום נשלח אליך':'אושר ונשלח ללקוח','done'],noshow:['לא התקיימה','no']};
 
 function grpH(k,ttl,n,sum){
@@ -1016,7 +1021,7 @@ function tlRow(m){
   const p=m.date.split('.');
   let s,sc;
   if(up){ s=inTxt(m); sc='soon'; }
-  else if(m.status==='summary'||m.status==='ai'){ s=document.documentElement.classList.contains('r-cli')?'סיכום מוכן':'ממתין לאישורך'; sc=document.documentElement.classList.contains('r-cli')?'ok':'wait'; }
+  else if(m.status==='summary'||m.status==='ai'){ s=document.documentElement.classList.contains('r-cli')?'התקיימה':'ממתין לאישורך'; sc=document.documentElement.classList.contains('r-cli')?'':'wait'; }   /* בעל העסק: "התקיימה" בלי צבע — ההכרעה מ-04.09 */
   else if(m.status==='noshow'){ s='לא התקיימה'; sc='wait'; }
   else { s='אושר ונשלח'; sc='ok'; }
   return `<button class="tl-row ${cls}" data-id="${m.id}" onclick="arenaShow('${m.id}')">
@@ -1063,7 +1068,7 @@ function pipeHTML(m){
   const tr=m.rec?S('תמלול','ok'):S('תמלול','');
   const sum=m.status==='done'?S('סיכום אושר','ok'):m.status==='summary'?S('סיכום ממתין לאישור','run'):
             m.status==='ai'?S('סיכום נוצר עכשיו','run'):S('סיכום','');
-  const mem=m.memUpd?S('זיכרון עודכן ('+m.memUpd.length+')','ok'):S('עדכון זיכרון','');
+  const mem=m.memUpd?S('זיכרון עודכן','ok'):S('עדכון זיכרון','');   /* אייל 06.09: בלי מספר */
   /* צינור העיבוד הוא פנימי — ללקוח הסיכום פשוט קיים */
   if(document.documentElement.classList.contains('r-cli')) return '';
   return `<div class="pipe">${rec}${arm}${tr}${arm}${sum}${arm}${mem}</div>`;
