@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 07.09.2026, 15:33 */
+/* לוח המשימות — נשמר מהמסך 07.09.2026, 15:53 */
 window.HK_BOARD = {
- "version": 328,
+ "version": 330,
  "seq": 296,
- "updated": "07.09.2026, 15:33",
+ "updated": "07.09.2026, 15:53",
  "emails": [
   {
    "who": "אייל",
@@ -263,12 +263,12 @@ window.HK_BOARD = {
     {
      "id": "bug-7",
      "n": 210,
-     "kind": "fix",
+     "kind": "check",
      "title": "אין חיפוש במסך תזרים עתידי",
      "what": "בלי פירוט.",
      "need": "",
-     "sev": "בינוני",
-     "dev": "",
+     "sev": "",
+     "dev": "אייל",
      "who": "אופיר",
      "status": "open",
      "imgA": "img/bugs/bug-7.jpg",
@@ -276,18 +276,31 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026, 10:58",
-     "updated": "06.09.2026, 10:58",
+     "updated": "07.09.2026",
      "log": [
       {
        "when": "06.09.2026, 10:58",
        "who": "אופיר",
        "ev": "reported",
        "txt": ""
+      },
+      {
+       "when": "07.09.2026 15:53",
+       "who": "",
+       "ev": "built",
+       "txt": ""
       }
      ],
      "src": "support",
      "rep": "אופיר",
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "",
+      "sev": "בינוני",
+      "what": "בלי פירוט.",
+      "need": ""
+     }
     },
     {
      "id": "bug-8",
