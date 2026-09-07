@@ -61,7 +61,7 @@
     function fmt(v,t,c){
       c=c||{};
       if(v==null||v==='') return '<span style="color:var(--faint)">—</span>';
-      var unit=c.unit?'<span class="unit">'+esc(c.unit)+'</span>':'';
+      var unit=c.unit?'<span class="unit">&#160;'+esc(c.unit)+'</span>':'';
       if(t==='money'){ var cur=c.currency||S.cur, d=c.decimals!=null?c.decimals:0;
         return '<span class="'+(v<0?'neg':'')+colorOf(v,c)+'">'+(v<0?'-':'')+'<span class="cur">'+esc(cur)+'</span>'+nfd(Math.abs(v),d)+'</span>'+bar(v,c); }
       if(t==='percent'){ var d2=c.decimals!=null?c.decimals:(Math.abs(v)%1?1:0); return '<span class="'+colorOf(v,c)+'">'+(v<0?'-':'')+nfd(Math.abs(v),d2)+'%</span>'+bar(v,c); }
