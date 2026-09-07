@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 07.09.2026, 15:53 */
 window.HK_BOARD = {
- "version": 330,
+ "version": 332,
  "seq": 296,
  "updated": "07.09.2026, 15:53",
  "emails": [
@@ -411,12 +411,12 @@ window.HK_BOARD = {
     {
      "id": "bug-11",
      "n": 289,
-     "kind": "fix",
+     "kind": "check",
      "title": "להוסיף מסגרת אשראי בתחזית תזרים שרואים בתפעול",
      "what": "בלי פירוט.",
      "need": "",
-     "sev": "בינוני",
-     "dev": "",
+     "sev": "",
+     "dev": "אייל",
      "who": "אופיר",
      "status": "open",
      "imgA": "img/bugs/bug-11.jpg",
@@ -424,18 +424,31 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "07.09.2026, 09:05",
-     "updated": "07.09.2026, 09:05",
+     "updated": "07.09.2026",
      "log": [
       {
        "when": "07.09.2026, 09:05",
        "who": "אופיר",
        "ev": "reported",
        "txt": ""
+      },
+      {
+       "when": "07.09.2026 15:53",
+       "who": "",
+       "ev": "built",
+       "txt": ""
       }
      ],
      "src": "support",
      "rep": "אופיר",
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "",
+      "sev": "בינוני",
+      "what": "בלי פירוט.",
+      "need": ""
+     }
     },
     {
      "id": "bug-12",
