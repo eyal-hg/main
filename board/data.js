@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 07.09.2026, 11:34 */
+/* לוח המשימות — נשמר מהמסך 07.09.2026, 11:51 */
 window.HK_BOARD = {
- "version": 300,
+ "version": 301,
  "seq": 287,
- "updated": "07.09.2026 11:45",
+ "updated": "07.09.2026, 11:51",
  "emails": [
   {
    "who": "אייל",
@@ -478,6 +478,35 @@ window.HK_BOARD = {
      "src": "support",
      "rep": "עומרי",
      "client": "תפנית הכל מתחיל בחינוך",
+     "ask": null
+    },
+    {
+     "id": "bug-14",
+     "kind": "fix",
+     "title": "לסרביס קומפניס לוקח 24 שניות לעלות",
+     "what": "לקוח: כל החברות. http://localhost:8080/api/user-accounts/current-user/companies",
+     "need": "",
+     "sev": "בינוני",
+     "dev": "",
+     "who": "עומרי",
+     "status": "open",
+     "imgA": "",
+     "capA": "",
+     "imgB": "",
+     "capB": "",
+     "created": "07.09.2026, 11:51",
+     "updated": "07.09.2026, 11:51",
+     "log": [
+      {
+       "when": "07.09.2026, 11:51",
+       "who": "עומרי",
+       "ev": "reported",
+       "txt": ""
+      }
+     ],
+     "src": "support",
+     "rep": "עומרי",
+     "client": "כל החברות",
      "ask": null
     }
    ]
