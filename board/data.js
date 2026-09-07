@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 07.09.2026, 20:01 */
+/* לוח המשימות — נשמר מהמסך 07.09.2026, 20:03 */
 window.HK_BOARD = {
- "version": 381,
+ "version": 384,
  "seq": 299,
- "updated": "07.09.2026, 20:01",
+ "updated": "07.09.2026, 20:03",
  "emails": [
   {
    "who": "אייל",
@@ -3343,12 +3343,12 @@ window.HK_BOARD = {
     {
      "id": "tasks-193",
      "n": 193,
-     "kind": "fix",
+     "kind": "check",
      "title": "משימות: שליחת בקשה ל-HK נכשלת — הנתיב POST /api/workspace/advisor/tasks/requests לא קיים בשרת (404)",
      "what": "בסטייג׳ינג 06.09 10:58, תצוגת יועץ (preview=advisor:rep), הטאב \"ביקשתי מ-HK\": ממלאים בקשה ולקוח ולוחצים \"שליחה ל-HK\" — השרת מחזיר 404 \"Cannot POST /api/workspace/advisor/tasks/requests\" (עמוד HTML), ושום דבר לא נוצר. הקריאה GET /api/workspace/advisor/tasks עובדת.",
      "need": "לפי האפיון (docs/tasks/2026-09-03-tasks/TASK.md, סעיף ג — הבקשות ל-HK): POST /api/workspace/advisor/tasks/requests עם {text, company_id (יכול להיות null — אייל 06.09: לקוח לא חובה), note?, due_on?} יוצר בקשה אצל מנהל התזרים של הלקוח ומחזיר אותה (id, text, company_id, company_name, operations_manager{id,name}, status=open, due_on, created_at).\nבדיקה: אחרי התיקון — שליחה מהטאב מוסיפה שורה \"פתוח\" בראש הטבלה וטוסט \"נשלח ל{מנהל התזרים}\"; הבקשה מופיעה אצל מנהל התזרים כאירוע.\n\nכלל הרשימה (אייל 06.09): GET /api/workspace/advisor/tasks מחזיר ב-requests את כל הבקשות ל-HK של משרד הייעוץ על חברות שבהרשאות של המשתמש (גם אם יועץ אחר במשרד פתח אותן), ובנוסף בקשות בלי חברה — רק אלה שהמשתמש עצמו פתח.",
-     "sev": "גבוה",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -3356,7 +3356,7 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 11:02",
-     "updated": "06.09.2026 11:08",
+     "updated": "07.09.2026",
      "log": [
       {
        "when": "06.09.2026 11:02",
@@ -3375,9 +3375,22 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "אייל 06.09: לקוח לא חובה בבקשה ל-HK — company_id יכול להיות null; בקשה כזו נראית רק למי שפתח אותה. הקליינט (design/tasks) כבר שולח null."
+      },
+      {
+       "when": "07.09.2026 12:03",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "תוקן ונפרס ל־stg (a039c53 / b616e29). הנתיב POST /api/workspace/advisor/tasks/requests קיים, יוצר Event והודעה פנימית באותה טרנזקציה ומנתב למנהל התזרים של החברה; company_id=null נתמך ונראה רק ליוצר. בקשה חדשה מוצגת מיד בראש הטבלה כפתוחה, בלי קישור שבור כשאין חברה. עברו 34 בדיקות Koa/שירות, בדיקת rollback, בדיקות PostgreSQL של נראות לפי משרד לפני LIMIT, ובדיקות רכיב ליצירה/שגיאה/הצגה מיידית. הממשק המקומי נבדק; בדיקות היצירה בוצעו בסביבה מבודדת ללא הודעות חיצוניות."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "גבוה",
+      "what": "בסטייג׳ינג 06.09 10:58, תצוגת יועץ (preview=advisor:rep), הטאב \"ביקשתי מ-HK\": ממלאים בקשה ולקוח ולוחצים \"שליחה ל-HK\" — השרת מחזיר 404 \"Cannot POST /api/workspace/advisor/tasks/requests\" (עמוד HTML), ושום דבר לא נוצר. הקריאה GET /api/workspace/advisor/tasks עובדת.",
+      "need": "לפי האפיון (docs/tasks/2026-09-03-tasks/TASK.md, סעיף ג — הבקשות ל-HK): POST /api/workspace/advisor/tasks/requests עם {text, company_id (יכול להיות null — אייל 06.09: לקוח לא חובה), note?, due_on?} יוצר בקשה אצל מנהל התזרים של הלקוח ומחזיר אותה (id, text, company_id, company_name, operations_manager{id,name}, status=open, due_on, created_at).\nבדיקה: אחרי התיקון — שליחה מהטאב מוסיפה שורה \"פתוח\" בראש הטבלה וטוסט \"נשלח ל{מנהל התזרים}\"; הבקשה מופיעה אצל מנהל התזרים כאירוע.\n\nכלל הרשימה (אייל 06.09): GET /api/workspace/advisor/tasks מחזיר ב-requests את כל הבקשות ל-HK של משרד הייעוץ על חברות שבהרשאות של המשתמש (גם אם יועץ אחר במשרד פתח אותן), ובנוסף בקשות בלי חברה — רק אלה שהמשתמש עצמו פתח."
+     }
     },
     {
      "id": "tasks-194",
