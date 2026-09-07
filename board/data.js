@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 07.09.2026, 20:54 */
+/* לוח המשימות — נשמר מהמסך 07.09.2026, 21:26 */
 window.HK_BOARD = {
- "version": 391,
+ "version": 394,
  "seq": 299,
- "updated": "07.09.2026, 20:54",
+ "updated": "07.09.2026, 21:26",
  "emails": [
   {
    "who": "אייל",
@@ -3659,12 +3659,12 @@ window.HK_BOARD = {
     {
      "id": "company-meetings-43",
      "n": 46,
-     "kind": "fix",
+     "kind": "check",
      "title": "הוספת פגישה: לא בוחרים עם מי הפגישה — ולכן אין משתתפים בשום מקום",
      "what": "אייל 06.09: הבעיה הגדולה היא בהוספת פגישה. הדיאלוג \"תיאום פגישה\" שולח ל-POST /api/meetings/create רק title, scheduled_at, company_id, remind_*; אין שדה משתתף, והפגישה נשמרת עם user_id = היועץ שיצר אותה. לכן בכרטיס כתוב \"עם עידו אייזנשטיין\" ולכן \"שלח את הסיכום\" לא יודע למי. צריך לתקן קודם את הבחירה בהוספה — ואז יהיו משתתפים. עדכון: הקליינט כבר עושה את שלו (‎PR #7‎, קומיט \"עם מי\"): בדיאלוג התיאום שדה \"עם מי\" עם צ׳יפים של אנשי הקשר של החברה (GET /api/users/get-users-by-company), הראשי (is_main_user ב-Company_Contacts) מסומן כברירת מחדל ואפשר להוסיף; ב-POST /api/meetings/create נשלח participant_ids: number[] (מזהי Company_Contacts).",
      "need": "הכרעת אייל 06.09 — עמודה אחת: ב-Meeting להוסיף participant_ids (מערך של מזהי Company_Contacts, למשל int8[] או jsonb). (1) POST /api/meetings/create ו-PUT /api/meetings/:id שומרים אותה מה-body (הקליינט כבר שולח participant_ids). (2) כל קריאה שמחזירה פגישה מחזירה participants: [{id, first_name, last_name, is_main_user}] לפי העמודה. (3) הנמענים של \"שלח את הסיכום\" = המשתתפים. בדיקה: לתאם פגישה לחברה 69 עם \"אייל מיתוקית\" → GET הפגישה מחזיר participants עם השם, והזירה מציגה \"עם אייל מיתוקית\".",
-     "sev": "גבוה",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -3672,7 +3672,7 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "04.09.2026",
-     "updated": "06.09.2026 10:00",
+     "updated": "07.09.2026",
      "log": [
       {
        "when": "05.09.2026 23:01",
@@ -3703,9 +3703,22 @@ window.HK_BOARD = {
        "who": "אייל",
        "ev": "note",
        "txt": "הכרעת אייל: עמודה אחת participant_ids ב-Meeting (לא טבלת קישור)."
+      },
+      {
+       "when": "07.09.2026 13:26",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg: שרת cc51846, קליינט 614f12f. participant_ids נשמר כמערך Company_Contacts ב-public וב-jampa, עם participants בכל תצוגות הפגישה. הבורר משתמש באנשי קשר, עריכה שומרת בחירה והסרת כולם נשמרת כרשימה ריקה; נמעני הסיכום מוגבלים לבחירה, כולל איש קשר ללא Users ותשובת וואטסאפ מאומתת. בדיקות קוד ו-PostgreSQL עם rollback עברו, וכן build ו-tsc. בחברה 69 נבדקו מקומית הסרה/שמירה/רענון ובחירה מחדש; בסטייג׳ינג אומת ״עם אייל מיתוקית״. פגישת הבדיקה 547 נמחקה ללא רשומות תלויות; לא נשלחו הודעות או הזמנות יומן בבדיקה."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "גבוה",
+      "what": "אייל 06.09: הבעיה הגדולה היא בהוספת פגישה. הדיאלוג \"תיאום פגישה\" שולח ל-POST /api/meetings/create רק title, scheduled_at, company_id, remind_*; אין שדה משתתף, והפגישה נשמרת עם user_id = היועץ שיצר אותה. לכן בכרטיס כתוב \"עם עידו אייזנשטיין\" ולכן \"שלח את הסיכום\" לא יודע למי. צריך לתקן קודם את הבחירה בהוספה — ואז יהיו משתתפים. עדכון: הקליינט כבר עושה את שלו (‎PR #7‎, קומיט \"עם מי\"): בדיאלוג התיאום שדה \"עם מי\" עם צ׳יפים של אנשי הקשר של החברה (GET /api/users/get-users-by-company), הראשי (is_main_user ב-Company_Contacts) מסומן כברירת מחדל ואפשר להוסיף; ב-POST /api/meetings/create נשלח participant_ids: number[] (מזהי Company_Contacts).",
+      "need": "הכרעת אייל 06.09 — עמודה אחת: ב-Meeting להוסיף participant_ids (מערך של מזהי Company_Contacts, למשל int8[] או jsonb). (1) POST /api/meetings/create ו-PUT /api/meetings/:id שומרים אותה מה-body (הקליינט כבר שולח participant_ids). (2) כל קריאה שמחזירה פגישה מחזירה participants: [{id, first_name, last_name, is_main_user}] לפי העמודה. (3) הנמענים של \"שלח את הסיכום\" = המשתתפים. בדיקה: לתאם פגישה לחברה 69 עם \"אייל מיתוקית\" → GET הפגישה מחזיר participants עם השם, והזירה מציגה \"עם אייל מיתוקית\"."
+     }
     },
     {
      "id": "company-meetings-44",
