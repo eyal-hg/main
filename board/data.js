@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 08.09.2026, 15:44 */
+/* לוח המשימות — נשמר מהמסך 08.09.2026, 15:45 */
 window.HK_BOARD = {
- "version": 440,
+ "version": 443,
  "seq": 304,
- "updated": "08.09.2026, 15:44",
+ "updated": "08.09.2026, 15:45",
  "emails": [
   {
    "who": "אייל",
@@ -5614,12 +5614,12 @@ window.HK_BOARD = {
     {
      "id": "acct-171",
      "n": 171,
-     "kind": "fix",
+     "kind": "check",
      "title": "תכנון חשבונאי — מחיקת יעד ידני (↺ החזרה לממוצע המערכת)",
      "what": "אין קריאה שמוחקת יעד ידני; \"↺ החזרה לממוצע\" בעורך התא שומר היום יעד = ממוצע 3 ח׳ כסכום ידני (ומסומן \"ידני\"), במקום להחזיר את התא ל-source:\"average\" שמתעדכן עם הזמן.",
      "need": "DELETE /companies/:id/accounting-plan/values?entityType&entityId&month&valueKind=target (או PUT עם amount:null) שמסיר את היעד הידני/כלל האחוז והתא חוזר ל-\"average\". הקליינט (CellEditorPopover.restoreAverage) יעבור לקריאה הזו. בדיקה: אחרי ↺ — value.source===\"average\", value.targetMode===null.",
-     "sev": "בינוני",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5627,9 +5627,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 03:19",
-     "updated": "06.09.2026 03:19",
-     "log": [],
-     "ask": null
+     "updated": "08.09.2026",
+     "log": [
+      {
+       "when": "08.09.2026 07:45",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg 60b0edb / 3baaa14. החזרה לממוצע שולחת amount:null ומסירה את יעד החודש וכלל האחוז; היעד חוזר למקור average ולא נשמר כסכום ידני. העורך מסביר שכלל האחוז מוסר לכל החודשים. נבדקו API וקליינט: targetMode:null, שמירת יעדים ידניים בחודשים אחרים, ופתיחה ושמירה חוזרות ללא יצירת override."
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "בינוני",
+      "what": "אין קריאה שמוחקת יעד ידני; \"↺ החזרה לממוצע\" בעורך התא שומר היום יעד = ממוצע 3 ח׳ כסכום ידני (ומסומן \"ידני\"), במקום להחזיר את התא ל-source:\"average\" שמתעדכן עם הזמן.",
+      "need": "DELETE /companies/:id/accounting-plan/values?entityType&entityId&month&valueKind=target (או PUT עם amount:null) שמסיר את היעד הידני/כלל האחוז והתא חוזר ל-\"average\". הקליינט (CellEditorPopover.restoreAverage) יעבור לקריאה הזו. בדיקה: אחרי ↺ — value.source===\"average\", value.targetMode===null."
+     }
     },
     {
      "id": "acct-172",
