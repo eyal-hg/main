@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 08.09.2026, 15:49 */
 window.HK_BOARD = {
- "version": 464,
+ "version": 467,
  "seq": 304,
  "updated": "08.09.2026, 15:49",
  "emails": [
@@ -5906,12 +5906,12 @@ window.HK_BOARD = {
     {
      "id": "acct-180",
      "n": 180,
-     "kind": "fix",
+     "kind": "check",
      "title": "תכנון חשבונאי — המונים \"N כרטיסים תוצאתיים\" ו\"ללא סעיף\" מגיעים מהשרת (כולל מנותקים)",
      "what": "mapping.balanceCount/unassignedCount/disconnectedCount קיימים; \"N כרטיסים תוצאתיים בדוח\" מחושב בקליינט.",
      "need": "plCount (תוצאתיים שנספרים בדוח = לא מאזני, לא מנותק, לא unverified) ב-mapping; unassignedCount כולל מנותקים (בפרוטוטיפ ניתוק = \"ללא סעיף\"). בדיקה: הצ׳יפ העליון = plCount כשאין לא-משויכים.",
-     "sev": "נמוך",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5919,9 +5919,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 03:19",
-     "updated": "06.09.2026 09:38",
-     "log": [],
-     "ask": null
+     "updated": "08.09.2026",
+     "log": [
+      {
+       "when": "08.09.2026 07:49",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg 60b0edb / 3baaa14. השרת מחזיר plCount לפי הכרטיסים הנכללים בדוח ו-unassignedCount כולל מנותקים. הכותרת והפוטר צורכים את המונים ללא ספירה כפולה של מנותקים. נבדקו כרטיס מאזני שהועבר לדוח, כרטיס מנותק וכרטיס לא מאומת, וכן המונים במסך המקומי של חברה 69."
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "נמוך",
+      "what": "mapping.balanceCount/unassignedCount/disconnectedCount קיימים; \"N כרטיסים תוצאתיים בדוח\" מחושב בקליינט.",
+      "need": "plCount (תוצאתיים שנספרים בדוח = לא מאזני, לא מנותק, לא unverified) ב-mapping; unassignedCount כולל מנותקים (בפרוטוטיפ ניתוק = \"ללא סעיף\"). בדיקה: הצ׳יפ העליון = plCount כשאין לא-משויכים."
+     }
     },
     {
      "id": "acct-181",
