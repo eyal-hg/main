@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 08.09.2026, 15:48 */
 window.HK_BOARD = {
- "version": 458,
+ "version": 461,
  "seq": 304,
  "updated": "08.09.2026, 15:48",
  "emails": [
@@ -5818,12 +5818,12 @@ window.HK_BOARD = {
     {
      "id": "acct-177",
      "n": 177,
-     "kind": "fix",
+     "kind": "check",
      "title": "תכנון חשבונאי — מס ורווח נקי אחרי מס בשני הצדדים",
      "what": "PUT /values {entityType:\"tax\", entityId:\"tax_rate\"} עובד; profit[].tax/preTaxProfit/taxRate אופציונליים. בקליינט השדה \"[23] % מהרווח לפני מס\" בשורת המס.",
      "need": "tax = preTaxProfit>0 ? −preTaxProfit·rate/100 : 0, netProfit = preTaxProfit + tax, גם ב-target; plan.taxRate תמיד (ברירת מחדל 23). בדיקה: חודש עם רווח שלילי → tax===0; שינוי ל-25% → כל החודשים מתעדכנים.",
-     "sev": "בינוני",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5831,9 +5831,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 03:19",
-     "updated": "06.09.2026 03:19",
-     "log": [],
-     "ask": null
+     "updated": "08.09.2026",
+     "log": [
+      {
+       "when": "08.09.2026 07:48",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg 60b0edb / 3baaa14. המס והרווח הנקי מחושבים בנפרד לבפועל וליעד: מס רק על רווח חיובי, ברירת מחדל 23%, ושינוי שיעור חל בכל החודשים. נבדקו רווח, הפסד, 0 ושיעור 25% ב-API עם rollback; אחוזי הפסד נשארים שליליים גם במסך."
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "בינוני",
+      "what": "PUT /values {entityType:\"tax\", entityId:\"tax_rate\"} עובד; profit[].tax/preTaxProfit/taxRate אופציונליים. בקליינט השדה \"[23] % מהרווח לפני מס\" בשורת המס.",
+      "need": "tax = preTaxProfit>0 ? −preTaxProfit·rate/100 : 0, netProfit = preTaxProfit + tax, גם ב-target; plan.taxRate תמיד (ברירת מחדל 23). בדיקה: חודש עם רווח שלילי → tax===0; שינוי ל-25% → כל החודשים מתעדכנים."
+     }
     },
     {
      "id": "acct-178",
