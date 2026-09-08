@@ -147,9 +147,12 @@
       let ph=document.getElementById('cliLogoPh');
       if(isClient){
         _lg.style.display='none';
-        if(!ph){ ph=document.createElement('span'); ph.id='cliLogoPh'; ph.className='logo-ph';
-          ph.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="9" cy="9" r="1.4"/></svg>הלוגו שלך';
+        if(!ph){ ph=document.createElement('span'); ph.id='cliLogoPh'; ph.className='logo-firm';
           _lw.appendChild(ph); }
+        /* המותג של המשרד, לא מציין מקום: הלקוח רואה את הלוגו של היועץ שלו.
+           כשיש קובץ לוגו הוא נכנס כאן; בהיעדרו — שם המשרד כוורדמארק. */
+        var _firm=(typeof CLIENTS!=='undefined'&&CLIENTS[CUR]&&(CLIENTS[CUR].firm||CLIENTS[CUR].mgr))||'';
+        ph.innerHTML='<span class="logo-firm__mark">'+(_firm.trim().charAt(0)||'\u2022')+'</span>'+_firm;
         ph.style.display='';
       }else{
         if(ph) ph.style.display='none';
