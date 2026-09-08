@@ -1,8 +1,8 @@
-/* לוח המשימות — נשמר מהמסך 08.09.2026, 15:51 */
+/* לוח המשימות — נשמר מהמסך 08.09.2026, 15:52 */
 window.HK_BOARD = {
- "version": 470,
+ "version": 473,
  "seq": 304,
- "updated": "08.09.2026, 15:51",
+ "updated": "08.09.2026, 15:52",
  "emails": [
   {
    "who": "אייל",
@@ -5974,12 +5974,12 @@ window.HK_BOARD = {
     {
      "id": "acct-182",
      "n": 182,
-     "kind": "fix",
+     "kind": "check",
      "title": "תכנון חשבונאי — אישור מפת העמודות בקליטה: תצוגה מקדימה של שורות והסבר בעברית",
      "what": "MappingReviewDialog מוצג כש-confidence<0.9, אבל structureMap.sample_rows/headers לא תמיד מגיעים ו-reviewReason באנגלית.",
      "need": "structureMap.sample_rows (30–50 שורות) + headers תמיד; reviewReason בעברית. בדיקה: להעלות PDF דיגיטלי → status===\"needs_review\" עם sample_rows.length>0.",
-     "sev": "נמוך",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5987,16 +5987,29 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 03:19",
-     "updated": "07.09.2026 09:25",
+     "updated": "08.09.2026",
      "log": [
       {
        "when": "07.09.2026 09:25",
        "who": "אייל",
        "ev": "note",
        "txt": "07.09: דוגמה חיה — כרטסת חשבשבת (\"טל בשן\") נכשלה בזיהוי אוטומטי ב-225 בלי מסך מיפוי ידני. ראו הפריט בסבב הבדיקות."
+      },
+      {
+       "when": "08.09.2026 07:52",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg 60b0edb / 3baaa14. מיפוי חסר או לא ודאי נשמר כ-needs_review עם כותרות, 30–50 שורות וסיבה בעברית; תאריכים בתצוגה קריאים. נבדקה הדוגמה החיה בחברה 225: הקובץ מופיע כעת במסך המיפוי עם ההצעה הנכונה. בקובץ פער חובה/זכות של 121,177.34 ש״ח, ולכן הוא נשאר לבדיקה ללא פרסום כספי. נבדקו גם מסלולי מיפוי חסר ו-PDF דיגיטלי."
       }
      ],
-     "ask": null
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "נמוך",
+      "what": "MappingReviewDialog מוצג כש-confidence<0.9, אבל structureMap.sample_rows/headers לא תמיד מגיעים ו-reviewReason באנגלית.",
+      "need": "structureMap.sample_rows (30–50 שורות) + headers תמיד; reviewReason בעברית. בדיקה: להעלות PDF דיגיטלי → status===\"needs_review\" עם sample_rows.length>0."
+     }
     },
     {
      "id": "acct-183",
