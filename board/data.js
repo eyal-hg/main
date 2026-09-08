@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 08.09.2026, 19:01 */
 window.HK_BOARD = {
- "version": 511,
+ "version": 513,
  "seq": 308,
  "updated": "08.09.2026, 19:01",
  "emails": [
@@ -5741,12 +5741,12 @@ window.HK_BOARD = {
     {
      "id": "acct-170",
      "n": 170,
-     "kind": "check",
+     "kind": "fix",
      "title": "תכנון חשבונאי — שורות הרווח בחודש פתוח: בפועל ויעד בנפרד",
      "what": "AccountingPlan.profit[] מחזיר revenue/cogs/grossProfit/…/netProfit כמספר אחד לחודש; actual/target/difference/variancePercent אופציונליים ולרוב חסרים. הקליינט נופל ל-0 ליעד (profitField), וכך \"רווח נקי\" בחודש פתוח מציג יעד \"—\".",
      "need": "לכל חודש profit[i].actual{revenue,cogs,grossProfit,opex,operatingProfit,financing,preTaxProfit,tax,netProfit} ו-profit[i].target{…} (הרווח אילו כל היעדים התקיימו), כולל בחודש הרץ. בדיקה: profit[i].target.grossProfit = סכום יעדי ההכנסות + יעדי עלות המכר של אותו חודש.",
-     "sev": "",
-     "dev": "אייל",
+     "sev": "גבוה",
+     "dev": "עידו",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5761,6 +5761,12 @@ window.HK_BOARD = {
        "who": "עידו",
        "ev": "built",
        "txt": "נפרס ל-stg 60b0edb / 3baaa14. לכל חודש מוחזרים ומוצגים רווח, מס ורווח נקי בנפרד לבפועל וליעד. קבוצות הן סכום הסעיפים והמלאי; יעדי קבוצה ישנים אינם עוקפים את הסכום. נבדקו חישובי API, חודשים פתוחים, הפסד ואחוז שלילי במסך המקומי."
+      },
+      {
+       "when": "08.09.2026 11:01",
+       "who": "עידו",
+       "ev": "failed",
+       "txt": "בוטלה העלאת סבב 27 המשימות לבקשת עידו. השינוי הוסר מ־stg ומ־main; הקוד נשמר מקומית לבדיקה ולהעלאה ידנית. זו החזרת גרסה, לא כישלון בבדיקת הקוד."
       }
      ],
      "ask": null,
