@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 08.09.2026, 15:44 */
 window.HK_BOARD = {
- "version": 437,
+ "version": 440,
  "seq": 304,
  "updated": "08.09.2026, 15:44",
  "emails": [
@@ -5580,12 +5580,12 @@ window.HK_BOARD = {
     {
      "id": "acct-170",
      "n": 170,
-     "kind": "fix",
+     "kind": "check",
      "title": "תכנון חשבונאי — שורות הרווח בחודש פתוח: בפועל ויעד בנפרד",
      "what": "AccountingPlan.profit[] מחזיר revenue/cogs/grossProfit/…/netProfit כמספר אחד לחודש; actual/target/difference/variancePercent אופציונליים ולרוב חסרים. הקליינט נופל ל-0 ליעד (profitField), וכך \"רווח נקי\" בחודש פתוח מציג יעד \"—\".",
      "need": "לכל חודש profit[i].actual{revenue,cogs,grossProfit,opex,operatingProfit,financing,preTaxProfit,tax,netProfit} ו-profit[i].target{…} (הרווח אילו כל היעדים התקיימו), כולל בחודש הרץ. בדיקה: profit[i].target.grossProfit = סכום יעדי ההכנסות + יעדי עלות המכר של אותו חודש.",
-     "sev": "גבוה",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5593,9 +5593,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 03:19",
-     "updated": "06.09.2026 03:19",
-     "log": [],
-     "ask": null
+     "updated": "08.09.2026",
+     "log": [
+      {
+       "when": "08.09.2026 07:44",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg 60b0edb / 3baaa14. לכל חודש מוחזרים ומוצגים רווח, מס ורווח נקי בנפרד לבפועל וליעד. קבוצות הן סכום הסעיפים והמלאי; יעדי קבוצה ישנים אינם עוקפים את הסכום. נבדקו חישובי API, חודשים פתוחים, הפסד ואחוז שלילי במסך המקומי."
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "גבוה",
+      "what": "AccountingPlan.profit[] מחזיר revenue/cogs/grossProfit/…/netProfit כמספר אחד לחודש; actual/target/difference/variancePercent אופציונליים ולרוב חסרים. הקליינט נופל ל-0 ליעד (profitField), וכך \"רווח נקי\" בחודש פתוח מציג יעד \"—\".",
+      "need": "לכל חודש profit[i].actual{revenue,cogs,grossProfit,opex,operatingProfit,financing,preTaxProfit,tax,netProfit} ו-profit[i].target{…} (הרווח אילו כל היעדים התקיימו), כולל בחודש הרץ. בדיקה: profit[i].target.grossProfit = סכום יעדי ההכנסות + יעדי עלות המכר של אותו חודש."
+     }
     },
     {
      "id": "acct-171",
