@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 08.09.2026, 15:22 */
 window.HK_BOARD = {
- "version": 407,
+ "version": 410,
  "seq": 304,
  "updated": "08.09.2026, 15:22",
  "emails": [
@@ -4840,12 +4840,12 @@ window.HK_BOARD = {
     {
      "id": "metrics-127",
      "n": 127,
-     "kind": "fix",
+     "kind": "check",
      "title": "מדדים: שינוי שם / יחידה / מקור של מדד מהגיליון — השרת לא מקבל עדכון חלקי",
      "what": "הפרוטוטיפ מחליף מקור ויחידה בפופאפ בשורה. היום: PUT עם metric_config.source=\"acct\" בלי הגדרות מחזיר 400 \"Accounting metrics require a valid report row\" (נבדק על test123), ו-PUT עם metric_config.unit=\"number\" לא משנה כלום (היחידה נשארת ₪ — target_type על השורות לא מתעדכן). לכן ב-‎PR #12‎ הצ׳יפ והיחידה פותחים את העורך במקום פופאפ.",
      "need": "PUT /metrics/:id מקבל {name} / {metric_config.unit} / {metric_config.source} לבד ומשאיר את השאר; יחידה מעדכנת את target_type בכל החודשים; החלפת מקור למקור שדורש הגדרות → המדד במצב \"אין עדיין נתון\" (לא שגיאה). בדיקה: PUT {metric_config:{unit:\"number\"}} → הגיליון מציג \"מספר\" אחרי רענון.",
-     "sev": "בינוני",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -4853,9 +4853,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "05.09.2026 23:26",
-     "updated": "06.09.2026 09:38",
-     "log": [],
-     "ask": null
+     "updated": "08.09.2026",
+     "log": [
+      {
+       "when": "08.09.2026 07:22",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg: שרת b364f11, קליינט 3c25420. שינוי שם/יחידה/מקור ממזג הגדרות קיימות; מקור לא שלם מציג אין נתון. נבדק במסך 105 שינוי יחידה במדד Sheets וחזרה ללא אובדן המקור, היעדים או הבפועל, לצד בדיקות PUT חלקיות."
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "בינוני",
+      "what": "הפרוטוטיפ מחליף מקור ויחידה בפופאפ בשורה. היום: PUT עם metric_config.source=\"acct\" בלי הגדרות מחזיר 400 \"Accounting metrics require a valid report row\" (נבדק על test123), ו-PUT עם metric_config.unit=\"number\" לא משנה כלום (היחידה נשארת ₪ — target_type על השורות לא מתעדכן). לכן ב-‎PR #12‎ הצ׳יפ והיחידה פותחים את העורך במקום פופאפ.",
+      "need": "PUT /metrics/:id מקבל {name} / {metric_config.unit} / {metric_config.source} לבד ומשאיר את השאר; יחידה מעדכנת את target_type בכל החודשים; החלפת מקור למקור שדורש הגדרות → המדד במצב \"אין עדיין נתון\" (לא שגיאה). בדיקה: PUT {metric_config:{unit:\"number\"}} → הגיליון מציג \"מספר\" אחרי רענון."
+     }
     },
     {
      "id": "metrics-128",
