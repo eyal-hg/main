@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 08.09.2026, 15:47 */
 window.HK_BOARD = {
- "version": 452,
+ "version": 455,
  "seq": 304,
  "updated": "08.09.2026, 15:47",
  "emails": [
@@ -5750,12 +5750,12 @@ window.HK_BOARD = {
     {
      "id": "acct-175",
      "n": 175,
-     "kind": "fix",
+     "kind": "check",
      "title": "תכנון חשבונאי — ידני: דריסה/שמירה בטעינה הבאה + היסטוריה (lastChange)",
      "what": "manualPolicy, lastChange{by:\"manual\"|\"load\"|\"load-kept\",userName,at} ו-changeHistory קיימים בטיפוס; לא אומת שהעלאה חוזרת מכבדת אותם. העורך החדש מציג \"שינוי אחרון … · בטעינה האחרונה: השתנה / לא השתנה — נשמר לפי בקשתך\" מתוך lastChange.",
      "need": "בהעלאה חוזרת — תא preserve נשאר ונרשם load-kept; overwrite מקבל את הכרטסת ונרשם load, source חוזר ל-ledger, manualPolicy מתאפס; manualSummary מתעדכן. בדיקה: לערוך בפועל, לבחור \"לדרוס\", להעלות שוב את אותו קובץ → הערך חוזר, lastChange.by===\"load\", הצ׳יפ \"ידני\" יורד.",
-     "sev": "בינוני",
-     "dev": "עידו",
+     "sev": "",
+     "dev": "אייל",
      "who": "",
      "status": "open",
      "imgA": "",
@@ -5763,9 +5763,23 @@ window.HK_BOARD = {
      "imgB": "",
      "capB": "",
      "created": "06.09.2026 03:19",
-     "updated": "06.09.2026 03:19",
-     "log": [],
-     "ask": null
+     "updated": "08.09.2026",
+     "log": [
+      {
+       "when": "08.09.2026 07:47",
+       "who": "עידו",
+       "ev": "built",
+       "txt": "נפרס ל-stg 60b0edb / 3baaa14. טעינה חוזרת מכבדת preserve/overwrite בכרטיס, בסעיף ובתת־סעיף, כולל ערכי אפס וכרטיסים חסרים. נשמרת היסטוריית load/load-kept ו-manualSummary תואם. נבדק על PostgreSQL עם rollback: אותו קובץ, שמירה/דריסה, מדיניות והיסטוריה; בתיקון מקור 69 נשמרו כל ההזנות המאוחרות מהמקור ללא שינוי."
+      }
+     ],
+     "ask": null,
+     "back": {
+      "kind": "fix",
+      "dev": "עידו",
+      "sev": "בינוני",
+      "what": "manualPolicy, lastChange{by:\"manual\"|\"load\"|\"load-kept\",userName,at} ו-changeHistory קיימים בטיפוס; לא אומת שהעלאה חוזרת מכבדת אותם. העורך החדש מציג \"שינוי אחרון … · בטעינה האחרונה: השתנה / לא השתנה — נשמר לפי בקשתך\" מתוך lastChange.",
+      "need": "בהעלאה חוזרת — תא preserve נשאר ונרשם load-kept; overwrite מקבל את הכרטסת ונרשם load, source חוזר ל-ledger, manualPolicy מתאפס; manualSummary מתעדכן. בדיקה: לערוך בפועל, לבחור \"לדרוס\", להעלות שוב את אותו קובץ → הערך חוזר, lastChange.by===\"load\", הצ׳יפ \"ידני\" יורד."
+     }
     },
     {
      "id": "acct-176",
