@@ -1,0 +1,486 @@
+<title>המדריך לבעל העסק</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap">
+<style>
+:root{
+  --ink:#171F27;
+  --ground:#F5F4F1;
+  --surface:#FFFFFF;
+  --muted:#5D6772;
+  --faint:#8A929B;
+  --rule:#E2E0DA;
+  --accent:#20486E;
+  --accent-soft:#E8EEF4;
+  --accent-line:#B9CBDC;
+  --ok:#0F7B52;
+  --ok-soft:#E4F2EB;
+  --bad:#B02A20;
+  --bad-soft:#FAE9E7;
+  --warn:#8A5A12;
+  --warn-soft:#F7EFDF;
+  --shadow:0 1px 2px rgba(23,31,39,.05), 0 8px 24px -16px rgba(23,31,39,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E7E9EB; --ground:#12171C; --surface:#1B2229; --muted:#A0A9B2; --faint:#7C858E;
+    --rule:#2B333B; --accent:#8FB6D8; --accent-soft:#1E2A35; --accent-line:#38495A;
+    --ok:#5DBF95; --ok-soft:#16281F; --bad:#E4867C; --bad-soft:#2B1B19;
+    --warn:#D3AB6A; --warn-soft:#2A2418;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E7E9EB; --ground:#12171C; --surface:#1B2229; --muted:#A0A9B2; --faint:#7C858E;
+  --rule:#2B333B; --accent:#8FB6D8; --accent-soft:#1E2A35; --accent-line:#38495A;
+  --ok:#5DBF95; --ok-soft:#16281F; --bad:#E4867C; --bad-soft:#2B1B19;
+  --warn:#D3AB6A; --warn-soft:#2A2418;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Assistant","Segoe UI",system-ui,sans-serif;
+  font-size:17px; line-height:1.72; direction:rtl;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Frank Ruhl Libre",Georgia,serif; text-wrap:balance; margin:0}
+p{margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+
+/* ---------- shell ---------- */
+.shell{max-width:1140px; margin:0 auto; padding:0 28px 96px}
+.grid{display:grid; grid-template-columns:210px minmax(0,1fr); gap:56px; align-items:start}
+@media (max-width:900px){ .grid{grid-template-columns:1fr; gap:0} .toc{display:none} }
+
+/* ---------- masthead ---------- */
+.masthead{padding:64px 0 34px; border-bottom:1px solid var(--rule); margin-bottom:48px}
+.eyebrow{
+  font-size:12.5px; font-weight:700; letter-spacing:.13em; color:var(--faint);
+  text-transform:uppercase; margin-bottom:18px;
+}
+.masthead h1{font-size:clamp(38px,6vw,60px); font-weight:900; line-height:1.08; letter-spacing:-.01em}
+.masthead .standfirst{
+  margin-top:20px; font-size:20px; line-height:1.62; color:var(--muted); max-width:56ch; font-weight:300;
+}
+.brandline{
+  margin-top:28px; padding:12px 16px; border:1px dashed var(--accent-line); border-radius:6px;
+  background:var(--accent-soft); color:var(--muted); font-size:14.5px; max-width:56ch;
+}
+.brandline b{color:var(--ink)}
+
+/* ---------- toc ---------- */
+.toc{position:sticky; top:24px; padding-top:6px}
+.toc h2{font-size:12.5px; font-family:"Assistant",sans-serif; font-weight:700;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--faint); margin-bottom:14px}
+.toc ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px}
+.toc a{
+  display:block; padding:6px 10px 6px 8px; border-right:2px solid transparent;
+  color:var(--muted); text-decoration:none; font-size:15px; border-radius:0 4px 4px 0;
+}
+.toc a:hover{color:var(--ink); background:var(--accent-soft); border-right-color:var(--accent-line)}
+
+/* ---------- sections ---------- */
+main{max-width:70ch}
+section{margin-bottom:62px; scroll-margin-top:24px}
+section > * + *{margin-top:18px}
+h2.sec{font-size:30px; font-weight:700; line-height:1.24; letter-spacing:-.005em}
+h3{font-size:19.5px; font-weight:700; margin-top:34px}
+.lede{font-size:18.5px; color:var(--muted); font-weight:300}
+.rule{height:1px; background:var(--rule); border:0; margin:0}
+
+/* ---------- specimen: the actual chips from the screen ---------- */
+.chip{
+  display:inline-flex; align-items:center; gap:6px; padding:2px 10px; border-radius:999px;
+  font-size:14px; font-weight:600; line-height:1.7; white-space:nowrap;
+  vertical-align:.05em;
+}
+.chip::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; flex:none}
+.chip.ok{background:var(--ok-soft); color:var(--ok)}
+.chip.bad{background:var(--bad-soft); color:var(--bad)}
+.chip.warn{background:var(--warn-soft); color:var(--warn)}
+.chip.plain{background:var(--accent-soft); color:var(--accent)}
+.chip.plain::before{display:none}
+
+.money{font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:-.01em}
+.money.neg{color:var(--bad)}
+.money.pos{color:var(--ok)}
+
+/* ---------- the strip mock: what the top of the dashboard looks like ---------- */
+.strip{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  background:var(--surface); border:1px solid var(--rule); border-radius:8px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.strip > div{padding:16px 18px; border-inline-start:1px solid var(--rule)}
+.strip > div:first-child{border-inline-start:0}
+.strip .k{font-size:13px; color:var(--faint); font-weight:600; letter-spacing:.02em}
+.strip .v{font-size:26px; margin-top:2px; font-variant-numeric:tabular-nums; font-weight:700; letter-spacing:-.02em}
+.strip .s{font-size:12.5px; color:var(--faint); margin-top:2px}
+.caption{font-size:13.5px; color:var(--faint); margin-top:10px}
+
+/* ---------- annotated list: screen element -> what it means ---------- */
+.gloss{display:flex; flex-direction:column; gap:0; border-top:1px solid var(--rule)}
+.gloss > div{
+  display:grid; grid-template-columns:minmax(140px,190px) minmax(0,1fr); gap:22px;
+  padding:15px 0; border-bottom:1px solid var(--rule); align-items:baseline;
+}
+@media (max-width:620px){ .gloss > div{grid-template-columns:1fr; gap:4px} }
+.gloss dt, .gloss .t{font-weight:700; font-size:16px}
+.gloss .d{color:var(--muted); font-size:16px}
+
+/* ---------- callout ---------- */
+.note{
+  border-inline-start:3px solid var(--accent); background:var(--surface);
+  padding:16px 20px; border-radius:0 6px 6px 0; box-shadow:var(--shadow);
+}
+.note .h{font-weight:700; margin-bottom:4px}
+.note p{color:var(--muted)}
+
+/* ---------- ask list ---------- */
+.asks{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px}
+.asks span{
+  background:var(--surface); border:1px solid var(--rule); border-radius:999px;
+  padding:9px 16px; font-size:15.5px; color:var(--ink); box-shadow:var(--shadow);
+}
+
+/* ---------- week sequence ---------- */
+.week{list-style:none; margin:0; padding:0; counter-reset:step; display:flex; flex-direction:column; gap:0}
+.week li{
+  counter-increment:step; display:grid; grid-template-columns:38px minmax(0,1fr); gap:18px;
+  padding:18px 0; border-bottom:1px solid var(--rule); align-items:start;
+}
+.week li:first-child{border-top:1px solid var(--rule)}
+.week li::before{
+  content:counter(step); font-family:"Frank Ruhl Libre",serif; font-size:26px; font-weight:700;
+  color:var(--accent-line); line-height:1.15;
+}
+.week b{display:block; font-size:17px}
+.week p{color:var(--muted); margin-top:2px}
+
+/* ---------- faq ---------- */
+details{border-bottom:1px solid var(--rule); padding:14px 0}
+details:first-of-type{border-top:1px solid var(--rule)}
+summary{cursor:pointer; font-weight:700; font-size:17px; list-style:none; display:flex; gap:10px; align-items:baseline}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+"; color:var(--accent); font-weight:700; font-size:18px; width:14px; flex:none}
+details[open] summary::before{content:"–"}
+details p{color:var(--muted); margin-top:8px; padding-inline-start:24px}
+
+footer{margin-top:20px; padding-top:26px; border-top:1px solid var(--rule); color:var(--faint); font-size:14px; max-width:70ch}
+
+@media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="shell">
+
+  <header class="masthead">
+    <div class="eyebrow">מדריך למשתמש · בעל העסק</div>
+    <h1>המדריך לבעל העסק</h1>
+    <p class="standfirst">
+      זה לא עוד תוכנה שצריך ללמוד. זה חלון אחד אל הכסף של העסק שלך, שהמשרד שמלווה
+      אותך מתחזק בשבילך. המדריך הזה עובר על כל מה שתראו במסך, בסדר שבו תפגשו אותו.
+    </p>
+    <p class="brandline">
+      <b>למשרד המלווה:</b> המדריך נכתב בלי שם מותג בכוונה. הלקוח רואה במערכת את הלוגו
+      ואת השם שלכם, ולכן כל הפניה כאן היא אל &ldquo;המשרד שמלווה אותך&rdquo; ואל
+      &ldquo;מנהל התזרים שלך&rdquo;. אפשר להחליף את המילים האלה בשם שלכם לפני שמעבירים ללקוח.
+    </p>
+  </header>
+
+  <div class="grid">
+
+    <nav class="toc" aria-label="תוכן העניינים">
+      <h2>בעמוד הזה</h2>
+      <ol>
+        <li><a href="#what">מה זה, ומה זה לא</a></li>
+        <li><a href="#first">הכניסה הראשונה</a></li>
+        <li><a href="#dash">הדשבורד</a></li>
+        <li><a href="#meetings">פגישות</a></li>
+        <li><a href="#ai">העוזר</a></li>
+        <li><a href="#flow">תכנון תזרימי ותמונת תזרים</a></li>
+        <li><a href="#week">השבוע הראשון שלך</a></li>
+        <li><a href="#faq">שאלות שחוזרות</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <section id="what">
+        <h2 class="sec">מה זה, ומה זה לא</h2>
+        <p class="lede">
+          המערכת מציגה תמונה אחת של הכסף בעסק: כמה יש עכשיו, מה צפוי להיכנס ולצאת,
+          ומה סוכם בפגישות עם המשרד שמלווה אותך.
+        </p>
+        <p>
+          המספרים לא מוקלדים ידנית. הם נמשכים מחשבונות הבנק שחיברתם, ומהעבודה
+          שהמשרד עושה עליהם. מה שתראו זה מה שהמשרד רואה על העסק שלכם.
+        </p>
+        <div class="gloss">
+          <div><div class="t">זו לא תוכנת הנהלת חשבונות</div><div class="d">אין כאן חשבוניות, ספרים או דוחות למס הכנסה. זה נשאר אצל רואה החשבון.</div></div>
+          <div><div class="t">זה לא אתר הבנק</div><div class="d">אי אפשר להעביר כסף, לשלם או לפתוח מסגרת. המערכת קוראת בלבד.</div></div>
+          <div><div class="t">זה לא תחליף ליועץ</div><div class="d">המערכת מראה לך את התמונה בין הפגישות. ההחלטות נשארות בפגישה, עם בן אדם.</div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="first">
+        <h2 class="sec">הכניסה הראשונה</h2>
+        <p>
+          נכנסים דרך הקישור שהמשרד שולח, עם המייל שמסרתם. למעלה מופיע שם החברה
+          שלכם, ולידו הלוגו של המשרד המלווה. אם יש לכם יותר מחברה אחת, אפשר להחליף
+          ביניהן מאותו מקום.
+        </p>
+        <p>בצד יש חמישה דברים, וזה כל מה שיש:</p>
+        <div class="gloss">
+          <div><div class="t">דשבורד</div><div class="d">מסך הבית. היתרה, מה צפוי, מה קרה לאחרונה.</div></div>
+          <div><div class="t">פגישות</div><div class="d">כל הפגישות עם המשרד, והסיכומים שלהן.</div></div>
+          <div><div class="t">עוזר&nbsp;AI</div><div class="d">שואלים בשפה חופשית על העסק, ומקבלים תשובה מהנתונים שלכם.</div></div>
+          <div><div class="t">תכנון תזרימי</div><div class="d">הטבלה החודשית: מה תכננו מול מה שקרה בפועל.</div></div>
+          <div><div class="t">תמונת תזרים</div><div class="d">התחזית היומית קדימה, תנועה אחרי תנועה.</div></div>
+        </div>
+        <div class="note">
+          <div class="h">לא צריך להגדיר כלום</div>
+          <p>
+            אין הגדרות ראשוניות, אין אשף התקנה ואין מה למלא. כשנכנסתם, הכול כבר מחובר.
+            הדבר היחיד שכדאי לבדוק בכניסה הראשונה הוא שהיתרה למעלה מתאימה למה שאתם
+            רואים בבנק. אם לא — כתבו למנהל התזרים מהמסך עצמו.
+          </p>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="dash">
+        <h2 class="sec">הדשבורד</h2>
+        <p class="lede">
+          הרצועה העליונה היא הדבר היחיד שחייבים להבין. כל השאר נחמד שיהיה.
+        </p>
+
+        <div class="strip" role="img" aria-label="דוגמה לרצועה העליונה של הדשבורד: יתרה נוכחית מינוס 123,504 שקלים, חריגה צפויה מינוס 309,973 שקלים בעוד 14 יום, ופנייה פתוחה אחת">
+          <div>
+            <div class="k">יתרה נוכחית</div>
+            <div class="v money neg">123,504&#8202;−&#8202;₪</div>
+            <div class="s">עו״ש · מסגרת 268,800 ₪</div>
+          </div>
+          <div>
+            <div class="k">חריגה צפויה</div>
+            <div class="v money neg">309,973&#8202;−&#8202;₪</div>
+            <div class="s">23.09 · בעוד 14 יום</div>
+          </div>
+          <div>
+            <div class="k">פניות פתוחות</div>
+            <div class="v">1</div>
+            <div class="s">למנהל התזרים שלך</div>
+          </div>
+        </div>
+        <p class="caption">כך נראית הרצועה. המספרים כאן הם דוגמה בלבד, לא הנתונים שלכם.</p>
+
+        <h3>מה כל מספר אומר</h3>
+        <div class="gloss">
+          <div><div class="t">יתרה נוכחית</div><div class="d">הסכום שיש בעו״ש ברגע זה, בכל החשבונות ביחד. לידו מופיעה מסגרת האשראי ושעת העדכון האחרון. מספר שלילי אינו בהכרח בעיה — הוא בעיה רק ביחס למסגרת.</div></div>
+          <div><div class="t">חריגה צפויה</div><div class="d">התאריך הראשון קדימה שבו התחזית חוצה את המסגרת שלכם, והסכום באותו יום. זה המספר שכדאי להסתכל עליו פעם בשבוע.</div></div>
+          <div><div class="t">פניות פתוחות</div><div class="d">שאלות ששלחתם למנהל התזרים ועוד לא נענו. אפשר לפתוח פנייה חדשה מכאן.</div></div>
+          <div><div class="t">העלאת מסמכים</div><div class="d">מעלים כאן דף בנק, הסכם או חשבונית שהמשרד ביקש. הקובץ מגיע ישירות אליהם.</div></div>
+        </div>
+
+        <h3>תקין מול חריגה</h3>
+        <p>
+          בכרטיס תחזית התזרים מופיע שבב מצב. הוא לא בודק אם היתרה חיובית או שלילית —
+          הוא בודק אם התחזית חוצה את מסגרת האשראי בטווח שבחרתם.
+        </p>
+        <div class="gloss">
+          <div><div class="t"><span class="chip ok">מצב תקין</span></div><div class="d">בטווח הנבחר התחזית נשארת בתוך המסגרת. גם יתרה שלילית תוצג כתקינה, כל עוד היא בתוך המסגרת.</div></div>
+          <div><div class="t"><span class="chip bad">חריגה צפויה</span></div><div class="d">יש יום שבו התחזית יוצאת מהמסגרת. התאריך מופיע על השבב עצמו. זה הרגע להרים טלפון.</div></div>
+        </div>
+        <p>
+          מעל התחזית יש בורר טווח — <span class="chip plain">14 יום</span>
+          <span class="chip plain">30</span> <span class="chip plain">60</span>
+          <span class="chip plain">90</span>. ככל שמסתכלים רחוק יותר, התחזית פחות ודאית.
+          ארבעה־עשר יום זה הטווח שכדאי להסתכל עליו ברוב הימים.
+        </p>
+
+        <h3>שאר הכרטיסים</h3>
+        <p>
+          מתחת לרצועה יושבים כרטיסים שהמשרד בחר עבורכם, ולכן הם לא זהים אצל כולם.
+          הנפוצים הם <b>תחזית תזרים</b> עם הפירוט יום־יום, <b>פעולות אחרונות</b> עם
+          התנועות שנכנסו לחשבון, ו<b>מדדים</b> שהמשרד הגדיר יחד אתכם — יעד מול ביצוע.
+          בכל כרטיס שיש בו רשימה יש גם חיפוש, ואפשר לחפש בו גם לפי סכום, בלי פסיקים
+          ובלי מינוס.
+        </p>
+      </section>
+
+      <hr class="rule">
+
+      <section id="meetings">
+        <h2 class="sec">פגישות</h2>
+        <p>
+          כאן נמצאות כל הפגישות שלכם עם המשרד, מהחדשה לישנה, עם התאריך והשעה. הפגישה
+          הקרובה מופיעה גם למעלה בדשבורד; אם לא נקבעה פגישה, כתוב שם במפורש
+          &ldquo;לא נקבעה פגישה קרובה&rdquo;.
+        </p>
+        <div class="gloss">
+          <div><div class="t"><span class="chip plain">התקיימה</span></div><div class="d">הפגישה נערכה. הסיכום עוד בעבודה אצל המשרד.</div></div>
+          <div><div class="t"><span class="chip ok">הסיכום נשלח אליך</span></div><div class="d">הסיכום מוכן וכבר יצא אליכם. אפשר לקרוא אותו כאן בכל זמן.</div></div>
+          <div><div class="t"><span class="chip warn">לא התקיימה</span></div><div class="d">הפגישה נקבעה ולא נערכה. היא נשארת ברשימה כדי שהתמונה תהיה שלמה.</div></div>
+        </div>
+        <p>
+          הסיכומים נכתבים על בסיס מה שנאמר בפגישה. אין צורך לרשום לעצמכם — מה שסוכם
+          יגיע אליכם בכתב, ויישאר כאן.
+        </p>
+      </section>
+
+      <hr class="rule">
+
+      <section id="ai">
+        <h2 class="sec">העוזר</h2>
+        <p class="lede">
+          כותבים שאלה בעברית רגילה ומקבלים תשובה מהנתונים של העסק שלכם. לא צריך
+          לדעת איך לנסח.
+        </p>
+        <h3>מה שווה לשאול</h3>
+        <div class="asks">
+          <span>מה תהיה היתרה בעוד שבועיים?</span>
+          <span>מתי צפויה חריגה?</span>
+          <span>מה מגמת ההכנסות?</span>
+          <span>מה נעשה עבורי החודש?</span>
+          <span>מה פתוח אצלי?</span>
+          <span>מה סוכם בפגישה האחרונה?</span>
+        </div>
+        <p>
+          השאלות האלה מופיעות גם על המסך כשלוחצים על העוזר, מחולקות לשתי קבוצות:
+          <b>הכסף שלי</b> ו<b>הליווי שלי</b>. אפשר ללחוץ עליהן במקום להקליד.
+        </p>
+        <h3>מה הוא יודע ומה לא</h3>
+        <div class="gloss">
+          <div><div class="t">יודע</div><div class="d">את התנועות בחשבונות שלכם, את התחזית, את המדדים, את הפגישות ואת מה שפתוח מולכם.</div></div>
+          <div><div class="t">לא יודע</div><div class="d">מה שלא נכנס למערכת. עסקה שסגרתם אתמול בטלפון ולא סיפרתם לאף אחד — הוא לא מכיר.</div></div>
+          <div><div class="t">לא עושה</div><div class="d">הוא לא מעביר כסף, לא שולח הודעות בשמכם ולא משנה נתונים. הוא עונה בלבד.</div></div>
+          <div><div class="t">לא מייעץ</div><div class="d">הוא מתאר את המצב. החלטה על אשראי, על גיוס או על השקעה נשארת מולכם ומול המשרד.</div></div>
+        </div>
+        <div class="note">
+          <div class="h">אם התשובה נראית לכם לא נכונה</div>
+          <p>
+            אל תתעלמו ואל תניחו שטעיתם. פתחו פנייה למנהל התזרים מהדשבורד וכתבו מה
+            ראיתם. תשובה שגויה כמעט תמיד מקורה בנתון חסר, ולזה יש מי שיטפל.
+          </p>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="flow">
+        <h2 class="sec">תכנון תזרימי ותמונת תזרים</h2>
+        <p>
+          שני המסכים האלה הם אותו סיפור בשתי רזולוציות. רוב הלקוחות נכנסים אליהם
+          לפני פגישה, לא כל יום.
+        </p>
+        <div class="gloss">
+          <div><div class="t">תכנון תזרימי</div><div class="d">טבלה חודשית: הכנסות, עלות המכר, רווח גולמי והוצאות תפעוליות. לכל חודש שתי עמודות — מה תוכנן ומה קרה בפועל. חודש שכבר עבר מציג בפועל; חודש קדימה מציג תחזית.</div></div>
+          <div><div class="t">תמונת תזרים</div><div class="d">אותו כסף, יום־יום. כל תנועה צפויה עם התאריך והסכום שלה, ואיפה היתרה עומדת בסוף כל יום. זה המסך שמראה בדיוק למה החריגה נופלת דווקא בתאריך שהיא נופלת.</div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="week">
+        <h2 class="sec">השבוע הראשון שלך</h2>
+        <p class="lede">
+          שלושה דברים, ואפשר להפסיק לקרוא. כל השאר יגיע מעצמו.
+        </p>
+        <ol class="week">
+          <li>
+            <div>
+              <b>היום — תוודאו שהמספר נכון</b>
+              <p>
+                היכנסו, הסתכלו על היתרה הנוכחית והשוו לבנק. אם יש פער, פתחו פנייה
+                מיד. מספר לא נכון בשבוע הראשון הוא הדבר היחיד שיכול להרוס את כל השאר.
+              </p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <b>מחר — תשאלו את העוזר שאלה אחת</b>
+              <p>
+                כל שאלה. &ldquo;מה תהיה היתרה בעוד שבועיים?&rdquo; זו שאלה טובה
+                להתחיל בה. המטרה היא לגלות שזה עונה, לא לקבל תשובה מסוימת.
+              </p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <b>פעם בשבוע — מסתכלים על החריגה הצפויה</b>
+              <p>
+                מספר אחד, שתי שניות. אם יש תאריך — זה הזמן להרים טלפון למשרד, בזמן
+                שעוד אפשר לעשות משהו. זו כל הפואנטה של המערכת.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <hr class="rule">
+
+      <section id="faq">
+        <h2 class="sec">שאלות שחוזרות</h2>
+
+        <details>
+          <summary>מי עוד רואה את הנתונים שלי?</summary>
+          <p>
+            המשרד שמלווה אתכם, ואתם. לקוחות אחרים של המשרד לא רואים אתכם ואתם לא
+            רואים אותם. אם מוגדרים אצלכם כמה משתמשים מהעסק, כולם רואים את אותה תמונה.
+          </p>
+        </details>
+
+        <details>
+          <summary>מי מעדכן את המספרים?</summary>
+          <p>
+            אף אחד לא מקליד אותם. התנועות מגיעות מחיבור לחשבונות הבנק שלכם ומתעדכנות
+            מעצמן. שעת העדכון האחרון כתובה מתחת ליתרה. את התכנון קדימה בונה המשרד
+            יחד אתכם.
+          </p>
+        </details>
+
+        <details>
+          <summary>אפשר להעביר כסף או לשלם מכאן?</summary>
+          <p>
+            לא, ובכוונה. המערכת קוראת מהבנק ולא כותבת אליו. שום פעולה כספית לא נעשית
+            דרכה.
+          </p>
+        </details>
+
+        <details>
+          <summary>המספר שאני רואה לא מסתדר לי. מה עושים?</summary>
+          <p>
+            פותחים פנייה למנהל התזרים מהדשבורד, וכותבים מה ראיתם ומה ציפיתם לראות.
+            עדיף לשאול מוקדם מאשר להניח. הפנייה נספרת ברצועה העליונה עד שהיא נענית.
+          </p>
+        </details>
+
+        <details>
+          <summary>אני צריך לדבר עם בן אדם.</summary>
+          <p>
+            פנייה מהדשבורד מגיעה למנהל התזרים שלכם. אם זה דחוף — טלפון למשרד עדיין
+            הדרך המהירה ביותר, והמערכת לא באה במקומו.
+          </p>
+        </details>
+
+        <details>
+          <summary>יש אפליקציה לנייד?</summary>
+          <p>
+            המערכת נפתחת בדפדפן גם בנייד. כדאי לשמור את הקישור למסך הבית כדי להיכנס
+            בלחיצה אחת.
+          </p>
+        </details>
+      </section>
+
+      <footer>
+        המדריך מתאר את המסכים שבעל עסק רואה. חלק מהכרטיסים בדשבורד נקבעים על ידי
+        המשרד המלווה, ולכן ייתכנו הבדלים קטנים בין עסק לעסק. לשאלה על מה שרואים
+        במסך — פנייה מהדשבורד היא הדרך הנכונה.
+      </footer>
+
+    </main>
+  </div>
+</div>
