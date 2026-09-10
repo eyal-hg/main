@@ -758,6 +758,8 @@ function blEven(){
    והפער נגזר מחדש בכל חודש. סכום קבוע גדול מהפער הנוכחי = הערה, לא שגיאה. */
 function blAccSum(){ return BL_ACCTS.reduce((s,[k])=>s+(BLE.acc[k]||0),0); }
 function blAccSplitRow(gap){
+  // אין פער — אין מה לחלק, ולא נציג שורה של אפסים.
+  if(!(gap>0)) return '<div class="ble-note">אין פער החודש — החלוקה תחול כשייווצר פער.</div>';
   const parts=BL_ACCTS.filter(([k])=>(BLE.acc[k]||0)>0)
     .map(([k,l])=>`<b>${nf.format(Math.round(gap*(BLE.acc[k]||0)/100))} ₪</b> ל${l}`);
   if(!parts.length) return '<div class="ble-note">אין חשבון עם אחוז — הפער לא יתחלק.</div>';
@@ -837,7 +839,7 @@ function blRender(focusless){
   const emptyDates=BLE.mode==='dates'&&!BLE.days.length;
   const savable=(!emptyDates||BLE.existed)&&(BLE.mode!=='dates'||emptyDates||blOkSum())&&(!BLE.accOn||Math.abs(blAccSum()-100)<=1);
   body+=`<div class="gt-foot" style="border:none;padding-top:10px">
-       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'שמירת הפיזור'}</button>
+       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':BLE.existed?'הפעל ושמור פיזור':'שמירת הפיזור'}</button>
        <button class="gt-clear" onclick="blClose()">ביטול</button>
      </div>`;
   document.getElementById('blBody').innerHTML=body;
@@ -851,8 +853,14 @@ function blSave(){
     BLE.saving=true;
     btn.disabled=true;
     btn.classList.add('is-working');
-    btn.innerHTML='<span class="bl-spin" aria-hidden="true"></span>מפזר על החודשים…';
-    setTimeout(()=>{ BLE.saving=false; blCommit(); }, 900);
+    // הפיזור נכתב, ואחריו נמשכים הנתונים מביזיבוקס. רק כשהמשיכה מסתיימת
+    // המסך נקרא מחדש ומראה את השינוי (אייל 10.09).
+    btn.innerHTML='<span class="bl-spin" aria-hidden="true"></span>שומר את הפיזור…';
+    setTimeout(()=>{
+      const live=document.getElementById('bleSave');
+      if(live) live.innerHTML='<span class="bl-spin" aria-hidden="true"></span>מרענן נתונים מביזיבוקס…';
+      setTimeout(()=>{ BLE.saving=false; blCommit(); toast('הנתונים רועננו — המסך מעודכן'); }, 1400);
+    }, 700);
     return;
   }
   blCommit();
