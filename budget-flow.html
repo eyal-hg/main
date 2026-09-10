@@ -839,7 +839,7 @@ function blRender(focusless){
   const emptyDates=BLE.mode==='dates'&&!BLE.days.length;
   const savable=(!emptyDates||BLE.existed)&&(BLE.mode!=='dates'||emptyDates||blOkSum())&&(!BLE.accOn||Math.abs(blAccSum()-100)<=1);
   body+=`<div class="gt-foot" style="border:none;padding-top:10px">
-       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':BLE.existed?'הפעל ושמור פיזור':'שמירת הפיזור'}</button>
+       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'הפעל ושמור פיזור'}</button>
        <button class="gt-clear" onclick="blClose()">ביטול</button>
      </div>`;
   document.getElementById('blBody').innerHTML=body;
