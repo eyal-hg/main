@@ -1296,39 +1296,56 @@
      inst = שורות הדמה של השורה התקציבית (המופעים על הציר). */
   /* hist = מה קרה בפועל ביוני (חודש אחד אחורה) · pace = כמה מהיעד נכנס עד היום־בחודש, שעבר מול החודש */
   /* done = מה שקרה בפועל ביולי · inst = מה שמתוכנן בהמשך החודש */
-  const BL_SIMPLE=[
-    {cat:'הכנסות ממכירות',      budget:200000, actual:172400, flow:20000, done:[['05.07',52000],['15.07',68000],['24.07',52400]],
-     inst:[['28.07',3000],['29.07',2600],['31.07',2000]], hist:[['12.06',48000],['25.06',96000],['30.06',51000]], pacePrev:74, paceNow:86},
-    {cat:'קניות מלאי',           budget:80000,  actual:31000,  flow:18000, done:[['08.07',14000],['20.07',17000]],
-     inst:[['28.07',12000],['31.07',8000]], hist:[['05.06',22000],['18.06',31000],['28.06',24000]], pacePrev:69, paceNow:61},
-    {cat:'שכר עבודה',            budget:60000,  actual:55000,  flow:0,     done:[['01.07',55000]],
-     inst:[['31.07',5000]], hist:[['01.06',58000]], pacePrev:100, paceNow:92},
-    {cat:'ספקים',                budget:45000,  actual:38200,  flow:3000,  done:[['06.07',12000],['16.07',14000],['25.07',12200]],
+  const BL_ALL=[
+    {cat:'הכנסות ממכירות', managed:true,  budget:200000, actual:172400, flow:20000, done:[['05.07',52000],['15.07',68000],['24.07',52400]],
+     inst:[['28.07',3000],['29.07',2600],['31.07',2000]], tgt:[190000,200000,205000,210000], fwd1:[['12.08',52000],['22.08',68000],['30.08',55000]], fwd2:[['12.09',54000],['22.09',70000],['30.09',56000]],
+     hist:[['12.06',48000],['25.06',96000],['30.06',51000]], pacePrev:74, paceNow:86},
+    {cat:'קניות מלאי', managed:true,  budget:80000,  actual:31000,  flow:18000, done:[['08.07',14000],['20.07',17000]],
+     inst:[['28.07',12000],['31.07',8000]], tgt:[78000,80000,82000,82000], fwd1:[['08.08',15000],['20.08',18000],['30.08',9000]], fwd2:[['08.09',15000],['20.09',18000],['30.09',9000]],
+     hist:[['05.06',22000],['18.06',31000],['28.06',24000]], pacePrev:69, paceNow:61},
+    {cat:'שכר עבודה', managed:true,  budget:60000,  actual:55000,  flow:0,     done:[['01.07',55000]],
+     inst:[['31.07',5000]], tgt:[60000,60000,62000,62000], fwd1:[['01.08',55000],['31.08',5000]], fwd2:[['01.09',55000],['30.09',5000]],
+     hist:[['01.06',58000]], pacePrev:100, paceNow:92},
+    {cat:'ספקים', managed:false, budget:45000,  actual:38200,  flow:3000,  done:[['06.07',12000],['16.07',14000],['25.07',12200]],
      inst:[['29.07',1800],['31.07',2000]], hist:[['10.06',14000],['20.06',15500],['30.06',13000]], pacePrev:66, paceNow:92},
-    {cat:'שכירות ותפעול משרד',  budget:12000,  actual:12000,  flow:0,     done:[['01.07',12000]], inst:[], hist:[['01.06',12000]], pacePrev:100, paceNow:100},
+    {cat:'שכירות ותפעול משרד', managed:false, budget:12000,  actual:12000,  flow:0,     done:[['01.07',12000]], inst:[], hist:[['01.06',12000]], pacePrev:100, paceNow:100},
   ];
+  /* לבדיקת התפעול עולות רק שורות שסומנו "שורה מנוהלת" במסך הפערים.
+     שורה שאינה מנוהלת נשארת שם בלבד ואינה נבדקת כאן (אייל 10.09). */
+  const BL_SIMPLE=BL_ALL.filter(b=>b.managed);
+  const BL_UNMANAGED=BL_ALL.length-BL_SIMPLE.length;
   /* טבלה: חודש שעבר מול החודש — הפעולות זו מול זו. המתוכנן לחיץ לעריכה. */
+  /* ארבע עמודות: החודש שעבר הוא **בפועל** ולכן מסומן ככזה, ולידו החודש
+     ושני החודשים הבאים — שם יש מקום במסך ושם נמצאת ההחלטה (אייל 10.09). */
   function blSimpleTl(b,i){
     const fmt=n=>n.toLocaleString();
     const nextDay=b.inst.length?Math.min(...b.inst.map(x=>+x[0].slice(0,2))):null;
-    const rows=Math.max((b.hist||[]).length,(b.done||[]).length+b.inst.length);
-    const june=(b.hist||[]), july=(b.done||[]).map(x=>({d:x[0],a:x[1],k:'done'}))
+    const prev=(b.hist||[]).map(x=>({d:x[0],a:x[1],k:'act'}));
+    const cur=(b.done||[]).map(x=>({d:x[0],a:x[1],k:'done'}))
       .concat(b.inst.map((x,j)=>({d:x[0],a:x[1],k:+x[0].slice(0,2)===nextDay?'next':'plan',j})));
+    const f1=(b.fwd1||[]).map(x=>({d:x[0],a:x[1],k:'plan'}));
+    const f2=(b.fwd2||[]).map(x=>({d:x[0],a:x[1],k:'plan'}));
+    const cols=[prev,cur,f1,f2];
+    const rows=Math.max(...cols.map(c=>c.length));
+    const cell=(x,ci)=>{
+      if(!x) return '';
+      const tag=ci===0?'' : x.k==='done' ? '' : `<em>${x.k==='next'?'הקרוב · מתוכנן':'מתוכנן'}</em>`;
+      return `<i>${x.d}</i><b>${fmt(x.a)}</b>${tag}`;
+    };
     let body='';
     for(let r=0;r<rows;r++){
-      const l=june[r], x=july[r];
-      body+=`<div class="blc-r">
-        <span class="c1">${l?`<i>${l[0]}</i><b>${fmt(l[1])}</b>`:''}</span>
-        <span class="c2 ${x?x.k:''}">
-          ${x?`<i>${x.d}</i><b>${fmt(x.a)}</b>${x.k==='done'?'':`<em>${x.k==='next'?'הקרוב · מתוכנן':'מתוכנן'}</em>`}`:''}</span>
-      </div>`;
+      body+='<div class="blc-r">'+cols.map((c,ci)=>
+        `<span class="c${ci+1} ${c[r]?c[r].k:''}">${cell(c[r],ci)}</span>`).join('')+'</div>';
     }
-    const sumJ=june.reduce((s,x)=>s+x[1],0), sumL=july.reduce((s,x)=>s+x.a,0);
+    const sums=cols.map(c=>c.reduce((t,x)=>t+x.a,0));
     const slow=b.paceNow<b.pacePrev-5;
-    return `<div class="blc">
-      <div class="blc-h"><span class="c1">חודש שעבר · יוני</span><span class="c2">החודש · יולי</span></div>
+    return `<div class="blc four">
+      <div class="blc-h">
+        ${['חודש שעבר · יוני','החודש · יולי','חודש הבא · אוגוסט','עוד חודשיים · ספטמבר'].map((lbl,ci)=>
+          `<span class="c${ci+1}">${lbl}${ci===0?' <em class="blc-act">בפועל</em>':''}${(b.tgt&&b.tgt[ci]!=null)?`<em class="blc-tgt">יעד ${fmt(b.tgt[ci])}</em>`:''}</span>`).join('')}
+      </div>
       ${body}
-      <div class="blc-r sum"><span class="c1"><i>סה״כ</i><b>${fmt(sumJ)}</b></span><span class="c2"><i>סה״כ</i><b>${fmt(sumL)}</b></span></div>
+      <div class="blc-r sum">${sums.map((v,ci)=>`<span class="c${ci+1}"><i>סה״כ</i><b>${fmt(v)}</b></span>`).join('')}</div>
       <div class="bl-pace ${slow?'slow':''}">${slow?'⚠ ':''}עד היום־בחודש: שעבר <b>${b.pacePrev}%</b> מהיעד · החודש <b>${b.paceNow}%</b></div>
     </div>`;
   }
@@ -1338,7 +1355,7 @@
     const fmt=n=>n.toLocaleString();
     const open=BL_SIMPLE.filter(b=>!b.st).length;
     box.innerHTML=`<div class="bl-top">
-        <span><b>${BL_SIMPLE.length} שורות תקציביות</b> · ${open?open+' לטיפול':'כולן טופלו ✓'} — קטגוריות שהוגדרו למעקב</span>
+        <span><b>${BL_SIMPLE.length} שורות מנוהלות</b> · ${open?open+' לטיפול':'כולן טופלו ✓'}${BL_UNMANAGED?` — ${BL_UNMANAGED} שורות שאינן מנוהלות אינן נבדקות כאן`:''}</span>
         <button class="ot-btn done" ${open?'disabled':''} onclick="blReviewGo()">${open?'נותרו '+open+' שורות':'המשך לשלב הבא'}</button>
       </div>`+
       BL_SIMPLE.map((b,i)=>{
