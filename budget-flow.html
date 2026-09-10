@@ -524,6 +524,19 @@ if(IS_CLI)document.body.classList.add('is-client');</script>
 .ble-managed input:checked+.sw::after{transform:translateX(-15px)}
 .ble-managed b{font-size:13px;color:#12263A;display:block}
 .ble-managed small{font-size:11.5px;color:#7A8898;display:block;margin-top:2px}
+
+/* מתג החלוקה בין חשבונות, ומצב העבודה של השמירה (אייל 10.09) */
+.ble-acc-sw{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700}
+.ble-acc-sw input{position:absolute;opacity:0;width:0;height:0}
+.ble-acc-sw .sw{position:relative;width:34px;height:19px;border-radius:999px;background:#CBD5DF;transition:.16s;flex:none}
+.ble-acc-sw .sw::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.16s}
+.ble-acc-sw input:checked + .sw{background:#2A9BD4}
+.ble-acc-sw input:checked + .sw::after{transform:translateX(-15px)}
+.ble-acc-sw input:focus-visible + .sw{outline:2px solid #0C4068;outline-offset:2px}
+.gt-save.is-working{display:inline-flex;align-items:center;gap:8px;opacity:1;cursor:default}
+.bl-spin{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;animation:blspin .7s linear infinite;flex:none}
+@keyframes blspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.bl-spin{animation:none}}
 </style>
 <script>
 const nf=new Intl.NumberFormat('he-IL');
@@ -720,7 +733,7 @@ function blOpen(gi,ri){
   BLE={gi,ri, mode:r.blMode||'dates', wd:(r.blWd!=null?r.blWd:null), days:(r.blDays||[]).slice(),
        managed:(r.blManaged!==false),   /* מנוהלת = עולה לבדיקת התפעול; ברירת מחדל: כן */
        w:Object.assign({},r.blW||{}),      // משקל פר תאריך באחוזים
-       acc:Object.assign({mz295:100,mz139:0,pl112:0}, r.blAcc||{})};   // חלוקה בין חשבונות
+       acc:Object.assign({mz295:100,mz139:0,pl112:0}, r.blAcc||{}), accOn:r.blAccOn!==false};   // חלוקה בין חשבונות
   if(BLE.days.length&&!BLE.days.every(d=>BLE.w[d]!=null)) blEven();
   document.getElementById('blTitle').textContent=r.label;
   blRender();
@@ -744,6 +757,12 @@ function blEven(){
 /* אין חסימה לפי הפער של היום: הפיזור הוא הגדרה שממשיכה קדימה,
    והפער נגזר מחדש בכל חודש. סכום קבוע גדול מהפער הנוכחי = הערה, לא שגיאה. */
 function blAccSum(){ return BL_ACCTS.reduce((s,[k])=>s+(BLE.acc[k]||0),0); }
+function blAccSplitRow(gap){
+  const parts=BL_ACCTS.filter(([k])=>(BLE.acc[k]||0)>0)
+    .map(([k,l])=>`<b>${nf.format(Math.round(gap*(BLE.acc[k]||0)/100))} ₪</b> ל${l}`);
+  if(!parts.length) return '<div class="ble-note">אין חשבון עם אחוז — הפער לא יתחלק.</div>';
+  return `<div class="ble-note">מתוך <b>${nf.format(gap)} ₪</b>: ${parts.join(' · ')}.</div>`;
+}
 function blOkSum(){ return Math.abs(blWSum()-100)<=1 && Math.abs(blAccSum()-100)<=1; }
 function blSetAcc(k,v){
   BLE.acc[k]=Math.max(0,Math.min(100,Math.round(+v||0)));
@@ -778,12 +797,11 @@ function blRender(focusless){
       <span><b>שורה מנוהלת</b><small>${BLE.managed?'תעלה לבדיקת "שורה תקציבית" בסיום התפעול — עם המספרים והמופעים':'לא תופיע בבדיקות התפעול — רק כאן, במסך הפערים'}</small></span></label>
     <div class="ble-fwd">הפיזור חל מהחודש הזה ולכל החודשים קדימה — עד שישונה כאן.</div><div class="ble-modes">${MODES.map(([k,l])=>`<button class="${BLE.mode===k?'on':''}" onclick="blMode('${k}')">${l}</button>`).join('')}</div>`;
   if(BLE.mode==='daily'){
-    body+=`<div class="ble-sum">הפער <b>${nf.format(g)} ₪</b> יתפזר שווה על <b>כל יום עסקים</b> שנותר — <b>${nf.format(Math.round(g/18))} ₪</b> ליום (נותרו 18).</div>`;
   }else if(BLE.mode==='weekly'){
     const WD=[['א׳',0],['ב׳',1],['ג׳',2],['ד׳',3],['ה׳',4],['ו׳',5]];
     if(BLE.wd==null) BLE.wd=0;
     body+=`<div class="ble-wdays">${WD.map(([l,i])=>`<button class="ble-day ${BLE.wd===i?'on':''}" onclick="BLE.wd=${i};blRender()">${l}</button>`).join('')}</div>
-      <div class="ble-sum">הפער <b>${nf.format(g)} ₪</b> יתפזר <b>בכל יום ${WD[BLE.wd][0]}</b> — <b>${nf.format(Math.round(g/3))} ₪</b> לשורה, 3 ימי ${WD[BLE.wd][0]} שנותרו החודש.</div>`;
+      `;
   }else{
     const ok=blOkSum();
     const shown=[...new Set(DAYS.concat(BLE.days))].sort((a,b)=>a-b);
@@ -802,24 +820,45 @@ function blRender(focusless){
       body+=`<div class="ble-sum">בלי ימים אין שורה תקציבית — הפער יישאר חשוף בעקומה</div>`;
     }
   }
+  // החלוקה בין החשבונות היא בחירה, לא חובה — מתג להפעלה, ושורה שאומרת
+  // כמה כסף יוצא בפועל לכל חשבון ולא רק באיזה אחוז (אייל 10.09).
   body+=`<div class="ble-wt" style="margin-top:12px">
-    <div class="ble-wt-h">חלוקה בין חשבונות <span class="ble-wsum ${Math.abs(blAccSum()-100)<=1?'ok':'bad'}" id="bleASum">סה״כ ${blAccSum()}%</span></div>
-    ${BL_ACCTS.map(([k,l])=>`<div class="ble-wrow"><span class="ble-wd" style="flex-basis:110px">${l}</span>
+    <div class="ble-wt-h">
+      <label class="ble-acc-sw"><input type="checkbox" ${BLE.accOn?'checked':''} onchange="BLE.accOn=this.checked;blRender()"><span class="sw"></span><span>חלוקה בין חשבונות</span></label>
+      ${BLE.accOn?`<span class="ble-wsum ${Math.abs(blAccSum()-100)<=1?'ok':'bad'}" id="bleASum">סה״כ ${blAccSum()}%</span>`:'<span class="ble-wsum">הכול לחשבון הראשי</span>'}
+    </div>
+    ${BLE.accOn?BL_ACCTS.map(([k,l])=>`<div class="ble-wrow"><span class="ble-wd" style="flex-basis:110px">${l}</span>
       <input type="number" min="0" max="100" value="${BLE.acc[k]||0}" oninput="blSetAcc('${k}',this.value)"><span class="ble-wp">%</span>
-    </div>`).join('')}
+    </div>`).join(''):''}
+    ${BLE.accOn?blAccSplitRow(g):''}
   </div>`;
-  const savable=(BLE.mode!=='dates'||!BLE.days.length||blOkSum())&&Math.abs(blAccSum()-100)<=1;
+  const savable=(BLE.mode!=='dates'||!BLE.days.length||blOkSum())&&(!BLE.accOn||Math.abs(blAccSum()-100)<=1);
   body+=`<div class="gt-foot" style="border:none;padding-top:10px">
        <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'שמירת הפיזור'}</button>
        <button class="gt-clear" onclick="blClose()">ביטול</button>
      </div>`;
   document.getElementById('blBody').innerHTML=body;
 }
+/* שמירת פיזור אינה מיידית: היא נכתבת אחורה על החודש ועל כל החודשים קדימה.
+   הכפתור נכנס למצב עבודה ונשאר נעול עד שהיא מסתיימת (אייל 10.09). */
 function blSave(){
+  if(BLE.saving) return;
+  const btn=document.getElementById('bleSave');
+  if(btn && !BLE.saving){
+    BLE.saving=true;
+    btn.disabled=true;
+    btn.classList.add('is-working');
+    btn.innerHTML='<span class="bl-spin" aria-hidden="true"></span>מפזר על החודשים…';
+    setTimeout(()=>{ BLE.saving=false; blCommit(); }, 900);
+    return;
+  }
+  blCommit();
+}
+function blCommit(){
   const r=GROUPS[BLE.gi].rows[BLE.ri];
   if(BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
   else{
-    r.blMode=BLE.mode; r.blAcc=Object.assign({},BLE.acc); r.blManaged=BLE.managed;
+    r.blMode=BLE.mode; r.blAcc=Object.assign({},BLE.acc); r.blAccOn=BLE.accOn; r.blManaged=BLE.managed;
     if(BLE.mode==='weekly') r.blWd=(BLE.wd==null?0:BLE.wd);
     if(BLE.mode==='dates'){ r.blDays=BLE.days.slice(); r.blW=Object.assign({},BLE.w); }
     if(!r.bl) r.bl=rawGap(r);
