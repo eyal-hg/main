@@ -7,7 +7,12 @@
      כרגע false — נוחתים על שלב 1 "הודעות לקוח" (ראו OPS_PREDONE). */
   const OPS_SKIP_STAGES=false;
   /* דילוג נוסף: גם על חמשת שלבי הבדיקה — נוחתים ישר על מסך סיום התפעול */
-  const OPS_SKIP_CHECKS=true;
+  const OPS_SKIP_CHECKS=false;
+  /* ===== דמו הזרימה שאייל עובד עליה (10.09) =====
+     נוחתים על שלב 4 "נגררות ולא צפויות" עם נגררת אחת. הטיפול בה מפעיל את
+     רענון הנתונים מ-Bizibox, וכשהוא מסתיים נפתח שלב 1 של הבדיקות —
+     "בדיקת שורה תקציבית". שלב 5 "הזנות ואוטומציה" מחוץ לסבב הזה. */
+  const OPS_DEMO_CARRY_FLOW=true;
   /* דמו: מסך הסיום עם חריגות. false ⇒ "אין חריגות — מוכן לשליחה" */
   const OPS_DEMO_EXC=true;
   /* בדיקת הכפילויות ברענון — כבויה כרגע. הרענון עצמו נשאר. */
@@ -62,7 +67,7 @@
      ריק ⇒ נוחתים על "הודעות לקוח" (השלב הראשון).
      'msg','doc' ⇒ מוטבים · +'payee' ⇒ קטגוריות · +'ai' ⇒ נגררות ·
      +'carry','unexpected' ⇒ הזנות · +'sheet' ⇒ ישר לסיום. */
-  const OPS_PREDONE=[];
+  const OPS_PREDONE=OPS_DEMO_CARRY_FLOW?['msg','doc','payee','ai','sheet']:[];
   /* שלבי העבודה בתפעול — סדר קבוע, משותף למסך ולסרגל */
   /* ההודעות ראשונות: הן השלב היחיד שבו מישהו מחכה, והן מזינות את השאר
      (אישור העברה ⇒ שורה בתזרים · צילום שיק ⇒ מוטב · אקסל ⇒ הזנות). */
@@ -346,8 +351,9 @@
   }
   function finishOps(){
     if(finPaused){opsTotal=(opsAccum[opsActiveKey]||0)+opsSession();stopOpsTimer();finPaused=false;document.getElementById('opsGrid').style.display='none';document.getElementById('finView').style.display='';opsEndBtnMode();return;}
-    /* הרענון נשאר זמין מהכפתור שלו — אבל הוא לא חוסם את הדרך לסיכום.
-       לחיצה על "סיום תפעול" נוחתת ישר על מסך הסיום. */
+    /* סיום חלק 1 עובר דרך רענון הנתונים: הבדיקות נשענות על מה שהרענון הביא,
+       ולכן הן נפתחות רק כשהוא הסתיים (אייל 10.09). */
+    if(OPS_DEMO_CARRY_FLOW&&window._refPassed!==opsActiveKey){ openRefresh('gate'); return; }
     finishOps2();
   }
   /* רענון נתוני ה-raw data — זמין תמיד, וגם השער בין חלק 1 לחלק 2 */
@@ -445,7 +451,11 @@
     document.getElementById('finTitle').textContent=opsDoneSet.has(opsActiveKey)?'מרענן נתונים…':'מסיים תפעול…';
     document.getElementById('finSub').textContent='מרענן נתונים מ-Bizibox ובודק את תקינות התזרים מול התקציב';
     const ico=document.getElementById('finIco'); ico.className='fin-ico'; ico.innerHTML='<div class="spin"></div>';
-    document.getElementById('finSteps').innerHTML='';
+    /* רשימת חמשת השלבים נבנית כאן — בלעדיה runFinStep לא מוצא את fstep{i}
+       והמסך נשאר על הספינר (אייל 10.09). */
+    document.getElementById('finSteps').innerHTML=FIN_STEPS.map((label,ix)=>
+      `<div class="fin-step" id="fstep${ix}"><span class="fs-ico"></span><span>${label}</span><span class="fs-tag" id="ftag${ix}"></span></div>`
+    ).join('');
     finTimers.forEach(clearTimeout); finTimers=[];
     finCurStep=0;
     FIN_EXC=OPS_DEMO_EXC?FIN_EXC_DEF():[];
@@ -1683,6 +1693,15 @@
        ואם OPS_SKIP_STAGES — כל שלבי התפעול מסומנים כטופלו ונכנסים ישר לבדיקות. */
     CLIENTS.forEach(c=>(c.tasks||[]).forEach(t=>{
       if(OPS_SKIP_STAGES ? STAGE_TASK_TYPES.includes(t.type) : OPS_PREDONE.includes(t.type)) t.done=true;}));
+    /* בסבב הזה משאירים נגררת אחת בלבד — היא הפעולה שפותחת את הבדיקות. */
+    if(OPS_DEMO_CARRY_FLOW) CLIENTS.forEach(c=>{
+      let kept=false;
+      (c.tasks||[]).forEach(t=>{
+        if(t.type!=='carry'&&t.type!=='unexpected') return;
+        if(!kept&&t.type==='carry'){ kept=true; t.done=false; return; }
+        t.done=true;
+      });
+    });
     CLIENTS.forEach(c=>{if(!c.stat)c.stat='active'; c.opsPending=(c.tasks||[]).filter(t=>!t.done).length;});
   }
   function curTasks(){return CLIENTS[CUR].tasks||(CLIENTS[CUR].tasks=[]);}
