@@ -730,7 +730,7 @@ const BL_ACCTS=[['mz295','מזרחי 295199'],['mz139','מזרחי 139287'],['pl
 let BLE=null;
 function blOpen(gi,ri){
   const r=GROUPS[gi].rows[ri];
-  BLE={gi,ri, mode:r.blMode||'dates', wd:(r.blWd!=null?r.blWd:null), days:(r.blDays||[]).slice(),
+  BLE={gi,ri, existed:r.bl!=null, mode:r.blMode||'dates', wd:(r.blWd!=null?r.blWd:null), days:(r.blDays||[]).slice(),
        managed:(r.blManaged!==false),   /* מנוהלת = עולה לבדיקת התפעול; ברירת מחדל: כן */
        w:Object.assign({},r.blW||{}),      // משקל פר תאריך באחוזים
        acc:Object.assign({mz295:100,mz139:0,pl112:0}, r.blAcc||{}), accOn:r.blAccOn!==false};   // חלוקה בין חשבונות
@@ -832,9 +832,12 @@ function blRender(focusless){
     </div>`).join(''):''}
     ${BLE.accOn?blAccSplitRow(g):''}
   </div>`;
-  const savable=(BLE.mode!=='dates'||!BLE.days.length||blOkSum())&&(!BLE.accOn||Math.abs(blAccSum()-100)<=1);
+  // שורה חדשה בלי אף תאריך אינה פיזור — אין מה לשמור. בשורה קיימת אותו מצב
+  // הוא ביטול מכוון, ולכן הכפתור פעיל ומשנה את שמו.
+  const emptyDates=BLE.mode==='dates'&&!BLE.days.length;
+  const savable=(!emptyDates||BLE.existed)&&(BLE.mode!=='dates'||emptyDates||blOkSum())&&(!BLE.accOn||Math.abs(blAccSum()-100)<=1);
   body+=`<div class="gt-foot" style="border:none;padding-top:10px">
-       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'שמירת הפיזור'}</button>
+       <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'שמירת הפיזור'}</button>
        <button class="gt-clear" onclick="blClose()">ביטול</button>
      </div>`;
   document.getElementById('blBody').innerHTML=body;
@@ -856,7 +859,7 @@ function blSave(){
 }
 function blCommit(){
   const r=GROUPS[BLE.gi].rows[BLE.ri];
-  if(BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
+  if(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length){ delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; toast('השורה התקציבית בוטלה — הפער חשוף בעקומה'); }
   else{
     r.blMode=BLE.mode; r.blAcc=Object.assign({},BLE.acc); r.blAccOn=BLE.accOn; r.blManaged=BLE.managed;
     if(BLE.mode==='weekly') r.blWd=(BLE.wd==null?0:BLE.wd);
