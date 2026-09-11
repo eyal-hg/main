@@ -1299,12 +1299,15 @@
   const BL_ALL=[
     {cat:'הכנסות ממכירות', managed:true,  budget:200000, actual:172400, flow:20000, done:[['05.07',52000],['15.07',68000],['24.07',52400]],
      inst:[['28.07',3000],['29.07',2600],['31.07',2000]], tgt:[190000,200000,205000,210000], fwd1:[['12.08',52000],['22.08',68000],['30.08',55000]], fwd2:[['12.09',54000],['22.09',70000],['30.09',56000]],
+     flowM:[null,20000,30000,30000],
      hist:[['12.06',48000],['25.06',96000],['30.06',51000]], pacePrev:74, paceNow:86},
     {cat:'קניות מלאי', managed:true,  budget:80000,  actual:31000,  flow:18000, done:[['08.07',14000],['20.07',17000]],
      inst:[['28.07',12000],['31.07',8000]], tgt:[78000,80000,82000,82000], fwd1:[['08.08',15000],['20.08',18000],['30.08',9000]], fwd2:[['08.09',15000],['20.09',18000],['30.09',9000]],
+     flowM:[null,18000,20000,20000],
      hist:[['05.06',22000],['18.06',31000],['28.06',24000]], pacePrev:69, paceNow:61},
     {cat:'שכר עבודה', managed:true,  budget:60000,  actual:55000,  flow:0,     done:[['01.07',55000]],
      inst:[['31.07',5000]], tgt:[60000,60000,62000,62000], fwd1:[['01.08',55000],['31.08',5000]], fwd2:[['01.09',55000],['30.09',5000]],
+     flowM:[null,0,2000,2000],
      hist:[['01.06',58000]], pacePrev:100, paceNow:92},
     {cat:'ספקים', managed:false, budget:45000,  actual:38200,  flow:3000,  done:[['06.07',12000],['16.07',14000],['25.07',12200]],
      inst:[['29.07',1800],['31.07',2000]], hist:[['10.06',14000],['20.06',15500],['30.06',13000]], pacePrev:66, paceNow:92},
@@ -1345,7 +1348,14 @@
           `<span class="c${ci+1}">${lbl}${ci===0?' <em class="blc-act">בפועל</em>':''}${(b.tgt&&b.tgt[ci]!=null)?`<em class="blc-tgt">יעד ${fmt(b.tgt[ci])}</em>`:''}</span>`).join('')}
       </div>
       ${body}
-      <div class="blc-r sum">${sums.map((v,ci)=>`<span class="c${ci+1}"><i>סה״כ</i><b>${fmt(v)}</b></span>`).join('')}</div>
+      <div class="blc-r sum">${sums.map((v,ci)=>`<span class="c${ci+1}"><i>שורות</i><b>${fmt(v)}</b></span>`).join('')}</div>
+      ${b.tgt?`<div class="blc-r comp">${sums.map((v,ci)=>{
+        if(ci===0) return `<span class="c${ci+1}"></span>`;
+        const fl=(b.flowM&&b.flowM[ci])||0, gap=Math.max(0,(b.tgt[ci]||0)-v-fl);
+        return `<span class="c${ci+1} blc-comp">
+          <em class="bc-fl">בתזרים ${fmt(fl)}</em>
+          ${gap?`<em class="bc-gap">פער ${fmt(gap)}</em>`:'<em class="bc-ok">הפער סגור</em>'}
+        </span>`;}).join('')}</div>`:''}
       <div class="bl-pace ${slow?'slow':''}">${slow?'⚠ ':''}עד היום־בחודש: שעבר <b>${b.pacePrev}%</b> מהיעד · החודש <b>${b.paceNow}%</b></div>
     </div>`;
   }
