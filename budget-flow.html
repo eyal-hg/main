@@ -537,6 +537,17 @@ if(IS_CLI)document.body.classList.add('is-client');</script>
 .bl-spin{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;animation:blspin .7s linear infinite;flex:none}
 @keyframes blspin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.bl-spin{animation:none}}
+
+/* מחיקת שורה תקציבית — פעולה הרסנית, ולכן שקטה עד שלוחצים ואז מאשרים */
+.bl-del{margin-inline-start:auto;border:0;background:none;padding:6px 4px;font:inherit;font-size:12.5px;font-weight:600;color:#B02A20;cursor:pointer;border-radius:6px}
+.bl-del:hover{background:#FBEDEB}
+.bl-del:disabled{opacity:.45;cursor:default;background:none}
+.bl-del-confirm{display:flex;flex-direction:column;gap:4px;margin-top:10px;padding:12px 14px;border:1px solid #F0C8C2;border-radius:10px;background:#FDF6F5}
+.bl-del-confirm b{color:#8E241D;font-size:13.5px}
+.bl-del-confirm span{color:#6B5450;font-size:12.5px;line-height:1.6}
+.bl-del-acts{display:flex;gap:8px;margin-top:6px}
+.bl-del-yes{border:0;border-radius:8px;padding:7px 16px;background:#B02A20;color:#fff;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.bl-del-yes:hover{background:#8E241D}
 </style>
 <script>
 const nf=new Intl.NumberFormat('he-IL');
@@ -838,11 +849,39 @@ function blRender(focusless){
   // הוא ביטול מכוון, ולכן הכפתור פעיל ומשנה את שמו.
   const emptyDates=BLE.mode==='dates'&&!BLE.days.length;
   const savable=(!emptyDates||BLE.existed)&&(BLE.mode!=='dates'||emptyDates||blOkSum())&&(!BLE.accOn||Math.abs(blAccSum()-100)<=1);
+  /* מחיקה היא פעולה בפני עצמה ולא תופעת לוואי של ניקוי התאריכים: עד עכשיו
+     היא הייתה אפשרית רק במצב "לפי תאריכים" בלי אף תאריך, ובכלל לא במצבים
+     האחרים (אייל 11.09). */
   body+=`<div class="gt-foot" style="border:none;padding-top:10px">
        <button class="gt-save" id="bleSave" ${savable?'':'disabled'} onclick="blSave()">${(BLE.existed&&BLE.mode==='dates'&&!BLE.days.length)?'ביטול השורה התקציבית':'הפעל ושמור פיזור'}</button>
        <button class="gt-clear" onclick="blClose()">ביטול</button>
-     </div>`;
+       ${BLE.existed?`<button class="bl-del" id="bleDel" onclick="blAskDelete()">מחיקת השורה התקציבית</button>`:''}
+     </div>
+     ${BLE.existed?`<div class="bl-del-confirm" id="bleDelC" hidden>
+       <b>למחוק את השורה התקציבית?</b>
+       <span>הפיזור והחלוקה בין החשבונות יימחקו, והפער יחזור להיות חשוף בעקומה. אפשר להגדיר אותה מחדש בכל רגע.</span>
+       <div class="bl-del-acts">
+         <button class="bl-del-yes" onclick="blDelete()">מחיקה</button>
+         <button class="gt-clear" onclick="blCancelDelete()">השארה</button>
+       </div>
+     </div>`:''}`;
   document.getElementById('blBody').innerHTML=body;
+}
+function blAskDelete(){
+  const c=document.getElementById('bleDelC'); if(!c) return;
+  c.hidden=false;
+  const d=document.getElementById('bleDel'); if(d) d.disabled=true;
+}
+function blCancelDelete(){
+  const c=document.getElementById('bleDelC'); if(c) c.hidden=true;
+  const d=document.getElementById('bleDel'); if(d) d.disabled=false;
+}
+function blDelete(){
+  const r=GROUPS[BLE.gi].rows[BLE.ri];
+  delete r.bl; delete r.blDays; delete r.blW; delete r.blMode; delete r.blWd;
+  delete r.blAcc; delete r.blAccOn; delete r.blManaged;
+  blClose(); render();
+  toast('השורה התקציבית נמחקה — הפער חשוף בעקומה');
 }
 /* שמירת פיזור אינה מיידית: היא נכתבת אחורה על החודש ועל כל החודשים קדימה.
    הכפתור נכנס למצב עבודה ונשאר נעול עד שהיא מסתיימת (אייל 10.09). */
