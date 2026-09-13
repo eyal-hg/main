@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הוספת ווידג׳ט — אפשרויות</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap">
+<style>
+:root{
+  --navy:#0C4068; --navy-2:#104A76; --coral:#E4826E; --coral-h:#D96A55; --red:#C43D30; --red-t:#dc4436;
+  --sky:#39ABE2; --green:#13895b; --amber:#c98404;
+  --ink:#12263A; --ink-2:#44566A; --quiet:#7A8898;
+  --ground:#F6F8FB; --chip:#F0F4F8; --sel:#EEF6FC; --line:#E3EAF3;
+  --shadow:0 1px 2px rgba(12,64,104,.04),0 10px 30px rgba(12,64,104,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:Rubik,Heebo,system-ui,sans-serif;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:600}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.page{max-width:1180px;margin:0 auto;padding:0 28px 90px}
+
+/* ראש */
+.hero{background:var(--navy);color:#fff;padding:36px 0 30px;margin-bottom:30px}
+.hero .page{padding-bottom:0}
+.hero small{display:block;opacity:.7;font-size:12.5px;letter-spacing:.02em}
+.hero h1{margin:8px 0 0;font-size:28px;font-weight:800;position:relative;display:inline-block}
+.hero h1:after{content:"";position:absolute;right:0;bottom:-10px;width:44px;height:3px;border-radius:3px;background:var(--coral)}
+.hero p{margin:22px 0 0;max-width:780px;font-size:17px;font-weight:300;opacity:.92}
+.hero .jump{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap}
+.hero .jump a{color:#fff;text-decoration:none;font-size:13px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18)}
+.hero .jump a:hover{background:rgba(255,255,255,.18)}
+
+section{margin:0 0 42px}
+.sh{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
+.sh h2{margin:0;font-size:22px;font-weight:700;color:var(--navy)}
+.sh span{color:var(--quiet);font-size:13px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.pad{padding:18px 20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+
+/* היום */
+.today{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+@media (max-width:980px){.today{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;font-weight:500;color:var(--quiet);text-align:right;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}
+tr:last-child td{border-bottom:0}
+td b{color:var(--ink)}
+td small{display:block;color:var(--quiet);font-size:12px}
+.tag{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--chip);color:var(--ink-2);white-space:nowrap}
+.tag.warn{background:#FFF4DE;color:#8a5a00}
+.tag.hide{background:#F3F0F0;color:#8d6e6e}
+.pain{margin:0;padding:0;list-style:none}
+.pain li{position:relative;padding:9px 18px 9px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink-2)}
+.pain li:last-child{border-bottom:0}
+.pain li:before{content:"";position:absolute;right:2px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--red)}
+.pain li b{color:var(--ink)}
+.clicks{display:flex;gap:10px;margin-top:14px}
+.clicks div{flex:1;background:var(--chip);border-radius:10px;padding:10px 12px}
+.clicks small{display:block;color:var(--quiet);font-size:12px}
+.clicks b{font-size:22px;font-weight:600;color:var(--navy)}
+
+/* אפשרות */
+.opt{margin-bottom:34px}
+.opt-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.opt-h .letter{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:none}
+.opt-h h3{margin:0;font-size:19px;color:var(--navy)}
+.opt-h p{margin:2px 0 0;color:var(--ink-2);font-size:13.5px}
+.opt-h .rec{margin-inline-start:auto;background:var(--coral);color:#fff;font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.opt-body{display:grid;grid-template-columns:1fr 300px;gap:16px}
+@media (max-width:980px){.opt-body{grid-template-columns:1fr}}
+.notes h4{margin:0 0 6px;font-size:13px;color:var(--navy)}
+.notes ul{margin:0 0 14px;padding:0 16px 0 0;color:var(--ink-2);font-size:13px}
+.notes li{margin:3px 0}
+.notes .plus li::marker{color:var(--green)}
+.notes .minus li::marker{color:var(--red)}
+.meter{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.meter span{font-size:12px;background:var(--chip);border-radius:999px;padding:3px 10px;color:var(--ink-2)}
+.meter span b{color:var(--navy)}
+
+/* מסך מוקטן — הדשבורד */
+.stage{position:relative;background:var(--ground);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:540px}
+.band{background:var(--navy);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px}
+.band b{font-size:15px}
+.band .sp{flex:1}
+.pill{font-size:11.5px;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff;background:transparent;white-space:nowrap}
+.pill.coral{background:var(--coral);border-color:var(--coral)}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.w{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:84px}
+.w h5{margin:0 0 6px;font-size:12.5px;color:var(--navy);font-weight:600}
+.w .big{font-size:20px;font-weight:600;color:var(--navy)}
+.w .sub{font-size:11px;color:var(--quiet)}
+.w .bar{height:6px;border-radius:6px;background:var(--chip);margin-top:8px;overflow:hidden}
+.w .bar i{display:block;height:100%;background:#3b9ad2;border-radius:6px}
+.ghost{opacity:.55}
+.slot{border:1.5px dashed #BBD3E6;border-radius:10px;min-height:46px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:12.5px;background:rgba(255,255,255,.55)}
+.slot.on{border-color:var(--coral);background:#FFF5F2;color:var(--coral-h);font-weight:500}
+.dim:after{content:"";position:absolute;inset:0;background:rgba(12,38,58,.28)}
+
+/* רכיבים משותפים של הבורר */
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--quiet);font-size:12.5px;background:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips span{font-size:11.5px;padding:4px 10px;border-radius:7px;background:var(--chip);color:var(--ink-2)}
+.chips span.on{background:var(--navy);color:#fff}
+.row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px}
+.row + .row{border-top:1px solid var(--line)}
+.row.sel{background:var(--sel);border-top-color:transparent}
+.row .ic{width:30px;height:30px;border-radius:8px;background:var(--chip);display:flex;align-items:center;justify-content:center;flex:none}
+.row .ic svg{width:16px;height:16px;stroke:var(--navy);fill:none;stroke-width:1.8}
+.row .tx{flex:1;min-width:0}
+.row .tx b{display:block;font-size:12.5px;color:var(--ink)}
+.row .tx small{display:block;font-size:11px;color:var(--quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .on-board{font-size:10.5px;color:var(--green)}
+.btn{font-family:inherit;font-size:11.5px;font-weight:500;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--navy);white-space:nowrap}
+.btn.p{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn.lg{font-size:12.5px;padding:8px 18px}
+.grp{font-size:11px;color:var(--quiet);margin:10px 10px 2px;font-weight:500}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-inline-end:5px;vertical-align:middle}
+
+/* א — מגירה */
+.drawer{position:absolute;top:0;bottom:0;left:0;width:56%;background:#fff;border-right:1px solid var(--line);box-shadow:-20px 0 40px rgba(12,38,58,.12);display:grid;grid-template-columns:1fr 1fr;z-index:2}
+.drawer .list{border-left:1px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.drawer .prev{padding:14px;display:flex;flex-direction:column;gap:10px;background:#FBFCFE}
+.drawer .prev h6{margin:0;font-size:13px;color:var(--navy)}
+.drawer .prev p{margin:0;font-size:11.5px;color:var(--ink-2)}
+.cfg{display:flex;flex-direction:column;gap:6px}
+.cfg label{font-size:11px;color:var(--quiet)}
+.fake-pick{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px;background:#fff;display:flex;justify-content:space-between}
+.seg{display:flex;background:var(--chip);border-radius:8px;padding:3px}
+.seg span{flex:1;text-align:center;font-size:11.5px;padding:5px;border-radius:6px;color:var(--ink-2)}
+.seg span.on{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.live{font-size:10.5px;color:var(--green)}
+
+/* ב — חלונית ליד המקום */
+.pop{position:absolute;z-index:3;width:330px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 20px 50px rgba(12,38,58,.2);padding:10px;display:flex;flex-direction:column;gap:6px}
+.pop:before{content:"";position:absolute;top:-7px;right:60px;width:12px;height:12px;background:#fff;border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+.pop .step2{border-top:1px solid var(--line);margin-top:4px;padding-top:10px;display:flex;flex-direction:column;gap:8px}
+
+/* ג — הצעות */
+.modal{position:absolute;z-index:3;inset:26px 60px;background:#fff;border-radius:12px;box-shadow:0 30px 60px rgba(12,38,58,.25);display:flex;flex-direction:column;overflow:hidden}
+.modal header{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.modal header b{font-size:15px;color:var(--navy)}
+.modal header .x{margin-inline-start:auto;color:var(--quiet)}
+.modal .body{padding:12px 18px;display:grid;grid-template-columns:1fr 1fr;gap:16px;overflow:hidden}
+.sug{border:1px solid #F6D6CD;background:#FFF8F6;border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start}
+.sug + .sug{margin-top:8px}
+.sug .why{font-size:11px;color:var(--coral-h);margin-top:2px}
+.sug .tx{flex:1}
+.sug .tx b{font-size:12.5px;color:var(--ink)}
+.sug .tx small{display:block;font-size:11px;color:var(--ink-2)}
+
+/* השוואה והמלצה */
+.cmp th,.cmp td{text-align:center}
+.cmp th:first-child,.cmp td:first-child{text-align:right}
+.yes{color:var(--green);font-weight:600}
+.no{color:var(--red-t)}
+.mid{color:var(--amber)}
+.reco{background:var(--navy);color:#fff;border-radius:14px;padding:22px 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:24px}
+@media (max-width:900px){.reco{grid-template-columns:1fr}}
+.reco h3{margin:0 0 8px;font-size:19px}
+.reco p{margin:0 0 10px;opacity:.9;font-size:14px}
+.reco ol{margin:0;padding:0 18px 0 0;font-size:13.5px;opacity:.95}
+.reco ol li{margin:4px 0}
+.reco .q{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:14px 16px}
+.reco .q h4{margin:0 0 8px;font-size:13px;opacity:.8;font-weight:500}
+.reco .q li{margin:6px 0}
+.src{color:var(--quiet);font-size:12px;margin-top:10px}
+.reco code{background:rgba(255,255,255,.16);color:#fff}
+code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--chip);padding:1px 5px;border-radius:4px;direction:ltr;unicode-bidi:isolate}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-metric" viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 8-8M15 7h5v5"/></symbol>
+  <symbol id="i-gap" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8M19 10v8M9 10v8M15 10v8M3 20h18"/></symbol>
+  <symbol id="i-profit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.6c0 2.4-5 1.4-5 3.8 0 1 1 1.6 2.5 1.6s2.5-.5 2.5-1.5"/></symbol>
+  <symbol id="i-proc" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M9 10v9"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+</svg>
+
+<header class="hero">
+  <div class="page">
+    <small>דשבורד · עריכת לוח · לוח #203 · 14.09.2026</small>
+    <h1>הוספת ווידג׳ט — שלוש אפשרויות</h1>
+    <p>הפופאפ של היום הוא קרוסלה של איורי דמו, "סל" עם כמויות ו"אישור", והחיבור לנתונים מגיע רק אחר כך דרך גלגל שיניים. כאן: מה יש היום, שלוש דרכים להחליף אותו, והמלצה.</p>
+    <div class="jump"><a href="#today">מה יש היום</a><a href="#a">א · מגירה עם תצוגה חיה</a><a href="#b">ב · הוספה במקום בלוח</a><a href="#c">ג · מה חסר לחברה הזאת</a><a href="#reco">השוואה והמלצה</a></div>
+  </div>
+</header>
+
+<main class="page">
+
+<section id="today">
+  <div class="sh"><h2>מה יש היום</h2><span>נבדק בקוד (WidgetsPanel.tsx) ובלוקאל על בלק גוני — בלי להוסיף כלום</span></div>
+  <div class="today">
+    <div class="panel pad">
+      <table>
+        <thead><tr><th>ווידג׳ט</th><th>מה הוא מראה</th><th>קבוצה</th><th>מה צריך לבחור</th></tr></thead>
+        <tbody>
+          <tr><td><b>מדד מגמות</b></td><td>מדד לבחירה עם השוואה לחודשים קודמים ומגמה</td><td><span class="tag">מדדים</span></td><td>איזה מדד <small>רק אחרי ההוספה, בגלגל השיניים</small></td></tr>
+          <tr><td><b>ימי עבודה שנותרו</b></td><td>קצב יומי נדרש וציר זמן לסוף החודש</td><td><span class="tag">מדדים</span></td><td>איזה יעד <small>אחרי ההוספה</small></td></tr>
+          <tr><td><b>פירוט מדד מחובר</b></td><td>חלוקה בין שני מדדים מחוברים, מול תקופה קודמת</td><td><span class="tag">מדדים</span></td><td>מדד מחובר <small>רק כזה שבנוי מחיבור</small></td></tr>
+          <tr><td><b>תחזית תזרים</b></td><td>תנועות יומיות עם יתרות וסימון חריגה</td><td><span class="tag">תזרים</span></td><td>כלום <small>חשבון וטווח בתוך הכרטיס</small></td></tr>
+          <tr><td><b>חריגה צפויה</b></td><td>עו״ש מאוחד — חריגה ב-30 הימים הקרובים</td><td><span class="tag">תזרים</span></td><td>כלום</td></tr>
+          <tr><td><b>פערי תקציב</b></td><td>ביצוע ותזרים מול יעדי החודש</td><td><span class="tag warn">תזרים / "תקציב"</span></td><td>כלום</td></tr>
+          <tr><td><b>פעולות אחרונות</b></td><td>תנועות בנק לפי תקופה</td><td><span class="tag">תזרים</span></td><td>כלום</td></tr>
+          <tr><td><b>רווחיות חודשית</b></td><td>גולמי, תפעולי ותזרימי, מגמה 4 חודשים</td><td><span class="tag">רווחיות</span></td><td>כלום <small>החודש בתוך הכרטיס</small></td></tr>
+          <tr><td><b>התהליך שלי</b></td><td>התקדמות הלקוח בתהליך הליווי</td><td><span class="tag">תהליכים</span></td><td>כלום</td></tr>
+          <tr><td><b>התהליך הבא</b></td><td>השלב הראשון שעוד לא הסתיים</td><td><span class="tag">תהליכים</span></td><td>כלום</td></tr>
+          <tr><td><b>טבלה מהשרת</b></td><td>טבלאות שהתקבלו לחברה (JSON חיצוני)</td><td><span class="tag">טבלאות</span></td><td>איזו טבלה <small>בחלון שני, ונוסף מיד</small></td></tr>
+          <tr><td><b>מדיה</b></td><td>מסמכים ותיקיות מחוברות</td><td><span class="tag hide">מוסתר בקוד</span></td><td>תיקייה</td></tr>
+        </tbody>
+      </table>
+      <p class="src">הקטלוג מגיע מהשרת לכל חברה (<code>company-widgets/.../bootstrap</code>), הקליינט מסנן לרשימה הזאת. ב-Jampa אין ווידג׳טים. בעל העסק רק צופה.</p>
+    </div>
+
+    <div class="panel pad">
+      <b style="color:var(--navy);font-size:15px">מה לא עובד</b>
+      <ul class="pain">
+        <li><b>איורי דמו, לא הנתונים של החברה.</b> רואים ₪48,200 מומצא — לא יודעים מה ייראה אצל הלקוח הזה.</li>
+        <li><b>קרוסלה אופקית</b> של 11 כרטיסים עם פס גלילה — לא רואים את כל מה שיש.</li>
+        <li><b>"סל" עם כמויות + "אישור"</b> — אף אחד לא מוסיף 3 חריגות צפויות. שני צעדים לדבר אחד.</li>
+        <li><b>ווידג׳ט מדד נוסף ריק.</b> את המדד בוחרים אחר כך בגלגל שיניים שמופיע רק במצב עריכה.</li>
+        <li><b>אין בחירה איפה הוא נוחת</b> — העמודה נקבעת לפי זוגיות המיקום, ואז גוררים.</li>
+        <li><b>שני מסלולים באותו גריד:</b> כרטיס שמוסיף לסל, וכרטיס "טבלה" שפותח חלון ומוסיף מיד.</li>
+        <li><b>אין סימון "כבר בלוח"</b> — אפשר להוסיף שוב את אותו ווידג׳ט.</li>
+        <li><b>מונחים טכניים:</b> "טבלה מהשרת", "עריכת shell", שגיאות באנגלית, <code>select</code> נייטיב בהגדרות.</li>
+      </ul>
+      <div class="clicks">
+        <div><small>ווידג׳ט תזרים</small><b class="num">4</b> קליקים</div>
+        <div><small>מדד שעובד</small><b class="num">~8</b> קליקים</div>
+        <div><small>בחירת מיקום</small><b>גרירה</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== א -->
+<section class="opt" id="a">
+  <div class="opt-h"><div class="letter">א</div><div><h3>מגירה עם תצוגה חיה</h3><p>"הוספת ווידג׳ט" פותח מגירה בצד. רשימה קצרה מימין, ומשמאל הווידג׳ט <b>עם הנתונים של החברה</b> והבחירות שלו. כפתור אחד.</p></div></div>
+  <div class="opt-body">
+    <div class="stage dim">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="board">
+        <div class="w"><h5>תחזית תזרים</h5><div class="big num">₪300,784</div><div class="sub">יתרה צפויה בעוד 14 יום</div></div>
+        <div class="w"><h5>התהליך הבא</h5><div class="sub">תוכנית אנליזה 2 · שלב 1</div><div class="bar"><i style="width:35%"></i></div></div>
+        <div class="w"><h5>פעולות אחרונות</h5><div class="sub">5 תנועות · 30 יום</div></div>
+        <div class="w"><h5>חריגה צפויה</h5><div class="sub">אין חריגה ב-30 הימים</div></div>
+      </div>
+      <div class="drawer">
+        <div class="list">
+          <div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg> חיפוש ווידג׳ט…</div>
+          <div class="chips"><span class="on">הכול</span><span>מדדים</span><span>תזרים</span><span>רווחיות</span><span>תהליכים</span><span>טבלאות</span></div>
+          <div>
+            <div class="grp">מדדים</div>
+            <div class="row sel"><span class="ic"><svg><use href="#i-metric"/></svg></span><span class="tx"><b>מדד מגמות</b><small>מדד עם השוואה לחודשים קודמים</small></span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-cal"/></svg></span><span class="tx"><b>ימי עבודה שנותרו</b><small>קצב יומי נדרש לסוף החודש</small></span></div>
+            <div class="grp">תזרים</div>
+            <div class="row"><span class="ic"><svg><use href="#i-flow"/></svg></span><span class="tx"><b>תחזית תזרים</b><small>תנועות יומיות ויתרות</small></span><span class="on-board">✓ בלוח</span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-gap"/></svg></span><span class="tx"><b>פערי תקציב</b><small>ביצוע ותזרים מול היעד</small></span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-bank"/></svg></span><span class="tx"><b>פעולות אחרונות</b><small>תנועות בנק לפי תקופה</small></span><span class="on-board">✓ בלוח</span></div>
+          </div>
+        </div>
+        <div class="prev">
+          <div style="display:flex;align-items:center;gap:8px"><h6>מדד מגמות</h6><span class="live">● נתוני בלק גוני</span></div>
+          <div class="w" style="min-height:0"><h5>הכנסות</h5><div class="big num">₪130,504</div><div class="sub">ספטמבר · ↑ 12% מאוגוסט</div><div class="bar"><i style="width:62%"></i></div></div>
+          <div class="cfg"><label>איזה מדד</label><div class="fake-pick"><span>הכנסות</span><span style="color:var(--quiet)">⌄</span></div></div>
+          <div class="cfg"><label>איפה בלוח</label><div class="seg"><span class="on">ימין · למעלה</span><span>שמאל · למעלה</span><span>בסוף</span></div></div>
+          <div style="margin-top:auto;display:flex;gap:8px"><span class="btn p lg">הוספה ללוח</span><span class="btn lg">ביטול</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li>רואים את <b>הנתונים האמיתיים</b> של החברה לפני שמוסיפים.</li>
+        <li>המדד / הטבלה נבחרים <b>לפני</b> ההוספה — לא נוסף ווידג׳ט ריק.</li>
+        <li>בוחרים איפה הוא נוחת.</li>
+        <li>הלוח נשאר גלוי מאחור — רואים מה כבר יש.</li>
+        <li>"✓ בלוח" על מה שכבר קיים.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>המגירה מכסה חצי מהלוח.</li>
+        <li>בחירת מיקום בשלושה כפתורים, לא במקום עצמו.</li>
+        <li>תצוגה חיה = לרנדר את הכרטיס האמיתי בתוך המגירה (קיים, צריך רק לעטוף).</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>3</b></span><span>שרת: <b>אין</b></span><span>קליינט: <b>בינוני</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ב -->
+<section class="opt" id="b">
+  <div class="opt-h"><div class="letter">ב</div><div><h3>הוספה במקום בלוח</h3><p>במצב עריכה מופיעים מקומות ריקים "+ ווידג׳ט כאן" בכל עמודה. לוחצים על המקום, נפתחת חלונית קטנה צמודה אליו — והווידג׳ט נוחת בדיוק שם.</p></div><span class="rec">מומלץ</span></div>
+  <div class="opt-body">
+    <div class="stage">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="board">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="w"><h5>תחזית תזרים</h5><div class="big num">₪300,784</div><div class="sub">יתרה צפויה בעוד 14 יום</div></div>
+          <div class="slot on">+ ווידג׳ט כאן</div>
+          <div class="w ghost"><h5>פעולות אחרונות</h5><div class="sub">5 תנועות · 30 יום</div></div>
+          <div class="slot">+ ווידג׳ט כאן</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="w ghost"><h5>התהליך הבא</h5><div class="sub">תוכנית אנליזה 2 · שלב 1</div><div class="bar"><i style="width:35%"></i></div></div>
+          <div class="slot">+ ווידג׳ט כאן</div>
+          <div class="w ghost"><h5>חריגה צפויה</h5><div class="sub">אין חריגה ב-30 הימים</div></div>
+          <div class="slot">+ ווידג׳ט כאן</div>
+        </div>
+      </div>
+      <div class="pop" style="top:174px;right:24px">
+        <div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg> מה להוסיף כאן?</div>
+        <div class="row"><span class="ic"><svg><use href="#i-gap"/></svg></span><span class="tx"><b>פערי תקציב</b><small>ביצוע ותזרים מול יעדי החודש</small></span><span class="btn">הוספה</span></div>
+        <div class="row"><span class="ic"><svg><use href="#i-profit"/></svg></span><span class="tx"><b>רווחיות חודשית</b><small>גולמי, תפעולי, תזרימי</small></span><span class="btn">הוספה</span></div>
+        <div class="row sel"><span class="ic"><svg><use href="#i-metric"/></svg></span><span class="tx"><b>מדד מגמות</b><small>מדד עם השוואה לחודשים קודמים</small></span></div>
+        <div class="step2">
+          <div class="cfg"><label>איזה מדד</label><div class="fake-pick"><span>הכנסות</span><span style="color:var(--quiet)">⌄</span></div></div>
+          <div style="display:flex;gap:8px;align-items:center"><span class="btn p lg">הוספה כאן</span><span style="font-size:11px;color:var(--quiet)">₪130,504 · ↑ 12% מאוגוסט</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li><b>המיקום הוא הבחירה הראשונה</b> — אין גרירה אחר כך.</li>
+        <li>ווידג׳ט בלי בחירות נוסף בלחיצה אחת בשורה.</li>
+        <li>מדד / טבלה: השורה נפתחת במקום עם הבחירה ושורת תצוגה של המספר האמיתי.</li>
+        <li>אין פופאפ שמכסה את המסך. אין סל, אין "אישור".</li>
+        <li>אותה חלונית משמשת גם ל"החלפה" של ווידג׳ט קיים.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>המקומות הריקים מוסיפים רעש במצב עריכה (רק שם).</li>
+        <li>אין תצוגה מלאה של הכרטיס — שורת מספר אחת.</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>2–3</b></span><span>שרת: <b>אין</b> <small>(order_index + עמודה כבר קיימים)</small></span><span>קליינט: <b>בינוני</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ג -->
+<section class="opt" id="c">
+  <div class="opt-h"><div class="letter">ג</div><div><h3>מה חסר לחברה הזאת</h3><p>החלון נפתח עם <b>הצעות</b> שנגזרות מהחברה ומהלוח — "יש לה שורות תקציביות ואין פערי תקציב בלוח" — ומתחת הרשימה המלאה.</p></div></div>
+  <div class="opt-body">
+    <div class="stage dim">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="board">
+        <div class="w"><h5>תחזית תזרים</h5><div class="big num">₪300,784</div></div>
+        <div class="w"><h5>התהליך הבא</h5></div>
+        <div class="w"><h5>פעולות אחרונות</h5></div>
+        <div class="w"><h5>חריגה צפויה</h5></div>
+      </div>
+      <div class="modal">
+        <header><b>הוספת ווידג׳ט</b><span style="color:var(--quiet);font-size:12px">בלק גוני · 4 בלוח</span><span class="x">✕</span></header>
+        <div class="body">
+          <div>
+            <div class="grp" style="margin:0 0 8px">מתאים לחברה הזאת <span style="font-weight:400">· הסיבות בדוגמה ממוצאות</span></div>
+            <div class="sug"><span class="ic" style="width:30px;height:30px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center"><svg style="width:16px;height:16px;stroke:var(--coral-h);fill:none;stroke-width:1.8"><use href="#i-gap"/></svg></span><span class="tx"><b>פערי תקציב</b><small>ביצוע ותזרים מול יעדי החודש</small><div class="why">יש 3 שורות תקציביות · אין בלוח</div></span><span class="btn p">הוספה</span></div>
+            <div class="sug"><span class="ic" style="width:30px;height:30px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center"><svg style="width:16px;height:16px;stroke:var(--coral-h);fill:none;stroke-width:1.8"><use href="#i-table"/></svg></span><span class="tx"><b>טבלת לקוחות</b><small>יתרות לקוחות · 42 שורות</small><div class="why">טבלה חדשה התקבלה אתמול</div></span><span class="btn p">הוספה</span></div>
+            <div class="sug"><span class="ic" style="width:30px;height:30px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center"><svg style="width:16px;height:16px;stroke:var(--coral-h);fill:none;stroke-width:1.8"><use href="#i-profit"/></svg></span><span class="tx"><b>רווחיות חודשית</b><small>גולמי, תפעולי, תזרימי</small><div class="why">תכנון חשבונאי מולא · אין בלוח</div></span><span class="btn p">הוספה</span></div>
+          </div>
+          <div>
+            <div class="search" style="margin-bottom:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg> כל הווידג׳טים…</div>
+            <div class="row"><span class="ic"><svg><use href="#i-metric"/></svg></span><span class="tx"><b>מדד מגמות</b><small>צריך לבחור מדד</small></span><span class="btn">בחירה</span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-cal"/></svg></span><span class="tx"><b>ימי עבודה שנותרו</b><small>צריך לבחור יעד</small></span><span class="btn">בחירה</span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-flow"/></svg></span><span class="tx"><b>תחזית תזרים</b></span><span class="on-board">✓ בלוח</span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-proc"/></svg></span><span class="tx"><b>התהליך שלי</b></span><span class="btn">הוספה</span></div>
+            <div class="row"><span class="ic"><svg><use href="#i-bank"/></svg></span><span class="tx"><b>פעולות אחרונות</b></span><span class="on-board">✓ בלוח</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li>המתפעל לא צריך לדעת מה קיים — <b>המערכת אומרת מה חסר ולמה</b>.</li>
+        <li>טבלה חיצונית חדשה מופיעה כהצעה עם השם שלה, לא "טבלה מהשרת".</li>
+        <li>לחיצה אחת מההצעה.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>עדיין פופאפ שמכסה את הלוח ולא בוחר מיקום.</li>
+        <li>הכללים של "מתאים" = עוד לוגיקה. לפי מה שסיכמנו הערב — מקומה בשרת.</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>2</b></span><span>שרת: <b>כן</b> (הצעות)</span><span>קליינט: <b>קטן</b></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="reco">
+  <div class="sh"><h2>השוואה</h2></div>
+  <div class="panel pad" style="margin-bottom:16px;overflow-x:auto">
+    <table class="cmp">
+      <thead><tr><th></th><th>היום</th><th>א · מגירה</th><th>ב · במקום בלוח</th><th>ג · מה חסר</th></tr></thead>
+      <tbody>
+        <tr><td><b>קליקים לווידג׳ט תזרים</b></td><td class="no num">4</td><td class="num">3</td><td class="yes num">2</td><td class="yes num">2</td></tr>
+        <tr><td><b>קליקים למדד שעובד</b></td><td class="no num">~8</td><td class="num">4</td><td class="yes num">3–4</td><td class="num">4</td></tr>
+        <tr><td><b>בוחרים איפה נוחת</b></td><td class="no">גרירה אחר כך</td><td class="mid">3 כפתורים</td><td class="yes">המקום עצמו</td><td class="no">לא</td></tr>
+        <tr><td><b>רואים נתונים אמיתיים לפני</b></td><td class="no">איור דמו</td><td class="yes">כרטיס מלא</td><td class="mid">שורת מספר</td><td class="mid">סיבה, לא מספר</td></tr>
+        <tr><td><b>לא נוסף ווידג׳ט ריק</b></td><td class="no">נוסף ריק</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td><b>"✓ בלוח"</b></td><td class="no">אין</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td><b>מכסה את הלוח</b></td><td class="no">כולו</td><td class="mid">חצי</td><td class="yes">חלונית קטנה</td><td class="no">כמעט כולו</td></tr>
+        <tr><td><b>עבודה בשרת</b></td><td>—</td><td class="yes">אין</td><td class="yes">אין</td><td class="mid">הצעות</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="reco">
+    <div>
+      <h3>ההמלצה: ב, עם שורה אחת מ-ג</h3>
+      <p>המקום בלוח הוא הבחירה הראשונה, החלונית קטנה וצמודה אליו, ובראשה <b>"מתאים כאן"</b> — עד שלוש שורות שכבר אפשר לחשב היום בלי שרת: מה לא בלוח, וטבלאות חיצוניות שעוד לא נוספו. כשההצעות החכמות יעברו לשרת — הן נכנסות לאותה שורה.</p>
+      <ol>
+        <li>מחליפים את הפופאפ כולו (כמו שנרשם ב-#203) — לא משפרים את הקרוסלה.</li>
+        <li>אין איורי דמו. אייקון קו אחד לכל סוג, שם ותיאור בעברית פשוטה.</li>
+        <li>מדד / יעד / טבלה נבחרים בתוך השורה, עם המספר האמיתי — ורק אז "הוספה כאן".</li>
+        <li>אותה חלונית משמשת ל"החלפה" של ווידג׳ט קיים ולהגדרות — וה-<code>select</code> הנייטיב בהגדרות יורד.</li>
+        <li>"טבלה מהשרת" → השם של הטבלה עצמה.</li>
+      </ol>
+    </div>
+    <div class="q">
+      <h4>מה אני צריך ממך כדי להתחיל</h4>
+      <ol>
+        <li><b>א / ב / ג</b> — או שילוב אחר.</li>
+        <li><b>המקומות הריקים</b> — בכל מצב עריכה, או רק אחרי "הוספת ווידג׳ט"?</li>
+        <li><b>ווידג׳ט פעמיים</b> (שני מדדים שונים) — מותר; אותו ווידג׳ט בלי בחירות פעמיים — לחסום?</li>
+        <li><b>"ייבוא ממקור אחר"</b> — היום רק ללוח ריק. להשאיר, או לתת "העתקת לוח מחברה" גם ללוח קיים?</li>
+      </ol>
+    </div>
+  </div>
+  <p class="src">מקורות: <code>hk-client/src/pages/home/Layout/components/WidgetsPanel.tsx</code> (הקטלוג, שורות 63–137; ההוספה 1203–1563; ההגדרות 2771–2998), <code>WorkspaceBody.tsx</code> 1109–1143. נבדק בלוקאל על בלק גוני, 13.09 בלילה — שום ווידג׳ט לא נוסף.</p>
+</section>
+
+</main>
+</body>
+</html>
