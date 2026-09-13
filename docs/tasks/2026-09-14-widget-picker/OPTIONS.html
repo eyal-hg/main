@@ -150,6 +150,56 @@ td small{display:block;color:var(--quiet);font-size:12px}
 .sug .tx b{font-size:12.5px;color:var(--ink)}
 .sug .tx small{display:block;font-size:11px;color:var(--ink-2)}
 
+/* ד — הקלדה */
+.palette{position:absolute;z-index:3;top:70px;right:50%;transform:translateX(50%);width:440px;background:#fff;border-radius:12px;box-shadow:0 30px 60px rgba(12,38,58,.28);overflow:hidden}
+.palette .in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px;color:var(--ink)}
+.palette .in em{font-style:normal;color:var(--quiet)}
+.palette .in kbd,.kbd{font-family:inherit;font-size:10.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--ink-2);background:#fff}
+.palette .res{padding:6px}
+.palette mark{background:#FFE9E3;color:inherit;border-radius:3px;padding:0 1px}
+.palette .foot{display:flex;gap:14px;padding:8px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--quiet);background:#FBFCFE}
+.cmdbar{display:flex;align-items:center;gap:8px;margin:12px 12px 0;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--quiet);font-size:12.5px}
+/* ה — בין ווידג׳טים */
+.ins{position:relative;height:18px;display:flex;align-items:center}
+.ins:before{content:"";position:absolute;right:0;left:0;top:50%;border-top:2px solid var(--coral)}
+.ins span{position:relative;margin:0 auto;width:22px;height:22px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 0 4px var(--ground)}
+.w .swap{float:left;font-size:10.5px;color:var(--navy);border:1px solid var(--line);border-radius:999px;padding:1px 8px;background:#fff}
+.menu{position:absolute;z-index:3;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 16px 40px rgba(12,38,58,.18);padding:6px;width:230px}
+.menu .mi{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:12px;color:var(--ink)}
+.menu .mi.on{background:var(--sel)}
+.menu .mi small{margin-inline-start:auto;color:var(--quiet);font-size:10.5px}
+.menu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.menu .ic{width:22px;height:22px;border-radius:6px;background:var(--chip);display:flex;align-items:center;justify-content:center}
+.menu .ic svg{width:13px;height:13px;stroke:var(--navy);fill:none;stroke-width:1.8}
+/* ו — פס חי */
+.split{display:grid;grid-template-columns:1fr 210px;height:calc(100% - 46px)}
+.strip{border-right:1px solid var(--line);background:#fff;padding:10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.strip h6{margin:0;font-size:12px;color:var(--navy)}
+.mini{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;cursor:grab;position:relative}
+.mini b{display:block;font-size:11.5px;color:var(--navy)}
+.mini .v{font-size:15px;font-weight:600;color:var(--navy)}
+.mini small{font-size:10px;color:var(--quiet)}
+.mini:after{content:"⋮⋮";position:absolute;left:8px;top:8px;color:#C5D2E0;font-size:10px;letter-spacing:-2px}
+.mini.drag{transform:rotate(-2deg);box-shadow:0 14px 30px rgba(12,38,58,.2);border-color:var(--coral)}
+.drop{border:2px solid var(--coral);background:#FFF5F2;border-radius:10px;min-height:70px;display:flex;align-items:center;justify-content:center;color:var(--coral-h);font-size:12px}
+/* ז — לוחות מוכנים */
+.presets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px 16px}
+.preset{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.preset.on{border-color:var(--navy);box-shadow:0 0 0 2px var(--sel)}
+.preset b{font-size:13px;color:var(--navy)}
+.preset p{margin:2px 0 8px;font-size:11px;color:var(--ink-2)}
+.preset .lay{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px}
+.preset .lay i{display:block;height:16px;border-radius:4px;background:var(--chip);font-style:normal;font-size:8.5px;color:var(--ink-2);padding:2px 4px;overflow:hidden;white-space:nowrap}
+.preset .lay i.full{grid-column:1/-1}
+.preset .have{font-size:10.5px;color:var(--green)}
+/* ח — כרטיס ריק */
+.blank{background:#fff;border:1.5px dashed var(--coral);border-radius:10px;padding:10px 12px}
+.blank h5{margin:0 0 8px;font-size:12.5px;color:var(--coral-h)}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.types span{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid var(--line);border-radius:8px;padding:8px 4px;font-size:10.5px;color:var(--ink);text-align:center;background:#fff}
+.types span.on{border-color:var(--navy);background:var(--sel)}
+.types svg{width:16px;height:16px;stroke:var(--navy);fill:none;stroke-width:1.8}
+
 /* השוואה והמלצה */
 .cmp th,.cmp td{text-align:center}
 .cmp th:first-child,.cmp td:first-child{text-align:right}
@@ -186,9 +236,9 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--
 <header class="hero">
   <div class="page">
     <small>דשבורד · עריכת לוח · לוח #203 · 14.09.2026</small>
-    <h1>הוספת ווידג׳ט — שלוש אפשרויות</h1>
-    <p>הפופאפ של היום הוא קרוסלה של איורי דמו, "סל" עם כמויות ו"אישור", והחיבור לנתונים מגיע רק אחר כך דרך גלגל שיניים. כאן: מה יש היום, שלוש דרכים להחליף אותו, והמלצה.</p>
-    <div class="jump"><a href="#today">מה יש היום</a><a href="#a">א · מגירה עם תצוגה חיה</a><a href="#b">ב · הוספה במקום בלוח</a><a href="#c">ג · מה חסר לחברה הזאת</a><a href="#reco">השוואה והמלצה</a></div>
+    <h1>הוספת ווידג׳ט — שמונה אפשרויות</h1>
+    <p>הפופאפ של היום הוא קרוסלה של איורי דמו, "סל" עם כמויות ו"אישור", והחיבור לנתונים מגיע רק אחר כך דרך גלגל שיניים. כאן: מה יש היום, שמונה דרכים להחליף אותו — <b>כולן בקליינט בלבד</b>, על השירותים שכבר קיימים — והמלצה.</p>
+    <div class="jump"><a href="#today">מה יש היום</a><a href="#a">א · מגירה עם תצוגה חיה</a><a href="#b">ב · הוספה במקום בלוח</a><a href="#c">ג · מה חסר לחברה</a><a href="#d">ד · הקלדה</a><a href="#e">ה · בין ווידג׳טים + החלפה</a><a href="#f">ו · גרירה מפס חי</a><a href="#g">ז · לוחות מוכנים</a><a href="#h">ח · כרטיס ריק שבוחר</a><a href="#reco">השוואה והמלצה</a></div>
   </div>
 </header>
 
@@ -388,10 +438,243 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--
       <h4>מה פחות טוב</h4>
       <ul class="minus">
         <li>עדיין פופאפ שמכסה את הלוח ולא בוחר מיקום.</li>
-        <li>הכללים של "מתאים" = עוד לוגיקה. לפי מה שסיכמנו הערב — מקומה בשרת.</li>
+        <li>בלי שרת ההצעות פשוטות: "לא בלוח", "טבלה שעוד לא נוספה", "יש שורות תקציביות / תכנון חשבונאי" — מהנתונים שהקליינט כבר טוען. חכם יותר — רק בשרת, בהמשך.</li>
       </ul>
       <h4>מה צריך</h4>
-      <div class="meter"><span>קליקים: <b>2</b></span><span>שרת: <b>כן</b> (הצעות)</span><span>קליינט: <b>קטן</b></span></div>
+      <div class="meter"><span>קליקים: <b>2</b></span><span>שרת: <b>אין</b> (כללים פשוטים)</span><span>קליינט: <b>קטן</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ד -->
+<section class="opt" id="d">
+  <div class="opt-h"><div class="letter">ד</div><div><h3>הקלדה — שורת פקודה</h3><p>לוחצים <span class="kbd">/</span> על הלוח (או על "הוספת ווידג׳ט") וכותבים מה רוצים: "תזרים", "הכנסות", "לקוחות". Enter מוסיף. בלי קטלוג בכלל.</p></div></div>
+  <div class="opt-body">
+    <div class="stage dim">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="cmdbar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg> מה להוסיף ללוח? <span class="kbd" style="margin-inline-start:auto">/</span></div>
+      <div class="board">
+        <div class="w"><h5>תחזית תזרים</h5><div class="big num">₪300,784</div></div>
+        <div class="w"><h5>התהליך הבא</h5><div class="sub">תוכנית אנליזה 2</div></div>
+        <div class="w"><h5>פעולות אחרונות</h5></div>
+        <div class="w"><h5>חריגה צפויה</h5></div>
+      </div>
+      <div class="palette">
+        <div class="in"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>הכנ<em>|</em></span><span class="kbd" style="margin-inline-start:auto">Esc</span></div>
+        <div class="res">
+          <div class="grp" style="margin:4px 8px">מדדים של החברה</div>
+          <div class="row sel"><span class="ic"><svg><use href="#i-metric"/></svg></span><span class="tx"><b>מדד מגמות · <mark>הכנ</mark>סות</b><small>₪130,504 בספטמבר · ↑ 12%</small></span><span class="kbd">Enter</span></div>
+          <div class="row"><span class="ic"><svg><use href="#i-cal"/></svg></span><span class="tx"><b>ימי עבודה שנותרו · יעד <mark>הכנ</mark>סות</b><small>נדרש ₪8,500 ליום</small></span></div>
+          <div class="grp" style="margin:8px 8px 4px">ווידג׳טים</div>
+          <div class="row"><span class="ic"><svg><use href="#i-profit"/></svg></span><span class="tx"><b>רווחיות חודשית</b><small>גולמי · תפעולי · תזרימי</small></span></div>
+          <div class="row"><span class="ic"><svg><use href="#i-table"/></svg></span><span class="tx"><b>טבלה · <mark>הכנ</mark>סות לפי לקוח</b><small>טבלה חיצונית · 42 שורות</small></span></div>
+        </div>
+        <div class="foot"><span>↑↓ ניווט</span><span>Enter הוספה בסוף העמודה הקצרה</span><span>⌘Enter הוספה ובחירת מקום</span></div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li><b>החיפוש הוא על המדדים והטבלאות של החברה</b>, לא רק על סוגי ווידג׳טים — "הכנסות" מוצא ישר את המדד המחובר.</li>
+        <li>אין ווידג׳ט ריק: מדד נבחר בשם שלו.</li>
+        <li>הכי מהיר למי שיודע מה הוא רוצה: <b>/ · 3 אותיות · Enter</b>.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>למי שלא יודע מה יש — לא מראה את כל האפשרויות. צריך לצד אחת אחרת.</li>
+        <li>המיקום אוטומטי (העמודה הקצרה), אלא אם בוחרים.</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>0–1</b> + הקלדה</span><span>שרת: <b>אין</b></span><span>קליינט: <b>קטן</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ה -->
+<section class="opt" id="e">
+  <div class="opt-h"><div class="letter">ה</div><div><h3>פלוס בין ווידג׳טים + החלפה במקום</h3><p>במצב עריכה, מעבר עכבר בין שני כרטיסים מראה קו עם <b>+</b>. ועל כל כרטיס קיים — "החלפה": אותו מקום, סוג אחר. לא צריך "הוספה" ואז "מחיקה".</p></div></div>
+  <div class="opt-body">
+    <div class="stage">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="board">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="w"><h5>תחזית תזרים <span class="swap">החלפה</span></h5><div class="big num">₪300,784</div><div class="sub">יתרה צפויה בעוד 14 יום</div></div>
+          <div class="ins"><span>+</span></div>
+          <div class="w"><h5>פעולות אחרונות <span class="swap">החלפה</span></h5><div class="sub">5 תנועות · 30 יום</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="w" style="border-color:var(--navy)"><h5>חריגה צפויה <span class="swap" style="background:var(--navy);color:#fff;border-color:var(--navy)">החלפה</span></h5><div class="sub">אין חריגה ב-30 הימים</div></div>
+          <div class="w"><h5>התהליך הבא <span class="swap">החלפה</span></h5><div class="sub">תוכנית אנליזה 2</div></div>
+        </div>
+      </div>
+      <div class="menu" style="top:108px;left:28px">
+        <div class="grp" style="margin:2px 6px 4px">להחליף את "חריגה צפויה" ב…</div>
+        <div class="mi on"><span class="ic"><svg><use href="#i-gap"/></svg></span>פערי תקציב<small>אותו גודל</small></div>
+        <div class="mi"><span class="ic"><svg><use href="#i-flow"/></svg></span>תחזית תזרים<small>✓ בלוח</small></div>
+        <div class="mi"><span class="ic"><svg><use href="#i-profit"/></svg></span>רווחיות חודשית</div>
+        <div class="mi"><span class="ic"><svg><use href="#i-metric"/></svg></span>מדד…</div>
+        <hr>
+        <div class="mi" style="color:var(--red-t)">הסרה מהלוח</div>
+      </div>
+      <div class="menu" style="top:200px;right:40px">
+        <div class="search" style="margin:2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg> להוסיף כאן…</div>
+        <div class="mi"><span class="ic"><svg><use href="#i-gap"/></svg></span>פערי תקציב</div>
+        <div class="mi"><span class="ic"><svg><use href="#i-profit"/></svg></span>רווחיות חודשית</div>
+        <div class="mi"><span class="ic"><svg><use href="#i-proc"/></svg></span>התהליך שלי</div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li><b>אין שום אלמנט קבוע על המסך</b> — ה-+ מופיע רק בין כרטיסים, במעבר עכבר.</li>
+        <li><b>"החלפה"</b> — הדבר שעושים הכי הרבה בפועל. מחליף סוג וממשיך באותו מקום (עדכון + מחיקה בקליינט, שני שירותים קיימים).</li>
+        <li>אותו תפריט קצר לשני המקרים.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>ה-+ בין כרטיסים פחות "נמצא" מכפתור. צריך רמז בכניסה הראשונה למצב עריכה.</li>
+        <li>בטאץ׳ (אייפד) אין מעבר עכבר — שם צריך את המקומות הריקים של ב.</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>2</b></span><span>שרת: <b>אין</b></span><span>קליינט: <b>בינוני</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ו -->
+<section class="opt" id="f">
+  <div class="opt-h"><div class="letter">ו</div><div><h3>גרירה מפס חי</h3><p>"הוספת ווידג׳ט" פותח פס צר בצד עם כל הווידג׳טים <b>בגרסה מוקטנת עם הנתונים של החברה</b>. גוררים ללוח, בדיוק למקום.</p></div></div>
+  <div class="opt-body">
+    <div class="stage">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="split">
+        <div class="board" style="align-content:start">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="w"><h5>תחזית תזרים</h5><div class="big num">₪300,784</div></div>
+            <div class="drop">שחררו כאן</div>
+            <div class="w ghost"><h5>פעולות אחרונות</h5></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="w ghost"><h5>התהליך הבא</h5></div>
+            <div class="w ghost"><h5>חריגה צפויה</h5></div>
+          </div>
+        </div>
+        <div class="strip">
+          <h6>גררו ללוח</h6>
+          <div class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg> סינון…</div>
+          <div class="mini drag"><b>פערי תקציב</b><span class="v num">3</span> <small>קטגוריות בפער · ₪4,120</small></div>
+          <div class="mini"><b>רווחיות חודשית</b><span class="v num">18%</span> <small>תפעולי · אוגוסט</small></div>
+          <div class="mini"><b>מדד · הכנסות</b><span class="v num">₪130,504</span> <small>↑ 12%</small></div>
+          <div class="mini"><b>ימי עבודה שנותרו</b><span class="v num">11</span> <small>ימים · ₪8,500 ליום</small></div>
+          <div class="mini" style="opacity:.5"><b>תחזית תזרים</b><small>✓ כבר בלוח</small></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li><b>הקטלוג הוא הנתונים</b> — "פערי תקציב · 3 קטגוריות" אומר למה כדאי להוסיף.</li>
+        <li>המיקום נקבע בגרירה עצמה — מנגנון הגרירה כבר קיים בלוח.</li>
+        <li>הלוח כולו נשאר גלוי.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>לטעון נתונים לכל הווידג׳טים בפס = הרבה בקשות בבת אחת (אפשר לטעון רק מה שנגלל לתצוגה).</li>
+        <li>גרירה פחות נוחה בטאץ׳ ולמשתמשים מבוגרים — צריך גם לחיצה = "הוספה בסוף".</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>1 + גרירה</b></span><span>שרת: <b>אין</b></span><span>קליינט: <b>גדול</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ז -->
+<section class="opt" id="g">
+  <div class="opt-h"><div class="letter">ז</div><div><h3>לוחות מוכנים</h3><p>לפני ווידג׳ט אחד — <b>לוח שלם בלחיצה</b>: "מנהל תזרים", "בעל עסק", "רווחיות". מוסיף רק מה שחסר, בסדר קבוע. ואחר כך מוסיפים בודדים באחת האפשרויות האחרות.</p></div></div>
+  <div class="opt-body">
+    <div class="stage dim">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="board">
+        <div class="w"><h5>תחזית תזרים</h5></div><div class="w"><h5>התהליך הבא</h5></div>
+        <div class="w"><h5>פעולות אחרונות</h5></div><div class="w"><h5>חריגה צפויה</h5></div>
+      </div>
+      <div class="modal" style="inset:40px 50px auto">
+        <header><b>לוח מוכן</b><span style="color:var(--quiet);font-size:12px">בלק גוני · יש כבר 4 ווידג׳טים</span><span class="x">✕</span></header>
+        <div class="presets">
+          <div class="preset on"><b>מנהל תזרים</b><p>מה יוצא, מה חסר, מה חורג</p>
+            <div class="lay"><i>תחזית תזרים</i><i>חריגה צפויה</i><i>פערי תקציב</i><i>פעולות אחרונות</i><i class="full">מדד · הכנסות</i></div>
+            <div class="have">✓ 4 כבר בלוח · יתווספו 2</div></div>
+          <div class="preset"><b>בעל עסק</b><p>התמונה הגדולה, בלי פרטים</p>
+            <div class="lay"><i>רווחיות חודשית</i><i>חריגה צפויה</i><i>התהליך שלי</i><i>התהליך הבא</i></div>
+            <div class="have">✓ 2 כבר בלוח · יתווספו 2</div></div>
+          <div class="preset"><b>רווחיות ומדדים</b><p>מגמות ויעדים של החודש</p>
+            <div class="lay"><i>רווחיות חודשית</i><i>ימי עבודה שנותרו</i><i>מדד · הכנסות</i><i>מדד · הוצאות</i></div>
+            <div class="have">יתווספו 4</div></div>
+        </div>
+        <div style="display:flex;gap:8px;padding:0 16px 14px;align-items:center"><span class="btn p lg">הוספת 2 החסרים</span><span class="btn lg">ביטול</span><span style="font-size:11px;color:var(--quiet);margin-inline-start:auto">לא מוחק ולא מזיז את מה שכבר בלוח</span></div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li><b>חברה חדשה מקבלת לוח שלם בלחיצה אחת</b> — היום זה 11 הוספות וגרירות.</li>
+        <li>אחידות: כל מנהלי התזרים רואים את אותו לוח בכל החברות.</li>
+        <li>התבניות הן רשימה קבועה בקוד (סוג + סדר + עמודה), ומדד "הכנסות" נבחר לפי השם אם קיים.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>לא מחליף הוספה של ווידג׳ט בודד — משלים אותה.</li>
+        <li>התבניות קבועות בקוד; שינוי תבנית = גרסה חדשה.</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>2</b> ללוח שלם</span><span>שרת: <b>אין</b> (יצירה + סדר קיימים)</span><span>קליינט: <b>קטן</b></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== ח -->
+<section class="opt" id="h">
+  <div class="opt-h"><div class="letter">ח</div><div><h3>כרטיס ריק שבוחר בעצמו</h3><p>"הוספת ווידג׳ט" מוסיף מיד <b>כרטיס ריק ללוח</b>, בעמודה הקצרה. בתוך הכרטיס: שישה אייקונים. בוחרים — והכרטיס הופך לווידג׳ט במקום. לא נשמר עד שבוחרים.</p></div></div>
+  <div class="opt-body">
+    <div class="stage">
+      <div class="band"><b>בלק גוני</b><span class="sp"></span><span class="pill">רענון</span><span class="pill coral">סיום עריכה</span></div>
+      <div class="board">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="w"><h5>תחזית תזרים</h5><div class="big num">₪300,784</div></div>
+          <div class="w"><h5>פעולות אחרונות</h5><div class="sub">5 תנועות · 30 יום</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="w"><h5>חריגה צפויה</h5><div class="sub">אין חריגה ב-30 הימים</div></div>
+          <div class="blank">
+            <h5>מה יהיה כאן?</h5>
+            <div class="types">
+              <span class="on"><svg><use href="#i-metric"/></svg>מדד</span>
+              <span><svg><use href="#i-gap"/></svg>פערי תקציב</span>
+              <span><svg><use href="#i-profit"/></svg>רווחיות</span>
+              <span><svg><use href="#i-cal"/></svg>ימי עבודה</span>
+              <span><svg><use href="#i-proc"/></svg>תהליך</span>
+              <span><svg><use href="#i-table"/></svg>טבלה</span>
+            </div>
+            <div class="cfg" style="margin-top:10px"><label>איזה מדד</label><div class="fake-pick"><span>הכנסות · ₪130,504</span><span style="color:var(--quiet)">⌄</span></div></div>
+            <div style="display:flex;gap:8px;margin-top:10px"><span class="btn p">שמירה</span><span class="btn">ביטול</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel pad notes">
+      <h4>מה משתנה</h4>
+      <ul class="plus">
+        <li><b>אין חלון בכלל</b> — הכל קורה בכרטיס עצמו, במקום שבו הוא יישאר.</li>
+        <li>רואים מיד את הגודל והמקום האמיתיים.</li>
+        <li>אותו כרטיס משמש להגדרות אחר כך (לחיצה על הכותרת במצב עריכה) — גלגל השיניים יורד.</li>
+      </ul>
+      <h4>מה פחות טוב</h4>
+      <ul class="minus">
+        <li>שישה אייקונים = צריך לקבץ (תזרים כולל 4 ווידג׳טים → בחירה שנייה).</li>
+        <li>הכרטיס נוחת בעמודה הקצרה; אם רוצים מקום אחר — גוררים.</li>
+      </ul>
+      <h4>מה צריך</h4>
+      <div class="meter"><span>קליקים: <b>3</b></span><span>שרת: <b>אין</b></span><span>קליינט: <b>בינוני</b></span></div>
     </div>
   </div>
 </section>
@@ -400,24 +683,25 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--
   <div class="sh"><h2>השוואה</h2></div>
   <div class="panel pad" style="margin-bottom:16px;overflow-x:auto">
     <table class="cmp">
-      <thead><tr><th></th><th>היום</th><th>א · מגירה</th><th>ב · במקום בלוח</th><th>ג · מה חסר</th></tr></thead>
+      <thead><tr><th>אפשרות</th><th>קליקים (תזרים)</th><th>מדד שעובד</th><th>בוחרים מקום</th><th>נתונים אמיתיים לפני</th><th>מכסה את הלוח</th><th>טאץ׳</th><th>עבודה בקליינט</th></tr></thead>
       <tbody>
-        <tr><td><b>קליקים לווידג׳ט תזרים</b></td><td class="no num">4</td><td class="num">3</td><td class="yes num">2</td><td class="yes num">2</td></tr>
-        <tr><td><b>קליקים למדד שעובד</b></td><td class="no num">~8</td><td class="num">4</td><td class="yes num">3–4</td><td class="num">4</td></tr>
-        <tr><td><b>בוחרים איפה נוחת</b></td><td class="no">גרירה אחר כך</td><td class="mid">3 כפתורים</td><td class="yes">המקום עצמו</td><td class="no">לא</td></tr>
-        <tr><td><b>רואים נתונים אמיתיים לפני</b></td><td class="no">איור דמו</td><td class="yes">כרטיס מלא</td><td class="mid">שורת מספר</td><td class="mid">סיבה, לא מספר</td></tr>
-        <tr><td><b>לא נוסף ווידג׳ט ריק</b></td><td class="no">נוסף ריק</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-        <tr><td><b>"✓ בלוח"</b></td><td class="no">אין</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-        <tr><td><b>מכסה את הלוח</b></td><td class="no">כולו</td><td class="mid">חצי</td><td class="yes">חלונית קטנה</td><td class="no">כמעט כולו</td></tr>
-        <tr><td><b>עבודה בשרת</b></td><td>—</td><td class="yes">אין</td><td class="yes">אין</td><td class="mid">הצעות</td></tr>
+        <tr><td><b>היום</b></td><td class="no num">4</td><td class="no">~8</td><td class="no">גרירה אחר כך</td><td class="no">איור דמו</td><td class="no">כולו</td><td class="mid">כן</td><td>—</td></tr>
+        <tr><td><b>א · מגירה</b></td><td class="num">3</td><td class="num">4</td><td class="mid">3 כפתורים</td><td class="yes">כרטיס מלא</td><td class="mid">חצי</td><td class="yes">כן</td><td class="mid">בינוני</td></tr>
+        <tr><td><b>ב · מקום ריק בלוח</b></td><td class="yes num">2</td><td class="yes">3–4</td><td class="yes">המקום עצמו</td><td class="mid">שורת מספר</td><td class="yes">חלונית</td><td class="yes">כן</td><td class="mid">בינוני</td></tr>
+        <tr><td><b>ג · מה חסר</b></td><td class="yes num">2</td><td class="num">4</td><td class="no">לא</td><td class="mid">סיבה</td><td class="no">כמעט כולו</td><td class="yes">כן</td><td class="yes">קטן</td></tr>
+        <tr><td><b>ד · הקלדה</b></td><td class="yes">הקלדה</td><td class="yes">הקלדה</td><td class="mid">אוטומטי</td><td class="yes">שורת מספר</td><td class="mid">חלונית</td><td class="no">לא</td><td class="yes">קטן</td></tr>
+        <tr><td><b>ה · + בין ווידג׳טים / החלפה</b></td><td class="yes num">2</td><td class="yes">3</td><td class="yes">המקום עצמו</td><td class="mid">לא</td><td class="yes">תפריט</td><td class="no">חלקי</td><td class="mid">בינוני</td></tr>
+        <tr><td><b>ו · גרירה מפס חי</b></td><td class="yes">1 + גרירה</td><td class="yes">1 + גרירה</td><td class="yes">בגרירה</td><td class="yes">מוקטן</td><td class="yes">פס צר</td><td class="no">חלקי</td><td class="no">גדול</td></tr>
+        <tr><td><b>ז · לוחות מוכנים</b></td><td class="yes">2 ללוח שלם</td><td class="mid">לפי שם</td><td class="mid">קבוע</td><td class="no">לא</td><td class="no">חלון</td><td class="yes">כן</td><td class="yes">קטן</td></tr>
+        <tr><td><b>ח · כרטיס ריק</b></td><td class="num">3</td><td class="yes">3</td><td class="mid">עמודה קצרה</td><td class="yes">בכרטיס</td><td class="yes">אין חלון</td><td class="yes">כן</td><td class="mid">בינוני</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="reco">
     <div>
-      <h3>ההמלצה: ב, עם שורה אחת מ-ג</h3>
-      <p>המקום בלוח הוא הבחירה הראשונה, החלונית קטנה וצמודה אליו, ובראשה <b>"מתאים כאן"</b> — עד שלוש שורות שכבר אפשר לחשב היום בלי שרת: מה לא בלוח, וטבלאות חיצוניות שעוד לא נוספו. כשההצעות החכמות יעברו לשרת — הן נכנסות לאותה שורה.</p>
+      <h3>ההמלצה: ב + ה + ז — שלושה כלים קטנים במקום קטלוג אחד</h3>
+      <p><b>ב</b> להוספה (מקום ריק → חלונית קטנה עם "מתאים כאן" מ-ג), <b>ה</b> ל"החלפה" של ווידג׳ט קיים — הפעולה הכי שכיחה אחרי ההתחלה, ו-<b>ז</b> לחברה חדשה: לוח שלם בלחיצה. שלושתם אותה חלונית ואותה רשימה, בלי שרת. <b>ד</b> (הקלדה) אפשר להוסיף אחר כך מעל אותה רשימה בעלות קטנה.</p>
       <ol>
         <li>מחליפים את הפופאפ כולו (כמו שנרשם ב-#203) — לא משפרים את הקרוסלה.</li>
         <li>אין איורי דמו. אייקון קו אחד לכל סוג, שם ותיאור בעברית פשוטה.</li>
@@ -429,10 +713,10 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:var(--
     <div class="q">
       <h4>מה אני צריך ממך כדי להתחיל</h4>
       <ol>
-        <li><b>א / ב / ג</b> — או שילוב אחר.</li>
+        <li><b>ב + ה + ז</b> — או שילוב אחר מתוך א–ח.</li>
         <li><b>המקומות הריקים</b> — בכל מצב עריכה, או רק אחרי "הוספת ווידג׳ט"?</li>
         <li><b>ווידג׳ט פעמיים</b> (שני מדדים שונים) — מותר; אותו ווידג׳ט בלי בחירות פעמיים — לחסום?</li>
-        <li><b>"ייבוא ממקור אחר"</b> — היום רק ללוח ריק. להשאיר, או לתת "העתקת לוח מחברה" גם ללוח קיים?</li>
+        <li><b>לוחות מוכנים (ז)</b> — אילו שלושה? ו"ייבוא מחברה אחרת" נשאר לצידם או יורד?</li>
       </ol>
     </div>
   </div>
