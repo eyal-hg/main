@@ -486,7 +486,7 @@
         ico.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
         document.getElementById('ftag'+i).textContent=BL_SIMPLE.filter(b=>!b.st).length+' לטיפול';
         document.getElementById('finTitle').textContent='שלב 1: שורה תקציבית';
-        document.getElementById('finSub').textContent='תקציב מול ביצוע וצפי — מאשר, או מתאם שיחה עם הלקוח';
+        document.getElementById('finSub').textContent='תקציב מול ביצוע וצפי — מאשר, או פותח משימה לתיאום שיחה עם הלקוח';
         renderBLReview();
       },900));
       return;
@@ -1290,7 +1290,7 @@
   /* ===== שלב 1 — שורה תקציבית, פשוט =====
      קטגוריה שהוגדרה למעקב ונפתחה לטיפול מציגה חמישה מספרים:
      תקציב · ביצוע · נותר · צפי סוף חודש · חריגה צפויה.
-     שתי פעולות בלבד: מאשר | מתאם שיחה עם הלקוח. אין הודעה ללקוח מכאן. */
+     שתי פעולות בלבד: מאשר | משימה: תיאום שיחה עם הלקוח. אין הודעה ללקוח מכאן (אייל 13.09). */
   /* השפה של מסך הפערים: יעד · בפועל · בתזרים · שורה תקציבית · נותר.
      היעד חוסם — בפועל + בתזרים + שורה תקציבית ≤ יעד, נותר ≥ 0 תמיד.
      inst = שורות הדמה של השורה התקציבית (המופעים על הציר). */
@@ -1382,7 +1382,7 @@
           <div class="ffind-act">
             ${b.st?`<button class="ot-btn ghost sm" onclick="blUndo(${i})">ביטול</button>`
                  :`<button class="ot-btn done sm" onclick="blOk(${i})">מאשר</button>
-                   <button class="ot-btn ghost sm" onclick="blCall(${i})">מתאם שיחה עם הלקוח</button>`}
+                   <button class="ot-btn ghost sm" onclick="blCall(${i})">משימה: תיאום שיחה עם הלקוח</button>`}
           </div>
         </div>
         <div class="blx wide">
@@ -1402,7 +1402,8 @@
       </div>`;}).join('');
   }
   function blOk(i){ BL_SIMPLE[i].st='אושר'; toast('"'+BL_SIMPLE[i].cat+'" אושרה — השורה ממשיכה להתנהל'); renderBLReview(); }
-  function blCall(i){ BL_SIMPLE[i].st='שיחה תואמה'; toast('נשלח לינק תיאום שיחה ללקוח — '+BL_SIMPLE[i].cat); renderBLReview(); }
+  /* אייל 13.09: לא שולחים לינק מכאן — פותחים משימה "תיאום שיחה עם הלקוח" על היועץ, עם הקטגוריה והפער */
+  function blCall(i){ BL_SIMPLE[i].st='נפתחה משימה'; toast('נפתחה משימה ליועץ: תיאום שיחה עם הלקוח — '+BL_SIMPLE[i].cat); renderBLReview(); }
   function blUndo(i){ BL_SIMPLE[i].st=null; renderBLReview(); }
     function blReviewGo(){
     const el=document.getElementById('fstep0');

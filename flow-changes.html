@@ -3,10 +3,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>מה השתנה בתזרים · חזות קריספין</title>
+<title>שינויים בתזרים · אנרגי אינטרנשיונל</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
+/* ---------------------------------------------------------------------
+   שינויים בתזרים — "למה היתרה הצפויה היום שונה מזו של אתמול"
+   האפיון: docs/tasks/2026-09-13-cashflow-timeline/MEETING.html (אייל 13.09)
+   היחידה היא יום. אתמול ואחורה — ימים חתומים ע"י הג׳וב הלילי; היום — חי
+   מהאירועים, מסומן "טרם נסגר".
+   --------------------------------------------------------------------- */
 :root{
   --bg:#F4F7FA; --surface:#fff;
   --border:#e6ecf4; --border-strong:#d3dced; --line:#f1f6fa;
@@ -15,84 +21,114 @@
   --coral:#E48375; --coral-deep:#C2372A; --coral-soft:#FDECEB;
   --pos:#13895b; --pos-soft:#e7f7ef;
   --warn:#B4690E; --warn-soft:#FDF4E3;
-  --mem:#7C5CBF; --mem-soft:#F6F3FC; --mem-border:#E4DCF5;
+  --gold:#B7791F; --gold-soft:#FFF6E0;
+  --sys:#5A6B7D; --sys-soft:#EEF2F6;
   --shadow-sm:0 2px 8px rgba(15,35,65,.06);
   --shadow-md:0 6px 18px rgba(12,64,104,.08);
 }
 *{box-sizing:border-box}
 html,body{margin:0;font-family:"Rubik",-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer}
+a{color:var(--accent)}
 .app{max-width:1240px;margin:0 auto;padding:24px 22px 70px}
 body.is-embedded .app{padding:4px 2px 30px;max-width:none}
+.num{font-variant-numeric:tabular-nums}
+.neg{color:var(--coral-deep)} .pos{color:var(--pos)}
 
 /* כותרת */
-.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
 .head h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.3px}
 .head .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
-.rng{display:flex;gap:6px;align-items:center}
+.head .sub a{font-weight:600;text-decoration:none;margin-inline-start:8px}
+.rng{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .rbtn{border:1.5px solid var(--border-strong);background:#fff;color:var(--muted);font-weight:700;font-size:12px;border-radius:999px;padding:7px 15px}
 .rbtn.on{background:var(--text);border-color:var(--text);color:#fff}
 .rbtn:hover:not(.on){border-color:#b9c9da;color:var(--text)}
+.rng input[type=date]{border:1.5px solid var(--border-strong);border-radius:999px;padding:6px 12px;font:inherit;font-size:12px;color:var(--muted);background:#fff}
+.stamp{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:999px;padding:5px 11px}
+.stamp i{width:8px;height:8px;border-radius:50%;background:var(--pos)}
+.stamp.open i{background:var(--warn)}
+.stamp.partial i{background:var(--coral-deep)}
 
-/* הכותרת הגדולה — הדלתא */
-.delta{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-md);padding:20px 26px;margin-bottom:16px}
-.delta-top{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.d-main{flex:1;min-width:260px}
-.d-main .q{font-size:12px;color:var(--muted);font-weight:600}
-.d-main .a{font-size:22px;font-weight:800;margin-top:4px;line-height:1.35}
-.d-main .a .down{color:var(--coral-deep)}
-.d-main .a .up{color:var(--pos)}
-.d-chips{display:flex;gap:10px}
-.dch{background:#FAFCFE;border:1px solid var(--border);border-radius:14px;padding:10px 16px;min-width:132px}
-.dch span{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
-.dch b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
-.dch.bad b{color:var(--coral-deep)}
-.dch.ok b{color:var(--pos)}
-/* גרף מיני: אתמול מול היום */
-.spark{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
-.spark-h{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--muted);margin-bottom:8px}
-.lg{display:inline-flex;align-items:center;gap:6px}
-.lg i{width:14px;height:3px;border-radius:2px;display:inline-block}
-.lg.y i{background:#C6D3E0}
-.lg.t i{background:var(--coral)}
-.chart{position:relative;height:118px}
-.chart svg{width:100%;height:100%;overflow:visible}
-.zero{stroke:#E3EDF5;stroke-width:1;stroke-dasharray:3 3}
-.pathY{fill:none;stroke:#C6D3E0;stroke-width:2}
-.pathT{fill:none;stroke:var(--coral);stroke-width:2.5}
-.mark{fill:var(--coral-deep)}
-.mlbl{font-size:10px;fill:var(--coral-deep);font-weight:700}
-.xlbl{font-size:9.5px;fill:#9aa7bb}
+/* החתימה — ארבעה מספרים */
+.sig{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:900px){.sig{grid-template-columns:repeat(2,1fr)}}
+.k{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);padding:14px 18px}
+.k .l{font-size:11.5px;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;gap:6px}
+.k .l small{font-weight:500;color:var(--soft)}
+.k .v{display:flex;align-items:baseline;gap:10px;margin-top:6px;flex-wrap:wrap}
+.k .v b{font-size:22px;font-weight:800}
+.k .v s{text-decoration:none;color:var(--soft);font-size:13px}
+.k .v s::before{content:attr(data-l) " ";font-size:11px}
+.k .d{font-size:12.5px;font-weight:800;border-radius:999px;padding:2px 9px}
+.k .d.neg{background:var(--coral-soft)} .k .d.pos{background:var(--pos-soft)} .k .d.zero{background:#F1F4F7;color:var(--muted)}
+.k.dev{border-color:#F3C9C2;background:linear-gradient(180deg,#fff,#FFF8F6)}
+.k.dev .v b{font-size:18px}
+.k.dev .v b small{font-size:13px;font-weight:600;color:var(--coral-deep)}
 
-/* הסיבות */
+/* התשובה */
+.ans{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-md);padding:18px 24px;margin-bottom:16px}
+.ans .q{font-size:12px;color:var(--muted);font-weight:600}
+.ans .a{font-size:19px;font-weight:800;margin-top:4px;line-height:1.4}
+.ans .a .down{color:var(--coral-deep)} .ans .a .up{color:var(--pos)}
+.src{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.sc{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:12px;padding:7px 12px;font-size:12px;background:#FAFCFE}
+.sc span{color:var(--muted);font-weight:600}
+.sc b{font-size:13.5px;font-weight:800}
+.sc i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.sc.cf i{background:var(--accent)} .sc.bm i{background:var(--gold)} .sc.bu i{background:var(--coral)} .sc.ru i{background:var(--sys)} .sc.bl i{background:#9C7CD6} .sc.sy i{background:#B0BCC8}
+.sc.left{margin-inline-start:auto;border-style:dashed;background:#fff}
+.sc.left b{color:var(--warn)}
+
+/* הציר */
 .sec{display:flex;align-items:baseline;gap:9px;margin:20px 0 10px}
 .sec b{font-size:14px;font-weight:700}
 .sec i{font-style:normal;font-size:12px;color:var(--soft)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden}
-.ev{display:grid;grid-template-columns:44px 96px 1fr 150px 108px;gap:14px;align-items:center;padding:13px 18px;border-top:1px solid var(--line);cursor:pointer}
-.ev:first-child{border-top:0}
+.sec .sp{flex:1}
+.sec .tg{font-size:11.5px;color:var(--accent);background:none;border:none;font-weight:600;padding:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:14px}
+.dayh{display:flex;align-items:center;gap:10px;padding:10px 18px;background:#F8FAFC;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:600}
+.dayh b{color:var(--text);font-size:13px}
+.dayh .st{margin-inline-start:auto}
+.ev{display:grid;grid-template-columns:112px 1fr 128px 150px 118px;gap:14px;align-items:center;padding:12px 18px;border-top:1px solid var(--line)}
+.ev:first-child,.dayh+.ev{border-top:0}
 .ev:hover{background:#FBFDFF}
-.rank{width:26px;height:26px;border-radius:9px;background:#F1F6FA;color:var(--muted);display:grid;place-items:center;font-size:12px;font-weight:800}
-.ev.big .rank{background:var(--coral-soft);color:var(--coral-deep)}
-.amt{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;text-align:start}
-.amt.neg{color:var(--coral-deep)}
-.amt.pos{color:var(--pos)}
+.tag{font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;justify-self:start}
+.tag i{width:6px;height:6px;border-radius:50%;display:inline-block}
+.tag.cf{background:var(--accent-soft);color:var(--accent)} .tag.cf i{background:var(--accent)}
+.tag.bm{background:var(--gold-soft);color:var(--gold)} .tag.bm i{background:var(--gold)}
+.tag.bu{background:var(--coral-soft);color:var(--coral-deep)} .tag.bu i{background:var(--coral)}
+.tag.ru{background:var(--sys-soft);color:var(--sys)} .tag.ru i{background:var(--sys)}
+.tag.bl{background:#F3EEFB;color:#7C5CBF} .tag.bl i{background:#9C7CD6}
+.tag.sy{background:#F1F4F7;color:var(--muted)} .tag.sy i{background:#B0BCC8}
 .ev-b .t{font-size:13.5px;font-weight:600}
-.ev-b .s{font-size:11.5px;color:var(--soft);margin-top:3px}
-.tag{font-size:10px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
-.tag.entry{background:var(--accent-soft);color:var(--accent)}
-.tag.slip{background:var(--warn-soft);color:var(--warn)}
-.tag.actual{background:#F1F4F7;color:var(--muted)}
-.tag.unexp{background:var(--coral-soft);color:var(--coral-deep)}
-.tag.cat{background:var(--mem-soft);color:var(--mem)}
-.tag.rec{background:var(--pos-soft);color:var(--pos)}
+.ev-b .s{font-size:11.5px;color:var(--soft);margin-top:2px}
+.ev-b .s b{color:var(--muted);font-weight:600}
+.amt{font-size:14.5px;font-weight:800;text-align:start}
+.amt small{display:block;font-size:10.5px;font-weight:500;color:var(--soft)}
+.delta{font-size:14px;font-weight:800;text-align:start}
+.delta small{display:block;font-size:10.5px;font-weight:500;color:var(--soft)}
 .who{font-size:11px;color:var(--soft);text-align:start}
-.go{color:#C9DDEC;font-size:17px;font-weight:700;text-align:center}
-.ev:hover .go{color:var(--accent)}
+.who b{display:block;color:var(--muted);font-weight:600}
+.ev.alert{background:#FFF8F6}
+.ev.alert .ev-b .t{color:var(--coral-deep)}
+.ev.open .ev-b .t::after{content:"טרם טופל";font-size:10px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:1px 7px;margin-inline-start:8px;vertical-align:middle}
+.quiet{padding:9px 18px;border-top:1px solid var(--line);font-size:12px;color:var(--soft);display:flex;gap:8px;align-items:center;background:#FCFDFE}
+.quiet button{border:none;background:none;color:var(--accent);font-weight:600;font-size:12px;padding:0}
+.quiet-rows{display:none}
+.card.show-quiet .quiet-rows{display:block}
+.card.show-quiet .quiet .more{display:none}
+.quiet-rows .ev{opacity:.7}
 .foot{padding:11px 18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--soft);display:flex;gap:14px;align-items:center}
 .foot b{color:var(--muted);font-weight:600}
+.foot .go{margin-inline-start:auto;color:var(--accent);font-weight:600;text-decoration:none}
+
+/* מאחורי המסך */
 .mini{background:#FAFCFE;border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-top:14px;font-size:12px;color:var(--muted);line-height:1.7}
 .mini b{color:var(--text)}
+.mini code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#EEF2F6;padding:1px 6px;border-radius:5px;direction:ltr;unicode-bidi:isolate}
+.mini ul{margin:6px 0 0;padding-inline-start:18px}
+details summary{cursor:pointer;font-weight:700;color:var(--text)}
 </style>
 </head>
 <body>
@@ -101,137 +137,203 @@ body.is-embedded .app{padding:4px 2px 30px;max-width:none}
 
   <div class="head">
     <div>
-      <h1>מה השתנה בתזרים</h1>
-      <div class="sub">אנרגי אינטרנשיונל · כל שינוי שהשפיע על התחזית — מדורג לפי השפעה</div>
+      <h1>שינויים בתזרים</h1>
+      <div class="sub">אנרגי אינטרנשיונל · למה היתרה הצפויה השתנתה, לפי יום
+        <a href="docs/tasks/2026-09-13-cashflow-timeline/MEETING.html" target="_blank" rel="noopener">האפיון ←</a>
+      </div>
     </div>
     <div class="rng">
-      <button class="rbtn on">מאתמול</button>
-      <button class="rbtn">3 ימים</button>
-      <button class="rbtn">שבוע</button>
-      <button class="rbtn">מהפגישה האחרונה</button>
+      <button class="rbtn on" data-r="1" onclick="setRange(1,this)">מאז אתמול</button>
+      <button class="rbtn" data-r="3" onclick="setRange(3,this)">3 ימים</button>
+      <button class="rbtn" data-r="7" onclick="setRange(7,this)">שבוע</button>
+      <button class="rbtn" data-r="m" onclick="setRange('m',this)">מהפגישה האחרונה · 04.09</button>
+      <input type="date" value="2026-09-12" title="השוואה ליום מסוים" onchange="setRange('d',this)">
+      <span class="stamp" id="stamp"><i></i>יום חתום · נסגר 13.09 03:12</span>
     </div>
   </div>
 
-  <!-- הדלתא -->
-  <div class="delta">
-    <div class="delta-top">
-      <div class="d-main">
-        <div class="q">למה נוצרה חריגה שלא הייתה אתמול?</div>
-        <div class="a">היתרה הצפויה ל-<b>24.08</b> ירדה ב-<span class="down">32,400 ₪</span> — מ-<span dir="ltr">+12,150</span> ל-<span class="down" dir="ltr">-20,250</span></div>
-      </div>
-      <div class="d-chips">
-        <div class="dch bad"><span>חריגה חדשה</span><b>24.08</b></div>
-        <div class="dch"><span>שינויים בטווח</span><b>6</b></div>
-        <div class="dch ok"><span>הכי משפיע</span><b>-19,800</b></div>
-      </div>
-    </div>
+  <!-- החתימה: ארבעה מספרים, על תאריכי יעד קבועים -->
+  <div class="sig" id="sig"></div>
 
-    <div class="spark">
-      <div class="spark-h">
-        <span class="lg y"><i></i> תחזית אתמול</span>
-        <span class="lg t"><i></i> תחזית היום</span>
-        <span style="margin-inline-start:auto">30 הימים הקרובים</span>
-      </div>
-      <div class="chart">
-        <svg viewBox="0 0 900 118" preserveAspectRatio="none">
-          <line class="zero" x1="0" y1="62" x2="900" y2="62"/>
-          <path class="pathY" d="M0,74 L90,70 L180,64 L270,58 L360,52 L450,48 L540,44 L610,40 L680,44 L760,50 L830,54 L900,56"/>
-          <path class="pathT" d="M0,74 L90,72 L180,68 L270,66 L360,70 L450,76 L540,84 L610,96 L680,104 L760,100 L830,96 L900,94"/>
-          <circle class="mark" cx="610" cy="96" r="4.5"/>
-          <text class="mlbl" x="610" y="114" text-anchor="middle">24.08 · חריגה</text>
-          <text class="xlbl" x="4" y="12">היום</text>
-          <text class="xlbl" x="880" y="12" text-anchor="end">+30 יום</text>
-        </svg>
-      </div>
-    </div>
+  <!-- התשובה -->
+  <div class="ans">
+    <div class="q" id="ansQ">למה סוף אוקטובר ירד מאז אתמול?</div>
+    <div class="a" id="ansA"></div>
+    <div class="a" id="ansS" style="font-size:14.5px;font-weight:600;color:var(--muted);margin-top:6px"></div>
+    <div class="src" id="src"></div>
   </div>
 
-  <!-- הסיבות -->
-  <div class="sec"><b>הסיבות — לפי השפעה</b><i>לחיצה פותחת את המקור</i></div>
-  <div class="card">
+  <!-- הציר: היום (חי) ואז הימים החתומים, מהחדש לישן -->
+  <div class="sec"><b id="secT">מאז אתמול · 12.09</b><i>לפי השפעה על היתרה הצפויה · היום חי מהאירועים, אתמול ואחורה חתום</i><span class="sp"></span><button class="tg" onclick="toggleAllQuiet()">להציג גם את השקט</button></div>
+  <div id="days"></div>
 
-    <div class="ev big">
-      <span class="rank">1</span>
-      <span class="amt neg">-19,800</span>
-      <div class="ev-b">
-        <div class="t">תקבול "מרכז הבנייה — יתרת פרויקט" נדחה מ-12.08 ל-22.08</div>
-        <div class="s">הצפי עבר את מועדו ולא התקבל — הפך לנגררת והוזז קדימה 10 ימים</div>
-      </div>
-      <span class="tag slip">נגררת · נדחה</span>
-      <span class="who">אוטומטי · 06:10</span>
-      <span class="go">‹</span>
-    </div>
-
-    <div class="ev big">
-      <span class="rank">2</span>
-      <span class="amt neg">-7,500</span>
-      <div class="ev-b">
-        <div class="t">נוספה שורת תשלום — פלסט-גל, חומרי גלם (25.08)</div>
-        <div class="s">הוזן ע״י הלקוח בטבלת ההזנה · אושר לתזרים 10:12 · שיק 21045</div>
-      </div>
-      <span class="tag entry">הזנה חדשה</span>
-      <span class="who">טל · 10:12</span>
-      <span class="go">‹</span>
-    </div>
-
-    <div class="ev">
-      <span class="rank">3</span>
-      <span class="amt neg">-5,100</span>
-      <div class="ev-b">
-        <div class="t">חיוב ויזה כ.א.ל בפועל היה גבוה מהצפי</div>
-        <div class="s">צפי 4,110 ← בפועל 9,210 · הפרש נזקף לחודש הנוכחי</div>
-      </div>
-      <span class="tag actual">בפועל ≠ צפי</span>
-      <span class="who">סנכרון בנק · 05:40</span>
-      <span class="go">‹</span>
-    </div>
-
-    <div class="ev">
-      <span class="rank">4</span>
-      <span class="amt neg">-2,300</span>
-      <div class="ev-b">
-        <div class="t">תנועה לא צפויה — "מוסך רם" (אתמול)</div>
-        <div class="s">לא היה לה צפי בתזרים · קוטלגה ל״רכב ודלק״</div>
-      </div>
-      <span class="tag unexp">לא צפויה</span>
-      <span class="who">סנכרון בנק · 05:40</span>
-      <span class="go">‹</span>
-    </div>
-
-    <div class="ev">
-      <span class="rank">5</span>
-      <span class="amt pos">+2,300</span>
-      <div class="ev-b">
-        <div class="t">עדכון סכום — תקבול מרכז הבנייה</div>
-        <div class="s">17,500 ← 19,800 · עודכן ע״י הלקוח ואושר</div>
-      </div>
-      <span class="tag entry">עריכה</span>
-      <span class="who">טל · 08:55</span>
-      <span class="go">‹</span>
-    </div>
-
-    <div class="ev">
-      <span class="rank">6</span>
-      <span class="amt neg">-1,050</span>
-      <div class="ev-b">
-        <div class="t">שינוי קיטלוג — "אלקטרו סחר" מ״כללי״ ל״קניות מלאי״</div>
-        <div class="s">משפיע על התחזית מבוססת-התקציב בקטגוריה</div>
-      </div>
-      <span class="tag cat">קיטלוג</span>
-      <span class="who">טל · 09:20</span>
-      <span class="go">‹</span>
-    </div>
-
-    <div class="foot">
-      <b>סה״כ השפעה על 24.08:</b> <span class="amt neg" style="font-size:13px">-32,400 ₪</span>
-      <span style="margin-inline-start:auto">6 אירועים · מתוך 41 תנועות שנקלטו היום</span>
-    </div>
-  </div>
-
-  <div class="mini">
-    <b>איך זה עובד:</b> כל לילה נשמר תצלום של עקומת התחזית. כל שינוי שנוגע לתזרים — הזנה, אישור, תנועה בפועל, נגררת, קיטלוג, הו״ק אוטומטית או סנכרון יתרה — נרשם כאירוע עם ההשפעה שלו בשקלים ועל איזה תאריך. הפער בין שני תצלומים מוסבר במלואו ע״י האירועים שביניהם, מדורגים לפי השפעה.
-  </div>
+  <details class="mini">
+    <summary>מאחורי המסך — מה השרת נותן (עידו) ומה נשאר בקליינט</summary>
+    <ul>
+      <li><b>ימים חתומים</b> — <code>GET /api/cashflow-timeline/:company_id/days?from=&amp;to=</code> — שורה ליום: יתרה נוכחית, <code>targets[{target_date,balance}]</code>, <code>first_deviation{date,depth}</code>, <code>partial</code> (חשבון לא התעדכן), וסכומי <code>delta</code> לפי מקור.</li>
+      <li><b>הרשומות של יום</b> — <code>GET /api/cashflow-timeline/:company_id/changes?from=&amp;to=</code> — כבר מחוברות: תזרים + אירועי בנק סגורים, עם <code>source · action · amount · expected · actual · delta · transaction_id · who · reason</code>, וקבוצות שקט (<code>quiet[{kind,count,net}]</code>).</li>
+      <li><b>היום החי</b> — <code>GET /api/cashflow-timeline/:company_id/today</code> — אירועי בנק של היום, פתוחים וסגורים, בלי חתימה.</li>
+      <li><b>רענון</b> — <code>POST …/operations/refresh-data</code> (קיים) — צריך גם ליצור אירועי "הותאם" ו"נמחק לפי כלל" סגורים.</li>
+      <li><b>הפגישה האחרונה</b> — קיים (<code>meetings</code>), הקליינט לוקח ממנו את התאריך ל"מהפגישה האחרונה".</li>
+    </ul>
+    <b>בקליינט בלבד:</b> "מאז X" = הפרש בין שתי חתימות על אותו יעד; ניסוח התשובה; קיפול השקט; "לא מוסבר" = הפרש בחתימה פחות סכום הרשומות → קישור לתור.
+  </details>
 
 </div>
+
+<script>
+/* ---------- נתוני דמו: ימים חתומים (מהג׳וב הלילי) ----------
+   חתימה של סוף יום, לפי תאריך יעד קבוע. הרשומות של יום X מסבירות את ההפרש
+   בין החתימה של X-1 לחתימה של X. */
+const DAYS = {
+  '2026-09-12': {cur:41200, t:{'2026-09-30':20400,'2026-10-31':4900}, dev:null, partial:false},
+  '2026-09-11': {cur:42150, t:{'2026-09-30':21350,'2026-10-31':5850}, dev:null, partial:false},
+  '2026-09-10': {cur:41750, t:{'2026-09-30':12950,'2026-10-31':-2550}, dev:{date:'2026-10-15',depth:-7450}, partial:false},
+  '2026-09-09': {cur:43900, t:{'2026-09-30':15100,'2026-10-31':-400},  dev:null, partial:true},
+  '2026-09-06': {cur:48300, t:{'2026-09-30':19500,'2026-10-31':4000},  dev:null, partial:false},
+  '2026-09-04': {cur:52100, t:{'2026-09-30':23300,'2026-10-31':7800},  dev:null, partial:false},
+};
+/* "היום" עוד לא חתום — היתרה הנוכחית מהבנק, הצפי מחושב חי ומסומן "טרם נסגר" */
+const TODAY = {cur:17800, t:{'2026-09-30':14382,'2026-10-31':-11118}, dev:{date:'2026-10-14',depth:-11118}};
+
+/* רשומות לפי יום. src: cf תזרים · bm בנק-הותאם · bu בנק-לא-צפוי · ru כלל · bl שורה תקציבית · sy מערכת
+   delta = השפעה על 31.10; dS = השפעה על 30.09 כשהיא שונה (תשלום שנדחה מחודש לחודש). */
+const ROWS = {
+  '2026-09-13': [ /* היום — חי: אירועי הבנק, ושינויי התזרים מה-diff של הרענון האחרון */
+    {src:'bl', t:'פער חשוף — קניות מלאי', s:'התקציב (80,000) נגמר · 11,000 מעבר לתקציב · <b>אותו פער כמו בבדיקת השורה התקציבית בתפעול</b>', amt:-11000, delta:-11000, who:'מערכת', when:'07:12'},
+    {src:'cf', t:'נוספה הוצאה — קניית מחשב', s:'תשלום אחר לספק · 22.09 · הוזן בטבלת ההזנה ואושר', amt:-2500, delta:-2500, who:'טל', when:'09:20'},
+    {src:'bu', t:'תנועה לא צפויה — "מוסך רם"', s:'הגיע בבנק 08:40 · אין צפי בתזרים', amt:-1350, delta:-1350, who:'', open:true},
+    {src:'bm', t:'הותאם — שכר ספטמבר', s:'צפי 18,600 · הגיע 17,900', amt:-17900, exp:-18600, delta:-700, who:'ביזיבוקס', when:'07:12'},
+    {src:'bu', t:'תנועה לא צפויה — "אלקטרו סחר"', s:'סווגה: ציוד · <b>לא עודכנו מהלקוח</b>', amt:-420, delta:-420, who:'דנה', when:'09:05'},
+    {src:'ru', t:'עמלת ניהול חשבון', s:'נמחקה לפי כלל · <b>כלל: עמלות בנק</b>', amt:-48, delta:-48, who:'אוטומטי', when:'07:12'},
+    {src:'cf', t:'נדחה תשלום — ספק "פלסט-גל"', s:'25.09 ← 05.10 · <b>סוכם עם הספק</b>', amt:-10000, delta:0, dS:10000, who:'טל', when:'12:05', note:'יצא מספטמבר, נשאר באוקטובר'},
+    {src:'bl', t:'תקציב קניות מלאי הצטמצם ב-3,660', s:'כי הגיעה בפועל: העברה למפועלים 3,660 · <b>הבנק לקח, השורה שחררה</b> — לכן ההוצאה לא הזיזה את הצפי · <b>קצב: 86% מהיעד ב-43% מהחודש</b>', amt:-3660, delta:0, who:'מערכת', when:'07:12', alert:true},
+  ],
+  '2026-09-12': [
+    {src:'bu', t:'תנועה לא צפויה — "חניון הבימה"', s:'סווגה: רכב ודלק · <b>לא עודכנו מהלקוח</b>', amt:-600, delta:-600, who:'דנה', when:'09:40'},
+    {src:'bu', t:'תנועה לא צפויה — "דלק ישראל"', s:'סווגה: רכב ודלק · <b>לא עודכנו מהלקוח</b>', amt:-338, delta:-338, who:'דנה', when:'09:41'},
+    {src:'cf', t:'נגררת — תקבול "גל תעשיות" הוזז', s:'09.09 ← 16.09 · <b>הלקוח אמר שישלם ב-16.09</b>', amt:6200, delta:0, who:'דנה', when:'10:30', note:'לא משנה את היעדים — עדיין לפני 30.09'},
+    {src:'ru', t:'עמלת פעולה', s:'נמחקה לפי כלל · <b>כלל: עמלות בנק</b>', amt:-12, delta:-12, who:'אוטומטי', quiet:true},
+    {src:'bm', t:'הותאם — מרכז הבנייה, יתרת פרויקט', s:'צפי 19,800 · הגיע 19,800', amt:19800, exp:19800, delta:0, who:'ביזיבוקס', quiet:true},
+    {src:'bl', t:'תקציב הפקדות פנסיוניות', s:'נכתבה מחדש · 79 שורות · נטו 0', amt:0, delta:0, who:'מערכת', quiet:true},
+  ],
+  '2026-09-11': [
+    {src:'bl', t:'המופעים הבאים של "שיווק" הוקטנו', s:'20,000 ← 12,000 לחודש · <b>בבדיקת השורה התקציבית: הקצב לא ריאלי</b>', amt:12000, delta:8000, who:'דנה', when:'10:50'},
+    {src:'cf', t:'עודכן סכום — תקבול "גל תעשיות"', s:'5,800 ← 6,200 · הלקוח עדכן ואושר', amt:6200, delta:400, who:'טל', when:'11:15'},
+    {src:'cf', t:'נגררות', s:'3 נגררות נגררו יום', amt:0, delta:0, who:'מערכת', quiet:true},
+  ],
+  '2026-09-10': [
+    {src:'bu', t:'תנועה לא צפויה — "ביטוח ישיר"', s:'סווגה: ביטוחים · <b>חד-פעמי</b>', amt:-2150, delta:-2150, who:'דנה', when:'10:02'},
+    {src:'sy', t:'חשבון לאומי 12345 חזר להתעדכן', s:'הפער נסגר · 9 פעולות נקלטו באיחור', amt:0, delta:0, who:'מערכת'},
+  ],
+  '2026-09-09': [
+    {src:'cf', t:'נוספה הוצאה — חידוש ביטוח רכב', s:'תשלום לספק · 28.09 · הוזן ואושר', amt:-4400, delta:-4400, who:'טל', when:'15:10'},
+    {src:'sy', t:'חשבון לאומי 12345 לא התעדכן', s:'מאז 08.09 · <b>החתימה חלקית</b> · נפתח אירוע לתפעול', amt:0, delta:0, who:'מערכת', alert:true},
+  ],
+  '2026-09-06': [
+    {src:'bm', t:'הותאם — ויזה כ.א.ל', s:'צפי 4,110 · הגיע 6,260', amt:-6260, exp:-4110, delta:-2150, who:'ביזיבוקס'},
+    {src:'bu', t:'תנועה לא צפויה — "ביטוח ישיר"', s:'סווגה: ביטוחים · <b>לא עודכנו מהלקוח</b>', amt:-1650, delta:-1650, who:'דנה', when:'09:12'},
+  ],
+};
+
+const nf = new Intl.NumberFormat('he-IL');
+const money = v => (v<0?'−':'')+nf.format(Math.abs(v));
+const signed = v => v===0 ? '0' : (v>0?'+':'−')+nf.format(Math.abs(v));
+const cls = v => v<0?'neg':v>0?'pos':'zero';
+const dd = iso => iso.slice(8,10)+'.'+iso.slice(5,7);
+const SRC = {cf:'תזרים',bm:'בנק · הותאם',bu:'בנק · לא צפוי',ru:'כלל אוטומטי',bl:'שורה תקציבית',sy:'מערכת'};
+const SRC_ORDER = ['cf','bm','bu','ru','bl','sy'];
+
+let RANGE = 1, BASE = '2026-09-12';
+const SORTED = Object.keys(DAYS).sort();
+function setRange(r, el){
+  document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('on', b===el));
+  if(r==='d'){ BASE = el.value in DAYS ? el.value : '2026-09-12'; RANGE='d'; }
+  else if(r==='m'){ BASE='2026-09-04'; RANGE='m'; }
+  else { RANGE=r; BASE = r===1?'2026-09-12': r===3?'2026-09-10':'2026-09-06'; }
+  render();
+}
+
+function render(){
+  const base = DAYS[BASE];
+  const now = TODAY;                 /* "היום" = הנוכחי; הצפי שלו טרם נחתם */
+  const label = RANGE===1?'מאז אתמול': RANGE==='m'?'מאז הפגישה האחרונה': 'מאז '+dd(BASE);
+  document.getElementById('secT').textContent = label+' · '+dd(BASE);
+  const st=document.getElementById('stamp');
+  st.className='stamp'+(base.partial?' partial':'');
+  st.innerHTML='<i></i>'+(base.partial?'החתימה של '+dd(BASE)+' חלקית — חשבון לא התעדכן':'יום חתום · '+dd(BASE)+' נסגר בלילה');
+
+  /* החתימה */
+  const dS = now.t['2026-09-30']-base.t['2026-09-30'], dO = now.t['2026-10-31']-base.t['2026-10-31'], dC = now.cur-base.cur;
+  const devTxt = d => d ? dd(d.date)+' · '+money(d.depth) : 'אין';
+  let devD = '';
+  if(!base.dev && now.dev) devD='<span class="d neg">חריגה חדשה</span>';
+  else if(base.dev && !now.dev) devD='<span class="d pos">החריגה נעלמה</span>';
+  else if(base.dev && now.dev){
+    const near = now.dev.date<base.dev.date, deeper = now.dev.depth<base.dev.depth;
+    devD = (near?'<span class="d neg">התקרבה</span>':'')+(deeper?'<span class="d neg">העמיקה '+signed(now.dev.depth-base.dev.depth)+'</span>':'');
+    if(!near&&!deeper) devD='<span class="d zero">ללא שינוי</span>';
+  }
+  document.getElementById('sig').innerHTML = `
+    <div class="k"><div class="l">יתרה נוכחית <small>בבנק</small></div><div class="v num"><b>${money(now.cur)}</b><s data-l="${RANGE===1?"אתמול":dd(BASE)}">${money(base.cur)}</s><span class="d ${cls(dC)}">${signed(dC)}</span></div></div>
+    <div class="k"><div class="l">סוף החודש <small>30.09 · צפוי</small></div><div class="v num"><b class="${now.t['2026-09-30']<0?'neg':''}">${money(now.t['2026-09-30'])}</b><s data-l="${RANGE===1?"אתמול":dd(BASE)}">${money(base.t['2026-09-30'])}</s><span class="d ${cls(dS)}">${signed(dS)}</span></div></div>
+    <div class="k"><div class="l">סוף החודש הבא <small>31.10 · צפוי</small></div><div class="v num"><b class="${now.t['2026-10-31']<0?'neg':''}">${money(now.t['2026-10-31'])}</b><s data-l="${RANGE===1?"אתמול":dd(BASE)}">${money(base.t['2026-10-31'])}</s><span class="d ${cls(dO)}">${signed(dO)}</span></div></div>
+    <div class="k dev"><div class="l">חריגה צפויה ראשונה <small>תאריך · עומק</small></div><div class="v num"><b>${devTxt(now.dev)}</b><s data-l="${RANGE===1?"אתמול":dd(BASE)}">${devTxt(base.dev)}</s>${devD}</div></div>`;
+
+  /* הרשומות בטווח: ימים חתומים אחרי BASE, ועד היום (כולל היום החי) */
+  const days = Object.keys(ROWS).filter(d => d>BASE).sort().reverse();
+  const rows = days.flatMap(d => ROWS[d].map(r => ({...r, day:d})));
+  const bySrc = {}; rows.filter(r=>!r.open).forEach(r => { bySrc[r.src]=(bySrc[r.src]||0)+r.delta; });
+  const explained = rows.filter(r=>!r.open).reduce((s,r)=>s+r.delta,0);
+  const unexplained = dO - explained;
+  const openN = rows.filter(r=>r.open).length;
+
+  /* התשובה */
+  const top = rows.filter(r=>r.delta!==0&&!r.open).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta)).slice(0,3);
+  document.getElementById('ansQ').textContent = 'למה סוף אוקטובר '+(dO<0?'ירד':dO>0?'עלה':'לא השתנה')+' '+label.replace('מאז ','מאז ')+'?';
+  document.getElementById('ansA').innerHTML = dO===0 ? 'היתרה הצפויה לסוף אוקטובר לא השתנתה.' :
+    `היתרה הצפויה ל-31.10 ${dO<0?'ירדה':'עלתה'} ב-<span class="${dO<0?'down':'up'}">${money(Math.abs(dO))} ₪</span> — `+
+    top.map(r=>`<span class="${r.delta<0?'down':'up'}">${signed(r.delta)}</span> ${r.t.replace(/^(נוספה הוצאה|הותאם|תנועה לא צפויה|עודכן סכום|נגררת) — /,'')}`).join(' · ')+
+    (rows.filter(r=>r.delta!==0).length>3?` ועוד ${rows.filter(r=>r.delta!==0).length-3}`:'')+'.';
+  const sepRows = rows.filter(r=>(r.dS!==undefined?r.dS:r.delta)!==0);
+  const sepExplained = rows.reduce((s,r)=>s+(r.dS!==undefined?r.dS:r.delta),0);
+  document.getElementById('ansS').innerHTML = dS===0 ? '' :
+    `וסוף ספטמבר ${dS<0?'ירד':'עלה'} ב-<span class="${dS<0?'down':'up'}">${money(Math.abs(dS))} ₪</span>`+
+    (rows.some(r=>r.dS!==undefined&&r.dS!==r.delta) ? ` — ההבדל מסוף אוקטובר: ${rows.filter(r=>r.dS!==undefined&&r.dS!==r.delta).map(r=>`<span class="${(r.dS-r.delta)<0?'down':'up'}">${signed(r.dS-r.delta)}</span> ${r.t.replace(/^[^—]+— /,'')}`).join(' · ')}` : '')+'.';
+  document.getElementById('src').innerHTML =
+    SRC_ORDER.filter(k=>k in bySrc).map(k=>`<span class="sc ${k}"><i></i><span>${SRC[k]}</span><b class="num ${cls(bySrc[k])}">${signed(bySrc[k])}</b></span>`).join('')+
+    `<span class="sc left"><span>לא מוסבר</span><b class="num">${signed(unexplained)}</b><span>· ${openN} בבנק טרם טופלו</span></span>`;
+
+  /* היום (חי) ואז הימים החתומים */
+  document.getElementById('days').innerHTML = days.map(d=>{
+    const live = d==='2026-09-13';
+    const sig = DAYS[d]; const dsum = ROWS[d].filter(r=>!r.open).reduce((s,r)=>s+r.delta,0);
+    return `<div class="card">
+      <div class="dayh"><b>${live?'היום · ':''}${dd(d)}</b>${live?'<span style="color:var(--warn)">חי מהאירועים · טרם נסגר · בלי חתימת יתרה</span>':''}${sig&&sig.partial?'<span style="color:var(--coral-deep)">חתימה חלקית</span>':''}<span class="st">השפעה על 31.10: <b class="num ${cls(dsum)}">${signed(dsum)}</b>${sig?' · סוף אוקטובר בסוף היום: <b class="num">'+money(sig.t['2026-10-31'])+'</b>':''}</span></div>
+      ${renderRows(ROWS[d], live)}
+    </div>`;
+  }).join('') + `<div class="card"><div class="foot"><b>לא מוסבר:</b><span class="num ${cls(unexplained)}">${signed(unexplained)} ₪</span><span>· ${openN} פעולות בבנק שעוד לא טופלו — הן יקבלו סיבה כשמנהל התזרים יסווג</span><a class="go" href="#" onclick="try{parent.postMessage({hk:'ops'},'*')}catch(e){};return false">לתור בתפעול ←</a></div></div>`;
+}
+
+function renderRows(list, live){
+  const loud = list.filter(r=>!r.quiet), quiet = list.filter(r=>r.quiet);
+  const row = r => `<div class="ev${r.alert?' alert':''}${r.open?' open':''}">
+      <span class="tag ${r.src}"><i></i>${SRC[r.src]}</span>
+      <div class="ev-b"><div class="t">${r.t}</div><div class="s">${r.s}${r.note?' · '+r.note:''}</div></div>
+      <span class="amt num ${r.amt<0?'neg':r.amt>0?'pos':''}">${r.amt===0?'—':money(r.amt)}${r.exp!==undefined?`<small>צפי ${money(r.exp)}</small>`:''}</span>
+      <span class="delta num">${r.dS!==undefined&&r.dS!==r.delta
+          ? `<span class="${cls(r.dS)}">30.09 ${signed(r.dS)}</span> · <span class="${cls(r.delta)}">31.10 ${signed(r.delta)}</span><small>לפי יעד</small>`
+          : (r.delta===0?'<span style="color:var(--soft);font-weight:500">ללא השפעה</span>':`<span class="${cls(r.delta)}">${signed(r.delta)} ₪</span>`)+'<small>על שני היעדים</small>'}</span>
+      <span class="who">${r.who?'<b>'+r.who+'</b>':'<b style="color:var(--warn)">ממתין למתפעל</b>'}${r.when||''}</span>
+    </div>`;
+  return loud.map(row).join('') + (quiet.length ? `
+    <div class="quiet">שקט: ${quiet.map(q=>q.t.replace(/ — .*$/,'')).join(' · ')} — ${quiet.length} רשומות בלי השפעה
+      <button class="more" onclick="this.closest('.card').classList.add('show-quiet')">להציג</button></div>
+    <div class="quiet-rows">${quiet.map(row).join('')}</div>` : '');
+}
+function toggleAllQuiet(){ document.querySelectorAll('.card').forEach(c=>c.classList.toggle('show-quiet')); }
+const _r=new URLSearchParams(location.search).get('r'); if(_r){ const b=document.querySelector('.rbtn[data-r="'+_r+'"]'); if(b) setRange(isNaN(+_r)?_r:+_r,b); }
+render();
+</script>
 </body>
 </html>
