@@ -48,6 +48,87 @@ window.HK_BOARD = {
       "proto": "",
       "items": [
         {
+          "id": "general-345",
+          "n": 345,
+          "kind": "spec",
+          "title": "שירות לפתיחת פעולה קבועה ישר מהמערכת (לאשף ההקמה)",
+          "what": "אייל 15.09: בשלב 3 של אשף ההקמה המערכת מציגה את הפעולות הקבועות שזוהו בחודשיים האחרונים, והמתפעל מקים אותן **ידנית** בביזיבוקס. \"אחרי זה אני מבקש מעידו שייתן לנו Service לפתוח פעולות קבועות ישר מהמערכת שלנו; בשלב ראשון נקים ידנית\".\n\n**מה יש בקליינט:** `src/pages/workspace/setup/SetupRecurringStep.tsx` + `setupLogic.ts › detectRecurring`. לכל פעולה: שם (כמו בתנועה האחרונה), קטגוריה וסעיף, סכום לכל חודש וממוצע, יום בחודש כשהוא יציב (±4 ימים), סכום קבוע (±5%) או משתנה, חשבון בנק (account_id), והאם באשראי.",
+          "need": "**הצעה לחוזה** (לתאם עם אייל לפני מימוש):\n`POST /api/companies/:companyId/recurring-actions`\n```json\n{\"name\": \"שכירות משרד\", \"categoryKeyId\": \"…\", \"companyAccountId\": \"…\", \"amount\": -8000, \"frequency\": \"MONTHLY\", \"dayOfMonth\": 2, \"startDate\": \"2026-10-01\", \"endDate\": null, \"isFixedAmount\": true}\n```\n- התשובה: הפעולה שנוצרה בביזיבוקס עם המזהה שלה.\n- `GET` לאותו נתיב — הפעולות הקבועות שכבר קיימות בביזיבוקס, כדי שהאשף יסמן \"כבר קיימת\" ולא ייצור כפולה.\n- הרשאה: משרד HK בלבד. בלי שליחות ללקוח.\nאחרי שהשירות קיים — בקליינט הסימון \"נפתח בביזיבוקס\" הופך לכפתור \"פתיחה\".",
+          "sev": "בינוני",
+          "dev": "עידו",
+          "who": "אייל",
+          "status": "open",
+          "imgA": "",
+          "capA": "",
+          "imgB": "",
+          "capB": "",
+          "created": "15.09.2026 05:00",
+          "updated": "15.09.2026 05:00",
+          "log": [
+            {
+              "when": "15.09.2026 05:00",
+              "who": "אייל (Claude)",
+              "ev": "opened",
+              "txt": "משימת לילה 15.09 — אשף הקמה."
+            }
+          ],
+          "ask": ""
+        },
+        {
+          "id": "general-344",
+          "n": 344,
+          "kind": "bug",
+          "title": "סטטוס SETUP (\"הקמה\") חוזר כ-status:null ב-current-user/companies",
+          "what": "15.09, סטטוס קיים ב-get-company-statuses: `{status:\"SETUP\", status_name:\"הקמה\"}`.\n`POST /api/companies/update-company-status {id:298, status:\"SETUP\", status_description:\"הקמה\"}` → 204. אחרי זה ב-`GET /api/user-accounts/current-user/companies` החברה חוזרת עם `status: null` ו-`status_description: \"הקמה\"`.\nבאותו שירות עם `NEW` — `status` חוזר כאובייקט מלא (id, status, status_name, color…). כנראה ה-join לטבלת הסטטוסים לא מכיר את SETUP.\n\n**בקליינט עד התיקון:** `setupProgress.ts › isSetupCompany` מזהה גם `status_description === \"הקמה\"` כש-status ריק.\n**כרגע:** וטרינר תורן (298) בסטטוס SETUP לצורך ההדגמה לאייל.",
+          "need": "1. לתקן כך ש-SETUP יחזור כאובייקט מלא כמו שאר הסטטוסים.\n2. בדיקת קבלה: 298 חוזרת עם `status.status === \"SETUP\"`.\n3. אחרי התיקון — להסיר מהקליינט את הזיהוי לפי התיאור.",
+          "sev": "גבוה",
+          "dev": "עידו",
+          "who": "אייל",
+          "status": "open",
+          "imgA": "",
+          "capA": "",
+          "imgB": "",
+          "capB": "",
+          "created": "15.09.2026 05:00",
+          "updated": "15.09.2026 05:00",
+          "log": [
+            {
+              "when": "15.09.2026 05:00",
+              "who": "אייל (Claude)",
+              "ev": "opened",
+              "txt": "משימת לילה 15.09 — אשף הקמה."
+            }
+          ],
+          "ask": ""
+        },
+        {
+          "id": "general-343",
+          "n": 343,
+          "kind": "spec",
+          "title": "לידיעה — אשף הקמה + מיפוי כרטיסים בגרירה (hk-client, בלוקאל)",
+          "what": "**1. אשף הקמה** (אייל 15.09, משימת לילה) — `/workspace/companies/:id/setup`, קוד ב-`src/pages/workspace/setup/`. אפיון: `mainScreen/docs/tasks/2026-09-15-setup-wizard/TASK.md`, מחקר: `RESEARCH.md`.\n- **למי:** חברה בסטטוס SETUP ובתצוגת משרד (manager). בסרגל הצד כפתור \"הקמה\" במקום \"תפעול\"; בכותרת הסטטוס \"הקמה\".\n- **שלב 0 הגדרות:** מוצר — get/edit-finance-data (שולח בחזרה את שדות החיוב כמו שהתקבלו); תחום עיסוק — update-company-details {occupation} **וגם** general-settings.trade של התפעול; אנשי קשר — company-contacts add + sync.\n- **שלב 1 מורשות:** category-classifications (initialize / remove), ברירת מחדל = 16 קטגוריות שמורשות ב-40%+ מ-17 החברות; הוספה = wrong-cataloged/categories (יוצר בביזיבוקס).\n- **שלב 2 קיטלוג:** operations/refresh-data בלחיצה בלבד + WrongCatalogedStage עם `defaultCreateRule` (\"צור כלל\" מסומן מראש).\n- **שלב 3 פעולות קבועות:** get-monthly-cashflow-data לחודשיים המלאים האחרונים, זיהוי בקליינט (setupLogic.ts). שירות פתיחה — #345.\n- **שלב 4 שורות תקציביות:** get-future-monthly-cashflow-targets + budget-rows, המלצות בקליינט; הפופאפ הקיים של השורה התקציבית (עכשיו לא נסגר בלחיצה בחוץ).\n- **סיום:** update-company-status → ACTIVE.\n- ההתקדמות נשמרת בדפדפן (setupProgress.ts) — כשיהיה שירות הקמה, להחליף.\n\n**2. מיפוי כרטיסים בתכנון החשבונאי** — גרירה ישירות בין סעיפים, בלי עמודת הכרטיסים בצד; \"ללא סעיף\" ו\"מאזניים\" למעלה; חיפוש אחד. אותם שירותים (placement PUT/DELETE).",
+          "need": "**שאלות פתוחות לשרת:**\n1. האם `POST wrong-cataloged/categories` מכניס את הקטגוריה החדשה גם למורשות? האשף בודק אחרי היצירה ומציג \"תופיע במורשות אחרי הרענון\" אם לא. אם לא — צריך שירות \"הוספה למורשות\".\n2. שני שדות לתחום עיסוק (`companies.occupation` ו-`operations general-settings.trade`) — על איזה ה-AI של הקיטלוג נשען? האשף שומר בשניהם.\n3. באג הסטטוס SETUP — #344.",
+          "sev": "נמוך",
+          "dev": "עידו",
+          "who": "אייל",
+          "status": "open",
+          "imgA": "",
+          "capA": "",
+          "imgB": "",
+          "capB": "",
+          "created": "15.09.2026 05:00",
+          "updated": "15.09.2026 05:00",
+          "log": [
+            {
+              "when": "15.09.2026 05:00",
+              "who": "אייל (Claude)",
+              "ev": "opened",
+              "txt": "משימת לילה 15.09 — אשף הקמה."
+            }
+          ],
+          "ask": ""
+        },
+        {
           "id": "general-342",
           "n": 342,
           "kind": "bug",
