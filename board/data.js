@@ -48,6 +48,33 @@ window.HK_BOARD = {
       "proto": "",
       "items": [
         {
+          "id": "general-341",
+          "n": 341,
+          "kind": "spec",
+          "title": "לידיעה — ווידג׳טים: תחזית תזרים, רווחיות חודשית, ושני חדשים (גרף חודש קרוב, חלוקת הוצאות)",
+          "what": "אייל 14–15.09, hk-client בלוקאל (לא בסטייג׳), קומיטים e94e51f…9fd2c32:\n\n1. **תחזית תזרים** — הרצועה מציגה תמיד יתרה נוכחית (opening_balance); הצפי לסוף הטווח בשורה משנית. ה-prop `balanceMode` הוסר (גם מ-OperationsFinancePanel).\n2. **רווחיות חודשית** — עוצב מחדש כדוח: טאבים של חודשים, \"רווחיות תזרימית\" גדולה + שינוי מהחודש המלא הקודם, והחשבון הכנסות − עלות המכר = גולמי − תפעוליות = תפעולי − מימון = רווחיות תזרימית. \"לא מלא\" = רק החודש הנוכחי. החישובים ב-`monthlyProfitability.ts` (+בדיקות). אותו שירות, בלי שינוי.\n3. **חדש: גרף תזרים לחודש הקרוב** — widget_type `cashflow_month_chart`. `CashflowMonthChartWidgetCard.tsx`. אותו שירות של תחזית תזרים + `summarizeCompany` מ-ownerGroupSummary (נוסף שדה `fromDate`).\n4. **חדש: חלוקת הוצאות** — widget_type `cashflow_expense_breakdown`. `ExpenseBreakdownWidgetCard.tsx` + `expenseBreakdown.ts` (+בדיקות). get-monthly-cashflow-data ל-6 חודשים בבקשה אחת, קטגוריות של costOfGoods ו-expenses בלי שורות סיכום ובלי מימון.",
+          "need": "שורות ב-Widget_Templates לשני הסוגים החדשים (אייל מוסיף בעצמו). בהמשך: שירות קל לחלוקת הוצאות לפי חודש במקום הדוח החודשי המלא (~4 שנ׳).",
+          "sev": "נמוך",
+          "dev": "עידו",
+          "who": "אייל",
+          "status": "open",
+          "imgA": "",
+          "capA": "",
+          "imgB": "",
+          "capB": "",
+          "created": "15.09.2026 01:00",
+          "updated": "15.09.2026 01:00",
+          "log": [
+            {
+              "when": "15.09.2026 01:00",
+              "who": "אייל (Claude)",
+              "ev": "opened",
+              "txt": "לידיעה על שינויי קליינט."
+            }
+          ],
+          "ask": ""
+        },
+        {
           "id": "general-340",
           "n": 340,
           "kind": "spec",
