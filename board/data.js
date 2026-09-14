@@ -1,6 +1,6 @@
 /* לוח המשימות — נשמר מהמסך 14.09.2026, 21:45 */
 window.HK_BOARD = {
- "version": 562,
+ "version": 564,
  "seq": 331,
  "updated": "14.09.2026, 21:45",
  "emails": [
@@ -9041,7 +9041,7 @@ window.HK_BOARD = {
      "sev": "",
      "dev": "אייל",
      "who": "אייל",
-     "status": "open",
+     "status": "done",
      "imgA": "",
      "capA": "",
      "imgB": "",
@@ -9054,6 +9054,20 @@ window.HK_BOARD = {
        "who": "עידו",
        "ev": "built",
        "txt": ""
+      },
+      {
+       "when": "14.09.2026 13:45",
+       "who": "עידו",
+       "ev": "passed",
+       "txt": "",
+       "via": "דף עידו"
+      },
+      {
+       "when": "14.09.2026 13:45",
+       "who": "עידו",
+       "ev": "passed",
+       "txt": "",
+       "via": "דף עידו"
       }
      ],
      "ask": null,
