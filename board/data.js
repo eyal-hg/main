@@ -8750,6 +8750,7 @@ window.HK_BOARD = {
           "created": "13.09.2026 10:53",
           "updated": "13.09.2026 22:50",
           "log": [
+            {"when": "14.09.2026 03:00", "who": "אייל (Claude)", "ev": "note", "txt": "נדחף לסטייג׳ (stg ad227a6): (1) ספריית ווידג׳טים במקום הקרוסלה (#203) — WidgetLibraryModal.tsx + widgetLibrary.ts. (2) בעל עסק עם כמה חברות (clientN): הבית OwnerGroupHome — יתרה מצרפית, חברות בסיכון, חריגה צפויה מצרפית, כל החברות לפי סיכון, נכנס מול יוצא, צפוי ב-14 יום, לאן הולך הכסף. הכול מ-get-cashflow-widget-data/:companyId, עד 4 במקביל, זיכרון 5 דק׳ (ownerGroupSummary.ts + בדיקות). מעל ~40 חברות לכדאי שירות אחד בשרת. (3) רשימת החברות עברה לסרגל הצד (WorkspaceCustomersRail variant owner), למעלה שם+ח.פ. (4) תזרים מאוחד = דף בסרגל כמו תמונת תזרים, כל החברות מסומנות מראש, בלי עוזר AI (companyId 0). נבדק עם משתמש CUSTOMER אמיתי (user 333, חברות 93 ו-105)."},
             {"when": "14.09.2026 01:30", "who": "אייל (Claude)", "ev": "note", "txt": "נדחף לסטייג׳ (stg 447d848): בדיקות המוח, שלב 3 בתוך התפעול (TrackingRowDialogs), \"למי\" בבורר. בלוקאל, לא נדחף: 32636f0 — ספריית ווידג׳טים (#203). קבצים חדשים: WidgetLibraryModal.tsx (המסך), widgetLibrary.ts (כל הטקסטים והלוחות המוכנים + חישוב מה חסר, בדיקות ב-widgetLibrary.test.ts), connectedMetricSources.ts (הוצא כמו שהוא מ-WidgetsPanel). מ-WidgetsPanel הוסרו הקרוסלה, הסל ובורר הטבלה הנפרד (~950 שורות). אין שירות חדש: create + update (מדד, עמודה) + reorder. לתשומת לב: השרת מחזיר מזהי ווידג׳ט/תבנית כמחרוזות למרות שהטיפוס number."},
             {
               "when": "14.09.2026 00:10",
