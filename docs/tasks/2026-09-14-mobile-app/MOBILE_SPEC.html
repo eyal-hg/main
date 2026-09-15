@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>HK-APP · אפיון האפליקציה הסלולרית</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* =====================================================================
+   MOBILE_SPEC.html — אפיון HK-APP · 14.09.2026
+   הטוקנים הם css/tokens.css של הפרוטוטיפ. Jampa = אותם תפקידים, ערכים אחרים.
+   ===================================================================== */
+:root{
+  --navy:#0C4068; --navy-2:#104A76; --coral:#E4826E; --coral-2:#D96A55;
+  --danger:#C43D30; --danger-t:#dc4436; --sky:#39ABE2; --link:#14618F;
+  --ok:#13895b; --ok-bg:#E7F7EF; --warn:#c98404; --warn-bg:#FFF6E6; --info-bg:#E8F4FB;
+  --ink:#12263A; --ink-2:#44566A; --ink-3:#7A8898; --on-navy:#DCEBF5; --on-navy-2:#9FC0DA;
+  --bg:#F6F8FB; --panel:#fff; --chip:#F0F4F8; --row-on:#EEF6FC; --tint:#EAF3FA;
+  --line:#E3EAF3; --line-2:#CBD6E2;
+  --rec:#B3372A; --rec-2:#8F2B21; --pausebar:#5B6673; --mark:#F5B841; --mark-ink:#5A3C00;
+  --shadow:0 1px 2px rgba(12,64,104,.04),0 10px 28px -18px rgba(12,64,104,.18);
+  --font:'Rubik','Heebo',system-ui,-apple-system,sans-serif;
+  --page:#E9EEF3;
+}
+/* Jampa — אותם תפקידים, ערכי Jampa-Fig */
+body.jp{
+  --navy:#6F62AC; --navy-2:#5C5192; --coral:#7557E3; --coral-2:#5F45C4;
+  --sky:#7557E3; --link:#5F45C4; --info-bg:#F0EBFF;
+  --ink:#3F3D4A; --ink-2:#696971; --ink-3:#9B9BA6; --on-navy:#F0EBFF; --on-navy-2:#CBC0F7;
+  --bg:#FFFBF3; --chip:#E5E7FF; --row-on:#F0EBFF; --tint:#F0EBFF;
+  --line:#EFEAE0; --line-2:#DAD4E8;
+  --rec:#37306B; --rec-2:#2A2452; --pausebar:#8C88A3; --mark:#FFD096; --mark-ink:#5A3C00;
+  --shadow:0 0 6.7px rgba(55,48,107,.10);
+  --page:#F2EEE6;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font);background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.cur{font-size:.52em;font-weight:400;margin-inline-start:2px;opacity:.85}
+
+/* ---------------- המסמך ---------------- */
+.doc-top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+.doc-top-in{max-width:1480px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.doc-logo{font-weight:800;font-size:22px;color:var(--navy);letter-spacing:-.02em}
+.doc-logo small{display:block;font-size:12px;font-weight:400;color:var(--ink-3);letter-spacing:0}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--ink-2);font-weight:600;font-size:13px;padding:8px 18px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--navy);color:#fff}
+.doc-sp{flex:1}
+.doc-meta{font-size:12px;color:var(--ink-3)}
+.doc-idx{max-width:1480px;margin:0 auto;padding:0 32px 12px;display:flex;gap:6px;flex-wrap:wrap}
+.doc-idx a{font-size:12px;font-weight:600;color:var(--ink-2);text-decoration:none;background:var(--chip);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.doc-idx a b{color:var(--navy);font-weight:700;margin-inline-end:4px}
+.doc-idx a:hover{background:var(--row-on)}
+.doc{max-width:1480px;margin:0 auto;padding:8px 32px 80px}
+
+.intro{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;margin:24px 0 8px}
+.card-doc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+.card-doc h2{margin:0 0 4px;font-size:22px;font-weight:800;color:var(--navy)}
+.card-doc h2::after{content:"";display:block;width:26px;height:3px;background:var(--coral);border-radius:3px;margin-top:8px}
+.card-doc p{margin:10px 0 0;font-size:14px;line-height:1.65;color:var(--ink-2)}
+.card-doc ul{margin:10px 0 0;padding-inline-start:18px;color:var(--ink-2);line-height:1.7;font-size:13px}
+.card-doc b{color:var(--ink)}
+.navmap{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.navmap span{font-size:12.5px;font-weight:600;background:var(--chip);color:var(--ink-2);border-radius:999px;padding:6px 12px}
+.navmap span.c{background:var(--coral);color:#fff}
+
+.part{margin-top:44px}
+.part-h{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--navy);padding-bottom:10px}
+.part-h h2{margin:0;font-size:28px;font-weight:800;color:var(--navy)}
+.part-h span{font-size:13px;color:var(--ink-3)}
+
+.sec{display:grid;grid-template-columns:auto minmax(320px,1fr);gap:36px;padding:36px 0;border-bottom:1px solid var(--line-2);align-items:start}
+.sec.wide{grid-template-columns:1fr}
+.sec.wide .notes{max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:4px 32px}
+.sec.wide .notes .n-h,.sec.wide .notes .n-top{grid-column:1/-1}
+.phones{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+.ph-wrap{display:flex;flex-direction:column;gap:10px;align-items:center}
+.ph-cap{font-size:13px;font-weight:600;color:var(--ink-2);text-align:center;max-width:390px}
+.ph-cap b{color:var(--navy)}
+.notes{max-width:560px}
+.n-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.n-code{font-size:12px;font-weight:700;color:#fff;background:var(--navy);border-radius:7px;padding:3px 8px}
+.n-h h3{margin:0;font-size:22px;font-weight:800;color:var(--navy)}
+.n-blk{margin-top:14px}
+.n-blk h4{margin:0 0 4px;font-size:12px;font-weight:700;color:var(--ink-3);letter-spacing:.02em}
+.n-blk p,.n-blk li{font-size:13.5px;line-height:1.65;color:var(--ink-2);margin:0}
+.n-blk ul{margin:0;padding-inline-start:18px}
+.n-blk b{color:var(--ink);font-weight:600}
+.n-blk code{white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--chip);color:var(--ink);border-radius:5px;padding:1px 5px;direction:ltr;unicode-bidi:isolate}
+.n-blk .miss{color:var(--danger-t);font-weight:600}
+.n-blk .miss::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-inline-end:6px;vertical-align:middle}
+.n-chg{background:var(--tint);border-radius:10px;padding:10px 14px;margin-top:14px}
+.n-chg h4{color:var(--navy)}
+
+/* דיאגרמת מצבים */
+.sm{display:flex;align-items:stretch;gap:0;margin:18px 0 6px;flex-wrap:wrap;row-gap:12px}
+.sm-st{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:170px;flex:1;box-shadow:var(--shadow)}
+.sm-st b{display:block;font-size:14px;color:var(--navy)}
+.sm-st span{display:block;font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.5}
+.sm-st i{font-style:normal;display:inline-block;margin-top:8px;font-size:11.5px;font-weight:700;color:#fff;background:var(--coral);border-radius:999px;padding:3px 10px}
+.sm-st.rec b{color:var(--rec)}
+.sm-ar{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 6px;color:var(--ink-3);font-size:11.5px;min-width:64px;text-align:center}
+.sm-ar::before{content:"←";font-size:18px;color:var(--line-2)}
+
+/* שאלות */
+.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:10px;margin-top:18px}
+.q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.q.q-other{opacity:.55}
+.q-n{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.q b{font-size:14px;color:var(--navy);font-weight:600}
+.q p{margin:3px 0 0;font-size:13px;line-height:1.6;color:var(--ink-2)}
+.q-t{margin-inline-start:auto;font-size:11.5px;font-weight:600;color:var(--ink-3);background:var(--chip);border-radius:999px;padding:2px 9px;flex:none}
+
+/* ---------------- מסגרת טלפון ---------------- */
+.phone{width:414px;height:868px;padding:12px;border-radius:60px;background:#1B1F24;box-shadow:0 0 0 1.5px #3a3f46 inset,0 30px 60px -30px rgba(12,38,58,.45);position:relative;flex:none}
+.phone.mini{zoom:.62}
+.scr{width:390px;height:844px;border-radius:48px;overflow:hidden;position:relative;background:var(--bg);display:flex;flex-direction:column;isolation:isolate}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:#000;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.island.act{width:188px}
+.island .idot{width:8px;height:8px;border-radius:50%;background:#FF453A;animation:blink 1.4s infinite}
+body.jp .island .idot{background:#FF5D6C}
+.island .itime{color:#FF6B5F;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.sbar{height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 30px;font-weight:600;font-size:15px;color:var(--ink);position:relative;z-index:20;direction:rtl}
+.sbar.dark{color:#fff}
+.sbar .st-r{display:flex;gap:6px;align-items:center;direction:ltr}
+.sbar svg{display:block}
+.homeind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:#12263A;z-index:40;opacity:.9}
+.homeind.light{background:#fff}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+
+/* ---------------- רכיבי האפליקציה ---------------- */
+.band{background:var(--navy);color:#fff;padding:2px 20px 18px;flex:none}
+.band-top{display:flex;align-items:center;gap:10px;min-height:40px}
+.band h1{margin:0;font-size:28px;font-weight:800;line-height:1.1}
+.band h1::after{content:"";display:block;width:26px;height:3px;border-radius:3px;background:var(--coral);margin-top:7px}
+body.jp .band h1::after{background:#CBC0F7}
+.band .sub{font-size:12.5px;color:var(--on-navy-2);margin-top:8px}
+.band-sp{flex:1}
+.av{width:36px;height:36px;border-radius:50%;background:var(--navy-2);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.35);flex:none}
+.av.l{background:var(--tint);color:var(--navy);border:0}
+.ic-btn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--on-navy);background:rgba(255,255,255,.08);flex:none}
+.ic-btn.l{color:var(--ink-2);background:var(--chip)}
+
+.hdr{display:flex;align-items:center;gap:10px;padding:4px 16px 10px;flex:none;background:var(--bg)}
+.hdr .t{font-size:19px;font-weight:700;color:var(--navy);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .t small{display:block;font-size:12px;font-weight:400;color:var(--ink-3)}
+.back{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--navy);flex:none}
+.bigtitle{padding:2px 20px 12px;flex:none}
+.bigtitle h1{margin:0;font-size:28px;font-weight:800;color:var(--navy)}
+.bigtitle h1::after{content:"";display:block;width:26px;height:3px;border-radius:3px;background:var(--coral);margin-top:7px}
+.bigtitle .sub{font-size:12.5px;color:var(--ink-3);margin-top:8px}
+
+.pad{padding:0 16px}
+.stack{display:flex;flex-direction:column;gap:12px;padding:12px 16px 24px}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.pn-h{display:flex;align-items:baseline;gap:8px;padding:14px 16px 8px}
+.pn-h b{font-size:17px;font-weight:600;color:var(--navy)}
+.pn-h span{font-size:12.5px;color:var(--ink-3)}
+.pn-h a{margin-inline-start:auto;font-size:12.5px;font-weight:600;color:var(--link);text-decoration:none;white-space:nowrap}
+.pn-b{padding:0 16px 14px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;min-height:56px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .mn{flex:1;min-width:0}
+.row .t1{font-size:14px;font-weight:500;color:var(--ink);line-height:1.35}
+.row .t1 b{font-weight:600;color:var(--navy)}
+.row .t2{font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.4}
+.row .end{flex:none;text-align:end}
+.chev{color:var(--line-2);flex:none}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-inline-end:5px;vertical-align:middle;position:relative;top:-1px}
+.al{color:var(--danger-t)} .okc{color:var(--ok)} .wrn{color:var(--warn)} .inf{color:var(--link)} .mut{color:var(--ink-3)}
+
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 16px 4px;scrollbar-width:none;flex:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:999px;background:var(--chip);color:var(--ink-2);white-space:nowrap;flex:none;display:inline-flex;gap:6px;align-items:center}
+.chip.on{background:var(--navy);color:#fff}
+.chip i{font-style:normal;font-weight:700;font-size:11.5px;opacity:.75}
+.tag{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap;display:inline-block}
+.tag.ok{background:var(--ok-bg);color:var(--ok)} .tag.wait{background:var(--warn-bg);color:var(--warn)} .tag.info{background:var(--info-bg);color:var(--link)} .tag.mute{background:var(--chip);color:var(--ink-2)}
+
+.btn{height:44px;border-radius:999px;border:1px solid var(--line-2);background:#fff;color:var(--navy);font-size:14px;font-weight:600;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn.pri{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn.sm{height:32px;font-size:12.5px;padding:0 13px}
+.btn.blk{width:100%}
+.btn.ghost-n{background:transparent;border-color:rgba(255,255,255,.35);color:#fff}
+.btn.dis{background:var(--chip);border-color:var(--chip);color:var(--ink-3)}
+.btn.rec{background:var(--rec);border-color:var(--rec);color:#fff}
+
+.live{display:flex;gap:0}
+.live>div{flex:1;padding:14px 16px}
+.live>div+div{border-inline-start:1px solid var(--line)}
+.lv-l{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.lv-n{font-size:27px;font-weight:600;color:var(--navy);line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums}
+.lv-n.bad{color:var(--danger)}
+.lv-m{font-size:12px;color:var(--ink-3);margin-top:3px}
+
+.input{height:45px;border:1px solid var(--line-2);border-radius:12px;background:#fff;display:flex;align-items:center;padding:0 14px;gap:8px;color:var(--ink-3);font-size:14px}
+.input.focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(57,171,226,.15);color:var(--ink)}
+.search{height:40px;border-radius:999px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 14px;color:var(--ink-3);font-size:14px;margin:4px 16px 8px}
+
+/* טאב־בר תחתון */
+.tabs{flex:none;height:84px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:flex;align-items:flex-start;padding:7px 6px 0;position:relative;z-index:25}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-3);font-size:11.5px;font-weight:500;padding-top:2px}
+.tab.on{color:var(--navy);font-weight:700}
+.tab.on svg{stroke-width:2.2}
+.tab.fab{margin-top:-20px}
+.fabb{width:58px;height:58px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -6px rgba(228,130,110,.7);border:4px solid #fff}
+body.jp .fabb{box-shadow:0 8px 18px -6px rgba(117,87,227,.55)}
+.fabb.recording{background:var(--rec);box-shadow:0 0 0 6px rgba(179,55,42,.18)}
+.tab.fab span{margin-top:1px}
+.badge{position:absolute;top:-4px;inset-inline-end:-9px;min-width:17px;height:17px;border-radius:9px;background:var(--coral);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:1.5px solid #fff}
+.tab .icw{position:relative}
+
+/* פס ההקלטה — מצב של המערכת, לא מסך */
+.recbar{flex:none;background:var(--rec);color:#fff;display:flex;align-items:center;gap:10px;padding:0 12px 0 14px;height:48px;position:relative;z-index:22}
+.recbar.paused{background:var(--pausebar)}
+.recbar .rdot{width:9px;height:9px;border-radius:50%;background:#fff;animation:blink 1.5s infinite;flex:none}
+.recbar.paused .rdot{animation:none;opacity:.55;border-radius:2px;width:9px}
+.recbar .rclock{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;direction:ltr;flex:none}
+.recbar .rwho{flex:1;min-width:0;font-size:12.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recbar .rwho b{font-weight:600}
+.recbar .rwho small{display:block;font-size:11.5px;opacity:.8}
+.recbar .rbtn{height:32px;border-radius:999px;border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;gap:5px;padding:0 11px;font-size:12.5px;font-weight:600;flex:none}
+.recbar .rbtn.mk{background:var(--mark);color:var(--mark-ink);border-color:var(--mark)}
+.recbar .rbtn.sq{width:32px;padding:0}
+.recbar .rup{display:flex;align-items:center;gap:4px;font-size:11.5px;opacity:.9;flex:none}
+@keyframes blink{50%{opacity:.25}}
+
+/* מסך ההקלטה המלא */
+.recscr{background:#0E2236;color:#fff}
+body.jp .recscr{background:#2E2950}
+.rs-top{display:flex;align-items:center;gap:10px;padding:4px 18px 0}
+.rs-live{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#FFB4AB}
+body.jp .rs-live{color:#FFC2C9}
+.rs-live i{width:8px;height:8px;border-radius:50%;background:#FF6B5F;animation:blink 1.4s infinite}
+.rs-who{text-align:center;padding:22px 20px 0}
+.rs-who b{display:block;font-size:22px;font-weight:700}
+.rs-who span{display:block;font-size:13px;color:#9FC0DA;margin-top:4px}
+body.jp .rs-who span{color:#CBC0F7}
+.rs-clock{text-align:center;font-size:64px;font-weight:300;letter-spacing:.01em;font-variant-numeric:tabular-nums;direction:ltr;margin-top:14px;line-height:1}
+.rs-wave{display:flex;align-items:center;justify-content:center;gap:3px;height:56px;margin:16px 26px 0}
+.rs-wave i{display:block;width:4px;border-radius:2px;background:rgba(255,255,255,.75)}
+.rs-wave.flat i{background:rgba(255,255,255,.25)}
+.rs-ctl{display:flex;align-items:center;justify-content:center;gap:30px;margin-top:26px}
+.rs-c{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12.5px;color:#DCEBF5}
+.rs-c .cb{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#fff}
+.rs-c .cb.mk{width:84px;height:84px;background:var(--mark);color:var(--mark-ink)}
+.rs-c .cb.stop{background:#fff;color:var(--rec)}
+.rs-sheet{background:#fff;color:var(--ink);border-radius:22px 22px 0 0;margin-top:26px;flex:1;padding:6px 0 0}
+.grab{width:38px;height:5px;border-radius:3px;background:var(--line-2);margin:4px auto 8px}
+
+/* גיליון תחתון / פופאפ */
+.dim{position:absolute;inset:0;background:rgba(12,38,58,.42);z-index:60}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;z-index:61;padding:6px 20px 34px;box-shadow:0 -10px 40px rgba(0,0,0,.18)}
+.sheet h3{margin:6px 0 4px;font-size:19px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px}
+.sheet h3 .x{margin-inline-start:auto;width:32px;height:32px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.sheet p{margin:4px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.opt{border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;margin-top:10px}
+.opt.on{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy) inset;background:var(--row-on)}
+.opt .oi{width:40px;height:40px;border-radius:12px;background:var(--tint);color:var(--navy);display:flex;align-items:center;justify-content:center;flex:none}
+.opt b{display:block;font-size:14px;color:var(--ink);font-weight:600}
+.opt span{display:block;font-size:12px;color:var(--ink-3);margin-top:2px}
+.toast{position:absolute;left:14px;right:14px;bottom:98px;background:var(--ink);color:#fff;border-radius:14px;padding:12px 14px;font-size:13px;display:flex;align-items:center;gap:10px;z-index:55;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.toast a{margin-inline-start:auto;color:#9FD6F2;font-weight:600;text-decoration:none;white-space:nowrap}
+body.jp .toast a{color:#CBC0F7}
+
+/* ציר היום */
+.tl{position:relative;padding:4px 0}
+.tl-r{display:flex;gap:12px;padding:10px 16px;position:relative}
+.tl-time{width:44px;flex:none;font-size:14px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;padding-top:1px}
+.tl-time small{display:block;font-size:11.5px;font-weight:400;color:var(--ink-3)}
+.tl-bar{width:3px;border-radius:2px;flex:none;align-self:stretch}
+.tl-mn{flex:1;min-width:0}
+.tl-r.done .t1{color:var(--ink-3)}
+.tl-now{display:flex;align-items:center;gap:8px;padding:0 16px;margin:2px 0}
+.tl-now b{font-size:11.5px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;width:44px}
+.tl-now i{flex:1;height:1.5px;background:var(--coral);border-radius:1px}
+
+/* מסך נעילה */
+.lock{background:linear-gradient(180deg,#27425E,#16293D 60%,#0F1E2E);color:#fff}
+body.jp .lock{background:linear-gradient(180deg,#5B5190,#3A3366 60%,#29244A)}
+.lk-date{text-align:center;font-size:17px;font-weight:500;margin-top:18px;opacity:.9}
+.lk-time{text-align:center;font-size:88px;font-weight:600;line-height:1;margin-top:2px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.la{margin:28px 12px 0;background:rgba(20,24,30,.72);backdrop-filter:blur(20px);border-radius:24px;padding:14px 16px}
+.la-top{display:flex;align-items:center;gap:10px}
+.la-logo{width:30px;height:30px;border-radius:8px;background:var(--navy);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+.la-top b{font-size:14px;font-weight:600}
+.la-top span{font-size:12px;opacity:.7;display:block}
+.la-clock{margin-inline-start:auto;font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;color:#FF6B5F;direction:ltr}
+.la-btns{display:flex;gap:8px;margin-top:12px}
+.la-btns div{flex:1;height:40px;border-radius:999px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600}
+.la-btns div.mk{background:var(--mark);color:var(--mark-ink)}
+.notif{margin:10px 12px 0;background:rgba(245,247,250,.88);color:#12263A;border-radius:22px;padding:12px 14px;display:flex;gap:10px}
+.notif .la-logo{flex:none}
+.notif b{font-size:14px;display:block}
+.notif span{font-size:13px;color:#44566A;display:block;line-height:1.4;margin-top:1px}
+.notif small{margin-inline-start:auto;font-size:12px;color:#7A8898;flex:none}
+
+/* אנדרואיד */
+.andr .scr{border-radius:34px}
+.andr.phone{border-radius:44px}
+.a-shade{background:#1F2428;color:#fff;flex:1;padding:8px 14px}
+.a-qs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 4px 18px}
+.a-qs i{height:54px;border-radius:18px;background:#343A40;display:block}
+.a-n{background:#2B3137;border-radius:22px;padding:14px 16px;margin-top:10px}
+.a-n .an-h{display:flex;align-items:center;gap:8px;font-size:12px;color:#B7C3CF}
+.a-n .an-h .la-logo{width:20px;height:20px;border-radius:50%;font-size:9px}
+.a-n b{display:block;font-size:15px;margin-top:8px}
+.a-n span{display:block;font-size:13px;color:#B7C3CF;margin-top:2px}
+.a-n .an-a{display:flex;gap:18px;margin-top:12px;font-size:13.5px;font-weight:600;color:#9FD6F2}
+
+/* מצלמה */
+.cam{background:#0B0D10;color:#fff}
+.cam-view{flex:1;position:relative;background:radial-gradient(ellipse at 50% 45%,#5d5a52,#2a2925 70%);overflow:hidden}
+.paper{position:absolute;left:62px;right:58px;top:92px;bottom:120px;background:#F4F1E8;transform:rotate(-3deg);border-radius:3px;box-shadow:0 20px 40px rgba(0,0,0,.5);padding:26px 22px;color:#555}
+.paper i{display:block;height:7px;background:#cfcabc;border-radius:3px;margin-top:10px}
+.edge{position:absolute;left:54px;right:50px;top:84px;bottom:112px;border:3px solid #7FD1F7;border-radius:6px;transform:rotate(-3deg);box-shadow:0 0 0 2000px rgba(0,0,0,.28)}
+body.jp .edge{border-color:#CBC0F7}
+.cam-ctl{height:170px;display:flex;align-items:center;justify-content:space-around;padding-bottom:30px}
+.shutter{width:74px;height:74px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center}
+.shutter i{width:60px;height:60px;border-radius:50%;background:#fff;display:block}
+
+/* צ׳אט AI */
+.bub{max-width:82%;border-radius:18px;padding:10px 13px;font-size:14px;line-height:1.5}
+.bub.me{background:var(--navy);color:#fff;margin-inline-start:auto;border-end-end-radius:6px}
+.bub.ai{background:#fff;border:1px solid var(--line);color:var(--ink);border-end-start-radius:6px}
+
+/* שלד טעינה */
+.sk{background:linear-gradient(90deg,#E9EEF3 0,#F3F6F9 40%,#E9EEF3 80%);background-size:300px 100%;border-radius:8px;animation:sk 1.3s infinite linear}
+body.jp .sk{background:linear-gradient(90deg,#EEEAF6 0,#F7F4FC 40%,#EEEAF6 80%);background-size:300px 100%}
+@keyframes sk{from{background-position:-300px 0}to{background-position:300px 0}}
+
+/* מצב "רק אחד" לצילום */
+body.only .doc-top,body.only .intro,body.only .part-h,body.only .doc-idx{display:none}
+body.only .doc{padding:24px}
+body.only .sec{border:0;padding:0}
+@media (max-width:1100px){.sec{grid-template-columns:1fr}.intro{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="doc-top">
+  <div class="doc-top-in">
+    <div class="doc-logo">HK-APP <small>אפיון האפליקציה הסלולרית · 14.09.2026 · טיוטה לבוקר</small></div>
+    <div class="seg"><button data-tab="adv" onclick="setTab('adv')">יועץ</button><button data-tab="cli" onclick="setTab('cli')">לקוח</button></div>
+    <div class="seg"><button data-brand="hk" onclick="setBrand('hk')">HK</button><button data-brand="jp" onclick="setBrand('jp')">Jampa</button></div>
+    <span class="doc-sp"></span>
+    <span class="doc-meta">TASK.md באותה תיקייה · מסמך סטטי, נפתח מ-file://</span>
+  </div>
+  <nav class="doc-idx" id="idx"></nav>
+</header>
+<main class="doc" id="doc"></main>
+<script>
+/* =====================================================================
+   מנוע המסמך: מותג, מונחים, אייקונים, מסגרת טלפון
+   ===================================================================== */
+const S = { tab:'adv', brand:'hk' };
+const JP = () => S.brand === 'jp';
+
+/* מונחים — כל טקסט תלוי־מותג עובר כאן. HK ↔ Jampa */
+const TERMS = {
+  client:      ['לקוח','מטופלת'],
+  clients:     ['לקוחות','מטופלים'],
+  clientOf:    ['של הלקוח','של המטופלת'],
+  toClient:    ['ללקוח','למטופלת'],
+  advisor:     ['יועץ','מטפלת'],
+  prep:        ['הכנה לפגישה','בריף לפגישה'],
+  memory:      ['זיכרון','פרופיל'],
+  memoryOf:    ['הזיכרון של','הפרופיל של'],
+  feedback:    ['משוב עליך','סופרוויזיון'],
+  portfolio:   ['התיק שלי','המטופלים שלי'],
+  searchCl:    ['חיפוש לקוח','חיפוש מטופל'],
+  company:     ['חברה','מטופלת'],
+};
+const t = k => (TERMS[k] ? TERMS[k][JP()?1:0] : k);
+const pick = (hk, jp) => JP() ? jp : hk;
+
+/* אייקונים — קו אחד, 24px, בלי קישוט */
+const P = {
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  tasks:'<path d="M3 6l2 2 4-4M3 14l2 2 4-4"/><path d="M13 6h8M13 14h8M13 20h8"/>',
+  mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  home:'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/>',
+  camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3.5"/>',
+  spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7z"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  pause:'<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+  play:'<path d="M7 4l13 8-13 8z"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>',
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  back:'<path d="M9 18l6-6-6-6"/>',
+  chev:'<path d="M15 18l-6-6 6-6"/>',
+  down:'<path d="M6 9l6 6 6-6"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  x:'<path d="M18 6L6 18M6 6l12 12"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  wifioff:'<path d="M2 2l20 20M8.5 16.4a5 5 0 0 1 7 0M5 12.6a10 10 0 0 1 5.2-2.8M19 12.6a10 10 0 0 0-2.1-1.6M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.7 5M12 20h.01"/>',
+  cloud:'<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+  battery:'<rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  headset:'<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  people:'<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M15 14.5a5 5 0 0 1 6.5 4.8"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',
+  down2:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
+  storage:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+};
+const ic = (n, s=22, w=1.8, extra='') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" ${extra}>${P[n]||''}</svg>`;
+const icf = (n, s=22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor">${P[n]||''}</svg>`;
+
+/* מספר: LTR, tabular, מינוס משמאל, ₪ קטן וקבוע */
+const nis = (v, cls='') => {
+  const neg = v < 0, a = Math.abs(v).toLocaleString('en-US');
+  return `<span class="num ${cls}">${neg?'-':''}${a}<span class="cur">₪</span></span>`;
+};
+
+/* פס סטטוס iOS (RTL: שעה מימין) */
+const sbar = (time='10:54', dark=false, bg='') => `
+  <div class="sbar ${dark||bg?'dark':''}" style="${bg?`background:${bg}`:''}">
+    <span class="num">${time}</span>
+    <span class="st-r">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.3c2.3 0 4.4.9 6 2.4l1.2-1.3A10.4 10.4 0 0 0 8 .5C5.2.5 2.7 1.6.8 3.4L2 4.7a8.6 8.6 0 0 1 6-2.4zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.2-1.3A6.8 6.8 0 0 0 8 4.1a6.8 6.8 0 0 0-4.6 1.8l1.2 1.3c.9-.8 2.1-1.3 3.4-1.3zM8 9.5a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x=".5" y=".5" width="22" height="11" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/><path d="M24 4v4c.8-.3 1.3-1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity=".4"/></svg>
+    </span>
+  </div>`;
+
+/* מסגרת טלפון. o: {time, dark, island:'rec'|'', homeLight, cls, scrCls} */
+const phone = (inner, o={}) => `
+  <div class="phone ${o.cls||''}">
+    <div class="scr ${o.scrCls||''}">
+      ${o.noIsland?'':`<div class="island ${o.island?'act':''}">`}${o.island==='rec'?`<i class="idot"></i><span class="itime num">${o.islandTime||'12:04'}</span>`:''}${o.noIsland?'':'</div>'}
+      ${o.noSbar?'':sbar(o.time, o.dark, o.sbg || (o.dark && !o.scrCls && !o.cls ? 'var(--navy)' : ''))}
+      ${inner}
+      <div class="homeind ${o.homeLight?'light':''}"></div>
+    </div>
+  </div>`;
+
+/* טאב־בר תחתון */
+const TABS = {
+  adv: () => [
+    {k:'today', l:'היום', i:'sun'},
+    {k:'tasks', l:'משימות', i:'tasks', b:3},
+    {k:'rec', l:'הקלטה', i:'mic', fab:true},
+    {k:'clients', l:t('clients'), i:'users'},
+    {k:'meet', l:'פגישות', i:'cal', b: JP()?1:2},
+  ],
+  cli: () => [
+    {k:'home', l:'בית', i:'home'},
+    {k:'wait', l:'מחכה ממני', i:'inbox', b:2},
+    {k:'doc', l:'מסמך', i:'camera', fab:true},
+    {k:'meet', l:'פגישות', i:'cal'},
+    {k:'ai', l:'עוזר', i:'spark'},
+  ],
+};
+const tabbar = (set, on, o={}) => { const rec = o.recording || !!o.rec, pz = !!(o.rec && o.rec.paused), rt = (o.rec && o.rec.time) || o.recTime || '12:04'; return `
+  <div class="tabs">${TABS[set]().map(x => x.fab
+    ? `<div class="tab fab"><div class="fabb ${rec?'recording':''}" style="${pz?'background:var(--pausebar);box-shadow:none':''}">${rec?`<span class="num" style="font-size:12.5px;font-weight:700">${rt}</span>`:ic(x.i,26,2)}</div><span>${rec?(pz?'מושהה':'מקליט'):x.l}</span></div>`
+    : `<div class="tab ${x.k===on?'on':''}"><div class="icw">${ic(x.i,24)}${x.b&&!o.noBadge?`<span class="badge num">${x.b}</span>`:''}</div><span>${x.l}</span></div>`
+  ).join('')}</div>`; };
+
+/* פס ההקלטה — מופיע מעל כל מסך כשיש הקלטה פעילה או מושהית */
+const recbar = (o={}) => {
+  const paused = o.paused;
+  return `<div class="recbar ${paused?'paused':''}">
+    <i class="rdot"></i>
+    <span class="rclock">${o.time||'12:04'}</span>
+    <span class="rwho">${paused?'<b>מושהה</b>':'<b>מקליט</b>'} · ${o.who||pick('מטעי גבעון','מיכל אדרי')}<small>${o.sub||pick('שיחת מעקב · 2 רגעים','פגישה שבועית · 2 רגעים')}</small></span>
+    ${o.offline?`<span class="rup">${ic('cloud',16,2)}<span>במכשיר</span></span>`:''}
+    ${paused
+      ? `<span class="rbtn">${icf('play',14)}המשך</span>`
+      : `<span class="rbtn mk">${ic('flag',15,2.2)}רגע</span>`}
+  </div>`;
+};
+
+/* גל קול */
+const wave = (n=34, dim=false, seed=1) => `<div class="rs-wave ${dim?'flat':''}">${
+  Array.from({length:n},(_,i)=>{const h=dim?6:Math.round(10+Math.abs(Math.sin(i*0.55+seed)*Math.cos(i*0.23))*44);return `<i style="height:${h}px"></i>`}).join('')}</div>`;
+
+/* בלוק הסבר ליד מסך */
+const notes = s => `
+  <div class="notes">
+    <div class="n-h"><span class="n-code">${s.code}</span><h3>${s.title}</h3></div>
+    ${s.top?`<div class="n-top">${s.top}</div>`:''}
+    ${s.why?`<div class="n-blk"><h4>${(s.lab&&s.lab.why)||'למה המסך קיים'}</h4><p>${s.why}</p></div>`:''}
+    ${s.see?`<div class="n-blk"><h4>${(s.lab&&s.lab.see)||'מה רואים'}</h4>${Array.isArray(s.see)?`<ul>${s.see.map(x=>`<li>${x}</li>`).join('')}</ul>`:`<p>${s.see}</p>`}</div>`:''}
+    ${s.tap?`<div class="n-blk"><h4>${(s.lab&&s.lab.tap)||'מה לוחצים'}</h4>${Array.isArray(s.tap)?`<ul>${s.tap.map(x=>`<li>${x}</li>`).join('')}</ul>`:`<p>${s.tap}</p>`}</div>`:''}
+    ${s.data?`<div class="n-blk"><h4>${(s.lab&&s.lab.data)||'מאיפה הנתונים'}</h4>${Array.isArray(s.data)?`<ul>${s.data.map(x=>`<li>${x}</li>`).join('')}</ul>`:`<p>${s.data}</p>`}</div>`:''}
+    ${s.extra||''}
+    ${s.chg?`<div class="n-blk n-chg"><h4>מה משתנה מהאפליקציה של היום</h4>${Array.isArray(s.chg)?`<ul>${s.chg.map(x=>`<li>${x}</li>`).join('')}</ul>`:`<p>${s.chg}</p>`}</div>`:''}
+  </div>`;
+
+const miss = s => `<span class="miss">${s}</span>`;
+const code = s => `<code>${s}</code>`;
+/* =====================================================================
+   יועץ / מטפלת — המסכים
+   ===================================================================== */
+const D = () => JP() ? {
+  me:'ענת שלו', meIni:'עש', office:'הקליניקה של ענת שלו',
+  next:{time:'13:00', who:'מיכל אדרי', what:'שיחת מעקב', hint:'שבועיים בלי פגישה', in:'2:06'},
+  done:{who:'שרה לוינסון', what:'פגישה שבועית', time:'09:00', len:'45'},
+  day:[
+    {t:'09:00', e:'09:45', who:'שרה לוינסון', what:'פגישה שבועית', m:'הוקלטה 45 דק׳ · הסיכום מחכה לאישור', k:'meet', done:true},
+    {now:'10:54'},
+    {t:'13:00', who:'מיכל אדרי', what:'שיחת מעקב', m:'<span class="okc"><i class="dot"></i>הבריף נפתח</span> · שבועיים בלי פגישה', k:'call', next:true},
+    {t:'16:00', who:'נועה ברק', what:'פגישה שבועית', m:'שלב 4 · עבודה על דפוסים', k:'meet'},
+    {t:'17:30', who:'דניאל כהן', what:'פגישה מתגברת', m:'<span class="wrn"><i class="dot"></i>הבריף לא נפתח</span>', k:'meet'},
+  ],
+  att:[
+    {d:'inf', q:'“למה אחרי שמשהו מצליח לי אני מיד מוצאת מה היה לא בסדר בו”', who:'נועה ברק', src:'שיחה · היום 09:41'},
+    {d:'al', q:'ביטלה פגישה שנייה ברצף', who:'יואב פרידמן', src:'יומן · אתמול'},
+    {d:'inf', q:'“עשינו את שיחת הערב בלי מסכים. זה היה מוזר בהתחלה”', who:'דניאל כהן', src:'הודעה · לפני 3 ימים'},
+  ],
+} : {
+  me:'אילון שחר', meIni:'אש', office:'שחר ייעוץ עסקי',
+  next:{time:'13:00', who:'מטעי גבעון', what:'שיחת מעקב', hint:'אחרי חריגת התקציב', in:'2:06'},
+  done:{who:'אנרגי אינטרנשיונל', what:'פגישה שוטפת — סקירת תזרים', time:'09:00', len:'46'},
+  day:[
+    {t:'08:00', who:'', what:'סקירת התראות הבוקר', m:'משימה · 20 דק׳', k:'task', done:true},
+    {t:'09:00', e:'09:46', who:'אנרגי אינטרנשיונל', what:'פגישה שוטפת', m:'הוקלטה 46 דק׳ · הסיכום מחכה לאישור', k:'meet', done:true},
+    {now:'10:54'},
+    {t:'11:30', who:'אנרגי גולני', what:'שיחת גבייה', m:'חוב פתוח 1,200 ₪ · 15 דק׳', k:'call'},
+    {t:'13:00', who:'מטעי גבעון', what:'שיחת מעקב', m:'<span class="okc"><i class="dot"></i>ההכנה נפתחה</span> · אחרי חריגת התקציב', k:'call', next:true},
+    {t:'14:30', who:'רימון יצחק', what:'הצעת מסגרת אשראי', m:'לפי בקשה מהפגישה האחרונה', k:'meet'},
+    {t:'16:00', who:'משה עובד', what:'פגישה חודשית — ספטמבר', m:'Zoom · <span class="wrn"><i class="dot"></i>ההכנה לא נפתחה</span>', k:'meet'},
+  ],
+  att:[
+    {d:'al', q:'“אני מרגיש שאנחנו לא מתקדמים עם הבנק”', who:'אנרגי אינטרנשיונל · צחי עובד', src:'פגישה · היום 09:32'},
+    {d:'inf', q:'סגרנו חוזה עם מרכז הבנייה — התחלה באוקטובר', who:'מטעי גבעון · תומר לוי', src:'קבוצה · אתמול 21:40'},
+    {d:'al', q:'ביטלה פגישה שנייה ברצף', who:'משה עובד · יעל', src:'יומן · אתמול'},
+  ],
+};
+const barColor = k => JP() ? ({meet:'#7557E3',call:'#989EF5',task:'#C8CCFF'})[k] : ({meet:'#13895b',call:'#E4826E',task:'#8E7CC3'})[k];
+
+/* ---------- A1 · היום ---------- */
+function scrToday(o={}){
+  const d=D();
+  let day=d.day.slice();
+  if(o.rec){ day=day.filter(r=>!r.now); const i=day.findIndex(r=>r.next); day.splice(i+1,0,{now:'13:13'}); }
+  const rows=day.map(r=> r.now
+    ? `<div class="tl-now"><b>${r.now}</b><i></i></div>`
+    : `<div class="tl-r ${r.done?'done':''}">
+        <div class="tl-time">${r.t}${r.e?`<small>עד ${r.e}</small>`:''}</div>
+        <span class="tl-bar" style="background:${barColor(r.k)}"></span>
+        <div class="tl-mn"><div class="t1" style="font-size:14px">${r.who?`<b style="${r.done?'color:var(--ink-3)':''}">${r.who}</b> · `:''}${r.what}</div><div class="t2">${r.m}</div></div>
+      </div>`).join('');
+  return `
+  ${o.rec?recbar(o.rec):''}
+  <div class="band" style="${o.rec?'padding-top:12px':''}">
+    <div class="band-top"><div><h1>היום</h1></div><span class="band-sp"></span><span class="sub" style="margin:0 0 12px">יום שני · 14.09.2026</span><span class="av">${d.meIni}</span></div>
+    <div style="margin-top:14px;display:flex;align-items:flex-end;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;color:var(--on-navy-2)">${o.rec?'עכשיו · מקליט':`האירוע הבא · <span class="num">בעוד ${d.next.in}</span>`}</div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-top:3px"><span class="num" style="font-size:22px;font-weight:600">${d.next.time}</span><span style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.next.who} · ${d.next.what}</span></div>
+        <div style="font-size:12px;color:var(--on-navy-2);margin-top:2px">${d.next.hint}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      ${o.rec?`<span class="btn blk ghost-n" style="flex:1">למסך ההקלטה</span>`:`<span class="btn pri" style="flex:1">${ic('mic',18,2)}הקלטה</span>`}
+      <span class="btn ghost-n" style="flex:1">${t('prep')}</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="stack">
+      <div class="pn">
+        <div class="row" style="border:0">
+          <span style="width:40px;height:40px;border-radius:12px;background:var(--warn-bg);color:var(--warn);display:flex;align-items:center;justify-content:center;flex:none">${ic('file',20)}</span>
+          <div class="mn"><div class="t1"><b>הסיכום מוכן לאישור</b></div><div class="t2">${d.done.who} · ${d.done.what} · <span class="num">${d.done.time}</span></div></div>
+          <span class="chev">${ic('chev',20)}</span>
+        </div>
+      </div>
+      <div class="pn">
+        <div class="pn-h"><b>היומן שלי</b><span>${pick('שש · שתיים הסתיימו','ארבע · אחת הסתיימה')}</span><a>היומן המלא</a></div>
+        <div class="tl">${rows}</div>
+      </div>
+      <div class="pn">
+        <div class="pn-h"><b>תשומת לב</b><span>שלושה ימים אחרונים</span><a>הכל</a></div>
+        ${d.att.map(a=>`<div class="row" style="align-items:flex-start"><i class="dot ${a.d}" style="margin-top:7px"></i><div class="mn"><div class="t1">${a.q}</div><div class="t2"><b style="color:var(--link);font-weight:600">${a.who}</b> · ${a.src}</div></div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  ${tabbar('adv','today',o)}`;
+}
+
+/* ---------- A2 · משימות ---------- */
+function scrTasks(o={}){
+  const G = JP() ? [
+    {h:'עבר זמנן', cls:'al', rows:[{t:'להתקשר לאם של דניאל — הסכמת הורים', m:'<b class="inf">דניאל כהן</b> · <span class="al">היה לאתמול</span>'}]},
+    {h:'היום · שני 14.09', rows:[
+      {t:'אישור סיכום — פגישה שבועית', m:'<span style="color:#7557E3"><i class="dot"></i>מפגישה</span> · <b class="inf">שרה לוינסון</b>'},
+      {t:'להכין דף תרגול — תקשורת זוגית', m:'<b class="inf">יואב פרידמן</b> · לפני 16:00', swipe:true},
+      {t:'לקרוא את ההודעה על הצגה בישיבה', m:'<b class="inf">מיכל אדרי</b> · לפני השיחה ב-13:00', done:true},
+    ]},
+    {h:'מחר · שלישי 15.09', rows:[{t:'לעבור על הסופרוויזיון של השבוע', m:'4 פגישות · ↻ כל שלישי'}]},
+  ] : [
+    {h:'עבר זמנן', cls:'al', rows:[{t:'לשלוח לרימון את הצעת המסגרת', m:'<b class="inf">רימון יצחק</b> · <span class="al">היה ל-11.09</span>'}]},
+    {h:'היום · שני 14.09', rows:[
+      {t:'אישור הסיכום — פגישה שוטפת', m:'<span style="color:#8E7CC3"><i class="dot"></i>מפגישה</span> · <b class="inf">אנרגי אינטרנשיונל</b>'},
+      {t:'לבדוק עם הבנק את מסגרת האשראי', m:'<b class="inf">אנרגי גולני</b> · לפני 11:30', swipe:true},
+      {t:'לחזור לרו״ח על המע״מ', m:'<b class="inf">מטעי גבעון</b> · לפני השיחה ב-13:00', done:true},
+    ]},
+    {h:'מחר · שלישי 15.09', rows:[{t:'עדכוני וואטסאפ ללקוחות', m:'4 חברות · ↻ כל שלישי'}]},
+    {h:'בלי תאריך', rows:[{t:'הכנה לפגישת רבעון', m:'<b class="inf">משה עובד</b> · <span class="mut">● נשלח ליעל</span>'}]},
+  ];
+  const cb = done => `<span style="width:24px;height:24px;border-radius:50%;border:1.8px solid ${done?'var(--ok)':'var(--line-2)'};background:${done?'var(--ok)':'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;flex:none">${done?ic('check',14,3):''}</span>`;
+  return `
+  ${o.rec?recbar(o.rec):''}
+  <div class="bigtitle"><h1>משימות</h1><div class="sub">${pick('5 פתוחות · אחת באיחור','4 פתוחות · אחת באיחור')}</div></div>
+  <div class="chips"><span class="chip on">המשימות שלי <i>${pick(5,4)}</i></span>${JP()?'':'<span class="chip">ביקשתי מ-HK <i>3</i></span>'}<span class="chip">מפגישות</span><span class="chip">בוצעו</span></div>
+  <div class="body">
+    <div class="stack" style="gap:14px">
+    ${G.map(g=>`<div>
+      <div style="font-size:12.5px;font-weight:600;margin:2px 4px 6px" class="${g.cls||'mut'}">${g.cls?'<i class="dot"></i>':''}${g.h}</div>
+      <div class="pn" style="overflow:hidden">${g.rows.map(r=> r.swipe
+        ? `<div style="display:flex;border-top:1px solid var(--line)"><div class="row" style="flex:1;border:0;transform:translateX(0);margin-inline-end:-2px;background:#fff">${cb(false)}<div class="mn"><div class="t1">${r.t}</div><div class="t2">${r.m}</div></div></div>
+            <div style="display:flex;flex:none"><span style="width:62px;background:var(--navy);color:#fff;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center">מחר</span><span style="width:62px;background:var(--navy-2);color:#fff;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center">בשבוע</span></div></div>`
+        : `<div class="row">${cb(r.done)}<div class="mn"><div class="t1" style="${r.done?'color:var(--ink-3);text-decoration:line-through':''}">${r.t}</div><div class="t2">${r.m}</div></div></div>`).join('')}</div>
+    </div>`).join('')}
+    </div>
+  </div>
+  <div style="flex:none;padding:8px 16px;background:var(--bg);border-top:1px solid var(--line);display:flex;gap:8px;align-items:center">
+    <div class="input" style="flex:1;border-radius:999px;height:42px">משימה חדשה… <span style="color:var(--link);font-weight:600">@</span> לשיוך ${t('client')}</div>
+    <span style="width:42px;height:42px;border-radius:50%;background:var(--chip);color:var(--ink-3);display:flex;align-items:center;justify-content:center">${ic('plus',20,2.2)}</span>
+  </div>
+  ${tabbar('adv','tasks',o)}`;
+}
+
+/* ---------- A3 · לקוחות / מטופלים ---------- */
+function scrClients(){
+  const rows = JP() ? [
+    {n:'מיכל אדרי', s:'שלב 3 · כלים להתמודדות', a:'<span class="wrn"><i class="dot"></i>שבועיים בלי פגישה</span>', nx:'היום 13:00'},
+    {n:'נועה ברק', s:'שלב 4 · עבודה על דפוסים', a:'', nx:'היום 16:00'},
+    {n:'דניאל כהן', s:'שלב 2 · מיפוי צרכים', a:'<span class="al"><i class="dot"></i>לא ענה לשתי הודעות</span>', nx:'היום 17:30'},
+    {n:'שרה לוינסון', s:'שלב 1 · בניית קשר', a:'<span class="wrn"><i class="dot"></i>סיכום מחכה לאישור</span>', nx:'ראשון 09:00'},
+    {n:'יואב פרידמן', s:'שלב 2 · מיפוי צרכים', a:'<span class="al"><i class="dot"></i>ביטל פגישה שנייה ברצף</span>', nx:'לא נקבעה'},
+    {n:'עומר גל', s:'שלב 4 · עבודה על דפוסים', a:'', nx:'רביעי 13:00'},
+  ] : [
+    {n:'מטעי גבעון', s:'מוכן לפגישה · 3 ימים', a:'<span class="al"><i class="dot"></i>בעיה תזרימית</span>', nx:'היום 13:00'},
+    {n:'אנרגי אינטרנשיונל', s:'סיכום אושר · היום', a:'<span class="al"><i class="dot"></i>חוסר שביעות רצון</span>', nx:'05.10'},
+    {n:'רימון יצחק', s:'יעדים עודכנו · 2 ימים', a:'', nx:'היום 14:30'},
+    {n:'אנרגי גולני', s:'<span class="al">ממתין לחומר · 9 ימים · תקוע</span>', a:'', nx:'לא נקבעה'},
+    {n:'משה עובד', s:'הוזן · יום אחד', a:'<span class="wrn"><i class="dot"></i>אין פגישה הבאה</span>', nx:'היום 16:00'},
+    {n:'חורש מתכת', s:'מוכן לפגישה · יום אחד', a:'', nx:'רביעי 10:00'},
+  ];
+  return `
+  <div class="bigtitle"><h1>${t('portfolio')}</h1><div class="sub">${pick('32 לקוחות · 2 תקועים','14 מטופלים · 3 דורשים תשומת לב')}</div></div>
+  <div class="search">${ic('search',18)}<span>${t('searchCl')}</span></div>
+  <div class="chips">${(JP()
+    ? [['הכל',14,1],['דורשים תשומת לב',3],['שלב 1',2],['שלב 2',4],['שלב 3',3],['שלב 4',5]]
+    : [['הכל',32,1],['ממתין לחומר',5],['הוזן',3],['יעדים עודכנו',4],['מוכן לפגישה',12],['סיכום אושר',6]]
+  ).map(c=>`<span class="chip ${c[2]?'on':''}">${c[0]} <i class="num">${c[1]}</i></span>`).join('')}</div>
+  <div class="body">
+    <div class="stack" style="padding-top:8px">
+      <div class="pn" style="overflow:hidden">${rows.map(r=>`
+        <div class="row" style="min-height:64px">
+          <span class="av l" style="width:40px;height:40px">${r.n.split(' ').map(w=>w[0]).slice(0,2).join('')}</span>
+          <div class="mn"><div class="t1"><b>${r.n}</b></div><div class="t2">${r.s}${r.a?` · ${r.a}`:''}</div></div>
+          <div class="end"><div style="font-size:11.5px;color:var(--ink-3)">הפגישה הבאה</div><div class="num" style="font-size:12.5px;font-weight:600;color:${r.nx==='לא נקבעה'?'var(--warn)':'var(--navy)'}">${r.nx}</div></div>
+        </div>`).join('')}</div>
+    </div>
+  </div>
+  ${tabbar('adv','clients')}`;
+}
+
+/* ---------- A4 · כרטיס לקוח / מטופלת ---------- */
+function scrClient(o={}){
+  const jp=JP();
+  const other = !!o.other;
+  const name = other ? pick('רימון יצחק','נועה ברק') : pick('מטעי גבעון','מיכל אדרי');
+  const meetings = jp ? [
+    {d:'07.09', n:'פגישה שבועית', l:'50 דק׳', tag:'<span class="tag ok">אושר ונשלח</span>'},
+    {d:'24.08', n:'פגישה שבועית', l:'48 דק׳', tag:'<span class="tag ok">אושר ונשלח</span>'},
+    {d:'17.08', n:'פגישה שבועית', l:'', tag:'<span class="tag mute">לא התקיימה</span>'},
+  ] : [
+    {d:'07.09', n:'פגישה חודשית — אוגוסט', l:'52 דק׳', tag:'<span class="tag ok">אושר ונשלח</span>'},
+    {d:'01.09', n:'שיחה על המסגרת בבנק', l:'18 דק׳', tag:'<span class="tag wait">ממתין לאישור</span>'},
+    {d:'04.08', n:'פגישה חודשית — יולי', l:'47 דק׳', tag:'<span class="tag ok">אושר ונשלח</span>'},
+  ];
+  const act = (i,l)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:var(--ink-2)"><span style="width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--navy)">${ic(i,20)}</span>${l}</div>`;
+  return `
+  ${o.rec?recbar(o.rec):''}
+  <div class="hdr" style="${o.rec?'padding-top:10px':''}"><span class="back">${ic('back',20)}</span><div class="t">${name}<small>${other?pick('דורון יצחק · יעדים עודכנו · 2 ימים','שלב 4 · עבודה על דפוסים'):pick('תומר לוי · מוכן לפגישה · 3 ימים','שלב 3 · כלים להתמודדות')}</small></div></div>
+  <div class="body">
+    <div style="display:flex;padding:4px 20px 12px">${act('phone','חיוג')}${act('msg','וואטסאפ')}${jp?'':act('spark','עוזר')}${act('cal','פגישה חדשה')}</div>
+    <div class="stack" style="padding-top:0">
+      ${o.closed ? `
+      <div class="pn" style="border-color:var(--navy);box-shadow:0 0 0 1px var(--navy) inset">
+        <div class="pn-h"><b>הפגישה הוקלטה · טרם נסגרה</b></div>
+        <div class="pn-b" style="padding-top:0"><div class="t2" style="font-size:12.5px;color:var(--ink-3)"><span class="num">47:20</span> · 3 רגעים · הכל עלה לשרת ✓</div>
+        <div style="display:flex;gap:8px;margin-top:12px"><span class="btn pri" style="flex:1.4">סיום ושליחה לסיכום</span><span class="btn" style="flex:1">המשך הקלטה</span></div></div>
+      </div>` : `
+      ${other ? `
+      <div class="pn">
+        <div class="pn-h"><b>הפגישה הבאה</b><span class="num">היום</span></div>
+        <div class="pn-b" style="padding-top:0">
+          <div style="display:flex;align-items:baseline;gap:10px"><span class="num" style="font-size:22px;font-weight:600;color:var(--navy)">${pick('14:30','16:00')}</span><span class="t1" style="font-weight:600">${pick('הצעת מסגרת אשראי','פגישה שבועית')}</span></div>
+          <div class="t2" style="font-size:12px;color:var(--ink-3);margin-top:2px">${pick('במשרד · עם דורון יצחק','בקליניקה')}</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><span class="btn dis" style="flex:1.3">כבר מקליט את ${pick('מטעי גבעון','מיכל אדרי')}</span><span class="btn" style="flex:1">${t('prep')}</span></div>
+        </div>
+      </div>` : o.rec ? `
+      <div class="pn">
+        <div class="pn-h"><b>הפגישה עכשיו</b><span class="rec-t" style="color:var(--rec);font-weight:600">● מקליט</span></div>
+        <div class="pn-b" style="padding-top:0">
+          <div style="display:flex;align-items:baseline;gap:10px"><span class="num" style="font-size:22px;font-weight:600;color:var(--navy)">13:00</span><span class="t1" style="font-weight:600">${pick('שיחת מעקב · אחרי חריגת התקציב','שיחת מעקב')}</span></div>
+          <div style="display:flex;gap:8px;margin-top:12px"><span class="btn" style="flex:1">למסך ההקלטה</span><span class="btn" style="flex:1">${t('prep')}</span></div>
+        </div>
+      </div>` : `
+      <div class="pn">
+        <div class="pn-h"><b>הפגישה הבאה</b><span class="num">בעוד 2:06</span></div>
+        <div class="pn-b" style="padding-top:0">
+          <div style="display:flex;align-items:baseline;gap:10px"><span class="num" style="font-size:22px;font-weight:600;color:var(--navy)">13:00</span><span class="t1" style="font-weight:600">${pick('שיחת מעקב · אחרי חריגת התקציב','שיחת מעקב')}</span></div>
+          <div class="t2" style="font-size:12px;color:var(--ink-3);margin-top:2px">${pick('טלפון · עם תומר לוי','טלפון · שבועיים בלי פגישה')}</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><span class="btn pri" style="flex:1">${ic('mic',18,2)}הקלטה</span><span class="btn" style="flex:1">${t('prep')}</span></div>
+        </div>
+      </div>`}`}
+      ${jp ? `
+      <div class="pn"><div class="pn-h"><b>שלב בתהליך</b><span>בלי מספרים — שלב, לא ציון</span></div>
+        <div class="pn-b" style="padding-top:2px">
+          <div style="display:flex;gap:4px">${[1,2,3,4,5,6].map(i=>`<i style="flex:1;height:7px;border-radius:99px;background:${i<=(other?4:3)?'#7557E3':'#E5E7FF'}"></i>`).join('')}</div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px"><span class="t1" style="font-weight:600;color:var(--navy)">${other?'שלב 4 · עבודה על דפוסים':'שלב 3 · כלים להתמודדות'}</span><span class="t2" style="color:var(--ink-3);font-size:12px">${other?'מ-03.08':'מ-17.08'}</span></div>
+        </div></div>` : `
+      <div class="pn"><div class="live">
+        <div><div class="lv-l">יתרה נוכחית</div><div class="lv-n">${nis(other?1029208:312400)}</div><div class="lv-m">עו״ש · עודכן 08:10</div></div>
+        ${other?`<div><div class="lv-l">חריגה צפויה</div><div class="lv-n" style="font-size:17px;color:var(--ok);margin-top:10px"><i class="dot"></i>אין חריגה</div><div class="lv-m">ב-30 הימים הקרובים</div></div>`:`<div><div class="lv-l">חריגה צפויה</div><div class="lv-n bad">${nis(-161198)}</div><div class="lv-m">29.09 · <span class="al">בעוד 15 ימים</span></div></div>`}
+      </div></div>`}
+      <div class="pn">
+        <div class="pn-h"><b>פגישות</b><span>${pick('12 פגישות · מ-02.2026','9 פגישות · מ-05.2026')}</span><a>הכל</a></div>
+        ${meetings.map(m=>`<div class="row"><div class="tl-time" style="width:40px;font-size:13px">${m.d}</div><div class="mn"><div class="t1">${m.n}</div>${m.l?`<div class="t2">${m.l}</div>`:''}</div>${m.tag}</div>`).join('')}
+      </div>
+      <div class="pn">
+        <div class="pn-h"><b>${jp?'מהשיחה השבוע':'מהזיכרון'}</b><span>${jp?'ההודעות בין הפגישות':'מה חשוב לדעת'}</span></div>
+        ${(jp ? [
+          ['“כשהבת שלי צרחה עשיתי את הנשימה ולא צעקתי חזרה”','הודעה · 10.09'],
+          ['שאלה אם אפשר להקדים את הפגישה — לא נענתה','הודעה · 12.09'],
+        ] : [
+          ['פתח במספרים — תומר מאבד סבלנות מהקדמות','סגנון תקשורת · פגישה 07.09'],
+          ['תלות בלקוח מרכזי — רימון מוצרי אנרגיה (38% מההכנסות)','כאבי לקוח · קבוצה 02.09'],
+        ]).map(m=>`<div class="row" style="align-items:flex-start"><i class="dot inf" style="margin-top:7px"></i><div class="mn"><div class="t1">${m[0]}</div><div class="t2">${m[1]}</div></div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  ${tabbar('adv','clients',o)}`;
+}
+
+/* ---------- A5 · הכנה / בריף ---------- */
+function scrPrep(){
+  const jp=JP();
+  const sec=(h,items,mark)=>`<div class="pn"><div class="pn-h"><b>${h}</b></div>${items.map(x=>`<div class="row" style="align-items:flex-start;min-height:0;padding:10px 16px">${mark==='cb'?`<span style="width:20px;height:20px;border-radius:6px;border:1.8px solid var(--line-2);flex:none;margin-top:1px"></span>`:`<i class="dot inf" style="margin-top:7px"></i>`}<div class="mn"><div class="t1">${x[0]}</div>${x[1]?`<div class="t2">${x[1]}</div>`:''}</div></div>`).join('')}</div>`;
+  return `
+  <div class="hdr"><span class="back">${ic('back',20)}</span><div class="t">${t('prep')}<small>${pick('מטעי גבעון · היום 13:00 · שיחת מעקב','מיכל אדרי · היום 13:00 · שיחת מעקב')}</small></div></div>
+  <div class="body">
+    <div class="stack" style="padding-top:4px">
+      <div class="pn" style="background:var(--tint);border-color:var(--tint)">
+        <div class="pn-b" style="padding-top:14px"><div style="font-size:12px;color:var(--ink-3)">${jp?'בריף · 60 שניות':'המטרה של הפגישה'}</div>
+        <div style="font-size:17px;font-weight:600;color:var(--navy);margin-top:4px;line-height:1.4">${pick('לסגור איך מכסים את החריגה של 29.09 לפני שהשיק לספק נפרע','לחזור לשגרת פגישות אחרי שבועיים — ולבדוק מה קרה עם הנשימה בבית')}</div></div>
+      </div>
+      ${jp ? sec('תמונת מצב',[['שלב 3 · כלים להתמודדות — מ-17.08',''],['שבועיים בלי פגישה; שלחה שתי הודעות','הודעות · 10.09, 12.09']])
+           : sec('תמונת מצב',[['חריגה צפויה של 161,198 ₪ ב-29.09','תזרים · מתעדכן מהבנק'],['סגרו חוזה עם מרכז הבנייה — התחלה באוקטובר','קבוצה · אתמול']])}
+      ${sec('פתוח מהפגישה הקודמת',jp?[['דף תרגול — נשימה לפני תגובה','באחריות: מיכל · 07.09']]:[['להעביר 40,000 ₪ מפועלים ללאומי','באחריות: תומר · 07.09'],['לחזור לרו״ח על המע״מ','באחריות: אילון · בוצע היום']],'cb')}
+      ${sec(jp?'פתיחות — מה לשאול':'נקודות פתיחה',jp?[['“איך היה לעשות את הנשימה בזמן אמת?”',''],['לבדוק מה עומד מאחורי הדילוג על שתי פגישות','']]:[['הצעה: מסגרת זמנית של 150,000 ₪ עד 31.10',''],['לאשר את תקציב הקניות החדש — 130,000 ₪ לחודש','']],'cb')}
+      ${jp ? '' : sec('איך לדבר איתו',[['פתח במספרים — תומר מאבד סבלנות מהקדמות','מהזיכרון · סגנון תקשורת']])}
+    </div>
+  </div>
+  <div style="flex:none;padding:10px 16px 30px;background:#fff;border-top:1px solid var(--line)"><span class="btn pri blk">${ic('mic',18,2)}התחלת הקלטה</span></div>`;
+}
+
+/* ---------- A6 · פגישות ---------- */
+function scrMeetings(){
+  const jp=JP();
+  const rows = jp ? [
+    {w:'שרה לוינסון', n:'פגישה שבועית', d:'היום 09:00 · 45 דק׳', tag:'<span class="tag wait">ממתין לאישור</span>'},
+  ] : [
+    {w:'אנרגי אינטרנשיונל', n:'פגישה שוטפת — סקירת תזרים', d:'היום 09:00 · 46 דק׳', tag:'<span class="tag wait">ממתין לאישור</span>'},
+    {w:'מטעי גבעון', n:'שיחה על המסגרת בבנק', d:'01.09 · 18 דק׳', tag:'<span class="tag wait">ממתין לאישור</span>'},
+  ];
+  const later = jp ? [
+    {w:'עומר גל', n:'פגישה שבועית', d:'10.09 · לא הוקלטה', b:'העלאת הקלטה'},
+  ] : [
+    {w:'רימון יצחק', n:'פגישה חודשית — אוגוסט', d:'08.09 · לא הוקלטה', b:'העלאת הקלטה'},
+    {w:'חורש מתכת', n:'שיחת היכרות', d:'03.09 · לא הוקלטה', b:'סיכום ידני'},
+  ];
+  return `
+  <div class="bigtitle"><h1>פגישות</h1><div class="sub">${pick('2 מחכות לאישור · אחת לא נשלחה','אחת מחכה לאישור')}</div></div>
+  <div class="chips">${(jp?[['לאישור',1,1],['לא נשלחה',0],['לא הוקלטה',1],['קרובות',3],['הושלמו','']]:[['לאישור',2,1],['לא נשלחה',1],['לא הוקלטה',2],['קרובות',6],['הושלמו','']]).filter(c=>c[1]!==0).map(c=>`<span class="chip ${c[2]?'on':''}">${c[0]}${c[1]!==''?` <i class="num">${c[1]}</i>`:''}</span>`).join('')}</div>
+  <div class="body">
+    <div class="stack" style="padding-top:8px">
+      <div class="pn" style="overflow:hidden">${rows.map(r=>`<div class="row" style="min-height:68px"><div class="mn"><div class="t1"><b>${r.w}</b></div><div class="t2" style="color:var(--ink-2);font-size:12.5px">${r.n}</div><div class="t2">${r.d}</div></div>${r.tag}<span class="chev">${ic('chev',18)}</span></div>`).join('')}</div>
+      <div style="font-size:12.5px;font-weight:600;margin:6px 4px 0" class="mut">לא הוקלטה — ${t('memory')} לא התעדכן</div>
+      <div class="pn" style="overflow:hidden">${later.map(r=>`<div class="row" style="min-height:64px"><div class="mn"><div class="t1"><b>${r.w}</b> · ${r.n}</div><div class="t2">${r.d}</div></div><span class="btn sm">${r.b}</span></div>`).join('')}</div>
+      <div style="font-size:12.5px;font-weight:600;margin:6px 4px 0" class="mut">קרובות</div>
+      <div class="pn" style="overflow:hidden">
+        <div class="row"><div class="tl-time" style="width:44px">13:00</div><div class="mn"><div class="t1"><b>${pick('מטעי גבעון','מיכל אדרי')}</b> · שיחת מעקב</div><div class="t2">היום · בעוד 2:06</div></div><span class="btn sm pri">${ic('mic',15,2)}הקלטה</span></div>
+        <div class="row"><div class="tl-time" style="width:44px">${pick('14:30','16:00')}</div><div class="mn"><div class="t1"><b>${pick('רימון יצחק','נועה ברק')}</b> · ${pick('הצעת מסגרת אשראי','פגישה שבועית')}</div><div class="t2">היום</div></div></div>
+      </div>
+    </div>
+  </div>
+  ${tabbar('adv','meet')}`;
+}
+
+/* ---------- A7 · סיכום לאישור ---------- */
+function scrSummary(o={}){
+  const jp=JP();
+  const tabs = jp ? [['סיכום',1],['משימות 3'],['סופרוויזיון'],['תמלול']] : [['סיכום',1],['משימות 4'],['זיכרון 3'],['משוב עליך'],['תמלול']];
+  const stamp = s=>`<span class="num" style="font-size:11.5px;font-weight:600;color:var(--link);background:var(--info-bg);border-radius:6px;padding:1px 6px;margin-inline-start:6px">▸ ${s}</span>`;
+  const items = jp ? [
+    ['הגיעה בזמן והביאה נושא מיוזמתה, לראשונה','07:40'],
+    ['“לא רוצה להעמיס על הילדים” — חוזר בפעם השלישית','21:10'],
+    ['הנשימה לפני תגובה עבדה פעמיים השבוע','33:05'],
+  ] : [
+    ['היתרה עומדת על 312,400 ₪; החריגה הצפויה ב-29.09 היא 161,198 ₪','09:20'],
+    ['שיק לספק של 45,000 ₪ ב-25.09 הוא מה שמייצר את החריגה','14:02'],
+    ['החוזה עם מרכז הבנייה מתחיל באוקטובר — 19,800 ₪ בחודש','27:45'],
+  ];
+  return `
+  <div class="hdr"><span class="back">${ic('back',20)}</span><div class="t">סיכום — ${jp?'פגישה שבועית':'פגישה שוטפת'}<small>${pick('אנרגי אינטרנשיונל · היום 09:00–09:46','שרה לוינסון · היום 09:00–09:45')}</small></div></div>
+  <div class="chips" style="padding-bottom:10px">${tabs.map(x=>`<span class="chip ${x[1]?'on':''}">${x[0]}</span>`).join('')}</div>
+  <div class="body">
+    <div class="stack" style="padding-top:2px">
+      <div class="pn"><div class="pn-h"><b>${jp?'תמונת מצב':'תמונת מצב ונתוני יסוד'}</b></div>
+        ${items.map((x,i)=>`<div class="row" style="align-items:flex-start;min-height:0;padding:10px 16px"><span class="num" style="font-size:12.5px;font-weight:700;color:var(--ink-3);width:14px;flex:none">${i+1}</span><div class="mn"><div class="t1">${x[0]}${stamp(x[1])}</div></div></div>`).join('')}
+      </div>
+      <div class="pn"><div class="pn-h"><b>${jp?'דפוסים':'תובנות'}</b></div><div class="pn-b" style="padding-top:0">
+        <div class="t1" style="font-size:14px;line-height:1.55;color:var(--ink-2)">${pick('הבעיה היא לא הרווחיות אלא מועד הגבייה: 3 לקוחות גדולים משלמים שוטף+90 והספקים בשוטף+30.','נמנעת מלבקש עזרה גם כשהיא מציעה אותה לאחרים; זה עלה סביב הילדים ובעבודה.')}</div>
+        <div style="font-size:12.5px;font-weight:600;color:var(--link);margin-top:8px">קרא עוד</div></div></div>
+      <div class="pn"><div class="pn-h"><b>החלטות</b></div>
+        ${(jp?[['לנסות את הנשימה גם בשיחות עם אמא'],['פגישה הבאה — ראשון 09:00']]:[['מסגרת זמנית של 150,000 ₪ — תומר מדבר עם הבנק עד 18.09'],['תקציב קניות מלאי חדש — 130,000 ₪ לחודש']]).map(x=>`<div class="row" style="min-height:0;padding:10px 16px"><span class="okc">${ic('check',16,2.4)}</span><div class="mn"><div class="t1">${x[0]}</div></div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div style="flex:none;padding:10px 16px 30px;background:#fff;border-top:1px solid var(--line)">
+    <div style="font-size:12px;color:var(--ink-3);text-align:center;margin-bottom:8px">${pick('4 משימות ייפתחו עם האישור · 3 אצל תומר, אחת אצלך','3 משימות ייפתחו עם האישור')}</div>
+    <div style="display:flex;gap:8px"><span class="btn pri" style="flex:1.35">אישור ושליחה ${t('toClient')}</span><span class="btn" style="flex:1">אישור בלי שליחה</span></div>
+  </div>
+  ${o.sheet?`<div class="dim"></div><div class="sheet"><div class="grab"></div>
+    <h3>למי לשלוח את הסיכום?<span class="x">${ic('x',16,2)}</span></h3>
+    <p>בוואטסאפ. אף אחד לא מסומן מראש.</p>
+    ${(jp?[['שרה לוינסון','מטופלת · 054-…812',1]]:[['צחי עובד','בעל העסק · 052-…431',1],['אורית עובד','כספים · 050-…977',0],['טל מלקר','מנהלת התזרים',0]]).map(p=>`<div class="opt ${p[2]?'on':''}" style="padding:10px 14px"><span style="width:22px;height:22px;border-radius:6px;border:1.8px solid ${p[2]?'var(--navy)':'var(--line-2)'};background:${p[2]?'var(--navy)':'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;flex:none">${p[2]?ic('check',14,3):''}</span><div><b>${p[0]}</b><span>${p[1]}</span></div></div>`).join('')}
+    <div style="margin-top:16px"><span class="btn pri blk">לחיצה נוספת שולחת ל${pick('צחי','שרה')}</span></div>
+    <div style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:8px">הלחיצה הראשונה סימנה. השנייה שולחת — ואי אפשר לבטל.</div>
+  </div>`:''}`;
+}
+/* =====================================================================
+   הקלטה — מצב של המערכת, לא מסך
+   ===================================================================== */
+const RW = () => pick('מטעי גבעון','מיכל אדרי');
+const RWhat = () => pick('שיחת מעקב','שיחת מעקב');
+
+/* R1 · התחלה מהירה: גיליון מעל "היום" */
+function scrRecStart(o={}){
+  return scrToday({noBadge:true}) + `
+  <div class="dim"></div>
+  <div class="sheet"><div class="grab"></div>
+    <h3>הקלטה חדשה<span class="x">${ic('x',16,2)}</span></h3>
+    <div style="font-size:12px;font-weight:600;color:var(--ink-3);margin-top:12px">על איזו פגישה?</div>
+    <div class="opt on" style="padding:11px 14px"><span class="num" style="font-size:17px;font-weight:600;color:var(--navy);width:46px">13:00</span><div style="flex:1"><b>${RW()} · ${RWhat()}</b><span>מתחילה בעוד 2 דק׳ · מהיומן</span></div></div>
+    <div class="opt" style="padding:11px 14px"><span class="oi" style="width:34px;height:34px">${ic('plus',18,2)}</span><div><b>פגישה אחרת</b><span>${pick('בוחרים לקוח — הפרטים נסגרים אחרי','בוחרים מטופלת — הפרטים נסגרים אחרי')}</span></div></div>
+    <div style="font-size:12px;font-weight:600;color:var(--ink-3);margin-top:16px">איך מתקיימת הפגישה?</div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <div class="opt on" style="flex:1;margin:0;flex-direction:column;align-items:flex-start;gap:6px;padding:12px"><span class="oi" style="width:34px;height:34px">${ic('people',18)}</span><div><b>באותו חדר</b><span>מקליט מהמיקרופון</span></div></div>
+      <div class="opt" style="flex:1;margin:0;flex-direction:column;align-items:flex-start;gap:6px;padding:12px"><span class="oi" style="width:34px;height:34px">${ic('headset',18)}</span><div><b>בטלפון או בזום</b><span>רמקול פתוח, קרוב לטלפון</span></div></div>
+    </div>
+    ${o.warn?`<div style="margin-top:14px;background:var(--warn-bg);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--ink-2);line-height:1.5"><b class="wrn"><i class="dot"></i>סוללה 14%</b> — שעת הקלטה צורכת כ-8%. כדאי לחבר מטען.</div>`:''}
+    <div style="margin-top:16px"><span class="btn pri blk">${ic('mic',18,2)}התחלת הקלטה</span></div>
+  </div>`;
+}
+
+/* R2 · הרשאת מיקרופון */
+function scrMicDenied(){
+  return scrClient() + `
+  <div class="dim"></div>
+  <div class="sheet"><div class="grab"></div>
+    <div style="width:52px;height:52px;border-radius:16px;background:var(--warn-bg);color:var(--warn);display:flex;align-items:center;justify-content:center;margin:10px 0 4px">${ic('mic',26,2)}</div>
+    <h3>אין גישה למיקרופון<span class="x">${ic('x',16,2)}</span></h3>
+    <p>בלי מיקרופון אי אפשר להקליט את הפגישה. זה נפתח פעם אחת, בהגדרות של הטלפון.</p>
+    <div style="margin-top:12px;background:var(--chip);border-radius:12px;padding:10px 14px;font-size:13px;color:var(--ink-2);line-height:1.7">הגדרות ← ${pick('HK','Jampa')} ← <b>מיקרופון</b> ← להדליק</div>
+    <div style="margin-top:16px;display:flex;gap:8px"><span class="btn pri" style="flex:1.3">פתיחת ההגדרות</span><span class="btn" style="flex:1">לא עכשיו</span></div>
+    <div style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:10px">הפגישה נשארת ביומן. אפשר להעלות הקלטה בדיעבד.</div>
+  </div>`;
+}
+
+/* R3 · מסך ההקלטה המלא */
+function scrRecLive(o={}){
+  const paused=o.paused;
+  const marks = pick([['12:04','רגע חשוב'],['07:41','הוצגה החריגה של 29.09']],[['12:04','רגע חשוב'],['07:41','“לא רוצה להעמיס על הילדים”']]);
+  return `
+  <div class="rs-top">
+    <span class="ic-btn" style="color:#fff">${ic('down',22,2)}</span>
+    <span class="rs-live">${paused?'<span style="color:#B7C3CF">מושהה</span>':'<i></i>מקליט · נשמר אוטומטית'}</span>
+    <span class="band-sp"></span>
+    ${o.low?`<span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#FFB4AB">${ic('battery',18,2)}<span class="num">9%</span></span>`:`<span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#9FC0DA">${ic('cloud',18,2)}הכל עלה</span>`}
+  </div>
+  <div class="rs-who"><b>${RW()}</b><span>${RWhat()} · ${pick('תומר לוי','טלפון')} · התחלה 13:01</span></div>
+  <div class="rs-clock" style="${paused?'opacity:.45':''}">12:04</div>
+  ${wave(34,paused,1.3)}
+  <div class="rs-ctl">
+    <div class="rs-c"><span class="cb">${paused?icf('play',24):icf('pause',24)}</span>${paused?'המשך':'השהיה'}</div>
+    <div class="rs-c"><span class="cb mk">${ic('flag',30,2.2)}</span>סימון רגע</div>
+    <div class="rs-c"><span class="cb stop">${icf('stop',22)}</span>סיום</div>
+  </div>
+  ${o.low?`<div style="margin:18px 16px 0;background:rgba(255,180,171,.12);border:1px solid rgba(255,180,171,.35);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:#FFD9D4"><b>סוללה 9%</b> — כל שתי דקות נשמרות במכשיר. אם הטלפון ייכבה, מה שהוקלט לא יאבד.</div>`:''}
+  <div class="rs-sheet"><div class="grab"></div>
+    <div class="pn-h" style="padding-top:4px"><b>${pick('נקודות הפתיחה','פתיחות')}</b><span>1 מתוך 2 כוסו</span></div>
+    ${(JP()?[['איך היה לעשות את הנשימה בזמן אמת?',1],['מה עומד מאחורי הדילוג על שתי פגישות',0]]:[['מסגרת זמנית של 150,000 ₪ עד 31.10',1],['תקציב הקניות החדש — 130,000 ₪',0]]).map(x=>`<div class="row" style="min-height:0;padding:9px 16px"><span style="width:20px;height:20px;border-radius:6px;border:1.8px solid ${x[1]?'var(--ok)':'var(--line-2)'};background:${x[1]?'var(--ok)':'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;flex:none">${x[1]?ic('check',12,3):''}</span><div class="mn"><div class="t1" style="${x[1]?'color:var(--ink-3)':''}">${x[0]}</div></div></div>`).join('')}
+    <div class="pn-h" style="padding-top:12px"><b>רגעים שסימנת</b><span>כל רגע הופך לפרק בתמלול</span></div>
+    ${marks.map(m=>`<div class="row" style="min-height:0;padding:9px 16px"><span class="num" style="font-size:12.5px;font-weight:600;color:var(--link);width:40px">${m[0]}</span><div class="mn"><div class="t1">${m[1]}</div></div></div>`).join('')}
+  </div>`;
+}
+
+/* R6 · מסך נעילה + Live Activity */
+function scrLock(o={}){
+  return `
+  <div class="lk-date">יום שני, 14 בספטמבר</div>
+  <div class="lk-time">${o.notif?'13:50':'13:13'}</div>
+  ${o.notif?'':`<div class="la">
+    <div class="la-top"><span class="la-logo">${pick('HK','J')}</span><div><b>${o.paused?'מושהה':'מקליט'} · ${RW()}</b><span>${RWhat()} · 2 רגעים</span></div><span class="la-clock" style="${o.paused?'color:#B7C3CF':''}">12:04</span></div>
+    <div class="la-btns"><div class="mk">${ic('flag',16,2.2)}סימון רגע</div><div>${o.paused?icf('play',14)+'המשך':icf('pause',14)+'השהיה'}</div></div>
+  </div>`}
+  ${o.notif?`<div class="notif" style="margin-top:28px"><span class="la-logo">${pick('HK','J')}</span><div><b>הסיכום מוכן לאישור</b><span>${RW()} · ${RWhat()} · 47 דק׳</span></div><small>עכשיו</small></div>`:''}
+  <div style="flex:1"></div>
+  <div style="display:flex;justify-content:space-between;padding:0 46px 54px">
+    <span style="width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center">${ic('sun',22)}</span>
+    <span style="width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center">${ic('camera',22)}</span>
+  </div>`;
+}
+
+/* R6b · אנדרואיד — התראה קבועה של שירות חזית */
+function scrAndroid(){
+  return `
+  <div class="a-shade">
+    <div style="display:flex;justify-content:space-between;font-size:14px;padding:2px 6px"><span class="num">13:13</span><span>שני, 14 בספטמבר</span></div>
+    <div class="a-qs">${'<i></i>'.repeat(8)}</div>
+    <div class="a-n">
+      <div class="an-h"><span class="la-logo">${pick('HK','J')}</span>${pick('HK','Jampa')} · מקליט · <span class="num">12:04</span></div>
+      <b>מקליט · ${RW()}</b>
+      <span>${RWhat()} · 2 רגעים · הכל עלה</span>
+      <div class="an-a"><span>סימון רגע</span><span>השהיה</span><span>פתיחה</span></div>
+    </div>
+    <div class="a-n" style="opacity:.75">
+      <div class="an-h"><span class="la-logo" style="background:#25D366">W</span>WhatsApp · לפני 5 דק׳</div>
+      <b>${pick('קבוצת מטעי גבעון','עומר גל')}</b><span>${pick('תומר: שלחתי את דפי הבנק','אפשר לדבר מחר?')}</span>
+    </div>
+  </div>`;
+}
+
+/* R7 · שיחה נכנסת — אחרי שהשיחה נגמרה */
+function scrAfterCall(){
+  return scrClient({rec:{sub:pick('שיחת מעקב · 3 רגעים','שיחת מעקב · 3 רגעים'),time:'15:27'}}) + `
+  <div class="toast" style="bottom:98px;align-items:flex-start"><span style="color:#9FD6F2;margin-top:1px">${ic('phone',18,2)}</span><div style="line-height:1.45"><b>ההקלטה חזרה</b><br><span style="opacity:.8">הייתה הפסקה של 3:12 בגלל שיחה נכנסת. סומן רגע.</span></div><a>פרטים</a></div>`;
+}
+
+/* R8 · בלי רשת — גיליון מצב השמירה */
+function scrOffline(){
+  return scrTasks({rec:{offline:true,time:'38:10',sub:pick('שיחת מעקב · 3 רגעים','שיחת מעקב · 3 רגעים')},noBadge:true}) + `
+  <div class="dim"></div>
+  <div class="sheet"><div class="grab"></div>
+    <h3>${ic('wifioff',22,2)}אין רשת — ממשיכים להקליט<span class="x">${ic('x',16,2)}</span></h3>
+    <p>ההקלטה נשמרת במכשיר בחלקים. כל חלק עולה לבד כשהרשת חוזרת, גם אם האפליקציה סגורה.</p>
+    <div style="display:flex;gap:3px;margin-top:16px">${Array.from({length:19},(_,i)=>`<i style="flex:1;height:22px;border-radius:4px;background:${i<12?'var(--ok)':i<18?'var(--line-2)':'repeating-linear-gradient(45deg,var(--line-2),var(--line-2) 3px,#fff 3px,#fff 6px)'}"></i>`).join('')}</div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin-top:6px"><span><span class="okc"><i class="dot"></i></span><span class="num">12</span> חלקים עלו</span><span><span class="num">6</span> במכשיר · מקליט את ה-<span class="num">19</span></span></div>
+    <div class="pn" style="margin-top:14px;box-shadow:none">
+      <div class="row" style="min-height:0;padding:10px 14px"><span class="mut">${ic('storage',18)}</span><div class="mn"><div class="t1">פנוי במכשיר <span class="num">1.2 GB</span></div><div class="t2">מספיק לכ-10 שעות הקלטה בלי רשת</div></div></div>
+      <div class="row" style="min-height:0;padding:10px 14px"><span class="mut">${ic('lock',18)}</span><div class="mn"><div class="t1">אפשר לסיים גם בלי רשת</div><div class="t2">הפגישה תישלח לסיכום כשהחלק האחרון יעלה</div></div></div>
+    </div>
+    <div style="margin-top:14px"><span class="btn blk">הבנתי</span></div>
+  </div>`;
+}
+
+/* R8b · חזרה אחרי קריסה */
+function scrRecovered(){
+  return scrTasks({noBadge:true}) + `
+  <div class="dim"></div>
+  <div class="sheet"><div class="grab"></div>
+    <h3>ההקלטה נקטעה<span class="x">${ic('x',16,2)}</span></h3>
+    <p>האפליקציה נסגרה באמצע ההקלטה עם ${RW()}. שום דבר לא נמחק — <b class="num">23:41</b> דקות שמורות.</p>
+    <div class="pn" style="margin-top:14px;box-shadow:none"><div class="row" style="min-height:0;padding:10px 14px"><span class="okc">${ic('check',18,2.4)}</span><div class="mn"><div class="t1">11 חלקים עלו לשרת</div><div class="t2">חלק אחד עוד במכשיר — יעלה עכשיו</div></div></div></div>
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+      <span class="btn pri blk">${ic('mic',18,2)}המשך הקלטה באותה פגישה</span>
+      <span class="btn blk">סיום ושליחה לסיכום</span>
+    </div>
+  </div>`;
+}
+
+/* R10 · סיום */
+function scrEnd(){
+  return scrRecLive() + `
+  <div class="dim"></div>
+  <div class="sheet"><div class="grab"></div>
+    <h3>סיום הפגישה<span class="x">${ic('x',16,2)}</span></h3>
+    <p>ההקלטה תישלח לתמלול, לסיכום ולעדכון ${t('memory')}. אחרי זה אי אפשר להמשיך להקליט את הפגישה הזאת.</p>
+    <div style="display:flex;gap:0;margin-top:14px;background:var(--chip);border-radius:12px">
+      <div style="flex:1;padding:10px 12px"><div style="font-size:12px;color:var(--ink-3)">משך</div><div class="num" style="font-size:19px;font-weight:600;color:var(--navy)">47:20</div></div>
+      <div style="flex:1;padding:10px 12px;border-inline-start:1px solid var(--line)"><div style="font-size:12px;color:var(--ink-3)">רגעים</div><div class="num" style="font-size:19px;font-weight:600;color:var(--navy)">3</div></div>
+      <div style="flex:1.3;padding:10px 12px;border-inline-start:1px solid var(--line)"><div style="font-size:12px;color:var(--ink-3)">שמירה</div><div style="font-size:14px;font-weight:600;color:var(--ok);margin-top:3px">הכל עלה ✓</div></div>
+    </div>
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+      <span class="btn pri blk">סיום ושליחה לסיכום</span>
+      <div style="display:flex;gap:8px"><span class="btn" style="flex:1">המשך הקלטה</span><span class="btn" style="flex:1">עצירה בלי לסגור</span></div>
+    </div>
+  </div>`;
+}
+
+/* R11 · עיבוד */
+function scrProcessing(){
+  const steps=[['הקלטה נקלטה','47:20',2],['מתמללת','',1],['סיכום','',0],['משימות','',0],[t('memory'),'',0]];
+  return `
+  <div class="hdr"><span class="back">${ic('back',20)}</span><div class="t">${RW()}<small>${RWhat()} · היום 13:01–13:48</small></div></div>
+  <div class="body">
+    <div class="stack">
+      <div class="pn" style="padding:22px 20px 20px">
+        <div style="width:56px;height:56px;border-radius:50%;border:4px solid var(--tint);border-top-color:var(--coral);margin:0 auto"></div>
+        <div style="text-align:center;font-size:19px;font-weight:700;color:var(--navy);margin-top:14px">הפגישה בעיבוד</div>
+        <div style="text-align:center;font-size:13px;color:var(--ink-3);margin-top:4px;line-height:1.5">בדרך כלל כשתי דקות. אפשר לסגור את האפליקציה —<br>תגיע התראה כשהסיכום מוכן לאישור.</div>
+        <div style="margin-top:18px">${steps.map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)">
+          <span style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;${s[2]===2?'background:var(--ok);color:#fff':s[2]===1?'border:2px solid var(--coral)':'border:2px solid var(--line-2)'}">${s[2]===2?ic('check',13,3):s[2]===1?'<i style="width:8px;height:8px;border-radius:50%;background:var(--coral);animation:blink 1.2s infinite"></i>':''}</span>
+          <span style="flex:1;font-size:14px;${s[2]===0?'color:var(--ink-3)':'color:var(--ink);font-weight:500'}">${s[0]}</span><span class="num" style="font-size:12.5px;color:var(--ink-3)">${s[1]}</span></div>`).join('')}</div>
+      </div>
+      <div class="pn"><div class="row" style="border:0"><span class="mut">${ic('refresh',18)}</span><div class="mn"><div class="t1">אם התמלול ייכשל</div><div class="t2">הקובץ שמור. מריצים שוב — לא איבדת את הפגישה.</div></div></div></div>
+    </div>
+  </div>
+  ${tabbar('adv','meet')}`;
+}
+/* =====================================================================
+   לקוח — בעל העסק. white-label: הלוגו והשם של המשרד, אף פעם לא HK
+   ===================================================================== */
+const offLogo = (s=30) => `<span style="width:${s}px;height:${s}px;border-radius:9px;background:#fff;border:1px solid var(--line);color:#1F5E8C;font-weight:800;font-size:${Math.round(s*.46)}px;display:flex;align-items:center;justify-content:center;flex:none">ש</span>`;
+const cliHead = (title='אנרגי אינטרנשיונל') => `
+  <div style="display:flex;align-items:center;gap:10px;padding:2px 16px 10px;flex:none">
+    ${offLogo(34)}
+    <div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--ink-3)">שחר ייעוץ עסקי</div><div style="font-size:17px;font-weight:700;color:var(--navy);line-height:1.2">${title}</div></div>
+    <span class="av l">צע</span>
+  </div>`;
+const cbx = (done,s=24) => `<span style="width:${s}px;height:${s}px;border-radius:50%;border:1.8px solid ${done?'var(--ok)':'var(--line-2)'};background:${done?'var(--ok)':'#fff'};color:#fff;display:flex;align-items:center;justify-content:center;flex:none">${done?ic('check',s*.58,3):''}</span>`;
+
+/* C1 · בית */
+function scrCliHome(o={}){
+  if(o.state==='loading') return cliHead() + `<div class="body"><div class="stack">
+    <div class="sk" style="height:118px;border-radius:14px"></div>
+    <div class="pn" style="padding:16px;display:flex;gap:16px"><div style="flex:1"><div class="sk" style="height:12px;width:60%"></div><div class="sk" style="height:26px;width:85%;margin-top:10px"></div><div class="sk" style="height:10px;width:70%;margin-top:10px"></div></div><div style="flex:1"><div class="sk" style="height:12px;width:60%"></div><div class="sk" style="height:26px;width:85%;margin-top:10px"></div><div class="sk" style="height:10px;width:70%;margin-top:10px"></div></div></div>
+    <div class="pn" style="padding:16px"><div class="sk" style="height:14px;width:40%"></div><div class="sk" style="height:40px;margin-top:14px"></div><div class="sk" style="height:40px;margin-top:10px"></div></div>
+  </div></div>${tabbar('cli','home',{noBadge:true})}`;
+  if(o.state==='error') return cliHead() + `<div class="body"><div class="stack">
+    <div class="pn" style="padding:26px 20px;text-align:center"><div style="font-size:17px;font-weight:600;color:var(--navy)">המספרים לא נטענו</div><div style="font-size:13px;color:var(--ink-3);margin-top:6px;line-height:1.5">זה אצלנו, לא אצלך. נסו שוב בעוד רגע.</div><div style="margin-top:14px"><span class="btn sm">${ic('refresh',15,2)}טעינה מחדש</span></div></div>
+  </div></div>${tabbar('cli','home',{noBadge:true})}`;
+  if(o.state==='empty') return cliHead() + `<div class="body"><div class="stack">
+    <div class="pn" style="padding:16px 18px"><div style="font-size:12.5px;color:var(--ink-3)">הפגישה הבאה</div><div style="font-size:14px;color:var(--ink-2);margin-top:4px">לא נקבעה פגישה קרובה</div></div>
+    <div class="pn"><div class="live"><div><div class="lv-l">יתרה נוכחית</div><div class="lv-n" style="color:var(--ink-3)">—</div><div class="lv-m">החשבון עוד לא חובר</div></div><div><div class="lv-l">חריגה צפויה</div><div class="lv-n" style="color:var(--ink-3)">—</div><div class="lv-m">אחרי חיבור הבנק</div></div></div></div>
+    <div class="pn"><div class="pn-h"><b>מחכה ממך</b></div><div class="pn-b" style="padding-top:0;font-size:13px;color:var(--ok)"><i class="dot"></i>אין כרגע משהו שמחכה לך</div></div>
+  </div></div>${tabbar('cli','home',{noBadge:true})}`;
+  return `
+  ${o.state==='offline'?`<div style="flex:none;background:var(--ink);color:#fff;font-size:12.5px;padding:8px 16px;display:flex;align-items:center;gap:8px">${ic('wifioff',16,2)}אין רשת · מוצג מה שנטען ב-08:10</div>`:''}
+  ${cliHead()}
+  <div class="body">
+    <div class="stack" style="padding-top:2px">
+      <div style="background:var(--navy);color:#fff;border-radius:14px;padding:14px 16px">
+        <div style="font-size:12px;color:var(--on-navy-2)">הפגישה הבאה · בעוד 3 ימים</div>
+        <div style="font-size:17px;font-weight:600;margin-top:4px">סקירת רבעון Q3</div>
+        <div style="font-size:12.5px;color:var(--on-navy);margin-top:3px">חמישי 17.09 · <span class="num">14:00–15:00</span> · עם אילון שחר · Zoom</div>
+        <div style="display:flex;gap:8px;margin-top:12px"><span class="btn sm" style="background:#fff;border-color:#fff">הוספה ליומן</span></div>
+      </div>
+      <div class="pn"><div class="live">
+        <div><div class="lv-l">יתרה נוכחית</div><div class="lv-n bad">${nis(-123504)}</div><div class="lv-m">עו״ש · מסגרת <span class="num">268,800</span> ₪</div></div>
+        <div><div class="lv-l">חריגה צפויה</div><div class="lv-n bad">${nis(-309973)}</div><div class="lv-m">23.09 · <span class="al">בעוד 9 ימים</span></div></div>
+      </div><div style="border-top:1px solid var(--line);padding:9px 16px;font-size:12px;color:var(--ink-3);display:flex">עודכן היום 08:10<a style="margin-inline-start:auto;color:var(--link);font-weight:600">תחזית תזרים</a></div></div>
+      <div class="pn">
+        <div class="pn-h"><b>מחכה ממך</b><span>2 פתוחות</span><a>הכל</a></div>
+        <div class="row">${cbx(false)}<div class="mn"><div class="t1">לשלוח דפי בנק של אוגוסט</div><div class="t2">מהפגישה 07.09 · עד 18.09</div></div></div>
+        <div class="row">${cbx(false)}<div class="mn"><div class="t1">לדבר עם הבנק על מסגרת זמנית</div><div class="t2">מאילון · עד 18.09</div></div></div>
+      </div>
+      <div class="pn">
+        <div class="pn-h"><b>משימות מנהל התזרים</b><span>הבקשות שלך</span></div>
+        <div class="row"><div class="mn"><div class="t1">אישור העברה לאלקטרה מיזוג — לא מופיעה בבנק</div><div class="t2">12.09 · <span class="al">דחוף</span></div></div><span class="tag wait">נשלחה</span></div>
+        <div class="row"><div class="mn"><div class="t1">פיצול חשבונית סונול בין שני מרכזי רווח</div><div class="t2">08.09</div></div><span class="tag ok">בוצעה</span></div>
+        <div style="padding:10px 16px 14px"><span class="btn sm pri">${ic('plus',15,2.2)}בקשה</span></div>
+      </div>
+      <div class="pn">
+        <div class="pn-h"><b>מה סיכמנו</b><span>פגישה חודשית — אוגוסט · 07.09</span></div>
+        ${[['תקציב חדש לקניות המלאי — 130,000 ₪ לחודש'],['העברה מפועלים 112 ללאומי 604 לכיסוי החריגה']].map(x=>`<div class="row" style="min-height:0;padding:9px 16px"><span class="okc">${ic('check',16,2.4)}</span><div class="mn"><div class="t1">${x[0]}</div></div></div>`).join('')}
+        <div style="padding:6px 16px 14px"><a style="font-size:12.5px;font-weight:600;color:var(--link)">לסיכום המלא</a></div>
+      </div>
+    </div>
+  </div>
+  ${tabbar('cli','home')}`;
+}
+
+/* C2 · מחכה ממני */
+function scrCliWait(o={}){
+  return `
+  <div class="bigtitle"><h1>מחכה ממני</h1><div class="sub">2 פתוחות · אחת נסגרה השבוע</div></div>
+  <div class="chips"><span class="chip on">מהיועץ <i>2</i></span><span class="chip">הבקשות שלי <i>3</i></span></div>
+  <div class="body">
+    <div class="stack" style="padding-top:8px">
+      <div class="pn">
+        <div class="row" style="align-items:flex-start;padding:14px 16px">${cbx(false)}<div class="mn"><div class="t1" style="font-weight:600">לשלוח דפי בנק של אוגוסט</div><div class="t2">מהפגישה החודשית 07.09 · עד חמישי 18.09</div>
+          <div style="display:flex;gap:8px;margin-top:10px"><span class="btn sm">${ic('camera',15,2)}צילום מסמך</span><span class="btn sm">${ic('upload',15,2)}קובץ</span></div></div></div>
+        <div class="row" style="align-items:flex-start;padding:14px 16px">${cbx(false)}<div class="mn"><div class="t1" style="font-weight:600">לדבר עם הבנק על מסגרת זמנית</div><div class="t2">מאילון · עד 18.09</div><div class="t2" style="color:var(--ink-2);font-size:12.5px;margin-top:6px;line-height:1.5">150,000 ₪ עד 31.10 — כדי לעבור את 23.09 בלי חריגה.</div></div></div>
+      </div>
+      <div style="font-size:12.5px;font-weight:600;margin:6px 4px 0" class="mut">בוצעו</div>
+      <div class="pn"><div class="row">${cbx(true)}<div class="mn"><div class="t1" style="color:var(--ink-3);text-decoration:line-through">לאשר את תקציב הקניות</div><div class="t2">סומן 10.09 · אילון רואה שבוצע</div></div></div></div>
+    </div>
+  </div>
+  <div style="flex:none;padding:8px 16px;background:var(--bg)"><span class="btn blk">${ic('plus',18,2.2)}בקשה חדשה למנהל התזרים</span></div>
+  ${tabbar('cli','wait')}
+  ${o.sheet?`<div class="dim"></div><div class="sheet"><div class="grab"></div>
+    <h3>בקשה חדשה למנהל התזרים<span class="x">${ic('x',16,2)}</span></h3>
+    <div style="font-size:12px;color:var(--ink-3);margin:12px 0 5px">נושא</div>
+    <div class="input focus">אישור העברה לאלקטרה מיזוג</div>
+    <div style="font-size:12px;color:var(--ink-3);margin:12px 0 5px">פירוט</div>
+    <div class="input" style="height:88px;align-items:flex-start;padding-top:12px;color:var(--ink);line-height:1.5">העברתי 18,400 ₪ ב-10.09 והיא לא מופיעה בבנק</div>
+    <div style="display:flex;gap:6px;margin-top:12px"><span class="chip">רגיל</span><span class="chip on">דחוף</span></div>
+    <div style="margin-top:16px"><span class="btn pri blk">שליחה</span></div>
+    <div style="font-size:12px;color:var(--ink-3);text-align:center;margin-top:8px">אפשר לערוך או למחוק בקשה שעדיין לא בוצעה</div>
+  </div>`:''}`;
+}
+
+/* C3 · פגישות */
+function scrCliMeet(){
+  const rows=[['07.09','פגישה חודשית — אוגוסט','<span class="tag ok">הסיכום נשלח אליך</span>'],['01.09','שיחה על המסגרת בבנק','<span class="tag mute">התקיימה</span>'],['04.08','פגישה חודשית — יולי','<span class="tag ok">הסיכום נשלח אליך</span>'],['21.07','פגישה עם אילון שחר','<span class="tag mute">לא התקיימה</span>']];
+  return `
+  <div class="bigtitle"><h1>פגישות</h1><div class="sub">עם אילון שחר · שחר ייעוץ עסקי</div></div>
+  <div class="body">
+    <div class="stack" style="padding-top:4px">
+      <div style="background:var(--navy);color:#fff;border-radius:14px;padding:14px 16px">
+        <div style="font-size:12px;color:var(--on-navy-2)">הפגישה הבאה · בעוד 3 ימים</div>
+        <div style="font-size:17px;font-weight:600;margin-top:4px">סקירת רבעון Q3</div>
+        <div style="font-size:12.5px;color:var(--on-navy);margin-top:3px">חמישי 17.09 · <span class="num">14:00–15:00</span> · Zoom</div>
+        <div style="display:flex;gap:8px;margin-top:12px"><span class="btn sm" style="background:#fff;border-color:#fff">הוספה ליומן</span></div>
+      </div>
+      <div class="pn" style="overflow:hidden">${rows.map(r=>`<div class="row" style="min-height:64px"><div class="tl-time" style="width:42px;font-size:13px">${r[0]}</div><div class="mn"><div class="t1">${r[1]}</div></div>${r[2]}</div>`).join('')}</div>
+    </div>
+  </div>
+  ${tabbar('cli','meet')}`;
+}
+
+/* C4 · סיכום פגישה אצל בעל העסק */
+function scrCliSummary(){
+  return `
+  <div class="hdr"><span class="back">${ic('back',20)}</span><div class="t">פגישה חודשית — אוגוסט<small>07.09 · 14:00–14:52 · עם אילון שחר</small></div></div>
+  <div class="chips" style="padding-bottom:10px"><span class="chip on">סיכום הפגישה</span><span class="chip">משימות <i>3</i></span></div>
+  <div class="body">
+    <div class="stack" style="padding-top:2px">
+      <div class="pn"><div class="pn-h"><b>תמונת מצב</b></div>
+        ${['היתרה עומדת על 75,187 ₪, וצפויה חריגה ב-23.09','קניות המלאי ביולי היו 155,000 ₪ מול יעד של 130,000 ₪','החוזה עם מרכז הבנייה מתחיל באוקטובר'].map((x,i)=>`<div class="row" style="align-items:flex-start;min-height:0;padding:10px 16px"><span class="num" style="font-size:12.5px;font-weight:700;color:var(--ink-3);width:14px;flex:none">${i+1}</span><div class="mn"><div class="t1">${x}</div></div></div>`).join('')}
+      </div>
+      <div class="pn"><div class="pn-h"><b>מה סיכמנו</b></div>
+        ${['תקציב חדש לקניות המלאי — 130,000 ₪ לחודש','צביעת 25,000 ₪ הפתוחים בתזרים עד 10.09','העברה מפועלים 112 ללאומי 604 לכיסוי החריגה'].map(x=>`<div class="row" style="min-height:0;padding:10px 16px"><span class="okc">${ic('check',16,2.4)}</span><div class="mn"><div class="t1">${x}</div></div></div>`).join('')}
+      </div>
+      <div class="pn"><div class="pn-h"><b>עליך</b><span>נכנס ל"מחכה ממני"</span></div>
+        <div class="row">${cbx(false,22)}<div class="mn"><div class="t1">לשלוח דפי בנק של אוגוסט</div><div class="t2">עד 18.09</div></div></div>
+        <div class="row">${cbx(true,22)}<div class="mn"><div class="t1" style="color:var(--ink-3);text-decoration:line-through">לאשר את תקציב הקניות</div></div></div>
+      </div>
+      <span class="btn blk">${ic('down2',18,2)}הורדת הסיכום</span>
+    </div>
+  </div>`;
+}
+
+/* C5 · עוזר AI */
+function scrCliAI(){
+  return `
+  <div class="hdr"><div class="t" style="padding-inline-start:4px">עוזר<small>על אנרגי אינטרנשיונל בלבד</small></div><span class="ic-btn l">${ic('plus',20,2)}</span></div>
+  <div class="body" style="padding:6px 16px 12px;display:flex;flex-direction:column;gap:10px">
+    <div class="bub me">מה תהיה היתרה בעוד שבועיים?</div>
+    <div class="bub ai" style="max-width:92%;padding:14px">
+      <div style="font-size:12.5px;color:var(--ink-3)">יתרה צפויה · 28.09</div>
+      <div class="lv-n bad" style="margin-top:2px">${nis(-287300)}</div>
+      <svg viewBox="0 0 280 64" width="100%" height="64" style="margin-top:8px;display:block">
+        <line x1="0" y1="18" x2="280" y2="18" stroke="#CBD6E2" stroke-dasharray="3 3"/>
+        <polyline fill="none" stroke="var(--navy)" stroke-width="2" points="0,10 30,12 60,11 90,15 120,16 150,22 170,44 200,46 230,48 260,50 280,49"/>
+        <circle cx="150" cy="22" r="3.5" fill="var(--danger)"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3)"><span class="num">14.09</span><span class="num">23.09</span><span class="num">28.09</span></div>
+      <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">קו מקווקו = המסגרת</div>
+      <div style="font-size:13.5px;color:var(--ink-2);margin-top:10px;line-height:1.55">החריגה נפתחת ב-23.09, כשהשיק לספק של 45,000 ₪ נפרע.</div>
+    </div>
+    <div class="bub me">מה סוכם בפגישה האחרונה?</div>
+    <div class="bub ai">בפגישה של 07.09 עם אילון סוכם תקציב של 130,000 ₪ לקניות המלאי, ושתעביר כסף מפועלים ללאומי לכיסוי החריגה. <a style="color:var(--link);font-weight:600">לסיכום</a></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span class="chip">מתי צפויה חריגה?</span><span class="chip">מה פתוח אצלי?</span><span class="chip">כמה קניתי מסונול החודש?</span></div>
+  </div>
+  <div style="flex:none;padding:8px 16px;display:flex;gap:8px;align-items:center;background:var(--bg);border-top:1px solid var(--line)">
+    <div class="input" style="flex:1;border-radius:999px;height:44px;font-size:13px">שאלו על העסק — מספרים, פגישות, משימות</div>
+    <span style="height:44px;border-radius:999px;background:var(--chip);color:var(--ink-3);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 12px;font-size:12px;font-weight:600">${ic('mic',18)}בקרוב</span>
+  </div>
+  ${tabbar('cli','ai')}`;
+}
+
+/* C6 · צילום מסמך */
+function scrCam(){
+  return `
+  <div class="cam-view">
+    <div style="position:absolute;top:10px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;z-index:3">
+      <span class="ic-btn" style="background:rgba(0,0,0,.35);color:#fff">${ic('x',20,2)}</span>
+      <span style="background:rgba(0,0,0,.45);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600">הדף זוהה · מצלם לבד</span>
+      <span class="ic-btn" style="background:rgba(0,0,0,.35);color:#fff;font-size:12px;font-weight:700">אוטו׳</span>
+    </div>
+    <div class="paper"><b style="font-size:12px;color:#444">בנק לאומי · דף חשבון</b><i style="width:60%"></i><i></i><i style="width:80%"></i><i></i><i style="width:70%"></i><i></i><i style="width:50%"></i><i></i><i style="width:75%"></i><i></i></div>
+    <div class="edge"></div>
+  </div>
+  <div class="cam-ctl">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#B7C3CF"><span style="width:44px;height:44px;border-radius:10px;background:#333;border:1.5px solid #555"></span>גלריה</div>
+    <div class="shutter"><i></i></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#B7C3CF"><span style="width:44px;height:44px;border-radius:50%;background:#262626;display:flex;align-items:center;justify-content:center;color:#fff">${ic('file',20)}</span>קובץ</div>
+  </div>`;
+}
+function scrCamReview(){
+  return `
+  <div class="hdr"><span class="back">${ic('back',20)}</span><div class="t">שליחת מסמך<small>למנהל התזרים שלך</small></div></div>
+  <div class="body">
+    <div class="stack" style="padding-top:4px">
+      <div style="display:flex;gap:10px">
+        ${[1,2].map(i=>`<div style="flex:1;aspect-ratio:3/4;background:#F4F1E8;border-radius:10px;border:1px solid var(--line);padding:14px 12px;position:relative;box-shadow:var(--shadow)"><b style="font-size:10px;color:#555">בנק לאומי</b>${'<i style="display:block;height:5px;background:#d8d3c6;border-radius:3px;margin-top:8px"></i>'.repeat(8)}<span class="num" style="position:absolute;bottom:8px;inset-inline-start:8px;font-size:11.5px;font-weight:700;background:var(--ink);color:#fff;border-radius:6px;padding:1px 6px">${i}</span></div>`).join('')}
+        <div style="flex:1;aspect-ratio:3/4;border-radius:10px;border:1.5px dashed var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--ink-3);font-size:12.5px">${ic('plus',22,2)}עמוד</div>
+      </div>
+      <div><div style="font-size:12px;color:var(--ink-3);margin:4px 0 5px">שם</div><div class="input" style="color:var(--ink)">דף בנק לאומי — אוגוסט</div></div>
+      <div class="pn"><div class="row" style="border:0">${cbx(true,22)}<div class="mn"><div class="t1">סוגר את "לשלוח דפי בנק של אוגוסט"</div><div class="t2">מחכה ממני · מהפגישה 07.09</div></div></div></div>
+      <div class="pn">
+        <div class="pn-h"><b>מסמכים אחרונים</b><a>כל המסמכים (14)</a></div>
+        <div class="row"><span class="mut">${ic('file',20)}</span><div class="mn"><div class="t1">חשבונית סונול — אוגוסט</div><div class="t2">11.09</div></div><span class="tag info">בקיטלוג AI</span></div>
+        <div class="row"><span class="mut">${ic('file',20)}</span><div class="mn"><div class="t1">דוח קליטה — יולי</div><div class="t2">02.09</div></div><span class="tag ok">✓ הוזן</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:none;padding:10px 16px 30px;background:#fff;border-top:1px solid var(--line)"><span class="btn pri blk">${ic('send',18,2)}שליחה · 2 עמודים</span></div>`;
+}
+/* =====================================================================
+   הסקשנים: מסכים + הסברים. כל טקסט תלוי־מותג מחושב בזמן הרינדור
+   ===================================================================== */
+const recNote = () => JP() ? 'ב-Jampa הפס בסגול המותג (כמו מצב ההקלטה בפרוטוטיפ של Jampa), הנקודה אדומה.' : '';
+
+const SECTIONS = {
+adv: () => [
+  {part:'יועץ · המסכים', sub: pick('ADMIN · REPRESENTATIVE — אותו ממשק, ההבדל רק באילו לקוחות','מטפלת — אותו קוד, מונחים ומיתוג של Jampa')},
+  {code:'A1', title:'היום', phones:[{cap:'מסך הפתיחה', html:()=>phone(scrToday(),{dark:true,homeLight:false})}],
+   why:'מה קורה היום: הפגישה הבאה עם הקלטה בלחיצה אחת, מה מחכה לאישור, ומה חשוב לדעת. בטלפון היועץ לא יושב מול המסך — הוא פותח אותו בין פגישות.',
+   see:['פס נייבי (הבלוק הנייבי היחיד): "היום", תאריך, <b>האירוע הבא</b> עם ספירה לאחור חיה, "הקלטה" (קורל) ו"'+t('prep')+'".',
+        '"הסיכום מוכן לאישור" — רק כשיש. המקבילה של "מה נולד מהפגישה" בדשבורד.',
+        '<b>היומן שלי</b>: ציר עם קו "עכשיו" שזז עם השעון. פס צבע לפי סוג: פגישה · שיחה · משימה. "הוקלטה 46 דק׳", "'+pick('ההכנה נפתחה','הבריף נפתח')+'".',
+        '<b>תשומת לב</b>: עד שלושה עדכונים מ-3 הימים האחרונים. נקודה אדומה = שלילי.',
+        'בלי מספרים ובלי סכומים — כמו "היום" בדשבורד.'],
+   tap:['"הקלטה" → R1 עם הפגישה הבאה מסומנת.','"'+t('prep')+'" → A5.','שורה בציר → כרטיס '+t('client')+' (A4), ופגישה שהסתיימה → הסיכום (A7).','האווטאר → אזור אישי: הרשאות, '+pick('"חברה חדשה"','"מטופלת חדשה"')+', יציאה.'],
+   data:['פגישות ושיחות היום: היומן — באפליקציה היום '+code('POST /meetings/company/getAllMeetingsByIds')+'.','משימות עם שעה: '+code('advisor_task')+' — '+miss('לא מחובר באפליקציה'),'תשומת לב: עדכוני '+t('memory')+' של 3 ימים — '+miss('אין endpoint באפליקציה'),'"'+pick('ההכנה נפתחה','הבריף נפתח')+'": אם אין מנגנון שמסמן — לא מציגים את הטקסט (כמו בדשבורד).'],
+   chg:['היום: "ראשי" = ברכה ("צהריים טובים, …") ורשימת אירועים "לטיפול / לטיפול בהמשך" עם כפתורי CONFIRM · REJECT · DONE מהשרת.','חדש: המבנה של "היום" מהדשבורד — ציר, האירוע הבא, הקלטה בלחיצה.','האירועים "לטיפול" עוברים למשימות (A2). "חברה חדשה" ויציאה עוברים מהכותרת לאזור האישי.']},
+
+  {code:'A2', title:'משימות', phones:[{cap:'שורה מוחלקת: מחר / בשבוע', html:()=>phone(scrTasks())}],
+   why:'המשימות של היועץ עצמו, באותו מודל כמו מסך המשימות בדשבורד — כדי שמה שסומן בטלפון מסומן גם שם.',
+   see:['קבוצות: <b>עבר זמנן</b> (אדום) · היום · מחר · בלי תאריך.','צ׳יפים: המשימות שלי'+(JP()?'':' · ביקשתי מ-HK')+' · מפגישות · בוצעו. מונה 0 לא מוצג.','"מפגישה" מסומן בנקודה; שם '+t('client')+' בתכלת; "↻" למשימה חוזרת; "● נשלח ל…" כשנשלחה '+t('toClient')+'.','שורת הוספה קבועה בתחתית: "@" משייך '+t('client')+'; "מחר", "בשבוע" ושעה מזוהים מהטקסט.'],
+   tap:['עיגול = בוצע. משימה חוזרת יוצרת את הבאה.','החלקה = "מחר" / "בשבוע".','לחיצה = עורך בשורה: '+t('client')+' · תאריך · הערה · חוזרת · "שליחה '+t('toClient')+' בוואטסאפ" (שתי לחיצות).','מחיקה בתוך העורך, טוסט "ביטול" ל-5 שניות. "אישור הסיכום" פותח A7.'],
+   data:[code('advisor_task')+' (docs/tasks/2026-09-03-tasks) — '+miss('אין endpoint באפליקציה'),(JP()?'':'"ביקשתי מ-HK" — '+miss('הנתיב מחזיר 404 בסטייג׳ (#193)')),'משימות מפגישה נוצרות רק באישור הסיכום (#194).'].filter(Boolean),
+   chg:['היום אין מסך משימות. יש TaskEventDialog ("יצירת משימה חדשה") שיוצר אירוע ב-'+code('/events/create-task-event')+'.','חדש: מסך מלא. ראה שאלה 3 — איזה מודל משימות הוא האמת.']},
+
+  {code:'A3', title:t('portfolio'), phones:[{cap:'רשימה עם שלבי המחזור', html:()=>phone(scrClients())}],
+   why:'איפה כל '+t('client')+' עומד — לפני שיחה, בחיפוש של שנייה.',
+   see: JP() ? ['חיפוש, צ׳יפים לפי שלב בתהליך (1–6) ו"דורשים תשומת לב".','שורה: שם · שלב · התראה אחת בטקסט צבוע · הפגישה הבאה.','בלי כסף ובלי ציון — "בלי לכמת אדם".'] :
+        ['חיפוש, צ׳יפים של שלבי המחזור עם מונים: ממתין לחומר · הוזן · יעדים עודכנו · מוכן לפגישה · סיכום אושר.','שורה: שם · שלב + ימים · התראה אחת (בעיה תזרימית / חוסר שביעות רצון / אין פגישה הבאה) · הפגישה הבאה.','"תקוע" באדום רק כשהשלב עבר את הימים הסבירים שהוגדרו.'],
+   tap:['שורה → A4.','אין בטלפון החלקות של ארכיון ומחיקה, ואין שינוי סטטוס בלחיצה על גלולה.'],
+   data:['חברות פעילות: '+code('GET /companies/get-active-companies')+' (קיים).','שלב: באפליקציה היום '+code('consultant_ui_status')+' / '+code('get-company-statuses')+'; בדשבורד — מחזור הטיפול של המשרד.','התראות: לבדוק עם עידו אם קיימות כשדה. אין — לא מציגים.'],
+   chg:['היום: כרטיסים עם סטטוס בגלולה צבעונית, כפתור CTA מהשרת, והחלקות "עריכה · העברה לארכיון · מחיקה · הוספת משימה".','במשתמש של business 1 הגלולה פותחת דרופדאון סטטוס — קל לשנות בטעות. אישור המחיקה כותרתו "מחיקת פגישה" אבל מוחק חברה.','חדש: שורה שקטה, התראה = טקסט + נקודה, בלי פעולות הרסניות מהטלפון.']},
+
+  {code:'A4', title:'כרטיס '+t('client'), phones:[{cap:pick('מטעי גבעון — שעתיים לפני השיחה','מיכל אדרי — שעתיים לפני השיחה'), html:()=>phone(scrClient())}],
+   why:'כל מה שצריך בדקה לפני פגישה — ומשם להקליט.',
+   see:[(JP()?'שלוש פעולות: חיוג · וואטסאפ · פגישה חדשה.':'ארבע פעולות: חיוג · וואטסאפ · עוזר · פגישה חדשה.'),'הפגישה הבאה עם "הקלטה" ו"'+t('prep')+'" — ההכנה רק כאן, לא פעמיים.',
+        JP()?'שלב בתהליך כסולם, בלי מספר.':'שני מספרים חיים — יתרה נוכחית וחריגה צפויה — על אותו קו בסיס, LTR, ₪ קטן.',
+        'פגישות בלבד בציר — שיחות טלפון לא (הכרעה 06.09).', JP()?'"מהשיחה השבוע" — ההודעות בין הפגישות. הזיכרון חסום ב-Jampa (07.09).':'"מהזיכרון": שתי שורות של מה חשוב לדעת עכשיו.'],
+   tap:['חיוג ווואטסאפ פותחים את האפליקציה של הטלפון עם המספר — לא שולחים כלום.','פגישה בציר → הסיכום (A7) או מצב העיבוד (R11).','"הקלטה" → מתחיל מיד; שואלים רק "איך מתקיימת הפגישה" (R1).'],
+   data:['פגישות: '+code('GET /meetings/company/:id')+' (קיים).','טלפון ראשי: '+code('POST /users/get-users-by-company')+' ('+code('is_main_user')+').',JP()?'שלב: '+code('/company-process-stages/:cid')+' (קיים).':'יתרה וחריגה: אותו חישוב כמו בדשבורד בעל העסק (owner-dash) — '+miss('לא נחשף לאפליקציה'),(JP()?'':'זיכרון: קטגוריות "סגנון תקשורת" ו"כאבי לקוח" (MEMORY_SPEC).'),(JP()?'':'עוזר: '+code('POST /chat/handle-chat')+' — אותו צ׳אט שיש היום בטאב "צ׳אט".')].filter(Boolean),
+   chg:['היום: טאבים עליונים "צ׳אט · הכנה לפגישה · פגישות", ברירת מחדל פגישות, ואין מספרים או זיכרון.','חדש: דף אחד שנגלל. '+(JP()?'':'הצ׳אט נפתח מ"עוזר"; ')+'ההכנה מהפגישה הבאה. "פגישה חדשה" — גיליון תאריך, שעה ו"עם מי".']},
+
+  {code:'A5', title:t('prep'), phones:[{cap:'בחדר ההמתנה, דקה לפני', html:()=>phone(scrPrep())}],
+   why:'"ההכנה נגזרת ולא נכתבת." היועץ לא ממלא כלום — קורא דקה, ומקליט.',
+   see: JP() ? ['בריף 60 שניות: המטרה · תמונת מצב · פתוח מהפגישה הקודמת · פתיחות.','ניסוח של תצפית, לא תווית; מילים של המטופלת.'] :
+     ['המטרה של הפגישה.','תמונת מצב · פתוח מהפגישה הקודמת · נקודות פתיחה · איך לדבר איתו (מהזיכרון).','נקודות הפתיחה ממשיכות למסך ההקלטה (R3) ומסומנות שם.'],
+   tap:['"התחלת הקלטה" — כפתור ראשי אחד, קבוע בתחתית.','תיבות הסימון ידניות.'],
+   data:[code('POST /meetings/preparation')+' (קיים) מחזיר: תמונת מצב, משימות מהפגישה האחרונה, מטרות מומלצות, המלצות לפתיחה, תזכורות.'],
+   chg:['היום: כרטיסי AI בטאב של כרטיס הלקוח — "תמונת מצב", "משימות מהפגישה האחרונה", "מטרות מומלצות לפגישה", "המלצות לפתיחת פגישה", "תזכורות", "סיכום AI:" — ואין מהם הקלטה.','חדש: אותו תוכן בסדר של "מה עושים בפגישה"; "סיכום AI:" יורד (כפילות); ההקלטה מתוך המסך.']},
+
+  {code:'A6', title:'פגישות', phones:[{cap:'התור — מה מחכה ליועץ', html:()=>phone(scrMeetings())}],
+   why:'מה מחכה ליועץ אחרי הפגישות. תור, לא ארכיון.',
+   see:['צ׳יפים: לאישור · לא נשלחה · לא הוקלטה · קרובות · הושלמו. ברירת המחדל — הראשון שיש בו משהו.','"לא הוקלטה — '+t('memory')+' לא התעדכן", עם "העלאת הקלטה" או "סיכום ידני".','"הקלטה" רק על הקרובה ביותר.'],
+   tap:['שורה → A7, או R11 כשבעיבוד.','"העלאת הקלטה" → בורר הקבצים של הטלפון; אותו מסלול עיבוד.'],
+   data:['פגישות + סטטוס ('+code('scheduled · processing · processed · approve')+') — קיים.','"לא נשלחה" = אושרה בלי שליחה ('+code('date_sent')+' ריק).','העלאה בדיעבד — '+miss('אין endpoint באפליקציה')],
+   chg:['היום: "קרובות · ממתינות לאישור · הושלמו · לא התקיימו", כפתור לכל כרטיס ("התחל והקלט", "אישור הסיכום", "צפייה בסיכום", "קביעה מחדש").','חדש: סדר לפי מה שדורש פעולה. "לא התקיימו" → "לא הוקלטה" עם דרך לסגור את החור. "קביעה מחדש" יורד — אין משימת תיאום מחדש (06.09).']},
+
+  {code:'A7', title:'סיכום לאישור', phones:[{cap:'הסיכום', html:()=>phone(scrSummary())},{cap:'סומן צחי — הלחיצה הבאה שולחת', html:()=>phone(scrSummary({sheet:true}))}],
+   why:'הפגישה לא נגמרת עד שהסיכום אושר. רק אז נפתחות המשימות ו'+t('memory')+' מתעדכן.',
+   see:['טאבים: '+pick('סיכום · משימות · זיכרון · משוב עליך · תמלול. בעל העסק רואה רק סיכום ומשימות.','סיכום · משימות · סופרוויזיון · תמלול. המטופלת רואה רק סיכום.'),'כל סעיף עם חותמת זמן שקופצת לתמלול.','בתחתית: כמה משימות ייפתחו עם האישור ואצל מי.'],
+   tap:['"אישור ושליחה '+t('toClient')+'" → גיליון נמענים: אף אחד לא מסומן, הלחיצה הראשונה מסמנת, השנייה שולחת.','"אישור בלי שליחה".','עריכה — לחיצה על סעיף.'],
+   data:[code('GET /meetings/:id/get-summary')+' · '+code('POST update-summary'),code('GET /tasks/:id')+' · '+code('PATCH /tasks/:id/approve'),code('GET /meetings/:id/approve')+' · '+code('GET get-meeting-summary-users')+' · '+code('POST send-meeting-summary'),code('GET /feedback/:id')+' — כולם קיימים.'],
+   chg:['היום: "לא ניתן לאשר לפני אישור כל המשימות" חוסם את האישור; בגיליון יש "בחר הכל"; הכותרת "סיכום - {שם}" מופיעה גם בזמן הקלטה.','חדש: המשימות מאושרות עם הסיכום (06.09). "בחר הכל" יורד.']},
+
+  {part:'יועץ · הקלטה', sub:'"ההקלטה היא מצב של המערכת, לא מסך" — MEETING_RECORDING_SPEC, מותאם לטלפון'},
+  {code:'R0', title:'מכונת המצבים', wide:true, lab:{see:'הכללים',tap:'בטלפון — מה חייב לרוץ בנייטיב',data:'שרת'},
+   top:`<div class="sm">
+      <div class="sm-st"><b>אין הקלטה</b><span>הכפתור האמצעי בטאב־בר, "הקלטה" על הפגישה הבאה</span><i>התחלת הקלטה</i></div>
+      <div class="sm-ar">מיידי</div>
+      <div class="sm-st rec"><b>מקליט</b><span>פס עליון בכל מסך · Live Activity · התראה קבועה</span><i>סיום</i></div>
+      <div class="sm-ar">מיידי ↔</div>
+      <div class="sm-st"><b>מושהה</b><span>פס אפור, השעון עומד. גם אוטומטית בשיחה נכנסת</span><i>המשך</i></div>
+      <div class="sm-ar">עצירה בלי לסגור</div>
+      <div class="sm-st"><b>הוקלט, טרם נסגר</b><span>כרטיס בראש "היום" ובכרטיס ${t('client')} · push אחרי 30 דק׳</span><i>סיום ושליחה לסיכום</i></div>
+      <div class="sm-ar">אישור · בלתי הפיך</div>
+      <div class="sm-st"><b>נסגר</b><span>בעיבוד ← הסיכום מחכה לאישור · push</span><i>אישור הסיכום</i></div>
+    </div>`,
+   see:['<b>המעבר היחיד שדורש אישור הוא סיום הפגישה</b> — הוא שולח לסיכום ואי אפשר לבטל. השאר מיידיים.','הקלטה אחת בכל רגע. ניסיון לפתוח שנייה: "כבר מקליט את '+pick('מטעי גבעון','מיכל אדרי')+'".','שעון 00:00 לא מוצג כשלא מקליטים.'],
+   tap:['<b>iOS:</b> '+code('UIBackgroundModes=audio')+' (קיים) · AVAudioSession מסוג PlayAndRecord · ActivityKit ל-Live Activity ול-Dynamic Island (קיים, בלי כפתורים) · App Intents לכפתורים (חדש).','<b>Android:</b> Foreground Service מסוג '+code('microphone')+' (קיים, '+code('AudioMeterService')+') · התראה קבועה עם פעולות (חדש) · WorkManager לסיום בלי רשת (קיים).','<b>שני המכשירים:</b> המצב חי בנייטיב, לא ב-JS — כך הפס חוזר נכון אחרי שהאפליקציה נסגרה ונפתחה.'],
+   data:['מקטעי WAV של עד 120 שניות, נחתכים בשתיקה (קיים).',code('POST /meetings/:id/upload-url')+' → PUT לכתובת חתומה → '+code('POST /meetings/:id/chunk-uploaded')+' (קיים).',code('POST /meetings/:id/recordings/end')+' עם '+code('pendingChunkIndices')+' (קיים).','רגעים מסומנים — '+miss('חסר בשרת')+': '+code('marks[{t,label,auto}]')+' על הפגישה, נשלח בסיום ומשמש כפרקים בתמלול.']},
+
+  {code:'R1', title:'התחלה מהירה', phones:[{cap:'הכפתור האמצעי — מכל מסך', html:()=>phone(scrRecStart(),{dark:true})}],
+   why:'"אף שדה לא עומד בין היועץ לבין ההקלטה." הכפתור האמצעי קיים בכל מסך של היועץ.',
+   see:['הפגישה הקרובה ביומן (30 דק׳ לפני עד 30 אחרי) מסומנת מראש.','"פגישה אחרת" — בוחרים '+t('client')+'; שם, שעה ומשתתפים נסגרים אחרי.','"איך מתקיימת הפגישה?" — פעם אחת לפגישה. בטלפון מקליטים מהמיקרופון בלבד; בזום — רמקול פתוח.'],
+   tap:['"התחלת הקלטה" — מתחיל מיד, רטט קצר, עוברים ל-R3.','לחיצה ארוכה על הכפתור האמצעי — התחלה מיידית על הפגישה המסומנת, בלי הגיליון.','מתוך כרטיס '+t('client')+', הכנה או "היום" הפגישה ידועה — שואלים רק "איך".'],
+   data:['פגישה קיימת: '+code('GET /meetings/:id/start-recording')+' (קיים).','פגישה חדשה: '+code('POST /meetings/create')+' ואז התחלה (קיים).'],
+   chg:['היום: הקלטה מתחילה רק בטאב "תמלול" של פגישה, או ב"התחל והקלט" ביצירת פגישה.','קישור עמוק מתחיל להקליט לבד ('+code('startRecord')+' ברירת מחדל true) — מתחלף: קישור פותח את הגיליון, לא מקליט.']},
+
+  {code:'R2', title:'הרשאת מיקרופון', phones:[{cap:'ההרשאה נדחתה', html:()=>phone(scrMicDenied())}],
+   why:'"הודעה אחת ברורה עם מה לעשות — לא כישלון שקט" (SPEC §7).',
+   see:['לפני בקשת ההרשאה הראשונה: שורה אחת בגיליון R1 "צריך גישה למיקרופון כדי להקליט", ואז הדיאלוג של המערכת — הדיאלוג היחיד שאי אפשר להחליף.','נדחה → הגיליון הזה, עם הדרך בהגדרות.'],
+   tap:['"פתיחת ההגדרות" → '+code('app-settings:')+' / '+code('ACTION_APPLICATION_DETAILS_SETTINGS')+'.'],
+   data:['iOS: '+code('NSMicrophoneUsageDescription')+' בעברית.','Android: '+code('RECORD_AUDIO')+', ו-'+code('POST_NOTIFICATIONS')+' מ-13.'],
+   chg:['היום: לפני כל הקלטה נבדקות עד שש הרשאות, כולל '+code('READ_PHONE_STATE')+' ו"סוללה ללא הגבלה" — וכל אחת חוסמת. ההודעה באייפון באנגלית עם שגיאת כתיב ("wont").','חדש: חוסם רק מיקרופון (+התראות באנדרואיד). סוללה ללא הגבלה = המלצה באזור האישי.']},
+
+  {code:'R3', title:'מקליט', phones:[{cap:'מקליט', html:()=>phone(scrRecLive(),{dark:true,scrCls:'recscr',homeLight:true,time:'13:13'})},{cap:'מושהה', html:()=>phone(scrRecLive({paused:true}),{dark:true,scrCls:'recscr',homeLight:true,time:'13:14'})}],
+   why:'המסך של הפגישה עצמה. כהה, גדול, לוחצים בלי להסתכל.',
+   see:['שעון, גל קול, שלושה כפתורים: השהיה · <b>סימון רגע</b> (הגדול) · סיום.','למטה: '+pick('נקודות הפתיחה','הפתיחות')+' מההכנה, ורגעים שסימנת.','בפינה: "הכל עלה" / "במכשיר". גל שטוח 30 שניות → "לא שומע כלום — המיקרופון מכוסה?".'],
+   tap:['החץ למטה מקטין לפס (R4); ההקלטה ממשיכה.','סימון רגע = רטט קצר + שורה ברשימה.','השהיה — מיידית, בלי אישור. סיום → R10.'],
+   data:['רגעים — '+miss('חסר בשרת')+' (ראה R0).','השהיה מקומית: סוגרת את המקטע ומעלה אותו (קיים, '+code('stopMetering')+').'],
+   chg:['היום: ההקלטה חיה בתוך טאב "תמלול" וחוסמת ניווט. "עצירה" היא השהיה והכותרת מציגה "סיימתי".','על המסך שורות טכניות: "מצב קול: דיבור/שתיקה • קובץ N", "חותך מקטע אחרי שתיקה".','חדש: מסך הקלטה נפרד, ניווט חופשי. השורות הטכניות עוברות לדיאגנוסטיקה (קיים: '+code('recordings/diagnostics/batch')+').']},
+
+  {code:'R4', title:'פס עליון בזמן ניווט', phones:[{cap:'"היום" באמצע הקלטה', html:()=>phone(scrToday({rec:{},recording:true,noBadge:true}),{island:'rec',islandTime:'12:04',sbg:'var(--rec)',time:'13:13'})},{cap:t('client')+' אחר באמצע הקלטה — אי אפשר להקליט שניים', html:()=>phone(scrClient({rec:{},recording:true,other:true}),{island:'rec',sbg:'var(--rec)',time:'13:13'})}],
+   why:'היועץ פותח משימה או כרטיס באמצע פגישה — וההקלטה ממשיכה. '+recNote(),
+   see:['פס 48px מתחת לשורת הסטטוס, <b>דוחף את התוכן</b> ולא מכסה: נקודה מהבהבת · שעון · "מקליט · '+pick('מטעי גבעון','מיכל אדרי')+'" · מספר רגעים · "רגע".','הכפתור האמצעי בטאב־בר הופך לשעון אדום.','Dynamic Island: נקודה + שעון.'],
+   tap:['לחיצה על הפס → R3.','"רגע" מסמן בלי לפתוח.','<b>אין "סיום" בפס</b> — רק מ-R3. מונע סיום בטעות מהכיס.'],
+   data:['מצב ההקלטה נקרא מהנייטיב ('+code('AudioMeterModule')+').'],
+   chg:['היום: '+code('REC_STATE')+' חוסם לחיצות על טאבים ו-'+code('beforeRemove')+'.','חדש: הניווט פתוח. נחסמים רק יציאה מהחשבון והקלטה שנייה.']},
+
+  {code:'R5', title:'מושהה · הוקלט וטרם נסגר', phones:[{cap:'מושהה — ממשיכים', html:()=>phone(scrTasks({rec:{paused:true,time:'23:41'},noBadge:true}),{sbg:'var(--pausebar)',time:'13:25'})},{cap:'הוקלט, טרם נסגר — לא נשלח', html:()=>phone(scrClient({closed:true}),{time:'13:52'})}],
+   why:'שני מצבים שאסור לבלבל: הפסקה באמצע, ופגישה שנגמרה ולא נשלחה לסיכום.',
+   see:['מושהה: הפס אפור, השעון עומד, "המשך" במקום "רגע".','הוקלט וטרם נסגר: כרטיס בראש כרטיס '+t('client')+', בראש "היום" ובשורת הפגישה — משך · רגעים · מצב שמירה.'],
+   tap:['"סיום ושליחה לסיכום" → R10.','"המשך הקלטה" → R3, באותה פגישה ובאותו שעון.'],
+   data:['טרם נסגר = יש מקטעים ואין '+code('recordings/end')+'.','תזכורת push אחרי 30 דק׳ — '+miss('חסר')+' (אפשר מקומית, בלי שרת).'],
+   chg:['היום: אחרי "עצירה" הפגישה נשארת פתוחה רק בתוך מסך הפגישה; יוצאים — ואין סימן בשום מקום.','חדש: הכרטיס + תזכורת: "הפגישה עם '+pick('מטעי גבעון','מיכל אדרי')+' לא נשלחה לסיכום".']},
+
+  {code:'R6', title:'מסך נעילה ורקע', phones:[{cap:'iOS — Live Activity', html:()=>phone(scrLock(),{dark:true,scrCls:'lock',homeLight:true,time:' '})},{cap:'Android — התראה קבועה', html:()=>phone(scrAndroid(),{dark:true,cls:'andr',noSbar:true,homeLight:true,noIsland:true})}],
+   why:'הטלפון על השולחן, המסך כבוי. ההקלטה ממשיכה — ורואים שהיא רצה בלי לפתוח.',
+   see:['iOS: Live Activity במסך הנעילה וב-Dynamic Island — שעון, '+t('client')+', "סימון רגע", "השהיה".','Android: התראה קבועה של שירות חזית — אותן פעולות.','בלי "קובץ מספר N" ובלי "מצב קול".'],
+   tap:['הכפתורים פועלים בלי לפתוח את האפליקציה (iOS 17+: App Intents · Android: PendingIntent).','לחיצה על הכרטיס → R3.'],
+   data:[code('RecordingLiveActivityManager.swift')+' ו-'+code('RecordingLiveActivityWidget')+' קיימים. השעון מקומי ('+code('Text(timerInterval:)')+'), בלי push.',code('AudioMeterService.kt')+' קיים, '+code('microphone|dataSync')+'.'],
+   chg:['היום: Live Activity והתראה בלי כפתורים; מוצגים "קובץ מספר N", מצב קול ותור העלאה.','ה-Live Activity נסגר ב-'+code('applicationWillTerminate')+' — חדש: עובר ל"ההקלטה נקטעה — לפתוח" (R8).']},
+
+  {code:'R7', title:'שיחה נכנסת', phones:[{cap:'אחרי השיחה — ההקלטה חזרה לבד', html:()=>phone(scrAfterCall(),{sbg:'var(--rec)',time:'13:17'})}],
+   why:'שיחה נכנסת היא מה שהכי הרבה קוטע הקלטה בטלפון.',
+   see:['בזמן השיחה: המערכת לוקחת את המיקרופון — ההקלטה מושהית לבד, הפס אפור "מושהה · שיחה". השיחה עצמה לא מוקלטת.','אחרי השיחה: ממשיכה לבד, טוסט "ההקלטה חזרה", ורגע אוטומטי בנקודה.'],
+   tap:['"פרטים" → R3.','שיחה של יותר מ-20 דק׳ — לא ממשיכה לבד. push: "ההקלטה מושהית 20 דק׳ — להמשיך או לסיים?".'],
+   data:['iOS: '+code('AVAudioSession.interruptionNotification')+' + '+code('CXCallObserver')+' (קיים).','Android: איבוד audio focus — בלי '+code('READ_PHONE_STATE')+'.'],
+   chg:['היום: באנרים "התחילה שיחה, ההקלטה נעצרה" / "השיחה הסתיימה, ההקלטה ממשיכה", וחידוש אוטומטי (12 ניסיונות).','חדש: אותה התנהגות, פלוס רגע אוטומטי, גבול 20 דק׳, ובלי הרשאת טלפון באנדרואיד.']},
+
+  {code:'R8', title:'בלי רשת · קריסה', phones:[{cap:'אין רשת — ממשיכים', html:()=>phone(scrOffline(),{sbg:'var(--rec)',time:'13:40'})},{cap:'האפליקציה נסגרה באמצע', html:()=>phone(scrRecovered(),{time:'13:25'})}],
+   why:'פגישות קורות במרתף, בשטח, בחניון. אסור לאבד דקה.',
+   see:['אין רשת → בפס "במכשיר". לחיצה → גיליון: חלקים שעלו / במכשיר, מקום פנוי, "אפשר לסיים גם בלי רשת".','קריסה או סגירה → בפתיחה הבאה "ההקלטה נקטעה": כמה נשמר, "המשך באותה פגישה" / "סיום ושליחה לסיכום".','"לא מוחקים מקטעים שעלו" (SPEC §7).'],
+   tap:['סיום בלי רשת → הפגישה נשלחת לסיכום כשהחלק האחרון עולה.'],
+   data:['תור ההעלאה קיים: '+code('native_recording_upload_queue.json')+', עד 2 במקביל, backoff 5–300 שניות, NSURLSession ברקע / WorkManager.','מקום: WAV 16kHz מונו ≈ 115MB לשעה; חלק נמחק אחרי אישור העלאה.','טוקן שפג בזמן שהתור מחכה → '+code('auth_required')+'.'],
+   chg:['היום: באנר "אין חיבור לרשת. N מקטעים שמורים במכשיר…" והודעות Alert של המערכת ("סיום הפגישה נשמר").',code('auth_required')+' נתקע בשקט. חדש: push "צריך להתחבר מחדש כדי לסיים את הפגישה", והתור ממשיך אחרי כניסה.']},
+
+  {code:'R9', title:'סוללה ואחסון', phones:[{cap:'אזהרה לפני התחלה', html:()=>phone(scrRecStart({warn:true}),{dark:true})},{cap:'סוללה 9% באמצע', html:()=>phone(scrRecLive({low:true}),{dark:true,scrCls:'recscr',homeLight:true,time:'13:13'})}],
+   why:'פגישה של שעה וחצי על 15% סוללה — קורה כל שבוע.',
+   see:['לפני התחלה: שורת אזהרה בגיליון כשהסוללה מתחת ל-20% או המקום מספיק לפחות משעתיים.','במהלך: ב-10% שורה במסך ההקלטה; ב-5% push.','נגמר המקום → עוצרים, שומרים, מודיעים.'],
+   tap:['אזהרה בלבד. ההקלטה לא נחסמת.'],
+   data:['מקומי: '+code('UIDevice.batteryLevel')+' / '+code('BatteryManager')+', מקום פנוי.','מקטע של עד 120 שניות ('+code('maxSegment')+' קיים) — המקסימום שאפשר לאבד בכיבוי.'],
+   chg:['היום: "סוללה ללא הגבלה" באנדרואיד חוסם התחלה; אין אזהרת סוללה ואין בדיקת מקום.']},
+
+  {code:'R10', title:'סיום', phones:[{cap:'המעבר היחיד שדורש אישור', html:()=>phone(scrEnd(),{dark:true,scrCls:'recscr',time:'13:48'})}],
+   why:'סיום שולח לסיכום ואי אפשר לבטל (SPEC §2).',
+   see:['משך · רגעים · מצב שמירה.','שלוש אפשרויות: <b>סיום ושליחה לסיכום</b> · המשך הקלטה · עצירה בלי לסגור.'],
+   tap:['"סיום ושליחה לסיכום" → R11.','"עצירה בלי לסגור" → "הוקלט, טרם נסגר" (R5).','✕ = המשך הקלטה. הגיליון לא נסגר בלחיצה על הרקע.'],
+   data:[code('POST /meetings/:id/recordings/end')+' (קיים, עם תור נייטיב ל-30 שניות ושליחה ברקע).'],
+   chg:['היום: פופאפ "סיום ההקלטה יסגור את הפגישה." · "סיום הקלטה" / "ביטול".','חדש: "עצירה בלי לסגור" — היום אין דרך לעצור בלי לסגור חוץ מהשהיה.']},
+
+  {code:'R11', title:'עיבוד ← סיכום', phones:[{cap:'בעיבוד — אפשר לסגור', html:()=>phone(scrProcessing(),{time:'13:49'})},{cap:'push כשהסיכום מוכן', html:()=>phone(scrLock({notif:true}),{dark:true,scrCls:'lock',homeLight:true,time:' '})}],
+   why:'להראות שהפגישה בדרך — ולשחרר את היועץ.',
+   see:['שלבים: הקלטה נקלטה · מתמללת · סיכום · משימות · '+t('memory')+'.','"אפשר לסגור את האפליקציה". כשמוכן — push במסך הנעילה.','תמלול נכשל: "הקובץ שמור. מריצים שוב".'],
+   tap:['ה-push → A7.'],
+   data:[code('GET /meetings/:id/get-meeting-status')+' כל 2 שניות כשהמסך פתוח (קיים).','push כשהסיכום מוכן — '+miss('חסר בשרת')],
+   chg:['היום: "מכין סיכום פגישה..." בתוך מסך הפגישה; כדי לדעת שנגמר צריך להישאר בו.']},
+],
+
+cli: () => [
+  {part:'לקוח · בעל העסק', sub:'CUSTOMER · white-label בשם המשרד של היועץ · HK לא מופיע בשום מקום'},
+  {code:'C1', title:'בית', phones:[{cap:'תמונת מצב', html:()=>phone(scrCliHome())}],
+   why:'30 השניות הראשונות קובעות אם בעל העסק ישתמש (CLIENT_ROLLOUT_PLAN). מספר גדול ונכון אחד — ומה מחכה ממנו.',
+   see:['לוגו ושם המשרד + שם החברה. בלי HK, בלי "מלווה על ידי".','הפגישה הבאה — הבלוק הנייבי היחיד — עם "הוספה ליומן". בלי "תיאום מחדש" (היועץ מתאם).','יתרה נוכחית וחריגה צפויה על אותו קו בסיס. שלילי באדום עמוק, מינוס משמאל.','<b>מחכה ממך</b>: משימות מהיועץ ומהפגישות.','<b>משימות מנהל התזרים</b>: הבקשות שלו — נשלחה / בוצעה — ו"＋ בקשה".','<b>מה סיכמנו</b>: מהסיכום האחרון.'],
+   tap:['עיגול = בוצע; היועץ רואה.','"＋ בקשה" → C2.','"לסיכום המלא" → C4. "תחזית תזרים" → תמונת תזרים לקריאה בלבד (ראה שאלה 9).'],
+   data:['פגישה, יתרה, חריגה: אותם מקורות כמו דשבורד בעל העסק (docs/tasks/2026-09-03-owner-dash).','בקשות: אירועי '+code('MESSAGE')+' עם "נפתח מהממשק".','מחכה ממך: '+miss('חסר בשרת (#195)'),'כל קריאה עם טוקן CUSTOMER אמיתי. כתיבה לתזרים → 403.'],
+   chg:['היום: ה"ראשי" של הלקוח הוא עוזר קולי — כדור מהבהב ושיחה בקול (Soniox).','הטאבים נקבעים מ-'+code('visible_screens')+': ראשי · מדדים · התהליך שלי · קבצים. "מדדים" ניתן לעריכה, ו"התהליך שלי" מאפשר לשנות סטטוס שלב.','חדש: בית של תמונת מצב. בעל העסק לא עורך כלום בתזרים.']},
+
+  {code:'C2', title:'מחכה ממני', phones:[{cap:'משימות מהיועץ', html:()=>phone(scrCliWait())},{cap:'בקשה חדשה למנהל התזרים', html:()=>phone(scrCliWait({sheet:true}),{dark:false})}],
+   why:'הדבר היחיד שבעל העסק צריך לעשות: מה ביקשו ממנו, ומה הוא ביקש.',
+   see:['צ׳יפים: מהיועץ · הבקשות שלי.','משימה: מה · מאיזו פגישה או ממי · עד מתי. כשזה מסמך — "צילום מסמך" ו"קובץ" ישר מהשורה.','בקשות: "נשלחה" / "בוצעה — נעולה". אין "בטיפול".'],
+   tap:['עיגול = בוצע (חוזר ליועץ).','"בקשה חדשה" → גיליון: נושא · פירוט · רגיל/דחוף. טוסט "הבקשה נשלחה למנהל התזרים".','עריכה ומחיקה — רק כל עוד "נשלחה", עם טוסט ביטול.'],
+   data:['בקשה = '+code('MESSAGE')+', גוף '+code('{נושא}\\n{פירוט}\\n\\nנפתח מהממשק')+'.','משימות ללקוח: פעולות מסיכום שבאחריותו + משימות שהיועץ שלח — '+miss('חסר בשרת (#195)')],
+   chg:['חדש. היום אין לבעל העסק רשימת משימות או בקשות באפליקציה.']},
+
+  {code:'C3', title:'פגישות', phones:[{cap:'הבאה + ההיסטוריה', html:()=>phone(scrCliMeet())}],
+   why:'"מה שסוכם יגיע אליכם בכתב, ויישאר כאן."',
+   see:['הפגישה הבאה עם "הוספה ליומן".','היסטוריה עם שלושה מצבים בלבד: "הסיכום נשלח אליך" · "התקיימה" · "לא התקיימה".','בלי תיאום, בלי נגן, בלי שיחות טלפון, בלי שמות אוטומטיים — השם מהיומן או "פגישה עם {יועץ}".'],
+   tap:['פגישה עם סיכום → C4.'],
+   data:['פגישות החברה; סיכום מוצג רק אחרי אישור ('+code('approve')+').'],
+   chg:['היום: פגישות מופיעות אצל הלקוח רק בתוך "התהליך שלי", לפי שלב.']},
+
+  {code:'C4', title:'סיכום פגישה', phones:[{cap:'מה שבעל העסק מקבל', html:()=>phone(scrCliSummary())}],
+   why:'הסיכום שנשלח בוואטסאפ — גם כאן, עם מה שעליו.',
+   see:['טאבים: סיכום הפגישה · משימות.','תמונת מצב · מה סיכמנו · <b>עליך</b> (אותן שורות כמו "מחכה ממני").','"הורדת הסיכום".','בלי תמלול, בלי משוב, בלי '+t('memory')+', בלי חותמות זמן, בלי markdown גולמי.'],
+   tap:['עיגול ב"עליך" = בוצע.'],
+   data:[code('GET /meetings/:id/get-summary')+' + '+code('GET /tasks/:id')+' — רק כשאושר.'],
+   chg:['היום: MeetingDetails של היועץ, בלי הכפתורים.']},
+
+  {code:'C5', title:'עוזר', phones:[{cap:'שאלה במילים שלו', html:()=>phone(scrCliAI())}],
+   why:'"מה תהיה היתרה בעוד שבועיים?" — על העסק שלו בלבד.',
+   see:['שאלה על מצב → תשובה גרפית: מספר, קו מול המסגרת, שורה אחת של משמעות.','שאלה על פגישות → טקסט עם קישור לסיכום.','שלוש שאלות מוצעות שעוד לא נשאלו. מיקרופון אפור "בקרוב".'],
+   tap:['"+" = שיחה חדשה. "השיחות שלי" מהכותרת.'],
+   data:[code('POST /chat/handle-chat')+' עם '+code('entry_point: "customer_chat_message"')+'; מעקב '+code('think-process/:id/status')+'.','זיכרון חיצוני בלבד (MEMORY_SPEC §6.4). "requires unrestricted company access" = באג, לא הרשאה.'],
+   chg:['היום: עוזר קולי במסך הבית (Soniox STT+TTS), בלי טקסט.','חדש: טקסט קודם; קול "בקרוב" לפי ההכרעה של 06.09 — אבל באפליקציה הקול כבר עובד. שאלה 7.']},
+
+  {code:'C6', title:'צילום מסמך', phones:[{cap:'הכפתור האמצעי — מצלמה', html:()=>phone(scrCam(),{dark:true,scrCls:'cam',homeLight:true})},{cap:'לפני שליחה', html:()=>phone(scrCamReview())}],
+   why:'"דף בנק, הסכם או חשבונית שהמשרד ביקש" — בטלפון זה צילום, לא קובץ.',
+   see:['מצלמה עם זיהוי קצוות; מצלם לבד כשהדף יציב. גלריה · קובץ.','לפני שליחה: עמודים (＋ עמוד), שם שנגזר, וסימון המשימה שהמסמך סוגר.','מסמכים אחרונים: "בקיטלוג AI" → "✓ הוזן". בלי "אצל המתפעל".'],
+   tap:['"שליחה" → טוסט "המסמך נשלח", חזרה למסך הקודם.'],
+   data:['אחסון: '+code('/company-storage/:cid/...')+' (כתובות חתומות, קיים) + אירוע '+code('DOCUMENT')+' בתור החברה.','סריקה: VisionKit '+code('VNDocumentCameraViewController')+' / ML Kit Document Scanner. PDF אחד לכל העמודים.'],
+   chg:['היום: "קבצים" — מנהל תיקיות מלא (5.5 אלף שורות), ייבוא מגוגל דרייב, העלאה, שינוי שם, מחיקה.','חדש: צילום בכפתור האמצעי. ניהול תיקיות לא בטלפון.']},
+
+  {code:'C7', title:'מצבים', wide:true, phones:[
+     {cap:'טעינה', html:()=>phone(scrCliHome({state:'loading'}),{cls:'mini'})},
+     {cap:'ריק — בנק לא חובר', html:()=>phone(scrCliHome({state:'empty'}),{cls:'mini'})},
+     {cap:'שגיאה', html:()=>phone(scrCliHome({state:'error'}),{cls:'mini'})},
+     {cap:'בלי רשת', html:()=>phone(scrCliHome({state:'offline'}),{cls:'mini'})}],
+   see:['<b>טעינה</b>: שלד באותה צורה ובאותו גובה — בלי קפיצה כשהנתונים מגיעים.','<b>ריק</b>: "—" ומשפט שאומר למה. לא 0, לא קופסה מקווקוות.','<b>שגיאה</b>: משפט אחד + "טעינה מחדש". בלי טקסט מערכת, בלי "לא ניתן לטעון".','<b>בלי רשת</b>: פס עליון עם שעת העדכון; המסך מהמטמון; פעולות כתיבה נכנסות לתור ומסומנות "יישלח כשתחזור רשת".']},
+],
+};
+
+/* שאלות לאייל — אותה רשימה כמו בסוף TASK.md */
+const QUESTIONS = [
+  ['adv','הטאב־בר של היועץ','היום · משימות · ● הקלטה · לקוחות · פגישות. "יומן" = "היומן המלא" מתוך היום; "תקשורת" = וואטסאפ מכרטיס הלקוח. בדשבורד: היום · משימות · יומן · תקשורת · התיק שלי.'],
+  ['adv','אין "סיום" בפס ההקלטה','SPEC §3 שם "סיום ההקלטה" בפס. בטלפון זה סיום מהכיס — הסיום רק ממסך ההקלטה, עם גיליון.'],
+  ['adv','איזה מודל משימות','באפליקציה היום משימה = אירוע ב-/events ("לטיפול"); בדשבורד = advisor_task. הנחתי advisor_task — משימה אחת בשני המקומות.'],
+  ['adv','שיחה נכנסת — חוזרת לבד','כמו היום, עם רגע אוטומטי ועד 20 דקות. הפגישה בחדר ממשיכה.'],
+  ['adv','פורמט ההקלטה','WAV ≈ 115MB לשעה. AAC 64kbps ≈ 29MB. להעביר לעידו כבדיקת איכות תמלול?'],
+  ['adv','רגעים מסומנים = שדה חדש בשרת','פריט מוצר לעידו — לא נפתח בלוח עד שתאשר.'],
+  ['cli','קול לבעל העסק','ההכרעה של 06.09: "בקרוב". אבל באפליקציה הקול כבר עובד (Soniox). הנחתי טקסט קודם, קול "בקרוב".'],
+  ['cli','Jampa ללקוח','אין ממשק מטופל (07.09), אבל באפליקציה יש טעם nlp ל-CUSTOMER. הנחתי שיורד.'],
+  ['cli','תכנון ותמונת תזרים בטלפון','לא אופיין. מסך קריאה בטלפון, או לפתוח את הדשבורד בדפדפן?'],
+  ['cli','"מדדים" ו"התהליך שלי" יורדים','היום עם עריכה — סותר "בעל העסק לא עורך".'],
+  ['cli','הכפתור האמצעי = מצלמה','האלטרנטיבה: "＋ בקשה". הנחתי מסמך — מה שמבקשים ממנו הכי הרבה.'],
+  ['both','גיליון לא נסגר ברקע','לפי הבריף. החלקה למטה סוגרת רק גיליון מידע, לא גיליון עם פעולה.'],
+  ['adv','"חברה חדשה" לאזור האישי','יוצא מהכותרת.'],
+  ['both','התראות push','"הסיכום מוכן" צריך שרת; "לא נשלח לסיכום" ו"להתחבר מחדש" — מקומית. פריט לעידו?'],
+  ['adv','iOS מינימלי','האפליקציה ל-15.1. כפתורים ב-Live Activity — iOS 17; ב-16.1–16.x בלי כפתורים.'],
+];
+/* =====================================================================
+   רינדור + חוזה כתובת: #adv/hk · #cli · ?only=R3&tab=adv&brand=jp (לצילום)
+   ===================================================================== */
+const Q = new URLSearchParams(location.search);
+function intro(jpCli){
+  if(S.tab==='adv') return `
+  <div class="intro">
+    <div class="card-doc">
+      <h2>${pick('האפליקציה של היועץ','האפליקציה של המטפלת')}</h2>
+      <p>${pick('היועץ לא יושב מול הטלפון. הוא פותח אותו בין פגישות, בדרך, בחדר ההמתנה. לכן שלושה דברים בלבד: <b>מה קורה היום</b>, <b>להקליט בלחיצה</b>, ו<b>לאשר את מה שנולד מהפגישה</b>. כל השאר — בדשבורד.','המטפלת פותחת את הטלפון בין מטופלים. שלושה דברים בלבד: <b>מה קורה היום</b>, <b>להקליט בלחיצה</b>, ו<b>לאשר את הסיכום</b>. בלי כסף, בלי זיכרון חברה, בלי עוזר AI (חסומים ב-Jampa, 07.09).')}</p>
+      <div class="navmap"><span>היום</span><span>משימות</span><span class="c">● הקלטה</span><span>${t('clients')}</span><span>פגישות</span></div>
+      <p style="font-size:13px">טאב־בר תחתון קבוע. הכפתור האמצעי מתחיל הקלטה מכל מסך, ובזמן הקלטה הופך לשעון. אזור אישי (הרשאות, יציאה) — מהאווטאר.</p>
+    </div>
+    <div class="card-doc">
+      <h2>החוקים, מותאמים לטלפון</h2>
+      <ul>
+        <li><b>אותה שפה כמו הדשבורד:</b> Rubik, סקאלה סגורה, בלוק ${pick('נייבי','סגול')} אחד, ${pick('קורל','סגול')} = הפעולה הראשית, אחת למסך. מספרים LTR ו-tabular.</li>
+        <li><b>מטרת לחיצה 44px</b> — כפתורים 44, שורות 56. זו החריגה היחידה מ-${code('css/tokens.css')} (כפתור 37).</li>
+        <li><b>גיליון תחתון במקום פופאפ.</b> נסגר ב-✕ או בכפתור — לא בלחיצה על הרקע. אין ${code('alert')} / ${code('confirm')} / ${code('Alert.alert')}. בורר — צ׳יפים, לא picker נייטיב.</li>
+        <li><b>התראה = טקסט צבוע + נקודה 6px.</b> גלולות צבעוניות רק למצבים ("ממתין לאישור").</li>
+        <li><b>אין נתונים מומצאים:</b> שדה בלי מקור = "—". <span class="miss" style="color:var(--danger-t);font-weight:600">● חסר בשרת</span> מסומן ליד כל מסך.</li>
+      </ul>
+    </div>
+  </div>`;
+  return `
+  <div class="intro">
+    <div class="card-doc">
+      <h2>האפליקציה של בעל העסק</h2>
+      <p>בעל העסק לא מכיר את HK. הוא רואה את הלוגו והשם של המשרד של היועץ שלו. בטלפון הוא רוצה לדעת <b>איפה הכסף עומד</b>, <b>מה מחכים ממנו</b>, ו<b>מה סוכם</b> — ולשלוח מסמך בצילום. הוא צופה במספרים, לא משנה אותם.</p>
+      <div class="navmap"><span>בית</span><span>מחכה ממני</span><span class="c">● מסמך</span><span>פגישות</span><span>עוזר</span></div>
+      <p style="font-size:13px">הכפתור האמצעי פותח מצלמה. אזור אישי (יציאה) — מהאווטאר.</p>
+    </div>
+    <div class="card-doc">
+      <h2>מה לא מופיע אצלו</h2>
+      <ul>
+        <li>HK, "מלווה על ידי", שמות עובדי HK.</li>
+        <li>שלבי עיבוד ("הוקלטה · תמלול · סיכום"), תמלול, משוב ליועץ, זיכרון, הכנה לפגישה.</li>
+        <li>תור התפעול, קיטלוג, "אצל המתפעל", טקסט מערכת באנגלית, markdown גולמי.</li>
+        <li>עריכה של תכנון תזרימי ותמונת תזרים — השרת מחזיר 403, לא רק הממשק.</li>
+      </ul>
+      ${jpCli?`<p style="background:var(--warn-bg);border-radius:10px;padding:10px 14px;margin-top:14px;font-size:13px"><b class="wrn">Jampa:</b> ל-Jampa אין ממשק מטופל (AI-GUIDE §5, 07.09). המסכים בטאב הזה הם HK בלבד, ולכן הם מוצגים בצבעי HK. באפליקציה של היום יש טעם nlp גם ללקוח (עוזר קולי, "התהליך שלי") — שאלה 8.</p>`:''}
+    </div>
+  </div>`;
+}
+
+function render(){
+  const only = Q.get('only');
+  document.body.classList.toggle('jp', JP() && S.tab==='adv');
+  document.body.classList.toggle('only', !!only);
+  const brandForCli = S.brand; if(S.tab==='cli') S.brand='hk';
+  const list = SECTIONS[S.tab]();
+  let html = only ? '' : intro(brandForCli==='jp'), idx='';
+  list.forEach(s=>{
+    if(s.part){ if(!only) html += `<div class="part"><div class="part-h"><h2>${s.part}</h2><span>${s.sub||''}</span></div></div>`; return; }
+    idx += `<a href="#${s.code}"><b>${s.code}</b>${s.title}</a>`;
+    if(only && only!==s.code) return;
+    const ph = (s.phones||[]).map(p=>`<div class="ph-wrap">${p.html()}<div class="ph-cap">${p.cap||''}</div></div>`).join('');
+    html += `<section class="sec ${s.wide?'wide':''}" id="${s.code}">
+      ${s.wide ? `${notes(s)}${ph?`<div class="phones" style="margin-top:18px">${ph}</div>`:''}` : `<div class="phones">${ph}</div>${notes(s)}`}
+    </section>`;
+  });
+  if(!only){
+    html += `<div class="part"><div class="part-h"><h2>הנחות ושאלות לאייל</h2><span>החלטתי במקום לא ברור — לסמן ✓ או לתקן. אותה רשימה בסוף TASK.md</span></div></div>
+    <div class="qs">${QUESTIONS.map((q,i)=>`<div class="q ${q[0]===S.tab||q[0]==='both'?'':'q-other'}"><span class="q-n num">${i+1}</span><div><b>${q[1]}</b><p>${q[2]}</p></div><span class="q-t">${q[0]==='adv'?'יועץ':q[0]==='cli'?'לקוח':'שניהם'}</span></div>`).join('')}</div>`;
+  }
+  S.brand = brandForCli;
+  document.getElementById('doc').innerHTML = html;
+  document.getElementById('idx').innerHTML = idx;
+  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('on', b.dataset.tab===S.tab));
+  document.querySelectorAll('[data-brand]').forEach(b=>b.classList.toggle('on', b.dataset.brand===S.brand));
+  document.querySelector('.doc-logo').firstChild.textContent = JP() && S.tab==='adv' ? 'Jampa-APP ' : 'HK-APP ';
+  if(!only) try{ localStorage.setItem('mspec', JSON.stringify(S)); }catch(e){}
+  if(only) document.title = 'SHOT-READY';
+}
+function setTab(v){ S.tab=v; location.hash=S.tab+'/'+S.brand; render(); window.scrollTo(0,0); }
+function setBrand(v){ S.brand=v; location.hash=S.tab+'/'+S.brand; render(); }
+
+(function boot(){
+  try{ Object.assign(S, JSON.parse(localStorage.getItem('mspec')||'{}')); }catch(e){}
+  const h = location.hash.replace('#','').split('/');
+  if(h[0]==='adv'||h[0]==='cli') S.tab=h[0];
+  if(h[1]==='hk'||h[1]==='jp') S.brand=h[1];
+  if(Q.get('tab')) S.tab=Q.get('tab');
+  if(Q.get('brand')) S.brand=Q.get('brand');
+  render();
+  if(/^[ARC]\d+$/.test(h[0])) document.getElementById(h[0])?.scrollIntoView();
+})();
+</script>
+</body></html>
