@@ -1,6 +1,6 @@
 /* גרסאות — מה עלה לפרוד, לבדיקה ולצוות. נערך כאן בריפו; סימוני הבדיקה נשמרים מהלוח (board/index.html#rel). */
 window.HK_RELEASES = {
- "version": 4,
+ "version": 5,
  "updated": "15.09.2026 23:22",
  "releases": [
   {
