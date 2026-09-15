@@ -1,7 +1,7 @@
 /* גרסאות — מה עלה לפרוד, לבדיקה ולצוות. נערך כאן בריפו; סימוני הבדיקה נשמרים מהלוח (board/index.html#rel). */
 window.HK_RELEASES = {
- "version": 18,
- "updated": "16.09.2026 00:13",
+ "version": 19,
+ "updated": "16.09.2026 00:21",
  "releases": [
   {
    "key": "2026-09-15",
@@ -252,7 +252,12 @@ window.HK_RELEASES = {
       "בעל עסק"
      ],
      "date": "06.09",
-     "check": null
+     "check": {
+      "status": "pass",
+      "note": "",
+      "who": "",
+      "when": "16.09.2026 00:21"
+     }
     },
     {
      "id": "f0609-12",
