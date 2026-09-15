@@ -68,11 +68,18 @@ window.HK_BOARD = {
       {
        "when": "16.09.2026",
        "who": "אייל (Claude)",
+       "ev": "note",
+       "txt": "אייל: קודם כל."
+      },
+      {
+       "when": "16.09.2026",
+       "who": "אייל (Claude)",
        "ev": "opened",
        "txt": "אייל: \"לבדוק שבפרוד יש רק את המייל info@hak.co.il בהפניה לישן; ב-Jampa להכניס eyal@ifact.co.il לחדש\"."
       }
      ],
-     "ask": ""
+     "ask": "",
+     "pin": true
     },
     {
      "id": "qa-1509-346",
