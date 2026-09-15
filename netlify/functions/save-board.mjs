@@ -120,6 +120,31 @@ export default async (req) => {
   if (body.action === "load") {   // הלוח קורא את הגרסה האחרונה מגיט — בלי לחכות לפריסה, ובלי לבנות בכלל
     try { return json(200, { ok: true, board: await loadBoard() }); } catch (e) { return json(502, { error: e.message }); }
   }
+  /* גרסאות (board/releases.js): הלוח קורא מגיט, וסימון בדיקה נשמר לפי פיתוח — השרת טוען את הקובץ העדכני ומשנה רק את הפיתוח הזה,
+     כך ששני אנשים שמסמנים במקביל לא דורסים זה את זה. את הגרסאות עצמן כותבים בריפו, לא מהמסך. */
+  async function loadReleases() {
+    const f = await gh(token, `/repos/${REPO}/contents/board/releases.js?ref=${BRANCH}`, { headers: { accept: "application/vnd.github.raw+json" } }, true);
+    const m = String(f).match(/window\.HK_RELEASES\s*=\s*(\{[\s\S]*\});?\s*$/);
+    if (!m) throw new Error("releases.js לא בפורמט הצפוי");
+    return { head: String(f).split("window.HK_RELEASES")[0], data: JSON.parse(m[1]) };
+  }
+  if (body.action === "rel-load") {
+    try { return json(200, { ok: true, releases: (await loadReleases()).data }); } catch (e) { return json(502, { error: e.message }); }
+  }
+  if (body.action === "rel-mark") {
+    const key = S(body.key).slice(0, 40), id = S(body.id).slice(0, 40), status = ["pass", "fail"].includes(body.status) ? body.status : null;
+    const who = ((ses && ses.name) || S(body.who)).slice(0, 40), note = S(body.note).slice(0, 1000).trim(), item = Number(body.item) || undefined;
+    let file; try { file = await loadReleases(); } catch (e) { return json(502, { error: e.message }); }
+    const rel = (file.data.releases || []).find(r => r.key === key), feat = rel && (rel.features || []).find(f => f.id === id);
+    if (!feat) return json(404, { error: "הפיתוח לא נמצא בגרסה" });
+    const when = stamp().replace(",", "");
+    feat.check = status || note || item ? { status, note, who, when, ...(item ? { item } : (feat.check && feat.check.item ? { item: feat.check.item } : {})) } : null;
+    file.data.version = (Number(file.data.version) || 0) + 1; file.data.updated = when;
+    const content = file.head + "window.HK_RELEASES = " + JSON.stringify(file.data, null, 1) + ";\n";
+    try { const sha = await commitFiles(token, { "board/releases.js": content }, `גרסאות — ${rel.name}: ${feat.title} · ${status === "pass" ? "עובד" : status === "fail" ? "לא עובד" : "בוטל"}${who ? " · " + who : ""}`);
+      return json(200, { ok: true, commit: sha.slice(0, 7), check: feat.check, version: file.data.version }); }
+    catch (e) { return json(502, { error: e.message }); }
+  }
   if (body.action === "bug") {    // דיווח מהתמיכה: פריט תיקון בתיבה "מהתמיכה" + צילום ב-board/img/bugs/. קומיט אחד, בלי פריסה
     const g = body.bug || {};
     const title = S(g.title).slice(0, 300).trim(), who = ((ses && ses.name) || S(g.who)).slice(0, 40).trim();

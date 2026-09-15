@@ -169,6 +169,22 @@ mark{background:#FFF1B8;color:inherit;border-radius:3px;padding:0 1px}
 .meid{font-size:12.5px;color:var(--ink2);margin-inline-start:6px;white-space:nowrap}.meid .out{border:0;background:none;font:inherit;font-size:11.5px;color:var(--ink3);cursor:pointer;text-decoration:underline;padding:0 2px}
 .sec{display:flex;align-items:center;gap:10px}
 .drow{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}.drow .row{border:0;border-radius:0;margin:0;grid-template-columns:minmax(26px,auto) 1fr auto auto auto auto auto 14px;cursor:pointer}.drow .car{color:var(--ink3);transition:.15s;display:inline-block}.drow.open .car{transform:rotate(90deg)}.drow.done{opacity:.75}.cwhen{font-size:11.5px;color:var(--ink3);white-space:nowrap}.golink{font-size:12px;color:#14618F;text-decoration:none;font-weight:600;white-space:nowrap}.drow.done .row{cursor:default}.donehdr{margin-top:26px}
+/* ---- גרסאות ---- */
+.rstat{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap;background:var(--chip);color:var(--ink3)}
+.rstat.pass{background:#E7F7EF;color:#0B6E4B}.rstat.fail{background:#FDECEB;color:#C43D30}
+.okb{border:1px solid #A9D9C1;background:#fff;color:#0B6E4B;font:inherit;font-size:12px;font-weight:600;border-radius:999px;padding:3px 11px;cursor:pointer;white-space:nowrap}.okb:hover{background:#E7F7EF}
+.okb.on{background:#13895B;border-color:#13895B;color:#fff}.fail.on{background:#C43D30;border-color:#C43D30;color:#fff}
+.rwho{display:inline-flex;gap:4px;flex-wrap:wrap}.rwho em{font-style:normal;font-size:11.5px;color:#14618F;background:var(--tint);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.rpath{direction:ltr;unicode-bidi:isolate;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#14618F}
+.col ol{margin:0;padding-inline-start:20px;color:var(--ink2);font-size:14px;max-width:70ch}.col ol li{margin:2px 0}
+.rnote{background:#FFF6E5;color:#7A4E00;border-radius:8px;padding:6px 10px;font-size:13px;margin:0 0 8px;max-width:70ch}
+.rbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.rbar .sp{flex:1}
+.progress{height:6px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;display:flex;margin-top:10px;max-width:420px}.progress i{display:block;height:100%}.progress .p{background:#3DBE86}.progress .f{background:#F07C6F}
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;margin-bottom:8px}
+.tcard b{display:block;font-size:15px;color:var(--navy);margin-bottom:2px}.tcard p{margin:4px 0 0;color:var(--ink2);max-width:72ch}.tcard .m{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink3)}
+@media (max-width:760px){.rrow{grid-template-columns:1fr auto auto!important}.rrow>.tm{display:none}.rrow>.t{grid-column:1/-1}.rrow>[data-rel]{display:inline-flex!important}}
+body.team .nav,body.team #bEdit,body.team #bMd,body.team #srch{display:none!important}
 .drow .dbody{display:none;border-top:1px solid var(--line)}.drow.open .dbody{display:block}.drow .dfoot{padding:8px 16px 12px;font-size:12.5px}.drow .dfoot a{color:var(--sky,#14618F);text-decoration:none;font-weight:600}.drow .st{white-space:nowrap}.secmd{margin-inline-start:auto;font-weight:600}
 </style>
 </head>
@@ -207,6 +223,7 @@ mark{background:#FFF1B8;color:inherit;border-radius:3px;padding:0 1px}
 <link rel="stylesheet" href="../css/tokens.css">
 <script src="../js/gate.js" defer></script>
 <script src="data.js"></script>
+<script src="releases.js"></script>
 <script>
 (function(){
 'use strict';
@@ -247,7 +264,7 @@ function route(){var h=location.hash.replace('#','');var q={};h.split('&').forEa
 function go(h){location.hash=h}
 /* ---------- ניווט ---------- */
 function renderNav(q){
-  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined&&q.q===undefined&&q.spec===undefined)?' class="on"':'')+'>מרכז</a>';
+  var h='<a href="#center"'+(q.center!==undefined||(!q.screen&&!q.dev&&q.arrived===undefined&&q.q===undefined&&q.spec===undefined&&q.rel===undefined)?' class="on"':'')+'>מרכז</a>';
   B.devs.forEach(function(d){var n=allItems().filter(function(x){return x.it.dev===d&&open_(x.it)}).length;h+='<a href="#dev='+encodeURIComponent(d)+'"'+(q.dev===d?' class="on"':'')+'>'+esc(d)+(n?' <i>'+n+'</i>':'')+'</a>'});
   var sn=supportNew().length;
   h+='<a href="#screen=inbox"'+(q.screen==='inbox'?' class="on"':'')+' style="margin-inline-start:14px">תמיכה'+(sn?' <i class="hot">'+sn+'</i>':'')+'</a>';
@@ -255,6 +272,8 @@ function renderNav(q){
   h+='<a href="#spec"'+(q.spec!==undefined?' class="on"':'')+' style="margin-inline-start:14px">אפיון'+(ns?' <i>'+ns+'</i>':'')+'</a>';
   var na=arrived().length;
   h+='<a href="#arrived"'+(q.arrived!==undefined?' class="on"':'')+'>הגיע מפיתוח'+(na?' <i class="hot">'+na+'</i>':'')+'</a>';
+  var rl=relLatest(), rc=rl?relCounts(rl):null;
+  h+='<a href="#rel'+(rl?'='+encodeURIComponent(rl.key):'')+'"'+(q.rel!==undefined?' class="on"':'')+' style="margin-inline-start:14px" title="מה עלה לפרוד ועוד לא נבדק">גרסאות'+(rc&&rc.fail?' <i class="hot">'+rc.fail+'</i>':rc&&rc.none?' <i>'+rc.none+'</i>':'')+'</a>';
   document.getElementById('nav').innerHTML=h;
   var bn=document.getElementById('banner');
   bn.innerHTML=DRAFT?'<div class="banner">יש שינויים שנשמרו רק בדפדפן הזה (גרסה '+B.version+'). <span class="sp"></span><button class="btn sm pri" id="bSaveNow">'+(ONLINE?'שמירה לגיט':'הורדת data.js')+'</button></div>':'';
@@ -429,6 +448,93 @@ function renderArrived(){
      +'<div class="dbody"><div class="ib one"><div class="col"><h3>מה בודקים ואיך</h3><p>'+esc(f.what)+'</p>'+(f.imgA?'<figure><img '+imgSrc(f.imgA)+' alt="" loading="lazy"><figcaption>'+esc(f.capA)+'</figcaption></figure>':'')+(f.imgB?'<figure><img '+imgSrc(f.imgB)+' alt="" loading="lazy"><figcaption>'+esc(f.capB)+'</figcaption></figure>':'')+'</div></div>'+logHTML(f)+'<div class="dfoot"><a href="#screen='+k+'&tab=check">לדף המסך ›</a></div></div></div>'}).join('');
   app.innerHTML=h;
   app.querySelectorAll('.row[data-tog]').forEach(function(r){r.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=r.dataset.tog;OPEN[id]=!OPEN[id];r.parentNode.classList.toggle('open',!!OPEN[id])}});
+}
+/* ---------- גרסאות ----------
+   board/releases.js — מה עלה לפרוד. #rel = כל הגרסאות · #rel=<key> = הגרסה לבדיקה · &view=team = אותה גרסה לצוות, בלי סימונים.
+   סימון נשמר מיד לגיט (rel-mark), פיתוח אחד בכל פעם. "לא עובד" פותח גם פריט תיקון ב"כללי" ומקשר אליו. מי שלא מתכנת רואה רק את תצוגת הצוות. */
+var REL=window.HK_RELEASES||{version:0,releases:[]};
+var RF={st:''};
+function relByKey(k){return (REL.releases||[]).filter(function(r){return r.key===k})[0]}
+function relFeat(r,id){return (r.features||[]).filter(function(f){return f.id===id})[0]}
+function relCounts(r){var c={pass:0,fail:0,none:0};(r.features||[]).forEach(function(f){var s=f.check&&f.check.status;c[s==='pass'?'pass':s==='fail'?'fail':'none']++});return c}
+function relLatest(){var L=REL.releases||[];return L[L.length-1]}
+function loadReleases(cb){
+  if(!ONLINE||!hasAuth()){cb&&cb();return}
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'rel-load'}))})
+   .then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.releases&&(j.releases.version||0)>=(REL.version||0))REL=j.releases;cb&&cb()}).catch(function(){cb&&cb()});
+}
+function relWhere(f){var w=String(f.where||''),m=w.match(/\/workspace[^\s),]*/);w=w.replace(/\(?\/workspace[^\s)]*\)?/g,'').replace(/\s*[—-]\s*$/,'').trim();return esc(w)+(m?' <span class="rpath">'+esc(m[0])+'</span>':'')}
+function relWho(f){return '<span class="rwho">'+(f.who||[]).map(function(w){return '<em>'+esc(w)+'</em>'}).join('')+'</span>'}
+function renderRelList(){
+  var L=(REL.releases||[]).slice().reverse();
+  var h='<div class="band"><div><div class="eyebrow">מה עלה לפרוד</div><h1>גרסאות</h1><div class="meta"><span>לכל גרסה: הפיתוחים המרכזיים, איך בודקים כל אחד, ותצוגה נקייה לצוות.</span></div></div></div>';
+  h+=L.length?'<div class="grid">'+L.map(function(r){var c=relCounts(r),open=c.none+c.fail;return '<a class="card'+(open?'':' closed')+(c.fail?' hot':'')+'" href="#rel='+encodeURIComponent(r.key)+(notDev()?'&view=team':'')+'"><b>'+esc(r.name)+'</b>'+(notDev()?'<div class="n"><span><em>'+(r.features||[]).length+'</em> פיתוחים</span></div>':'<div class="n"><span>עובד <em>'+c.pass+'</em></span><span>לא עובד <em>'+c.fail+'</em></span><span>לא נבדק <em>'+c.none+'</em></span></div>')+'</a>'}).join('')+'</div>':'<div class="empty">אין גרסאות עדיין</div>';
+  app.innerHTML=h;
+}
+function relRow(f){
+  var ck=f.check||{},s=ck.status||'';
+  var chip=s==='pass'?'<span class="rstat pass">עובד</span>':s==='fail'?'<span class="rstat fail">לא עובד</span>':'<span class="rstat">לא נבדק</span>';
+  return '<div class="drow'+(OPEN[f.id]?' open':'')+'" data-id="'+f.id+'"><div class="row rrow" data-tog="'+f.id+'"><span class="tm">'+esc(f.date)+'</span><span class="t">'+esc(f.title)+'<small>'+(ck.note?'<b>'+esc(ck.who||'')+':</b> '+esc(ck.note):relWhere(f))+'</small></span>'
+   +(ck.item?'<a class="golink" href="#q='+ck.item+'">פריט #'+ck.item+'</a>':'<span></span>')+(s?'<span></span>':chip)
+   +'<button class="okb'+(s==='pass'?' on':'')+'" data-rel="pass" data-id="'+f.id+'">עובד</button><button class="fail'+(s==='fail'?' on':'')+'" data-rel="fail" data-id="'+f.id+'">לא עובד</button><span class="car">›</span></div>'
+   +'<div class="dbody"><div class="ib"><div class="col"><h3>מה זה</h3>'+(f.note?'<div class="rnote">'+esc(f.note)+'</div>':'')+'<p>'+esc(f.for_staff)+'</p><h3>איפה ולמי</h3><p>'+relWhere(f)+'</p>'+relWho(f)+'</div>'
+   +'<div class="col"><h3>איך בודקים</h3><ol>'+(f.how_to_check||[]).map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ol></div></div>'
+   +(ck.when?'<div class="log"><div class="'+(s==='pass'?'passed':s==='fail'?'failed':'')+'"><span>'+esc(ck.when)+' · '+esc(ck.who||'')+' · <b>'+(s==='pass'?'עובד':s==='fail'?'לא עובד':'הערה')+'</b></span>'+(ck.note?' '+esc(ck.note):'')+'</div></div>':'')+'</div></div>';
+}
+function relCard(f){return '<div class="tcard"><b>'+esc(f.title)+'</b><div class="m">'+relWhere(f)+relWho(f)+'</div><p>'+esc(f.for_staff)+'</p></div>'}
+function renderRel(key,view){
+  var r=relByKey(key); if(!r){renderRelList();return}
+  var team=view==='team'||notDev(), F=r.features||[], n=F.length||1, c=relCounts(r);
+  document.body.classList.toggle('team',notDev());
+  var h='<div class="band'+(!team&&!c.none&&!c.fail?' closed':'')+'"><div><div class="eyebrow">'+(team?'מה חדש בממשק':'גרסה')+' · '+esc(String(r.from||'').slice(0,5))+'–'+esc(r.to||'')+'</div><h1>'+esc(r.name)+'</h1><div class="meta"><span>'+esc(r.about||'')+'</span></div>'
+   +(team?'':'<div class="progress" aria-hidden="true"><i class="p" style="width:'+(c.pass/n*100)+'%"></i><i class="f" style="width:'+(c.fail/n*100)+'%"></i></div>')+'</div>'
+   +(team?'<div class="counts"><div><b>'+F.length+'</b><span>פיתוחים</span></div></div>':'<div class="counts"><div><b>'+c.pass+'</b><span>עובד</span></div><div><b>'+c.fail+'</b><span>לא עובד</span></div><div><b>'+c.none+'</b><span>לא נבדק</span></div></div>')+'</div>';
+  h+='<div class="rbar">'+(notDev()?'':'<button class="pill'+(team?'':' on')+'" data-go="#rel='+encodeURIComponent(key)+'">בדיקות</button><button class="pill'+(team?' on':'')+'" data-go="#rel='+encodeURIComponent(key)+'&view=team">לצוות</button><span style="width:14px"></span>')
+   +(team?'':[['','הכל'],['none','לא נבדק'],['fail','לא עובד'],['pass','עובד']].map(function(o){return '<button class="pill'+(RF.st===o[0]?' on':'')+'" data-rf="'+o[0]+'">'+o[1]+'</button>'}).join(''))
+   +'<span class="sp"></span>'+(team&&!notDev()?'<button class="btn sm" id="relCopy">העתקת קישור לצוות</button>':'')+'</div>';
+  var areas=(r.areas||[]).slice(); F.forEach(function(f){if(areas.indexOf(f.area)<0)areas.push(f.area)});
+  var shown=0;
+  areas.forEach(function(a){
+    var L=F.filter(function(f){return f.area===a&&(team||!RF.st||((f.check&&f.check.status)||'none')===RF.st)}); if(!L.length)return; shown+=L.length;
+    h+='<h2 class="sec">'+esc(a)+' <span class="cwhen">'+L.length+'</span></h2>'+L.map(team?relCard:relRow).join('');
+  });
+  if(!shown)h+='<div class="empty">✓ אין פיתוחים במצב הזה</div>';
+  app.innerHTML=h;
+  app.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){go(b.dataset.go)}});
+  app.querySelectorAll('[data-rf]').forEach(function(b){b.onclick=function(){RF.st=b.dataset.rf;renderRel(key,view)}});
+  app.querySelectorAll('.row[data-tog]').forEach(function(rw){rw.onclick=function(e){if(e.target.closest('button,label,a,input'))return;var id=rw.dataset.tog;OPEN[id]=!OPEN[id];rw.parentNode.classList.toggle('open',!!OPEN[id])}});
+  var cp=document.getElementById('relCopy'); if(cp)cp.onclick=function(){var t=location.origin+location.pathname+'#rel='+encodeURIComponent(key)+'&view=team';
+    var done=function(){toast('הקישור לצוות הועתק')},fb=function(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(_){}ta.remove()};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb()};
+  app.querySelectorAll('[data-rel]').forEach(function(b){b.onclick=function(e){e.stopPropagation();var f=relFeat(r,b.dataset.id),cur=f.check&&f.check.status;
+    if(b.dataset.rel==='pass'){relMark(r,f,cur==='pass'?null:'pass','');return}
+    if(cur==='fail'){relMark(r,f,null,'');return}
+    var RD={dev:'אייל'};
+    askNote('לא עובד — '+f.title,'מה לא עבד ואיפה. נפתח פריט תיקון ב"כללי" ומקושר לפיתוח.',{required:true,ok:'שמירה ופתיחת תיקון',ph:'מה ראיתי, באיזו חברה, ומה ציפיתי לראות',danger:true},function(v){relFail(r,f,v,RD.dev)});
+    var sub=document.getElementById('nSub'); sub.insertAdjacentHTML('beforeend','<span style="display:flex;gap:8px;align-items:center;margin-top:8px">התיקון על '+sel('relDev',B.devs.map(function(d){return [d,d]}),RD.dev)+'</span>'); wireSel('relDev',function(v){RD.dev=v});
+  }});
+}
+function relMark(r,f,status,note,item,cb){
+  var prev=f.check;
+  f.check=(status||note||item)?{status:status,note:note||'',who:me()||'אייל',when:now(),item:item||(prev&&prev.item)||undefined}:null; render();
+  if(!ONLINE){toast('מקומית — הסימון לא נשמר לגיט');cb&&cb();return}
+  if(!hasAuth()){f.check=prev;render();toast('לא מחובר — רענן את הדף והיכנס שוב');return}
+  fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'rel-mark',key:r.key,id:f.id,status:status,note:note||'',item:item||'',who:me()}))})
+   .then(function(x){return x.json().then(function(j){return {ok:x.ok,status:x.status,j:j}})})
+   .then(function(x){
+     if(x.ok){f.check=x.j.check;REL.version=x.j.version;toast(status==='pass'?'סומן עובד ✓':status==='fail'?'סומן לא עובד':'הסימון בוטל');render();cb&&cb()}
+     else if(x.status===401){logout()}
+     else{f.check=prev;render();toast('הסימון לא נשמר: '+(x.j.error||x.status))}
+   }).catch(function(){f.check=prev;render();toast('אין חיבור לשרת — הסימון לא נשמר')});
+}
+function relFail(r,f,note,dev){
+  var it=newItem('fix','לא עובד אחרי העלייה ('+r.name+'): '+f.title,dev||'אייל');
+  it.what=note; it.sev='גבוה';
+  it.need=f.for_staff+((f.how_to_check||[]).length?'\n\nאיך בודקים:\n'+f.how_to_check.map(function(x,i){return (i+1)+'. '+x}).join('\n'):'');
+  logAdd(it,'reported',me()||'אייל','מהגרסה '+r.name);
+  scr('general').items.push(it); markDirty();
+  /* קודם הסימון, אחר כך הלוח — שני קומיטים ברצף, לא במקביל */
+  relMark(r,f,'fail',note,it.n,function(){save()});
 }
 /* ---------- דף מסך ---------- */
 var TAB='todo';
@@ -649,8 +755,11 @@ function hydrateBugImages(root){
 }
 function imgSrc(p){return /^img\/bugs\//.test(p)?'data-bug="'+esc(p)+'" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="':'src="'+esc(p)+'"'}
 function render(){
-  var q=route(); document.body.classList.toggle('edit',EDIT); renderNav(q);
-  if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else if(q.spec!==undefined)renderSpec(); else if(q.q!==undefined)renderSearch(q.q); else renderCenter();
+  var q=route(); document.body.classList.toggle('edit',EDIT); document.body.classList.remove('team');
+  if(notDev()&&q.rel===undefined){location.replace('../bug/index.html');return}
+  renderNav(q);
+  if(q.rel!==undefined){if(q.rel)renderRel(q.rel,q.view);else renderRelList()}
+  else if(q.screen)renderScreen(q.screen,q.tab); else if(q.dev)renderDev(q.dev); else if(q.arrived!==undefined)renderArrived(); else if(q.spec!==undefined)renderSpec(); else if(q.q!==undefined)renderSearch(q.q); else renderCenter();
   app.querySelectorAll('.ed').forEach(function(el){el.contentEditable=EDIT?'true':'false'});
   hydrateBugImages(app);
 }
@@ -682,20 +791,20 @@ function loadLatest(cb){
        if(!g.screens.some(function(x){return x.key==='inbox'}))g.screens.unshift(INBOX);
        numberItems(g);
        if((g.version||0)>=(FILE.version||0)){FILE=g; if(!DRAFT||(B.version||0)<=(g.version||0)){B=g;DRAFT=false;try{localStorage.removeItem('hkBoardDraft')}catch(e){}}}}
-     cb();
-   }).catch(function(){cb()});
+     loadReleases(cb);
+   }).catch(function(){loadReleases(cb)});
 }
 /* מי שמחובר ולא רשום כמתכנת — הלוח לא בשבילו; עובר לדף הדיווח של התמיכה */
 function notDev(){return ONLINE&&me()&&B.devs.indexOf(me())<0}
-loadLatest(function(){ if(notDev()){location.replace('../bug/index.html');return} if(!location.hash&&me()&&B.devs.indexOf(me())>=0) location.hash='#dev='+encodeURIComponent(me()); render(); });
-document.addEventListener('hk:login',function(){ if(notDev()){location.replace('../bug/index.html');return} if(me()&&B.devs.indexOf(me())>=0) go('#dev='+encodeURIComponent(me())); loadLatest(render); });
+loadLatest(function(){ if(notDev()&&route().rel===undefined){location.replace('../bug/index.html');return} if(!location.hash&&me()&&B.devs.indexOf(me())>=0) location.hash='#dev='+encodeURIComponent(me()); render(); });
+document.addEventListener('hk:login',function(){ if(notDev()&&route().rel===undefined){location.replace('../bug/index.html');return} if(me()&&B.devs.indexOf(me())>=0) go('#dev='+encodeURIComponent(me())); loadLatest(render); });
 /* רענון אוטומטי כל דקה: מביא מגיט, ומצייר מחדש רק אם יש גרסה חדשה יותר.
    לא בזמן עריכה ולא כשפופאפ פתוח — כדי לא למחוק למישהו טקסט באמצע. */
 setInterval(function(){
   if(EDIT||DRAFT)return;
   if(document.querySelector('.pop.on'))return;
-  var before=B.version||0;
-  loadLatest(function(){ if((B.version||0)>before){render();toast('הלוח התעדכן')} });
+  var before=B.version||0, rbefore=REL.version||0;
+  loadLatest(function(){ if((B.version||0)>before||(REL.version||0)>rbefore){render();toast('הלוח התעדכן')} });
 },60000);
 })();
 </script>
