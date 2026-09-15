@@ -461,7 +461,7 @@ function relLatest(){var L=REL.releases||[];return L[L.length-1]}
 function loadReleases(cb){
   if(!ONLINE||!hasAuth()){cb&&cb();return}
   fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'rel-load'}))})
-   .then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.releases&&(j.releases.version||0)>=(REL.version||0))REL=j.releases;cb&&cb()}).catch(function(){cb&&cb()});
+   .then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.releases&&(j.releases.version||0)>(REL.version||0))REL=j.releases;cb&&cb()}).catch(function(){cb&&cb()});
 }
 function relWhere(f){var w=String(f.where||''),m=w.match(/\/workspace[^\s),]*/);w=w.replace(/\(?\/workspace[^\s)]*\)?/g,'').replace(/\s*[—-]\s*$/,'').trim();return esc(w)+(m?' <span class="rpath">'+esc(m[0])+'</span>':'')}
 function relWho(f){return '<span class="rwho">'+(f.who||[]).map(function(w){return '<em>'+esc(w)+'</em>'}).join('')+'</span>'}
@@ -506,7 +506,7 @@ function renderRel(key,view){
   var cp=document.getElementById('relCopy'); if(cp)cp.onclick=function(){var t=location.origin+location.pathname+'#rel='+encodeURIComponent(key)+'&view=team';
     var done=function(){toast('הקישור לצוות הועתק')},fb=function(){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(_){}ta.remove()};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,fb);else fb()};
-  app.querySelectorAll('[data-rel]').forEach(function(b){b.onclick=function(e){e.stopPropagation();var f=relFeat(r,b.dataset.id),cur=f.check&&f.check.status;
+  app.querySelectorAll('[data-rel]').forEach(function(b){b.onclick=function(e){e.stopPropagation();var r=relByKey(key);if(!r)return;var f=relFeat(r,b.dataset.id);if(!f)return;var cur=f.check&&f.check.status;
     if(b.dataset.rel==='pass'){relMark(r,f,cur==='pass'?null:'pass','');return}
     if(cur==='fail'){relMark(r,f,null,'');return}
     var RD={dev:'אייל'};
@@ -522,7 +522,7 @@ function relMark(r,f,status,note,item,cb){
   fetch('/api/save-board',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign(auth(),{action:'rel-mark',key:r.key,id:f.id,status:status,note:note||'',item:item||'',who:me()}))})
    .then(function(x){return x.json().then(function(j){return {ok:x.ok,status:x.status,j:j}})})
    .then(function(x){
-     if(x.ok){f.check=x.j.check;REL.version=x.j.version;toast(status==='pass'?'סומן עובד ✓':status==='fail'?'סומן לא עובד':'הסימון בוטל');render();cb&&cb()}
+     if(x.ok){var rr=relByKey(r.key),ff=rr&&relFeat(rr,f.id);if(ff)ff.check=x.j.check;f.check=x.j.check;REL.version=Math.max(REL.version||0,x.j.version);toast(status==='pass'?'סומן עובד ✓':status==='fail'?'סומן לא עובד':'הסימון בוטל');render();cb&&cb()}
      else if(x.status===401){logout()}
      else{f.check=prev;render();toast('הסימון לא נשמר: '+(x.j.error||x.status))}
    }).catch(function(){f.check=prev;render();toast('אין חיבור לשרת — הסימון לא נשמר')});
